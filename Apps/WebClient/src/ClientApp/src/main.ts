@@ -88,7 +88,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const userCommentService: IUserCommentService = container.get(
         SERVICE_IDENTIFIER.UserCommentService
     );
-    logger.initialize();
+    logger.initialize(config);
 
     // Initialize services
     authService.initialize(config.openIdConnect, httpDelegate);

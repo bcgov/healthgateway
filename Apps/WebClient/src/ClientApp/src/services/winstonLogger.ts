@@ -1,14 +1,18 @@
 import { Logger, createLogger, format, transports } from "winston";
 import { ILogger } from "@/services/interfaces";
 import { injectable } from "inversify";
+import { ExternalConfiguration } from "@/models/configData";
 
 @injectable()
 export class WinstonLogger implements ILogger {
     private logger!: Logger;
 
-    public initialize(): void {
+    public initialize(config: ExternalConfiguration): void {
         this.logger = createLogger({
-            level: "debug",
+            level:
+                config.webClient.logLevel !== undefined
+                    ? config.webClient.logLevel.toLowerCase()
+                    : "info",
             format: format.json(),
             transports: [
                 new transports.Console({
