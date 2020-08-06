@@ -267,7 +267,6 @@ export default class LinearTimelineComponent extends Vue {
             (entry) => entry.date === eventDate
         );
         this.currentPage = Math.floor(index / this.numberOfEntriesPerPage) + 1;
-        // throw "Test exception";
     }
 
     private addLogging(): void {
