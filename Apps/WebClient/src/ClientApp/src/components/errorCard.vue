@@ -19,7 +19,7 @@ export default class ErrorCardComponent extends Vue {
     @Prop() show: boolean = false;
 
     private getCodeText(): string {
-        return !this.code ? "" : this.code + ": ";
+        return this.code ? this.code + ": " : "";
     }
 }
 </script>
