@@ -4,6 +4,7 @@ import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
+import moment from "moment";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
@@ -59,10 +60,12 @@ export class RestUserNoteService implements IUserNoteService {
             }
 
             this.http
-                .post<RequestResult<UserNote>>(
-                    `${this.USER_NOTE_BASE_URI}/`,
-                    note
-                )
+                .post<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, {
+                    ...note,
+                    journalDateTime: moment(note.journalDateTime)
+                        .toISOString()
+                        .slice(0, 10),
+                })
                 .then((result) => {
                     return this.handleResult(result, resolve, reject);
                 })
@@ -76,10 +79,12 @@ export class RestUserNoteService implements IUserNoteService {
     public updateNote(note: UserNote): Promise<UserNote> {
         return new Promise((resolve, reject) => {
             this.http
-                .put<RequestResult<UserNote>>(
-                    `${this.USER_NOTE_BASE_URI}/`,
-                    note
-                )
+                .put<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, {
+                    ...note,
+                    journalDateTime: moment(note.journalDateTime)
+                        .toISOString()
+                        .slice(0, 10),
+                })
                 .then((result) => {
                     return this.handleResult(result, resolve, reject);
                 })

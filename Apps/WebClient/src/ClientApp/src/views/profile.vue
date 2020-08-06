@@ -577,7 +577,7 @@ export default class ProfileView extends Vue {
             });
 
         this.calculateTimeForDeletion();
-        this.intervalHandler = setInterval(() => {
+        this.intervalHandler = window.setInterval(() => {
             this.calculateTimeForDeletion();
         }, 1000);
     }

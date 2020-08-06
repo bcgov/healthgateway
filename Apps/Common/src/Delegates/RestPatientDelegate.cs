@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,55 +57,85 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetPatientPHNAsync(string hdid, string authorization)
+        public RequestResult<string> GetPatientPHN(string hdid, string authorization)
         {
-            string retrievedPhn = string.Empty;
-            Patient patient = await this.GetPatientAsync(hdid, authorization).ConfigureAwait(true);
-            if (patient != null)
+            RequestResult<string> retVal = new RequestResult<string>()
             {
-                retrievedPhn = patient.PersonalHealthNumber;
+                ResultMessage = "Error during PHN retrieval",
+                ResultStatus = Constants.ResultType.Error,
+            };
+            string retrievedPhn = string.Empty;
+            RequestResult<Patient> patientResult = this.GetPatient(hdid, authorization);
+            if (patientResult != null)
+            {
+                retVal.ResultMessage = patientResult.ResultMessage;
+                retVal.ResultStatus = patientResult.ResultStatus;
+                if (patientResult.ResultStatus == Constants.ResultType.Success && patientResult.ResourcePayload != null)
+                {
+                    retVal.ResourcePayload = patientResult.ResourcePayload.PersonalHealthNumber;
+                }
             }
 
-            return retrievedPhn;
+            return retVal;
         }
 
         /// <inheritdoc/>
-        public async Task<Patient> GetPatientAsync(string hdid, string authorization)
+        public RequestResult<Patient> GetPatient(string hdid, string authorization)
         {
+            RequestResult<Patient> retVal = new RequestResult<Patient>()
+            {
+                ResultStatus = Constants.ResultType.Error,
+            };
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-
             this.logger.LogDebug($"GetPatientAsync: Getting patient information {hdid}");
-
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Add("Authorization", authorization);
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
-            using HttpResponseMessage response = await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true);
-            string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                Patient patient = JsonSerializer.Deserialize<Patient>(payload);
-
-                if (string.IsNullOrEmpty(patient.PersonalHealthNumber))
+                using HttpResponseMessage response = Task.Run<HttpResponseMessage>(async () =>
+                    await client.GetAsync(new Uri($"v1/api/Patient/{hdid}", UriKind.Relative)).ConfigureAwait(true)).Result;
+                string payload = Task.Run<string>(async () =>
+                    await response.Content.ReadAsStringAsync().ConfigureAwait(true)).Result;
+                if (response.IsSuccessStatusCode)
                 {
-                    this.logger.LogDebug($"Finished getting patient. {hdid}, PHN not found");
+                    Patient patient = JsonSerializer.Deserialize<Patient>(payload);
+                    if (patient != null)
+                    {
+                        if (!string.IsNullOrEmpty(patient.PersonalHealthNumber))
+                        {
+                            retVal.ResultStatus = Constants.ResultType.Success;
+                            retVal.ResourcePayload = patient;
+                            this.logger.LogDebug($"Finished getting patient. {hdid}");
+                            this.logger.LogTrace($"{patient.PersonalHealthNumber.Substring(0, 3)}");
+                        }
+                        else
+                        {
+                            retVal.ResultMessage = "PHN not found";
+                            this.logger.LogDebug($"Finished getting patient. {hdid}, PHN not found");
+                        }
+                    }
+                    else
+                    {
+                        retVal.ResultMessage = "Unable to deserialize patient result";
+                    }
                 }
                 else
                 {
-                    this.logger.LogDebug($"Finished getting patient. {hdid}");
-                    this.logger.LogTrace($"{patient.PersonalHealthNumber.Substring(0, 3)}");
+                    retVal.ResultMessage = $"Response {response.StatusCode}/{response.ReasonPhrase} from Patient Service";
+                    this.logger.LogError($"Error getting patient. {hdid}, {payload}");
                 }
-
-                return patient;
             }
-            else
+            catch (AggregateException e)
             {
-                this.logger.LogError($"Error getting patient. {hdid}, {payload}");
-                throw new HttpRequestException($"Unable to connect to PatientService: ${response.StatusCode}");
+                this.logger.LogError($"Error connecting to Patient service {e.ToString()}");
+                retVal.ResultMessage = "Unable to connect to Health Gateway Patient Service";
             }
+
+            return retVal;
         }
     }
 }
