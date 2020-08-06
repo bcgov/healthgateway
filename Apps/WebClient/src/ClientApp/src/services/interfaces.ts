@@ -156,4 +156,6 @@ export interface ILogger {
     info(message: string): void;
     verbose(message: string): void;
     debug(message: string): void;
+
+    addLogging(callerName: string, fn: any): any;
 }

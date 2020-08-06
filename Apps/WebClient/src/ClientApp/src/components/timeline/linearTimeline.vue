@@ -69,11 +69,14 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import moment from "moment";
 import EventBus from "@/eventbus";
 import TimelineEntry from "@/models/timelineEntry";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import { EventMessageName } from "@/constants/eventMessageName";
+import { ILogger } from "@/services/interfaces";
 
 interface DateGroup {
     key: string;
@@ -129,6 +132,7 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private created() {
+        this.addLogging();
         let self = this;
         this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
             self.setPageFromDate(eventDate);
@@ -263,6 +267,20 @@ export default class LinearTimelineComponent extends Vue {
             (entry) => entry.date === eventDate
         );
         this.currentPage = Math.floor(index / this.numberOfEntriesPerPage) + 1;
+        // throw "Test exception";
+    }
+
+    private addLogging(): void {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const callerName = "linearTimeline";
+        this.setPageFromDate = logger.addLogging(
+            callerName,
+            this.setPageFromDate
+        );
+        this.getHeadingDate = logger.addLogging(
+            callerName,
+            this.getHeadingDate
+        );
     }
 }
 </script>

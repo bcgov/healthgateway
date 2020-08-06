@@ -6,7 +6,27 @@ import { ExternalConfiguration } from "@/models/configData";
 @injectable()
 export class WinstonLogger implements ILogger {
     private logger!: Logger;
-
+    public addLogging: any = (callerName: string, fn: any) => (
+        ...args: any[]
+    ) => {
+        this.logger.debug(
+            `entering ${callerName}.${fn.name}: input args = ${args}`
+        );
+        try {
+            const valueToReturn = fn(...args);
+            this.logger.debug(
+                `exiting ${callerName}.${fn.name}: valueToReturn = ${
+                    valueToReturn !== undefined ? valueToReturn : "void"
+                }`
+            );
+            return valueToReturn;
+        } catch (thrownError) {
+            this.logger.error(
+                `exiting ${callerName}.${fn.name}: threw ${thrownError}`
+            );
+            throw thrownError;
+        }
+    };
     public initialize(config: ExternalConfiguration): void {
         this.logger = createLogger({
             level:
