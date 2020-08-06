@@ -149,7 +149,7 @@ export interface IHttpDelegate {
 }
 
 export interface ILogger {
-    initialize(): void;
+    initialize(config: ExternalConfiguration): void;
     log(level: string, message: string): void;
     warn(message: string): void;
     error(message: string): void;
