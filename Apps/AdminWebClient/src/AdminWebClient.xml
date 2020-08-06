@@ -148,6 +148,50 @@
             </summary>
             <returns>The Health Gatway Configuration.</returns>
         </member>
+        <member name="T:HealthGateway.Admin.Controllers.CsvExportController">
+            <summary>
+            Web API to handle user email interactions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CsvExportController.#ctor(HealthGateway.Admin.Services.ICsvExportService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.CsvExportController"/> class.
+            </summary>
+            <param name="dataExportService">The injected data export service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CsvExportController.GetUserProfiles(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a list of User Profiles created inclusively between UTC dates if provided.
+            </summary>
+            <param name="startDate">The optional start date for the data.</param>
+            <param name="endDate">The optional end date for the data.</param>
+            <returns>A CSV of the raw data. email.</returns>
+            <response code="200">Returns the list of beta requests.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CsvExportController.GetComments(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a list of Comments inclusively between UTC dates if provided.
+            </summary>
+            <param name="startDate">The optional start date for the data.</param>
+            <param name="endDate">The optional end date for the data.</param>
+            <returns>The invite email.</returns>
+            <response code="200">Returns the list of beta requests.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CsvExportController.GetNotes(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a list of Notes inclusively between UTC dates if provided.
+            </summary>
+            <returns>The invite email.</returns>
+            <param name="startDate">The optional start date for the data.</param>
+            <param name="endDate">The optional end date for the data.</param>
+            <response code="200">Returns the list of beta requests.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.DashboardController">
             <summary>
             Web API to handle user feedback review.
@@ -681,6 +725,24 @@
             </summary>
             <returns>The external configuration data.</returns>
         </member>
+        <member name="T:HealthGateway.Admin.Services.CsvExportService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CsvExportService})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CsvExportService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.GetComments(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.GetNotes(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.GetUserProfiles(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
@@ -803,6 +865,35 @@
             Creates and returns Configuration data for clients.
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.ICsvExportService">
+            <summary>
+            Service that provides functionality to export data in CSV format.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICsvExportService.GetUserProfiles(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a stream of UserProfiles in CSV format inclusive of the dates provided.
+            </summary>
+            <param name="startDate">Optional start date to include in the query.</param>
+            <param name="endDate">Optional end date to include in the query.</param>
+            <returns>returns a stream representing a CSV of User Profiles.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICsvExportService.GetNotes(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a stream of Notes in CSV format inclusive of the dates provided.
+            </summary>
+            <param name="startDate">Optional start date to include in the query.</param>
+            <param name="endDate">Optional end date to include in the query.</param>
+            <returns>returns a stream representing a CSV of Notes.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICsvExportService.GetComments(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a stream of Comments in CSV format inclusive of the dates provided
+            </summary>
+            <param name="startDate">Optional start date to include in the query.</param>
+            <param name="endDate">Optional end date to include in the query.</param>
+            <returns>returns a stream representing a CSV of the Comments.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IDashboardService">
             <summary>
