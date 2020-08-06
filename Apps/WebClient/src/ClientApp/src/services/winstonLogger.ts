@@ -11,8 +11,8 @@ export class WinstonLogger implements ILogger {
         this.logger = createLogger({
             level:
                 config.webClient.logLevel !== undefined
-                    ? config.webClient.logLevel
-                    : "warning",
+                    ? config.webClient.logLevel.toLowerCase()
+                    : "info",
             format: format.json(),
             transports: [
                 new transports.Console({
