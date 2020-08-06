@@ -32,6 +32,7 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Constants;
     using System;
     using HealthGateway.Common.Instrumentation;
+    using HealthGateway.Common.Models;
 
     public class RestPatientDelegate_Test
     {
@@ -72,12 +73,12 @@ namespace HealthGateway.CommonTests.Delegates
                 new Mock<ITraceService>().Object,
                 mockHttpClientService.Object,
                 this.configuration);
-            string phn = Task.Run(async () => await patientDelegate.GetPatientPHNAsync("HDID", "Bearer Token")).Result;
+            string phn = patientDelegate.GetPatientPHN("HDID", "Bearer Token").ResourcePayload;
             Assert.True(phn == expectedPHN);
         }
 
         [Fact]
-        public void SHouldThrowsException()
+        public void ShouldError()
         {
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestPatientDelegate> logger = loggerFactory.CreateLogger<RestPatientDelegate>();
@@ -104,7 +105,8 @@ namespace HealthGateway.CommonTests.Delegates
                 new Mock<ITraceService>().Object,
                 mockHttpClientService.Object,
                 this.configuration);
-            Assert.ThrowsAsync<AggregateException>(() => Task.Run(async () => await patientDelegate.GetPatientPHNAsync("HDID", "Bearer Token")));
+            RequestResult<string> result = patientDelegate.GetPatientPHN("HDID", "Bearer Token");
+            Assert.True(result.ResultStatus == ResultType.Error);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
