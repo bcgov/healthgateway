@@ -728,11 +728,13 @@
         <member name="T:HealthGateway.Admin.Services.CsvExportService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.CsvExportService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.CsvExportService})">
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Database.Delegates.ICommentDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CsvExportService"/> class.
             </summary>
-            <param name="logger">Injected Logger Provider.</param>
+            <param name="noteDelegate">The note delegate to interact with the DB.</param>
+            <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+            <param name="commentDelegate">The beta request delegate to interact with the DB.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.CsvExportService.GetComments(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <inheritdoc />

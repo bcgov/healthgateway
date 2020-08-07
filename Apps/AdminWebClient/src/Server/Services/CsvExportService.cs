@@ -17,30 +17,54 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
+    using CsvHelper;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
-    using ServiceStack.Text;
 
     /// <inheritdoc />
     public class CsvExportService : ICsvExportService
     {
-        private readonly ILogger logger;
+        private const int PageSize = 100000;
+        private const int Page = 1;
+        private readonly INoteDelegate noteDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly ICommentDelegate commentDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CsvExportService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        public CsvExportService(ILogger<CsvExportService> logger)
+        /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
+        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+        /// <param name="commentDelegate">The beta request delegate to interact with the DB.</param>
+        public CsvExportService(
+            INoteDelegate noteDelegate,
+            IUserProfileDelegate userProfileDelegate,
+            ICommentDelegate commentDelegate)
         {
-            this.logger = logger;
+            this.noteDelegate = noteDelegate;
+            this.userProfileDelegate = userProfileDelegate;
+            this.commentDelegate = commentDelegate;
         }
 
         /// <inheritdoc />
         public Stream GetComments(DateTime? startDate, DateTime? endDate)
         {
-            throw new NotImplementedException();
+            DBResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
+            MemoryStream stream = new MemoryStream();
+            using (var writeFile = new StreamWriter(stream, leaveOpen: true))
+            {
+                var csv = new CsvWriter(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
+
+                //csv.Configuration.RegisterClassMap<GroupReportCSVMap>();
+                csv.WriteRecords(comments.Payload);
+            }
+
+            return stream;
         }
 
         /// <inheritdoc />
