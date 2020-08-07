@@ -27,7 +27,6 @@ export class RestConfigService implements IConfigService {
         });
     }
     public getUserProfilesExportUrl(): string {
-        debugger;
         return `${this.csvExportBaseUri}/GetUserProfiles`;
     }
     public getUserNotesExportUrl(): string {
