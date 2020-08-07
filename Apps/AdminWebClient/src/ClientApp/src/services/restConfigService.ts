@@ -8,8 +8,8 @@ export class RestConfigService implements IConfigService {
     private readonly CONFIG_BASE_URI: string = "v1/api/configuration";
     private http!: IHttpDelegate;
     private get csvExportBaseUri(): string {
-        return store.getters["config/serviceEndpoints"]["CsvExportBaseUri"];
-    }    
+        return store.getters.serviceEndpoints["CsvExportBaseUri"];
+    }
     public initialize(http: IHttpDelegate): void {
         this.http = http;
     }
@@ -27,6 +27,7 @@ export class RestConfigService implements IConfigService {
         });
     }
     public getUserProfilesExportUrl(): string {
+        debugger;
         return `${this.csvExportBaseUri}/GetUserProfiles`;
     }
     public getUserNotesExportUrl(): string {
