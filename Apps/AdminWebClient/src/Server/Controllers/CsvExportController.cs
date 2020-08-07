@@ -16,23 +16,17 @@
 namespace HealthGateway.Admin.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.IO.Compression;
-    using System.Net;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Net.Http.Headers;
 
     /// <summary>
-    /// Web API to handle user email interactions.
+    /// Web API to export data from Health Gateway and return CSV files.
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
@@ -62,8 +56,9 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
+        [Route("GetUserProfiles")]
         [Produces("text/csv")]
-        public HttpResponseMessage GetUserProfiles(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetUserProfiles(DateTime? startDate = null, DateTime? endDate = null)
         {
             return SendContentResponse("UserProfiles", this.dataExportService.GetUserProfiles(startDate, endDate));
         }
@@ -78,8 +73,9 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
+        [Route("GetComments")]
         [Produces("text/csv")]
-        public HttpResponseMessage GetComments(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetComments(DateTime? startDate = null, DateTime? endDate = null)
         {
             return SendContentResponse("Comments", this.dataExportService.GetComments(startDate, endDate));
         }
@@ -94,20 +90,22 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
+        [Route("GetNotes")]
         [Produces("text/csv")]
-        public HttpResponseMessage GetNotes(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetNotes(DateTime? startDate = null, DateTime? endDate = null)
         {
             return SendContentResponse("Notes", this.dataExportService.GetNotes(startDate, endDate));
         }
 
-        private static HttpResponseMessage SendContentResponse(string name, Stream csvStream)
+        private static FileStreamResult SendContentResponse(string name, Stream csvStream)
         {
-            string filename = $"{name} {DateTimeFormatter.FormatDate(DateTime.Now)}.csv";
-            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
-            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment"); // force download
-            result.Content.Headers.ContentDisposition.FileName = "RecordExport.csv";
-            result.Content = new StreamContent(csvStream);
+            csvStream.Seek(0, SeekOrigin.Begin);
+            MediaTypeHeaderValue mimeType = new MediaTypeHeaderValue("text/csv");
+            string filename = $"{name}_export_{DateTimeFormatter.FormatDate(DateTime.Now)}.csv";
+            FileStreamResult result = new FileStreamResult(csvStream, mimeType)
+            {
+                FileDownloadName = filename,
+            };
             return result;
         }
     }

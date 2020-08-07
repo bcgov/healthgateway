@@ -150,7 +150,7 @@
         </member>
         <member name="T:HealthGateway.Admin.Controllers.CsvExportController">
             <summary>
-            Web API to handle user email interactions.
+            Web API to export data from Health Gateway and return CSV files.
             </summary>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.CsvExportController.#ctor(HealthGateway.Admin.Services.ICsvExportService)">
@@ -891,7 +891,7 @@
         </member>
         <member name="M:HealthGateway.Admin.Services.ICsvExportService.GetComments(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
-            Retrieves a stream of Comments in CSV format inclusive of the dates provided
+            Retrieves a stream of Comments in CSV format inclusive of the dates provided.
             </summary>
             <param name="startDate">Optional start date to include in the query.</param>
             <param name="endDate">Optional end date to include in the query.</param>

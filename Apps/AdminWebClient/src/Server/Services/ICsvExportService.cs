@@ -40,12 +40,11 @@ namespace HealthGateway.Admin.Services
         Stream GetNotes(DateTime? startDate, DateTime? endDate);
 
         /// <summary>
-        /// Retrieves a stream of Comments in CSV format inclusive of the dates provided
+        /// Retrieves a stream of Comments in CSV format inclusive of the dates provided.
         /// </summary>
         /// <param name="startDate">Optional start date to include in the query.</param>
         /// <param name="endDate">Optional end date to include in the query.</param>
         /// <returns>returns a stream representing a CSV of the Comments.</returns>
         Stream GetComments(DateTime? startDate, DateTime? endDate);
-
     }
 }
