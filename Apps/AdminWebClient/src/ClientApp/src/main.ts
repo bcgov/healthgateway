@@ -17,7 +17,8 @@ import {
     IUserFeedbackService,
     IDashboardService,
     IEmailAdminService,
-    ICommunicationService
+    ICommunicationService,
+    ICsvExportService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -65,6 +66,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const communicationService: ICommunicationService = container.get(
         SERVICE_IDENTIFIER.CommunicationService
     );
+    const csvExportService: ICsvExportService = container.get(
+        SERVICE_IDENTIFIER.CsvExportService
+    );
 
     // Initialize services
     authenticationService.initialize(httpDelegate, config);
@@ -73,6 +77,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     dashboardService.initialize(httpDelegate);
     emailAdminService.initialize(httpDelegate);
     communicationService.initialize(httpDelegate);
+    csvExportService.initialize(httpDelegate);
     initializeVue();
 });
 

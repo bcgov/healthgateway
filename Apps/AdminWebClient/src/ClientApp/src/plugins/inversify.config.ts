@@ -10,7 +10,8 @@ import {
     IUserFeedbackService,
     IDashboardService,
     IEmailAdminService,
-    ICommunicationService
+    ICommunicationService,
+    ICsvExportService
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestConfigService } from "@/services/restConfigService";
@@ -20,6 +21,7 @@ import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 import { DashboardService } from "@/services/dashboardService";
 import { RestEmailAdminService } from "@/services/restEmailAdminService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
+import { RestCsvExportService } from "@/services/restCsvExportService";
 
 let container = new Container();
 container
@@ -49,6 +51,10 @@ container
 container
     .bind<ICommunicationService>(SERVICE_IDENTIFIER.CommunicationService)
     .to(RestCommunicationService)
+    .inSingletonScope();
+container
+    .bind<ICsvExportService>(SERVICE_IDENTIFIER.CsvExportService)
+    .to(RestCsvExportService)
     .inSingletonScope();
 container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

@@ -53,6 +53,13 @@ export interface ICommunicationService {
     getAll(): Promise<Communication[]>;
 }
 
+export interface ICsvExportService {
+    initialize(http: IHttpDelegate): void;
+    getUserProfiles(): Promise<void>;
+    getComments(): Promise<void>;
+    getNotes(): Promise<void>;
+}
+
 export interface IHttpDelegate {
     unsetAuthorizationHeader(): void;
     setAuthorizationHeader(accessToken: string): void;
