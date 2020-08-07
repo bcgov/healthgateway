@@ -1,13 +1,15 @@
 import { IConfigService, IHttpDelegate } from "@/services/interfaces";
 import { injectable } from "inversify";
 import ExternalConfiguration from "@/models/externalConfiguration";
+import store from "@/store/store";
 
 @injectable()
 export class RestConfigService implements IConfigService {
     private readonly CONFIG_BASE_URI: string = "v1/api/configuration";
     private http!: IHttpDelegate;
-    private config: ExternalConfiguration = new ExternalConfiguration();
-
+    private get csvExportBaseUri(): string {
+        return store.getters["config/serviceEndpoints"]["CsvExportBaseUri"];
+    }    
     public initialize(http: IHttpDelegate): void {
         this.http = http;
     }
@@ -16,7 +18,6 @@ export class RestConfigService implements IConfigService {
             this.http
                 .getWithCors<ExternalConfiguration>(`${this.CONFIG_BASE_URI}/`)
                 .then(result => {
-                    this.config = result;
                     return resolve(result);
                 })
                 .catch(err => {
@@ -26,12 +27,12 @@ export class RestConfigService implements IConfigService {
         });
     }
     public getUserProfilesExportUrl(): string {
-        return `${this.config.serviceEndpoints["CsvExportBaseUri"]}/GetUserProfiles`;
+        return `${this.csvExportBaseUri}/GetUserProfiles`;
     }
     public getUserNotesExportUrl(): string {
-        return `${this.config.serviceEndpoints["CsvExportBaseUri"]}/GetNotes`;
+        return `${this.csvExportBaseUri}/GetNotes`;
     }
     public getUserCommentsExportUrl(): string {
-        return `${this.config.serviceEndpoints["CsvExportBaseUri"]}/GetComments`;
+        return `${this.csvExportBaseUri}/GetComments`;
     }
 }
