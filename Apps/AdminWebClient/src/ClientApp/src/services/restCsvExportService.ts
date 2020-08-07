@@ -4,16 +4,13 @@ import { ICsvExportService } from "@/services/interfaces";
 @injectable()
 export class RestCsvExportService implements ICsvExportService {
     private readonly BASE_URI: string = "v1/api/CsvExport";
-    public downloadUserInfoCSV(): void {
-        this.downloadCsvExport("GetUserProfiles");
+    public getUserProfilesExportUrl(): string {
+        return `${this.BASE_URI}/GetUserProfiles`;
     }
-    public downloadUserCommentsCSV(): void {
-        this.downloadCsvExport("GetComments");
+    public getUserNotesExportUrl(): string {
+        return `${this.BASE_URI}/GetNotes`;
     }
-    public downloadUserNotesCSV(): void {
-        this.downloadCsvExport("GetNotes");
-    }
-    private downloadCsvExport(routeName: string) {
-        window.open(`${this.BASE_URI}/${routeName}`);
+    public getUserCommentsExportUrl(): string {
+        return `${this.BASE_URI}/GetComments`;
     }
 }

@@ -15,7 +15,7 @@
                                     <v-btn
                                         class="info"
                                         @click="
-                                            csvExportService.downloadUserInfoCSV()
+                                            csvExportService.downloadUserProfileCSV()
                                         "
                                         ><v-icon>fa-download</v-icon></v-btn
                                     >
@@ -60,6 +60,15 @@ export default class StatsView extends Vue {
         this.csvExportService = container.get(
             SERVICE_IDENTIFIER.CsvExportService
         );
+    }
+    private downloadUserProfileCSV() {
+        window.open(this.csvExportService.getUserProfilesExportUrl());
+    }
+    private downloadUserNotesCSV() {
+        window.open(this.csvExportService.getUserNotesExportUrl());
+    }
+    private downloadUserCommentsCSV() {
+        window.open(this.csvExportService.getUserCommentsExportUrl());
     }
 }
 </script>

@@ -54,9 +54,9 @@ export interface ICommunicationService {
 }
 
 export interface ICsvExportService {
-    downloadUserInfoCSV(): void;
-    downloadUserCommentsCSV(): void;
-    downloadUserNotesCSV(): void;
+    getUserProfilesExportUrl(): string;
+    getUserNotesExportUrl(): string;
+    getUserCommentsExportUrl(): string;
 }
 
 export interface IHttpDelegate {
