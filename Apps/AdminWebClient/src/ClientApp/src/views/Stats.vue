@@ -14,9 +14,7 @@
                                     <h3>User Profile</h3>
                                     <v-btn
                                         class="info"
-                                        @click="
-                                            csvExportService.downloadUserProfileCSV()
-                                        "
+                                        @click="downloadUserProfileCSV()"
                                         ><v-icon>fa-download</v-icon></v-btn
                                     >
                                 </v-col>
@@ -24,9 +22,7 @@
                                     <h3>User Notes</h3>
                                     <v-btn
                                         class="info"
-                                        @click="
-                                            csvExportService.downloadUserNotesCSV()
-                                        "
+                                        @click="downloadUserNotesCSV()"
                                         ><v-icon>fa-download</v-icon></v-btn
                                     >
                                 </v-col>
@@ -34,9 +30,7 @@
                                     <h3>User Comments</h3>
                                     <v-btn
                                         class="info"
-                                        @click="
-                                            csvExportService.downloadUserCommentsCSV()
-                                        "
+                                        @click="downloadUserCommentsCSV()"
                                         ><v-icon>fa-download</v-icon></v-btn
                                     >
                                 </v-col>
@@ -52,23 +46,21 @@
 import { Component, Vue } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ICsvExportService } from "@/services/interfaces";
+import { IConfigService } from "@/services/interfaces";
 @Component
 export default class StatsView extends Vue {
-    private csvExportService!: ICsvExportService;
+    private configService!: IConfigService;
     private mounted() {
-        this.csvExportService = container.get(
-            SERVICE_IDENTIFIER.CsvExportService
-        );
+        this.configService = container.get(SERVICE_IDENTIFIER.ConfigService);
     }
-    private downloadUserProfileCSV() {
-        window.open(this.csvExportService.getUserProfilesExportUrl());
+    private downloadUserProfileCSV(): void {
+        window.open(this.configService.getUserProfilesExportUrl());
     }
-    private downloadUserNotesCSV() {
-        window.open(this.csvExportService.getUserNotesExportUrl());
+    private downloadUserNotesCSV(): void {
+        window.open(this.configService.getUserNotesExportUrl());
     }
-    private downloadUserCommentsCSV() {
-        window.open(this.csvExportService.getUserCommentsExportUrl());
+    private downloadUserCommentsCSV(): void {
+        window.open(this.configService.getUserCommentsExportUrl());
     }
 }
 </script>
