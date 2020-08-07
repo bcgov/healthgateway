@@ -77,7 +77,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     dashboardService.initialize(httpDelegate);
     emailAdminService.initialize(httpDelegate);
     communicationService.initialize(httpDelegate);
-    csvExportService.initialize(httpDelegate);
     initializeVue();
 });
 

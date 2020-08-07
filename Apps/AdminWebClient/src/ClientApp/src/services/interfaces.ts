@@ -54,10 +54,9 @@ export interface ICommunicationService {
 }
 
 export interface ICsvExportService {
-    initialize(http: IHttpDelegate): void;
-    getUserProfiles(): Promise<any>;
-    getComments(): Promise<any>;
-    getNotes(): Promise<any>;
+    downloadUserInfoCSV(): void;
+    downloadUserCommentsCSV(): void;
+    downloadUserNotesCSV(): void;
 }
 
 export interface IHttpDelegate {

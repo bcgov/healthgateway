@@ -1,42 +1,19 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, ICsvExportService } from "@/services/interfaces";
-import { ResultType } from "@/constants/resulttype";
+import { ICsvExportService } from "@/services/interfaces";
 
 @injectable()
 export class RestCsvExportService implements ICsvExportService {
     private readonly BASE_URI: string = "v1/api/CsvExport";
-    private http!: IHttpDelegate;
-
-    public initialize(http: IHttpDelegate): void {
-        this.http = http;
+    public downloadUserInfoCSV(): void {
+        this.downloadCsvExport("GetUserProfiles");
     }
-    public getUserProfiles(): Promise<any> {
-        return this.getCsvExport("GetUserProfiles");
+    public downloadUserCommentsCSV(): void {
+        this.downloadCsvExport("GetComments");
     }
-    public getComments(): Promise<any> {
-        return this.getCsvExport("GetComments");
+    public downloadUserNotesCSV(): void {
+        this.downloadCsvExport("GetNotes");
     }
-    public getNotes(): Promise<any> {
-        return this.getCsvExport("GetNotes");
-    }
-    private getCsvExport(route: string): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.http
-                .get(`${this.BASE_URI}/${route}`)
-                .then(requestResult => {
-                    this.handleResult(requestResult, resolve, reject);
-                })
-                .catch(err => {
-                    console.log(err);
-                    return reject(err);
-                });
-        });
-    }
-    private handleResult(requestResult: any, resolve: any, reject: any) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultMessage);
-        }
+    private downloadCsvExport(routeName: string) {
+        window.open(`${this.BASE_URI}/${routeName}`);
     }
 }
