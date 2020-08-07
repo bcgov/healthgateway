@@ -49,12 +49,12 @@ import container from "@/plugins/inversify.config";
 import { ICsvExportService } from "@/services/interfaces";
 @Component
 export default class StatsView extends Vue {
+    private csvExportService!: ICsvExportService;
     private mounted() {
         this.csvExportService = container.get(
             SERVICE_IDENTIFIER.CsvExportService
         );
     }
-    private csvExportService!: ICsvExportService;
     private downloadUserInfoCSV() {
         this.csvExportService
             .getUserProfiles()

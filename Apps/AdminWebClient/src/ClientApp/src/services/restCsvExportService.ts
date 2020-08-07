@@ -10,16 +10,16 @@ export class RestCsvExportService implements ICsvExportService {
     public initialize(http: IHttpDelegate): void {
         this.http = http;
     }
-    public getUserProfiles(): Promise<void> {
+    public getUserProfiles(): Promise<any> {
         return this.getCsvExport("GetUserProfiles");
     }
-    public getComments(): Promise<void> {
+    public getComments(): Promise<any> {
         return this.getCsvExport("GetComments");
     }
-    public getNotes(): Promise<void> {
+    public getNotes(): Promise<any> {
         return this.getCsvExport("GetNotes");
     }
-    private getCsvExport(route: string): Promise<void> {
+    private getCsvExport(route: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.http
                 .get(`${this.BASE_URI}/${route}`)

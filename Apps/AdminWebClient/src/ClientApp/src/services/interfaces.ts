@@ -55,9 +55,9 @@ export interface ICommunicationService {
 
 export interface ICsvExportService {
     initialize(http: IHttpDelegate): void;
-    getUserProfiles(): Promise<void>;
-    getComments(): Promise<void>;
-    getNotes(): Promise<void>;
+    getUserProfiles(): Promise<any>;
+    getComments(): Promise<any>;
+    getNotes(): Promise<any>;
 }
 
 export interface IHttpDelegate {
