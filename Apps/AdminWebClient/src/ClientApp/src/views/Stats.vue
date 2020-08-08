@@ -44,23 +44,23 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { IConfigService } from "@/services/interfaces";
+import { Getter } from "vuex-class";
+
 @Component
 export default class StatsView extends Vue {
-    private configService!: IConfigService;
-    private mounted() {
-        this.configService = container.get(SERVICE_IDENTIFIER.ConfigService);
-    }
+    @Getter("serviceEndpoints", { namespace: "config" })
+    private serviceEndpoints!: { [id: string]: string };
     private downloadUserProfileCSV(): void {
-        window.open(this.configService.getUserProfilesExportUrl());
+        window.open(
+            `${this.serviceEndpoints.CsvExportBaseUri}/GetUserProfiles`
+        );
     }
     private downloadUserNotesCSV(): void {
-        window.open(this.configService.getUserNotesExportUrl());
+        window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetNotes`);
     }
     private downloadUserCommentsCSV(): void {
-        window.open(this.configService.getUserCommentsExportUrl());
+        window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetComments`);
     }
 }
 </script>

@@ -9,9 +9,6 @@ import Communication from "@/models/adminCommunication";
 export interface IConfigService {
     initialize(http: IHttpDelegate): void;
     getConfiguration(): Promise<ExternalConfiguration>;
-    getUserProfilesExportUrl(): string;
-    getUserNotesExportUrl(): string;
-    getUserCommentsExportUrl(): string;
 }
 
 export interface IAuthenticationService {

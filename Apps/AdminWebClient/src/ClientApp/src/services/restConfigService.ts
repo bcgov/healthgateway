@@ -1,15 +1,11 @@
 import { IConfigService, IHttpDelegate } from "@/services/interfaces";
 import { injectable } from "inversify";
 import ExternalConfiguration from "@/models/externalConfiguration";
-import store from "@/store/store";
 
 @injectable()
 export class RestConfigService implements IConfigService {
     private readonly CONFIG_BASE_URI: string = "v1/api/configuration";
     private http!: IHttpDelegate;
-    private get csvExportBaseUri(): string {
-        return store.getters.serviceEndpoints["CsvExportBaseUri"];
-    }
     public initialize(http: IHttpDelegate): void {
         this.http = http;
     }
@@ -25,14 +21,5 @@ export class RestConfigService implements IConfigService {
                     reject(err);
                 });
         });
-    }
-    public getUserProfilesExportUrl(): string {
-        return `${this.csvExportBaseUri}/GetUserProfiles`;
-    }
-    public getUserNotesExportUrl(): string {
-        return `${this.csvExportBaseUri}/GetNotes`;
-    }
-    public getUserCommentsExportUrl(): string {
-        return `${this.csvExportBaseUri}/GetComments`;
     }
 }
