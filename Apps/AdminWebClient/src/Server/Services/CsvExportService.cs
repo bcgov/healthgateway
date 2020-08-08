@@ -20,6 +20,8 @@ namespace HealthGateway.Admin.Services
     using System.Globalization;
     using System.IO;
     using CsvHelper;
+    using CsvHelper.Configuration;
+    using HealthGateway.Admin.Server.Mappers;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -30,7 +32,7 @@ namespace HealthGateway.Admin.Services
     public class CsvExportService : ICsvExportService
     {
         private const int PageSize = 100000;
-        private const int Page = 1;
+        private const int Page = 0;
         private readonly INoteDelegate noteDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly ICommentDelegate commentDelegate;
@@ -55,32 +57,40 @@ namespace HealthGateway.Admin.Services
         public Stream GetComments(DateTime? startDate, DateTime? endDate)
         {
             DBResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
-            MemoryStream stream = new MemoryStream();
-            using (var writeFile = new StreamWriter(stream, leaveOpen: true))
-            {
-                var csv = new CsvWriter(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
+            return GetStream<Comment, CommentCsvMap>(comments.Payload);
 
-                //csv.Configuration.RegisterClassMap<GroupReportCSVMap>();
-                csv.WriteRecords(comments.Payload);
-            }
-
-            return stream;
         }
 
         /// <inheritdoc />
         public Stream GetNotes(DateTime? startDate, DateTime? endDate)
         {
-            throw new NotImplementedException();
+            DBResult<IEnumerable<Note>> notes = this.noteDelegate.GetAll(Page, PageSize);
+            return GetStream<Note, NoteCsvMap>(notes.Payload);
         }
 
         /// <inheritdoc />
         public Stream GetUserProfiles(DateTime? startDate, DateTime? endDate)
         {
-            using MemoryStream retStream = new MemoryStream();
-            using StreamWriter writer = new StreamWriter(retStream);
-            writer.Write("a,b,c");
-            writer.Flush();
-            return retStream;
+            DBResult<IEnumerable<UserProfile>> profiles = this.userProfileDelegate.GetAll(Page, PageSize);
+            return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
+        }
+
+        private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
+            where TMap : ClassMap
+        {
+            MemoryStream stream = new MemoryStream();
+            using (StreamWriter writeFile = new StreamWriter(stream, leaveOpen: true))
+            {
+#pragma warning disable CA2000 // Dispose objects before losing scope
+                var csv = new CsvWriter(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+                csv.Configuration.RegisterClassMap<TMap>();
+                csv.WriteRecords(obj);
+            }
+
+            return stream;
         }
     }
+
+
 }
