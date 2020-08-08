@@ -13,24 +13,24 @@
                                 <v-col align="center" justify="center">
                                     <h3>User Profile</h3>
                                     <v-btn
-                                        @click="downloadUserInfoCSV()"
                                         class="info"
+                                        @click="downloadUserProfileCSV()"
                                         ><v-icon>fa-download</v-icon></v-btn
                                     >
                                 </v-col>
                                 <v-col align="center" justify="center">
                                     <h3>User Notes</h3>
                                     <v-btn
-                                        @click="downloadUserNotesCSV()"
                                         class="info"
+                                        @click="downloadUserNotesCSV()"
                                         ><v-icon>fa-download</v-icon></v-btn
                                     >
                                 </v-col>
                                 <v-col align="center" justify="center">
                                     <h3>User Comments</h3>
                                     <v-btn
-                                        @click="downloadUserCommentsCSV()"
                                         class="info"
+                                        @click="downloadUserCommentsCSV()"
                                         ><v-icon>fa-download</v-icon></v-btn
                                     >
                                 </v-col>
@@ -44,12 +44,23 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import { Getter } from "vuex-class";
+
 @Component
 export default class StatsView extends Vue {
-    private downloadUserInfoCSV() {}
-    private downloadUserNotesCSV() {}
-    private downloadUserCommentsCSV() {}
+    @Getter("serviceEndpoints", { namespace: "config" })
+    private serviceEndpoints!: { [id: string]: string };
+    private downloadUserProfileCSV(): void {
+        window.open(
+            `${this.serviceEndpoints.CsvExportBaseUri}/GetUserProfiles`
+        );
+    }
+    private downloadUserNotesCSV(): void {
+        window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetNotes`);
+    }
+    private downloadUserCommentsCSV(): void {
+        window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetComments`);
+    }
 }
 </script>
