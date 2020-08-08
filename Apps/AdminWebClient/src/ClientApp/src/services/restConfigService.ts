@@ -6,7 +6,6 @@ import ExternalConfiguration from "@/models/externalConfiguration";
 export class RestConfigService implements IConfigService {
     private readonly CONFIG_BASE_URI: string = "v1/api/configuration";
     private http!: IHttpDelegate;
-
     public initialize(http: IHttpDelegate): void {
         this.http = http;
     }
