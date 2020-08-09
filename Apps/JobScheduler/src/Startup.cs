@@ -127,7 +127,6 @@ namespace HealthGateway.JobScheduler
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Contract.Requires((app != null) && (env != null));
             this.logger.LogInformation($"Hosting Environment: {env!.EnvironmentName}");
             this.startupConfig.UseForwardHeaders(app!);
             this.startupConfig.UseAuth(app!);
@@ -157,6 +156,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendStandardPriorityEmail", j => j.SendStandardPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendHighPriorityEmail", j => j.SendHighPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendUrgentPriorityEmail", j => j.SendUrgentPriorityEmails());
+            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "DeleteOldEmails", j => j.DeleteOldEmails());
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedApprovedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedMarketedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedCancelledDatabase");

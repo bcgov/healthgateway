@@ -165,5 +165,26 @@ namespace HealthGateway.Database.Delegates
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
+
+        /// <inheritdoc />
+        public int Delete(int n, int maxRows, bool shouldCommit = true)
+        {
+            if (n <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(n), "n must be greater than 0");
+            }
+
+            List<Email> oldIds = this.dbContext.Email
+                                .Where(p => p.CreatedDateTime.Date <= DateTime.UtcNow.AddDays(n * -1).Date)
+                                .Select(f => new Email { Id = f.Id, Version = f.Version })
+                                .ToList();
+            this.dbContext.RemoveRange(oldIds);
+            if (shouldCommit)
+            {
+                this.dbContext.SaveChanges();
+            }
+
+            return oldIds.Count;
+        }
     }
 }

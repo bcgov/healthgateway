@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,5 +47,10 @@ namespace HealthGateway.Common.Jobs
         /// Attempts to send urgent priority emails.
         /// </summary>
         void SendUrgentPriorityEmails();
+
+        /// <summary>
+        /// Deletes a configurable amount of emails (DeleteMaxRows) after a configurable amount of time in days (DeleteAfterDays).
+        /// </summary>
+        void DeleteOldEmails();
     }
 }

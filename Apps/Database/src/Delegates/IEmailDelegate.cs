@@ -115,5 +115,14 @@ namespace HealthGateway.Database.Delegates
         /// <param name="pagesize">The maximum amount of rows to return.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
         public DBResult<List<Email>> GetEmails(int offset = 0, int pagesize = 1000);
+
+        /// <summary>
+        /// Deletes email records that were created after n days ago.
+        /// </summary>
+        /// <param name="n">Delete emails were created n days ago.</param>
+        /// <param name="maxRows">The maximum amount of emails to delete at one time.</param>
+        /// <param name="shouldCommit">If true, the records will be deleted from the DB immediately.</param>
+        /// <returns>The number of rows deleted.</returns>
+        public int Delete(int n, int maxRows, bool shouldCommit = true);
     }
 }
