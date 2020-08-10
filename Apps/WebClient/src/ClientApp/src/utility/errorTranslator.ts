@@ -1,5 +1,5 @@
 export default class ErrorTranslator {
-    public static getHumanReadable(errorCode: string): string {
+    public static getDisplayMessage(errorCode: string): string {
         let sections = errorCode.split("-");
         console.log(sections);
         if (sections.length === 1) {

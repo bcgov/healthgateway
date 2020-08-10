@@ -335,7 +335,7 @@ export default class NoteTimelineComponent extends Vue {
                     this.onNoteDeleted(this.entry);
                 })
                 .catch((err) => {
-                    this.errorDescription = ErrorTranslator.getHumanReadable(
+                    this.errorDescription = ErrorTranslator.getDisplayMessage(
                         err
                     );
                     this.hasErrors = true;
