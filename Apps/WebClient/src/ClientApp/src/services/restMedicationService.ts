@@ -45,6 +45,7 @@ export class RestMedicationService implements IMedicationService {
                     resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
+                    errorCode: "",
                 });
                 return;
             }

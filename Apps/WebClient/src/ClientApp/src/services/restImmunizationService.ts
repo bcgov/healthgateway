@@ -35,6 +35,7 @@ export class RestImmunizationService implements IImmunizationService {
                     resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
+                    errorCode: "",
                 });
                 return;
             }

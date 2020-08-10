@@ -13,4 +13,6 @@ export default interface RequestResult<T> {
     resultStatus: ResultType;
     // The message associated to the request (could be empty)
     resultMessage: string;
+    // The error code  associated to the request (could be empty)
+    errorCode: string;
 }
