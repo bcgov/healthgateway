@@ -119,7 +119,7 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Deletes email records that were created after n days ago.
         /// </summary>
-        /// <param name="n">Delete emails were created n days ago.</param>
+        /// <param name="n">Delete emails where created on or before n days ago.</param>
         /// <param name="maxRows">The maximum amount of emails to delete at one time.</param>
         /// <param name="shouldCommit">If true, the records will be deleted from the DB immediately.</param>
         /// <returns>The number of rows deleted.</returns>
