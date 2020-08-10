@@ -11,7 +11,7 @@ export const mutations: MutationTree<MedicationState> = {
         state: MedicationState,
         medicationResult: MedicationResult
     ) {
-        this.logger.info(
+        logger.info(
             `addMedicationData medicationResult: ${JSON.stringify(
                 medicationResult
             )}`
