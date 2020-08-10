@@ -1,5 +1,11 @@
 import { injectable } from "inversify";
-import { IBetaRequestService, IHttpDelegate } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    IBetaRequestService,
+    IHttpDelegate,
+} from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
 import BetaRequest from "@/models/betaRequest";
 import { ResultType } from "@/constants/resulttype";
@@ -7,6 +13,7 @@ import RequestResult from "@/models/requestResult";
 
 @injectable()
 export class RestBetaRequestService implements IBetaRequestService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly BETA_REQUEST_BASE_URI: string = "/v1/api/BetaRequest";
     private http!: IHttpDelegate;
 
@@ -22,7 +29,7 @@ export class RestBetaRequestService implements IBetaRequestService {
                     return resolve(betaRequest);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(err);
                     return reject(err);
                 });
         });
@@ -42,7 +49,7 @@ export class RestBetaRequestService implements IBetaRequestService {
                     this.handleResult(requestResult, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(err);
                     return reject(err);
                 });
         });

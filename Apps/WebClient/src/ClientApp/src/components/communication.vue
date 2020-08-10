@@ -22,10 +22,11 @@ import { Component } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import Communication from "@/models/communication";
-import { ICommunicationService } from "@/services/interfaces";
+import { ILogger, ICommunicationService } from "@/services/interfaces";
 
 @Component
 export default class CommunicationComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private isLoaded: boolean = false;
     private communication!: Communication;
 
@@ -53,7 +54,7 @@ export default class CommunicationComponent extends Vue {
                 self.communication = requestResult.resourcePayload;
             })
             .catch((err) => {
-                console.log(err);
+                this.logger.error(err);
             });
     }
 }

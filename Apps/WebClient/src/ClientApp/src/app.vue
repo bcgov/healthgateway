@@ -73,6 +73,11 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import Process, { EnvironmentType } from "@/constants/process.ts";
+import { ILogger, IMedicationService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 // Load Bootstrap general plugins
 import {
@@ -202,8 +207,11 @@ export default class App extends Vue {
 
     constructor() {
         super();
-        console.log("Node ENV", Process.NODE_ENV);
-        console.log("host", this.host);
+        logger.info(
+            `Node ENV: ${JSON.stringify(
+                Process.NODE_ENV
+            )}; host: ${JSON.stringify(this.host)}`
+        );
     }
 
     @Watch("isAppIdle")

@@ -1,13 +1,15 @@
 import { ActionTree, Commit } from "vuex";
 
-import { IMedicationService } from "@/services/interfaces";
+import { ILogger, IMedicationService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { MedicationState, RootState } from "@/models/storeState";
 import MedicationResult from "@/models/medicationResult";
 
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
 function handleError(commit: Commit, error: Error) {
-    console.log("ERROR:" + error);
+    logger.error(`ERROR: ${error}`);
     commit("medicationError");
 }
 
@@ -22,11 +24,10 @@ export const actions: ActionTree<MedicationState, RootState> = {
                 params.din
             );
             if (medicationResult) {
-                console.log("Medication found stored, not quering!");
-                //console.log("Medication Data: ", medicationResult);
+                logger.info(`Medication found stored, not quering!`);
                 resolve(medicationResult);
             } else {
-                console.log("Retrieving Medication info");
+                logger.info(`Retrieving Medication info...`);
                 medicationService
                     .getMedicationInformation(params.din)
                     .then((medicationData) => {

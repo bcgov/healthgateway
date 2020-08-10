@@ -1,5 +1,11 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, IUserNoteService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    IHttpDelegate,
+    IUserNoteService,
+} from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
 import { ResultType } from "@/constants/resulttype";
@@ -8,6 +14,7 @@ import moment from "moment";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_NOTE_BASE_URI: string = "/v1/api/Note";
     private http!: IHttpDelegate;
     private isEnabled: boolean = false;
@@ -42,7 +49,7 @@ export class RestUserNoteService implements IUserNoteService {
                     return resolve(userNotes);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`getNotes error: ${err}`);
                     return reject(err);
                 });
         });
@@ -51,7 +58,7 @@ export class RestUserNoteService implements IUserNoteService {
     NOT_IMPLENTED: string = "Method not implemented.";
 
     public createNote(note: UserNote): Promise<UserNote> {
-        console.log(note);
+        this.logger.info(`createNote: ${JSON.stringify(note)}`);
         note.id = undefined;
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -70,7 +77,7 @@ export class RestUserNoteService implements IUserNoteService {
                     return this.handleResult(result, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`createNote error: ${err}`);
                     return reject(err);
                 });
         });
@@ -89,7 +96,7 @@ export class RestUserNoteService implements IUserNoteService {
                     return this.handleResult(result, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`updateNote error: ${err}`);
                     return reject(err);
                 });
         });
@@ -106,7 +113,7 @@ export class RestUserNoteService implements IUserNoteService {
                     return this.handleResult(result, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`deleteNote error: ${err}`);
                     return reject(err);
                 });
         });

@@ -1,9 +1,16 @@
 ﻿import { injectable } from "inversify";
-import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    IHttpDelegate,
+    IUserFeedbackService,
+} from "@/services/interfaces";
 import UserFeedback from "@/models/userFeedback";
 
 @injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_FEEDBACK_BASE_URI: string = "/v1/api/UserFeedback";
     private http!: IHttpDelegate;
 
@@ -19,7 +26,7 @@ export class RestUserFeedbackService implements IUserFeedbackService {
                     return resolve(true);
                 })
                 .catch((err) => {
-                    console.log("Fetch error:" + err.toString());
+                    this.logger.error(`submitFeedback Fetch error: ${err}`);
                     reject(err);
                 });
         });

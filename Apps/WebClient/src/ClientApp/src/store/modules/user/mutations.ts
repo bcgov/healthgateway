@@ -1,6 +1,9 @@
 import Vue from "vue";
 import { MutationTree } from "vuex";
 import { User as OidcUser } from "oidc-client";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 import { StateType, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import User from "@/models/user";
@@ -8,6 +11,7 @@ import UserProfile from "@/models/userProfile";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 export const mutations: MutationTree<UserState> = {
     setOidcUserData(state: UserState, oidcUser: OidcUser) {
         Vue.set(state.user, "hdid", oidcUser.profile.hdid);
@@ -43,7 +47,7 @@ export const mutations: MutationTree<UserState> = {
             "preferences",
             userProfile ? userProfile.preferences : {}
         );
-        console.log(state.user);
+        logger.info(`state.user: ${JSON.stringify(state.user)}`);
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
@@ -78,7 +82,11 @@ export const mutations: MutationTree<UserState> = {
         state: UserState,
         preference: { name: string; value: string }
     ) {
-        console.log(preference.name, preference.value);
+        logger.info(
+            `setUserPreference: preference.name: ${JSON.stringify(
+                preference.name
+            )}, preference.value: ${JSON.stringify(preference.value)}`
+        );
         state.user.preferences[preference.name] = preference.value;
         state.error = false;
         state.statusMessage = "success";

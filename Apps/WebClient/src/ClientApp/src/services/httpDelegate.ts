@@ -2,16 +2,20 @@ import Axios, { AxiosRequestConfig } from "axios";
 import { IHttpDelegate } from "./interfaces";
 import { injectable } from "inversify";
 import { Dictionary } from "vue-router/types/router";
+import { ILogger } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 
 @injectable()
 export default class HttpDelegate implements IHttpDelegate {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     public unsetAuthorizationHeader(): void {
-        console.log("ACCESS TOKEN UNSET");
+        this.logger.info(`ACCESS TOKEN UNSET`);
         Axios.defaults.headers.common = {};
     }
 
     public setAuthorizationHeader(accessToken: string): void {
-        console.log("ACCESS TOKEN SET");
+        this.logger.info(`ACCESS TOKEN SET`);
         Axios.defaults.headers.common = {
             Authorization: `Bearer ${accessToken}`,
         };
@@ -39,7 +43,7 @@ export default class HttpDelegate implements IHttpDelegate {
                 })
                 .catch((err) => {
                     const errorMessage: string = `GET error: ${err.toString()}`;
-                    console.log(errorMessage);
+                    this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
         });
@@ -59,7 +63,7 @@ export default class HttpDelegate implements IHttpDelegate {
                 })
                 .catch((err) => {
                     const errorMessage: string = `POST error: ${err.toString()}`;
-                    console.log(errorMessage);
+                    this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
         });
@@ -74,14 +78,14 @@ export default class HttpDelegate implements IHttpDelegate {
             const config: AxiosRequestConfig = {
                 headers,
             };
-            console.log("Config:", config);
+            this.logger.info(`Config: ${JSON.stringify(config)}`);
             Axios.put(url, payload, config)
                 .then((response) => {
                     return resolve(response.data);
                 })
                 .catch((err) => {
                     const errorMessage: string = `PUT error: ${err.toString()}`;
-                    console.log(errorMessage);
+                    this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
         });
@@ -96,14 +100,14 @@ export default class HttpDelegate implements IHttpDelegate {
             const config: AxiosRequestConfig = {
                 headers,
             };
-            console.log("Config:", config);
+            this.logger.info(`Config: ${JSON.stringify(config)}`);
             Axios.patch(url, payload, config)
                 .then((response) => {
                     return resolve(response.data);
                 })
                 .catch((err) => {
                     const errorMessage: string = `PATCH error: ${err.toString()}`;
-                    console.log(errorMessage);
+                    this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
         });
@@ -118,14 +122,14 @@ export default class HttpDelegate implements IHttpDelegate {
                 headers,
                 data: payload,
             };
-            console.log("Config:", config);
+            this.logger.info(`Config: ${JSON.stringify(config)}`);
             Axios.delete(url, config)
                 .then((response) => {
                     return resolve(response.data);
                 })
                 .catch((err) => {
                     const errorMessage: string = `DELETE error: ${err.toString()}`;
-                    console.log(errorMessage);
+                    this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
         });

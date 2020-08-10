@@ -2,13 +2,15 @@ import { ActionTree, Commit } from "vuex";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { LaboratoryState, RootState } from "@/models/storeState";
-import { ILaboratoryService } from "@/services/interfaces";
+import { ILogger, ILaboratoryService } from "@/services/interfaces";
 import { LaboratoryOrder } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
 function handleError(commit: Commit, error: Error) {
-    console.log("ERROR:" + error);
+    logger.info(`ERROR: ${JSON.stringify(error)}`);
     commit("laboratoryError");
 }
 
@@ -24,7 +26,7 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] = context.getters.getStoredLaboratoryOrders();
             if (laboratoryOrders.length > 0) {
-                console.log("Laboratory found stored, not quering!");
+                logger.info(`Laboratory found stored, not quering!`);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -34,7 +36,7 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
                     totalResultCount: laboratoryOrders.length,
                 });
             } else {
-                console.log("Retrieving Laboratory Orders");
+                logger.info(`Retrieving Laboratory Orders`);
                 laboratoryService
                     .getOrders(params.hdid)
                     .then((laboratoryOrders) => {

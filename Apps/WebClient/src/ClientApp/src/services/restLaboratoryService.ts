@@ -1,5 +1,11 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, ILaboratoryService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    IHttpDelegate,
+    ILaboratoryService,
+} from "@/services/interfaces";
 import { ExternalConfiguration } from "@/models/configData";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
@@ -7,6 +13,7 @@ import { ResultType } from "@/constants/resulttype";
 
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";
     private baseUri: string = "";
     private http!: IHttpDelegate;
@@ -44,7 +51,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    console.log("Fetch error: " + err.toString());
+                    this.logger.error(`getOrders Fetch error: ${err}`);
                     reject(err);
                 });
         });
@@ -74,7 +81,7 @@ export class RestLaboratoryService implements ILaboratoryService {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    console.log("Fetch error: " + err.toString());
+                    this.logger.error(`getReportDocument Fetch error: ${err}`);
                     reject(err);
                 });
         });

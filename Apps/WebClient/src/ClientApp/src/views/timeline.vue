@@ -265,6 +265,7 @@ import { Route } from "vue-router";
 import EventBus from "@/eventbus";
 import { WebClientConfiguration } from "@/models/configData";
 import {
+    ILogger,
     IImmunizationService,
     ILaboratoryService,
     IMedicationService,
@@ -318,6 +319,7 @@ Component.registerHooks(["beforeRouteLeave"]);
     },
 })
 export default class TimelineView extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("user", { namespace }) user!: User;
     @Action("getOrders", { namespace: "laboratory" })
     getLaboratoryOrders!: (params: {
@@ -516,7 +518,7 @@ export default class TimelineView extends Vue {
                     }
                     this.protectiveWordAttempts++;
                 } else {
-                    console.log(
+                    this.logger.error(
                         "Error returned from the medication statements call: " +
                             results.resultMessage
                     );
@@ -525,7 +527,7 @@ export default class TimelineView extends Vue {
             })
             .catch((err) => {
                 this.hasErrors = true;
-                console.log(err);
+                this.logger.error(err);
             })
             .finally(() => {
                 this.isMedicationLoading = false;
@@ -549,7 +551,7 @@ export default class TimelineView extends Vue {
                     }
                     this.sortEntries();
                 } else {
-                    console.log(
+                    this.logger.error(
                         "Error returned from the immunization call: " +
                             results.resultMessage
                     );
@@ -558,7 +560,7 @@ export default class TimelineView extends Vue {
             })
             .catch((err) => {
                 this.hasErrors = true;
-                console.log(err);
+                this.logger.error(err);
             })
             .finally(() => {
                 this.isImmunizationLoading = false;
@@ -586,7 +588,7 @@ export default class TimelineView extends Vue {
                         this.covidModal.showModal();
                     }
                 } else {
-                    console.log(
+                    this.logger.error(
                         "Error returned from the laboratory call: " +
                             results.resultMessage
                     );
@@ -595,7 +597,7 @@ export default class TimelineView extends Vue {
             })
             .catch((err) => {
                 this.hasErrors = true;
-                console.log(err);
+                this.logger.error(err);
             })
             .finally(() => {
                 this.isLaboratoryLoading = false;
@@ -619,7 +621,7 @@ export default class TimelineView extends Vue {
                     }
                     this.sortEntries();
                 } else {
-                    console.log(
+                    this.logger.error(
                         "Error returned from the note call: " +
                             results.resultMessage
                     );
@@ -628,7 +630,7 @@ export default class TimelineView extends Vue {
             })
             .catch((err) => {
                 this.hasErrors = true;
-                console.log(err);
+                this.logger.error(err);
             })
             .finally(() => {
                 this.isNoteLoading = false;
@@ -656,7 +658,7 @@ export default class TimelineView extends Vue {
     }
 
     private onEntryUpdated(entry: TimelineEntry) {
-        console.log(entry);
+        this.logger.info(`Timeline Entry updated: ${JSON.stringify(entry)}`);
         const index = this.timelineEntries.findIndex(
             (e) => e.id === entry.id && e.type === entry.type
         );
@@ -667,7 +669,7 @@ export default class TimelineView extends Vue {
     }
 
     private onEntryDeleted(entry: TimelineEntry) {
-        console.log(entry);
+        this.logger.info(`Timeline Entry deleted: ${JSON.stringify(entry)}`);
         const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
         this.timelineEntries.splice(index, 1);
         this.sortEntries();
@@ -679,7 +681,7 @@ export default class TimelineView extends Vue {
 
     private onProtectiveWordCancel() {
         // Does nothing as it won't be able to fetch pharmanet data.
-        console.log("protective word cancelled");
+        this.logger.info("protective word cancelled");
     }
 
     private getTotalCount(): number {

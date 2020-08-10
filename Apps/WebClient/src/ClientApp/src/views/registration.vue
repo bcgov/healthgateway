@@ -343,6 +343,7 @@ import Vue from "vue";
 import { Action, Getter } from "vuex-class";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import {
+    ILogger,
     IAuthenticationService,
     IBetaRequestService,
     IUserProfileService,
@@ -374,6 +375,7 @@ library.add(faCheck);
     },
 })
 export default class RegistrationView extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
 
@@ -444,7 +446,11 @@ export default class RegistrationView extends Vue {
                     this.betaRequestService
                         .getRequest(this.oidcUser.hdid)
                         .then((betaRequest) => {
-                            console.log("beta request:", betaRequest);
+                            this.logger.info(
+                                `getOidcUserProfile result: ${JSON.stringify(
+                                    betaRequest
+                                )}`
+                            );
                             if (betaRequest) {
                                 this.email = betaRequest.emailAddress;
                                 this.emailConfirmation = this.email;
@@ -530,11 +536,13 @@ export default class RegistrationView extends Vue {
         this.userProfileService
             .getTermsOfService()
             .then((result) => {
-                console.log(result);
+                this.logger.info(
+                    `getTermsOfService result: ${JSON.stringify(result)}`
+                );
                 this.termsOfService = result.content;
             })
             .catch((err) => {
-                console.log(err);
+                this.logger.error(err);
                 this.handleError("Please refresh your browser.");
             })
             .finally(() => {
@@ -568,7 +576,9 @@ export default class RegistrationView extends Vue {
                     inviteCode: this.inviteKey || "",
                 })
                 .then((result) => {
-                    console.log(result);
+                    this.logger.info(
+                        `Create Profile result: ${JSON.stringify(result)}`
+                    );
                     this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
                         (isRegistered: boolean) => {
                             if (isRegistered) {
@@ -611,7 +621,11 @@ export default class RegistrationView extends Vue {
             this.betaRequestService
                 .putRequest(newRequest)
                 .then((result) => {
-                    console.log(result);
+                    this.logger.info(
+                        `Save Beta Request Profile result: ${JSON.stringify(
+                            result
+                        )}`
+                    );
                     this.waitlistEdditable = false;
                     this.waitlistEmailConfirmation = "";
                     this.waitlistTempEmail = this.email;
@@ -621,7 +635,7 @@ export default class RegistrationView extends Vue {
                 })
                 .catch((err) => {
                     this.hasErrors = true;
-                    console.log("Error saving new beta request", err);
+                    this.logger.error(`Error saving new beta request. ${err}`);
                 })
                 .finally(() => {
                     this.loadingUserData = false;
@@ -652,7 +666,7 @@ export default class RegistrationView extends Vue {
     private handleError(error: string): void {
         this.hasErrors = true;
         this.errorMessage = error;
-        console.log(error);
+        this.logger.error(error);
     }
 }
 </script>
