@@ -2,9 +2,15 @@ import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import BootstrapVue from "bootstrap-vue";
 import LandingComponent from "@/views/landing.vue";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 import { WebClientConfiguration } from "@/models/configData";
 
 describe("Landing view", () => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
+
     const localVue = createLocalVue();
     localVue.use(Vuex);
     localVue.use(BootstrapVue);
