@@ -175,13 +175,23 @@ namespace HealthGateway.Database.Delegates
             }
 
             List<Email> oldIds = this.dbContext.Email
-                                .Where(p => p.CreatedDateTime.Date <= DateTime.UtcNow.AddDays(n * -1).Date)
+                                .Where(p => p.EmailStatusCode == EmailStatus.Processed &&
+                                            p.CreatedDateTime.Date <= DateTime.UtcNow.AddDays(n * -1).Date)
                                 .Select(f => new Email { Id = f.Id, Version = f.Version })
+                                .Take(maxRows)
                                 .ToList();
-            this.dbContext.RemoveRange(oldIds);
-            if (shouldCommit)
+            if (oldIds.Count > 0)
             {
-                this.dbContext.SaveChanges();
+                this.logger.LogDebug($"Deleting {oldIds.Count} Emails out of a maximum of {maxRows}");
+                this.dbContext.RemoveRange(oldIds);
+                if (shouldCommit)
+                {
+                    this.dbContext.SaveChanges();
+                }
+            }
+            else
+            {
+                this.logger.LogDebug($"No emails to delete that are older than {n} days");
             }
 
             return oldIds.Count;

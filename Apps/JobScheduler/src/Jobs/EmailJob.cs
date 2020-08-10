@@ -41,8 +41,6 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly int port;
         private readonly int retryFetchSize;
         private readonly int maxRetries;
-        private readonly int deleteMaxRows;
-        private readonly int deleteAfterDays;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailJob"/> class.
@@ -62,8 +60,6 @@ namespace Healthgateway.JobScheduler.Jobs
             section = configuration.GetSection("EmailJob");
             this.maxRetries = section.GetValue<int>("MaxRetries", 9);
             this.retryFetchSize = section.GetValue<int>("MaxRetryFetchSize", 250);
-            this.deleteMaxRows = section.GetValue<int>("DeleteMaxRows", 1000);
-            this.deleteAfterDays = section.GetValue<int>("DeleteAfterDays", 30);
         }
 
         /// <inheritdoc />
@@ -121,17 +117,6 @@ namespace Healthgateway.JobScheduler.Jobs
             List<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug($"Finished sending urgent priority emails. {JsonConvert.SerializeObject(resendEmails)}");
-        }
-
-        /// <summary>
-        /// Deletes a configurable amount of emails (DeleteMaxRows) after a configurable amount of time in days (DeleteAfterDays).
-        /// </summary>
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void DeleteOldEmails()
-        {
-            this.logger.LogInformation($"Delete job running: Delete emails {this.deleteAfterDays} days old and limit to {this.deleteMaxRows} deleted");
-            int count = this.emailDelegate.Delete(this.deleteAfterDays, this.deleteMaxRows, true);
-            this.logger.LogInformation($"Delete job finished after removing {count} records");
         }
 
         private static MimeMessage PrepareMessage(Email email)

@@ -156,7 +156,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendStandardPriorityEmail", j => j.SendStandardPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendHighPriorityEmail", j => j.SendHighPriorityEmails());
             SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendUrgentPriorityEmail", j => j.SendUrgentPriorityEmails());
-            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "DeleteOldEmails", j => j.DeleteOldEmails());
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedApprovedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedMarketedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedCancelledDatabase");
@@ -165,6 +164,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
             SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
+            SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
 
             app.UseStaticFiles(new StaticFileOptions
             {
