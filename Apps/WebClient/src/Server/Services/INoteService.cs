@@ -27,9 +27,9 @@ namespace HealthGateway.WebClient.Services
         /// <summary>
         /// Creates a note in the backend.
         /// </summary>
-        /// <param name="note">The note to create.</param>
+        /// <param name="userNote">The note to create.</param>
         /// <returns>A note wrapped in a RequestResult.</returns>
-        RequestResult<UserNote> CreateNote(UserNote note);
+        RequestResult<UserNote> CreateNote(UserNote userNote);
 
         /// <summary>
         /// Gets all the notes for the given hdId.
@@ -44,15 +44,15 @@ namespace HealthGateway.WebClient.Services
         /// Updates the given note in the backend.
         /// Any changes to HDID will be ignored.
         /// </summary>
-        /// <param name="note">The note to update.</param>
+        /// <param name="userNote">The note to update.</param>
         /// <returns>The updated Note.</returns>
-        RequestResult<UserNote> UpdateNote(UserNote note);
+        RequestResult<UserNote> UpdateNote(UserNote userNote);
 
         /// <summary>
         /// Deletes the given note from the backend.
         /// </summary>
-        /// <param name="note">The note to delete.</param>
+        /// <param name="userNote">The note to delete.</param>
         /// <returns>The deleted note wrapped in a RequestResult.</returns>
-        RequestResult<UserNote> DeleteNote(UserNote note);
+        RequestResult<UserNote> DeleteNote(UserNote userNote);
     }
 }

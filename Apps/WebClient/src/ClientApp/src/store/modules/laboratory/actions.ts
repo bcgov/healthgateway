@@ -32,6 +32,7 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
                     resultMessage: "From storage",
                     resultStatus: ResultType.Success,
                     totalResultCount: laboratoryOrders.length,
+                    errorCode: "",
                 });
             } else {
                 console.log("Retrieving Laboratory Orders");

@@ -54,5 +54,11 @@ namespace HealthGateway.Common.Models
         /// Will always be set when ResultType is Error.
         /// </summary>
         public string ResultMessage { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the error code.
+        /// Will always be set when ResultType is Error.
+        /// </summary>
+        public string ErrorCode { get; set; } = string.Empty;
     }
 }

@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Services
     using System.Linq;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -59,7 +60,12 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userNote.HdId}");
-                throw new ApplicationException("Profile key not set");
+                return new RequestResult<UserNote>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultMessage = "Profile Key not set",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState)
+                };
             }
 
             Note note = userNote.ToDbModel(this.cryptoDelegate, key);
@@ -95,7 +101,12 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${hdId}");
-                throw new ApplicationException("Profile key not set");
+                return new RequestResult<IEnumerable<UserNote>>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultMessage = "Profile Key not set",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState)
+                };
             }
 
             RequestResult<IEnumerable<UserNote>> result = new RequestResult<IEnumerable<UserNote>>()
@@ -118,7 +129,12 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userNote.HdId}");
-                throw new ApplicationException("Profile key not set");
+                return new RequestResult<UserNote>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultMessage = "Profile Key not set",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState)
+                };
             }
 
             Note note = userNote.ToDbModel(this.cryptoDelegate, key);
@@ -141,7 +157,12 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userNote.HdId}");
-                throw new ApplicationException("Profile key not set");
+                return new RequestResult<UserNote>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultMessage = "Profile Key not set",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState)
+                };
             }
 
             Note note = userNote.ToDbModel(this.cryptoDelegate, key);

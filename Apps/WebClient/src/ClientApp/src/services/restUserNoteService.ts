@@ -30,6 +30,7 @@ export class RestUserNoteService implements IUserNoteService {
                     resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
+                    errorCode: "",
                 });
                 return;
             }
@@ -120,7 +121,8 @@ export class RestUserNoteService implements IUserNoteService {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            reject(requestResult.resultMessage);
+            console.log(requestResult);
+            reject(requestResult.errorCode);
         }
     }
 }

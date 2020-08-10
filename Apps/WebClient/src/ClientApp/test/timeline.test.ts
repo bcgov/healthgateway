@@ -82,6 +82,7 @@ class MockMedicationService implements IMedicationService {
                         resultStatus: ResultType.Success,
                         resultMessage: "",
                         resourcePayload: medicationStatements,
+                        errorCode: "",
                     });
                 } else if (hdid === "hdid_no_results") {
                     resolve();
@@ -131,6 +132,7 @@ let laboratoryActions = {
                 resultMessage: "From storage",
                 resultStatus: ResultType.Success,
                 totalResultCount: 0,
+                errorCode: "",
             });
         });
     },

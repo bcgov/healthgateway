@@ -32,6 +32,7 @@ export class RestUserCommentService implements IUserCommentService {
                     resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
+                    errorCode: "",
                 });
                 return;
             }
