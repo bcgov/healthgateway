@@ -127,7 +127,6 @@ namespace HealthGateway.JobScheduler
         /// <param name="env">The passed in Environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Contract.Requires((app != null) && (env != null));
             this.logger.LogInformation($"Hosting Environment: {env!.EnvironmentName}");
             this.startupConfig.UseForwardHeaders(app!);
             this.startupConfig.UseAuth(app!);
@@ -165,6 +164,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
             SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
+            SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
 
             app.UseStaticFiles(new StaticFileOptions
             {
