@@ -30,7 +30,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly ILogger<EmailJob> logger;
         private readonly IEmailDelegate emailDelegate;
         private readonly int deleteMaxRows;
-        private readonly int deleteAfterDays;
+        private readonly uint deleteAfterDays;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteEmailJob"/> class.
@@ -46,7 +46,7 @@ namespace Healthgateway.JobScheduler.Jobs
             IConfigurationSection section = configuration!.GetSection("Smtp");
             section = configuration.GetSection("DeleteEmailJob");
             this.deleteMaxRows = section.GetValue<int>("DeleteMaxRows", 1000);
-            this.deleteAfterDays = section.GetValue<int>("DeleteAfterDays", 30);
+            this.deleteAfterDays = section.GetValue<uint>("DeleteAfterDays", 30);
         }
 
         /// <summary>

@@ -167,17 +167,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int Delete(int n, int maxRows, bool shouldCommit = true)
+        public int Delete(uint daysAgo, int maxRows, bool shouldCommit = true)
         {
-            if (n <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(n), "n must be greater than 0");
-            }
-
             List<Email> oldIds = this.dbContext.Email
-                                .Where(p => p.EmailStatusCode == EmailStatus.Processed &&
-                                            p.CreatedDateTime.Date <= DateTime.UtcNow.AddDays(n * -1).Date)
-                                .Select(f => new Email { Id = f.Id, Version = f.Version })
+                                .Where(email => email.EmailStatusCode == EmailStatus.Processed &&
+                                                email.CreatedDateTime.Date <= DateTime.UtcNow.AddDays(daysAgo * -1).Date)
+                                .Select(email => new Email { Id = email.Id, Version = email.Version })
                                 .Take(maxRows)
                                 .ToList();
             if (oldIds.Count > 0)
@@ -191,7 +186,7 @@ namespace HealthGateway.Database.Delegates
             }
             else
             {
-                this.logger.LogDebug($"No emails to delete that are older than {n} days");
+                this.logger.LogDebug($"No emails to delete that are older than {daysAgo} days");
             }
 
             return oldIds.Count;
