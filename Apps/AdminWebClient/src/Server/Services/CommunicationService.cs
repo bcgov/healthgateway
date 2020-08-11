@@ -17,11 +17,9 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using HealthGateway.Admin.Models;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -111,6 +109,31 @@ namespace HealthGateway.Admin.Services
                 ResultMessage = dBResult.Message,
             };
             return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Communication> Delete(Communication communication)
+        {
+            if (communication.CommunicationStatusCode == CommunicationStatus.Processed)
+            {
+                this.logger.LogError($"Processed communication can't be deleted.");
+                return new RequestResult<Communication>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultMessage = "Processed communication can't be deleted.",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+            }
+
+            DBResult<Communication> dbResult = this.communicationDelegate.Delete(communication);
+            RequestResult<Communication> result = new RequestResult<Communication>()
+            {
+                ResourcePayload = dbResult.Payload,
+                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultMessage = dbResult.Message,
+                ErrorCode = dbResult.Status == DBStatusCode.Deleted ? "" : ErrorTranslator.InternalError(ErrorType.CommunicationInternal)
+            };
+            return result;
         }
 
         private static bool ValidateDates(DateTime effectiveDate, DateTime expiryDate)

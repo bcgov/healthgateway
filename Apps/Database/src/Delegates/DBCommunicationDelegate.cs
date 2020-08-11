@@ -157,7 +157,6 @@ namespace HealthGateway.Database.Delegates
                 Status = DBStatusCode.Deferred,
             };
             this.dbContext.Communication.Remove(communication);
-            this.dbContext.Entry(communication).Property(c => c.Id).IsModified = false;
             if (commit)
             {
                 try
