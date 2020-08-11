@@ -414,6 +414,40 @@
                             </b-col>
                         </b-row>
                     </div>
+                    <!-- Health Insights button -->
+                    <router-link
+                        id="menuBtnHealthInsights"
+                        to="/healthInsights"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isHealthInsights }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col
+                                title="Health Insights"
+                                :class="{ 'col-3': isOpen }"
+                            >
+                                <font-awesome-icon
+                                    icon="chart-line"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="7"
+                                class="button-title d-none"
+                            >
+                                <span>Health Insights</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
                     <br />
                 </b-col>
             </b-row>
@@ -660,6 +694,10 @@ export default class SidebarComponent extends Vue {
 
     private get isProfile(): boolean {
         return this.$route.path == "/profile";
+    }
+
+    private get isHealthInsights(): boolean {
+        return this.$route.path == "/healthInsights";
     }
 
     private get isNoteEnabled(): boolean {

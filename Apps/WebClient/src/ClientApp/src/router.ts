@@ -40,6 +40,10 @@ const TermsOfServiceView = () =>
     import(
         /* webpackChunkName: "termsOfService" */ "@/views/termsOfService.vue"
     );
+const HealthInsightsView = () =>
+    import(
+        /* webpackChunkName: "healthInsights" */ "@/views/healthInsights.vue"
+    );
 
 Vue.use(VueRouter);
 
@@ -84,6 +88,11 @@ const routes = [
     {
         path: "/timeline",
         component: TimelineView,
+        meta: { requiresRegistration: true, roles: ["user"] },
+    },
+    {
+        path: "/healthInsights",
+        component: HealthInsightsView,
         meta: { requiresRegistration: true, roles: ["user"] },
     },
     {
