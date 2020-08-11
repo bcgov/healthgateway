@@ -22,6 +22,9 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 import CalendarHeader from "./header.vue";
 import CalendarBody from "./body.vue";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
@@ -41,6 +44,7 @@ import EventBus from "@/eventbus";
     },
 })
 export default class CalendarComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() dateGroups!: DateGroup[];
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
@@ -116,7 +120,9 @@ export default class CalendarComponent extends Vue {
                         groups.push(monthYear);
                     }
                 } else {
-                    console.log("Invalid entry date:", entry);
+                    this.logger.error(
+                        `Invalid entry date: ${JSON.stringify(entry)}`
+                    );
                 }
                 return groups;
             },

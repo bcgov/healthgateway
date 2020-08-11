@@ -7,12 +7,9 @@ import { ExternalConfiguration } from "@/models/configData";
 export class WinstonLogger implements ILogger {
     private logger!: Logger;
 
-    public initialize(config: ExternalConfiguration): void {
+    public initialize(logLevel?: string): void {
         this.logger = createLogger({
-            level:
-                config.webClient.logLevel !== undefined
-                    ? config.webClient.logLevel.toLowerCase()
-                    : "info",
+            level: logLevel !== undefined ? logLevel.toLowerCase() : "info",
             format: format.json(),
             transports: [
                 new transports.Console({

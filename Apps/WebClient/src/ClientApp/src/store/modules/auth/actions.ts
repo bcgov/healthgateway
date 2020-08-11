@@ -1,10 +1,15 @@
 import { ActionTree } from "vuex";
 import { AuthState, RootState } from "@/models/storeState";
 import { Route } from "vue-router";
-import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
+import {
+    ILogger,
+    IHttpDelegate,
+    IAuthenticationService,
+} from "@/services/interfaces";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 function routeIsOidcCallback(route: Route): boolean {
     if (route.meta.isOidcCallback) {
         return true;
@@ -32,14 +37,14 @@ export const actions: ActionTree<AuthState, RootState> = {
 
             authService.getUser().then((oidcUser) => {
                 if (!oidcUser || oidcUser.expired) {
-                    console.log("Could not get the user!");
+                    logger.warn("Could not get the user!");
                     context.dispatch("clearStorage");
                     hasAccess = false;
                 } else {
                     context.dispatch("oidcWasAuthenticated", oidcUser);
                     if (!isAuthenticatedInStore) {
                         // We can add events when the user wasnt authenticated and now it is.
-                        console.log(
+                        logger.debug(
                             "The user was previously unauthenticated, now it is!"
                         );
                     }
@@ -56,11 +61,12 @@ export const actions: ActionTree<AuthState, RootState> = {
             authService
                 .signinRedirect(params.idpHint, params.redirectPath)
                 .then(() => {
-                    console.log("signinRedirect done");
+                    logger.debug("signinRedirect done");
                     resolve();
                 })
                 .catch((err) => {
                     context.commit("setOidcError", err);
+                    logger.error(`setOidcError: ${err}`);
                     reject();
                 });
         });
@@ -75,9 +81,8 @@ export const actions: ActionTree<AuthState, RootState> = {
                         oidcUser
                     );
                     if (cookieToStoreSize > 4000) {
-                        console.log(
-                            "Warning: User info is too big:",
-                            cookieToStoreSize
+                        logger.warn(
+                            `Warning: User info is too big: ${cookieToStoreSize}`
                         );
                     }
 
@@ -120,7 +125,7 @@ export const actions: ActionTree<AuthState, RootState> = {
             .getUser()
             .then((oidcUser) => {
                 if (!oidcUser || oidcUser.expired) {
-                    console.log("User is invalid.");
+                    logger.warn(`User is invalid`);
                     context.dispatch("clearStorage");
                 } else {
                     context.dispatch("oidcWasAuthenticated", oidcUser);

@@ -52,7 +52,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
-import { IUserProfileService } from "@/services/interfaces";
+import { ILogger, IUserProfileService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import LoadingComponent from "@/components/loading.vue";
@@ -65,6 +65,8 @@ import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
     },
 })
 export default class TermsOfServiceView extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
     private userProfileService!: IUserProfileService;
     private isLoading: boolean = true;
     private hasErrors: boolean = false;
@@ -84,11 +86,13 @@ export default class TermsOfServiceView extends Vue {
         this.userProfileService
             .getTermsOfService()
             .then((result) => {
-                console.log(result);
+                this.logger.debug(
+                    "Terms Of Service retrieved: " + JSON.stringify(result)
+                );
                 this.termsOfService = result.content;
             })
             .catch((err) => {
-                console.log(err);
+                this.logger.error(err);
                 this.handleError("Please refresh your browser.");
             })
             .finally(() => {
@@ -99,7 +103,7 @@ export default class TermsOfServiceView extends Vue {
     private handleError(error: string): void {
         this.hasErrors = true;
         this.errorMessage = error;
-        console.log(error);
+        this.logger.error(error);
     }
 }
 </script>

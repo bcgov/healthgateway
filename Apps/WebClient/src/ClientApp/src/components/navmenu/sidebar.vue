@@ -454,7 +454,7 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { IAuthenticationService } from "@/services/interfaces";
+import { ILogger, IAuthenticationService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import VueRouter, { Route } from "vue-router";
@@ -476,6 +476,7 @@ const sidebar: string = "sidebar";
     },
 })
 export default class SidebarComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("updateUserPreference", { namespace: "user" })
     updateUserPreference!: (params: {
         hdid: string;
@@ -606,7 +607,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private dismissTutorial() {
-        console.log("Dismissing tutorial...");
+        this.logger.debug("Dismissing tutorial...");
         this.updateUserPreference({
             hdid: this.user.hdid,
             name: "tutorialPopover",

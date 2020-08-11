@@ -148,12 +148,13 @@ import {
     faEllipsisV,
     faLock,
 } from "@fortawesome/free-solid-svg-icons";
-import { IUserCommentService } from "@/services/interfaces";
+import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
 @Component
 export default class CommentComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("user", { namespace: "user" }) user!: User;
     @Prop() comment!: UserComment;
     private commentInput: string = "";
@@ -227,11 +228,11 @@ export default class CommentComponent extends Vue {
                 this.onCommentAdded(this.comment);
             })
             .catch((err) => {
-                console.log(
-                    "Error adding comment on entry " +
+                this.logger.error(
+                    `Error adding comment on entry ${
                         this.comment.parentEntryId
+                    }: ${JSON.stringify(err)}`
                 );
-                console.log(err);
                 this.hasErrors = true;
             })
             .finally(() => {
@@ -259,7 +260,7 @@ export default class CommentComponent extends Vue {
                 this.needsUpdate(this.comment);
             })
             .catch((err) => {
-                console.log(err);
+                this.logger.error(err);
                 this.hasErrors = true;
             })
             .finally(() => {
@@ -277,7 +278,7 @@ export default class CommentComponent extends Vue {
                     this.needsUpdate(this.comment);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(err);
                 })
                 .finally(() => {
                     this.isLoading = false;

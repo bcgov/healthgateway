@@ -1,10 +1,17 @@
 import { injectable } from "inversify";
-import { ICommunicationService, IHttpDelegate } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    ICommunicationService,
+    IHttpDelegate,
+} from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
 import Communication from "@/models/communication";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly BASE_URI: string = "/v1/api/Communication";
     private http!: IHttpDelegate;
 
@@ -20,7 +27,7 @@ export class RestCommunicationService implements ICommunicationService {
                     return resolve(communication);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`getActive Communication error: ${err}`);
                     return reject(err);
                 });
         });

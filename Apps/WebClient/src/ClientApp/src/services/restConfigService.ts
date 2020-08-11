@@ -18,7 +18,7 @@ export class RestConfigService implements IConfigService {
                     return resolve(result);
                 })
                 .catch((err) => {
-                    console.log("Fetch error:" + err.toString());
+                    console.error("Fetch error:" + err.toString());
                     reject(err);
                 });
         });

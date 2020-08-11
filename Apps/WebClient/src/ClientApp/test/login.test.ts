@@ -5,6 +5,9 @@ import LoginComponent from "@/views/login.vue";
 import { auth as authModule } from "@/store/modules/auth/auth";
 import { user as userModule } from "@/store/modules/user/user";
 import { IdentityProviderConfiguration } from "@/models/configData";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 const pushMethod = jest.fn();
 
@@ -66,6 +69,8 @@ function createWrapper(): Wrapper<LoginComponent> {
 }
 
 describe("Login view", () => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
     beforeEach(() => {
         $router = {
             push: pushMethod,

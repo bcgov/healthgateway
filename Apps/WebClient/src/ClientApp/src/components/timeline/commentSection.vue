@@ -87,7 +87,7 @@ import UserComment from "@/models/userComment";
 import CommentComponent from "@/components/timeline/comment.vue";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Component, Prop } from "vue-property-decorator";
-import { IUserCommentService } from "@/services/interfaces";
+import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
@@ -97,6 +97,7 @@ import container from "@/plugins/inversify.config";
     },
 })
 export default class CommentSectionComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() parentEntry!: MedicationTimelineEntry;
     private commentService!: IUserCommentService;
     private showComments: boolean = false;
@@ -152,10 +153,11 @@ export default class CommentSectionComponent extends Vue {
                 }
             })
             .catch((err) => {
-                console.log(
-                    "Error loading comments for entry " + this.parentEntry.id
+                this.logger.error(
+                    `Error loading comments for entry  ${
+                        this.parentEntry.id
+                    }: ${JSON.stringify(err)}`
                 );
-                console.log(err);
                 this.hasErrors = true;
             })
             .finally(() => {
