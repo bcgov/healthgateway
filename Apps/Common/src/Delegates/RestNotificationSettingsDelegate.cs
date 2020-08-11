@@ -98,7 +98,7 @@ namespace HealthGateway.Common.Delegates
                         }
                         else
                         {
-                            retVal.ResultMessage = "Error with JSON data";
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data" , };
                         }
 
                         break;
@@ -118,9 +118,9 @@ namespace HealthGateway.Common.Delegates
                         break;
                 }
             }
-            #pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
-            #pragma warning restore CA1031 // Do not catch general exception types
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 retVal.ResultMessage = $"Exception getting Notification Settings: {e}";
                 this.logger.LogError($"Unexpected exception in GetNotificationSettings {e}");

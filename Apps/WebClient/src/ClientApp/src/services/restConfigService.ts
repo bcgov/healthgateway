@@ -1,6 +1,8 @@
 import { IConfigService, IHttpDelegate } from "@/services/interfaces";
 import { injectable } from "inversify";
 import { ExternalConfiguration } from "@/models/configData";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestConfigService implements IConfigService {
@@ -19,7 +21,12 @@ export class RestConfigService implements IConfigService {
                 })
                 .catch((err) => {
                     console.log("Fetch error:" + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }

@@ -55,8 +55,12 @@ main {
         </header>
         <b-row class="p-0 m-0">
             <NavSidebar class="no-print" />
-
             <main class="col fill-height">
+                <ErrorCard
+                    title="Whoops!"
+                    description="An error occurred."
+                    show="true"
+                />
                 <router-view></router-view>
                 <IdleComponent ref="idleModal" />
             </main>
@@ -180,12 +184,14 @@ import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
+import ErrorCard from "@/components/errorCard.vue";
 
 @Component({
     components: {
         NavHeader: HeaderComponent,
         NavFooter: FooterComponent,
         NavSidebar: SidebarComponent,
+        ErrorCard: ErrorCard,
         IdleComponent,
     },
 })

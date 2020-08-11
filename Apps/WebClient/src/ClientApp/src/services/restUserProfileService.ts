@@ -7,6 +7,8 @@ import { TermsOfService } from "@/models/termsOfService";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 import { Dictionary } from "vue-router/types/router";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
@@ -29,7 +31,12 @@ export class RestUserProfileService implements IUserProfileService {
                 })
                 .catch((err) => {
                     console.log(this.FETCH_ERROR + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -48,7 +55,12 @@ export class RestUserProfileService implements IUserProfileService {
                 })
                 .catch((err) => {
                     console.log(this.FETCH_ERROR + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -64,7 +76,12 @@ export class RestUserProfileService implements IUserProfileService {
                 })
                 .catch((err) => {
                     console.log(this.FETCH_ERROR + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -226,7 +243,12 @@ export class RestUserProfileService implements IUserProfileService {
                 })
                 .catch((err) => {
                     console.log(this.FETCH_ERROR + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -239,7 +261,7 @@ export class RestUserProfileService implements IUserProfileService {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            reject(requestResult.resultMessage);
+            reject(requestResult.resultError);
         }
     }
 }

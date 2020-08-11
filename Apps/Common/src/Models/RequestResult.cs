@@ -50,15 +50,8 @@ namespace HealthGateway.Common.Models
         public ResultType ResultStatus { get; set; }
 
         /// <summary>
-        /// Gets or sets the message depending on the result type.
-        /// Will always be set when ResultType is Error.
+        /// Gets or sets the ResultError of the request. Can be null
         /// </summary>
-        public string ResultMessage { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the error code.
-        /// Will always be set when ResultType is Error.
-        /// </summary>
-        public string ErrorCode { get; set; } = string.Empty;
+        public RequestResultError? ResultError { get; set; } = null;
     }
 }

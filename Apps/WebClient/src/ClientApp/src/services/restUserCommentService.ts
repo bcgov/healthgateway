@@ -4,6 +4,8 @@ import RequestResult from "@/models/requestResult";
 import UserComment from "@/models/userComment";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
@@ -29,10 +31,8 @@ export class RestUserCommentService implements IUserCommentService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: [],
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
-                    errorCode: "",
                 });
                 return;
             }
@@ -45,7 +45,12 @@ export class RestUserCommentService implements IUserCommentService {
                 })
                 .catch((err) => {
                     console.log(err);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -67,7 +72,12 @@ export class RestUserCommentService implements IUserCommentService {
                 })
                 .catch((err) => {
                     console.log(err);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -84,7 +94,12 @@ export class RestUserCommentService implements IUserCommentService {
                 })
                 .catch((err) => {
                     console.log(err);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -101,7 +116,12 @@ export class RestUserCommentService implements IUserCommentService {
                 })
                 .catch((err) => {
                     console.log(err);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -114,7 +134,7 @@ export class RestUserCommentService implements IUserCommentService {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            reject(requestResult.resultMessage);
+            reject(requestResult.resultError);
         }
     }
 }

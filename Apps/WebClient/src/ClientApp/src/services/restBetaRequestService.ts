@@ -4,6 +4,8 @@ import { Dictionary } from "vue-router/types/router";
 import BetaRequest from "@/models/betaRequest";
 import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestBetaRequestService implements IBetaRequestService {
@@ -23,7 +25,12 @@ export class RestBetaRequestService implements IBetaRequestService {
                 })
                 .catch((err) => {
                     console.log(err);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -43,7 +50,12 @@ export class RestBetaRequestService implements IBetaRequestService {
                 })
                 .catch((err) => {
                     console.log(err);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -56,7 +68,7 @@ export class RestBetaRequestService implements IBetaRequestService {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            reject(requestResult.resultMessage);
+            reject(requestResult.resultError);
         }
     }
 }

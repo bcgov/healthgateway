@@ -4,6 +4,8 @@ import { ExternalConfiguration } from "@/models/configData";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
@@ -30,10 +32,8 @@ export class RestLaboratoryService implements ILaboratoryService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: [],
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
-                    errorCode: "",
                 });
                 return;
             }
@@ -46,7 +46,12 @@ export class RestLaboratoryService implements ILaboratoryService {
                 })
                 .catch((err) => {
                     console.log("Fetch error: " + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Laboratory
+                        )
+                    );
                 });
         });
     }
@@ -61,10 +66,8 @@ export class RestLaboratoryService implements ILaboratoryService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: { data: "", encoding: "", mediaType: "" },
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
-                    errorCode: "",
                 });
                 return;
             }
@@ -77,7 +80,12 @@ export class RestLaboratoryService implements ILaboratoryService {
                 })
                 .catch((err) => {
                     console.log("Fetch error: " + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Laboratory
+                        )
+                    );
                 });
         });
     }

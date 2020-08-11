@@ -6,6 +6,8 @@ import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
@@ -42,10 +44,8 @@ export class RestMedicationService implements IMedicationService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: [],
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
-                    errorCode: "",
                 });
                 return;
             }
@@ -59,7 +59,12 @@ export class RestMedicationService implements IMedicationService {
                 })
                 .catch((err) => {
                     console.log(this.FETCH_ERROR + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Medication
+                        )
+                    );
                 });
         });
     }
@@ -77,7 +82,12 @@ export class RestMedicationService implements IMedicationService {
                 })
                 .catch((err) => {
                     console.log(this.FETCH_ERROR + err.toString());
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Medication
+                        )
+                    );
                 });
         });
     }
@@ -90,7 +100,7 @@ export class RestMedicationService implements IMedicationService {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            reject(requestResult.resultMessage);
+            reject(requestResult.resultError);
         }
     }
 }
