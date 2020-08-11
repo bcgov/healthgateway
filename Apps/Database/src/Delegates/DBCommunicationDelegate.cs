@@ -164,7 +164,7 @@ namespace HealthGateway.Database.Delegates
                     this.dbContext.SaveChanges();
                     result.Status = DBStatusCode.Deleted;
                 }
-                catch (DbUpdateConcurrencyException e)
+                catch (DbUpdateException e)
                 {
                     result.Status = DBStatusCode.Concurrency;
                     result.Message = e.Message;
