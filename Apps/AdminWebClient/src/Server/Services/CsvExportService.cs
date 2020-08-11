@@ -58,7 +58,6 @@ namespace HealthGateway.Admin.Services
         {
             DBResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
             return GetStream<Comment, CommentCsvMap>(comments.Payload);
-
         }
 
         /// <inheritdoc />
@@ -91,6 +90,4 @@ namespace HealthGateway.Admin.Services
             return stream;
         }
     }
-
-
 }
