@@ -127,7 +127,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    logger.info(
+    logger.debug(
         `from.fullPath: ${JSON.stringify(
             from.fullPath
         )}; to.fullPath: ${JSON.stringify(to.fullPath)}`

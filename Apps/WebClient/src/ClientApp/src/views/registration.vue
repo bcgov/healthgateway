@@ -446,7 +446,7 @@ export default class RegistrationView extends Vue {
                     this.betaRequestService
                         .getRequest(this.oidcUser.hdid)
                         .then((betaRequest) => {
-                            this.logger.info(
+                            this.logger.debug(
                                 `getOidcUserProfile result: ${JSON.stringify(
                                     betaRequest
                                 )}`
@@ -536,7 +536,7 @@ export default class RegistrationView extends Vue {
         this.userProfileService
             .getTermsOfService()
             .then((result) => {
-                this.logger.info(
+                this.logger.debug(
                     `getTermsOfService result: ${JSON.stringify(result)}`
                 );
                 this.termsOfService = result.content;
@@ -576,7 +576,7 @@ export default class RegistrationView extends Vue {
                     inviteCode: this.inviteKey || "",
                 })
                 .then((result) => {
-                    this.logger.info(
+                    this.logger.debug(
                         `Create Profile result: ${JSON.stringify(result)}`
                     );
                     this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
@@ -621,7 +621,7 @@ export default class RegistrationView extends Vue {
             this.betaRequestService
                 .putRequest(newRequest)
                 .then((result) => {
-                    this.logger.info(
+                    this.logger.debug(
                         `Save Beta Request Profile result: ${JSON.stringify(
                             result
                         )}`

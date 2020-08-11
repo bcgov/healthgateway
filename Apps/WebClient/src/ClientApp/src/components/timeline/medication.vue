@@ -257,7 +257,7 @@ export default class MedicationTimelineComponent extends Vue {
         // Load medication details
         if (!this.medicationLoaded) {
             this.isLoadingMedication = true;
-            this.logger.info(
+            this.logger.debug(
                 `Loading Medication Entry : ${JSON.stringify(medicationEntry)}`
             );
             var medicationPromise = this.getMedication({

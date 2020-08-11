@@ -86,7 +86,7 @@ export default class TermsOfServiceView extends Vue {
         this.userProfileService
             .getTermsOfService()
             .then((result) => {
-                this.logger.info(
+                this.logger.debug(
                     "Terms Of Service retrieved: " + JSON.stringify(result)
                 );
                 this.termsOfService = result.content;

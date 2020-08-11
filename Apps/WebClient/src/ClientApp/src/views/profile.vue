@@ -563,7 +563,7 @@ export default class ProfileView extends Vue {
                 if (results[3]) {
                     // Load user profile
                     this.userProfile = results[3];
-                    this.logger.info(
+                    this.logger.debug(
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
                     this.lastLoginDateString = moment(
@@ -712,7 +712,7 @@ export default class ProfileView extends Vue {
             this.submitStatus = "ERROR";
         } else {
             this.submitStatus = "PENDING";
-            this.logger.info(`saveEmailEdit: ${JSON.stringify(this.email)}`);
+            this.logger.debug(`saveEmailEdit: ${JSON.stringify(this.email)}`);
             this.sendUserEmailUpdate();
         }
     }
@@ -745,7 +745,7 @@ export default class ProfileView extends Vue {
             emailAddress: this.email,
         })
             .then(() => {
-                this.logger.info("success!");
+                this.logger.verbose("success!");
                 this.isEmailEditable = false;
                 this.emailVerificationSent = true;
                 this.emailConfirmation = "";
@@ -763,7 +763,7 @@ export default class ProfileView extends Vue {
     }
 
     private updateSMS(): void {
-        this.logger.info(
+        this.logger.debug(
             `Updating ${this.smsNumber ? this.smsNumber : "sms number..."}`
         );
         // Send update to backend
@@ -798,7 +798,7 @@ export default class ProfileView extends Vue {
             hdid: this.user.hdid,
         })
             .then(() => {
-                this.logger.info("success!");
+                this.logger.verbose("success!");
             })
             .catch((err) => {
                 this.hasErrors = true;
@@ -823,7 +823,7 @@ export default class ProfileView extends Vue {
             hdid: this.user.hdid,
         })
             .then(() => {
-                this.logger.info("success!");
+                this.logger.verbose("success!");
                 this.showCloseWarning = false;
             })
             .catch((err) => {

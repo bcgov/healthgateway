@@ -12,7 +12,7 @@ export const getters: GetterTree<MedicationState, RootState> = {
         din: string
     ): MedicationResult | undefined => {
         din = din.padStart(8, "0");
-        logger.info(`getStoredMedication: din = ${JSON.stringify(din)}`);
+        logger.debug(`getStoredMedication: din = ${JSON.stringify(din)}`);
         return state.medications.find((item) => item.din === din);
     },
 };

@@ -33,7 +33,7 @@ export const actions: ActionTree<UserState, RootState> = {
             patientService
                 .getPatientData(params.hdid)
                 .then((patientData) => {
-                    logger.info(`Patient Data: ${JSON.stringify(patientData)}`);
+                    logger.debug(`Patient Data: ${JSON.stringify(patientData)}`);
                     context.commit("setPatientData", patientData);
                     resolve(patientData);
                 })
@@ -44,12 +44,12 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     },
     checkRegistration(context, params: { hdid: string }): Promise<boolean> {
-        logger.info(`checkRegistration params: ${JSON.stringify(params)}`);
+        logger.debug(`checkRegistration params: ${JSON.stringify(params)}`);
         return new Promise((resolve, reject) => {
             userProfileService
                 .getProfile(params.hdid)
                 .then((userProfile) => {
-                    logger.info(`User Profile: ${JSON.stringify(userProfile)}`);
+                    logger.debug(`User Profile: ${JSON.stringify(userProfile)}`);
                     let isRegistered: boolean;
                     if (userProfile) {
                         isRegistered = userProfile.acceptedTermsOfService;
@@ -194,7 +194,7 @@ export const actions: ActionTree<UserState, RootState> = {
             userProfileService
                 .recoverAccount(params.hdid)
                 .then((userProfile) => {
-                    logger.info(
+                    logger.debug(
                         `recoverUserAccount User Profile: ${JSON.stringify(
                             userProfile
                         )}`

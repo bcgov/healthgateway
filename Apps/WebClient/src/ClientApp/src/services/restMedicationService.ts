@@ -64,7 +64,7 @@ export class RestMedicationService implements IMedicationService {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    this.logger.info(
+                    this.logger.error(
                         `getPatientMedicationStatementHistory ${this.FETCH_ERROR}: ${err}`
                     );
                     reject(err);
@@ -84,7 +84,7 @@ export class RestMedicationService implements IMedicationService {
                     this.handleResult(requestResult, resolve, reject);
                 })
                 .catch((err) => {
-                    this.logger.info(
+                    this.logger.error(
                         `getMedicationInformation ${this.FETCH_ERROR}: ${err}`
                     );
                     reject(err);

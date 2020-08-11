@@ -10,7 +10,7 @@ import { ResultType } from "@/constants/resulttype";
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 function handleError(commit: Commit, error: Error) {
-    logger.info(`ERROR: ${JSON.stringify(error)}`);
+    logger.error(`ERROR: ${JSON.stringify(error)}`);
     commit("laboratoryError");
 }
 
@@ -26,7 +26,7 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] = context.getters.getStoredLaboratoryOrders();
             if (laboratoryOrders.length > 0) {
-                logger.info(`Laboratory found stored, not quering!`);
+                logger.debug(`Laboratory found stored, not quering!`);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -36,7 +36,7 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
                     totalResultCount: laboratoryOrders.length,
                 });
             } else {
-                logger.info(`Retrieving Laboratory Orders`);
+                logger.debug(`Retrieving Laboratory Orders`);
                 laboratoryService
                     .getOrders(params.hdid)
                     .then((laboratoryOrders) => {

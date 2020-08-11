@@ -658,7 +658,7 @@ export default class TimelineView extends Vue {
     }
 
     private onEntryUpdated(entry: TimelineEntry) {
-        this.logger.info(`Timeline Entry updated: ${JSON.stringify(entry)}`);
+        this.logger.debug(`Timeline Entry updated: ${JSON.stringify(entry)}`);
         const index = this.timelineEntries.findIndex(
             (e) => e.id === entry.id && e.type === entry.type
         );
@@ -669,7 +669,7 @@ export default class TimelineView extends Vue {
     }
 
     private onEntryDeleted(entry: TimelineEntry) {
-        this.logger.info(`Timeline Entry deleted: ${JSON.stringify(entry)}`);
+        this.logger.debug(`Timeline Entry deleted: ${JSON.stringify(entry)}`);
         const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
         this.timelineEntries.splice(index, 1);
         this.sortEntries();
@@ -681,7 +681,7 @@ export default class TimelineView extends Vue {
 
     private onProtectiveWordCancel() {
         // Does nothing as it won't be able to fetch pharmanet data.
-        this.logger.info("protective word cancelled");
+        this.logger.debug("protective word cancelled");
     }
 
     private getTotalCount(): number {

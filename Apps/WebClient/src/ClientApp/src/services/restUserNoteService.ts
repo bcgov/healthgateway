@@ -58,7 +58,7 @@ export class RestUserNoteService implements IUserNoteService {
     NOT_IMPLENTED: string = "Method not implemented.";
 
     public createNote(note: UserNote): Promise<UserNote> {
-        this.logger.info(`createNote: ${JSON.stringify(note)}`);
+        this.logger.debug(`createNote: ${JSON.stringify(note)}`);
         note.id = undefined;
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {

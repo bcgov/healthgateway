@@ -8,11 +8,11 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 export const mutations: MutationTree<SidebarState> = {
     toggle(state: SidebarState) {
-        logger.info(`SidebarState:toggle`);
+        logger.verbose(`SidebarState:toggle`);
         state.isOpen = !state.isOpen;
     },
     setState(state: SidebarState, isOpen: boolean) {
-        logger.info(`SidebarState:setState`);
+        logger.verbose(`SidebarState:setState`);
         state.isOpen = isOpen;
     },
 };

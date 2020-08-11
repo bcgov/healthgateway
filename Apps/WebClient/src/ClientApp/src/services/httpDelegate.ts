@@ -10,12 +10,12 @@ import container from "@/plugins/inversify.config";
 export default class HttpDelegate implements IHttpDelegate {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     public unsetAuthorizationHeader(): void {
-        this.logger.info(`ACCESS TOKEN UNSET`);
+        this.logger.debug(`ACCESS TOKEN UNSET`);
         Axios.defaults.headers.common = {};
     }
 
     public setAuthorizationHeader(accessToken: string): void {
-        this.logger.info(`ACCESS TOKEN SET`);
+        this.logger.debug(`ACCESS TOKEN SET`);
         Axios.defaults.headers.common = {
             Authorization: `Bearer ${accessToken}`,
         };
@@ -78,7 +78,7 @@ export default class HttpDelegate implements IHttpDelegate {
             const config: AxiosRequestConfig = {
                 headers,
             };
-            this.logger.info(`Config: ${JSON.stringify(config)}`);
+            this.logger.debug(`Config: ${JSON.stringify(config)}`);
             Axios.put(url, payload, config)
                 .then((response) => {
                     return resolve(response.data);
@@ -100,7 +100,7 @@ export default class HttpDelegate implements IHttpDelegate {
             const config: AxiosRequestConfig = {
                 headers,
             };
-            this.logger.info(`Config: ${JSON.stringify(config)}`);
+            this.logger.debug(`Config: ${JSON.stringify(config)}`);
             Axios.patch(url, payload, config)
                 .then((response) => {
                     return resolve(response.data);
@@ -122,7 +122,7 @@ export default class HttpDelegate implements IHttpDelegate {
                 headers,
                 data: payload,
             };
-            this.logger.info(`Config: ${JSON.stringify(config)}`);
+            this.logger.debug(`Config: ${JSON.stringify(config)}`);
             Axios.delete(url, config)
                 .then((response) => {
                     return resolve(response.data);

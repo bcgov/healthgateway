@@ -68,7 +68,7 @@ export class RestUserCommentService implements IUserCommentService {
                     comment
                 )
                 .then((result) => {
-                    this.logger.info(
+                    this.logger.debug(
                         `createComment result: ${JSON.stringify(result)}`
                     );
                     return this.handleResult(result, resolve, reject);

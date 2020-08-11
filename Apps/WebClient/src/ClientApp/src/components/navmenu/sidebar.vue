@@ -607,7 +607,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private dismissTutorial() {
-        this.logger.info("Dismissing tutorial...");
+        this.logger.debug("Dismissing tutorial...");
         this.updateUserPreference({
             hdid: this.user.hdid,
             name: "tutorialPopover",

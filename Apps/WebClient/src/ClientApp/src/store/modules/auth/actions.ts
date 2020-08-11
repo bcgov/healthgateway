@@ -44,7 +44,7 @@ export const actions: ActionTree<AuthState, RootState> = {
                     context.dispatch("oidcWasAuthenticated", oidcUser);
                     if (!isAuthenticatedInStore) {
                         // We can add events when the user wasnt authenticated and now it is.
-                        logger.info(
+                        logger.debug(
                             "The user was previously unauthenticated, now it is!"
                         );
                     }
@@ -61,7 +61,7 @@ export const actions: ActionTree<AuthState, RootState> = {
             authService
                 .signinRedirect(params.idpHint, params.redirectPath)
                 .then(() => {
-                    logger.info("signinRedirect done");
+                    logger.debug("signinRedirect done");
                     resolve();
                 })
                 .catch((err) => {

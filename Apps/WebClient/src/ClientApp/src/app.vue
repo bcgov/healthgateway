@@ -207,7 +207,7 @@ export default class App extends Vue {
 
     constructor() {
         super();
-        logger.info(
+        logger.debug(
             `Node ENV: ${JSON.stringify(
                 Process.NODE_ENV
             )}; host: ${JSON.stringify(this.host)}`

@@ -54,13 +54,13 @@ export class RestAuthenticationService implements IAuthenticationService {
             loadUserInfo: false,
             automaticSilentRenew: true,
         };
-        this.logger.info(`oidc configuration: ${JSON.stringify(oidcConfig)}`);
+        this.logger.debug(`oidc configuration: ${JSON.stringify(oidcConfig)}`);
         this.http = httpDelegate;
         this.authorityUri = config.authority;
         this.oidcUserManager = new UserManager(oidcConfig);
         let seft = this;
         this.oidcUserManager.events.addAccessTokenExpiring(function () {
-            seft.logger.info("Token expiring...");
+            seft.logger.debug("Token expiring...");
         });
     }
 

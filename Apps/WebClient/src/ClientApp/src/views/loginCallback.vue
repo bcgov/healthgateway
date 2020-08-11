@@ -32,7 +32,7 @@ export default class LoginCallbackView extends Vue {
     private created() {
         this.oidcSignInCallback()
             .then((redirectPath) => {
-                this.logger.info(
+                this.logger.debug(
                     `oidcSignInCallback for user: ${JSON.stringify(this.user)}`
                 );
                 this.checkRegistration({ hdid: this.user.hdid }).then(() => {
@@ -45,7 +45,7 @@ export default class LoginCallbackView extends Vue {
                             this.$router.push({ path: "/registration" });
                         }
                     }
-                    this.logger.info(
+                    this.logger.debug(
                         `checkRegistration RedirectPath: ${JSON.stringify(
                             redirectPath
                         )}`

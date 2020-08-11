@@ -47,7 +47,7 @@ export const mutations: MutationTree<UserState> = {
             "preferences",
             userProfile ? userProfile.preferences : {}
         );
-        logger.info(`state.user: ${JSON.stringify(state.user)}`);
+        logger.debug(`state.user: ${JSON.stringify(state.user)}`);
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
@@ -82,7 +82,7 @@ export const mutations: MutationTree<UserState> = {
         state: UserState,
         preference: { name: string; value: string }
     ) {
-        logger.info(
+        logger.debug(
             `setUserPreference: preference.name: ${JSON.stringify(
                 preference.name
             )}, preference.value: ${JSON.stringify(preference.value)}`

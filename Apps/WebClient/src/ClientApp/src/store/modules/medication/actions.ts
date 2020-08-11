@@ -23,10 +23,10 @@ export const actions: ActionTree<MedicationState, RootState> = {
                 params.din
             );
             if (medicationResult) {
-                logger.info(`Medication found stored, not quering!`);
+                logger.debug(`Medication found stored, not quering!`);
                 resolve(medicationResult);
             } else {
-                logger.info(`Retrieving Medication info...`);
+                logger.debug(`Retrieving Medication info...`);
                 medicationService
                     .getMedicationInformation(params.din)
                     .then((medicationData) => {
