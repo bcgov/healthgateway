@@ -49,9 +49,10 @@
             </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-btn :disabled="checkDisabled(item)" @click="edit(item)">
+            <v-btn class="mr-2" :disabled="checkDisabled(item)" @click="edit(item)">
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
+
             <v-btn :disabled="checkDisabled(item)" @click="deleteComm(item)">
                 <font-awesome-icon icon="trash" size="1x"> </font-awesome-icon>
             </v-btn>
@@ -225,7 +226,7 @@ export default class CommunicationTable extends Vue {
         },
         {
             text: "Status",
-            value: "communicationStatusCode",
+            value: "communicationStatusCode"
         },
         {
             text: "Actions",
