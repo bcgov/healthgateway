@@ -23,21 +23,43 @@ namespace HealthGateway.Common.ErrorHandling
         private ServiceType(string value) { Value = value; }
 
         /// <summary>
-        /// Value that holds the internal representation of the ServiceType.
+        /// Gets or sets the Value that holds the internal representation of the ServiceType.
         /// </summary>
         public string Value { get; set; }
 
         /// <summary>
-        /// Database error.
+        /// Gets the Database service code.
         /// </summary>
         public static ServiceType Database { get { return new ServiceType("DB"); } }
+
         /// <summary>
-        /// Communication with the Client registries service failed.
+        /// Gets the Client Registries service code.
         /// </summary>
         public static ServiceType ClientRegistries { get { return new ServiceType("CR"); } }
+
         /// <summary>
-        /// Communication with an the ODR services failed.
+        /// Gets the ODRRecords service code.
         /// </summary>
         public static ServiceType ODRRecords { get { return new ServiceType("ODR"); } }
+
+        /// <summary>
+        /// Gets the Medication service code.
+        /// </summary>
+        public static ServiceType Medication { get { return new ServiceType("MED"); } }
+
+        /// <summary>
+        /// Gets the Laboratory service code.
+        /// </summary>
+        public static ServiceType Laboratory { get { return new ServiceType("LAB"); } }
+
+        /// <summary>
+        /// Gets the Immunization service code.
+        /// </summary>
+        public static ServiceType Immunization { get { return new ServiceType("IMZ"); } }
+
+        /// <summary>
+        /// Gets the Patient service code.
+        /// </summary>
+        public static ServiceType Patient { get { return new ServiceType("PAT"); } }
     }
 }

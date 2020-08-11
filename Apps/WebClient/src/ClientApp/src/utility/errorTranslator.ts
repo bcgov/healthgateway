@@ -93,6 +93,8 @@ export default class ErrorTranslator {
                 return "Laboratory";
             case ServiceName.Immunization:
                 return "Immunization";
+            case ServiceName.Patient:
+                return "Patient";
             default:
                 return "Unknown";
         }

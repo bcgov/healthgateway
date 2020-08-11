@@ -63,8 +63,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<UserNote>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultMessage = "Profile Key not set",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState)
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) }
                 };
             }
 
@@ -75,7 +74,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = UserNote.CreateFromDbModel(dbNote.Payload, this.cryptoDelegate, key),
                 ResultStatus = dbNote.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbNote.Message,
+                ResultError = dbNote.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbNote.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) }
             };
             return result;
         }
@@ -104,8 +103,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<IEnumerable<UserNote>>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultMessage = "Profile Key not set",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState)
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) }
                 };
             }
 
@@ -116,7 +114,7 @@ namespace HealthGateway.WebClient.Services
                 PageSize = pageSize,
                 TotalResultCount = dbNotes.Payload.ToList().Count,
                 ResultStatus = dbNotes.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbNotes.Message,
+                ResultError = dbNotes.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbNotes.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) }
             };
             return result;
         }
@@ -132,8 +130,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<UserNote>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultMessage = "Profile Key not set",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState)
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) }
                 };
             }
 
@@ -144,7 +141,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = UserNote.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
                 ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbResult.Message,
+                ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) }
             };
             return result;
         }
@@ -160,8 +157,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<UserNote>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultMessage = "Profile Key not set",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState)
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) }
                 };
             }
 
@@ -171,7 +167,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = UserNote.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
                 ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbResult.Message,
+                ResultError = dbResult.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) }
             };
             return result;
         }

@@ -20,6 +20,7 @@ namespace HealthGateway.WebClient.Listeners
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -118,9 +119,8 @@ namespace HealthGateway.WebClient.Listeners
                     if (utcnow >= comm.EffectiveDateTime && utcnow <= comm.ExpiryDateTime)
                     {
                         cacheEntry.ResultStatus = Common.Constants.ResultType.Success;
-                        cacheEntry.ResultMessage = "Active Banner inserted or updated in DB";
                         cacheEntry.ResourcePayload = comm;
-                        this.logger.LogInformation(cacheEntry.ResultMessage);
+                        this.logger.LogInformation("Active Banner inserted or updated in DB");
                         this.CommunicationService.SetActiveBannerCache(cacheEntry);
                     }
                 }
@@ -131,8 +131,8 @@ namespace HealthGateway.WebClient.Listeners
                         currentBanner.ResourcePayload.Id == changeEvent.Data.Id)
                     {
                         cacheEntry.ResultStatus = Common.Constants.ResultType.Error;
-                        cacheEntry.ResultMessage = "Active Banner deleted from DB";
-                        this.logger.LogInformation(cacheEntry.ResultMessage);
+                        cacheEntry.ResultError = new RequestResultError() { ResultMessage = "Active Banner deleted from DB", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
+                        this.logger.LogInformation("Active Banner deleted from DB");
                         this.CommunicationService.SetActiveBannerCache(cacheEntry);
                     }
                 }

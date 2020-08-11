@@ -15,7 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -56,8 +59,8 @@ namespace HealthGateway.WebClient.Services
                 cacheEntry = new RequestResult<Communication>()
                 {
                     ResourcePayload = dbComm.Payload,
-                    ResultStatus = dbComm.Status == Database.Constants.DBStatusCode.Read ? Common.Constants.ResultType.Success : Common.Constants.ResultType.Error,
-                    ResultMessage = dbComm.Message,
+                    ResultStatus = dbComm.Status == DBStatusCode.Read ? Common.Constants.ResultType.Success : ResultType.Error,
+                    ResultError = dbComm.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbComm.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) }
                 };
 
                 this.SetActiveBannerCache(cacheEntry);
