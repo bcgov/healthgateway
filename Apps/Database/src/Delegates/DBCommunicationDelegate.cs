@@ -146,5 +146,34 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished getting list of New & Processing Email Communications from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
+
+        /// <inheritdoc />
+        public DBResult<Communication> Delete(Communication communication, bool commit = true)
+        {
+            this.logger.LogTrace($"Deleting Communication from DB...");
+            DBResult<Communication> result = new DBResult<Communication>()
+            {
+                Payload = communication,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.Communication.Remove(communication);
+            this.dbContext.Entry(communication).Property(c => c.Id).IsModified = false;
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Deleted;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished deleting Communication in DB");
+            return result;
+        }
     }
 }
