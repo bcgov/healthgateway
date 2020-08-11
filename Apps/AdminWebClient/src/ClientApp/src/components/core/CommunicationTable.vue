@@ -317,11 +317,11 @@ export default class CommunicationTable extends Vue {
     private checkDisabled(item: Communication) {
         if (
             item.communicationTypeCode === CommunicationType.Email &&
-            item.communicationStatusCode === CommunicationStatus.New
+            item.communicationStatusCode != CommunicationStatus.New
         ) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private loadCommunicationList() {
