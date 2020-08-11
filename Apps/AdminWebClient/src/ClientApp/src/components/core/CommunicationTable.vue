@@ -49,10 +49,10 @@
             </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-btn @click="edit(item)">
+            <v-btn :disabled="checkDisabled(item)" @click="edit(item)">
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
-            <v-btn @click="deleteComm(item)">
+            <v-btn :disabled="checkDisabled(item)" @click="deleteComm(item)">
                 <font-awesome-icon icon="trash" size="1x"> </font-awesome-icon>
             </v-btn>
         </template>
@@ -69,7 +69,10 @@ import { Component, Vue, Watch, Emit } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import BannerFeedback from "@/models/bannerFeedback";
-import Communication, { CommunicationType } from "@/models/adminCommunication";
+import Communication, {
+    CommunicationType,
+    CommunicationStatus
+} from "@/models/adminCommunication";
 import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
@@ -104,6 +107,7 @@ export default class CommunicationTable extends Vue {
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
+        communicationStatusCode: CommunicationStatus.New,
         priority: 10,
         version: 0,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -117,6 +121,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         subject: "",
         communicationTypeCode: CommunicationType.Email,
+        communicationStatusCode: CommunicationStatus.New,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -130,6 +135,7 @@ export default class CommunicationTable extends Vue {
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
+        communicationStatusCode: CommunicationStatus.New,
         version: 0,
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -143,6 +149,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         subject: "",
         communicationTypeCode: CommunicationType.Email,
+        communicationStatusCode: CommunicationStatus.New,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -220,6 +227,11 @@ export default class CommunicationTable extends Vue {
             text: "Actions",
             value: "actions",
             sortable: false
+        },
+        {
+            text: "Status",
+            value: "communicationStatusCode",
+            width: "10%"
         }
     ];
 
@@ -298,6 +310,16 @@ export default class CommunicationTable extends Vue {
         return this.communicationList;
     }
 
+    private checkDisabled(item: Communication) {
+        if (
+            item.communicationTypeCode === CommunicationType.Email &&
+            item.communicationStatusCode === CommunicationStatus.Processed
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     private loadCommunicationList() {
         this.communicationService
             .getAll()
@@ -341,6 +363,7 @@ export default class CommunicationTable extends Vue {
                 subject: comm.subject,
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
+                communicationStatusCode: CommunicationStatus.New,
                 priority: comm.priority,
                 version: 0,
                 scheduledDateTime: comm.scheduledDateTime,
@@ -379,6 +402,7 @@ export default class CommunicationTable extends Vue {
                 subject: comm.subject,
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
+                communicationStatusCode: CommunicationStatus.New,
                 priority: comm.priority,
                 version: comm.version,
                 scheduledDateTime: comm.scheduledDateTime,

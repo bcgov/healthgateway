@@ -3,6 +3,10 @@ export enum CommunicationType {
     Banner = "Banner"
 }
 
+export enum CommunicationStatus {
+    New = "New",
+    Processed = "Processed"
+}
 
 // Model that provides a user representation of admin communications.
 export default interface Communication {
@@ -22,13 +26,16 @@ export default interface Communication {
     expiryDateTime: Date;
 
     // Gets or sets the scheduled date of the email
-    scheduledDateTime: Date,
+    scheduledDateTime: Date;
 
     // Gets or sets the email communication priority
     priority: number;
 
     // Gets or sets the communication type: email or banner
     communicationTypeCode: string;
+
+    // Gets or sets the communication status code: new or processed
+    communicationStatusCode: string;
 
     // The communication version number.
     version: number;
