@@ -131,6 +131,7 @@ namespace HealthGateway.Admin.Services
                 ResourcePayload = dbResult.Payload,
                 ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultMessage = dbResult.Message,
+                ErrorCode = dbResult.Status == DBStatusCode.Deleted ? string.Empty : ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
             };
             return result;
         }
