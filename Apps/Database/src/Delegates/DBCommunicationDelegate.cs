@@ -166,7 +166,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    result.Status = DBStatusCode.Concurrency;
+                    result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
