@@ -30,12 +30,10 @@ namespace HealthGateway.Admin.Server.Mappers
         /// </summary>
         public NoteCsvMap()
         {
-            this.AutoMap(CultureInfo.InvariantCulture);
-            this.Map(m => m.Text).Ignore();
-            this.Map(m => m.Title).Ignore();
-            this.Map(m => m.UpdatedBy).Ignore();
-            this.Map(m => m.CreatedBy).Ignore();
+            this.Map(m => m.Id);
             this.Map(m => m.HdId).ConvertUsing(o => o.HdId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
+            this.Map(m => m.CreatedDateTime);
+            this.Map(m => m.UpdatedDateTime);
         }
     }
 }
