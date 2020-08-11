@@ -106,4 +106,27 @@ export default class HttpDelegate implements IHttpDelegate {
                 });
         });
     }
+
+    public delete<T>(
+        url: string,
+        payload: Object | undefined = undefined,
+        headers: Dictionary<string> | undefined = undefined
+    ): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            const config: AxiosRequestConfig = {
+                headers,
+                data: payload
+            };
+            console.log("Config:", config);
+            Axios.delete(url, config)
+                .then(response => {
+                    return resolve(response.data);
+                })
+                .catch(err => {
+                    const errorMessage: string = `DELETE error: ${err.toString()}`;
+                    console.log(errorMessage);
+                    return reject(errorMessage);
+                });
+        });
+    }
 }
