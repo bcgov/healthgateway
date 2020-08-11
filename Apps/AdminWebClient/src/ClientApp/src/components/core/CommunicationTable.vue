@@ -224,14 +224,13 @@ export default class CommunicationTable extends Vue {
             value: "priority"
         },
         {
+            text: "Status",
+            value: "communicationStatusCode",
+        },
+        {
             text: "Actions",
             value: "actions",
             sortable: false
-        },
-        {
-            text: "Status",
-            value: "communicationStatusCode",
-            width: "10%"
         }
     ];
 
