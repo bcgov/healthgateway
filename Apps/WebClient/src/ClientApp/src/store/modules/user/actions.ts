@@ -33,7 +33,9 @@ export const actions: ActionTree<UserState, RootState> = {
             patientService
                 .getPatientData(params.hdid)
                 .then((patientData) => {
-                    logger.debug(`Patient Data: ${JSON.stringify(patientData)}`);
+                    logger.debug(
+                        `Patient Data: ${JSON.stringify(patientData)}`
+                    );
                     context.commit("setPatientData", patientData);
                     resolve(patientData);
                 })
@@ -49,7 +51,9 @@ export const actions: ActionTree<UserState, RootState> = {
             userProfileService
                 .getProfile(params.hdid)
                 .then((userProfile) => {
-                    logger.debug(`User Profile: ${JSON.stringify(userProfile)}`);
+                    logger.debug(
+                        `User Profile: ${JSON.stringify(userProfile)}`
+                    );
                     let isRegistered: boolean;
                     if (userProfile) {
                         isRegistered = userProfile.acceptedTermsOfService;

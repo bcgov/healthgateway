@@ -30,6 +30,8 @@ namespace HealthGateway.Admin.Test.Services
     using System.Collections.Generic;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
 
     public class CommunicationServiceTest
     {
@@ -193,6 +195,73 @@ namespace HealthGateway.Admin.Test.Services
             Assert.Equal("Effective Date should be before Expiry Date.", actualResult.ResultMessage);
         }
 
+        [Fact]
+        public void ShouldDeleteCommunication()
+        {
+            // Sample communication to test
+            Communication comm = new Communication()
+            {
+                Id = Guid.NewGuid(),
+                Text = "Test update communication",
+                Subject = "Testing update communication",
+                EffectiveDateTime = new DateTime(2020, 07, 04),
+                ExpiryDateTime = new DateTime(2020, 07, 07)
+            };
+
+            RequestResult<Communication> actualResult = DeleteCommunication(comm, DBStatusCode.Deleted);
+
+            // Check result
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(comm));
+        }
+
+        [Fact]
+        public void ShouldDeleteProcessedCommunicationReturnError()
+        {
+            // Sample communication to test
+            Communication comm = new Communication()
+            {
+                Id = Guid.NewGuid(),
+                CommunicationStatusCode = CommunicationStatus.Processed,
+                Text = "Test update communication",
+                Subject = "Testing update communication",
+                EffectiveDateTime = new DateTime(2020, 07, 04),
+                ExpiryDateTime = new DateTime(2020, 07, 07),
+            };
+
+            RequestResult<Communication> expectedResult = new RequestResult<Communication>()
+            {
+                ResultStatus = ResultType.Error,
+                ResultMessage = "Processed communication can't be deleted.",
+                ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+            };
+
+            RequestResult<Communication> actualResult = DeleteCommunication(comm, DBStatusCode.Error);
+
+            // Check result
+            Assert.True(expectedResult.IsDeepEqual(actualResult));
+        }
+
+        [Fact]
+        public void ShouldDeleteCommunicationWithDBError()
+        {
+            // Sample communication to test
+            Communication comm = new Communication()
+            {
+                Id = Guid.NewGuid(),
+                Text = "Test update communication",
+                Subject = "Testing update communication",
+                EffectiveDateTime = new DateTime(2020, 07, 04),
+                ExpiryDateTime = new DateTime(2020, 07, 07)
+            };
+
+            RequestResult<Communication> actualResult = DeleteCommunication(comm, DBStatusCode.Error);
+
+            // Check result
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(comm));
+        }
+
         private RequestResult<Communication> UpdateCommunication(Communication comm, DBStatusCode dbStatusCode)
         {
             // Set up delegate
@@ -213,5 +282,27 @@ namespace HealthGateway.Admin.Test.Services
 
             return service.Update(comm);
         }
+
+        private RequestResult<Communication> DeleteCommunication(Communication comm, DBStatusCode dbStatusCode)
+        {
+            // Set up delegate
+            DBResult<Communication> deleteResult = new DBResult<Communication>
+            {
+                Payload = comm,
+                Status = dbStatusCode
+            };
+
+            Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
+            communicationDelegateMock.Setup(s => s.Delete(It.Is<Communication>(x => x.Text == comm.Text), true)).Returns(deleteResult);
+
+            // Set up service
+            ICommunicationService service = new CommunicationService(
+                new Mock<ILogger<CommunicationService>>().Object,
+                communicationDelegateMock.Object
+            );
+
+            return service.Delete(comm);
+        }
+
     }
 }

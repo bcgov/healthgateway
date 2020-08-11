@@ -51,6 +51,7 @@ export interface ICommunicationService {
     add(communication: Communication): Promise<void>;
     update(communication: Communication): Promise<void>;
     getAll(): Promise<Communication[]>;
+    delete(communication: Communication): Promise<void>;
 }
 
 export interface IHttpDelegate {
@@ -71,6 +72,11 @@ export interface IHttpDelegate {
     patch<T>(
         url: string,
         payload: Object,
+        headers?: Dictionary<string>
+    ): Promise<T>;
+    delete<T>(
+        url: string,
+        payload?: Object,
         headers?: Dictionary<string>
     ): Promise<T>;
 }
