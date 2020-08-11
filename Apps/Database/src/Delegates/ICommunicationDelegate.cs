@@ -57,5 +57,13 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <returns>The list of communications.</returns>
         List<Communication> GetEmailCommunicationsToSend();
+
+        /// <summary>
+        /// Deletes the given communication from the database.
+        /// </summary>
+        /// <param name="communication">The communication to be deleted from the database.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <returns>A Communication wrapped in a DBResult.</returns>
+        DBResult<Communication> Delete(Communication communication, bool commit = true);
     }
 }

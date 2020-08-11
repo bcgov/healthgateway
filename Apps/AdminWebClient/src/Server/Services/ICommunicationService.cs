@@ -43,5 +43,12 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
         RequestResult<IEnumerable<Communication>> GetAll();
+
+        /// <summary>
+        /// Deletes the given communication from the backend.
+        /// </summary>
+        /// <param name="communication">The communication to delete.</param>
+        /// <returns>The deleted communication wrapped in a RequestResult.</returns>
+        RequestResult<Communication> Delete(Communication communication);
     }
 }
