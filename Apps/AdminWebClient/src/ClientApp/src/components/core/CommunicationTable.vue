@@ -52,6 +52,9 @@
             <v-btn @click="edit(item)">
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
+            <v-btn @click="deleteComm(item)">
+                <font-awesome-icon icon="trash" size="1x"> </font-awesome-icon>
+            </v-btn>
         </template>
         <template v-slot:item.priority="{ item }">
             <span>{{ formatPriority(item.priority) }}</span>
