@@ -432,6 +432,34 @@ export default class CommunicationTable extends Vue {
             });
     }
 
+    private deleteComm(comm: Communication): void {
+        this.isLoading = true;
+        this.isFinishedLoading();
+        this.communicationService
+            .delete(comm)
+            .then(() => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Success,
+                    title: "Success",
+                    message: "Communication Deleted."
+                };
+                this.loadCommunicationList();
+            })
+            .catch((err: any) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error deleting communication. Please try again."
+                };
+            })
+            .finally(() => {
+                this.isLoading = false;
+                this.emitResult();
+            });
+    }
+
     private close() {
         this.editedBanner = Object.assign({}, this.defaultBanner);
         this.editedEmail = Object.assign({}, this.defaultEmail);

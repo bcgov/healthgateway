@@ -51,6 +51,7 @@ export interface ICommunicationService {
     add(communication: Communication): Promise<void>;
     update(communication: Communication): Promise<void>;
     getAll(): Promise<Communication[]>;
+    delete(communication: Communication): Promise<void>;
 }
 
 export interface IHttpDelegate {
