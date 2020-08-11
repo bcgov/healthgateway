@@ -5,7 +5,10 @@ export enum CommunicationType {
 
 export enum CommunicationStatus {
     New = "New",
-    Processed = "Processed"
+    Processed = "Processed",
+    Error = "Error",
+    Pending = "Pending",
+    Processing = "Processing"
 }
 
 // Model that provides a user representation of admin communications.

@@ -49,7 +49,11 @@
             </v-toolbar>
         </template>
         <template v-slot:item.actions="{ item }">
-            <v-btn class="mr-2" :disabled="checkDisabled(item)" @click="edit(item)">
+            <v-btn
+                class="mr-2"
+                :disabled="checkDisabled(item)"
+                @click="edit(item)"
+            >
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
 
@@ -313,11 +317,11 @@ export default class CommunicationTable extends Vue {
     private checkDisabled(item: Communication) {
         if (
             item.communicationTypeCode === CommunicationType.Email &&
-            item.communicationStatusCode === CommunicationStatus.Processed
+            item.communicationStatusCode === CommunicationStatus.New
         ) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     private loadCommunicationList() {
