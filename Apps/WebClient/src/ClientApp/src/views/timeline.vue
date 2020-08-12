@@ -696,9 +696,11 @@ export default class TimelineView extends Vue {
 
     private toggleListView() {
         this.isListView = true;
+        window.location.hash = "linear";
     }
     private toggleMonthView() {
         this.isListView = false;
+        window.location.hash = "calendar";
     }
 
     private printRecords() {
