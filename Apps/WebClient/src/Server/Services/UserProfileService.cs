@@ -345,7 +345,6 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogTrace($"Getting user preference... {hdid}");
             DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
 
-
             RequestResult<Dictionary<string, string>> requestResult = new RequestResult<Dictionary<string, string>>()
             {
                 ResourcePayload = dbResult.Payload.ToDictionary(x => x.Preference, x => x.Value),

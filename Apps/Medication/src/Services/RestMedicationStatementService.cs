@@ -91,9 +91,7 @@ namespace HealthGateway.Medication.Services
                 // Retrieve the phn
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                 RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
-                if (patientResult != null &&
-                    patientResult.ResultStatus == ResultType.Success &&
-                    patientResult.ResourcePayload != null)
+                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
                     Patient patient = patientResult.ResourcePayload;
                     MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
@@ -126,9 +124,7 @@ namespace HealthGateway.Medication.Services
                 }
                 else
                 {
-                    string errorMessage = patientResult?.ResultError != null ? patientResult.ResultError.ResultMessage : "Patient returned null";
-                    result.ResultStatus = ResultType.Error;
-                    result.ResultError = new RequestResultError() { ResultMessage = errorMessage, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
+                    result.ResultError = patientResult.ResultError;
                 }
             }
             else

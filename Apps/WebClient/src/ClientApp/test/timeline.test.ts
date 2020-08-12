@@ -9,9 +9,7 @@ import {
     WebClientConfiguration,
 } from "@/models/configData";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
 import RequestResult from "@/models/requestResult";
@@ -21,6 +19,9 @@ import Pharmacy from "@/models/pharmacy";
 import { LaboratoryOrder } from "@/models/laboratory";
 import { LaboratoryState } from "@/models/storeState";
 import Router from "vue-router";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 const today = new Date();
@@ -188,6 +189,8 @@ function createWrapper(): Wrapper<TimelineComponent> {
 }
 
 describe("Timeline view", () => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
     const localVue = createLocalVue();
     localVue.use(BootstrapVue);
     localVue.use(VueRouter);

@@ -4,8 +4,13 @@ import VueRouter from "vue-router";
 import boostrapVue from "bootstrap-vue";
 import Vuex from "vuex";
 import store from "@/store/store";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 describe("NavBar Header Component", () => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
     const localVue = createLocalVue();
     localVue.use(VueRouter);
     localVue.use(boostrapVue);

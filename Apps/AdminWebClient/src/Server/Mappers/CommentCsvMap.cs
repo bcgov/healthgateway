@@ -13,28 +13,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-using System.Text.Json.Serialization;
-
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Admin.Server.Mappers
 {
+    using System;
+    using System.Globalization;
+    using CsvHelper.Configuration;
+    using HealthGateway.Database.Models;
+
     /// <summary>
-    /// The RequestResultError model.
+    /// Maps the Comment model to a CSV.
     /// </summary>
-    public class RequestResultError
+    public sealed class CommentCsvMap : ClassMap<Comment>
     {
         /// <summary>
-        /// Gets or sets the message depending on the result type.
-        /// Will always be set when ResultType is Error.
+        /// Initializes a new instance of the <see cref="CommentCsvMap"/> class.
         /// </summary>
-        [JsonPropertyName("resultMessage")]
-        public string ResultMessage { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the error code.
-        /// Will always be set when ResultType is Error.
-        /// </summary>
-        [JsonPropertyName("errorCode")]
-        public string ErrorCode { get; set; } = string.Empty;
+        public CommentCsvMap()
+        {
+            this.Map(m => m.Id);
+            this.Map(m => m.UserProfileId).ConvertUsing(o => o.UserProfileId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
+            this.Map(m => m.EntryTypeCode);
+            this.Map(m => m.ParentEntryId);
+            this.Map(m => m.CreatedDateTime);
+            this.Map(m => m.UpdatedDateTime);
+        }
     }
 }

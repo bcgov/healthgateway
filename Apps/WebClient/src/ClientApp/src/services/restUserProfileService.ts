@@ -1,5 +1,11 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, IUserProfileService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    IHttpDelegate,
+    IUserProfileService,
+} from "@/services/interfaces";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
@@ -12,6 +18,7 @@ import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly FETCH_ERROR: string = "Fetch error:";
     private readonly USER_PROFILE_BASE_URI: string = "/v1/api/UserProfile";
     private http!: IHttpDelegate;
@@ -30,7 +37,7 @@ export class RestUserProfileService implements IUserProfileService {
                     this.handleResult(requestResult, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(this.FETCH_ERROR + err.toString());
+                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -54,7 +61,7 @@ export class RestUserProfileService implements IUserProfileService {
                     this.handleResult(requestResult, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(this.FETCH_ERROR + err.toString());
+                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -75,7 +82,7 @@ export class RestUserProfileService implements IUserProfileService {
                     this.handleResult(requestResult, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(this.FETCH_ERROR + err.toString());
+                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -96,7 +103,7 @@ export class RestUserProfileService implements IUserProfileService {
                     this.handleResult(requestResult, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(this.FETCH_ERROR + err.toString());
+                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
                     reject(err);
                 });
         });
@@ -112,7 +119,7 @@ export class RestUserProfileService implements IUserProfileService {
                     this.handleResult(requestResult, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(this.FETCH_ERROR + err.toString());
+                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
                     reject(err);
                 });
         });
@@ -128,7 +135,7 @@ export class RestUserProfileService implements IUserProfileService {
                     return resolve(true);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`validateEmail error: ${err}`);
                     return resolve(false);
                 });
         });
@@ -144,7 +151,7 @@ export class RestUserProfileService implements IUserProfileService {
                     return resolve(true);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`validateSMS error: ${err}`);
                     return resolve(false);
                 });
         });
@@ -160,7 +167,7 @@ export class RestUserProfileService implements IUserProfileService {
                     return resolve(userEmailInvite);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`getLatestEmailInvite error: ${err}`);
                     return resolve(err);
                 });
         });
@@ -176,7 +183,7 @@ export class RestUserProfileService implements IUserProfileService {
                     return resolve(userSMSInvite);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`getLatestSMSInvite error: ${err}`);
                     return resolve(err);
                 });
         });
@@ -197,7 +204,7 @@ export class RestUserProfileService implements IUserProfileService {
                     return resolve();
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`updateEmail error: ${err}`);
                     return resolve(err);
                 });
         });
@@ -218,7 +225,7 @@ export class RestUserProfileService implements IUserProfileService {
                     return resolve();
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(`updateSMSNumber error: ${err}`);
                     return resolve(err);
                 });
         });
@@ -242,7 +249,7 @@ export class RestUserProfileService implements IUserProfileService {
                     resolve(result);
                 })
                 .catch((err) => {
-                    console.log(this.FETCH_ERROR + err.toString());
+                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,

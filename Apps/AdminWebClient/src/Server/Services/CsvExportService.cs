@@ -17,46 +17,77 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
+    using CsvHelper;
+    using CsvHelper.Configuration;
+    using HealthGateway.Admin.Server.Mappers;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
-    using ServiceStack.Text;
 
     /// <inheritdoc />
     public class CsvExportService : ICsvExportService
     {
-        private readonly ILogger logger;
+        private const int PageSize = 100000;
+        private const int Page = 0;
+        private readonly INoteDelegate noteDelegate;
+        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly ICommentDelegate commentDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CsvExportService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        public CsvExportService(ILogger<CsvExportService> logger)
+        /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
+        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+        /// <param name="commentDelegate">The beta request delegate to interact with the DB.</param>
+        public CsvExportService(
+            INoteDelegate noteDelegate,
+            IUserProfileDelegate userProfileDelegate,
+            ICommentDelegate commentDelegate)
         {
-            this.logger = logger;
+            this.noteDelegate = noteDelegate;
+            this.userProfileDelegate = userProfileDelegate;
+            this.commentDelegate = commentDelegate;
         }
 
         /// <inheritdoc />
         public Stream GetComments(DateTime? startDate, DateTime? endDate)
         {
-            throw new NotImplementedException();
+            DBResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
+            return GetStream<Comment, CommentCsvMap>(comments.Payload);
         }
 
         /// <inheritdoc />
         public Stream GetNotes(DateTime? startDate, DateTime? endDate)
         {
-            throw new NotImplementedException();
+            DBResult<IEnumerable<Note>> notes = this.noteDelegate.GetAll(Page, PageSize);
+            return GetStream<Note, NoteCsvMap>(notes.Payload);
         }
 
         /// <inheritdoc />
         public Stream GetUserProfiles(DateTime? startDate, DateTime? endDate)
         {
-            using MemoryStream retStream = new MemoryStream();
-            using StreamWriter writer = new StreamWriter(retStream);
-            writer.Write("a,b,c");
-            writer.Flush();
-            return retStream;
+            DBResult<IEnumerable<UserProfile>> profiles = this.userProfileDelegate.GetAll(Page, PageSize);
+            return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
+        }
+
+        private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
+            where TMap : ClassMap
+        {
+            MemoryStream stream = new MemoryStream();
+            using (StreamWriter writeFile = new StreamWriter(stream, leaveOpen: true))
+            {
+#pragma warning disable CA2000 // Dispose objects before losing scope
+                var csv = new CsvWriter(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+                csv.Configuration.RegisterClassMap<TMap>();
+                csv.WriteRecords(obj);
+            }
+
+            return stream;
         }
     }
 }

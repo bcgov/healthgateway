@@ -30,11 +30,12 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Instrumentation;
     using System.Text.Json;
+    using HealthGateway.Common.Constants;
 
     public class PatientDelegate_Test
     {
         private readonly IConfiguration configuration;
-        
+
         public PatientDelegate_Test()
         {
             this.configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
@@ -43,7 +44,7 @@ namespace HealthGateway.Medication.Test
         [Fact]
         public void ShouldGetPHN()
         {
-            Patient expected = new Patient("1234", "912345678", "Test", "Gateway", DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture), string.Empty);
+            RequestResult<Patient> expected = new RequestResult<Patient>() { ResultStatus = ResultType.Success, ResourcePayload = new Patient("1234", "912345678", "Test", "Gateway", DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture), string.Empty) };
             Mock<IHttpClientService> httpMock = new Mock<IHttpClientService>();
             var clientHandlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
@@ -58,9 +59,9 @@ namespace HealthGateway.Medication.Test
                 new Mock<ITraceService>().Object,
                 httpMock.Object,
                 configuration);
-            RequestResult<string> result = service.GetPatientPHN(expected.HdId, "Bearer TheTestToken");
-            
-            Assert.Equal(expected.PersonalHealthNumber, result.ResourcePayload);
+            RequestResult<string> result = service.GetPatientPHN(expected.ResourcePayload.HdId, "Bearer TheTestToken");
+
+            Assert.Equal(expected.ResourcePayload.PersonalHealthNumber, result.ResourcePayload);
         }
 
         [Fact]

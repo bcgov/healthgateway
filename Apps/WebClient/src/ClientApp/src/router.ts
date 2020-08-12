@@ -1,9 +1,13 @@
 import Vue from "vue";
+import { ILogger } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 
 // Routes
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
 import { SnowplowWindow } from "@/plugins/extensions";
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 declare let window: SnowplowWindow;
 
 const ProfileView = () =>
@@ -35,6 +39,10 @@ const ValidateEmailView = () =>
 const TermsOfServiceView = () =>
     import(
         /* webpackChunkName: "termsOfService" */ "@/views/termsOfService.vue"
+    );
+const HealthInsightsView = () =>
+    import(
+        /* webpackChunkName: "healthInsights" */ "@/views/healthInsights.vue"
     );
 
 Vue.use(VueRouter);
@@ -83,6 +91,11 @@ const routes = [
         meta: { requiresRegistration: true, roles: ["user"] },
     },
     {
+        path: "/healthInsights",
+        component: HealthInsightsView,
+        meta: { requiresRegistration: true, roles: ["user"] },
+    },
+    {
         path: "/termsOfService",
         component: TermsOfServiceView,
         meta: { requiresAuth: true, roles: ["user"] },
@@ -123,7 +136,11 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    console.log(from.fullPath, to.fullPath);
+    logger.debug(
+        `from.fullPath: ${JSON.stringify(
+            from.fullPath
+        )}; to.fullPath: ${JSON.stringify(to.fullPath)}`
+    );
     if (to.meta.requiresAuth || to.meta.requiresRegistration) {
         store.dispatch("auth/oidcCheckAccess", to).then((isAuthorized) => {
             if (!isAuthorized) {

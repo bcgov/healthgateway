@@ -19,5 +19,5 @@ export interface ResultError {
     // The error code  associated to the request
     errorCode: string;
     // The message associated to the error request
-    errorDetail: string;
+    resultMessage: string;
 }

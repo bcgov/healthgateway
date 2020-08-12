@@ -27,13 +27,6 @@ input {
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <div class="row py-5">
             <div class="col-lg-12 col-md-12">
-                <b-alert :show="hasErrors" dismissible variant="danger">
-                    <h4>Error</h4>
-                    <span
-                        >An unexpected error occured while processing the
-                        request.</span
-                    >
-                </b-alert>
                 <div id="pageTitle">
                     <h1 id="subject">
                         Profile
@@ -415,6 +408,7 @@ import {
     sameAs,
 } from "vuelidate/lib/validators";
 import {
+    ILogger,
     IAuthenticationService,
     IUserProfileService,
 } from "@/services/interfaces";
@@ -432,6 +426,8 @@ import {
     faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
+import BannerError from "@/models/bannerError";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 library.add(faExclamationTriangle);
 
@@ -445,6 +441,7 @@ const authNamespace: string = "auth";
     },
 })
 export default class ProfileView extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("oidcIsAuthenticated", {
         namespace: authNamespace,
     })
@@ -479,12 +476,13 @@ export default class ProfileView extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
 
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
     @Ref("verifySMSModal")
     readonly verifySMSModal!: VerifySMSComponent;
 
     private isLoading: boolean = true;
-    private hasErrors: boolean = false;
-    private errorMessage: string = "";
 
     private emailVerified = false;
     private email: string = "";
@@ -561,7 +559,9 @@ export default class ProfileView extends Vue {
                 if (results[3]) {
                     // Load user profile
                     this.userProfile = results[3];
-                    console.log("User Profile: ", this.userProfile);
+                    this.logger.debug(
+                        `User Profile: ${JSON.stringify(this.userProfile)}`
+                    );
                     this.lastLoginDateString = moment(
                         this.userProfile.lastLoginDateTime
                     ).format("lll");
@@ -570,9 +570,10 @@ export default class ProfileView extends Vue {
                 this.isLoading = false;
             })
             .catch((err) => {
-                console.log("Error loading profile");
-                console.log(err);
-                this.hasErrors = true;
+                this.logger.error(`Error loading profile: ${err}`);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile loading", err)
+                );
                 this.isLoading = false;
             });
 
@@ -709,9 +710,7 @@ export default class ProfileView extends Vue {
             this.submitStatus = "ERROR";
         } else {
             this.submitStatus = "PENDING";
-
-            console.log(this.email);
-
+            this.logger.debug(`saveEmailEdit: ${JSON.stringify(this.email)}`);
             this.sendUserEmailUpdate();
         }
     }
@@ -744,7 +743,7 @@ export default class ProfileView extends Vue {
             emailAddress: this.email,
         })
             .then(() => {
-                console.log("success!");
+                this.logger.verbose("success!");
                 this.isEmailEditable = false;
                 this.emailVerificationSent = true;
                 this.emailConfirmation = "";
@@ -753,8 +752,10 @@ export default class ProfileView extends Vue {
                 this.$v.$reset();
             })
             .catch((err) => {
-                this.hasErrors = true;
-                console.log(err);
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile Update", err)
+                );
             })
             .finally(() => {
                 this.isLoading = false;
@@ -762,8 +763,8 @@ export default class ProfileView extends Vue {
     }
 
     private updateSMS(): void {
-        console.log(
-            "Updating " + this.smsNumber ? this.smsNumber : "sms number..."
+        this.logger.debug(
+            `Updating ${this.smsNumber ? this.smsNumber : "sms number..."}`
         );
         // Send update to backend
         this.userProfileService
@@ -797,11 +798,13 @@ export default class ProfileView extends Vue {
             hdid: this.user.hdid,
         })
             .then(() => {
-                console.log("success!");
+                this.logger.verbose("success!");
             })
             .catch((err) => {
-                this.hasErrors = true;
-                console.log(err);
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile Recover", err)
+                );
             })
             .finally(() => {
                 this.isLoading = false;
@@ -822,12 +825,14 @@ export default class ProfileView extends Vue {
             hdid: this.user.hdid,
         })
             .then(() => {
-                console.log("success!");
+                this.logger.verbose("success!");
                 this.showCloseWarning = false;
             })
             .catch((err) => {
-                this.hasErrors = true;
-                console.log(err);
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile Close", err)
+                );
             })
             .finally(() => {
                 this.isLoading = false;

@@ -30,6 +30,7 @@ namespace HealthGateway.WebClient.Test.Services
     using System.Collections.Generic;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
+    using HealthGateway.Common.Constants;
 
     public class CommentServiceTest
     {
@@ -240,7 +241,7 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public void ShouldThrowIfNoKeyGet()
+        public void ShouldBeErrorIfNoKeyGet()
         {
             string encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -267,16 +268,12 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object
             );
 
-            try
-            {
-                RequestResult<IEnumerable<UserComment>> actualResult = service.GetList(hdid, parentEntryId);
-                Assert.True(false); // If it gets to this line, no exception was thrown
-            }
-            catch (ApplicationException) { }
+            RequestResult<IEnumerable<UserComment>> actualResult = service.GetList(hdid, parentEntryId);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
         [Fact]
-        public void ShouldThrowIfNoKeyAdd()
+        public void ShouldBeErrorIfNoKeyAdd()
         {
             string encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -303,16 +300,12 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object
             );
 
-            try
-            {
-                RequestResult<UserComment> actualResult = service.Add(userComment);
-                Assert.True(false); // If it gets to this line, no exception was thrown
-            }
-            catch (ApplicationException) { }
+            RequestResult<UserComment> actualResult = service.Add(userComment);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
         [Fact]
-        public void ShouldThrowIfNoKeyUpdate()
+        public void ShouldBeErrorIfNoKeyUpdate()
         {
             string encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -339,16 +332,13 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object
             );
 
-            try
-            {
-                RequestResult<UserComment> actualResult = service.Update(userComment);
-                Assert.True(false); // If it gets to this line, no exception was thrown
-            }
-            catch (ApplicationException) { }
+
+            RequestResult<UserComment> actualResult = service.Update(userComment);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
         [Fact]
-        public void ShouldThrowIfNoKeyDelete()
+        public void ShouldBeErrorIfNoKeyDelete()
         {
             string encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -375,12 +365,8 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object
             );
 
-            try
-            {
-                RequestResult<UserComment> actualResult = service.Delete(userComment);
-                Assert.True(false); // If it gets to this line, no exception was thrown
-            }
-            catch (ApplicationException) { }
+            RequestResult<UserComment> actualResult = service.Delete(userComment);
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,7 +64,7 @@ CREATE TRIGGER ""{triggerName}""
     AFTER INSERT or UPDATE or DELETE
     ON {schema}.""{table}""
     FOR EACH ROW
-    EXECUTE PROCEDURE ""{triggerName}""();";
+    EXECUTE PROCEDURE {schema}.""{triggerName}""();";
 
             migrationBuilder.Sql(triggerFunction);
             migrationBuilder.Sql(trigger);

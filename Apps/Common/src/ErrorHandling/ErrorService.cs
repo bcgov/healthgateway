@@ -61,5 +61,7 @@ namespace HealthGateway.Common.ErrorHandling
         /// Gets the Patient service code.
         /// </summary>
         public static ServiceType Patient { get { return new ServiceType("PAT"); } }
+
+        public static ServiceType PHSA { get { return new ServiceType("PHSA"); } }
     }
 }

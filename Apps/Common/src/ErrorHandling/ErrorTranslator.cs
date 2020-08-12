@@ -30,7 +30,7 @@ namespace HealthGateway.Common.ErrorHandling
         public static string ServiceError(ErrorType errorType, ServiceType service)
         {
             var applicationName = System.AppDomain.CurrentDomain.FriendlyName.ToString();
-            return applicationName + "-" + errorType.Value + "-" + service.Value;
+            return applicationName + "Server-" + errorType.Value + "-" + service.Value;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace HealthGateway.Common.ErrorHandling
         public static string InternalError(ErrorType errorType)
         {
             var applicationName = System.AppDomain.CurrentDomain.FriendlyName.ToString();
-            return applicationName + "-" + errorType.Value;
+            return applicationName + "Server-" + errorType.Value;
         }
     }
 }

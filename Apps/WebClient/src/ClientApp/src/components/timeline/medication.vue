@@ -202,6 +202,9 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 import Pharmacy, { PhoneType } from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
@@ -216,6 +219,7 @@ import MedicationResult from "@/models/medicationResult";
     },
 })
 export default class MedicationTimelineComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() entry!: MedicationTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
@@ -253,7 +257,9 @@ export default class MedicationTimelineComponent extends Vue {
         // Load medication details
         if (!this.medicationLoaded) {
             this.isLoadingMedication = true;
-            console.log(medicationEntry);
+            this.logger.debug(
+                `Loading Medication Entry : ${JSON.stringify(medicationEntry)}`
+            );
             var medicationPromise = this.getMedication({
                 din: medicationEntry.medication.din,
             })
@@ -265,8 +271,9 @@ export default class MedicationTimelineComponent extends Vue {
                     this.isLoadingMedication = false;
                 })
                 .catch((err) => {
-                    console.log("Error loading medication details");
-                    console.log(err);
+                    this.logger.error(
+                        `Error loading medication details : ${err}`
+                    );
                     this.hasErrors = true;
                     this.isLoadingMedication = false;
                 });

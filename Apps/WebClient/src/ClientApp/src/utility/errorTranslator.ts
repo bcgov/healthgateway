@@ -4,17 +4,17 @@ import { ErrorType, ServiceName } from "@/models/errorInterfaces";
 
 export default class ErrorTranslator {
     public static internalNetworkError(
-        errorDetail: string,
+        resultMessage: string,
         service: ServiceName
     ): ResultError {
         return {
             errorCode:
                 "ClientApp-" + ErrorType.InternalCommunication + "-" + service,
-            errorDetail: errorDetail,
+            resultMessage: resultMessage,
         };
     }
 
-    public static getBannerError(
+    public static toBannerError(
         title: string,
         error?: ResultError
     ): BannerError {
@@ -23,7 +23,7 @@ export default class ErrorTranslator {
             return {
                 title,
                 description: this.getDisplayMessage(error.errorCode),
-                detail: error.errorDetail,
+                detail: error.resultMessage,
                 errorCode: error.errorCode,
             };
         } else {
@@ -44,14 +44,14 @@ export default class ErrorTranslator {
         } else if (sections.length === 2) {
             return (
                 sections[0] +
-                " got an " +
+                " got a " +
                 this.getErrorType(sections[1]) +
                 " Error."
             );
         } else if (sections.length === 3) {
             return (
                 sections[0] +
-                " got an " +
+                " got a " +
                 this.getErrorType(sections[1]) +
                 " error while processing a " +
                 this.getServiceName(sections[2]) +
@@ -86,15 +86,15 @@ export default class ErrorTranslator {
             case ServiceName.ClientRegistries:
                 return "Client Registries";
             case ServiceName.ODR:
-                return "ODR";
+                return "ODR Services";
             case ServiceName.Medication:
-                return "Medication";
+                return "Medication Service";
             case ServiceName.Laboratory:
-                return "Laboratory";
+                return "Laboratory Service";
             case ServiceName.Immunization:
-                return "Immunization";
+                return "Immunization Service";
             case ServiceName.Patient:
-                return "Patient";
+                return "Patient Service";
             default:
                 return "Unknown";
         }

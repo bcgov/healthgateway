@@ -108,13 +108,13 @@ namespace HealthGateway.Patient.Test
             );
 
             // Act
-            Patient actual = await service.GetPatient(hdid);
+            RequestResult<Patient> actual = await service.GetPatient(hdid);
 
             // Verify
-            Assert.Equal(expectedPhn, actual.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.FirstName);
-            Assert.Equal(expectedLastName, actual.LastName);
-            Assert.Equal(expectedBirthDate, actual.Birthdate);
+            Assert.Equal(expectedPhn, actual.ResourcePayload.PersonalHealthNumber);
+            Assert.Equal(expectedFirstName, actual.ResourcePayload.FirstName);
+            Assert.Equal(expectedLastName, actual.ResourcePayload.LastName);
+            Assert.Equal(expectedBirthDate, actual.ResourcePayload.Birthdate);
         }
     }
 }

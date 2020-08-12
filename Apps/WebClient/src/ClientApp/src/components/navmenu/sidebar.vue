@@ -414,6 +414,40 @@
                             </b-col>
                         </b-row>
                     </div>
+                    <!-- Health Insights button -->
+                    <router-link
+                        id="menuBtnHealthInsights"
+                        to="/healthInsights"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isHealthInsights }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col
+                                title="Health Insights"
+                                :class="{ 'col-3': isOpen }"
+                            >
+                                <font-awesome-icon
+                                    icon="chart-line"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="7"
+                                class="button-title d-none"
+                            >
+                                <span>Health Insights</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
                     <br />
                 </b-col>
             </b-row>
@@ -454,7 +488,7 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { IAuthenticationService } from "@/services/interfaces";
+import { ILogger, IAuthenticationService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import VueRouter, { Route } from "vue-router";
@@ -476,6 +510,7 @@ const sidebar: string = "sidebar";
     },
 })
 export default class SidebarComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("updateUserPreference", { namespace: "user" })
     updateUserPreference!: (params: {
         hdid: string;
@@ -606,7 +641,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private dismissTutorial() {
-        console.log("Dismissing tutorial...");
+        this.logger.debug("Dismissing tutorial...");
         this.updateUserPreference({
             hdid: this.user.hdid,
             name: "tutorialPopover",
@@ -659,6 +694,10 @@ export default class SidebarComponent extends Vue {
 
     private get isProfile(): boolean {
         return this.$route.path == "/profile";
+    }
+
+    private get isHealthInsights(): boolean {
+        return this.$route.path == "/healthInsights";
     }
 
     private get isNoteEnabled(): boolean {

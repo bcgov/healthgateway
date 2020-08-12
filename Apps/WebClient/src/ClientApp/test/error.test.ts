@@ -3,8 +3,13 @@ import NotFoundView from "@/views/errors/notFound.vue";
 import UnauthorizedView from "@/views/errors/unauthorized.vue";
 import ErrorComponent from "@/components/error.vue";
 import PageError from "@/models/pageError";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 describe("ErrorComponent", () => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
     test("renders error component properties correctly", () => {
         const error: PageError = new PageError(
             "777",

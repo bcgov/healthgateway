@@ -85,7 +85,7 @@ namespace HealthGateway.LaboratoryTests
             });
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
-            LaboratoryController controller = new LaboratoryController(loggerFactory.CreateLogger<LaboratoryController>(),  svcMock.Object, httpContextAccessorMock.Object);
+            LaboratoryController controller = new LaboratoryController(loggerFactory.CreateLogger<LaboratoryController>(), svcMock.Object, httpContextAccessorMock.Object);
 
             // Act
             IActionResult actual = await controller.GetLaboratoryOrders(hdid);
@@ -146,7 +146,7 @@ namespace HealthGateway.LaboratoryTests
             svcMock.Setup(s => s.GetLaboratoryOrders(token, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryOrder>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
-                ResultMessage = "Test Error",
+                ResultError = new RequestResultError() { ResultMessage = "Test Error" },
                 TotalResultCount = 0,
             });
 
@@ -278,7 +278,7 @@ namespace HealthGateway.LaboratoryTests
             svcMock.Setup(s => s.GetLabReport(guid, token)).ReturnsAsync(new RequestResult<LaboratoryReport>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
-                ResultMessage = "Test Error",
+                ResultError = new RequestResultError() { ResultMessage = "Test Error" },
                 TotalResultCount = 0,
             });
 

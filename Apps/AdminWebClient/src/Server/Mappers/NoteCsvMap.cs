@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Services
+namespace HealthGateway.Admin.Server.Mappers
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
+    using System;
+    using System.Globalization;
+    using CsvHelper.Configuration;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The Patient data service.
+    /// Maps the Note model to a CSV.
     /// </summary>
-    public interface IPatientService
+    public sealed class NoteCsvMap : ClassMap<Note>
     {
         /// <summary>
-        /// Gets the patient record.
+        /// Initializes a new instance of the <see cref="NoteCsvMap"/> class.
         /// </summary>
-        /// <param name="id">The patient id.</param>
-        /// <returns>The patient model.</returns>
-        Task<RequestResult<Patient>> GetPatient(string id);
+        public NoteCsvMap()
+        {
+            this.Map(m => m.Id);
+            this.Map(m => m.HdId).ConvertUsing(o => o.HdId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
+            this.Map(m => m.CreatedDateTime);
+            this.Map(m => m.UpdatedDateTime);
+        }
     }
 }
