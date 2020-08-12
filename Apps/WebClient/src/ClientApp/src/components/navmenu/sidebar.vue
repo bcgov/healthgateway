@@ -416,6 +416,7 @@
                     </div>
                     <!-- Health Insights button -->
                     <router-link
+                        v-if="false"
                         id="menuBtnHealthInsights"
                         to="/healthInsights"
                         class="my-4"
