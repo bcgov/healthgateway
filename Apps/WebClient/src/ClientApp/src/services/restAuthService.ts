@@ -1,4 +1,10 @@
-import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    IAuthenticationService,
+    IHttpDelegate,
+} from "@/services/interfaces";
 import { User as OidcUser, UserManagerSettings } from "oidc-client";
 // These imports should be optimized
 import { UserManager, WebStorageStateStore } from "oidc-client";
@@ -10,6 +16,7 @@ import { FragmentedStorage } from "@/utility/fragmentStorage";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_INFO_PATH: string =
         "/protocol/openid-connect/userinfo";
 
@@ -47,13 +54,13 @@ export class RestAuthenticationService implements IAuthenticationService {
             loadUserInfo: false,
             automaticSilentRenew: true,
         };
-        console.log("oidc configuration: ", oidcConfig);
+        this.logger.debug(`oidc configuration: ${JSON.stringify(oidcConfig)}`);
         this.http = httpDelegate;
         this.authorityUri = config.authority;
         this.oidcUserManager = new UserManager(oidcConfig);
-
+        let seft = this;
         this.oidcUserManager.events.addAccessTokenExpiring(function () {
-            console.log("Token expiring...");
+            seft.logger.debug("Token expiring...");
         });
     }
 
@@ -69,7 +76,7 @@ export class RestAuthenticationService implements IAuthenticationService {
                     resolve(user);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.logger.error(err);
                     resolve(null);
                 });
         });

@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -86,7 +87,7 @@ namespace HealthGateway.Medication.Delegates
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
                 };
-                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData) !);
+                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData)!);
             }
             else
             {
@@ -149,8 +150,8 @@ namespace HealthGateway.Medication.Delegates
                         else
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Error;
-                            retVal.ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}";
-                            this.logger.LogError(retVal.ResultMessage);
+                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                            this.logger.LogError(retVal.ResultError.ResultMessage);
                         }
                     }
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -158,7 +159,7 @@ namespace HealthGateway.Medication.Delegates
 #pragma warning restore CA1031 // Do not catch general exception types
                     {
                         retVal.ResultStatus = Common.Constants.ResultType.Error;
-                        retVal.ResultMessage = e.ToString();
+                        retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
                         this.logger.LogError($"Unable to post message {e.ToString()}");
                     }
 
@@ -169,7 +170,7 @@ namespace HealthGateway.Medication.Delegates
             {
                 this.logger.LogInformation($"Invalid protected word");
                 retVal.ResultStatus = Common.Constants.ResultType.Protected;
-                retVal.ResultMessage = ErrorMessages.ProtectiveWordErrorMessage;
+                retVal.ResultError = new RequestResultError() { ResultMessage = ErrorMessages.ProtectiveWordErrorMessage, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
             }
 
             return retVal;

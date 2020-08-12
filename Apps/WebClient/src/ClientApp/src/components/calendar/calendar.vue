@@ -2,14 +2,14 @@
     <div class="calendar mx-3">
         <!-- header pick month -->
         <CalendarHeader
-            :current-date.sync="currentDate"
+            :current-month.sync="currentMonth"
             :title-format="titleFormat"
             :available-months="availableMonths"
         >
         </CalendarHeader>
         <!-- body display date day and events -->
         <CalendarBody
-            :current-date="currentDate"
+            :current-month="currentMonth"
             :date-groups="dateGroups"
             :month-names="monthNames"
             :week-names="weekNames"
@@ -22,6 +22,9 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 import CalendarHeader from "./header.vue";
 import CalendarBody from "./body.vue";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
@@ -41,6 +44,7 @@ import EventBus from "@/eventbus";
     },
 })
 export default class CalendarComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() dateGroups!: DateGroup[];
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
@@ -80,18 +84,14 @@ export default class CalendarComponent extends Vue {
     weekNames!: Array<string>;
 
     private availableMonths: Date[] = [];
-    private currentDate: Date = new Date();
+    private currentMonth: Date = new Date();
     private eventBus = EventBus;
 
     private mounted() {
         this.updateAvailableMonths();
         var self = this;
         this.eventBus.$on("timelinePageUpdate", function (eventDate: Date) {
-            console.log(
-                "calendar got the timelinePageUpdate sent by timeline vue for the " +
-                    eventDate
-            );
-            self.currentDate = DateUtil.getMonthFirstDate(eventDate);
+            self.currentMonth = DateUtil.getMonthFirstDate(eventDate);
         });
     }
 
@@ -119,6 +119,10 @@ export default class CalendarComponent extends Vue {
                     ) {
                         groups.push(monthYear);
                     }
+                } else {
+                    this.logger.error(
+                        `Invalid entry date: ${JSON.stringify(entry)}`
+                    );
                 }
                 return groups;
             },

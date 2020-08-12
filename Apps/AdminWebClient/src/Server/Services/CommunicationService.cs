@@ -17,11 +17,9 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using HealthGateway.Admin.Models;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -68,7 +66,7 @@ namespace HealthGateway.Admin.Services
             {
                 ResourcePayload = dbResult.Payload,
                 ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbResult.Message,
+                ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return requestResult;
         }
@@ -85,7 +83,7 @@ namespace HealthGateway.Admin.Services
                 {
                     ResourcePayload = dbResult.Payload,
                     ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                    ResultMessage = dbResult.Message,
+                    ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
                 };
             }
             else
@@ -94,7 +92,7 @@ namespace HealthGateway.Admin.Services
                 {
                     ResourcePayload = null,
                     ResultStatus = ResultType.Error,
-                    ResultMessage = "Effective Date should be before Expiry Date.",
+                    ResultError = new RequestResultError() { ResultMessage = "Effective Date should be before Expiry Date.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
                 };
             }
         }
@@ -103,14 +101,37 @@ namespace HealthGateway.Admin.Services
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
             this.logger.LogTrace($"Getting communication entries...");
-            DBResult<IEnumerable<Communication>> dBResult = this.communicationDelegate.GetAll();
+            DBResult<IEnumerable<Communication>> dbResult = this.communicationDelegate.GetAll();
             RequestResult<IEnumerable<Communication>> requestResult = new RequestResult<IEnumerable<Communication>>()
             {
-                ResourcePayload = dBResult.Payload,
-                ResultStatus = dBResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultMessage = dBResult.Message,
+                ResourcePayload = dbResult.Payload,
+                ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Communication> Delete(Communication communication)
+        {
+            if (communication.CommunicationStatusCode == CommunicationStatus.Processed)
+            {
+                this.logger.LogError($"Processed communication can't be deleted.");
+                return new RequestResult<Communication>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Processed communication can't be deleted.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
+
+            DBResult<Communication> dbResult = this.communicationDelegate.Delete(communication);
+            RequestResult<Communication> result = new RequestResult<Communication>()
+            {
+                ResourcePayload = dbResult.Payload,
+                ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+            };
+            return result;
         }
 
         private static bool ValidateDates(DateTime effectiveDate, DateTime expiryDate)

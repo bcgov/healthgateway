@@ -48,7 +48,7 @@ nav {
                 to="/timeline"
                 class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0"
             >
-                <h4 class="my-0 px-0 pr-md-5 pr-lg-5 mx-0">HealthGateway</h4>
+                <h4 class="my-0 px-0 pr-md-5 pr-lg-5 mx-0">Health Gateway</h4>
             </router-link>
         </b-navbar-brand>
 

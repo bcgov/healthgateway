@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
@@ -89,41 +90,48 @@ namespace HealthGateway.Medication.Services
             {
                 // Retrieve the phn
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-                Patient patient = await this.patientDelegate.GetPatientAsync(hdid, jwtString).ConfigureAwait(true);
-
-                MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
+                RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
+                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
-                    StartDate = patient.Birthdate,
-                    EndDate = System.DateTime.Now,
-                    PHN = patient.PersonalHealthNumber,
-                    PageSize = 20000,
-                };
-                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-                string ipv4Address = address.MapToIPv4().ToString();
-                RequestResult<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
-                result.ResultStatus = response.ResultStatus;
-                result.ResultMessage = response.ResultMessage;
-                if (response.ResultStatus == ResultType.Success)
+                    Patient patient = patientResult.ResourcePayload;
+                    MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
+                    {
+                        StartDate = patient.Birthdate,
+                        EndDate = System.DateTime.Now,
+                        PHN = patient.PersonalHealthNumber,
+                        PageSize = 20000,
+                    };
+                    IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+                    string ipv4Address = address.MapToIPv4().ToString();
+                    RequestResult<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+                    result.ResultStatus = response.ResultStatus;
+                    result.ResultError = response.ResultError;
+                    if (response.ResultStatus == ResultType.Success)
+                    {
+                        result.PageSize = historyQuery.PageSize;
+                        result.PageIndex = historyQuery.PageNumber;
+                        if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
+                        {
+                            result.TotalResultCount = response.ResourcePayload.Records;
+                            result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.ResourcePayload.Results.ToList());
+                            this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
+                        }
+                        else
+                        {
+                            result.ResourcePayload = new List<MedicationStatementHistory>();
+                        }
+                    }
+                }
+                else
                 {
-                    result.PageSize = historyQuery.PageSize;
-                    result.PageIndex = historyQuery.PageNumber;
-                    if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
-                    {
-                        result.TotalResultCount = response.ResourcePayload.Records;
-                        result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.ResourcePayload.Results.ToList());
-                        this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
-                    }
-                    else
-                    {
-                        result.ResourcePayload = new List<MedicationStatementHistory>();
-                    }
+                    result.ResultError = patientResult.ResultError;
                 }
             }
             else
             {
                 this.logger.LogInformation($"Invalid protective word. {hdid}");
                 result.ResultStatus = ResultType.Protected;
-                result.ResultMessage = validationResult.Item2!;
+                result.ResultError = new RequestResultError() { ResultMessage = validationResult.Item2, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
             }
 
             this.logger.LogDebug($"Finished getting history of medication statements");

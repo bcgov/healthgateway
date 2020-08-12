@@ -93,10 +93,6 @@ namespace HealthGateway.Database.Delegates
                 {
                     this.dbContext.SaveChanges();
                     result.Status = DBStatusCode.Created;
-
-                    // Forces the refresh from the database.
-                    this.dbContext.Entry(note).State = EntityState.Detached;
-                    result.Payload = this.dbContext.Note.Find(note.Id, note.HdId);
                 }
                 catch (DbUpdateException e)
                 {
@@ -204,6 +200,17 @@ namespace HealthGateway.Database.Delegates
                     .GroupBy(key => key)
                     .Where(w => w.Count() >= minNotes)
                     .Count();
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Note>> GetAll(int page, int pageSize)
+        {
+            this.logger.LogTrace($"Retrieving all the notes for the page #{page} with pageSize: {pageSize}...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.Note
+                    .OrderBy(note => note.CreatedDateTime),
+                page,
+                pageSize);
         }
     }
 }

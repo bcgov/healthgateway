@@ -5,6 +5,7 @@ import Vuex from "vuex";
 import { injectable } from "inversify";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { User as OidcUser, UserManagerSettings } from "oidc-client";
@@ -128,6 +129,8 @@ function createWrapper(): Wrapper<ProfileComponent> {
 }*/
 
 describe("Dummy Test", () => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
     test("has header element with static text", () => {
         expect(true).toBe(true);
     });

@@ -1,12 +1,21 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, ILaboratoryService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    IHttpDelegate,
+    ILaboratoryService,
+} from "@/services/interfaces";
 import { ExternalConfiguration } from "@/models/configData";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";
     private baseUri: string = "";
     private http!: IHttpDelegate;
@@ -30,7 +39,6 @@ export class RestLaboratoryService implements ILaboratoryService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: [],
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
@@ -44,8 +52,13 @@ export class RestLaboratoryService implements ILaboratoryService {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    console.log("Fetch error: " + err.toString());
-                    reject(err);
+                    this.logger.error(`getOrders Fetch error: ${err}`);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Laboratory
+                        )
+                    );
                 });
         });
     }
@@ -60,7 +73,6 @@ export class RestLaboratoryService implements ILaboratoryService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: { data: "", encoding: "", mediaType: "" },
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
@@ -74,8 +86,13 @@ export class RestLaboratoryService implements ILaboratoryService {
                     resolve(requestResult);
                 })
                 .catch((err) => {
-                    console.log("Fetch error: " + err.toString());
-                    reject(err);
+                    this.logger.error(`getReportDocument Fetch error: ${err}`);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Laboratory
+                        )
+                    );
                 });
         });
     }

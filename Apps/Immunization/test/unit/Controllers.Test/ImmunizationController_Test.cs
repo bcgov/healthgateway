@@ -1,17 +1,15 @@
 namespace HealthGateway.Immunization.Test.Controller
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Security.Claims;
     using System.Security.Principal;
     using System.Threading.Tasks;
-    using Castle.Core.Logging;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -46,13 +44,18 @@ namespace HealthGateway.Immunization.Test.Controller
 
             Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
 
-            List<ImmunizationView> immunizations = new List<ImmunizationView>();
-            immunizations.Add(new ImmunizationView()
+            RequestResult<IEnumerable<ImmunizationView>> result = new RequestResult<IEnumerable<ImmunizationView>>();
+            IEnumerable<ImmunizationView> immunizations = new List<ImmunizationView>();
+            immunizations.Append(new ImmunizationView()
             {
                 Name = "test"
             });
+            result.ResourcePayload = immunizations;
+            result.PageSize = immunizations.Count();
+            result.PageIndex = 0;
+            result.TotalResultCount = immunizations.Count();
 
-            svcMock.Setup(m => m.GetImmunizations(hdid)).ReturnsAsync(immunizations);
+            svcMock.Setup(m => m.GetImmunizations(hdid)).ReturnsAsync(result);
 
             ImmunizationController controller = new ImmunizationController(
                 new Mock<ILogger<ImmunizationController>>().Object,
@@ -60,10 +63,10 @@ namespace HealthGateway.Immunization.Test.Controller
                 httpContextAccessorMock.Object);
 
             // Act
-            JsonResult result = (JsonResult)await controller.GetImmunizations(hdid).ConfigureAwait(true);
+            JsonResult jsonResult = (JsonResult)await controller.GetImmunizations(hdid).ConfigureAwait(true);
 
             // Verify
-            RequestResult<List<ImmunizationView>> actual = (RequestResult<List<ImmunizationView>>)result.Value;
+            RequestResult<IEnumerable<ImmunizationView>> actual = (RequestResult<IEnumerable<ImmunizationView>>)jsonResult.Value;
 
             // Verify the result
             Assert.True(actual.ResourcePayload.IsDeepEqual(immunizations));

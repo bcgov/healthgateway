@@ -28,6 +28,6 @@ namespace HealthGateway.Patient.Services
         /// </summary>
         /// <param name="id">The patient id.</param>
         /// <returns>The patient model.</returns>
-        Task<Patient> GetPatient(string id);
+        Task<RequestResult<Patient>> GetPatient(string id);
     }
 }

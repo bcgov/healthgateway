@@ -203,6 +203,7 @@ $radius: 15px;
                     >An unexpected error occured while processing the
                     request.</span
                 >
+                <p>{{ errorDescription }}</p>
             </b-alert>
         </div>
     </b-col>
@@ -221,6 +222,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { IUserNoteService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import ErrorTranslator from "@/utility/errorTranslator";
 import container from "@/plugins/inversify.config";
 import UserNote from "@/models/userNote";
 import moment from "moment";
@@ -238,6 +240,7 @@ export default class NoteTimelineComponent extends Vue {
     private dateString: string = new Date().toISOString().slice(0, 10);
     private detailsVisible = false;
     private hasErrors: boolean = false;
+    private errorDescription: string = "";
     private isEditMode: boolean = false;
     private isSaving: boolean = false;
     private eventBus = EventBus;
@@ -326,8 +329,17 @@ export default class NoteTimelineComponent extends Vue {
     private deleteNote(): void {
         this.text = this.entry.id;
         if (confirm("Are you sure you want to delete this note?")) {
-            this.noteService.deleteNote(this.entry.toModel());
-            this.onNoteDeleted(this.entry);
+            this.noteService
+                .deleteNote(this.entry.toModel())
+                .then(() => {
+                    this.onNoteDeleted(this.entry);
+                })
+                .catch((err) => {
+                    this.errorDescription = ErrorTranslator.getDisplayMessage(
+                        err
+                    );
+                    this.hasErrors = true;
+                });
         }
     }
 

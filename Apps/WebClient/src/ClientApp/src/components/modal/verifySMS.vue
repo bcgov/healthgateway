@@ -100,7 +100,7 @@ import { Action, Getter } from "vuex-class";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { IUserProfileService } from "@/services/interfaces";
+import { ILogger, IUserProfileService } from "@/services/interfaces";
 import UserSMSInvite from "@/models/userSMSInvite";
 
 @Component({
@@ -109,6 +109,7 @@ import UserSMSInvite from "@/models/userSMSInvite";
     },
 })
 export default class VerifySMSComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() smsNumber!: string;
 
     @Getter("user", { namespace: "user" }) user!: User;
@@ -211,7 +212,7 @@ export default class VerifySMSComponent extends Vue {
                 }, 5000);
             })
             .catch((err) => {
-                console.log(err);
+                this.logger.error(`updateSMSNumber with error: ${err}`);
             });
     }
 

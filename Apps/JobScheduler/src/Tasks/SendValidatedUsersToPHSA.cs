@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,14 @@
 // -------------------------------------------------------------------------
 namespace Healthgateway.JobScheduler.Tasks
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Queries the Health Gateway DB for all current users with emails.

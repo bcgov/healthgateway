@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,14 +29,14 @@ namespace HealthGateway.Common.Delegates
         /// <param name="hdid">The patient hdid.</param>
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns>The patient phn.</returns>
-        Task<string> GetPatientPHNAsync(string hdid, string authorization);
+        RequestResult<string> GetPatientPHN(string hdid, string authorization);
 
         /// <summary>
         /// Gets the patient phn.
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
         /// <param name="authorization">Authorization for the call.</param>
-        /// <returns>The patient phn.</returns>
-        Task<Patient> GetPatientAsync(string hdid, string authorization);
+        /// <returns>The patient model.</returns>
+        RequestResult<Patient> GetPatient(string hdid, string authorization);
     }
 }

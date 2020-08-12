@@ -6,8 +6,13 @@ import NotFoundComponent from "@/views/errors/notFound.vue";
 import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 describe("Router", () => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
     test("has landing route", () => {
         const actualComponent = router.getMatchedComponents("/")[0];
         expect(actualComponent.name).toBe(LandingComponent.name);

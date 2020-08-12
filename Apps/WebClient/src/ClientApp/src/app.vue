@@ -55,8 +55,12 @@ main {
         </header>
         <b-row class="p-0 m-0">
             <NavSidebar class="no-print" />
-
             <main class="col fill-height">
+                <ErrorCard
+                    title="Whoops!"
+                    description="An error occurred."
+                    show="true"
+                />
                 <router-view></router-view>
                 <IdleComponent ref="idleModal" />
             </main>
@@ -73,6 +77,11 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import Process, { EnvironmentType } from "@/constants/process.ts";
+import { ILogger, IMedicationService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 // Load Bootstrap general plugins
 import {
@@ -147,6 +156,7 @@ import {
     faSyringe,
     faUserMd,
     faClipboardList,
+    faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
     faUser,
@@ -173,19 +183,22 @@ library.add(
     faPills,
     faSyringe,
     faUserMd,
-    faClipboardList
+    faClipboardList,
+    faChartLine
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
+import ErrorCard from "@/components/errorCard.vue";
 
 @Component({
     components: {
         NavHeader: HeaderComponent,
         NavFooter: FooterComponent,
         NavSidebar: SidebarComponent,
+        ErrorCard: ErrorCard,
         IdleComponent,
     },
 })
@@ -202,8 +215,11 @@ export default class App extends Vue {
 
     constructor() {
         super();
-        console.log("Node ENV", Process.NODE_ENV);
-        console.log("host", this.host);
+        logger.debug(
+            `Node ENV: ${JSON.stringify(
+                Process.NODE_ENV
+            )}; host: ${JSON.stringify(this.host)}`
+        );
     }
 
     @Watch("isAppIdle")

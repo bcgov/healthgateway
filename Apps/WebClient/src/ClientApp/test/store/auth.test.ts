@@ -1,8 +1,14 @@
 import { mutations } from "@/store/modules/auth/mutations";
 import { state as initialState } from "@/store/modules/auth/auth";
 import { User as OidcUser, UserSettings } from "oidc-client";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 describe("Auth mutations", () => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    logger.initialize("info");
+
     test("Sets oidcAuth authenticated", () => {
         const state = initialState;
         const settings: UserSettings = {

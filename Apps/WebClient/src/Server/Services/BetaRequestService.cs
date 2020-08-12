@@ -15,10 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -81,7 +80,7 @@ namespace HealthGateway.WebClient.Services
                 }
                 else
                 {
-                    requestResult.ResultMessage = insertResult.Message;
+                    requestResult.ResultError = new RequestResultError() { ResultMessage = insertResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) };
                     requestResult.ResultStatus = ResultType.Error;
                 }
 
@@ -104,7 +103,7 @@ namespace HealthGateway.WebClient.Services
                 }
                 else
                 {
-                    requestResult.ResultMessage = insertResult.Message;
+                    requestResult.ResultError = new RequestResultError() { ResultMessage = insertResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) };
                     requestResult.ResultStatus = ResultType.Error;
                 }
 

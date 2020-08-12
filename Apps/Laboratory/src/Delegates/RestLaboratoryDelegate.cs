@@ -25,6 +25,7 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Laboratory.Models;
@@ -105,13 +106,13 @@ namespace HealthGateway.Laboratory.Delegates
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
                             retVal.ResourcePayload = labReports;
                             retVal.TotalResultCount = labReports.Count();
-                            #pragma warning disable CA1305 // Specify IFormatProvider
+#pragma warning disable CA1305 // Specify IFormatProvider
                             retVal.PageSize = int.Parse(this.labConfig.FetchSize);
-                            #pragma warning restore CA1305 // Specify IFormatProvider
+#pragma warning restore CA1305 // Specify IFormatProvider
                         }
                         else
                         {
-                            retVal.ResultMessage = "Error with JSON data";
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         }
 
                         break;
@@ -119,24 +120,24 @@ namespace HealthGateway.Laboratory.Delegates
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
                         retVal.ResourcePayload = new List<LaboratoryOrder>();
                         retVal.TotalResultCount = 0;
-                        #pragma warning disable CA1305 // Specify IFormatProvider
+#pragma warning disable CA1305 // Specify IFormatProvider
                         retVal.PageSize = int.Parse(this.labConfig.FetchSize);
-                        #pragma warning restore CA1305 // Specify IFormatProvider
+#pragma warning restore CA1305 // Specify IFormatProvider
                         break;
                     case HttpStatusCode.Forbidden:
-                        retVal.ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}";
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         break;
                     default:
-                        retVal.ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}";
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                         break;
                 }
             }
-            #pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
-            #pragma warning restore CA1031 // Do not catch general exception types
+#pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultMessage = $"Exception getting Lab Orders: {e}";
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Lab Orders: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                 this.logger.LogError($"Unexpected exception in Get Lab Orders {e}");
             }
 
@@ -183,22 +184,21 @@ namespace HealthGateway.Laboratory.Delegates
                         }
                         else
                         {
-                            retVal.ResultMessage = "Error with JSON data";
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         }
 
                         break;
                     case HttpStatusCode.NoContent: // No Lab exits for this user
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
-                        retVal.ResultMessage = $"No Lab Report exists for id: {id}";
                         retVal.PageIndex = 0;
                         retVal.TotalResultCount = 0;
                         retVal.ResourcePayload = new LaboratoryReport();
                         break;
                     case HttpStatusCode.Forbidden:
-                        retVal.ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}";
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         break;
                     default:
-                        retVal.ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}";
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                         break;
                 }
@@ -207,7 +207,7 @@ namespace HealthGateway.Laboratory.Delegates
             catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                retVal.ResultMessage = $"Exception getting Lab Report: {e}";
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Lab Report: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                 this.logger.LogError($"Unexpected exception in Lab Report {e}");
             }
 

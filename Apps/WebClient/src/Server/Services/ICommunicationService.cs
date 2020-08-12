@@ -29,5 +29,11 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <returns>The active communication wrapped in a RequestResult.</returns>
         public RequestResult<Communication> GetActiveBanner();
+
+        /// <summary>
+        /// Sets the Active Banner in the internal cache.
+        /// </summary>
+        /// <param name="cacheEntry">The Communication wrapped in a RequestResult.</param>
+        public void SetActiveBannerCache(RequestResult<Communication> cacheEntry);
     }
 }

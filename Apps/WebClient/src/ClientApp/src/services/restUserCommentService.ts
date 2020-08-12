@@ -1,12 +1,21 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, IUserCommentService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    IHttpDelegate,
+    ILogger,
+    IUserCommentService,
+} from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
 import UserComment from "@/models/userComment";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     NOT_IMPLENTED: string = "Method not implemented.";
     private readonly USER_COMMENT_BASE_URI: string = "/v1/api/Comment";
     private http!: IHttpDelegate;
@@ -29,7 +38,6 @@ export class RestUserCommentService implements IUserCommentService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: [],
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
@@ -43,8 +51,13 @@ export class RestUserCommentService implements IUserCommentService {
                     return resolve(userComments);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    return reject(err);
+                    this.logger.error(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -61,12 +74,19 @@ export class RestUserCommentService implements IUserCommentService {
                     comment
                 )
                 .then((result) => {
-                    console.log(result);
+                    this.logger.debug(
+                        `createComment result: ${JSON.stringify(result)}`
+                    );
                     return this.handleResult(result, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    return reject(err);
+                    this.logger.error(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -82,8 +102,13 @@ export class RestUserCommentService implements IUserCommentService {
                     return this.handleResult(result, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    return reject(err);
+                    this.logger.error(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -99,8 +124,13 @@ export class RestUserCommentService implements IUserCommentService {
                     return this.handleResult(result, resolve, reject);
                 })
                 .catch((err) => {
-                    console.log(err);
-                    return reject(err);
+                    this.logger.error(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -113,7 +143,7 @@ export class RestUserCommentService implements IUserCommentService {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            reject(requestResult.resultMessage);
+            reject(requestResult.resultError);
         }
     }
 }

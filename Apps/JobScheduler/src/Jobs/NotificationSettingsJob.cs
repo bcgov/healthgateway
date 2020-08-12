@@ -87,8 +87,8 @@ namespace Healthgateway.JobScheduler.Jobs
                                     this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
                     if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
                     {
-                        this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
-                        throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultMessage}");
+                        this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                        throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
                     }
                 }
             }

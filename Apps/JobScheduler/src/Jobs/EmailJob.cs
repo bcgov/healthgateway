@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -79,7 +79,60 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger.LogDebug($"Finished sending email. {JsonConvert.SerializeObject(email)}");
         }
 
-        private void processEmails(List<Email> resendEmails)
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendLowPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
+            this.ProcessEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendStandardPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
+            this.ProcessEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending standard priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendHighPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
+            this.ProcessEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending high priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        /// <inheritdoc />
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        public void SendUrgentPriorityEmails()
+        {
+            this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
+            List<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
+            this.ProcessEmails(resendEmails);
+            this.logger.LogDebug($"Finished sending urgent priority emails. {JsonConvert.SerializeObject(resendEmails)}");
+        }
+
+        private static MimeMessage PrepareMessage(Email email)
+        {
+            MimeMessage msg = new MimeMessage();
+            msg.From.Add(new MailboxAddress("Health Gateway", email.From));
+            msg.To.Add(new MailboxAddress(email.To));
+            msg.Subject = email.Subject;
+            msg.Body = new TextPart(email.FormatCode == EmailFormat.HTML ? MimeKit.Text.TextFormat.Html : MimeKit.Text.TextFormat.Plain)
+            {
+                Text = email.Body,
+            };
+            return msg;
+        }
+
+        private void ProcessEmails(List<Email> resendEmails)
         {
             if (resendEmails.Count > 0)
             {
@@ -99,59 +152,6 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning restore CA1031 // Restore warnings.
                 }
             }
-        }
-
-        /// <inheritdoc />
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendLowPriorityEmails()
-        {
-            this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
-            this.processEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
-        }
-
-        /// <inheritdoc />
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendStandardPriorityEmails()
-        {
-            this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
-            this.processEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending standard priority emails. {JsonConvert.SerializeObject(resendEmails)}");
-        }
-
-        /// <inheritdoc />
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendHighPriorityEmails()
-        {
-            this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
-            this.processEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending high priority emails. {JsonConvert.SerializeObject(resendEmails)}");
-        }
-
-        /// <inheritdoc />
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendUrgentPriorityEmails()
-        {
-            this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
-            this.processEmails(resendEmails);
-            this.logger.LogDebug($"Finished sending urgent priority emails. {JsonConvert.SerializeObject(resendEmails)}");
-        }
-
-        private static MimeMessage PrepareMessage(Email email)
-        {
-            MimeMessage msg = new MimeMessage();
-            msg.From.Add(new MailboxAddress("Health Gateway", email.From));
-            msg.To.Add(new MailboxAddress(email.To));
-            msg.Subject = email.Subject;
-            msg.Body = new TextPart(email.FormatCode == EmailFormat.HTML ? MimeKit.Text.TextFormat.Html : MimeKit.Text.TextFormat.Plain)
-            {
-                Text = email.Body,
-            };
-            return msg;
         }
 
         private void SendEmail(Email email)

@@ -69,7 +69,7 @@ namespace HealthGateway.PatientService.Controllers
         [Authorize(Policy = PatientPolicy.Read)]
         public async Task<IActionResult> GetPatient(string hdid)
         {
-            Patient result = await this.service.GetPatient(hdid).ConfigureAwait(true);
+            RequestResult<Patient> result = await this.service.GetPatient(hdid).ConfigureAwait(true);
             return new JsonResult(result);
         }
     }

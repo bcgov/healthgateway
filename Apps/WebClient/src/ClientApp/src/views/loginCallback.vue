@@ -9,10 +9,14 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter, State } from "vuex-class";
 import VueRouter, { Route } from "vue-router";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 import User from "@/models/user";
 
 @Component
 export default class LoginCallbackView extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("oidcSignInCallback", { namespace: "auth" })
     oidcSignInCallback!: () => Promise<string>;
 
@@ -28,7 +32,9 @@ export default class LoginCallbackView extends Vue {
     private created() {
         this.oidcSignInCallback()
             .then((redirectPath) => {
-                console.log(this.user);
+                this.logger.debug(
+                    `oidcSignInCallback for user: ${JSON.stringify(this.user)}`
+                );
                 this.checkRegistration({ hdid: this.user.hdid }).then(() => {
                     if (this.userIsRegistered) {
                         this.$router.push({ path: redirectPath });
@@ -39,8 +45,11 @@ export default class LoginCallbackView extends Vue {
                             this.$router.push({ path: "/registration" });
                         }
                     }
-
-                    console.log("RedirectPath:", redirectPath);
+                    this.logger.debug(
+                        `checkRegistration RedirectPath: ${JSON.stringify(
+                            redirectPath
+                        )}`
+                    );
                 });
             })
             .catch((err) => {

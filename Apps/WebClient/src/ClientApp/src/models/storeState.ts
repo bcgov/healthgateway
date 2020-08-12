@@ -4,6 +4,7 @@ import User from "@/models/user";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
 import { LaboratoryOrder, LaboratoryReport } from "@/models//laboratory";
+import BannerError from "./bannerError";
 
 export enum StateType {
     NONE,
@@ -61,4 +62,9 @@ export interface LaboratoryState {
 
 export interface SidebarState {
     isOpen: boolean;
+}
+
+export interface ErrorBannerState {
+    isShowing: boolean;
+    errors: BannerError[];
 }

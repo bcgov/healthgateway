@@ -1,6 +1,10 @@
 import { ActionTree, Commit } from "vuex";
 
-import { IPatientService, IUserProfileService } from "@/services/interfaces";
+import {
+    ILogger,
+    IPatientService,
+    IUserProfileService,
+} from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
@@ -8,8 +12,10 @@ import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
 function handleError(commit: Commit, error: Error) {
-    console.log("UserProfile ERROR:" + error);
+    logger.error(`UserProfile ERROR: ${error}`);
     commit("userError");
 }
 
@@ -27,7 +33,9 @@ export const actions: ActionTree<UserState, RootState> = {
             patientService
                 .getPatientData(params.hdid)
                 .then((patientData) => {
-                    console.log("Patient Data: ", patientData);
+                    logger.debug(
+                        `Patient Data: ${JSON.stringify(patientData)}`
+                    );
                     context.commit("setPatientData", patientData);
                     resolve(patientData);
                 })
@@ -38,12 +46,14 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     },
     checkRegistration(context, params: { hdid: string }): Promise<boolean> {
-        console.log(params);
+        logger.debug(`checkRegistration params: ${JSON.stringify(params)}`);
         return new Promise((resolve, reject) => {
             userProfileService
                 .getProfile(params.hdid)
                 .then((userProfile) => {
-                    console.log("User Profile: ", userProfile);
+                    logger.debug(
+                        `User Profile: ${JSON.stringify(userProfile)}`
+                    );
                     let isRegistered: boolean;
                     if (userProfile) {
                         isRegistered = userProfile.acceptedTermsOfService;
@@ -188,7 +198,11 @@ export const actions: ActionTree<UserState, RootState> = {
             userProfileService
                 .recoverAccount(params.hdid)
                 .then((userProfile) => {
-                    console.log("User Profile: ", userProfile);
+                    logger.debug(
+                        `recoverUserAccount User Profile: ${JSON.stringify(
+                            userProfile
+                        )}`
+                    );
                     context.commit("setProfileUserData", userProfile);
                     resolve();
                 })

@@ -9,6 +9,7 @@ import VueRouter from "vue-router";
 import FeedbackView from "@/views/Feedback.vue";
 import UnauthorizedView from "@/views/Unauthorized.vue";
 import CommunicationView from "./views/Communication.vue";
+import StatsView from "./views/Stats.vue";
 
 Vue.use(VueRouter);
 
@@ -62,6 +63,12 @@ const routes = [
         path: "/communication",
         name: "System Communications",
         component: CommunicationView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: "/stats",
+        name: "System Analytics",
+        component: StatsView,
         meta: { requiresAuth: true }
     },
     {

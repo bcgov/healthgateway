@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Migrations
             modelBuilder
                 .HasDefaultSchema("gateway")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.0")
+                .HasAnnotation("ProductVersion", "3.1.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("Relational:Sequence:.gateway.trace_seq", "'gateway.trace_seq', '', '1', '1', '1', '999999', 'Int64', 'True'");
 

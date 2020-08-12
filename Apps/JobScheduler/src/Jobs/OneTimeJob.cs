@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -25,7 +26,6 @@ namespace Healthgateway.JobScheduler.Jobs
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// The OneTimeJob will run arbitrary IOneTimeTask (configurable) once.
@@ -68,7 +68,7 @@ namespace Healthgateway.JobScheduler.Jobs
         }
 
         /// <summary>
-        /// Reads
+        /// Reads the configuration and will instantiate and run the class a single time.
         /// </summary>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void Process()
@@ -117,6 +117,7 @@ namespace Healthgateway.JobScheduler.Jobs
             {
                 this.logger.LogInformation($"OneTime job is not configured to run anything");
             }
+
             this.logger.LogInformation($"OneTimeJob Finished running");
         }
 }

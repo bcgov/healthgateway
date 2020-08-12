@@ -20,11 +20,13 @@ namespace HealthGateway.Immunization.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Factories;
     using HealthGateway.Immunization.Models;
+    using Hl7.Fhir.Specification;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
@@ -55,52 +57,65 @@ namespace HealthGateway.Immunization.Services
             this.httpContextAccessor = httpAccessor;
             this.immunizationDelegate = immunizationDelegateFactory.CreateInstance();
             this.patientDelegate = patientDelegate;
-    }
-
-        /// <inheritdoc/>
-        public async Task<IEnumerable<ImmunizationView>> GetImmunizations(string hdid)
-        {
-            this.logger.LogDebug($"Getting immunization from Immunization Service... {hdid}");
-            List<ImmunizationView> immunizations = new List<ImmunizationView>();
-            ImmunizationRequest request = await this.GetImmunizationRequest(hdid).ConfigureAwait(true);
-            Hl7.Fhir.Model.Bundle fhirBundle = await this.immunizationDelegate.GetImmunizationBundle(request).ConfigureAwait(true);
-            IEnumerable<Hl7.Fhir.Model.Immunization> immmsLiist = fhirBundle.Entry
-                                                                            .Where(r => r.Resource is Hl7.Fhir.Model.Immunization)
-                                                                            .Select(f => (Hl7.Fhir.Model.Immunization)f.Resource);
-            foreach (Hl7.Fhir.Model.Immunization entry in immmsLiist)
-            {
-                ImmunizationView immunizationView = new ImmunizationView
-                {
-                    Id = entry.Id,
-                    Name = entry.VaccineCode.Text,
-                    Status = entry.Status.ToString() !,
-                    OccurrenceDateTime = System.DateTime.Parse(entry.Occurrence.ToString() !, CultureInfo.InvariantCulture),
-                };
-                foreach (Hl7.Fhir.Model.Coding code in entry.VaccineCode.Coding)
-                {
-                    ImmunizationAgent immunizationAgent = new ImmunizationAgent
-                    {
-                        Code = code.Code,
-                        Name = code.Display,
-                    };
-                    immunizationView.ImmunizationAgents.Add(immunizationAgent);
-                }
-
-                immunizations.Add(immunizationView);
-            }
-
-            this.logger.LogDebug($"Finished getting immunization records {immunizations.Count}");
-            return immunizations;
         }
 
-        private async Task<ImmunizationRequest> GetImmunizationRequest(string hdid)
+        /// <inheritdoc/>
+        public async Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string hdid)
         {
-            ImmunizationRequest request = new ImmunizationRequest();
+            this.logger.LogDebug($"Getting immunization from Immunization Service... {hdid}");
+
+            RequestResult<IEnumerable<ImmunizationView>> result = new RequestResult<IEnumerable<ImmunizationView>>();
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            Patient p = await this.patientDelegate.GetPatientAsync(hdid, jwtString).ConfigureAwait(true);
-            request.PersonalHealthNumber = p.PersonalHealthNumber;
-            request.DateOfBirth = p.Birthdate;
-            return request;
+            RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
+            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+            {
+                ImmunizationRequest request = new ImmunizationRequest()
+                {
+                    PersonalHealthNumber = patientResult.ResourcePayload.PersonalHealthNumber,
+                    DateOfBirth = patientResult.ResourcePayload.Birthdate,
+                };
+
+                Hl7.Fhir.Model.Bundle fhirBundle = await this.immunizationDelegate.GetImmunizationBundle(request).ConfigureAwait(true);
+                IEnumerable<Hl7.Fhir.Model.Immunization> immmsLiist = fhirBundle.Entry
+                                                                                .Where(r => r.Resource is Hl7.Fhir.Model.Immunization)
+                                                                                .Select(f => (Hl7.Fhir.Model.Immunization)f.Resource);
+
+                List<ImmunizationView> immunizations = new List<ImmunizationView>();
+                foreach (Hl7.Fhir.Model.Immunization entry in immmsLiist)
+                {
+                    ImmunizationView immunizationView = new ImmunizationView
+                    {
+                        Id = entry.Id,
+                        Name = entry.VaccineCode.Text,
+                        Status = entry.Status.ToString()!,
+                        OccurrenceDateTime = System.DateTime.Parse(entry.Occurrence.ToString()!, CultureInfo.InvariantCulture),
+                    };
+                    foreach (Hl7.Fhir.Model.Coding code in entry.VaccineCode.Coding)
+                    {
+                        ImmunizationAgent immunizationAgent = new ImmunizationAgent
+                        {
+                            Code = code.Code,
+                            Name = code.Display,
+                        };
+                        immunizationView.ImmunizationAgents.Add(immunizationAgent);
+                    }
+
+                    immunizations.Add(immunizationView);
+                }
+                result.ResultStatus = ResultType.Success;
+                result.PageIndex = 0;
+                result.PageSize = immunizations.Count;
+                result.TotalResultCount = immunizations.Count;
+                result.ResourcePayload = immunizations;
+            }
+            else
+            {
+                result.ResultError = patientResult.ResultError;
+            }
+
+
+            this.logger.LogDebug($"Finished getting immunization records {result.TotalResultCount}");
+            return result;
         }
     }
 }

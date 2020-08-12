@@ -131,6 +131,16 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Delete(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Deletes the Communication that is passed to the controller.
+            </summary>
+            <param name="communication">The communication object to delete.</param>
+            <returns>The communication object delete wrapped in a Request result.</returns>
+            <response code="200">Returns the communication json of the deleted object wrapped in a request result.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.ConfigurationController">
             <summary>
             Web API to return Health Gateway configuration to approved clients.
@@ -147,6 +157,50 @@
             Returns the external Health Gateway configuration.
             </summary>
             <returns>The Health Gatway Configuration.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Controllers.CsvExportController">
+            <summary>
+            Web API to export data from Health Gateway and return CSV files.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CsvExportController.#ctor(HealthGateway.Admin.Services.ICsvExportService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.CsvExportController"/> class.
+            </summary>
+            <param name="dataExportService">The injected data export service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CsvExportController.GetUserProfiles(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a list of User Profiles created inclusively between UTC dates if provided.
+            </summary>
+            <param name="startDate">The optional start date for the data.</param>
+            <param name="endDate">The optional end date for the data.</param>
+            <returns>A CSV of the raw data. email.</returns>
+            <response code="200">Returns the list of beta requests.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CsvExportController.GetComments(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a list of Comments inclusively between UTC dates if provided.
+            </summary>
+            <param name="startDate">The optional start date for the data.</param>
+            <param name="endDate">The optional end date for the data.</param>
+            <returns>The invite email.</returns>
+            <response code="200">Returns the list of beta requests.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.CsvExportController.GetNotes(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a list of Notes inclusively between UTC dates if provided.
+            </summary>
+            <returns>The invite email.</returns>
+            <param name="startDate">The optional start date for the data.</param>
+            <param name="endDate">The optional end date for the data.</param>
+            <response code="200">Returns the list of beta requests.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
         <member name="T:HealthGateway.Admin.Controllers.DashboardController">
             <summary>
@@ -268,6 +322,36 @@
             <response code="200">Returns the beta requests ids that where invited.</response>
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="T:HealthGateway.Admin.Server.Mappers.CommentCsvMap">
+            <summary>
+            Maps the Comment model to a CSV.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Mappers.CommentCsvMap.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Server.Mappers.CommentCsvMap"/> class.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Server.Mappers.NoteCsvMap">
+            <summary>
+            Maps the Note model to a CSV.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Mappers.NoteCsvMap.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Server.Mappers.NoteCsvMap"/> class.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Admin.Server.Mappers.UserProfileCsvMap">
+            <summary>
+            Maps the UserProfile model to a CSV.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Server.Mappers.UserProfileCsvMap.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Server.Mappers.UserProfileCsvMap"/> class.
+            </summary>
         </member>
         <member name="T:HealthGateway.Admin.Models.AdminConfiguration">
             <summary>
@@ -663,6 +747,9 @@
         <member name="M:HealthGateway.Admin.Services.CommunicationService.GetAll">
             <inheritdoc />
         </member>
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.Delete(HealthGateway.Database.Models.Communication)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Admin.Services.ConfigurationService">
             <summary>
             Provides external configuration data.
@@ -680,6 +767,26 @@
             Reads the external configuration and returns it to the caller.
             </summary>
             <returns>The external configuration data.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.CsvExportService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Database.Delegates.ICommentDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.CsvExportService"/> class.
+            </summary>
+            <param name="noteDelegate">The note delegate to interact with the DB.</param>
+            <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+            <param name="commentDelegate">The beta request delegate to interact with the DB.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.GetComments(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.GetNotes(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.CsvExportService.GetUserProfiles(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <inheritdoc />
         </member>
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
@@ -793,6 +900,13 @@
             </summary>
             <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
         </member>
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Delete(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Deletes the given communication from the backend.
+            </summary>
+            <param name="communication">The communication to delete.</param>
+            <returns>The deleted communication wrapped in a RequestResult.</returns>
+        </member>
         <member name="T:HealthGateway.Admin.Services.IConfigurationService">
             <summary>
             Admin configuration.
@@ -803,6 +917,35 @@
             Creates and returns Configuration data for clients.
             </summary>
             <returns>The Config object containing configuration elements useful for client consumption.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Services.ICsvExportService">
+            <summary>
+            Service that provides functionality to export data in CSV format.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICsvExportService.GetUserProfiles(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a stream of UserProfiles in CSV format inclusive of the dates provided.
+            </summary>
+            <param name="startDate">Optional start date to include in the query.</param>
+            <param name="endDate">Optional end date to include in the query.</param>
+            <returns>returns a stream representing a CSV of User Profiles.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICsvExportService.GetNotes(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a stream of Notes in CSV format inclusive of the dates provided.
+            </summary>
+            <param name="startDate">Optional start date to include in the query.</param>
+            <param name="endDate">Optional end date to include in the query.</param>
+            <returns>returns a stream representing a CSV of Notes.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.ICsvExportService.GetComments(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Retrieves a stream of Comments in CSV format inclusive of the dates provided.
+            </summary>
+            <param name="startDate">Optional start date to include in the query.</param>
+            <param name="endDate">Optional end date to include in the query.</param>
+            <returns>returns a stream representing a CSV of the Comments.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IDashboardService">
             <summary>

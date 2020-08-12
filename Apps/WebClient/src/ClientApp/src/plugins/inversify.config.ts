@@ -3,6 +3,7 @@ import { Container } from "inversify";
 
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
+    ILogger,
     IAuthenticationService,
     IBetaRequestService,
     ICommunicationService,
@@ -18,6 +19,7 @@ import {
     IUserProfileService,
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
+import { WinstonLogger } from "@/services/winstonLogger";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestImmunizationService } from "@/services/restImmunizationService";
 import { RestConfigService } from "@/services/restConfigService";
@@ -35,6 +37,10 @@ const container = new Container();
 container
     .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
     .to(RestConfigService)
+    .inSingletonScope();
+container
+    .bind<ILogger>(SERVICE_IDENTIFIER.Logger)
+    .to(WinstonLogger)
     .inSingletonScope();
 container
     .bind<IAuthenticationService>(SERVICE_IDENTIFIER.AuthenticationService)
