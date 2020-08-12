@@ -14,4 +14,5 @@ export enum ServiceName {
     Laboratory = "LAB",
     Immunization = "IMZ",
     Patient = "PAT",
+    PHSA = "PHSA",
 }

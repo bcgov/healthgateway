@@ -99,7 +99,7 @@ namespace HealthGateway.Common.Delegates
                         }
                         else
                         {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", };
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         }
 
                         break;

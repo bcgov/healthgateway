@@ -95,6 +95,8 @@ export default class ErrorTranslator {
                 return "Immunization Service";
             case ServiceName.Patient:
                 return "Patient Service";
+            case ServiceName.PHSA:
+                return "PHSA Services";
             default:
                 return "Unknown";
         }

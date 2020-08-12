@@ -20,7 +20,7 @@ namespace HealthGateway.Common.ErrorHandling
     /// </summary>
     public class ServiceType
     {
-        private ServiceType(string value) { Value = value; }
+        private ServiceType(string value) { this.Value = value; }
 
         /// <summary>
         /// Gets or sets the Value that holds the internal representation of the ServiceType.
@@ -30,38 +30,65 @@ namespace HealthGateway.Common.ErrorHandling
         /// <summary>
         /// Gets the Database service code.
         /// </summary>
-        public static ServiceType Database { get { return new ServiceType("DB"); } }
+        public static ServiceType Database
+        {
+            get { return new ServiceType("DB"); }
+        }
 
         /// <summary>
         /// Gets the Client Registries service code.
         /// </summary>
-        public static ServiceType ClientRegistries { get { return new ServiceType("CR"); } }
+        public static ServiceType ClientRegistries
+        {
+            get { return new ServiceType("CR"); }
+        }
 
         /// <summary>
         /// Gets the ODRRecords service code.
         /// </summary>
-        public static ServiceType ODRRecords { get { return new ServiceType("ODR"); } }
+        public static ServiceType ODRRecords
+        {
+            get { return new ServiceType("ODR"); }
+        }
 
         /// <summary>
         /// Gets the Medication service code.
         /// </summary>
-        public static ServiceType Medication { get { return new ServiceType("MED"); } }
+        public static ServiceType Medication
+        {
+            get { return new ServiceType("MED"); }
+        }
 
         /// <summary>
         /// Gets the Laboratory service code.
         /// </summary>
-        public static ServiceType Laboratory { get { return new ServiceType("LAB"); } }
+        public static ServiceType Laboratory
+        {
+            get { return new ServiceType("LAB"); }
+        }
 
         /// <summary>
         /// Gets the Immunization service code.
         /// </summary>
-        public static ServiceType Immunization { get { return new ServiceType("IMZ"); } }
+        public static ServiceType Immunization
+        {
+            get { return new ServiceType("IMZ"); }
+        }
 
         /// <summary>
         /// Gets the Patient service code.
         /// </summary>
-        public static ServiceType Patient { get { return new ServiceType("PAT"); } }
+        public static ServiceType Patient
+        {
+            get { return new ServiceType("PAT"); }
+        }
 
-        public static ServiceType PHSA { get { return new ServiceType("PHSA"); } }
+        /// <summary>
+        /// Gets the PHSA service code.
+        /// </summary>
+        public static ServiceType PHSA
+        {
+            get { return new ServiceType("PHSA"); }
+        }
     }
 }
