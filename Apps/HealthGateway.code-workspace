@@ -1,12 +1,12 @@
 {
   "folders": [
     {
-      "name": "AdminWebClient",
-      "path": "AdminWebClient"
-    },
-    {
       "name": "ClientApp",
       "path": "WebClient/src/ClientApp"
+    },
+    {
+      "name": "AdminWebClient",
+      "path": "AdminWebClient"
     },
     {
       "name": "Common",

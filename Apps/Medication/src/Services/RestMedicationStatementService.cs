@@ -25,6 +25,7 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
@@ -90,9 +91,7 @@ namespace HealthGateway.Medication.Services
                 // Retrieve the phn
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                 RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
-                if (patientResult != null &&
-                    patientResult.ResultStatus == ResultType.Success &&
-                    patientResult.ResourcePayload != null)
+                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
                     Patient patient = patientResult.ResourcePayload;
                     MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
@@ -106,7 +105,7 @@ namespace HealthGateway.Medication.Services
                     string ipv4Address = address.MapToIPv4().ToString();
                     RequestResult<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
                     result.ResultStatus = response.ResultStatus;
-                    result.ResultMessage = response.ResultMessage;
+                    result.ResultError = response.ResultError;
                     if (response.ResultStatus == ResultType.Success)
                     {
                         result.PageSize = historyQuery.PageSize;
@@ -125,15 +124,14 @@ namespace HealthGateway.Medication.Services
                 }
                 else
                 {
-                    result.ResultStatus = ResultType.Error;
-                    result.ResultMessage = patientResult != null ? patientResult.ResultMessage : "Patient returned null"; 
+                    result.ResultError = patientResult.ResultError;
                 }
             }
             else
             {
                 this.logger.LogInformation($"Invalid protective word. {hdid}");
                 result.ResultStatus = ResultType.Protected;
-                result.ResultMessage = validationResult.Item2!;
+                result.ResultError = new RequestResultError() { ResultMessage = validationResult.Item2, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
             }
 
             this.logger.LogDebug($"Finished getting history of medication statements");

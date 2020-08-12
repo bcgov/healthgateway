@@ -31,10 +31,8 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: laboratoryOrders,
-                    resultMessage: "From storage",
                     resultStatus: ResultType.Success,
                     totalResultCount: laboratoryOrders.length,
-                    errorCode: "",
                 });
             } else {
                 logger.debug(`Retrieving Laboratory Orders`);

@@ -163,7 +163,7 @@ export default class HealthInsightsView extends Vue {
                 } else {
                     this.logger.error(
                         "Error returned from the medication statements call: " +
-                            results.resultMessage
+                            results.resultError?.resultMessage
                     );
                     this.hasErrors = true;
                 }
@@ -195,7 +195,7 @@ export default class HealthInsightsView extends Vue {
                 } else {
                     this.logger.error(
                         "Error returned from the immunization call: " +
-                            results.resultMessage
+                            results.resultError?.resultMessage
                     );
                     this.hasErrors = true;
                 }
@@ -230,7 +230,7 @@ export default class HealthInsightsView extends Vue {
                 } else {
                     this.logger.error(
                         "Error returned from the laboratory call: " +
-                            results.resultMessage
+                            results.resultError?.resultMessage
                     );
                     this.hasErrors = true;
                 }

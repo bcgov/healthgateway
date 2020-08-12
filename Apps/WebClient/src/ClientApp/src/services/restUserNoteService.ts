@@ -11,6 +11,8 @@ import UserNote from "@/models/userNote";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import moment from "moment";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
@@ -34,10 +36,8 @@ export class RestUserNoteService implements IUserNoteService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: [],
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
-                    errorCode: "",
                 });
                 return;
             }
@@ -51,7 +51,12 @@ export class RestUserNoteService implements IUserNoteService {
                 })
                 .catch((err) => {
                     this.logger.error(`getNotes error: ${err}`);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -79,7 +84,12 @@ export class RestUserNoteService implements IUserNoteService {
                 })
                 .catch((err) => {
                     this.logger.error(`createNote error: ${err}`);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -98,7 +108,12 @@ export class RestUserNoteService implements IUserNoteService {
                 })
                 .catch((err) => {
                     this.logger.error(`updateNote error: ${err}`);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -115,7 +130,12 @@ export class RestUserNoteService implements IUserNoteService {
                 })
                 .catch((err) => {
                     this.logger.error(`deleteNote error: ${err}`);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -129,7 +149,7 @@ export class RestUserNoteService implements IUserNoteService {
             resolve(requestResult.resourcePayload);
         } else {
             console.log(requestResult);
-            reject(requestResult.errorCode);
+            reject(requestResult.resultError);
         }
     }
 }

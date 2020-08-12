@@ -192,7 +192,7 @@ namespace HealthGateway.Admin.Test.Services
 
             // Check result
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal("Effective Date should be before Expiry Date.", actualResult.ResultMessage);
+            Assert.Equal("Effective Date should be before Expiry Date.", actualResult.ResultError.ResultMessage);
         }
 
         [Fact]
@@ -232,8 +232,7 @@ namespace HealthGateway.Admin.Test.Services
             RequestResult<Communication> expectedResult = new RequestResult<Communication>()
             {
                 ResultStatus = ResultType.Error,
-                ResultMessage = "Processed communication can't be deleted.",
-                ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                ResultError = new RequestResultError() { ResultMessage = "Processed communication can't be deleted.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
             };
 
             RequestResult<Communication> actualResult = DeleteCommunication(comm, DBStatusCode.Error);

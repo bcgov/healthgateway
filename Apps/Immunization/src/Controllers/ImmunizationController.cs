@@ -83,15 +83,7 @@ namespace HealthGateway.Immunization.Controllers
         public async Task<IActionResult> GetImmunizations(string hdid)
         {
             this.logger.LogDebug($"Getting immunizations from controller... {hdid}");
-            List<ImmunizationView> immunizations = (await this.service.GetImmunizations(hdid).ConfigureAwait(true)).ToList();
-            RequestResult<List<ImmunizationView>> result = new RequestResult<List<ImmunizationView>>()
-            {
-                ResourcePayload = immunizations,
-                PageIndex = 0,
-                PageSize = immunizations.Count,
-                TotalResultCount = immunizations.Count,
-                ResultStatus = ResultType.Success,
-            };
+            RequestResult<IEnumerable<ImmunizationView>> result = await this.service.GetImmunizations(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting immunizations from controller... {hdid}");
             return new JsonResult(result);

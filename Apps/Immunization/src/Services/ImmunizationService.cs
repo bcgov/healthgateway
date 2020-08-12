@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Services
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Delegates;
@@ -56,18 +57,17 @@ namespace HealthGateway.Immunization.Services
             this.httpContextAccessor = httpAccessor;
             this.immunizationDelegate = immunizationDelegateFactory.CreateInstance();
             this.patientDelegate = patientDelegate;
-    }
+        }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<ImmunizationView>> GetImmunizations(string hdid)
+        public async Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string hdid)
         {
             this.logger.LogDebug($"Getting immunization from Immunization Service... {hdid}");
-            List<ImmunizationView> immunizations = new List<ImmunizationView>();
+
+            RequestResult<IEnumerable<ImmunizationView>> result = new RequestResult<IEnumerable<ImmunizationView>>();
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
-            if (patientResult != null &&
-                patientResult.ResultStatus == Common.Constants.ResultType.Success &&
-                patientResult.ResourcePayload != null)
+            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
                 ImmunizationRequest request = new ImmunizationRequest()
                 {
@@ -79,6 +79,8 @@ namespace HealthGateway.Immunization.Services
                 IEnumerable<Hl7.Fhir.Model.Immunization> immmsLiist = fhirBundle.Entry
                                                                                 .Where(r => r.Resource is Hl7.Fhir.Model.Immunization)
                                                                                 .Select(f => (Hl7.Fhir.Model.Immunization)f.Resource);
+
+                List<ImmunizationView> immunizations = new List<ImmunizationView>();
                 foreach (Hl7.Fhir.Model.Immunization entry in immmsLiist)
                 {
                     ImmunizationView immunizationView = new ImmunizationView
@@ -100,21 +102,20 @@ namespace HealthGateway.Immunization.Services
 
                     immunizations.Add(immunizationView);
                 }
+                result.ResultStatus = ResultType.Success;
+                result.PageIndex = 0;
+                result.PageSize = immunizations.Count;
+                result.TotalResultCount = immunizations.Count;
+                result.ResourcePayload = immunizations;
             }
             else
             {
-                if (patientResult != null)
-                {
-                    this.logger.LogError($"Unable to lookup Patient information {patientResult.ResultMessage}");
-                }
-                else
-                {
-                    this.logger.LogError($"Patient returned null Request");
-                }
+                result.ResultError = patientResult.ResultError;
             }
 
-            this.logger.LogDebug($"Finished getting immunization records {immunizations.Count}");
-            return immunizations;
+
+            this.logger.LogDebug($"Finished getting immunization records {result.TotalResultCount}");
+            return result;
         }
     }
 }

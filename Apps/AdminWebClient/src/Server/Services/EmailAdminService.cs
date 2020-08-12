@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Admin.Constants;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -84,7 +85,7 @@ namespace HealthGateway.Admin.Services
                 PageSize = this.maxEmails,
                 TotalResultCount = dbEmail.Payload.Count,
                 ResultStatus = dbEmail.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbEmail.Message,
+                ResultError = dbEmail.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbEmail.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
         }

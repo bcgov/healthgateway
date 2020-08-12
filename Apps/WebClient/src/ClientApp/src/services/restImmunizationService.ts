@@ -10,6 +10,8 @@ import ImmunizationData from "@/models/immunizationData";
 import { ExternalConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestImmunizationService implements IImmunizationService {
@@ -39,10 +41,8 @@ export class RestImmunizationService implements IImmunizationService {
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: [],
-                    resultMessage: "",
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
-                    errorCode: "",
                 });
                 return;
             }
@@ -56,7 +56,12 @@ export class RestImmunizationService implements IImmunizationService {
                 })
                 .catch((err) => {
                     this.logger.error(`Fetch error: ${err}`);
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Immunization
+                        )
+                    );
                 });
         });
     }

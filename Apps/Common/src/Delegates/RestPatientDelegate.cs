@@ -21,6 +21,8 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -61,14 +63,14 @@ namespace HealthGateway.Common.Delegates
         {
             RequestResult<string> retVal = new RequestResult<string>()
             {
-                ResultMessage = "Error during PHN retrieval",
+                ResultError = new RequestResultError() { ResultMessage = "Error during PHN retrieval", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
                 ResultStatus = Constants.ResultType.Error,
             };
             string retrievedPhn = string.Empty;
             RequestResult<Patient> patientResult = this.GetPatient(hdid, authorization);
             if (patientResult != null)
             {
-                retVal.ResultMessage = patientResult.ResultMessage;
+                retVal.ResultError = patientResult.ResultError;
                 retVal.ResultStatus = patientResult.ResultStatus;
                 if (patientResult.ResultStatus == Constants.ResultType.Success && patientResult.ResourcePayload != null)
                 {
@@ -102,8 +104,9 @@ namespace HealthGateway.Common.Delegates
                     await response.Content.ReadAsStringAsync().ConfigureAwait(true)).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    Patient patient = JsonSerializer.Deserialize<Patient>(payload);
-                    if (patient != null)
+                    RequestResult<Patient> result = JsonSerializer.Deserialize<RequestResult<Patient>>(payload);
+                    Patient? patient = result.ResourcePayload;
+                    if (result.ResultStatus == ResultType.Success && patient != null)
                     {
                         if (!string.IsNullOrEmpty(patient.PersonalHealthNumber))
                         {
@@ -114,25 +117,33 @@ namespace HealthGateway.Common.Delegates
                         }
                         else
                         {
-                            retVal.ResultMessage = "PHN not found";
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "PHN not found", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
                             this.logger.LogDebug($"Finished getting patient. {hdid}, PHN not found");
                         }
                     }
                     else
                     {
-                        retVal.ResultMessage = "Unable to deserialize patient result";
+                        if (result.ResultError != null)
+                        {
+                            retVal.ResultError = result.ResultError;
+                        }
+                        else
+                        {
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Invalid response object returned from PatientService", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
+                            this.logger.LogError($"Could not deserialize patient response object");
+                        }
                     }
                 }
                 else
                 {
-                    retVal.ResultMessage = $"Response {response.StatusCode}/{response.ReasonPhrase} from Patient Service";
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Response {response.StatusCode}/{response.ReasonPhrase} from Patient Service", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
                     this.logger.LogError($"Error getting patient. {hdid}, {payload}");
                 }
             }
             catch (AggregateException e)
             {
                 this.logger.LogError($"Error connecting to Patient service {e.ToString()}");
-                retVal.ResultMessage = "Unable to connect to Health Gateway Patient Service";
+                retVal.ResultError = new RequestResultError() { ResultMessage = "Unable to connect to Health Gateway Patient Service", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
             }
 
             return retVal;

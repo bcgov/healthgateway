@@ -64,11 +64,6 @@
                 id="timeline"
                 class="col-12 col-md-10 col-lg-9 column-wrapper"
             >
-                <ErrorCard
-                    title="Whoops!"
-                    description="An error occurred."
-                    :show="hasErrors"
-                />
                 <b-alert
                     :show="hasNewTermsOfService"
                     dismissible
@@ -299,6 +294,8 @@ import {
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
+import BannerError from "@/models/bannerError";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 const namespace: string = "user";
 
@@ -328,6 +325,9 @@ export default class TimelineView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
     private filterText: string = "";
     private filterTypes: string[] = [];
     private timelineEntries: TimelineEntry[] = [];
@@ -335,7 +335,6 @@ export default class TimelineView extends Vue {
     private isImmunizationLoading: boolean = false;
     private isLaboratoryLoading: boolean = false;
     private isNoteLoading: boolean = false;
-    private hasErrors: boolean = false;
     private idleLogoutWarning: boolean = false;
     private protectiveWordAttempts: number = 0;
     private isAddingNote: boolean = false;
@@ -520,14 +519,24 @@ export default class TimelineView extends Vue {
                 } else {
                     this.logger.error(
                         "Error returned from the medication statements call: " +
-                            results.resultMessage
+                            JSON.stringify(results.resultError)
                     );
-                    this.hasErrors = true;
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Medications Error",
+                            results.resultError
+                        )
+                    );
                 }
             })
             .catch((err) => {
-                this.hasErrors = true;
                 this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Fetch Medications Error",
+                        err
+                    )
+                );
             })
             .finally(() => {
                 this.isMedicationLoading = false;
@@ -553,14 +562,24 @@ export default class TimelineView extends Vue {
                 } else {
                     this.logger.error(
                         "Error returned from the immunization call: " +
-                            results.resultMessage
+                            JSON.stringify(results.resultError)
                     );
-                    this.hasErrors = true;
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Immunizations Error",
+                            results.resultError
+                        )
+                    );
                 }
             })
             .catch((err) => {
-                this.hasErrors = true;
                 this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Fetch Immunizations Error",
+                        err
+                    )
+                );
             })
             .finally(() => {
                 this.isImmunizationLoading = false;
@@ -590,14 +609,21 @@ export default class TimelineView extends Vue {
                 } else {
                     this.logger.error(
                         "Error returned from the laboratory call: " +
-                            results.resultMessage
+                            JSON.stringify(results.resultError)
                     );
-                    this.hasErrors = true;
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Laboratory Error",
+                            results.resultError
+                        )
+                    );
                 }
             })
             .catch((err) => {
-                this.hasErrors = true;
                 this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Fetch Laboratory Error", err)
+                );
             })
             .finally(() => {
                 this.isLaboratoryLoading = false;
@@ -623,14 +649,21 @@ export default class TimelineView extends Vue {
                 } else {
                     this.logger.error(
                         "Error returned from the note call: " +
-                            results.resultMessage
+                            JSON.stringify(results.resultError)
                     );
-                    this.hasErrors = true;
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Notes Error",
+                            results.resultError
+                        )
+                    );
                 }
             })
             .catch((err) => {
-                this.hasErrors = true;
                 this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Fetch Notes Error", err)
+                );
             })
             .finally(() => {
                 this.isNoteLoading = false;

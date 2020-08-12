@@ -18,9 +18,7 @@ namespace HealthGateway.WebClient.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Diagnostics.Contracts;
     using System.Text.Json;
-    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
@@ -32,6 +30,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.WebClient.Constant;
     using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.ErrorHandling;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
@@ -102,7 +101,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<UserProfileModel>()
                 {
                     ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                    ResultMessage = retVal.Message,
+                    ResultError = new RequestResultError() { ResultMessage = retVal.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
                     ResourcePayload = null,
                 };
             }
@@ -126,7 +125,7 @@ namespace HealthGateway.WebClient.Services
             return new RequestResult<UserProfileModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResultMessage = retVal.Message,
+                ResultError = retVal.Status != DBStatusCode.Error ? null : new RequestResultError() { ResultMessage = retVal.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
                 ResourcePayload = userProfile,
             };
         }
@@ -143,7 +142,7 @@ namespace HealthGateway.WebClient.Services
             if (registrationStatus == RegistrationStatus.Closed)
             {
                 requestResult.ResultStatus = ResultType.Error;
-                requestResult.ResultMessage = "Registration is closed";
+                requestResult.ResultError = new RequestResultError() { ResultMessage = "Registration is closed", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
                 this.logger.LogWarning($"Registration is closed. {JsonSerializer.Serialize(createProfileRequest)}");
                 return requestResult;
             }
@@ -155,7 +154,7 @@ namespace HealthGateway.WebClient.Services
                 if (!Guid.TryParse(createProfileRequest.InviteCode, out Guid inviteKey))
                 {
                     requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultMessage = "Invalid email invite";
+                    requestResult.ResultError = new RequestResultError() { ResultMessage = "Invalid email invite", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
                     this.logger.LogWarning($"Invalid email invite code. {JsonSerializer.Serialize(createProfileRequest)}");
                     return requestResult;
                 }
@@ -175,7 +174,7 @@ namespace HealthGateway.WebClient.Services
                          !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))))
                 {
                     requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultMessage = "Invalid email invite";
+                    requestResult.ResultError = new RequestResultError() { ResultMessage = "Invalid email invite", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
                     this.logger.LogWarning($"Invalid email invite. {JsonSerializer.Serialize(createProfileRequest)}");
                     return requestResult;
                 }
@@ -323,8 +322,8 @@ namespace HealthGateway.WebClient.Services
             return new RequestResult<TermsOfServiceModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResultMessage = retVal.Message,
                 ResourcePayload = TermsOfServiceModel.CreateFromDbModel(retVal.Payload),
+                ResultError = retVal.Status != DBStatusCode.Error ? null : new RequestResultError() { ResultMessage = retVal.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
         }
 
@@ -346,12 +345,11 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogTrace($"Getting user preference... {hdid}");
             DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
 
-
             RequestResult<Dictionary<string, string>> requestResult = new RequestResult<Dictionary<string, string>>()
             {
                 ResourcePayload = dbResult.Payload.ToDictionary(x => x.Preference, x => x.Value),
                 ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbResult.Message,
+                ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) }
             };
 
             this.logger.LogTrace($"Finished getting user preference. {JsonSerializer.Serialize(dbResult)}");

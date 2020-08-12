@@ -27,13 +27,6 @@ input {
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <div class="row py-5">
             <div class="col-lg-12 col-md-12">
-                <b-alert :show="hasErrors" dismissible variant="danger">
-                    <h4>Error</h4>
-                    <span
-                        >An unexpected error occured while processing the
-                        request.</span
-                    >
-                </b-alert>
                 <div id="pageTitle">
                     <h1 id="subject">
                         Profile
@@ -433,6 +426,8 @@ import {
     faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
+import BannerError from "@/models/bannerError";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 library.add(faExclamationTriangle);
 
@@ -481,12 +476,13 @@ export default class ProfileView extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
 
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
     @Ref("verifySMSModal")
     readonly verifySMSModal!: VerifySMSComponent;
 
     private isLoading: boolean = true;
-    private hasErrors: boolean = false;
-    private errorMessage: string = "";
 
     private emailVerified = false;
     private email: string = "";
@@ -575,7 +571,9 @@ export default class ProfileView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(`Error loading profile: ${err}`);
-                this.hasErrors = true;
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile loading", err)
+                );
                 this.isLoading = false;
             });
 
@@ -754,8 +752,10 @@ export default class ProfileView extends Vue {
                 this.$v.$reset();
             })
             .catch((err) => {
-                this.hasErrors = true;
                 this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile Update", err)
+                );
             })
             .finally(() => {
                 this.isLoading = false;
@@ -801,8 +801,10 @@ export default class ProfileView extends Vue {
                 this.logger.verbose("success!");
             })
             .catch((err) => {
-                this.hasErrors = true;
                 this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile Recover", err)
+                );
             })
             .finally(() => {
                 this.isLoading = false;
@@ -827,8 +829,10 @@ export default class ProfileView extends Vue {
                 this.showCloseWarning = false;
             })
             .catch((err) => {
-                this.hasErrors = true;
                 this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile Close", err)
+                );
             })
             .finally(() => {
                 this.isLoading = false;

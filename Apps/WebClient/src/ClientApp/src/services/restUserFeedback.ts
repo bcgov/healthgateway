@@ -7,6 +7,8 @@ import {
     IUserFeedbackService,
 } from "@/services/interfaces";
 import UserFeedback from "@/models/userFeedback";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
@@ -27,7 +29,12 @@ export class RestUserFeedbackService implements IUserFeedbackService {
                 })
                 .catch((err) => {
                     this.logger.error(`submitFeedback Fetch error: ${err}`);
-                    reject(err);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }

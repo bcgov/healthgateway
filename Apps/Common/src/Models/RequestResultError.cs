@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Services
-{
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
 
+using System.Text.Json.Serialization;
+
+namespace HealthGateway.Common.Models
+{
     /// <summary>
-    /// The Patient data service.
+    /// The RequestResultError model.
     /// </summary>
-    public interface IPatientService
+    public class RequestResultError
     {
         /// <summary>
-        /// Gets the patient record.
+        /// Gets or sets the message depending on the result type.
+        /// Will always be set when ResultType is Error.
         /// </summary>
-        /// <param name="id">The patient id.</param>
-        /// <returns>The patient model.</returns>
-        Task<RequestResult<Patient>> GetPatient(string id);
+        [JsonPropertyName("resultMessage")]
+        public string ResultMessage { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the error code.
+        /// Will always be set when ResultType is Error.
+        /// </summary>
+        [JsonPropertyName("errorCode")]
+        public string ErrorCode { get; set; } = string.Empty;
     }
 }

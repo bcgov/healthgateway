@@ -8,6 +8,8 @@ import {
 } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
 import Communication from "@/models/communication";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {
@@ -28,7 +30,12 @@ export class RestCommunicationService implements ICommunicationService {
                 })
                 .catch((err) => {
                     this.logger.error(`getActive Communication error: ${err}`);
-                    return reject(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }

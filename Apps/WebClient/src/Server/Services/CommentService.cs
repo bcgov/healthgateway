@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Services
     using System.Collections.Generic;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -58,7 +59,11 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
-                throw new ApplicationException("Profile key not set");
+                return new RequestResult<UserComment>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
             }
 
             Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
@@ -68,7 +73,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = UserComment.CreateFromDbModel(dbComment.Payload, this.cryptoDelegate, key),
                 ResultStatus = dbComment.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbComment.Message,
+                ResultError = new RequestResultError() { ResultMessage = dbComment.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
         }
@@ -83,7 +88,11 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${hdId}");
-                throw new ApplicationException("Profile key not set");
+                return new RequestResult<IEnumerable<UserComment>>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
             }
 
             DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetList(hdId, parentEntryId);
@@ -91,7 +100,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = UserComment.CreateListFromDbModel(dbComments.Payload, this.cryptoDelegate, key),
                 ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbComments.Message,
+                ResultError = dbComments.Status != DBStatusCode.Read ? new RequestResultError() { ResultMessage = dbComments.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };
             return result;
         }
@@ -104,7 +113,11 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
-                throw new ApplicationException("Profile key not set");
+                return new RequestResult<UserComment>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
             }
 
             Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
@@ -114,7 +127,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = UserComment.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
                 ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbResult.Message,
+                ResultError = dbResult.Status != DBStatusCode.Updated ? new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };
             return result;
         }
@@ -127,7 +140,11 @@ namespace HealthGateway.WebClient.Services
             if (key == null)
             {
                 this.logger.LogError($"User does not have a key: ${userComment.UserProfileId}");
-                throw new ApplicationException("Profile key not set");
+                return new RequestResult<UserComment>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
             }
 
             Comment comment = userComment.ToDbModel(this.cryptoDelegate, key);
@@ -137,7 +154,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = UserComment.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key),
                 ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultMessage = dbResult.Message,
+                ResultError = dbResult.Status != DBStatusCode.Deleted ? new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };
             return result;
         }

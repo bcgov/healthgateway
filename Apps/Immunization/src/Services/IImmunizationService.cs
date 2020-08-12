@@ -17,6 +17,7 @@ namespace HealthGateway.Immunization.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Models;
 
     /// <summary>
@@ -29,6 +30,6 @@ namespace HealthGateway.Immunization.Services
         /// </summary>
         /// <param name="hdid">The health directed id for the subject.</param>
         /// <returns>Returns a list of immunizations.</returns>
-        Task<IEnumerable<ImmunizationView>> GetImmunizations(string hdid);
+        Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string hdid);
     }
 }
