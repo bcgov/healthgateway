@@ -15,7 +15,7 @@
             content="Author: BCGov, Health Gateway of British Columbia"
         />
 
-        <!-- Snowplow starts plowing - Standalone vA.2.10.2 -->
+        <!-- Snowplow starts plowing - Standalone vE.2.14.0 -->
         <script type="text/javascript">
             (function (p, l, o, w, i, n, g) {
                 if (!p[i]) {
@@ -35,12 +35,13 @@
                 window,
                 document,
                 "script",
-                "https://sp-js.apps.gov.bc.ca/MDWay3UqFnIiGVLIo7aoMi4xMC4y.js",
+                "https://www2.gov.bc.ca/StaticWebResources/static/sp/sp-2-14-0.js",
                 "snowplow"
             );
             var collector = "spt.apps.gov.bc.ca";
             window.snowplow("newTracker", "rt", collector, {
                 appId: "Snowplow_standalone",
+                cookieLifetime: 86400 * 548,
                 platform: "web",
                 post: true,
                 forceSecureTracker: true,

@@ -15,7 +15,7 @@ Add the following text, changing [YOUR IP] to your actual IP.
   "ContentSecurityPolicy": {
     "connect-src": "https://spt.apps.gov.bc.ca/com.snowplowanalytics.snowplow/tp2 https://sso-dev.pathfinder.gov.bc.ca/ http://localhost:* ws://localhost:* http://[YOUR IP]:* ws://[YOUR IP]:*",
     "frame-src": "https://sso-dev.pathfinder.gov.bc.ca/",
-    "script-src": "https://sp-js.apps.gov.bc.ca/MDWay3UqFnIiGVLIo7aoMi4xMC4y.js 'sha256-4RS22DYeB7U14dra4KcQYxmwt5HkOInieXK1NUMBmQI=' 'sha256-tT6wQ5eTtffepfT/tETAfx8eRC/zUKlclQiXRqC//Yw='"
+    "script-src": "https://www2.gov.bc.ca/StaticWebResources/static/sp/sp-2-14-0.js 'sha256-q+lOQm0t+vqQq4IdjwI4OwRI9fKfomdxduL1IJYjkA4='"
   }
 }
 ```
