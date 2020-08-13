@@ -391,7 +391,7 @@ export default class RegistrationView extends Vue {
     private smsNumber: string = "";
 
     private isEmailChecked: boolean = true;
-    private isSMSNumberChecked: boolean = false;
+    private isSMSNumberChecked: boolean = true;
 
     private oidcUser: any = {};
     private userProfileService!: IUserProfileService;
