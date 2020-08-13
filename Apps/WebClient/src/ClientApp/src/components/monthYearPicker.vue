@@ -204,6 +204,8 @@ export default class MonthYearPickerComponent extends Vue {
         if (!this.years.some((y) => y == currentYear)) {
             this.years.push(currentYear);
         }
+        // Sort years by descending
+        this.years = this.years.sort((a, b) => b - a);
     }
 }
 </script>
