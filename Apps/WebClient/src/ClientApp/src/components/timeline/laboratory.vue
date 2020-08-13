@@ -177,7 +177,7 @@ $radius: 15px;
                                             >
                                             {{
                                                 formatDate(
-                                                    result.collectionDateTime
+                                                    result.collectedDateTime
                                                 )
                                             }}
                                         </div>
