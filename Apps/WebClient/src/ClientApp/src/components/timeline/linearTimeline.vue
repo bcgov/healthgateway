@@ -33,7 +33,7 @@
                         class="date"
                         tabindex="1"
                     >
-                        {{ getHeadingDate(dateGroup.date) }}
+                        {{ getHeadingDate(dateGroup) }}
                     </div>
                 </b-col>
                 <b-col>
@@ -192,8 +192,12 @@ export default class LinearTimelineComponent extends Vue {
         return result;
     }
 
-    private getHeadingDate(date: Date): string {
-        return moment(date).format("ll");
+    private getHeadingDate(dateGroup: DateGroup): string {
+        const dateToDisplay =
+            dateGroup.entries.length > 0
+                ? dateGroup.entries[0].date
+                : dateGroup.date;
+        return moment(dateToDisplay).format("ll");
     }
 
     @Watch("currentPage")
