@@ -89,6 +89,7 @@
     "image-webpack-loader": "^6.0.0",
     "inversify": "^5.0.1",
     "moment": "2.26.0",
+    "moment-timezone": "^0.5.31",
     "oidc-client": "^1.10.1",
     "reflect-metadata": "^0.1.13",
     "vue": "^2.6.11",

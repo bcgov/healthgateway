@@ -33,7 +33,7 @@
                         class="date"
                         tabindex="1"
                     >
-                        {{ getHeadingDate(dateGroup) }}
+                        {{ getHeadingDate(dateGroup.date) }}
                     </div>
                 </b-col>
                 <b-col>
@@ -70,10 +70,12 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import moment from "moment";
+import momentTimezone from "moment-timezone";
 import EventBus from "@/eventbus";
 import TimelineEntry from "@/models/timelineEntry";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import { EventMessageName } from "@/constants/eventMessageName";
+import { TimeZoneIdentifier } from "@/constants/timezoneIdentifier";
 
 interface DateGroup {
     key: string;
@@ -192,12 +194,10 @@ export default class LinearTimelineComponent extends Vue {
         return result;
     }
 
-    private getHeadingDate(dateGroup: DateGroup): string {
-        const dateToDisplay =
-            dateGroup.entries.length > 0
-                ? dateGroup.entries[0].date
-                : dateGroup.date;
-        return moment(dateToDisplay).format("ll");
+    private getHeadingDate(date: Date): string {
+        return momentTimezone
+            .tz(date, TimeZoneIdentifier.AmericaLosAngeles)
+            .format("ll");
     }
 
     @Watch("currentPage")
@@ -229,7 +229,6 @@ export default class LinearTimelineComponent extends Vue {
         >((groups, entry) => {
             // Get the string version of the date and get the date
             const date = new Date(entry.date).setHours(0, 0, 0, 0);
-
             // Create a new group if it the date doesnt exist in the map
             if (!groups[date]) {
                 groups[date] = [];
