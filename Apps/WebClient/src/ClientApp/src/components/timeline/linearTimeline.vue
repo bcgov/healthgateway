@@ -70,12 +70,10 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import moment from "moment";
-import momentTimezone from "moment-timezone";
 import EventBus from "@/eventbus";
 import TimelineEntry from "@/models/timelineEntry";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import { EventMessageName } from "@/constants/eventMessageName";
-import { TimeZoneIdentifier } from "@/constants/timezoneIdentifier";
 
 interface DateGroup {
     key: string;
