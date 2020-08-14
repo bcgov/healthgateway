@@ -21,7 +21,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         super(
             model.id,
             EntryType.Laboratory,
-            model.labResults[0].collectionDateTime
+            model.labResults[0].collectedDateTime
         );
 
         this.id = model.id;
@@ -39,7 +39,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.sortResults();
 
         const firstResult = this.resultList[0];
-        this.displayDate = firstResult.collectionDateTime;
+        this.displayDate = firstResult.collectedDateTime;
 
         this.summaryTestType = firstResult.testType || "";
         this.summaryDescription = firstResult.loincName || "";
@@ -59,9 +59,9 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 
     private sortResults() {
         this.resultList.sort((a, b) =>
-            a.collectionDateTime > b.collectionDateTime
+            a.collectedDateTime > b.collectedDateTime
                 ? -1
-                : a.collectionDateTime < b.collectionDateTime
+                : a.collectedDateTime < b.collectedDateTime
                 ? 1
                 : 0
         );
@@ -72,7 +72,7 @@ export class LaboratoryResultViewModel {
     public id: string;
     public testType: string | null;
     public outOfRange: string;
-    public collectionDateTime: Date;
+    public collectedDateTime: Date;
     public testStatus: string | null;
     public resultDescription: string | null;
     public receivedDateTime: Date;
@@ -84,7 +84,7 @@ export class LaboratoryResultViewModel {
         this.id = model.id;
         this.testType = model.testType;
         this.outOfRange = model.outOfRange ? "True" : "False";
-        this.collectionDateTime = model.collectionDateTime;
+        this.collectedDateTime = model.collectedDateTime;
         this.testStatus = model.testStatus;
         this.resultDescription = model.resultDescription;
         this.receivedDateTime = model.receivedDateTime;

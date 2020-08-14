@@ -45,7 +45,7 @@ namespace HealthGateway.Laboratory.Models
         /// Gets or sets the datetime the lab collection took place.
         /// </summary>
         [JsonPropertyName("collectedDateTime")]
-        public DateTime CollectionDateTime { get; set; }
+        public DateTime CollectedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the status of the test.
