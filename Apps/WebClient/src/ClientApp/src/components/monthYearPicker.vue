@@ -68,7 +68,6 @@
                 v-for="(year, i) of years"
                 :key="i"
                 :class="getDisplayYearCss(year)"
-                :variant="year == selectedYear ? 'primary' : 'light'"
                 @click="selectYear(year)"
             >
                 {{ year }}
