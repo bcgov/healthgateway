@@ -181,119 +181,117 @@ input {
                             </b-button>
                         </b-col>
                     </b-row>
-                    <!--
-    <b-row class="mb-3">
-        <b-col>
-            <label for="email"
-                >Cell Number (SMS notifications)</label
-            >
-            <b-button
-                v-if="!isSMSEditable"
-                id="editSMS"
-                class="mx-auto"
-                variant="link"
-                @click="makeSMSEditable()"
-                >Edit
-            </b-button>
-            <b-button
-                v-if="smsNumber"
-                id="removeSMS"
-                class="text-danger"
-                variant="link"
-                @click="
-                    makeSMSEditable();
-                    removeSMS();
-                "
-            >
-                Remove
-            </b-button>
-            <div class="form-inline">
-                <b-form-input
-                    id="smsNumber"
-                    v-model="$v.smsNumber.$model"
-                    type="text"
-                    class="mb-1"
-                    :placeholder="
-                        isSMSEditable
-                            ? 'Your phone number'
-                            : 'Empty'
-                    "
-                    :disabled="!isSMSEditable"
-                    :state="
-                        isValid($v.smsNumber) ||
-                        (smsVerified &&
-                        !isSMSEditable &&
-                        !!smsNumber
-                            ? true
-                            : undefined)
-                    "
-                />
-                <div
-                    v-if="
-                        !smsVerified &&
-                        !isSMSEditable &&
-                        smsNumber
-                    "
-                    class="ml-3"
-                >
-                    (Not Verified)
-                    <b-button
-                        id="verifySMS"
-                        variant="warning"
-                        class="ml-3"
-                        @click="verifySMS()"
+                    <b-row class="mb-3">
+                        <b-col>
+                            <label for="smsNumber"
+                                >Cell Number (SMS notifications)</label
+                            >
+                            <b-button
+                                v-if="!isSMSEditable"
+                                id="editSMS"
+                                class="mx-auto"
+                                variant="link"
+                                @click="makeSMSEditable()"
+                                >Edit
+                            </b-button>
+                            <b-button
+                                v-if="smsNumber"
+                                id="removeSMS"
+                                class="text-danger"
+                                variant="link"
+                                @click="
+                                    makeSMSEditable();
+                                    removeSMS();
+                                "
+                            >
+                                Remove
+                            </b-button>
+                            <div class="form-inline">
+                                <b-form-input
+                                    id="smsNumber"
+                                    v-model="$v.smsNumber.$model"
+                                    type="text"
+                                    class="mb-1"
+                                    :placeholder="
+                                        isSMSEditable
+                                            ? 'Your phone number'
+                                            : 'Empty'
+                                    "
+                                    :disabled="!isSMSEditable"
+                                    :state="
+                                        isValid($v.smsNumber) ||
+                                        (smsVerified &&
+                                        !isSMSEditable &&
+                                        !!smsNumber
+                                            ? true
+                                            : undefined)
+                                    "
+                                />
+                                <div
+                                    v-if="
+                                        !smsVerified &&
+                                        !isSMSEditable &&
+                                        smsNumber
+                                    "
+                                    class="ml-3"
+                                >
+                                    (Not Verified)
+                                    <b-button
+                                        id="verifySMS"
+                                        variant="warning"
+                                        class="ml-3"
+                                        @click="verifySMS()"
+                                    >
+                                        Verify
+                                    </b-button>
+                                </div>
+                            </div>
+                            <b-form-invalid-feedback
+                                :state="isValid($v.smsNumber)"
+                            >
+                                Valid SMS number is required
+                            </b-form-invalid-feedback>
+                            <b-form-invalid-feedback
+                                :state="$v.smsNumber.newSMSNumber"
+                            >
+                                New SMS number must be different from the
+                                previous one
+                            </b-form-invalid-feedback>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="!smsNumber && tempSMS">
+                        <b-col
+                            class="font-weight-bold text-primary text-center"
+                        >
+                            <font-awesome-icon
+                                icon="exclamation-triangle"
+                                aria-hidden="true"
+                            ></font-awesome-icon>
+                            Removing your phone number will disable future SMS
+                            communications from the Health Gateway
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="isSMSEditable"
+                        class="mb-3 justify-content-end"
                     >
-                        Verify
-                    </b-button>
-                </div>
-            </div>
-            <b-form-invalid-feedback
-                :state="isValid($v.smsNumber)"
-            >
-                Valid SMS number is required
-            </b-form-invalid-feedback>
-            <b-form-invalid-feedback
-                :state="$v.smsNumber.newSMSNumber"
-            >
-                New SMS number must be different from the
-                previous one
-            </b-form-invalid-feedback>
-        </b-col>
-    </b-row>
-    <b-row v-if="!smsNumber && tempSMS">
-        <b-col
-            class="font-weight-bold text-primary text-center"
-        >
-            <font-awesome-icon
-                icon="exclamation-triangle"
-                aria-hidden="true"
-            ></font-awesome-icon>
-            Removing your phone number will disable future SMS
-            communications from the Health Gateway
-        </b-col>
-    </b-row>
-    <b-row
-        v-if="isSMSEditable"
-        class="mb-3 justify-content-end"
-    >
-        <b-col class="text-right">
-            <b-button
-                id="cancelBtn"
-                class="mx-2 actionButton"
-                @click="cancelSMSEdit()"
-                >Cancel
-            </b-button>
-            <b-button
-                id="saveBtn"
-                variant="primary"
-                class="mx-2 actionButton"
-                :disabled="tempSMS === smsNumber"
-                @click="saveSMSEdit()"
-                >Save
-            </b-button>
-        </b-col>
-    </b-row>
-    -->
+                        <b-col class="text-right">
+                            <b-button
+                                id="cancelBtn"
+                                class="mx-2 actionButton"
+                                @click="cancelSMSEdit()"
+                                >Cancel
+                            </b-button>
+                            <b-button
+                                id="saveBtn"
+                                variant="primary"
+                                class="mx-2 actionButton"
+                                :disabled="tempSMS === smsNumber"
+                                @click="saveSMSEdit()"
+                                >Save
+                            </b-button>
+                        </b-col>
+                    </b-row>
                 </div>
                 <div v-else-if="!isLoading">
                     <b-row class="mb-3">
