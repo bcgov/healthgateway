@@ -195,9 +195,7 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private getHeadingDate(date: Date): string {
-        return momentTimezone
-            .tz(date, TimeZoneIdentifier.AmericaLosAngeles)
-            .format("ll");
+        return moment(date).format("ll");
     }
 
     @Watch("currentPage")
@@ -224,22 +222,32 @@ export default class LinearTimelineComponent extends Vue {
         if (this.visibleTimelineEntries.length === 0) {
             return [];
         }
+        const timezoneOffSetInMinutes = new Date().getTimezoneOffset();
         let groups = this.visibleTimelineEntries.reduce<
             Record<string, TimelineEntry[]>
         >((groups, entry) => {
             // Get the string version of the date and get the date
-            const date = new Date(entry.date).setHours(0, 0, 0, 0);
+            const localDate = new Date(entry.date);
+            debugger;
+            const dateGroup = localDate.setHours(
+                0,
+                timezoneOffSetInMinutes,
+                0,
+                0
+            );
             // Create a new group if it the date doesnt exist in the map
-            if (!groups[date]) {
-                groups[date] = [];
+            if (!groups[dateGroup]) {
+                groups[dateGroup] = [];
             }
-            groups[date].push(entry);
+            groups[dateGroup].push(entry);
             return groups;
         }, {});
         let groupArrays = Object.keys(groups).map<DateGroup>((dateKey) => {
+            const groupDate = new Date(groups[dateKey][0].date);
+            groupDate.setHours(0, timezoneOffSetInMinutes, 0, 0);
             return {
                 key: dateKey,
-                date: new Date(groups[dateKey][0].date),
+                date: groupDate,
                 entries: groups[
                     dateKey
                 ].sort((a: TimelineEntry, b: TimelineEntry) =>
