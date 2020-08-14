@@ -222,10 +222,15 @@
                         ></font-awesome-icon>
                     </b-col>
                     <b-col class="px-0 text-left" cols="auto">
-                        <span>{{ icon.label }}</span>
+                        <span
+                            >{{ icon.label }}
+                            <span v-if="!icon.active">
+                                (Coming soon)</span
+                            ></span
+                        >
                     </b-col>
                     <b-col
-                        v-if="false && icon.label === 'Lab Tests'"
+                        v-if="icon.definition === 'flask' && icon.active"
                         cols="0"
                         class="covid-container ml-2 px-2"
                     >
@@ -359,17 +364,17 @@ export default class LandingView extends Vue {
         },
         {
             definition: "syringe",
-            label: "Immunizations (Coming soon)",
+            label: "Immunizations",
             active: false,
         },
         {
             definition: "flask",
-            label: "Lab Results (Coming soon)",
-            active: false,
+            label: "Lab Results",
+            active: true,
         },
         {
             definition: "user-md",
-            label: "Health Visits (Coming soon)",
+            label: "Health Visits",
             active: false,
         },
     ];
