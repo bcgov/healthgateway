@@ -228,7 +228,6 @@ export default class LinearTimelineComponent extends Vue {
         >((groups, entry) => {
             // Get the string version of the date and get the date
             const localDate = new Date(entry.date);
-            debugger;
             const dateGroup = localDate.setHours(
                 0,
                 timezoneOffSetInMinutes,
