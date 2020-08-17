@@ -81,7 +81,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/vue-fontawesome": "^0.1.9",
     "@types/vue-clickaway": "^2.2.0",
-    "@types/winston": "^2.4.4",
     "axios": "^0.19.2",
     "bootstrap-vue": "^2.15.0",
     "cookie-storage": "^6.0.0",
