@@ -27,6 +27,6 @@ namespace HealthGateway.Database.Models
 
         public int Rating { get; set; }
 
-        public bool Skip { get; set; };
+        public bool Skip { get; set; }
     }
 }
