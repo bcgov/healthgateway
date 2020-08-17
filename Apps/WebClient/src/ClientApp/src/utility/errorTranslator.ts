@@ -18,7 +18,6 @@ export default class ErrorTranslator {
         title: string,
         error?: ResultError
     ): BannerError {
-        console.log(error);
         if (error) {
             return {
                 title,
@@ -38,7 +37,6 @@ export default class ErrorTranslator {
 
     public static getDisplayMessage(errorCode: string): string {
         let sections = errorCode.split("-");
-        console.log(sections);
         if (sections.length === 1) {
             return sections[0];
         } else if (sections.length === 2) {
@@ -63,7 +61,6 @@ export default class ErrorTranslator {
     }
 
     private static getErrorType(errorType: string): string {
-        console.log(errorType);
         switch (errorType) {
             case ErrorType.Concurreny:
                 return "Concurreny";
@@ -79,7 +76,6 @@ export default class ErrorTranslator {
     }
 
     private static getServiceName(serviceName: string): string {
-        console.log(serviceName);
         switch (serviceName) {
             case ServiceName.DataBase:
                 return "Data Base";

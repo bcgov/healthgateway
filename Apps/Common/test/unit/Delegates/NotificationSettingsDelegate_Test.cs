@@ -16,21 +16,22 @@
 namespace HealthGateway.CommonTests.Delegates
 {
     using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Configuration;
     using Moq;
-    using Xunit;
-    using HealthGateway.Common.Services;
-    using System.Net.Http;
-    using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Models;
-    using System.Threading.Tasks;
     using Moq.Protected;
-    using System.Threading;
-    using System.Net;
-    using System.Text.Json;
-    using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants;
+    using Xunit;
 
     public class NotificationSettingsDelegate_Test
     {
@@ -52,7 +53,8 @@ namespace HealthGateway.CommonTests.Delegates
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>(){
+            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
+            {
                 ResourcePayload = JsonSerializer.Deserialize<NotificationSettingsResponse>(json, options),
                 ResultStatus = Common.Constants.ResultType.Success,
                 TotalResultCount = 1,
@@ -116,7 +118,7 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
-                ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden",
+                ResultError = new RequestResultError() { ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
             };
             var handlerMock = new Mock<HttpMessageHandler>();
             handlerMock
@@ -255,7 +257,7 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
-                ResultMessage = $"Bad Request, HTTP Error BadRequest\nDetails:\n{errMsg}",
+                ResultError = new RequestResultError() { ResultMessage = $"Bad Request, HTTP Error BadRequest\nDetails:\n{errMsg}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
             };
             NotificationSettingsRequest notificationSettings = new NotificationSettingsRequest()
             {
@@ -300,7 +302,7 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<NotificationSettingsRequest> expected = new RequestResult<NotificationSettingsRequest>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
-                ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden",
+                ResultError = new RequestResultError() { ResultMessage = "DID Claim is missing or can not resolve PHN, HTTP Error Forbidden", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) },
             };
             NotificationSettingsRequest notificationSettings = new NotificationSettingsRequest()
             {
