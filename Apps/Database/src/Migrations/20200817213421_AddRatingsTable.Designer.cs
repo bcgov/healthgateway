@@ -27,7 +27,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20200817213033_AddRatingsTable")]
+    [Migration("20200817213421_AddRatingsTable")]
     partial class AddRatingsTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2728,7 +2728,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ratings");
+                    b.ToTable("Rating");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>

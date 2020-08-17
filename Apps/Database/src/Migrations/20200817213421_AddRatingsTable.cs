@@ -25,7 +25,7 @@ namespace HealthGateway.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Ratings",
+                name: "Rating",
                 schema: "gateway",
                 columns: table => new
                 {
@@ -40,14 +40,14 @@ namespace HealthGateway.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ratings", x => x.RatingId);
+                    table.PrimaryKey("PK_Rating", x => x.RatingId);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Ratings",
+                name: "Rating",
                 schema: "gateway");
         }
     }
