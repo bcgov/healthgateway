@@ -27,7 +27,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20200817193701_AddRatingsTable")]
+    [Migration("20200817213033_AddRatingsTable")]
     partial class AddRatingsTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2691,11 +2691,11 @@ namespace HealthGateway.Database.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.Ratings", b =>
+            modelBuilder.Entity("HealthGateway.Database.Models.Rating", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("RatingsId")
+                        .HasColumnName("RatingId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
@@ -2706,7 +2706,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("Rating")
+                    b.Property<int>("RatingValue")
                         .HasColumnType("integer");
 
                     b.Property<bool>("Skip")

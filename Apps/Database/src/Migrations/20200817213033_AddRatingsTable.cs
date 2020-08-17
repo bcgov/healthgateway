@@ -1,5 +1,4 @@
-﻿
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,18 +29,18 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    RatingsId = table.Column<Guid>(nullable: false),
+                    RatingId = table.Column<Guid>(nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     UpdatedDateTime = table.Column<DateTime>(nullable: false),
                     xmin = table.Column<uint>(type: "xid", nullable: false),
-                    Rating = table.Column<int>(nullable: false),
+                    RatingValue = table.Column<int>(nullable: false),
                     Skip = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ratings", x => x.RatingsId);
+                    table.PrimaryKey("PK_Ratings", x => x.RatingId);
                 });
         }
 

@@ -2673,11 +2673,11 @@ namespace HealthGateway.Database.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.Ratings", b =>
+            modelBuilder.Entity("HealthGateway.Database.Models.Rating", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("RatingsId")
+                        .HasColumnName("RatingId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
@@ -2688,7 +2688,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("Rating")
+                    b.Property<int>("RatingValue")
                         .HasColumnType("integer");
 
                     b.Property<bool>("Skip")

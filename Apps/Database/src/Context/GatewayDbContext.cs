@@ -70,7 +70,7 @@ namespace HealthGateway.Database.Context
         public DbSet<Comment> Comment { get; set; } = null!;
         public DbSet<Communication> Communication { get; set; } = null!;
         public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
-        public DbSet<Ratings> Ratings { get; set; } = null!;
+        public DbSet<Rating> Ratings { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />

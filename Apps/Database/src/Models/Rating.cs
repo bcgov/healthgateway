@@ -20,12 +20,12 @@ namespace HealthGateway.Database.Models
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
-    public class Ratings : AuditableEntity
+    public class Rating : AuditableEntity
     {
-        [Column("RatingsId")]
+        [Column("RatingId")]
         public Guid Id { get; set; }
 
-        public int Rating { get; set; }
+        public int RatingValue { get; set; }
 
         public bool Skip { get; set; }
     }
