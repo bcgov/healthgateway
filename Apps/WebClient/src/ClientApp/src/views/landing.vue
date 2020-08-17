@@ -382,7 +382,7 @@ export default class LandingView extends Vue {
         {
             definition: "edit",
             label: "Add Notes to Records (Mar 2020)",
-            active: true,
+            active: false,
         },
         {
             definition: "syringe",
@@ -392,7 +392,7 @@ export default class LandingView extends Vue {
         {
             definition: "flask",
             label: "Lab Results",
-            active: true,
+            active: false,
         },
         {
             definition: "user-md",
