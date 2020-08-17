@@ -87,6 +87,7 @@
             </b-col>
             <b-col class="col-8 p-0">
                 <b-btn
+                    id="selectedYearBtn"
                     squared
                     class="m-0 w-100 h-100"
                     variant="light"
