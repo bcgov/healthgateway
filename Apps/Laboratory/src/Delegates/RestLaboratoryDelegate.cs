@@ -76,7 +76,7 @@ namespace HealthGateway.Laboratory.Delegates
             };
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            this.logger.LogTrace($"Getting laboratory orders...");
+            this.logger.LogDebug($"Getting laboratory orders...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -91,6 +91,7 @@ namespace HealthGateway.Laboratory.Delegates
                 Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.labConfig.Endpoint, query));
                 HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                this.logger.LogTrace($"Response: {response}");
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
@@ -100,6 +101,7 @@ namespace HealthGateway.Laboratory.Delegates
                             IgnoreNullValues = true,
                             WriteIndented = true,
                         };
+                        this.logger.LogTrace($"Response payload: {payload}");
                         IEnumerable<LaboratoryOrder> labReports = JsonSerializer.Deserialize<List<LaboratoryOrder>>(payload, options);
                         if (labReports != null)
                         {
