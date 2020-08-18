@@ -22,11 +22,9 @@ namespace HealthGateway.Admin.Services
     using CsvHelper;
     using CsvHelper.Configuration;
     using HealthGateway.Admin.Server.Mappers;
-    using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class CsvExportService : ICsvExportService
@@ -36,21 +34,25 @@ namespace HealthGateway.Admin.Services
         private readonly INoteDelegate noteDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly ICommentDelegate commentDelegate;
+        private readonly IRatingDelegate ratingDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CsvExportService"/> class.
         /// </summary>
         /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="commentDelegate">The beta request delegate to interact with the DB.</param>
+        /// <param name="commentDelegate">The comment delegate to interact with the DB.</param>
+        /// <param name="ratingDelegate">The rating delegate to interact with the DB.</param>
         public CsvExportService(
             INoteDelegate noteDelegate,
             IUserProfileDelegate userProfileDelegate,
-            ICommentDelegate commentDelegate)
+            ICommentDelegate commentDelegate,
+            IRatingDelegate ratingDelegate)
         {
             this.noteDelegate = noteDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.commentDelegate = commentDelegate;
+            this.ratingDelegate = ratingDelegate;
         }
 
         /// <inheritdoc />
@@ -72,6 +74,13 @@ namespace HealthGateway.Admin.Services
         {
             DBResult<IEnumerable<UserProfile>> profiles = this.userProfileDelegate.GetAll(Page, PageSize);
             return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
+        }
+
+        /// <inheritdoc />
+        public Stream GetRatings(DateTime? startDate, DateTime? endDate)
+        {
+            DBResult<IEnumerable<Rating>> profiles = this.ratingDelegate.GetAll(Page, PageSize);
+            return GetStream<Rating, UserProfileCsvMap>(profiles.Payload);
         }
 
         private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
