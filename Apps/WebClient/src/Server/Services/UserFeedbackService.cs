@@ -15,7 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System.Diagnostics.Contracts;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -27,16 +30,19 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly IFeedbackDelegate feedbackDelegate;
+        private readonly IRatingDelegate ratingDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="feedbackDelegate">The feedback delegate to perform the work.</param>
-        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate)
+        /// <param name="ratingDelegate">The rating delegate to perform the work.</param>
+        public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IRatingDelegate ratingDelegate)
         {
             this.logger = logger;
             this.feedbackDelegate = feedbackDelegate;
+            this.ratingDelegate = ratingDelegate;
         }
 
         /// <inheritdoc />
@@ -47,6 +53,22 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(retVal)}");
 
             return retVal;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Rating> CreateRating(Rating rating)
+        {
+            this.logger.LogTrace($"Creating rating... {JsonConvert.SerializeObject(rating)}");
+            DBResult<Rating> dbRating = this.ratingDelegate.InsertRating(rating);
+            this.logger.LogDebug($"Finished creating user feedback. {JsonConvert.SerializeObject(dbRating)}");
+
+            RequestResult<Rating> result = new RequestResult<Rating>()
+            {
+                ResourcePayload = dbRating.Payload,
+                ResultStatus = dbRating.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultError = new RequestResultError() { ResultMessage = dbRating.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+            };
+            return result;
         }
     }
 }
