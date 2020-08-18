@@ -102,12 +102,12 @@ namespace HealthGateway.Laboratory.Delegates
                             WriteIndented = true,
                         };
                         this.logger.LogTrace($"Response payload: {payload}");
-                        IEnumerable<LaboratoryOrder> labReports = JsonSerializer.Deserialize<List<LaboratoryOrder>>(payload, options);
-                        if (labReports != null)
+                        PHSAResult phsaResult = JsonSerializer.Deserialize<PHSAResult>(payload, options);
+                        if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
-                            retVal.ResourcePayload = labReports;
-                            retVal.TotalResultCount = labReports.Count();
+                            retVal.ResourcePayload = phsaResult.Result;
+                            retVal.TotalResultCount = phsaResult.Result.Count;
 #pragma warning disable CA1305 // Specify IFormatProvider
                             retVal.PageSize = int.Parse(this.labConfig.FetchSize);
 #pragma warning restore CA1305 // Specify IFormatProvider
