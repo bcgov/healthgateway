@@ -38,14 +38,14 @@ namespace HealthGateway.WebClient.Controllers
     [ApiController]
     public class RatingController
     {
-        private IRatingService ratingService; // TODO: Update with Interface.
+        private IRatingService ratingService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RatingController"/> class.
         /// </summary>
         /// <param name="ratingService">The injected rating service.</param>
         public RatingController(
-            IRatingService ratingService) // TODO: Update with Interface.
+            IRatingService ratingService)
         {
             this.ratingService = ratingService;
         }
