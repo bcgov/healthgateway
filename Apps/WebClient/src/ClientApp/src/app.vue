@@ -103,6 +103,7 @@ import {
     PaginationNavPlugin,
     SpinnerPlugin,
     TooltipPlugin,
+    FormRatingPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -122,6 +123,7 @@ Vue.use(PaginationNavPlugin);
 Vue.use(TooltipPlugin);
 Vue.use(FormGroupPlugin);
 Vue.use(FormRadioPlugin);
+Vue.use(FormRatingPlugin);
 
 // Load general icons
 import { config, library } from "@fortawesome/fontawesome-svg-core";
