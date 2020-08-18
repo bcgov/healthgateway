@@ -77,7 +77,7 @@ export default class RatingComponent extends Vue {
                                 <b-button
                                     id="skipButton"
                                     variant="outline-primary"
-                                    @click="skip($event)"
+                                    @click="skip()"
                                     >Skip</b-button
                                 >
                             </b-col>
