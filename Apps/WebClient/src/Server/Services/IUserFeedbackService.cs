@@ -28,14 +28,14 @@ namespace HealthGateway.WebClient.Services
         /// Saves the user feedback to the database.
         /// </summary>
         /// <param name="userFeedback">The user feedback model to be saved.</param>
-        /// <returns>The wrappeed user feedback.</returns>
+        /// <returns>The wrapped user feedback.</returns>
         DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback);
 
         /// <summary>
         /// Saves the rating to the database.
         /// </summary>
         /// <param name="rating">The rating model to be saved.</param>
-        /// <returns>The wrappeed rating.</returns>
+        /// <returns>The wrapped rating.</returns>
         RequestResult<Rating> CreateRating(Rating rating);
     }
 }
