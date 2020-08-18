@@ -21,7 +21,6 @@ export class RestUserRatingService implements IUserRatingService {
     }
 
     public submitRating(rating: UserRating): Promise<boolean> {
-        debugger;
         return new Promise((resolve, reject) => {
             this.http
                 .post<void>(this.USER_RATING_BASE_URI, rating)
