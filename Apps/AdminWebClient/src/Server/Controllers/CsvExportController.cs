@@ -98,7 +98,7 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of Rain inclusively between UTC dates if provided.
+        /// Retrieves a list of Ratings inclusively between UTC dates if provided.
         /// </summary>
         /// <returns>The invite email.</returns>
         /// <param name="startDate">The optional start date for the data.</param>
