@@ -192,6 +192,18 @@ $radius: 15px;
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="detailSection">
+                                    <div>
+                                        <strong>What to expect next?</strong>
+                                        <p>
+                                            If you receive a positive COVID-19
+                                            result, expect a phone call from
+                                            care provider or public health
+                                            official for next steps.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </b-collapse>
                     </b-col>

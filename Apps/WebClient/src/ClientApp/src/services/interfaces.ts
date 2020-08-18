@@ -19,7 +19,7 @@ import Communication from "@/models/communication";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import UserSMSInvite from "@/models/userSMSInvite";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import UserRating from '@/models/userRating';
+import UserRating from "@/models/userRating";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
