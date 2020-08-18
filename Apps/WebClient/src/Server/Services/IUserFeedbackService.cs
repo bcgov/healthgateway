@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -29,5 +30,12 @@ namespace HealthGateway.WebClient.Services
         /// <param name="userFeedback">The user feedback model to be saved.</param>
         /// <returns>The wrappeed user feedback.</returns>
         DBResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback);
+
+        /// <summary>
+        /// Saves the rating to the database.
+        /// </summary>
+        /// <param name="rating">The rating model to be saved.</param>
+        /// <returns>The wrappeed rating.</returns>
+        RequestResult<Rating> CreateRating(Rating rating);
     }
 }
