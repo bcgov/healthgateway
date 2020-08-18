@@ -1,16 +1,5 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.modal-content {
-    max-width: 500px;
-    .modal-body {
-        padding-bottom: 0px !important;
-        .row-answer {
-            margin-top: 10px;
-            padding-left: 50px;
-            padding-right: 50px;
-        }
-    }
-}
 </style>
 <template>
     <div>
@@ -33,7 +22,7 @@
                     {{ question }}
                 </b-col>
             </b-row>
-            <b-row class="text-center row-answer">
+            <b-row class="text-center px-2 pt-3">
                 <b-col>
                     <b-form-rating
                         v-model="ratingValue"
