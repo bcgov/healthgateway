@@ -195,12 +195,12 @@ $radius: 15px;
 
                                 <div class="detailSection">
                                     <div>
-                                        <strong>What to expect next?</strong>
+                                        <strong>What to expect next</strong>
                                         <p>
                                             If you receive a positive COVID-19
                                             result, expect a phone call from
-                                            care provider or public health
-                                            official for next steps.
+                                            your care provider or a public
+                                            health official for next steps.
                                         </p>
                                     </div>
                                 </div>
