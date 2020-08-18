@@ -222,10 +222,15 @@
                         ></font-awesome-icon>
                     </b-col>
                     <b-col class="px-0 text-left" cols="auto">
-                        <span>{{ icon.label }}</span>
+                        <span
+                            >{{ icon.label }}
+                            <span v-if="!icon.active">
+                                (Coming soon)</span
+                            ></span
+                        >
                     </b-col>
                     <b-col
-                        v-if="false && icon.label === 'Lab Tests'"
+                        v-if="icon.definition === 'flask' && icon.active"
                         cols="0"
                         class="covid-container ml-2 px-2"
                     >
@@ -346,30 +351,52 @@ interface Tile {
     },
 })
 export default class LandingView extends Vue {
+    private logo: string = Image00;
+    private devices: string = Image02;
+    private bottomImage: string = Image07;
+    private isOpenRegistration: boolean = false;
+    private getTileClass(index: number): string {
+        return index % 2 == 0 ? "order-md-1" : "order-md-2";
+    }
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
+    private mounted() {
+        this.isOpenRegistration =
+            this.webClientConfig.registrationStatus == RegistrationStatus.Open;
+        this.icons[0].active = this.webClientConfig.modules[
+            "MedicationHistory"
+        ];
+        this.icons[1].active = this.webClientConfig.modules["Note"];
+        this.icons[2].active = this.webClientConfig.modules["Immunization"];
+        this.icons[3].active = this.webClientConfig.modules["Laboratory"];
+        this.icons[4].active = this.webClientConfig.modules["Encounter"];
+    }
+
     private icons: Icon[] = [
         {
             definition: "pills",
             label: "Medications (Dec 2019)",
-            active: true,
+            active: false,
         },
         {
             definition: "edit",
             label: "Add Notes to Records (Mar 2020)",
-            active: true,
+            active: false,
         },
         {
             definition: "syringe",
-            label: "Immunizations (Coming soon)",
+            label: "Immunizations",
             active: false,
         },
         {
             definition: "flask",
-            label: "Lab Results (Coming soon)",
+            label: "Lab Results",
             active: false,
         },
         {
             definition: "user-md",
-            label: "Health Visits (Coming soon)",
+            label: "Health Visits",
             active: false,
         },
     ];
@@ -399,20 +426,5 @@ export default class LandingView extends Vue {
             imageSrc: Image06,
         },
     ];
-
-    private logo: string = Image00;
-    private devices: string = Image02;
-    private bottomImage: string = Image07;
-    private isOpenRegistration: boolean = false;
-    private getTileClass(index: number): string {
-        return index % 2 == 0 ? "order-md-1" : "order-md-2";
-    }
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
-    private mounted() {
-        this.isOpenRegistration =
-            this.webClientConfig.registrationStatus == RegistrationStatus.Open;
-    }
 }
 </script>
