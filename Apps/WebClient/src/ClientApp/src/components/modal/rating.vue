@@ -83,8 +83,10 @@ export default class RatingComponent extends Vue {
             })
             .catch((err) => {
                 this.logger.error(`submitRating with error: ${err}`);
+            })
+            .finally(() => {
+                this.hideModal();
             });
-        this.hideModal();
     }
 }
 </script>
