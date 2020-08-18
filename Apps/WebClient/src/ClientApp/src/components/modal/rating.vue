@@ -42,9 +42,14 @@ export default class RatingComponent extends Vue {
             id="rating-modal"
             ref="rating-modal"
             v-model="isVisible"
-            hide-footer
-            hide-header
-            size="md sm"
+            title="Rating"
+            size="md"
+            header-bg-variant="primary"
+            header-text-variant="light"
+            footer-class="modal-footer"
+            no-close-on-backdrop
+            hide-header-close
+            no-close-on-esc
             centered
         >
             <b-row class="text-center">
@@ -64,11 +69,22 @@ export default class RatingComponent extends Vue {
                     ></b-form-rating>
                 </b-col>
             </b-row>
-            <b-row class="text-center row-skip">
-                <b-col>
-                    <b-button id="skipButton" @click="skip()">Skip</b-button>
-                </b-col>
-            </b-row>
+            <template v-slot:modal-footer>
+                <b-row>
+                    <b-col>
+                        <b-row>
+                            <b-col>
+                                <b-button
+                                    id="skipButton"
+                                    variant="outline-primary"
+                                    @click="skip($event)"
+                                    >Skip</b-button
+                                >
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+            </template>
         </b-modal>
     </div>
 </template>
@@ -79,22 +95,10 @@ export default class RatingComponent extends Vue {
     max-width: 500px;
     .modal-body {
         padding-bottom: 0px !important;
-        font-family: Myriad-Pro, Calibri, Arial, sans serif !important;
-
         .row-answer {
             margin-top: 10px;
             padding-left: 50px;
             padding-right: 50px;
-        }
-
-        .row-skip {
-            .btn {
-                width: 100%;
-                background-color: #f0f0f0;
-                margin-top: 10px;
-                border: none;
-                color: #000;
-            }
         }
     }
 }
