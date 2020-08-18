@@ -17,6 +17,7 @@ import {
     IUserFeedbackService,
     IUserNoteService,
     IUserProfileService,
+    IUserRatingService,
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { WinstonLogger } from "@/services/winstonLogger";
@@ -32,6 +33,7 @@ import { RestBetaRequestService } from "@/services/restBetaRequestService";
 import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestUserCommentService } from "@/services/restUserCommentService";
+import { RestUserRatingService } from "@/services/restUserRatingService";
 
 const container = new Container();
 container
@@ -85,6 +87,10 @@ container
 container
     .bind<IUserCommentService>(SERVICE_IDENTIFIER.UserCommentService)
     .to(RestUserCommentService)
+    .inSingletonScope();
+container
+    .bind<IUserRatingService>(SERVICE_IDENTIFIER.UserRatingService)
+    .to(RestUserRatingService)
     .inSingletonScope();
 container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

@@ -51,7 +51,7 @@
                         <b-button
                             id="skipButton"
                             variant="outline-primary"
-                            @click="skip(0, true)"
+                            @click="handleRating(0, true)"
                             >Skip</b-button
                         >
                     </b-col>
@@ -63,7 +63,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { ILogger } from "@/services/interfaces";
+import { ILogger, IUserRatingService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
@@ -81,7 +81,13 @@ export default class RatingComponent extends Vue {
         this.isVisible = false;
     }
     private handleRating(value: number, skip: boolean = false) {
-        // Todo: call rating vue service
+        const ratingService: IUserRatingService = container.get(
+            SERVICE_IDENTIFIER.UserRatingService
+        );
+        this.logger.debug(
+            `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
+        );
+        ratingService.submitRating({ ratingValue: value, skip: skip });
         this.hideModal();
     }
 }
