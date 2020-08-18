@@ -99,7 +99,7 @@ export interface IUserFeedbackService {
 
 export interface IUserRatingService {
     initialize(http: IHttpDelegate): void;
-    submitRating(rating: UserRating): void;
+    submitRating(rating: UserRating): Promise<boolean>;
 }
 
 export interface IBetaRequestService {

@@ -1,6 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-</style>
 <template>
     <div>
         <b-modal
@@ -59,16 +56,19 @@ import container from "@/plugins/inversify.config";
 @Component
 export default class RatingComponent extends Vue {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    question: string =
+    private question: string =
         "Did the Health Gateway improve your access to health information today? Please provide a rating.";
     private ratingValue: number = 0;
     private isVisible: boolean = false;
+
     public showModal() {
         this.isVisible = true;
     }
+
     public hideModal() {
         this.isVisible = false;
     }
+
     private handleRating(value: number, skip: boolean = false) {
         const ratingService: IUserRatingService = container.get(
             SERVICE_IDENTIFIER.UserRatingService
@@ -76,7 +76,14 @@ export default class RatingComponent extends Vue {
         this.logger.debug(
             `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
         );
-        ratingService.submitRating({ ratingValue: value, skip: skip });
+        ratingService
+            .submitRating({ ratingValue: value, skip: skip })
+            .then(() => {
+                this.logger.debug(`submitRating with success.`);
+            })
+            .catch((err) => {
+                this.logger.error(`submitRating with error: ${err}`);
+            });
         this.hideModal();
     }
 }
