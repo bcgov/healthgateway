@@ -38,14 +38,14 @@ namespace HealthGateway.WebClient.Controllers
     [ApiController]
     public class RatingController
     {
-        private readonly object ratingService; // TODO: Update with Interface.
+        private IRatingService ratingService; // TODO: Update with Interface.
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RatingController"/> class.
         /// </summary>
         /// <param name="ratingService">The injected rating service.</param>
         public RatingController(
-            object ratingService) // TODO: Update with Interface.
+            IRatingService ratingService) // TODO: Update with Interface.
         {
             this.ratingService = ratingService;
         }
@@ -53,16 +53,16 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Saves the rating model.
         /// </summary>
-        /// <param name="Rating">The rating to be saved.</param>
+        /// <param name="rating">The rating to be saved.</param>
         /// <returns>The saved rating wrapped in a request result.</returns>
         /// <response code="200">Returns the saved rating json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        public IActionResult Save(object Rating) // TODO: update with Model.
+        public IActionResult Add(Rating rating)
         {
-            //RequestResult<Rating> result = this.ratingService.Save(rating);
-            return new JsonResult(null); // TODO: update with result.
+            RequestResult<Rating> result = this.ratingService.Add(rating);
+            return new JsonResult(result);
         }
     }
 }
