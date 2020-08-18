@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -61,6 +63,17 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished inserting rating to DB... {JsonSerializer.Serialize(result)}");
             return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Rating>> GetAll(int page, int pageSize)
+        {
+            this.logger.LogTrace($"Retrieving all the ratings for the page #{page} with pageSize: {pageSize}...");
+            return DBDelegateHelper.GetPagedDBResult<Rating>(
+                this.dbContext.Rating
+                    .OrderBy(rating => rating.CreatedDateTime),
+                page,
+                pageSize);
         }
     }
 }

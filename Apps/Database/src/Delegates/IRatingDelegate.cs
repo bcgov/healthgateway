@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -29,5 +30,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="rating">The rating to create.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         DBResult<Rating> InsertRating(Rating rating);
+
+        /// <summary>
+        /// Gets a paged list of Ratings from the database.
+        /// </summary>
+        /// <param name="page">The starting offset for the query.</param>
+        /// <param name="pageSize">The maximum amount of rows to return.</param>
+        /// <returns>A list of Ratings wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<Rating>> GetAll(int page, int pageSize);
     }
 }
