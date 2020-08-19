@@ -66,7 +66,7 @@ namespace HealthGateway.Admin.Models
             {
                 Id = model.Id,
                 To = model.To,
-                EmailStatusCode = model.EmailStatusCode,
+                EmailStatusCode = model.EmailStatusCode.ToString(),
                 Subject = model.Subject,
                 SentDateTime = model.SentDateTime,
                 UserInviteStatus = inviteStatus,

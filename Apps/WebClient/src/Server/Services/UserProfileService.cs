@@ -316,7 +316,7 @@ namespace HealthGateway.WebClient.Services
         public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
         {
             this.logger.LogTrace($"Getting active terms of service...");
-            DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(AgreementType.TermsofService);
+            DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsofService);
             this.logger.LogDebug($"Finished getting terms of service. {JsonSerializer.Serialize(retVal)}");
 
             return new RequestResult<TermsOfServiceModel>()

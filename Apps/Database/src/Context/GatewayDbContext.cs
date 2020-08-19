@@ -19,12 +19,11 @@ namespace HealthGateway.Database.Context
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Reflection;
-    using System.Runtime.Serialization;
     using System.Text;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Utils;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -112,8 +111,8 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.EmailStatusCode);
 
             var emailFormatCodeConvertor = new ValueConverter<EmailFormat, string>(
-                    v => v.ToString(),
-                    v => (EmailFormat)Enum.Parse(typeof(EmailFormat), v));
+                    v => EnumUtility.ToEnumString<EmailFormat>(v, false),
+                    v => EnumUtility.ToEnum<EmailFormat>(v, false));
 
             modelBuilder.Entity<Email>()
                 .Property(e => e.FormatCode)
@@ -133,6 +132,18 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.FormatCode)
                 .HasConversion(emailFormatCodeConvertor);
 
+            var emailStatusCodeConvertor = new ValueConverter<EmailStatus, string>(
+                    v => EnumUtility.ToEnumString<EmailStatus>(v, false),
+                    v => EnumUtility.ToEnum<EmailStatus>(v, false));
+
+            modelBuilder.Entity<Email>()
+                .Property(e => e.EmailStatusCode)
+                .HasConversion(emailStatusCodeConvertor);
+
+            modelBuilder.Entity<EmailStatusCode>()
+                .Property(e => e.StatusCode)
+                .HasConversion(emailStatusCodeConvertor);
+
             // Create Foreign keys for Audit
             modelBuilder.Entity<AuditEvent>()
                     .HasOne<ProgramTypeCode>()
@@ -148,8 +159,8 @@ namespace HealthGateway.Database.Context
                     .OnDelete(DeleteBehavior.Restrict);
 
             var auditTransactionResultConvertor = new ValueConverter<AuditTransactionResult, string>(
-                    v => ToEnumString<AuditTransactionResult>(v),
-                    v => ToEnum<AuditTransactionResult>(v));
+                    v => EnumUtility.ToEnumString<AuditTransactionResult>(v, true),
+                    v => EnumUtility.ToEnum<AuditTransactionResult>(v, true));
 
             modelBuilder.Entity<AuditEvent>()
                     .Property(e => e.TransactionResultCode)
@@ -221,8 +232,8 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.CommunicationStatusCode);
 
             var communicationStatusCodeConverter = new ValueConverter<CommunicationStatus, string>(
-                   v => v.ToString(),
-                   v => (CommunicationStatus)Enum.Parse(typeof(CommunicationStatus), v));
+                    v => EnumUtility.ToEnumString<CommunicationStatus>(v, false),
+                    v => EnumUtility.ToEnum<CommunicationStatus>(v, false));
 
             modelBuilder.Entity<Communication>()
                 .Property(e => e.CommunicationStatusCode)
@@ -232,6 +243,24 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.StatusCode)
                 .HasConversion(communicationStatusCodeConverter);
 
+            var communicationTypeCodeConverter = new ValueConverter<CommunicationType, string>(
+                    v => EnumUtility.ToEnumString<CommunicationType>(v, false),
+                    v => EnumUtility.ToEnum<CommunicationType>(v, false));
+
+            modelBuilder.Entity<Communication>()
+                .Property(e => e.CommunicationTypeCode)
+                .HasConversion(communicationTypeCodeConverter);
+
+            modelBuilder.Entity<CommunicationTypeCode>()
+                .Property(e => e.StatusCode)
+                .HasConversion(communicationTypeCodeConverter);
+
+            modelBuilder.Entity<LegalAgreementTypeCode>()
+                .Property(e => e.LegalAgreementCode)
+                .HasConversion(new ValueConverter<LegalAgreementType, string>(
+                    v => EnumUtility.ToEnumString<LegalAgreementType>(v, true),
+                    v => EnumUtility.ToEnum<LegalAgreementType>(v, false)));
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -240,40 +269,6 @@ namespace HealthGateway.Database.Context
             this.SeedApplicationSettings(modelBuilder);
             this.SeedMessagingVerifications(modelBuilder);
             this.SeedCommunication(modelBuilder);
-        }
-
-        private static string ToEnumString<T>(Enum instance)
-        {
-            string enumString = instance.ToString();
-            var field = typeof(T).GetField(enumString);
-
-            // instance can be a number that was cast to T, instead of a named value, or could be a combination of flags instead of a single value
-            if (field != null)
-            {
-                var attr = (EnumMemberAttribute)field.GetCustomAttributes(typeof(EnumMemberAttribute), false).SingleOrDefault();
-                if (attr != null)
-                {// if there's no EnumMember attr, use the default value
-                    enumString = attr.Value;
-                }
-            }
-
-            var testValue = typeof(AuditTransactionResult).GetMember(instance.ToString()).First().GetCustomAttribute<EnumMemberAttribute>() !.Value;
-            return enumString;
-        }
-
-        private static T ToEnum<T>(string str)
-        {
-            var enumType = typeof(T);
-            foreach (var name in Enum.GetNames(enumType))
-            {
-                var enumMemberAttribute = ((EnumMemberAttribute[])enumType.GetField(name) !.GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
-                if (enumMemberAttribute.Value == str)
-                {
-                    return (T)Enum.Parse(enumType, name);
-                }
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(str), "Unable to convert to Enum");
         }
 
         /// <summary>
@@ -629,7 +624,7 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<LegalAgreementTypeCode>().HasData(
                 new LegalAgreementTypeCode
                 {
-                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
                     Description = "Terms of Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -640,7 +635,7 @@ namespace HealthGateway.Database.Context
                 new LegalAgreement // Terms of Service as of Launch
                 {
                     Id = Guid.Parse("f5acf1de-2f5f-431e-955d-a837d5854182"),
-                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20191206.html"),
                     EffectiveDate = this.DefaultSeedDate,
                     CreatedBy = UserId.DefaultUser,
@@ -651,7 +646,7 @@ namespace HealthGateway.Database.Context
                 new LegalAgreement // Updated Terms of Service for Notes feature
                 {
                     Id = Guid.Parse("ec438d12-f8e2-4719-8444-28e35d34674c"),
-                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200317.html"),
                     EffectiveDate = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     CreatedBy = UserId.DefaultUser,
@@ -662,7 +657,7 @@ namespace HealthGateway.Database.Context
                 new LegalAgreement // Updated Terms of Service for Lab/Covid Update
                 {
                     Id = Guid.Parse("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
-                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200511.html"),
                     EffectiveDate = DateTime.ParseExact("07/31/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     CreatedBy = UserId.DefaultUser,

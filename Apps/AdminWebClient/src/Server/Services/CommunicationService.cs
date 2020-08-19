@@ -48,7 +48,7 @@ namespace HealthGateway.Admin.Services
         public RequestResult<Communication> Add(Communication communication)
         {
             this.logger.LogTrace($"Communication recieved:  {JsonConvert.SerializeObject(communication)}");
-            if (communication.CommunicationTypeCode == "Email")
+            if (communication.CommunicationTypeCode == CommunicationType.Email)
             {
                 if (communication.Text.Length == 0 || communication.Subject.Length == 0)
                 {

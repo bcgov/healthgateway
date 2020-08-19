@@ -18,16 +18,16 @@ namespace HealthGateway.Database.Constants
     /// <summary>
     /// Represents the type of a communication.
     /// </summary>
-    public static class CommunicationType
+    public enum CommunicationType
     {
         /// <summary>
         /// The Banner communication.
         /// </summary>
-        public const string Banner = "Banner";
+        Banner,
 
         /// <summary>
         /// The Email communication.
         /// </summary>
-        public const string Email = "Email";
+        Email,
     }
 }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// A represntation of Legal Agreements for Health Gateway.
@@ -33,11 +34,11 @@ namespace HealthGateway.Database.Models
 
         /// <summary>
         /// Gets or sets a value representing the type of legal agreement.
-        /// The value is one of <see cref="Constants.AgreementType"/>.
+        /// The value is one of <see cref="Constants.LegalAgreementType"/>.
         /// </summary>
         [Required]
         [MaxLength(10)]
-        public string? LegalAgreementCode { get; set; }
+        public LegalAgreementType LegalAgreementCode { get; set; } = LegalAgreementType.TermsofService;
 
         /// <summary>
         /// Gets or sets the legal text.
