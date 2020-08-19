@@ -94,6 +94,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<INoteDelegate, DBNoteDelegate>();
