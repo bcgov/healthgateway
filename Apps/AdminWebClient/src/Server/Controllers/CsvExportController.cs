@@ -100,7 +100,7 @@ namespace HealthGateway.Admin.Controllers
         /// <summary>
         /// Retrieves a list of Ratings inclusively between UTC dates if provided.
         /// </summary>
-        /// <returns>The invite email.</returns>
+        /// <returns>A CSV of Ratings.</returns>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
         /// <response code="200">Returns the list of beta requests.</response>
