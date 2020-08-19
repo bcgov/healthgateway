@@ -15,29 +15,35 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Constants
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// Transaction Result Types for the audit entity.
     /// </summary>
-    public static class AuditTransactionResult
+    public enum AuditTransactionResult
     {
         /// <summary>
         /// Represents a successful transaction.
         /// </summary>
-        public const string Success = "Ok";
+        [EnumMember(Value = "Ok")]
+        Success,
 
         /// <summary>
         /// Represents a failed transaction.
         /// </summary>
-        public const string Failure = "Fail";
+        [EnumMember(Value = "Fail")]
+        Failure,
 
         /// <summary>
         /// Represents an unauthorized transaction.
         /// </summary>
-        public const string Unauthorized = "NotAuth";
+        [EnumMember(Value = "NotAuth")]
+        Unauthorized,
 
         /// <summary>
         /// Represents that a system error occurred.
         /// </summary>
-        public const string SystemError = "Err";
+        [EnumMember(Value = "Err")]
+        SystemError,
     }
 }

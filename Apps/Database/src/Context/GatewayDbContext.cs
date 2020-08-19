@@ -19,11 +19,14 @@ namespace HealthGateway.Database.Context
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
+    using System.Runtime.Serialization;
     using System.Text;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
     /// <summary>
     /// The database context used by the web client application.
@@ -108,11 +111,27 @@ namespace HealthGateway.Database.Context
                 .HasPrincipalKey(k => k.StatusCode)
                 .HasForeignKey(k => k.EmailStatusCode);
 
+            var emailFormatCodeConvertor = new ValueConverter<EmailFormat, string>(
+                    v => v.ToString(),
+                    v => (EmailFormat)Enum.Parse(typeof(EmailFormat), v));
+
+            modelBuilder.Entity<Email>()
+                .Property(e => e.FormatCode)
+                .HasConversion(emailFormatCodeConvertor);
+
             modelBuilder.Entity<EmailTemplate>()
                 .HasOne<EmailFormatCode>()
                 .WithMany()
                 .HasPrincipalKey(k => k.FormatCode)
                 .HasForeignKey(k => k.FormatCode);
+
+            modelBuilder.Entity<EmailTemplate>()
+                .Property(e => e.FormatCode)
+                .HasConversion(emailFormatCodeConvertor);
+
+            modelBuilder.Entity<EmailFormatCode>()
+                .Property(e => e.FormatCode)
+                .HasConversion(emailFormatCodeConvertor);
 
             // Create Foreign keys for Audit
             modelBuilder.Entity<AuditEvent>()
@@ -127,6 +146,18 @@ namespace HealthGateway.Database.Context
                     .HasPrincipalKey(k => k.ResultCode)
                     .HasForeignKey(k => k.TransactionResultCode)
                     .OnDelete(DeleteBehavior.Restrict);
+
+            var auditTransactionResultConvertor = new ValueConverter<AuditTransactionResult, string>(
+                    v => ToEnumString<AuditTransactionResult>(v),
+                    v => ToEnum<AuditTransactionResult>(v));
+
+            modelBuilder.Entity<AuditEvent>()
+                    .Property(e => e.TransactionResultCode)
+                    .HasConversion(auditTransactionResultConvertor);
+
+            modelBuilder.Entity<AuditTransactionResultCode>()
+                    .Property(e => e.ResultCode)
+                    .HasConversion(auditTransactionResultConvertor);
 
             // Create Foreign keys for FileDownload
             modelBuilder.Entity<FileDownload>()
@@ -189,6 +220,18 @@ namespace HealthGateway.Database.Context
                 .HasPrincipalKey(k => k.StatusCode)
                 .HasForeignKey(k => k.CommunicationStatusCode);
 
+            var communicationStatusCodeConverter = new ValueConverter<CommunicationStatus, string>(
+                   v => v.ToString(),
+                   v => (CommunicationStatus)Enum.Parse(typeof(CommunicationStatus), v));
+
+            modelBuilder.Entity<Communication>()
+                .Property(e => e.CommunicationStatusCode)
+                .HasConversion(communicationStatusCodeConverter);
+
+            modelBuilder.Entity<CommunicationStatusCode>()
+                .Property(e => e.StatusCode)
+                .HasConversion(communicationStatusCodeConverter);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -197,6 +240,40 @@ namespace HealthGateway.Database.Context
             this.SeedApplicationSettings(modelBuilder);
             this.SeedMessagingVerifications(modelBuilder);
             this.SeedCommunication(modelBuilder);
+        }
+
+        private static string ToEnumString<T>(Enum instance)
+        {
+            string enumString = instance.ToString();
+            var field = typeof(T).GetField(enumString);
+
+            // instance can be a number that was cast to T, instead of a named value, or could be a combination of flags instead of a single value
+            if (field != null)
+            {
+                var attr = (EnumMemberAttribute)field.GetCustomAttributes(typeof(EnumMemberAttribute), false).SingleOrDefault();
+                if (attr != null)
+                {// if there's no EnumMember attr, use the default value
+                    enumString = attr.Value;
+                }
+            }
+
+            var testValue = typeof(AuditTransactionResult).GetMember(instance.ToString()).First().GetCustomAttribute<EnumMemberAttribute>() !.Value;
+            return enumString;
+        }
+
+        private static T ToEnum<T>(string str)
+        {
+            var enumType = typeof(T);
+            foreach (var name in Enum.GetNames(enumType))
+            {
+                var enumMemberAttribute = ((EnumMemberAttribute[])enumType.GetField(name) !.GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
+                if (enumMemberAttribute.Value == str)
+                {
+                    return (T)Enum.Parse(enumType, name);
+                }
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(str), "Unable to convert to Enum");
         }
 
         /// <summary>
