@@ -102,7 +102,7 @@
             </summary>
             <param name="communicationService">The injected communication service.</param>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Add(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Add(HealthGateway.Admin.Models.Communication)">
             <summary>
             Adds a given communication to the backend.
             </summary>
@@ -112,7 +112,7 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Update(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Update(HealthGateway.Admin.Models.Communication)">
             <summary>
             Updates a given communication to the backend.
             </summary>
@@ -131,7 +131,7 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Delete(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Controllers.CommunicationController.Delete(HealthGateway.Admin.Models.Communication)">
             <summary>
             Deletes the Communication that is passed to the controller.
             </summary>
@@ -430,6 +430,110 @@
             <param name="model">A database email model.</param>
             <param name="inviteStatus">The user invite status.</param>
             <returns>A new UserBetaRequest.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.Communication">
+            <summary>
+            A system Communication.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Communication.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.Communication"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Communication.#ctor(HealthGateway.Database.Models.Communication)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.Communication"/> class.
+            </summary>
+            <param name="communication">The DB Communication to copy into this object.</param>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.Id">
+            <summary>
+            Gets or sets the id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.Text">
+            <summary>
+            Gets or sets the message text.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.Subject">
+            <summary>
+            Gets or sets the message subject.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.EffectiveDateTime">
+            <summary>
+            Gets or sets the effective datetime.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.ExpiryDateTime">
+            <summary>
+            Gets or sets the effective datetime.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.ScheduledDateTime">
+            <summary>
+            Gets or sets the scheduled datetime.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.CommunicationTypeCode">
+            <summary>
+            Gets or sets the type of the Communication (Banner vs Email).
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.CommunicationStatusCode">
+            <summary>
+            Gets or sets the state of the Communication (Draft, Pending ...).
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.Priority">
+            <summary>
+            Gets or sets the priority of the email communication.
+            The lower the value the lower the priority.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.CreatedBy">
+            <summary>
+            Gets or sets the user/system that created the entity.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.CreatedDateTime">
+            <summary>
+            Gets or sets the datetime the entity was created.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.UpdatedBy">
+            <summary>
+            Gets or sets the user/system that created the entity.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.UpdatedDateTime">
+            <summary>
+            Gets or sets the datetime the entity was updated.
+            This is generally set by the baseDbContext.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.Communication.Version">
+            <summary>
+            Gets or sets the version number to be used for backend locking.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Communication.FromDbModelIEnumerable(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.Communication})">
+            <summary>
+            Converts a list of DB Communications into a list of View Model Communications.
+            </summary>
+            <param name="communications">The list of DB Communications to convert.</param>
+            <returns>A converted list or null if inbound is null.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.Communication.ToDbModel">
+            <summary>
+            Converts this view model into a DB model object.
+            </summary>
+            <returns>The DB model object.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.ExternalConfiguration">
             <summary>
@@ -738,16 +842,16 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="communicationDelegate">The communication delegate to interact with the DB.</param>
         </member>
-        <member name="M:HealthGateway.Admin.Services.CommunicationService.Add(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.Add(HealthGateway.Admin.Models.Communication)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.CommunicationService.Update(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.Update(HealthGateway.Admin.Models.Communication)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.CommunicationService.GetAll">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.CommunicationService.Delete(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Services.CommunicationService.Delete(HealthGateway.Admin.Models.Communication)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Admin.Services.ConfigurationService">
@@ -880,14 +984,14 @@
             Service that interacts with the Communications database.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Add(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Add(HealthGateway.Admin.Models.Communication)">
             <summary>
             Adds a Communication to the database.
             </summary>
             <param name="communication">The communication to add to the backend.</param>
             <returns>Returns the added communication wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Update(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Update(HealthGateway.Admin.Models.Communication)">
             <summary>
             Updates a Communication to the database.
             </summary>
@@ -900,7 +1004,7 @@
             </summary>
             <returns>Returns a list of all communication entries, wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Delete(HealthGateway.Database.Models.Communication)">
+        <member name="M:HealthGateway.Admin.Services.ICommunicationService.Delete(HealthGateway.Admin.Models.Communication)">
             <summary>
             Deletes the given communication from the backend.
             </summary>
