@@ -259,7 +259,7 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.LegalAgreementCode)
                 .HasConversion(new ValueConverter<LegalAgreementType, string>(
                     v => EnumUtility.ToEnumString<LegalAgreementType>(v, true),
-                    v => EnumUtility.ToEnum<LegalAgreementType>(v, false)));
+                    v => EnumUtility.ToEnum<LegalAgreementType>(v, true)));
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
