@@ -13,18 +13,24 @@
             <div v-else>
                 <h3>Signing out...</h3>
             </div>
+            <RatingComponent ref="ratingComponent" :on-close="modalClosed()" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import { WebClientConfiguration } from "@/models/configData";
+import RatingComponent from "@/components/modal/rating.vue";
 const namespace = "auth";
 
-@Component
+@Component({
+    components: {
+        RatingComponent: RatingComponent,
+    },
+})
 export default class LogoutView extends Vue {
     @Action("signOutOidc", { namespace }) logout!: () => void;
 
@@ -32,13 +38,17 @@ export default class LogoutView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Ref("ratingComponent")
+    readonly ratingComponent!: RatingComponent;
+
     private mounted() {
+        this.ratingComponent.showModal();
+    }
+
+    private modalClosed() {
         if (this.oidcIsAuthenticated) {
             this.logout();
         }
-    }
-
-    private created() {
         setTimeout(() => {
             if (this.$route.path == "/logout") {
                 this.$router.push({ path: "/" });
