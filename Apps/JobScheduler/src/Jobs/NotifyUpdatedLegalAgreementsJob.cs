@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using Healthgateway.JobScheduler.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Database.Utils;
 
     /// <summary>
     /// Confirms if a new Legal Agreement is in place and notifies clients.
@@ -92,7 +93,8 @@ namespace Healthgateway.JobScheduler.Jobs
             foreach (LegalAgreementConfig lac in agreementConfigs)
             {
                 this.logger.LogInformation($"Processing {lac.Name}, looking up Legal Agreement code {lac.Code}");
-                DBResult<LegalAgreement> legalAgreementsResult = this.legalAgreementDelegate.GetActiveByAgreementType(lac.Code);
+                LegalAgreementType agreement = EnumUtility.ToEnum<LegalAgreementType>(lac.Code, true);
+                DBResult<LegalAgreement> legalAgreementsResult = this.legalAgreementDelegate.GetActiveByAgreementType(agreement);
                 if (legalAgreementsResult.Status == DBStatusCode.Read)
                 {
                     this.ProcessLegalAgreement(legalAgreementsResult.Payload, lac);

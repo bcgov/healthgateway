@@ -99,6 +99,6 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(10)]
-        public string EmailStatusCode { get; set; } = EmailStatus.New;
+        public EmailStatus EmailStatusCode { get; set; } = EmailStatus.New;
     }
 }

@@ -91,7 +91,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new Mock<ILegalAgreementDelegate>();
             legalAgreementDelegateMock
-                .Setup(s => s.GetActiveByAgreementType(AgreementType.TermsofService))
+                .Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService))
                 .Returns(new DBResult<LegalAgreement>() { Payload = termsOfService });
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
