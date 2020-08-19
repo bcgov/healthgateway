@@ -19,6 +19,8 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
@@ -49,7 +51,6 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
-    using Newtonsoft.Json;
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
@@ -114,6 +115,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
         }
 
@@ -268,7 +270,11 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             this.Logger.LogDebug("ConfigureAuditServices...");
 
-            services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)));
+            services.AddMvc(options => options.Filters.Add(typeof(AuditFilter)))
+                        .AddJsonOptions(options =>
+                        {
+                            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                        });
             services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection")));
             services.AddScoped<IAuditLogger, AuditLogger>();
@@ -492,7 +498,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             context.Response.ContentType = "application/json";
-            return context.Response.WriteAsync(JsonConvert.SerializeObject(new
+            return context.Response.WriteAsync(JsonSerializer.Serialize(new
             {
                 State = "AuthenticationFailed",
                 Message = context.Exception.ToString(),
