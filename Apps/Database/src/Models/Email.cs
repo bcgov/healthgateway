@@ -66,7 +66,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(4)]
-        public string FormatCode { get; set; } = EmailFormat.Text;
+        public EmailFormat FormatCode { get; set; } = EmailFormat.Text;
 
         /// <summary>
         /// Gets or sets the priority of the email.
