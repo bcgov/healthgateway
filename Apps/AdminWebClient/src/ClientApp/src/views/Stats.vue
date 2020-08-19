@@ -34,6 +34,14 @@
                                         ><v-icon>fa-download</v-icon></v-btn
                                     >
                                 </v-col>
+                                <v-col align="center" justify="center">
+                                    <h3>User Ratings</h3>
+                                    <v-btn
+                                        class="info"
+                                        @click="downloadUserRatingsCSV()"
+                                        ><v-icon>fa-download</v-icon></v-btn
+                                    >
+                                </v-col>
                             </v-row>
                         </v-container>
                     </v-form>
@@ -61,6 +69,9 @@ export default class StatsView extends Vue {
     }
     private downloadUserCommentsCSV(): void {
         window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetComments`);
+    }
+    private downloadUserRatingsCSV(): void {
+        window.open(`${this.serviceEndpoints.CsvExportBaseUri}/GetRatings`);
     }
 }
 </script>
