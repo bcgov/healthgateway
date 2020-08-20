@@ -13,7 +13,8 @@ import { ServiceName } from "@/models/errorInterfaces";
 @injectable()
 export class RestUserRatingService implements IUserRatingService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly USER_RATING_BASE_URI: string = "/v1/api/Rating";
+    private readonly USER_RATING_BASE_URI: string =
+        "/v1/api/UserFeedback/Rating";
     private http!: IHttpDelegate;
 
     public initialize(http: IHttpDelegate): void {

@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -85,6 +86,23 @@ namespace HealthGateway.WebClient.Controllers
 
                 return new OkResult();
             }
+        }
+
+
+        /// <summary>
+        /// Saves the rating model.
+        /// </summary>
+        /// <param name="rating">The rating to be saved.</param>
+        /// <returns>The saved rating wrapped in a request result.</returns>
+        /// <response code="200">Returns the saved rating json.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPost]
+        [Route("Rating")]
+        public IActionResult CreateRating(Rating rating)
+        {
+            RequestResult<Rating> result = this.userFeedbackService.CreateRating(rating);
+            return new JsonResult(result);
         }
     }
 }
