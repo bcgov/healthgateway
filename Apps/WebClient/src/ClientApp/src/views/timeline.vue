@@ -307,7 +307,6 @@ import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import TimelineLoadingComponent from "@/components/timelineLoading.vue";
-import MonthListToggleComponent from "@/components/monthListToggle.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
