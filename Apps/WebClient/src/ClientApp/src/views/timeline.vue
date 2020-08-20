@@ -174,26 +174,6 @@
                         <NoteTimelineComponent :is-add-mode="true" />
                     </b-col>
                 </b-row>
-                <b-row class="view-selector justify-content-end">
-                    <b-col cols="auto" class="pr-0">
-                        <b-btn
-                            class="month-view-btn btn-outline-primary px-2 m-0"
-                            :class="{ active: !isListView }"
-                            @click.stop="toggleMonthView"
-                        >
-                            Month
-                        </b-btn>
-                    </b-col>
-                    <b-col cols="auto" class="pl-0">
-                        <b-btn
-                            class="list-view-btn btn-outline-primary px-2 m-0"
-                            :class="{ active: isListView }"
-                            @click.stop="toggleListView"
-                        >
-                            List
-                        </b-btn>
-                    </b-col>
-                </b-row>
                 <LinearTimeline
                     v-show="isListView && !isLoading"
                     :timeline-entries="timelineEntries"
@@ -201,7 +181,30 @@
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
-                />
+                >
+                    <b-row
+                        slot="month-list-toggle"
+                        class="view-selector justify-content-end"
+                    >
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: false }"
+                                @click.stop="toggleMonthView"
+                            >
+                                Month
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: true }"
+                            >
+                                List
+                            </b-btn>
+                        </b-col>
+                    </b-row>
+                </LinearTimeline>
                 <CalendarTimeline
                     v-show="!isListView && !isLoading"
                     :timeline-entries="timelineEntries"
@@ -209,7 +212,30 @@
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
-                />
+                >
+                    <b-row
+                        slot="month-list-toggle"
+                        class="view-selector justify-content-end"
+                    >
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: true }"
+                            >
+                                Month
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: false }"
+                                @click.stop="toggleListView"
+                            >
+                                List
+                            </b-btn>
+                        </b-col>
+                    </b-row>
+                </CalendarTimeline>
                 <b-row v-if="isLoading">
                     <b-col>
                         <content-placeholders>
@@ -281,6 +307,7 @@ import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import TimelineLoadingComponent from "@/components/timelineLoading.vue";
+import MonthListToggleComponent from "@/components/monthListToggle.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";

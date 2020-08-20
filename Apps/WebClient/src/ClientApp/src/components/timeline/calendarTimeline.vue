@@ -1,13 +1,15 @@
 <style lang="scss"></style>
 <template>
     <div class="timeline-calendar">
+        <slot name="month-list-toggle"></slot>
         <CalendarComponent
             v-if="filteredTimelineEntries.length > 0"
             :date-groups="dateGroups"
             :filter-text="filterText"
             :filter-types="filterTypes"
             :is-visible="isVisible"
-        />
+        >
+        </CalendarComponent>
         <div v-else class="text-center">
             No records
         </div>
