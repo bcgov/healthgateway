@@ -18,31 +18,31 @@ namespace HealthGateway.Database.Constants
     /// <summary>
     /// Represents the status of a communication.
     /// </summary>
-    public static class CommunicationStatus
+    public enum CommunicationStatus
     {
         /// <summary>
         /// Constant value to a New communication.
         /// </summary>
-        public const string New = "New";
+        New,
 
         /// <summary>
         /// Constant value to represent a communication that has errored out.
         /// </summary>
-        public const string Error = "Error";
+        Error,
 
         /// <summary>
         /// Constant value to represent a communication that has been sent.
         /// </summary>
-        public const string Processed = "Processed";
+        Processed,
 
         /// <summary>
         /// Constant value to represent a Pending communication.
         /// </summary>
-        public const string Pending = "Pending";
+        Pending,
 
         /// <summary>
         /// Constant value to represent a Processing communication.
         /// </summary>
-        public const string Processing = "Processing";
+        Processing,
     }
 }

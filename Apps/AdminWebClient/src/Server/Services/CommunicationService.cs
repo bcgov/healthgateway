@@ -17,15 +17,15 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.Json;
+    using HealthGateway.Admin.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class CommunicationService : ICommunicationService
@@ -47,8 +47,8 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<Communication> Add(Communication communication)
         {
-            this.logger.LogTrace($"Communication recieved:  {JsonConvert.SerializeObject(communication)}");
-            if (communication.CommunicationTypeCode == "Email")
+            this.logger.LogTrace($"Communication recieved:  {JsonSerializer.Serialize(communication)}");
+            if (communication.CommunicationTypeCode == CommunicationType.Email)
             {
                 if (communication.Text.Length == 0 || communication.Subject.Length == 0)
                 {
@@ -59,12 +59,12 @@ namespace HealthGateway.Admin.Services
                 communication.ExpiryDateTime = DateTime.Now;
             }
 
-            this.logger.LogTrace($"Adding communication... {JsonConvert.SerializeObject(communication)}");
+            this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
 
-            DBResult<Communication> dbResult = this.communicationDelegate.Add(communication);
+            DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Add(communication.ToDbModel());
             RequestResult<Communication> requestResult = new RequestResult<Communication>()
             {
-                ResourcePayload = dbResult.Payload,
+                ResourcePayload = new Communication(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
@@ -76,12 +76,12 @@ namespace HealthGateway.Admin.Services
         {
             if (ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
             {
-                this.logger.LogTrace($"Updating communication... {JsonConvert.SerializeObject(communication)}");
+                this.logger.LogTrace($"Updating communication... {JsonSerializer.Serialize(communication)}");
 
-                DBResult<Communication> dbResult = this.communicationDelegate.Update(communication);
+                DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Update(communication.ToDbModel());
                 return new RequestResult<Communication>()
                 {
-                    ResourcePayload = dbResult.Payload,
+                    ResourcePayload = new Communication(dbResult.Payload),
                     ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                     ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
                 };
@@ -101,10 +101,10 @@ namespace HealthGateway.Admin.Services
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
             this.logger.LogTrace($"Getting communication entries...");
-            DBResult<IEnumerable<Communication>> dbResult = this.communicationDelegate.GetAll();
+            DBResult<IEnumerable<HealthGateway.Database.Models.Communication>> dbResult = this.communicationDelegate.GetAll();
             RequestResult<IEnumerable<Communication>> requestResult = new RequestResult<IEnumerable<Communication>>()
             {
-                ResourcePayload = dbResult.Payload,
+                ResourcePayload = Communication.FromDbModelIEnumerable(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
@@ -124,10 +124,10 @@ namespace HealthGateway.Admin.Services
                 };
             }
 
-            DBResult<Communication> dbResult = this.communicationDelegate.Delete(communication);
+            DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Delete(communication.ToDbModel());
             RequestResult<Communication> result = new RequestResult<Communication>()
             {
-                ResourcePayload = dbResult.Payload,
+                ResourcePayload = new Communication(dbResult.Payload),
                 ResultStatus = dbResult.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };

@@ -20,12 +20,10 @@ namespace HealthGateway.Common.ErrorHandling
     /// </summary>
     public class ServiceType
     {
-        private ServiceType(string value) { this.Value = value; }
-
-        /// <summary>
-        /// Gets or sets the Value that holds the internal representation of the ServiceType.
-        /// </summary>
-        public string Value { get; set; }
+        private ServiceType(string value)
+        {
+            this.Value = value;
+        }
 
         /// <summary>
         /// Gets the Database service code.
@@ -90,5 +88,10 @@ namespace HealthGateway.Common.ErrorHandling
         {
             get { return new ServiceType("PHSA"); }
         }
+
+        /// <summary>
+        /// Gets or sets the Value that holds the internal representation of the ServiceType.
+        /// </summary>
+        public string Value { get; set; }
     }
 }

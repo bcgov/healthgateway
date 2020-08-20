@@ -68,13 +68,13 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the type of the Communication (Banner vs Email).
         /// </summary>
         [MaxLength(10)]
-        public string CommunicationTypeCode { get; set; } = CommunicationType.Banner;
+        public CommunicationType CommunicationTypeCode { get; set; } = CommunicationType.Banner;
 
         /// <summary>
         /// Gets or sets the state of the Communication (Draft, Pending ...).
         /// </summary>
         [MaxLength(10)]
-        public string CommunicationStatusCode { get; set; } = CommunicationStatus.New;
+        public CommunicationStatus CommunicationStatusCode { get; set; } = CommunicationStatus.New;
 
         /// <summary>
         /// Gets or sets the priority of the email communication.

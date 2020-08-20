@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +13,19 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Services
+namespace HealthGateway.Database.Constants
 {
-    using System.Collections.Generic;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
+    using System.Runtime.Serialization;
 
     /// <summary>
-    /// Service to interact with the Rating Delegate.
+    /// The set of Legal Agreement types.
     /// </summary>
-    public interface IRatingService
+    public enum LegalAgreementType
     {
         /// <summary>
-        /// Adds a Rating in the backend.
+        /// The core representing Terms of Service.
         /// </summary>
-        /// <param name="rating">The rating to be created.</param>
-        /// <returns>A rating wrapped in a RequestResult.</returns>
-        RequestResult<Rating> Add(Rating rating);
+        [EnumMember(Value = "ToS")]
+        TermsofService,
     }
 }

@@ -13,11 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-using System.Text.Json.Serialization;
-
 namespace HealthGateway.Common.Models
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// The RequestResultError model.
     /// </summary>

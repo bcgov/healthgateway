@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Models
 {
     using System.ComponentModel.DataAnnotations;
+    using HealthGateway.Database.Constants;
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
@@ -24,7 +25,7 @@ namespace HealthGateway.Database.Models
         [Key]
         [Required]
         [MaxLength(10)]
-        public string? StatusCode { get; set; }
+        public CommunicationStatus StatusCode { get; set; }
 
         [Required]
         [MaxLength(50)]

@@ -15,34 +15,51 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.ErrorHandling
 {
-
     /// <summary>
     /// Enumerator that defines the different types of errors.
     /// </summary>
     public class ErrorType
     {
-        private ErrorType(string value) { this.Value = value; }
-
-        /// <summary>
-        /// Value that holds the internal representation of the ErrorType.
-        /// </summary>
-        public string Value { get; set; }
+        private ErrorType(string value)
+        {
+            this.Value = value;
+        }
 
         /// <summary>
         /// Gets the Data concurrency error.
         /// </summary>
-        public static ErrorType Concurrency { get { return new ErrorType("C"); } }
+        public static ErrorType Concurrency
+        {
+            get { return new ErrorType("C"); }
+        }
+
         /// <summary>
         /// Gets the External Communication error.
         /// </summary>
-        public static ErrorType CommunicationExternal { get { return new ErrorType("CE"); } }
+        public static ErrorType CommunicationExternal
+        {
+            get { return new ErrorType("CE"); }
+        }
+
         /// <summary>
         /// Gets the Internal Communication error.
         /// </summary>
-        public static ErrorType CommunicationInternal { get { return new ErrorType("CI"); } }
+        public static ErrorType CommunicationInternal
+        {
+            get { return new ErrorType("CI"); }
+        }
+
         /// <summary>
         /// Gets the invalid state error.
         /// </summary>
-        public static ErrorType InvalidState { get { return new ErrorType("I"); } }
+        public static ErrorType InvalidState
+        {
+            get { return new ErrorType("I"); }
+        }
+
+        /// <summary>
+        /// Gets or sets the value that holds the internal representation of the ErrorType.
+        /// </summary>
+        public string Value { get; set; }
     }
 }
