@@ -69,7 +69,9 @@ export default class RatingComponent extends Vue {
     public showModal() {
         this.isVisible = true;
         setTimeout(() => {
-            this.handleRating(0, true);
+            if (this.isVisible) {
+                this.handleRating(0, true);
+            }
         }, Number(this.config.timeouts!.logoutRedirect));
     }
 
