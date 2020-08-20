@@ -48,7 +48,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { Component, Prop, Emit } from "vue-property-decorator";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -86,7 +86,13 @@ export default class RatingComponent extends Vue {
             })
             .finally(() => {
                 this.hideModal();
+                this.onClose();
             });
+    }
+
+    @Emit()
+    public onClose() {
+        return;
     }
 }
 </script>

@@ -972,6 +972,19 @@
       ],
       "value": "${KEY_ENTER}"
     }, {
+      "id": "575937c1-7c33-4c66-83a4-fb97590a3bc3",
+      "comment": "",
+      "command": "click",
+      "target": "css=.col > .btn-outline-primary",
+      "targets": [
+        ["css=.col > .btn-outline-primary", "css:finder"],
+        ["xpath=(//button[@type='button'])[44]", "xpath:attributes"],
+        ["xpath=//footer[@id='covid-modal___BV_modal_footer_']/div/div/div/div/button", "xpath:idRelative"],
+        ["xpath=//footer/div/div/div/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'View Result')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
       "id": "b8e52b1b-85db-4917-bc02-f57c552c8928",
       "comment": "",
       "command": "assertText",
@@ -3834,7 +3847,7 @@
       "targets": [],
       "value": "30000"
     }, {
-      "id": "6d3efcda-d10f-4a9b-bd87-1d7eb01fef06",
+      "id": "e0261123-917d-4ddc-9d62-2d0aa7ec1ff1",
       "comment": "",
       "command": "clickAt",
       "target": "css=.month-view-btn",
@@ -3847,17 +3860,55 @@
       ],
       "value": "Month"
     }, {
+      "id": "f3249303-a27d-4e78-99fb-fcc2a0691ae2",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.col:nth-child(1) > .custom-control > .custom-control-label",
+      "targets": [
+        ["css=.col:nth-child(1) > .custom-control > .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[4]/div/div/label", "xpath:idRelative"],
+        ["xpath=//label", "xpath:position"],
+        ["xpath=//label[contains(.,'Medications')]", "xpath:innerText"]
+      ],
+      "value": "Medications"
+    }, {
+      "id": "7904b9d5-e1aa-47a5-8d31-45d440bbd4a6",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.col:nth-child(2) > .custom-control > .custom-control-label",
+      "targets": [
+        ["css=.col:nth-child(2) > .custom-control > .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[4]/div[2]/div/label", "xpath:idRelative"],
+        ["xpath=//div[2]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Immunizations')]", "xpath:innerText"]
+      ],
+      "value": "Immunizations"
+    }, {
+      "id": "6d3efcda-d10f-4a9b-bd87-1d7eb01fef06",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.col:nth-child(4) .custom-control-label",
+      "targets": [
+        ["css=.col:nth-child(4) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[4]/div[4]/div/label", "xpath:idRelative"],
+        ["xpath=//div[4]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'My Notes')]", "xpath:innerText"]
+      ],
+      "value": "My Notes"
+    }, {
       "id": "868fa02b-1815-4e65-b4c1-9ac9fdd69e15",
       "comment": "",
       "command": "assertText",
-      "target": "css=.title",
+      "target": "id=currentDate",
       "targets": [
-        ["css=.title", "css:finder"],
-        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
-        ["xpath=//div[3]/span", "xpath:position"],
-        ["xpath=//span[contains(.,'July 2020')]", "xpath:innerText"]
+        ["id=currentDate", "id"],
+        ["css=#currentDate", "css:finder"],
+        ["xpath=//button[@id='currentDate']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[7]/div/div/div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'August 2020')]", "xpath:innerText"]
       ],
-      "value": "July 2020"
+      "value": "August 2020"
     }, {
       "id": "b034e1d2-44a5-4226-b37f-5f6c53341cb2",
       "comment": "",
@@ -3871,14 +3922,11 @@
       "id": "50797141-891b-4080-b5e1-c9009c25e964",
       "comment": "",
       "command": "assertText",
-      "target": "css=.title",
+      "target": "css=.left-button path",
       "targets": [
-        ["css=.title", "css:finder"],
-        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
-        ["xpath=//div[3]/span", "xpath:position"],
-        ["xpath=//span[contains(.,'June 2020')]", "xpath:innerText"]
+        ["css=.left-button path", "css:finder"]
       ],
-      "value": "June 2020"
+      "value": ""
     }, {
       "id": "8e6da6a2-a7ae-46c0-936c-08faffbcfc68",
       "comment": "",
@@ -3895,20 +3943,24 @@
       "id": "bd05e13e-f44c-42e5-896c-52020cace38f",
       "comment": "",
       "command": "assertText",
-      "target": "css=.title",
+      "target": "id=currentDate",
       "targets": [
-        ["css=.title", "css:finder"],
-        ["xpath=//div[@id='timeline']/div[7]/div/div/div[3]/span", "xpath:idRelative"],
-        ["xpath=//div[3]/span", "xpath:position"],
-        ["xpath=//span[contains(.,'July 2020')]", "xpath:innerText"]
+        ["id=currentDate", "id"],
+        ["css=#currentDate", "css:finder"],
+        ["xpath=//button[@id='currentDate']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[7]/div/div/div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'August 2020')]", "xpath:innerText"]
       ],
-      "value": "July 2020"
+      "value": "August 2020"
     }, {
       "id": "000d9105-f8db-48c4-b86c-a1b04e85dbe6",
       "comment": "",
       "command": "mouseOver",
-      "target": "css=#event-1593846000000-type-3 path",
-      "targets": [],
+      "target": "css=#event-1596092400000-type-3 > .svg-inline--fa",
+      "targets": [
+        ["css=#event-1596092400000-type-3 > .svg-inline--fa", "css:finder"]
+      ],
       "value": "Note"
     }, {
       "id": "cdde66d0-dfc0-400c-92eb-1b5343dbb267",
@@ -3933,7 +3985,7 @@
         ["xpath=//div[@id='timeData']/div/div/div", "xpath:idRelative"],
         ["xpath=//div[6]/div[2]/div/div/div", "xpath:position"]
       ],
-      "value": "Jul 5, 2020"
+      "value": "Aug 16, 2020"
     }, {
       "id": "2c0a2465-a9fd-4116-9ba3-3279677e7ee8",
       "comment": "",
@@ -4100,7 +4152,7 @@
       "targets": [],
       "value": "30000"
     }, {
-      "id": "4d332aef-21a5-4933-b20d-45486c75a73b",
+      "id": "1d39f90b-8d57-449f-9104-538f4490ec11",
       "comment": "",
       "command": "clickAt",
       "target": "css=.month-view-btn",
@@ -4112,6 +4164,42 @@
         ["xpath=//button[contains(.,'Month')]", "xpath:innerText"]
       ],
       "value": "Month"
+    }, {
+      "id": "7895820d-9073-4b6b-a473-7c496f2e8330",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.col:nth-child(1) > .custom-control > .custom-control-label",
+      "targets": [
+        ["css=.col:nth-child(1) > .custom-control > .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[4]/div/div/label", "xpath:idRelative"],
+        ["xpath=//label", "xpath:position"],
+        ["xpath=//label[contains(.,'Medications')]", "xpath:innerText"]
+      ],
+      "value": "Medications"
+    }, {
+      "id": "715c690d-9b27-414d-8b4c-d1289170de49",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.col:nth-child(2) > .custom-control > .custom-control-label",
+      "targets": [
+        ["css=.col:nth-child(2) > .custom-control > .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[4]/div[2]/div/label", "xpath:idRelative"],
+        ["xpath=//div[2]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'Immunizations')]", "xpath:innerText"]
+      ],
+      "value": "Immunizations"
+    }, {
+      "id": "4d332aef-21a5-4933-b20d-45486c75a73b",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.col:nth-child(4) .custom-control-label",
+      "targets": [
+        ["css=.col:nth-child(4) .custom-control-label", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[4]/div[4]/div/label", "xpath:idRelative"],
+        ["xpath=//div[4]/div/label", "xpath:position"],
+        ["xpath=//label[contains(.,'My Notes')]", "xpath:innerText"]
+      ],
+      "value": "My Notes"
     }, {
       "id": "48eabf71-ca2b-499a-9d39-7dcb9bf6cc15",
       "comment": "",
@@ -4130,11 +4218,14 @@
       "id": "d7632e1a-11aa-4c32-8e15-f23712d62351",
       "comment": "",
       "command": "clickAt",
-      "target": "css=.row:nth-child(3) > .col-12",
+      "target": "id=currentDate",
       "targets": [
-        ["css=.row:nth-child(3) > .col-12", "css:finder"],
-        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/div[2]/div", "xpath:idRelative"],
-        ["xpath=//div[6]/div/div/div[3]/div/div[2]/div", "xpath:position"]
+        ["id=currentDate", "id"],
+        ["css=#currentDate", "css:finder"],
+        ["xpath=//button[@id='currentDate']", "xpath:attributes"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[2]/div/button", "xpath:idRelative"],
+        ["xpath=//div[7]/div/div/div[2]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'August 2020')]", "xpath:innerText"]
       ],
       "value": ""
     }, {
@@ -4163,36 +4254,22 @@
       "id": "4c688ba9-23db-44cb-8220-50dab2dceb45",
       "comment": "Click at Jan of 2019 which has no data",
       "command": "clickAt",
-      "target": "css=.col-4:nth-child(2)",
+      "target": "css=.col-4:nth-child(4)",
       "targets": [
-        ["css=.col-4:nth-child(2)", "css:finder"],
-        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/div[2]/div[2]", "xpath:idRelative"],
-        ["xpath=//div[6]/div/div/div[3]/div/div[2]/div[2]", "xpath:position"]
+        ["css=.col-4:nth-child(4)", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[2]/div/div[2]/div[4]", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div[2]/div[4]", "xpath:position"]
       ],
       "value": ""
-    }, {
-      "id": "15b1abb2-2c2c-4e9c-91ca-67ec323ee3da",
-      "comment": "",
-      "command": "assertText",
-      "target": "id=currentDate",
-      "targets": [
-        ["id=currentDate", "id"],
-        ["css=#currentDate", "css:finder"],
-        ["xpath=//button[@id='currentDate']", "xpath:attributes"],
-        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/button", "xpath:idRelative"],
-        ["xpath=//div[3]/div/button", "xpath:position"],
-        ["xpath=//button[contains(.,'December 2019')]", "xpath:innerText"]
-      ],
-      "value": "December 2019"
     }, {
       "id": "c6295419-c406-4a42-b401-d952985c2c68",
       "comment": "Click at Feb of 2019 which has data",
       "command": "clickAt",
-      "target": "css=.col-4:nth-child(3)",
+      "target": "css=.col-4:nth-child(5)",
       "targets": [
-        ["css=.col-4:nth-child(3)", "css:finder"],
-        ["xpath=//div[@id='timeline']/div[6]/div/div/div[3]/div/div[2]/div[3]", "xpath:idRelative"],
-        ["xpath=//div[3]/div/div[2]/div[3]", "xpath:position"]
+        ["css=.col-4:nth-child(5)", "css:finder"],
+        ["xpath=//div[@id='timeline']/div[7]/div/div/div[2]/div/div[2]/div[5]", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div[2]/div[5]", "xpath:position"]
       ],
       "value": ""
     }, {
