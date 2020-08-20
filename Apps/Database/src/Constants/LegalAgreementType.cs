@@ -16,12 +16,10 @@
 namespace HealthGateway.Database.Constants
 {
     using System.Runtime.Serialization;
-    using System.Text.Json.Serialization;
 
     /// <summary>
     /// The set of Legal Agreement types.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum LegalAgreementType
     {
         /// <summary>
