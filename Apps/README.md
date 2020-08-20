@@ -2,7 +2,7 @@
 
 1. Workstation Setup
     * [Windows](./Documentation/Windows.md)
-    * TODO: [Mac](./Documentation/Mac.md)
+    * [Mac](./Documentation/Mac.md)
     * [Linux](./Documentation/Linux.md)
 
 2. [General Setup](./Documentation/Configuration.md)
