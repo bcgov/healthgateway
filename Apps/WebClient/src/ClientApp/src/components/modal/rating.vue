@@ -52,6 +52,8 @@ import { Component, Prop, Emit } from "vue-property-decorator";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import { Action, Getter } from "vuex-class";
+import { WebClientConfiguration } from "@/models/configData";
 
 @Component
 export default class RatingComponent extends Vue {
@@ -61,8 +63,14 @@ export default class RatingComponent extends Vue {
     private ratingValue: number = 0;
     private isVisible: boolean = false;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     public showModal() {
         this.isVisible = true;
+        setTimeout(() => {
+            this.handleRating(0, true);
+        }, Number(this.config.timeouts!.logoutRedirect));
     }
 
     public hideModal() {
