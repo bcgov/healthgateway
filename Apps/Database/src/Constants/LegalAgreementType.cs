@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,17 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Constants
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// The set of Legal Agreement types.
     /// </summary>
-    public static class AgreementType
+    public enum LegalAgreementType
     {
         /// <summary>
         /// The core representing Terms of Service.
         /// </summary>
-        public const string TermsofService = "ToS";
+        [EnumMember(Value = "ToS")]
+        TermsofService,
     }
 }

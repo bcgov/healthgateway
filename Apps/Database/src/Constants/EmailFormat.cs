@@ -18,16 +18,16 @@ namespace HealthGateway.Database.Constants
     /// <summary>
     /// Represents the format of emails.
     /// </summary>
-    public static class EmailFormat
+    public enum EmailFormat
     {
         /// <summary>
         /// Constant value to represent Text email.
         /// </summary>
-        public const string Text = "Text";
+        Text,
 
         /// <summary>
         /// Constant value to represent HTML email.
         /// </summary>
-        public const string HTML = "HTML";
+        HTML,
     }
 }

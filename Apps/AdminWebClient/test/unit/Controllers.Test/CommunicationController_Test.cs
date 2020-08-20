@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Test.Services
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Services;
     using HealthGateway.Admin.Controllers;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Logging;

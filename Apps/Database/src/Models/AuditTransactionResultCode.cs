@@ -27,7 +27,7 @@ namespace HealthGateway.Database.Models
         [Key]
         [Required]
         [MaxLength(10)]
-        public string? ResultCode { get; set; }
+        public AuditTransactionResult ResultCode { get; set; }
 
         [Required]
         [MaxLength(30)]
