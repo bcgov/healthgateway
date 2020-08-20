@@ -68,7 +68,7 @@ nav {
                 <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login
             </router-link>
         </b-navbar-nav>
-        <RatingComponent ref="ratingComponent" :on-close="modalClosed()" />
+        <RatingComponent ref="ratingComponent" @on-close="modalClosed()" />
     </b-navbar>
 </template>
 
