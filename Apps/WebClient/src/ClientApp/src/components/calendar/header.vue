@@ -64,6 +64,7 @@
         </b-col>
         <b-col class="header-right">
             <slot name="header-right"> </slot>
+            <slot name="month-list-toggle"></slot>
         </b-col>
     </b-row>
 </template>
