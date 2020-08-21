@@ -29,7 +29,7 @@
                     use-router
                 ></b-pagination-nav>
             </b-col>
-            <b-col class=" py-2 col-12 col-sm-auto order-first order-sm-last">
+            <b-col class="py-2 col-12 col-sm-auto order-first order-sm-last">
                 <slot name="month-list-toggle"></slot>
             </b-col>
         </b-row>
