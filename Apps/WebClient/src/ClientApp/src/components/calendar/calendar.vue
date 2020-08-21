@@ -6,6 +6,9 @@
             :title-format="titleFormat"
             :available-months="availableMonths"
         >
+            <div slot="month-list-toggle">
+                <slot name="month-list-toggle"></slot>
+            </div>
         </CalendarHeader>
         <!-- body display date day and events -->
         <CalendarBody

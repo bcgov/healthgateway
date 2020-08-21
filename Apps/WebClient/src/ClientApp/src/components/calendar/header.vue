@@ -35,7 +35,7 @@
 </style>
 <template>
     <b-row class="calendar-header">
-        <b-col cols="auto" class="p-0">
+        <b-col cols="col-sm-auto" class="p-0">
             <b-btn
                 variant="light"
                 :disabled="monthIndex == 0"
@@ -45,14 +45,14 @@
                 <font-awesome-icon :icon="leftIcon" />
             </b-btn>
         </b-col>
-        <b-col cols="auto" class="p-0">
+        <b-col cols="col-sm-auto" class="p-0">
             <MonthYearPickerComponent
                 :current-month="currentMonth"
                 :available-months="availableMonths"
                 @date-changed="dateSelected"
             />
         </b-col>
-        <b-col cols="auto" class="p-0">
+        <b-col cols="col-sm-auto" class="p-0">
             <b-btn
                 variant="light"
                 :disabled="monthIndex == availableMonths.length - 1"
@@ -62,8 +62,10 @@
                 <font-awesome-icon :icon="rightIcon" />
             </b-btn>
         </b-col>
-        <b-col class="header-right">
-            <slot name="header-right"> </slot>
+        <b-col
+            class="header-right px-0 col-12 order-first col-sm order-sm-last"
+        >
+            <slot name="month-list-toggle"></slot>
         </b-col>
     </b-row>
 </template>

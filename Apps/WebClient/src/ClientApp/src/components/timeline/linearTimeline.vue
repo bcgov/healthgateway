@@ -16,6 +16,7 @@
 </style>
 <template>
     <div>
+        <slot name="month-list-toggle"></slot>
         <div id="listControlls" class="no-print">
             <b-row>
                 <b-col>
