@@ -352,7 +352,7 @@
                         >
                             <b-col
                                 id="add-a-note-btn"
-                                title="Add a Note todo"
+                                title="Add a Note"
                                 :class="{ 'col-4': isOpen }"
                             >
                                 <font-awesome-icon
@@ -459,7 +459,10 @@
                         class="align-items-center my-4"
                         :class="[isOpen ? 'mx-4' : 'button-container']"
                     >
-                        <b-col class :class="{ 'ml-auto col-4': isOpen }">
+                        <b-col
+                            :title="`${isOpen ? 'Collapse' : 'Expand'} Menu`"
+                            :class="{ 'ml-auto col-4': isOpen }"
+                        >
                             <font-awesome-icon
                                 class="arrow-icon p-2"
                                 icon="angle-double-left"
