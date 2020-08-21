@@ -33,7 +33,7 @@
                 <slot name="month-list-toggle"></slot>
             </b-col>
         </b-row>
-        <b-row id="listControlls" class="no-print">
+        <b-row id="listControls" class="no-print">
             <b-col>
                 Displaying {{ getVisibleCount() }} out of
                 {{ totalEntries }} records
