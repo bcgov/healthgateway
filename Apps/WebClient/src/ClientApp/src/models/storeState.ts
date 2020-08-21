@@ -5,6 +5,7 @@ import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
 import { LaboratoryOrder, LaboratoryReport } from "@/models//laboratory";
 import BannerError from "./bannerError";
+import MedicationStatementHistory from "./medicationStatementHistory";
 
 export enum StateType {
     NONE,
@@ -40,6 +41,7 @@ export interface UserState {
 }
 
 export interface MedicationState {
+    medicationStatements: MedicationStatementHistory[];
     medications: MedicationResult[];
     statusMessage: string;
     error: boolean;

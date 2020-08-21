@@ -2,28 +2,25 @@ import { Wrapper, createLocalVue, mount } from "@vue/test-utils";
 import BootstrapVue from "bootstrap-vue";
 import TimelineComponent from "@/views/timeline.vue";
 import VueRouter from "vue-router";
-import Vuex from "vuex";
-import { IHttpDelegate, IMedicationService } from "@/services/interfaces";
-import {
-    ExternalConfiguration,
-    WebClientConfiguration,
-} from "@/models/configData";
+import VueContentPlaceholders from "vue-content-placeholders";
+import Vuex, { ActionTree } from "vuex";
+import { WebClientConfiguration } from "@/models/configData";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import { injectable } from "inversify";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
-import MedicationResult from "@/models/medicationResult";
-import Pharmacy from "@/models/pharmacy";
 import { LaboratoryOrder } from "@/models/laboratory";
-import { LaboratoryState } from "@/models/storeState";
+import {
+    LaboratoryState,
+    MedicationState,
+    RootState,
+} from "@/models/storeState";
 import Router from "vue-router";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-const METHOD_NOT_IMPLEMENTED: string = "Method not implemented.";
 const today = new Date();
 const yesterday = new Date(today);
 
@@ -64,46 +61,6 @@ const medicationStatements: MedicationStatementHistory[] = [
     },
 ];
 
-@injectable()
-class MockMedicationService implements IMedicationService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void {
-        // No need to implement for the mock
-        throw new Error(METHOD_NOT_IMPLEMENTED);
-    }
-    getPatientMedicationStatementHistory(
-        hdid: string
-    ): Promise<RequestResult<MedicationStatementHistory[]>> {
-        return new Promise<RequestResult<MedicationStatementHistory[]>>(
-            (resolve, reject) => {
-                if (hdid === "hdid_with_results") {
-                    resolve({
-                        totalResultCount: medicationStatements.length,
-                        pageIndex: 0,
-                        pageSize: medicationStatements.length,
-                        resultStatus: ResultType.Success,
-                        resourcePayload: medicationStatements,
-                    });
-                } else if (hdid === "hdid_no_results") {
-                    resolve();
-                } else {
-                    reject({
-                        error: "User with " + hdid + " not found.",
-                    });
-                }
-            }
-        );
-    }
-    getMedicationInformation(
-        drugIdentifier: string
-    ): Promise<MedicationResult> {
-        throw new Error(METHOD_NOT_IMPLEMENTED);
-    }
-    getPharmacyInfo(pharmacyId: string): Promise<Pharmacy> {
-        // No need to implement for the mock
-        throw new Error(METHOD_NOT_IMPLEMENTED);
-    }
-}
-
 const $router = {};
 const $route = {
     path: "",
@@ -118,12 +75,9 @@ let userGetters = {
     },
 };
 
-let laboratoryActions = {
-    getOrders(
-        context: any,
-        params: { hdid: string }
-    ): Promise<RequestResult<LaboratoryOrder[]>> {
-        return new Promise((resolve, reject) => {
+let laboratoryActions: ActionTree<LaboratoryState, RootState> = {
+    getOrders(): Promise<RequestResult<LaboratoryOrder[]>> {
+        return new Promise((resolve) => {
             resolve({
                 pageIndex: 0,
                 pageSize: 0,
@@ -136,12 +90,40 @@ let laboratoryActions = {
 };
 
 let laboratoryGetters = {
-    getStoredLaboratoryOrders: (
-        state: LaboratoryState
-    ) => (): LaboratoryOrder[] => {
+    getStoredLaboratoryOrders: () => (): LaboratoryOrder[] => {
         return [];
     },
 };
+
+let medicationActions: ActionTree<MedicationState, RootState> = {
+    getMedicationStatements(
+        context,
+        params: {
+            hdid: string;
+            protectiveWord?: string;
+        }
+    ): Promise<RequestResult<MedicationStatementHistory[]>> {
+        return new Promise((resolve, reject) => {
+            if (params.hdid === "hdid_with_results") {
+                resolve({
+                    totalResultCount: medicationStatements.length,
+                    pageIndex: 0,
+                    pageSize: medicationStatements.length,
+                    resultStatus: ResultType.Success,
+                    resourcePayload: medicationStatements,
+                });
+            } else if (params.hdid === "hdid_no_results") {
+                resolve();
+            } else {
+                reject({
+                    error: "User with " + params.hdid + " not found.",
+                });
+            }
+        });
+    },
+};
+
+let medicationGetters = {};
 
 const configGetters = {
     webClient: (): WebClientConfiguration => {
@@ -156,6 +138,7 @@ function createWrapper(): Wrapper<TimelineComponent> {
     localVue.use(Vuex);
     localVue.use(BootstrapVue);
     localVue.use(Router);
+    localVue.use(VueContentPlaceholders);
     const customStore = new Vuex.Store({
         modules: {
             user: {
@@ -171,6 +154,11 @@ function createWrapper(): Wrapper<TimelineComponent> {
                 namespaced: true,
                 getters: laboratoryGetters,
                 actions: laboratoryActions,
+            },
+            medication: {
+                namespaced: true,
+                getters: medicationGetters,
+                actions: medicationActions,
             },
         },
     });
@@ -194,12 +182,8 @@ describe("Timeline view", () => {
     const localVue = createLocalVue();
     localVue.use(BootstrapVue);
     localVue.use(VueRouter);
+    localVue.use(VueContentPlaceholders);
     localVue.use(Vuex);
-
-    container
-        .rebind<IMedicationService>(SERVICE_IDENTIFIER.MedicationService)
-        .to(MockMedicationService)
-        .inSingletonScope();
 
     test("is a Vue instance", () => {
         const wrapper = createWrapper();
