@@ -98,7 +98,7 @@ const sidebar: string = "sidebar";
 
 @Component({
     components: {
-        RatingComponent: RatingComponent,
+        RatingComponent,
     },
 })
 export default class HeaderComponent extends Vue {
