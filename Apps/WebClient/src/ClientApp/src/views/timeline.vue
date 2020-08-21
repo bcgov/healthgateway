@@ -318,10 +318,18 @@ Component.registerHooks(["beforeRouteLeave"]);
 export default class TimelineView extends Vue {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("user", { namespace }) user!: User;
+
     @Action("getOrders", { namespace: "laboratory" })
     getLaboratoryOrders!: (params: {
         hdid: string;
     }) => Promise<RequestResult<LaboratoryOrder[]>>;
+
+    @Action("getMedicationStatements", { namespace: "medication" })
+    getMedicationStatements!: (params: {
+        hdid: string;
+        protectiveWord?: string;
+    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -489,18 +497,12 @@ export default class TimelineView extends Vue {
     }
 
     private fetchMedicationStatements(protectiveWord?: string) {
-        const medicationService: IMedicationService = container.get(
-            SERVICE_IDENTIFIER.MedicationService
-        );
         this.isMedicationLoading = true;
-        let promise: Promise<RequestResult<MedicationStatementHistory[]>>;
 
-        promise = medicationService.getPatientMedicationStatementHistory(
-            this.user.hdid,
-            protectiveWord
-        );
-
-        promise
+        this.getMedicationStatements({
+            hdid: this.user.hdid,
+            protectiveWord: protectiveWord,
+        })
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.protectiveWordAttempts = 0;

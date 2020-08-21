@@ -224,7 +224,7 @@ export default class MedicationTimelineComponent extends Vue {
     @Prop() index!: number;
     @Prop() datekey!: string;
 
-    @Action("getMedication", { namespace: "medication" })
+    @Action("getMedicationInformation", { namespace: "medication" })
     getMedication!: (params: { din: string }) => Promise<MedicationResult>;
 
     private faxPhoneType: PhoneType = PhoneType.Fax;
