@@ -54,7 +54,7 @@ main {
             <NavHeader />
         </header>
         <b-row class="p-0 m-0">
-            <NavSidebar class="no-print" />
+            <NavSidebar class="no-print sticky-top h-100" />
             <main class="col fill-height">
                 <ErrorCard
                     title="Whoops!"
