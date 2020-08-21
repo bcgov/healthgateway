@@ -7,7 +7,11 @@
             :filter-text="filterText"
             :filter-types="filterTypes"
             :is-visible="isVisible"
-        />
+        >
+            <div slot="month-list-toggle">
+                <slot name="month-list-toggle"></slot>
+            </div>
+        </CalendarComponent>
         <div v-else class="text-center">
             No records
         </div>

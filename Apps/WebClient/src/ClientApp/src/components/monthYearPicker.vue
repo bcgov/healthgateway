@@ -2,7 +2,7 @@
 @import "@/assets/scss/_variables.scss";
 
 #currentDate {
-    width: 200px;
+    width: 140px;
 }
 .select {
     position: relative;
