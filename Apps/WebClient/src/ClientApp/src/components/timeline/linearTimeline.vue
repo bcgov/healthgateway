@@ -13,10 +13,33 @@
     color: $primary;
     font-size: 1.3em;
 }
+.sticky-offset {
+    top: 117px;
+    background-color: white;
+    z-index: 2;
+    // TODO: Fix for filter overlaping. Remove once that is complete.
+    @media (max-width: 466px) {
+        top: 134px;
+    }
+}
+.sticky-line {
+    top: 187px;
+    background-color: white;
+    border-bottom: solid $primary 1px;
+    margin-top: -1px;
+    z-index: 1;
+    @media (max-width: 575px) {
+        top: 241px;
+    }
+    // TODO: Fix for filter overlaping. Remove once that is complete.
+    @media (max-width: 466px) {
+        top: 258px;
+    }
+}
 </style>
 <template>
     <div>
-        <b-row class="no-print">
+        <b-row class="no-print sticky-top sticky-offset">
             <b-col class="py-2">
                 <b-pagination-nav
                     v-model="currentPage"
@@ -33,6 +56,7 @@
                 <slot name="month-list-toggle"></slot>
             </b-col>
         </b-row>
+        <b-row class="sticky-top sticky-line" />
         <b-row id="listControls" class="no-print">
             <b-col>
                 Displaying {{ getVisibleCount() }} out of

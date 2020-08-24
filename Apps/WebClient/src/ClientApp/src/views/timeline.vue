@@ -56,6 +56,10 @@
         border-radius: 0px 5px 5px 0px;
     }
 }
+.sticky-offset {
+    padding-top: 1rem;
+    background-color: white;
+}
 </style>
 <template>
     <div>
@@ -107,69 +111,71 @@
 
                 <div id="pageTitle">
                     <h1 id="subject">Health Care Timeline</h1>
-                    <hr />
+                    <hr class="mb-0" />
                 </div>
-                <b-row class="no-print">
-                    <b-col>
-                        <div class="form-group has-filter">
-                            <font-awesome-icon
-                                :icon="searchIcon"
-                                class="form-control-feedback"
-                                fixed-width
-                            ></font-awesome-icon>
-                            <b-form-input
-                                v-model="filterText"
-                                type="text"
-                                placeholder=""
-                                maxlength="50"
-                                debounce="250"
-                            ></b-form-input>
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row align-h="start" class="no-print">
-                    <b-col v-if="isMedicationEnabled">
-                        <b-form-checkbox
-                            id="medicationFilter"
-                            v-model="filterTypes"
-                            name="medicationFilter"
-                            value="Medication"
-                        >
-                            Medications
-                        </b-form-checkbox>
-                    </b-col>
-                    <b-col v-if="isImmunizationEnabled">
-                        <b-form-checkbox
-                            id="immunizationFilter"
-                            v-model="filterTypes"
-                            name="immunizationFilter"
-                            value="Immunization"
-                        >
-                            Immunizations
-                        </b-form-checkbox>
-                    </b-col>
-                    <b-col v-if="isLaboratoryEnabled">
-                        <b-form-checkbox
-                            id="laboratoryFilter"
-                            v-model="filterTypes"
-                            name="laboratoryFilter"
-                            value="Laboratory"
-                        >
-                            Laboratory
-                        </b-form-checkbox>
-                    </b-col>
-                    <b-col v-if="isNoteEnabled">
-                        <b-form-checkbox
-                            id="notesFilter"
-                            v-model="filterTypes"
-                            name="notesFilter"
-                            value="Note"
-                        >
-                            My Notes
-                        </b-form-checkbox>
-                    </b-col>
-                </b-row>
-                <br />
+                <div class="sticky-top sticky-offset">
+                    <b-row class="no-print">
+                        <b-col>
+                            <div class="form-group has-filter">
+                                <font-awesome-icon
+                                    :icon="searchIcon"
+                                    class="form-control-feedback"
+                                    fixed-width
+                                ></font-awesome-icon>
+                                <b-form-input
+                                    v-model="filterText"
+                                    type="text"
+                                    placeholder=""
+                                    maxlength="50"
+                                    debounce="250"
+                                ></b-form-input>
+                            </div>
+                        </b-col>
+                    </b-row>
+                    <b-row align-h="start" class="no-print sticky-top">
+                        <b-col v-if="isMedicationEnabled">
+                            <b-form-checkbox
+                                id="medicationFilter"
+                                v-model="filterTypes"
+                                name="medicationFilter"
+                                value="Medication"
+                            >
+                                Medications
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isImmunizationEnabled">
+                            <b-form-checkbox
+                                id="immunizationFilter"
+                                v-model="filterTypes"
+                                name="immunizationFilter"
+                                value="Immunization"
+                            >
+                                Immunizations
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isLaboratoryEnabled">
+                            <b-form-checkbox
+                                id="laboratoryFilter"
+                                v-model="filterTypes"
+                                name="laboratoryFilter"
+                                value="Laboratory"
+                            >
+                                Laboratory
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isNoteEnabled">
+                            <b-form-checkbox
+                                id="notesFilter"
+                                v-model="filterTypes"
+                                name="notesFilter"
+                                value="Note"
+                            >
+                                My Notes
+                            </b-form-checkbox>
+                        </b-col>
+                    </b-row>
+                    <br />
+                </div>
                 <b-row v-if="isAddingNote" class="pb-5">
                     <b-col>
                         <NoteTimelineComponent :is-add-mode="true" />
