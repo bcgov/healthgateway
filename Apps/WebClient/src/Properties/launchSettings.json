@@ -4,14 +4,14 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:5000"
+      "applicationUrl": "http://localhost:5000"
     }
   },
   "profiles": {
     "HealthGateway.WebClient": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5000;",
+      "applicationUrl": "http://localhost:5000;",
       "environmentVariables": {
         "DOTNET_USE_POLLING_FILE_WATCHER": "1",
         "ASPNETCORE_ENVIRONMENT": "Development"
