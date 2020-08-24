@@ -113,19 +113,22 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
         store,
         startAtIdle: false,
     });
-
-    store.dispatch("auth/getOidcUser").then(() => {
-        const user: User = store.getters["user/user"];
-        if (user.hdid) {
-            store
-                .dispatch("user/checkRegistration", { hdid: user.hdid })
-                .then(() => {
-                    initializeVue();
-                });
-        } else {
-            initializeVue();
-        }
-    });
+    if (window.location.pathname === "/loginCallback") {
+        initializeVue();
+    } else {
+        store.dispatch("auth/getOidcUser").then(() => {
+            const user: User = store.getters["user/user"];
+            if (user.hdid) {
+                store
+                    .dispatch("user/checkRegistration", { hdid: user.hdid })
+                    .then(() => {
+                        initializeVue();
+                    });
+            } else {
+                initializeVue();
+            }
+        });
+    }
 });
 
 function initializeVue() {

@@ -54,7 +54,6 @@ export class RestAuthenticationService implements IAuthenticationService {
             loadUserInfo: false,
             automaticSilentRenew: true,
         };
-        this.logger.debug(`oidc configuration: ${JSON.stringify(oidcConfig)}`);
         this.http = httpDelegate;
         this.authorityUri = config.authority;
         this.oidcUserManager = new UserManager(oidcConfig);

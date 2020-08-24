@@ -48,9 +48,10 @@ export const actions: ActionTree<UserState, RootState> = {
     checkRegistration(context, params: { hdid: string }): Promise<boolean> {
         logger.debug(`checkRegistration params: ${JSON.stringify(params)}`);
         return new Promise((resolve, reject) => {
-            userProfileService
+            return userProfileService
                 .getProfile(params.hdid)
                 .then((userProfile) => {
+                    logger.info("pingu: checkRegistration getProfile then");
                     logger.debug(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
@@ -79,8 +80,15 @@ export const actions: ActionTree<UserState, RootState> = {
                             params.hdid
                         );
 
-                        Promise.all([latestEmailPromise, latestSMSPromise])
+                        logger.info("pingu: checkRegistration getProfile pair");
+                        return Promise.all([
+                            latestEmailPromise,
+                            latestSMSPromise,
+                        ])
                             .then((results) => {
+                                logger.info(
+                                    "pingu: checkRegistration getProfile pair then"
+                                );
                                 // Latest Email invite
                                 if (results[0]) {
                                     context.commit(
@@ -98,6 +106,9 @@ export const actions: ActionTree<UserState, RootState> = {
                                 resolve(isRegistered);
                             })
                             .catch((error) => {
+                                logger.info(
+                                    "pingu: checkRegistration getProfile pair error"
+                                );
                                 handleError(context.commit, error);
                                 reject(error);
                             });
@@ -106,11 +117,16 @@ export const actions: ActionTree<UserState, RootState> = {
                         context.commit("setValidatedSMS", undefined);
                         resolve(isRegistered);
                     }
+
+                    logger.info("pingu: checkRegistration getProfile end");
                 })
                 .catch((error) => {
+                    logger.info("pingu: checkRegistration error");
                     handleError(context.commit, error);
                     reject(error);
                 });
+
+            logger.info("pingu: checkRegistration end");
         });
     },
     getUserEmail(context, params: { hdid: string }): Promise<UserEmailInvite> {
