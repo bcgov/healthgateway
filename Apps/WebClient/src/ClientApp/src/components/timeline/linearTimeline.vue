@@ -16,15 +16,29 @@
 </style>
 <template>
     <div>
-        <slot name="month-list-toggle"></slot>
-        <div id="listControlls" class="no-print">
-            <b-row>
-                <b-col>
-                    Displaying {{ getVisibleCount() }} out of
-                    {{ totalEntries }} records
-                </b-col>
-            </b-row>
-        </div>
+        <b-row class="no-print">
+            <b-col class="py-2">
+                <b-pagination-nav
+                    v-model="currentPage"
+                    :link-gen="linkGen"
+                    :number-of-pages="numberOfPages"
+                    first-number
+                    last-number
+                    next-text="Next"
+                    prev-text="Prev"
+                    use-router
+                ></b-pagination-nav>
+            </b-col>
+            <b-col class="py-2 col-12 col-sm-auto order-first order-sm-last">
+                <slot name="month-list-toggle"></slot>
+            </b-col>
+        </b-row>
+        <b-row id="listControls" class="no-print">
+            <b-col>
+                Displaying {{ getVisibleCount() }} out of
+                {{ totalEntries }} records
+            </b-col>
+        </b-row>
         <div id="timeData">
             <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
                 <b-col cols="auto">
@@ -47,20 +61,6 @@
                     :entry="entry"
                     :index="index"
                 />
-            </b-row>
-            <b-row class="no-print">
-                <b-col>
-                    <b-pagination-nav
-                        v-model="currentPage"
-                        :link-gen="linkGen"
-                        :number-of-pages="numberOfPages"
-                        first-number
-                        last-number
-                        next-text="Next"
-                        prev-text="Prev"
-                        use-router
-                    ></b-pagination-nav>
-                </b-col>
             </b-row>
         </div>
     </div>
