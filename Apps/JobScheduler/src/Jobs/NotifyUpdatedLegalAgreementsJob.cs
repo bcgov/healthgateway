@@ -25,10 +25,10 @@ namespace Healthgateway.JobScheduler.Jobs
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.Database.Utils;
     using Healthgateway.JobScheduler.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using HealthGateway.Database.Utils;
 
     /// <summary>
     /// Confirms if a new Legal Agreement is in place and notifies clients.
