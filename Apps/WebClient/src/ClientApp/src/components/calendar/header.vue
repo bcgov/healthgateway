@@ -1,6 +1,8 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 .calendar-header {
+    padding-bottom: 15px;
+
     .btn-outline-primary {
         font-size: 2em;
         background-color: white;
