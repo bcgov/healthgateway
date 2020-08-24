@@ -56,7 +56,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.logger = logger;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
             this.authDelegate = authDelegate;
-            this.jobEnabled = this.configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, false);
+            this.jobEnabled = this.configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, true);
         }
 
         /// <inheritdoc />
