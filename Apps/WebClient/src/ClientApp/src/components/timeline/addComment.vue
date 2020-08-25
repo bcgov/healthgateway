@@ -33,7 +33,7 @@
                 <b-col class="col pl-2 pr-0">
                     <b-form @submit.prevent>
                         <b-form-textarea
-                            id="comment-input"
+                            :id="'comment-input-' + comment.parentEntryId"
                             v-model="commentInput"
                             :class="
                                 commentInput.length <= 30 ? 'single-line' : ''

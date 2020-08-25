@@ -557,7 +557,7 @@ export default class ProfileView extends Vue {
                 if (results[3]) {
                     // Load user profile
                     this.userProfile = results[3];
-                    this.logger.debug(
+                    this.logger.verbose(
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
                     this.lastLoginDateString = moment(

@@ -47,7 +47,7 @@ export const mutations: MutationTree<UserState> = {
             "preferences",
             userProfile ? userProfile.preferences : {}
         );
-        logger.debug(`state.user: ${JSON.stringify(state.user)}`);
+        logger.verbose(`state.user: ${JSON.stringify(state.user)}`);
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
