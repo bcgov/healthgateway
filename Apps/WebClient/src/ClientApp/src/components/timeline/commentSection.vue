@@ -20,26 +20,14 @@
                             <b-btn
                                 v-b-toggle="'entryComments-' + parentEntry.id"
                                 variant="link"
-                                class="px-0 py-2"
+                                class="px-3 py-2"
                                 @click="toggleComments()"
                             >
-                                <span class="when-opened">
-                                    <font-awesome-icon
-                                        icon="chevron-up"
-                                        aria-hidden="true"
-                                    ></font-awesome-icon
-                                ></span>
-                                <span class="when-closed">
-                                    <font-awesome-icon
-                                        icon="chevron-down"
-                                        aria-hidden="true"
-                                    ></font-awesome-icon
-                                ></span>
                                 <span>
                                     {{
                                         comments.length > 1
-                                            ? comments.length + " comments"
-                                            : "1 comment"
+                                            ? comments.length + " Comments"
+                                            : "1 Comment"
                                     }}</span
                                 >
                             </b-btn>
@@ -48,10 +36,10 @@
                 </b-row>
                 <b-row>
                     <b-col>
-                        <Comment
+                        <AddComment
                             :comment="newComment"
                             @on-comment-added="onAdd"
-                        ></Comment>
+                        ></AddComment>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -61,6 +49,7 @@
                                 <div
                                     v-for="comment in comments"
                                     :key="comment.id"
+                                    class="commentEntry"
                                 >
                                     <Comment
                                         :comment="comment"
@@ -85,6 +74,7 @@
 import Vue from "vue";
 import UserComment from "@/models/userComment";
 import CommentComponent from "@/components/timeline/comment.vue";
+import AddCommentComponent from "@/components/timeline/addComment.vue";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Component, Prop } from "vue-property-decorator";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
@@ -94,6 +84,7 @@ import container from "@/plugins/inversify.config";
 @Component({
     components: {
         Comment: CommentComponent,
+        AddComment: AddCommentComponent,
     },
 })
 export default class CommentSectionComponent extends Vue {
