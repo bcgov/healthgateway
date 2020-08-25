@@ -164,7 +164,12 @@ $radius: 15px;
                                             )
                                         }}
                                     </div>
-                                    <div v-if="entry.phoneType.phoneType === faxPhoneType">
+                                    <div
+                                        v-if="
+                                            entry.phoneType.phoneType ===
+                                            faxPhoneType
+                                        "
+                                    >
                                         Fax:
                                         {{
                                             formatPhoneNumber(
