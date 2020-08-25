@@ -165,6 +165,19 @@ $radius: 15px;
                                         }}
                                     </div>
                                     <div
+                                        v-if="
+                                            entry.pharmacy.phoneType ===
+                                            faxPhoneType
+                                        "
+                                    >
+                                        Fax:
+                                        {{
+                                            formatPhoneNumber(
+                                                entry.pharmacy.phoneNumber
+                                            )
+                                        }}
+                                    </div>
+                                    <div
                                         class="detailSection border border-dark p-2 small"
                                     >
                                         <div>
