@@ -49,7 +49,6 @@
                                 <div
                                     v-for="comment in comments"
                                     :key="comment.id"
-                                    class="commentEntry"
                                 >
                                     <Comment
                                         :comment="comment"
