@@ -166,7 +166,7 @@ $radius: 15px;
                                     </div>
                                     <div
                                         v-if="
-                                            entry.phoneType.phoneType ===
+                                            entry.pharmacy.phoneType ===
                                             faxPhoneType
                                         "
                                     >
