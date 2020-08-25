@@ -4294,6 +4294,121 @@
       "targets": [],
       "value": ""
     }]
+  }, {
+    "id": "e0fdeffd-6cbb-44d1-b11a-81b490c7d08e",
+    "name": "Timeline - Star Rating",
+    "commands": [{
+      "id": "f9cd6b05-f3ae-470b-bb82-b17077387829",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7f15ca71-9607-4e15-ba3f-183c580aeb7d",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "3b6e44e5-d72a-403d-9da1-cb3470578984",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "61c53f6a-d649-4af2-bbe7-3dccfb25a336",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "f91d4ec9-9c38-4afe-9864-574e4010193b",
+      "comment": "",
+      "command": "clickAt",
+      "target": "id=menuBtnLogout",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//button[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/header/nav/ul/button", "xpath:idRelative"],
+        ["xpath=//ul/button", "xpath:position"],
+        ["xpath=//button[contains(.,' Logout')]", "xpath:innerText"]
+      ],
+      "value": "Logout"
+    }, {
+      "id": "5e6427ad-edb3-4bd4-aa48-969027a7afde",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=.b-rating-star:nth-child(5) path",
+      "targets": [
+        ["css=.b-rating-star:nth-child(5) path", "css:finder"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "6a121a09-ff87-4c28-a49b-3d614d54e755",
+    "name": "Timeline -Star Rating-Skip",
+    "commands": [{
+      "id": "b8614143-c700-495e-9d9a-59350517713a",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "78b8623f-144c-4f91-bd0d-4fe8f5537fe0",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "2e11d73f-30a0-4812-9500-c30ff2d31c86",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "7a17ac00-82cc-49cc-ae12-336e4a348d23",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b9c76708-7ff6-4d11-8be0-8bf4c06cf230",
+      "comment": "",
+      "command": "clickAt",
+      "target": "id=menuBtnLogout",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//button[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/header/nav/ul/button", "xpath:idRelative"],
+        ["xpath=//ul/button", "xpath:position"],
+        ["xpath=//button[contains(.,' Logout')]", "xpath:innerText"]
+      ],
+      "value": "Logout"
+    }, {
+      "id": "3ded8631-2fc3-40ab-9c16-128a69012942",
+      "comment": "",
+      "command": "clickAt",
+      "target": "id=skipButton",
+      "targets": [
+        ["id=skipButton", "id"],
+        ["css=#skipButton", "css:finder"],
+        ["xpath=//button[@id='skipButton']", "xpath:attributes"],
+        ["xpath=//footer[@id='rating-modal___BV_modal_footer_']/div/div/button", "xpath:idRelative"],
+        ["xpath=//footer/div/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Skip')]", "xpath:innerText"]
+      ],
+      "value": "Skip"
+    }]
   }],
   "suites": [{
     "id": "6d542a3c-ca35-4a03-92c4-cc9a6e7a3717",
@@ -4322,7 +4437,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa", "91ee17d2-a248-4d46-a29b-96b1566abd22", "9aa3e8d4-df29-4fdf-9988-c3a52a8c5091"]
+    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa", "91ee17d2-a248-4d46-a29b-96b1566abd22", "9aa3e8d4-df29-4fdf-9988-c3a52a8c5091", "e0fdeffd-6cbb-44d1-b11a-81b490c7d08e", "41c23b52-c0dc-4d87-9b9d-bdf7fac0fd12", "31429eb6-c2c4-4282-8512-9f77cc9488c2", "0a00e628-a6e7-438d-b03c-fafdde224a7a", "6a121a09-ff87-4c28-a49b-3d614d54e755"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",
