@@ -66,9 +66,9 @@ namespace HealthGateway.Medication.Models
         public string PhoneNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the telephone type.
+        /// Gets or sets the fax number.
         /// </summary>
-        public string PhoneType { get; set; } = string.Empty;
+        public string FaxNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// Creates a Pharamacy object from an ODR model.
@@ -87,6 +87,7 @@ namespace HealthGateway.Medication.Models
                 PharmacyId = model.PharmacyId,
                 Name = model.Name,
                 PhoneNumber = model.PhoneNumber,
+                FaxNumber = model.FaxNumber,
                 AddressLine1 = model.Address.Line1,
                 AddressLine2 = model.Address.Line2,
                 City = model.Address.City,

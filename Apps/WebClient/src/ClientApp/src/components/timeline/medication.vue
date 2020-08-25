@@ -153,10 +153,7 @@ $radius: 15px;
                                         {{ entry.pharmacy.address }}
                                     </div>
                                     <div
-                                        v-if="
-                                            entry.pharmacy.phoneType !=
-                                            faxPhoneType
-                                        "
+                                        v-if="entry.pharmacy.phoneNumber !== ''"
                                     >
                                         {{
                                             formatPhoneNumber(
@@ -164,16 +161,11 @@ $radius: 15px;
                                             )
                                         }}
                                     </div>
-                                    <div
-                                        v-if="
-                                            entry.pharmacy.phoneType ===
-                                            faxPhoneType
-                                        "
-                                    >
+                                    <div v-if="entry.pharmacy.faxNumber !== ''">
                                         Fax:
                                         {{
                                             formatPhoneNumber(
-                                                entry.pharmacy.phoneNumber
+                                                entry.pharmacy.faxNumber
                                             )
                                         }}
                                     </div>
@@ -218,7 +210,7 @@ import Vue from "vue";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
-import Pharmacy, { PhoneType } from "@/models/pharmacy";
+import Pharmacy from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { Component, Prop } from "vue-property-decorator";
@@ -240,7 +232,6 @@ export default class MedicationTimelineComponent extends Vue {
     @Action("getMedicationInformation", { namespace: "medication" })
     getMedication!: (params: { din: string }) => Promise<MedicationResult>;
 
-    private faxPhoneType: PhoneType = PhoneType.Fax;
     private isLoadingMedication: boolean = false;
     private isLoadingPharmacy: boolean = false;
     private hasErrors: boolean = false;
