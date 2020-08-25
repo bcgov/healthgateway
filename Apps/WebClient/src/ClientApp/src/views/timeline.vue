@@ -706,6 +706,7 @@ export default class TimelineView extends Vue {
     }
 
     private onEntryAdded(entry: TimelineEntry) {
+        this.logger.debug(`Timeline Entry added: ${JSON.stringify(entry)}`);
         this.isAddingNote = false;
         if (entry) {
             this.timelineEntries.push(entry);
