@@ -116,7 +116,10 @@
             </div>
         </div>
         <div class="text">
-            <h5>Gathering your health records {{ ellipsis }}</h5>
+            <h5 class="d-none d-sm-inline">
+                Gathering your health records
+                {{ ellipsis }}
+            </h5>
         </div>
     </div>
 </template>
@@ -137,7 +140,7 @@ export default class TimelineLoadingComponent extends Vue {
     private step: number = 0;
     private intervalId: number = 0;
     private get ellipsis(): string {
-        return ".".padEnd(this.step >= 3 ? this.step : this.step + 1, ".");
+        return ".".padEnd(this.step + 1, ".");
     }
     private get medIcon(): IconDefinition {
         return faPills;
