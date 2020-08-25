@@ -1136,14 +1136,14 @@
       "target": "id=menuBtnLogin",
       "targets": [
         ["id=menuBtnLogin", "id"],
-        ["linkText=Logout", "linkText"],
+        ["linkText=Login", "linkText"],
         ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
+        ["xpath=//a[contains(text(),'Login')]", "xpath:link"],
         ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
         ["xpath=//div[@id='app-root']/header/nav/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
+        ["xpath=//a[contains(@href, '/login')]", "xpath:href"],
         ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Logout')]", "xpath:innerText"]
+        ["xpath=//a[contains(.,' Login')]", "xpath:innerText"]
       ],
       "value": "loggedin"
     }, {
@@ -1171,30 +1171,23 @@
       "id": "20bed1ce-40a1-416e-8964-9db200734ff9",
       "comment": "",
       "command": "click",
-      "target": "id=menuBtnLogin",
+      "target": "id=menuBtnLogout",
       "targets": [
-        ["id=menuBtnLogin", "id"],
-        ["linkText=Logout", "linkText"],
-        ["css=#menuBtnLogin", "css:finder"],
-        ["xpath=//a[contains(text(),'Logout')]", "xpath:link"],
-        ["xpath=//a[@id='menuBtnLogin']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/header/nav/ul/a", "xpath:idRelative"],
-        ["xpath=//a[contains(@href, '/logout')]", "xpath:href"],
-        ["xpath=//ul/a", "xpath:position"],
-        ["xpath=//a[contains(.,' Logout')]", "xpath:innerText"]
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//button[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/header/nav/ul/button", "xpath:idRelative"],
+        ["xpath=//ul/button", "xpath:position"],
+        ["xpath=//button[contains(.,' Logout')]", "xpath:innerText"]
       ],
       "value": ""
     }, {
-      "id": "96603320-5cec-470e-89c1-bf971b9cc352",
+      "id": "aefff68f-c496-47c6-b220-de96752aa37a",
       "comment": "",
-      "command": "waitForElementVisible",
-      "target": "css=.shadow-lg",
-      "targets": [
-        ["css=.shadow-lg", "css:finder"],
-        ["xpath=//div[@id='app-root']/div[2]/main/div/div/div", "xpath:idRelative"],
-        ["xpath=//main/div/div/div", "xpath:position"]
-      ],
-      "value": "30000"
+      "command": "clickAt",
+      "target": "id=skipButton",
+      "targets": [],
+      "value": "Skip"
     }, {
       "id": "65c0274c-8b1f-4510-bae3-0b31fd1ee350",
       "comment": "",
@@ -3194,7 +3187,7 @@
       ],
       "value": ""
     }, {
-      "id": "5a8d2d2c-c898-4452-b386-4c32f5177a97",
+      "id": "2310aa66-3cc1-437d-b790-9f40752ecd48",
       "comment": "",
       "command": "assertText",
       "target": "css=.name-wrapper > .button-title",
@@ -3205,37 +3198,38 @@
       ],
       "value": "Dr Gateway"
     }, {
-      "id": "336a8f12-6eb6-4d0c-89c3-b716fa7d1787",
+      "id": "5a8d2d2c-c898-4452-b386-4c32f5177a97",
       "comment": "",
-      "command": "click",
-      "target": "css=.m-4",
+      "command": "clickAt",
+      "target": "css=#menuBtnProfile .button-title",
       "targets": [
-        ["css=.m-4", "css:finder"],
-        ["xpath=//a[@id='menuBtnProfile']/div", "xpath:idRelative"],
-        ["xpath=//a/div", "xpath:position"]
+        ["css=#menuBtnProfile .button-title", "css:finder"],
+        ["xpath=//a[@id='menuBtnProfile']/div/div[3]", "xpath:idRelative"],
+        ["xpath=//div/div[3]", "xpath:position"]
       ],
-      "value": ""
+      "value": "Dr Gateway"
     }, {
-      "id": "7daf0cbc-069d-416c-bae4-bc2d4bbb5949",
+      "id": "cfa756f7-1bdc-49d7-8ed9-19c44c1c756e",
       "comment": "",
       "command": "assertText",
       "target": "css=#termsOfService span",
       "targets": [
         ["css=#termsOfService span", "css:finder"],
         ["xpath=//a[@id='termsOfService']/div/div[2]/span", "xpath:idRelative"],
-        ["xpath=//div[2]/a/div/div[2]/span", "xpath:position"],
+        ["xpath=//div[2]/span", "xpath:position"],
         ["xpath=//span[contains(.,'Terms of Service')]", "xpath:innerText"]
       ],
       "value": "Terms of Service"
     }, {
-      "id": "90ddd355-472a-4eda-b188-458c6db91587",
+      "id": "f58a470e-a9bf-4375-9b5b-6f9bb54f6fa5",
       "comment": "",
       "command": "assertText",
-      "target": "css=#releaseNotes > .row",
+      "target": "css=#releaseNotes span",
       "targets": [
-        ["css=#releaseNotes > .row", "css:finder"],
-        ["xpath=//a[@id='releaseNotes']/div", "xpath:idRelative"],
-        ["xpath=//div[2]/a[2]/div", "xpath:position"]
+        ["css=#releaseNotes span", "css:finder"],
+        ["xpath=//a[@id='releaseNotes']/div/div[2]/span", "xpath:idRelative"],
+        ["xpath=//a[2]/div/div[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Release Notes')]", "xpath:innerText"]
       ],
       "value": "Release Notes"
     }]
@@ -4295,95 +4289,124 @@
       "value": ""
     }]
   }, {
-    "id": "e0fdeffd-6cbb-44d1-b11a-81b490c7d08e",
-    "name": "Timeline - Star Rating",
+    "id": "ea0e41c0-3670-4722-904e-4c7e5c37f756",
+    "name": "Health Insights- Medication",
     "commands": [{
-      "id": "f9cd6b05-f3ae-470b-bb82-b17077387829",
+      "id": "b7503845-6433-451d-a594-7ed758938430",
       "comment": "",
       "command": "run",
       "target": "Keycloak Login",
       "targets": [],
       "value": ""
     }, {
-      "id": "7f15ca71-9607-4e15-ba3f-183c580aeb7d",
+      "id": "717c2d8b-6b48-4420-bad4-bbcb05c62323",
       "comment": "",
       "command": "assertText",
       "target": "id=subject",
       "targets": [],
       "value": "Health Care Timeline"
     }, {
-      "id": "3b6e44e5-d72a-403d-9da1-cb3470578984",
+      "id": "bd6f2d4e-5ea9-4353-ac7a-3cf9ea5aed08",
       "comment": "",
       "command": "waitForElementNotPresent",
       "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
-      "id": "61c53f6a-d649-4af2-bbe7-3dccfb25a336",
+      "id": "83c4ed20-02c9-4ed5-80a1-de95e98a0cd4",
       "comment": "",
       "command": "assertElementNotPresent",
       "target": "css=.name-wrapper > .button-title",
       "targets": [],
       "value": ""
     }, {
-      "id": "f91d4ec9-9c38-4afe-9864-574e4010193b",
+      "id": "0e42cd6e-40bc-4bc9-bfd8-a97e162deceb",
       "comment": "",
-      "command": "clickAt",
-      "target": "id=menuBtnLogout",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
       "targets": [
-        ["id=menuBtnLogout", "id"],
-        ["css=#menuBtnLogout", "css:finder"],
-        ["xpath=//button[@id='menuBtnLogout']", "xpath:attributes"],
-        ["xpath=//div[@id='app-root']/header/nav/ul/button", "xpath:idRelative"],
-        ["xpath=//ul/button", "xpath:position"],
-        ["xpath=//button[contains(.,' Logout')]", "xpath:innerText"]
-      ],
-      "value": "Logout"
-    }, {
-      "id": "5e6427ad-edb3-4bd4-aa48-969027a7afde",
-      "comment": "",
-      "command": "clickAt",
-      "target": "css=.b-rating-star:nth-child(5) path",
-      "targets": [
-        ["css=.b-rating-star:nth-child(5) path", "css:finder"]
+        ["css=.arrow-icon > path", "css:finder"]
       ],
       "value": ""
+    }, {
+      "id": "d9c4bacc-963b-497c-82f0-f89122a24365",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [
+        ["css=.name-wrapper > .button-title", "css:finder"],
+        ["xpath=//a[@id='menuBtnProfile']/div/div[2]", "xpath:idRelative"],
+        ["xpath=//a/div/div[2]", "xpath:position"]
+      ],
+      "value": "Dr Gateway"
+    }, {
+      "id": "a04aca95-38ce-4347-acb4-e6f9693b0e2a",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=#menuBtnHealthInsights span",
+      "targets": [
+        ["css=#menuBtnHealthInsights span", "css:finder"],
+        ["xpath=//a[@id='menuBtnHealthInsights']/div/div[3]/span", "xpath:idRelative"],
+        ["xpath=//a[3]/div/div[3]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Health Insights')]", "xpath:innerText"]
+      ],
+      "value": "Health Insights"
+    }, {
+      "id": "dc68372d-a5d7-4dae-bc64-3d1bff8810d1",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.col-auto:nth-child(3)",
+      "targets": [
+        ["css=.col-auto:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='healthInsights']/div[2]/div/div[3]", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div[3]", "xpath:position"]
+      ],
+      "value": "Total records: 259"
     }]
   }, {
-    "id": "6a121a09-ff87-4c28-a49b-3d614d54e755",
-    "name": "Timeline -Star Rating-Skip",
+    "id": "334c5cca-0bef-4928-a66b-3859e32d807d",
+    "name": "Timeline - Star Rating ",
     "commands": [{
-      "id": "b8614143-c700-495e-9d9a-59350517713a",
+      "id": "a6d959c1-5730-45f1-94ce-838971b6f993",
       "comment": "",
       "command": "run",
       "target": "Keycloak Login",
       "targets": [],
       "value": ""
     }, {
-      "id": "78b8623f-144c-4f91-bd0d-4fe8f5537fe0",
+      "id": "95350838-f125-4d6f-89f2-5f1887bd29ef",
       "comment": "",
       "command": "assertText",
       "target": "id=subject",
       "targets": [],
       "value": "Health Care Timeline"
     }, {
-      "id": "2e11d73f-30a0-4812-9500-c30ff2d31c86",
+      "id": "eaa7edd2-b493-45b4-bbdc-4e8cfeefe7a9",
       "comment": "",
       "command": "waitForElementNotPresent",
       "target": "css=.spinner",
       "targets": [],
       "value": "30000"
     }, {
-      "id": "7a17ac00-82cc-49cc-ae12-336e4a348d23",
+      "id": "51fca1c7-5d47-4df3-9b13-bd7dd0faccd4",
       "comment": "",
       "command": "assertElementNotPresent",
       "target": "css=.name-wrapper > .button-title",
       "targets": [],
       "value": ""
     }, {
-      "id": "b9c76708-7ff6-4d11-8be0-8bf4c06cf230",
+      "id": "44cb3ec1-dadd-46af-959a-1a4339557649",
       "comment": "",
-      "command": "clickAt",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "c3dde83c-6277-4743-a36b-680cd0068b2b",
+      "comment": "",
+      "command": "click",
       "target": "id=menuBtnLogout",
       "targets": [
         ["id=menuBtnLogout", "id"],
@@ -4395,9 +4418,80 @@
       ],
       "value": "Logout"
     }, {
-      "id": "3ded8631-2fc3-40ab-9c16-128a69012942",
+      "id": "a4e6b256-72ee-464a-a07e-cde0c4ed0b79",
       "comment": "",
-      "command": "clickAt",
+      "command": "click",
+      "target": "css=.b-rating-star:nth-child(5) .bi-star",
+      "targets": [
+        ["css=.b-rating-star:nth-child(5) .bi-star", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "15257952-219c-450f-ae7f-bbe81aeb81e1",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=strong",
+      "targets": [],
+      "value": "You signed out of your account"
+    }]
+  }, {
+    "id": "152f0bbe-ff40-42f9-81be-eca7164e5a3c",
+    "name": "Timeline - Star Rating- Skip",
+    "commands": [{
+      "id": "faa43694-3b89-4644-bd19-e9775dc25271",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3055bf8d-4789-4dba-9ea8-30a9c8d28899",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "5d636ad3-7908-4ac0-b419-beb31ced131f",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "2228fd14-6a87-4148-87bc-86bab4b65c12",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b06ab530-b779-4aea-ab48-067893269d9b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "05d4dd7b-24a9-4f3c-bf1a-e39a4e77c8f8",
+      "comment": "",
+      "command": "click",
+      "target": "id=menuBtnLogout",
+      "targets": [
+        ["id=menuBtnLogout", "id"],
+        ["css=#menuBtnLogout", "css:finder"],
+        ["xpath=//button[@id='menuBtnLogout']", "xpath:attributes"],
+        ["xpath=//div[@id='app-root']/header/nav/ul/button", "xpath:idRelative"],
+        ["xpath=//ul/button", "xpath:position"],
+        ["xpath=//button[contains(.,' Logout')]", "xpath:innerText"]
+      ],
+      "value": "Logout"
+    }, {
+      "id": "babe20aa-651e-4972-af2d-9451736da875",
+      "comment": "",
+      "command": "click",
       "target": "id=skipButton",
       "targets": [
         ["id=skipButton", "id"],
@@ -4408,6 +4502,89 @@
         ["xpath=//button[contains(.,'Skip')]", "xpath:innerText"]
       ],
       "value": "Skip"
+    }, {
+      "id": "f3de2c07-3c92-4422-8aac-c0f2f4b9ff3b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=strong",
+      "targets": [],
+      "value": "You signed out of your account"
+    }]
+  }, {
+    "id": "72f7840c-85e2-4513-b703-09333c592abb",
+    "name": "Health Insights - Medication",
+    "commands": [{
+      "id": "32844302-2b1b-4746-8128-f4f88f9d4f1d",
+      "comment": "",
+      "command": "run",
+      "target": "Keycloak Login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "765592a6-f64f-4df2-9a18-138984674dd1",
+      "comment": "",
+      "command": "assertText",
+      "target": "id=subject",
+      "targets": [],
+      "value": "Health Care Timeline"
+    }, {
+      "id": "8406c849-3ec0-441f-9f1a-cea43a40e766",
+      "comment": "",
+      "command": "waitForElementNotPresent",
+      "target": "css=.spinner",
+      "targets": [],
+      "value": "30000"
+    }, {
+      "id": "75a5ed01-9538-4027-94fc-111553bc9c73",
+      "comment": "",
+      "command": "assertElementNotPresent",
+      "target": "css=.name-wrapper > .button-title",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "279cb2dc-d62c-4684-8175-3ad3672a92b2",
+      "comment": "",
+      "command": "click",
+      "target": "css=.arrow-icon > path",
+      "targets": [
+        ["css=.arrow-icon > path", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "b12e77cb-5ca7-4571-a42e-67ebd9e27e08",
+      "comment": "",
+      "command": "clickAt",
+      "target": "css=#menuBtnHealthInsights span",
+      "targets": [
+        ["css=#menuBtnHealthInsights span", "css:finder"],
+        ["xpath=//a[@id='menuBtnHealthInsights']/div/div[3]/span", "xpath:idRelative"],
+        ["xpath=//a[3]/div/div[3]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'Health Insights')]", "xpath:innerText"]
+      ],
+      "value": "Health Insights"
+    }, {
+      "id": "2d00adf6-99dd-41f4-bc34-790d498c875e",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=h3",
+      "targets": [
+        ["css=h3", "css:finder"],
+        ["xpath=//div[@id='healthInsights']/div[2]/h3", "xpath:idRelative"],
+        ["xpath=//h3", "xpath:position"],
+        ["xpath=//h3[contains(.,'Medication count over time')]", "xpath:innerText"]
+      ],
+      "value": "Medication count over time"
+    }, {
+      "id": "adfb40b8-bb32-4b22-8607-c40298ade153",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.col-auto:nth-child(3)",
+      "targets": [
+        ["css=.col-auto:nth-child(3)", "css:finder"],
+        ["xpath=//div[@id='healthInsights']/div[2]/div/div[3]", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div[3]", "xpath:position"]
+      ],
+      "value": "Total records: 259"
     }]
   }],
   "suites": [{
@@ -4437,7 +4614,7 @@
     "persistSession": false,
     "parallel": false,
     "timeout": 300,
-    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa", "91ee17d2-a248-4d46-a29b-96b1566abd22", "9aa3e8d4-df29-4fdf-9988-c3a52a8c5091", "e0fdeffd-6cbb-44d1-b11a-81b490c7d08e", "41c23b52-c0dc-4d87-9b9d-bdf7fac0fd12", "31429eb6-c2c4-4282-8512-9f77cc9488c2", "0a00e628-a6e7-438d-b03c-fafdde224a7a", "6a121a09-ff87-4c28-a49b-3d614d54e755"]
+    "tests": ["938bf782-7029-421e-9789-0778be5f1295", "7a8e3e70-67ba-49e8-94a7-241c2f407c4b", "01b56ee4-eda6-437e-b5c0-807611d13b87", "f2822a3d-4ab1-4235-8350-4f8797f6f186", "ea0c5793-cfaf-4b48-8902-870aa52db970", "99bd943e-bfd8-4762-a277-a30f08ef14de", "4a61a452-b8f7-4d14-bae8-ca8f484920a2", "ccce0e79-1269-4337-902d-d1564ddde6b6", "152f8b6e-5c6f-48f8-969e-f13f449bc2f7", "821738af-743a-4451-954f-cb9b52ed89a7", "d60d5344-1f4e-49a3-938c-7b667a477041", "9dd5fa10-e355-40b8-9c8e-6742226a7a6f", "7c635cea-abd6-4328-9c4f-687abd18d022", "e08c1732-f184-4ba8-a171-f01a42b838aa", "91ee17d2-a248-4d46-a29b-96b1566abd22", "9aa3e8d4-df29-4fdf-9988-c3a52a8c5091", "334c5cca-0bef-4928-a66b-3859e32d807d", "152f0bbe-ff40-42f9-81be-eca7164e5a3c"]
   }, {
     "id": "51b5bf7d-e4d7-4222-87ab-58a33b3e28ff",
     "name": "Registration",
@@ -4459,6 +4636,13 @@
     "parallel": false,
     "timeout": 300,
     "tests": ["44eb2eaa-1a39-4e1b-bc1e-23f54f30a5bd"]
+  }, {
+    "id": "98b7656a-0747-4c29-8faf-39b05cc24d15",
+    "name": "Health Insights",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["ea0e41c0-3670-4722-904e-4c7e5c37f756"]
   }],
   "urls": ["https://dev-gateway.pathfinder.gov.bc.ca/", "http://localhost:5000/", "https://dev.healthgateway.gov.bc.ca/"],
   "plugins": []
