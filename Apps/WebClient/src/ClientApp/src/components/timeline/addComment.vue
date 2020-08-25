@@ -1,7 +1,7 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-#comment-input:not(:focus) {
+.comment-input-style:not(:focus) {
     background-color: $soft_background;
 }
 
@@ -35,6 +35,7 @@
                         <b-form-textarea
                             :id="'comment-input-' + comment.parentEntryId"
                             v-model="commentInput"
+                            class="comment-input-style"
                             :class="
                                 commentInput.length <= 30 ? 'single-line' : ''
                             "
