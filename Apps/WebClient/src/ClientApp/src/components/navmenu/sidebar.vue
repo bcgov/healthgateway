@@ -22,6 +22,30 @@
     @media (max-width: 767px) {
         min-width: 185px;
         max-width: 185px;
+
+        display: absolute;
+        position: fixed;
+        top: 0px;
+        padding-top: 80px;
+        overflow-y: scroll;
+
+        &.collapsed {
+            min-width: 0px !important;
+            max-width: 0px !important;
+            height: 100vh;
+        }
+
+        &.collapsed .row-container {
+            display: none;
+        }
+
+        &.collapsed .sidebar-footer {
+            display: none;
+        }
+
+        &.arrow-icon {
+            display: none;
+        }
     }
 }
 
@@ -144,35 +168,6 @@
     transition: all 0.5s ease-in-out;
     top: 0px;
     overflow: hidden;
-}
-
-/* Small Devices*/
-@media (max-width: 767px) {
-    #sidebar {
-        display: absolute;
-        position: fixed;
-        top: 0px;
-        padding-top: 80px;
-        overflow-y: scroll;
-    }
-
-    #sidebar.collapsed {
-        min-width: 0px;
-        max-width: 0px;
-        height: 100vh;
-    }
-
-    #sidebar.collapsed .row-container {
-        display: none;
-    }
-
-    #sidebar.collapsed .sidebar-footer {
-        display: none;
-    }
-
-    #sidebar .arrow-icon {
-        display: none;
-    }
 }
 
 #sidebar .row-container {

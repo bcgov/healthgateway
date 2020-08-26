@@ -364,9 +364,7 @@ export default class LandingView extends Vue {
     private mounted() {
         this.isOpenRegistration =
             this.webClientConfig.registrationStatus == RegistrationStatus.Open;
-        this.icons[0].active = this.webClientConfig.modules[
-            "MedicationHistory"
-        ];
+        this.icons[0].active = this.webClientConfig.modules["Medication"];
         this.icons[1].active = this.webClientConfig.modules["Note"];
         this.icons[2].active = this.webClientConfig.modules["Immunization"];
         this.icons[3].active = this.webClientConfig.modules["Laboratory"];
