@@ -59,16 +59,14 @@
 .sticky-offset {
     padding-top: 1rem;
     background-color: white;
+    z-index: 2;
 }
 </style>
 <template>
     <div>
         <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
         <b-row class="my-3 fluid justify-content-md-center">
-            <b-col
-                id="timeline"
-                class="col-12 col-md-10 col-lg-9 column-wrapper"
-            >
+            <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <b-alert
                     :show="hasNewTermsOfService"
                     dismissible
@@ -264,7 +262,7 @@
                     </b-col>
                 </b-row>
             </b-col>
-            <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
+            <b-col class="col-3 col-lg-3 column-wrapper no-print">
                 <HealthlinkComponent />
             </b-col>
         </b-row>
