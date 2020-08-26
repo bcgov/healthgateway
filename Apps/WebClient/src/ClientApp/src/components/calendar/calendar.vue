@@ -5,7 +5,7 @@
     background-color: white;
     z-index: 2;
     // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 466px) {
+    @media (max-width: 350px) {
         top: 142px;
     }
 }
@@ -19,7 +19,7 @@
         top: 210px;
     }
     // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 466px) {
+    @media (max-width: 350px) {
         top: 234px;
     }
 }
