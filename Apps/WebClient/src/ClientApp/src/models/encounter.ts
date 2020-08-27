@@ -1,4 +1,4 @@
-import Clinic from "@models/clinic";
+import Clinic from "@/models/clinic";
 
 export default interface Encounter {
     // Gets or sets the id.

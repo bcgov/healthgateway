@@ -339,7 +339,7 @@ export default class CalendarBodyComponent extends Vue {
         } else if (type == EntryType.Note) {
             return (entry as NoteTimelineEntry).title;
         } else if (type == EntryType.Encounter) {
-            return (entry as EncounterTimelineEntry).title;
+            return (entry as EncounterTimelineEntry).practitionerName;
         }
 
         return "N/A";
