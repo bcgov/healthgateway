@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="500px">
+    <v-dialog v-model="dialog" persistent max-width="1000px">
         <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on"
                 >New Banner Communication</v-btn
@@ -71,14 +71,12 @@
                     </v-row>
                     <v-row>
                         <v-col>
-                            <v-textarea
+                            <TiptapVuetify
                                 v-model="editedItem.text"
-                                label="Message"
-                                maxlength="1000"
-                                :rules="[v => !!v || 'Text is required']"
-                                validate-on-blur
-                                required
-                            ></v-textarea>
+                                :toolbar-attributes="{ color: 'gray' }"
+                                placeholder="Write the banner content here..."
+                                :extensions="extensions"
+                            />
                         </v-col>
                     </v-row>
                 </v-form>
@@ -101,6 +99,23 @@ import { ResultType } from "@/constants/resulttype";
 import { ValidationProvider, extend, validate } from "vee-validate";
 import { required, email } from "vee-validate/dist/rules";
 import moment from "moment";
+import {
+    TiptapVuetify,
+    Heading,
+    Bold,
+    Italic,
+    Strike,
+    Underline,
+    Code,
+    Paragraph,
+    BulletList,
+    OrderedList,
+    ListItem,
+    Link,
+    Blockquote,
+    HardBreak,
+    History
+} from "tiptap-vuetify";
 
 extend("dateValid", {
     validate(value: any, args: any) {
@@ -113,11 +128,36 @@ extend("dateValid", {
 });
 @Component({
     components: {
-        ValidationProvider
+        ValidationProvider,
+        TiptapVuetify
     }
 })
 export default class BannerModal extends Vue {
     private dialog: boolean = false;
+    private extensions: any = [
+        History,
+        Blockquote,
+        Link,
+        Underline,
+        Strike,
+        Bold,
+        Italic,
+        ListItem,
+        BulletList,
+        OrderedList,
+        [
+            Heading,
+            {
+                options: {
+                    levels: [1, 2, 3, 4]
+                }
+            }
+        ],
+        Bold,
+        Code,
+        Paragraph,
+        HardBreak
+    ];
 
     @Prop() editedItem!: Communication;
     @Prop() isNew!: number;
