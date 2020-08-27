@@ -327,7 +327,7 @@ export default class CalendarBodyComponent extends Vue {
         } else if (type == EntryType.Immunization) {
             return (entry as ImmunizationTimelineEntry).immunization.name;
         } else if (type == EntryType.Laboratory) {
-            return (entry as LaboratoryTimelineEntry).summaryTestType;
+            return (entry as LaboratoryTimelineEntry).summaryTitle;
         } else if (type == EntryType.Note) {
             return (entry as NoteTimelineEntry).title;
         }
