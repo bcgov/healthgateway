@@ -17,10 +17,7 @@ export default class EncounterTimelineEntry extends TimelineEntry {
         this.practitionerName =
             model?.practitionerName || "Unknown Practitioner";
         this.specialtyDescription = model?.specialtyDescription || "";
-        this.clinic = new ClinicViewModel(model?.clinic?.clinicId);
-        if (model?.clinic) {
-            this.clinic.populateFromModel(model.clinic);
-        }
+        this.clinic = new ClinicViewModel(model?.clinic);
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
@@ -43,21 +40,18 @@ class ClinicViewModel {
     public address?: string;
     public phoneNumber?: string;
 
-    constructor(id: string | undefined) {
-        this.id = id ? id : "";
-    }
-
-    public populateFromModel(model: Clinic): void {
-        this.name = model.name;
-        this.phoneNumber = model.phoneNumber;
+    constructor(model?: Clinic) {
+        this.id = model?.clinicId || "";
+        this.name = model?.name;
+        this.phoneNumber = model?.phoneNumber;
 
         this.address =
-            model.addressLine1 +
+            (model?.addressLine1 || "") +
             " " +
-            model.addressLine2 +
+            (model?.addressLine2 || "") +
             ", " +
-            model.city +
+            (model?.city || "") +
             " " +
-            model.province;
+            (model?.province || "");
     }
 }
