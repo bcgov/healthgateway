@@ -6,7 +6,7 @@ import Clinic from "@/models/clinic";
 export default class EncounterTimelineEntry extends TimelineEntry {
     public practitionerName: string;
     public specialtyDescription: string;
-    public clinic: Clinic;
+    public clinic: ClinicViewModel;
 
     public constructor(model?: Encounter) {
         super(
@@ -17,7 +17,10 @@ export default class EncounterTimelineEntry extends TimelineEntry {
         this.practitionerName =
             model?.practitionerName || "Unknown Practitioner";
         this.specialtyDescription = model?.specialtyDescription || "";
-        this.clinic = model?.clinic;
+        this.clinic = new ClinicViewModel(model?.clinic?.clinicId);
+        if (model?.clinic) {
+            this.clinic.populateFromModel(model.clinic);
+        }
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
@@ -31,5 +34,30 @@ export default class EncounterTimelineEntry extends TimelineEntry {
             (this.clinic?.name || "");
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
+    }
+}
+
+class ClinicViewModel {
+    public id: string;
+    public name?: string;
+    public address?: string;
+    public phoneNumber?: string;
+
+    constructor(id: string | undefined) {
+        this.id = id ? id : "";
+    }
+
+    public populateFromModel(model: Clinic): void {
+        this.name = model.name;
+        this.phoneNumber = model.phoneNumber;
+
+        this.address =
+            model.addressLine1 +
+            " " +
+            model.addressLine2 +
+            ", " +
+            model.city +
+            " " +
+            model.province;
     }
 }
