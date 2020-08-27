@@ -171,6 +171,16 @@
                                 My Notes
                             </b-form-checkbox>
                         </b-col>
+                        <b-col v-if="isEncounterEnabled">
+                            <b-form-checkbox
+                                id="encounterFilter"
+                                v-model="filterTypes"
+                                name="encounterFilter"
+                                value="Encounter"
+                            >
+                                MSP Visits
+                            </b-form-checkbox>
+                        </b-col>
                     </b-row>
                     <br />
                 </div>
@@ -501,6 +511,10 @@ export default class TimelineView extends Vue {
         return this.config.modules["Note"];
     }
 
+    private get isEncounterEnabled(): boolean {
+        return this.config.modules["Encounter"];
+    }
+
     private initializeFilters(): void {
         if (this.isMedicationEnabled) {
             this.filterTypes.push("Medication");
@@ -513,6 +527,9 @@ export default class TimelineView extends Vue {
         }
         if (this.isNoteEnabled) {
             this.filterTypes.push("Note");
+        }
+        if (this.isEncounterEnabled) {
+            this.filterTypes.push("Encounter");
         }
     }
 

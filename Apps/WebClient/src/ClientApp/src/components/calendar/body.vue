@@ -49,6 +49,9 @@
                         .immunization {
                             background-color: $primary !important;
                         }
+                        .encounter {
+                            background-color: $primary !important;
+                        }
 
                         .icon {
                             text-align: center;
@@ -160,6 +163,7 @@ import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import EventBus from "@/eventbus";
 import { CalendarEntry, CalendarWeek } from "./models";
 import { EventMessageName } from "@/constants/eventMessageName";
@@ -294,7 +298,9 @@ export default class CalendarBodyComponent extends Vue {
         if (event.type == EntryType.Note) {
             return "edit";
         }
-
+        if (event.type == EntryType.Encounter) {
+            return "user-md";
+        }
         return "";
     }
 
@@ -307,6 +313,8 @@ export default class CalendarBodyComponent extends Vue {
             return "laboratory";
         } else if (event.type == EntryType.Note) {
             return "note";
+        } else if (event.type == EntryType.Encounter) {
+            return "encounter";
         }
 
         return "";
@@ -330,6 +338,8 @@ export default class CalendarBodyComponent extends Vue {
             return (entry as LaboratoryTimelineEntry).summaryTitle;
         } else if (type == EntryType.Note) {
             return (entry as NoteTimelineEntry).title;
+        } else if (type == EntryType.Encounter) {
+            return (entry as EncounterTimelineEntry).title;
         }
 
         return "N/A";
