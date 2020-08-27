@@ -11,6 +11,12 @@ nav {
     a:hover h4 {
         text-decoration: underline;
     }
+    button {
+        svg {
+            width: 1.5em;
+            height: 1.5em;
+        }
+    }
 }
 </style>
 <template>
@@ -20,8 +26,13 @@ nav {
             v-if="displayMenu"
             class="mr-1"
             target="NONE"
-            @click="toggleSidebar"
-        ></b-navbar-toggle>
+            @click="handleToggleClick"
+        >
+            <template>
+                <b-icon v-if="sidebarExpanded" icon="x"></b-icon>
+                <b-icon v-else icon="list"></b-icon>
+            </template>
+        </b-navbar-toggle>
 
         <!-- Brand -->
         <b-navbar-brand class="mx-0">
@@ -54,33 +65,36 @@ nav {
 
         <!-- Navbar links -->
         <b-navbar-nav class="ml-auto">
-            <router-link
+            <b-btn
                 v-if="oidcIsAuthenticated"
-                id="menuBtnLogin"
+                id="menuBtnLogout"
+                variant="link"
                 class="nav-link"
-                to="/logout"
+                @click="showRating()"
             >
                 <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
                 Logout
-            </router-link>
+            </b-btn>
             <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
                 <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login
             </router-link>
         </b-navbar-nav>
+        <RatingComponent ref="ratingComponent" @on-close="modalClosed()" />
     </b-navbar>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
+import { Component, Prop, Watch, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import { User as OidcUser } from "oidc-client";
-import { IAuthenticationService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import User from "@/models/user";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import RatingComponent from "@/components/modal/rating.vue";
 library.add(faSignInAlt);
 library.add(faSignOutAlt);
 
@@ -93,8 +107,13 @@ const auth: string = "auth";
 const user: string = "user";
 const sidebar: string = "sidebar";
 
-@Component
+@Component({
+    components: {
+        RatingComponent,
+    },
+})
 export default class HeaderComponent extends Vue {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
     @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
 
@@ -111,13 +130,10 @@ export default class HeaderComponent extends Vue {
     @Getter("userIsActive", { namespace: user })
     userIsActive!: boolean;
 
-    private authenticationService!: IAuthenticationService;
+    @Ref("ratingComponent")
+    readonly ratingComponent!: RatingComponent;
 
-    private mounted() {
-        this.authenticationService = container.get(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-    }
+    private sidebarExpanded: boolean = false;
 
     private get displayMenu(): boolean {
         return (
@@ -127,8 +143,22 @@ export default class HeaderComponent extends Vue {
         );
     }
 
+    private handleToggleClick() {
+        this.sidebarExpanded = !this.sidebarExpanded;
+        this.toggleSidebar();
+    }
+
     private toggleMenu() {
         this.toggleSidebar();
+    }
+
+    private showRating() {
+        this.ratingComponent.showModal();
+    }
+
+    private modalClosed() {
+        this.logger.debug(`redirecting to logout view ...`);
+        this.$router.push({ path: "/logout" });
     }
 }
 </script>

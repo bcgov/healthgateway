@@ -20,21 +20,50 @@
                 id="healthInsights"
                 class="col-12 col-md-10 col-lg-9 column-wrapper"
             >
-                <ErrorCard
-                    title="Whoops!"
-                    description="An error occurred."
-                    :show="hasErrors"
-                />
                 <div id="pageTitle">
                     <h1 id="subject">Health Insights</h1>
                     <hr />
                 </div>
-
-                <!-- 
-                    <HealthInsightsComponent 
-                        :entries="timelineEntries"
-                    />
-                -->
+                <div>
+                    <h3>Medication count over time</h3>
+                    <b-row class="py-4">
+                        <b-col cols="auto">
+                            <strong>First month with data: </strong>
+                            {{ getReadableDate(startDate) }}
+                        </b-col>
+                        <b-col cols="auto">
+                            <strong>Last month with data: </strong
+                            >{{ getReadableDate(endDate) }}
+                        </b-col>
+                        <b-col cols="auto">
+                            <strong>Total records: </strong>{{ visibleCount }}
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="!isLoading && visibleCount > 0">
+                        <b-col>
+                            <LineChart
+                                :chartdata="timeChartData"
+                                :options="chartOptions"
+                            />
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="!isLoading && visibleCount === 0"
+                        class="text-center pt-5"
+                    >
+                        <b-col>
+                            No medication records
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="isLoading">
+                        <b-col>
+                            <content-placeholders>
+                                <content-placeholders-img />
+                                <content-placeholders-text :lines="1" />
+                            </content-placeholders>
+                        </b-col>
+                    </b-row>
+                </div>
             </b-col>
         </b-row>
         <ProtectiveWordComponent
@@ -52,33 +81,26 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import moment from "moment";
-import { Route } from "vue-router";
-import { WebClientConfiguration } from "@/models/configData";
-import {
-    ILogger,
-    IImmunizationService,
-    ILaboratoryService,
-    IMedicationService,
-} from "@/services/interfaces";
+
+import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
+import { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import TimelineEntry from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
-import MedicationStatementHistory from "../models/medicationStatementHistory";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import {
-    LaboratoryOrder,
-    LaboratoryReport,
-    LaboratoryResult,
-} from "@/models/laboratory";
 
 import TimelineLoadingComponent from "@/components/timelineLoading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
+
+import { Dictionary } from "vue-router/types/router";
+import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
+import BannerError from "@/models/bannerError";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 const namespace: string = "user";
 
@@ -87,67 +109,73 @@ const namespace: string = "user";
         TimelineLoadingComponent,
         ProtectiveWordComponent,
         ErrorCard: ErrorCardComponent,
+        LineChart: LineChartComponent,
     },
 })
 export default class HealthInsightsView extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("user", { namespace }) user!: User;
-    @Action("getOrders", { namespace: "laboratory" })
-    getLaboratoryOrders!: (params: {
-        hdid: string;
-    }) => Promise<RequestResult<LaboratoryOrder[]>>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Action("getMedicationStatements", { namespace: "medication" })
+    getMedicationStatements!: (params: {
+        hdid: string;
+        protectiveWord?: string;
+    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
+
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
     private timelineEntries: TimelineEntry[] = [];
     private isMedicationLoading: boolean = false;
-    private isImmunizationLoading: boolean = false;
-    private isLaboratoryLoading: boolean = false;
-    private hasErrors: boolean = false;
     private protectiveWordAttempts: number = 0;
+
+    private startDate: Date | null = null;
+    private endDate: Date | null = null;
+
+    private timeChartData: any | null = null;
+    private chartOptions: {} = { responsive: true, maintainAspectRatio: false };
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
 
     private mounted() {
+        this.timeChartData = {
+            labels: [],
+            datasets: [
+                {
+                    label: "Monthly medications count",
+                    backgroundColor: "#ff6666",
+                    data: [],
+                },
+            ],
+        };
+
         this.fetchMedicationStatements();
-        this.fetchImmunizations();
-        this.fetchLaboratoryResults();
     }
 
     private get isLoading(): boolean {
-        return (
-            this.isMedicationLoading ||
-            this.isImmunizationLoading ||
-            this.isLaboratoryLoading
-        );
+        return this.isMedicationLoading;
     }
 
     private get isMedicationEnabled(): boolean {
         return this.config.modules["Medication"];
     }
 
-    private get isImmunizationEnabled(): boolean {
-        return this.config.modules["Immunization"];
-    }
-
-    private get isLaboratoryEnabled(): boolean {
-        return this.config.modules["Laboratory"];
+    private get visibleCount(): number {
+        return this.timelineEntries.length;
     }
 
     private fetchMedicationStatements(protectiveWord?: string) {
-        const medicationService: IMedicationService = container.get(
-            SERVICE_IDENTIFIER.MedicationService
-        );
         this.isMedicationLoading = true;
-        let promise: Promise<RequestResult<MedicationStatementHistory[]>>;
 
-        promise = medicationService.getPatientMedicationStatementHistory(
-            this.user.hdid,
-            protectiveWord
-        );
-
-        promise
+        this.getMedicationStatements({
+            hdid: this.user.hdid,
+            protectiveWord: protectiveWord,
+        })
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.protectiveWordAttempts = 0;
@@ -157,6 +185,13 @@ export default class HealthInsightsView extends Vue {
                             new MedicationTimelineEntry(result)
                         );
                     }
+                    let timelineEntries = this.timelineEntries.reverse();
+                    this.startDate = this.timelineEntries[0].date;
+                    this.endDate = this.timelineEntries[
+                        this.timelineEntries.length - 1
+                    ].date;
+
+                    this.prepareMonthlyChart();
                 } else if (results.resultStatus == ResultType.Protected) {
                     this.protectiveWordModal.showModal();
                     this.protectiveWordAttempts++;
@@ -165,82 +200,25 @@ export default class HealthInsightsView extends Vue {
                         "Error returned from the medication statements call: " +
                             results.resultError?.resultMessage
                     );
-                    this.hasErrors = true;
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Medications Error",
+                            results.resultError
+                        )
+                    );
                 }
             })
             .catch((err) => {
-                this.hasErrors = true;
                 this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Fetch Medications Error",
+                        err
+                    )
+                );
             })
             .finally(() => {
                 this.isMedicationLoading = false;
-            });
-    }
-
-    private fetchImmunizations() {
-        const immunizationService: IImmunizationService = container.get(
-            SERVICE_IDENTIFIER.ImmunizationService
-        );
-        this.isImmunizationLoading = true;
-        immunizationService
-            .getPatientImmunizations(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the immunization entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new ImmunizationTimelineEntry(result)
-                        );
-                    }
-                } else {
-                    this.logger.error(
-                        "Error returned from the immunization call: " +
-                            results.resultError?.resultMessage
-                    );
-                    this.hasErrors = true;
-                }
-            })
-            .catch((err) => {
-                this.hasErrors = true;
-                this.logger.error(err);
-            })
-            .finally(() => {
-                this.isImmunizationLoading = false;
-            });
-    }
-
-    private fetchLaboratoryResults() {
-        const laboratoryService: ILaboratoryService = container.get(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
-        this.isLaboratoryLoading = true;
-        this.getLaboratoryOrders({ hdid: this.user.hdid })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the laboratory entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new LaboratoryTimelineEntry(result)
-                        );
-                    }
-
-                    if (results.resourcePayload.length > 0) {
-                        this.protectiveWordModal.hideModal();
-                    }
-                } else {
-                    this.logger.error(
-                        "Error returned from the laboratory call: " +
-                            results.resultError?.resultMessage
-                    );
-                    this.hasErrors = true;
-                }
-            })
-            .catch((err) => {
-                this.hasErrors = true;
-                this.logger.error(err);
-            })
-            .finally(() => {
-                this.isLaboratoryLoading = false;
             });
     }
 
@@ -251,6 +229,69 @@ export default class HealthInsightsView extends Vue {
     private onProtectiveWordCancel() {
         // Does nothing as it won't be able to fetch pharmanet data.
         this.logger.debug("protective word cancelled");
+    }
+
+    /**
+     * Gets an array of months between two dates
+     */
+    private getMonthsBetweenDates(start: Date, end: Date): string[] {
+        var startDate = moment(start);
+        var endDate = moment(end);
+
+        if (endDate.isBefore(startDate)) {
+            throw "End date must be greated than start date.";
+        }
+
+        var result: string[] = [];
+        while (startDate.isBefore(endDate)) {
+            result.push(startDate.format("YYYY-MM-01"));
+            startDate.add(1, "month");
+        }
+        return result;
+    }
+
+    /**
+     * Prepares the dataset based on the timeline entries
+     */
+    private prepareMonthlyChart() {
+        let months: string[] = this.getMonthsBetweenDates(
+            this.startDate as Date,
+            this.endDate as Date
+        );
+
+        let entryIndex = 0;
+        let monthCounter: number[] = [];
+        for (let monthIndex = 0; monthIndex < months.length; monthIndex++) {
+            let currentMonth = months[monthIndex];
+            monthCounter.push(0);
+
+            while (entryIndex < this.timelineEntries.length) {
+                let entry = this.timelineEntries[entryIndex];
+                if (moment(currentMonth).isSame(entry.date, "month")) {
+                    monthCounter[monthIndex] += 1;
+                    entryIndex++;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        this.timeChartData.datasets[0].data = [];
+
+        for (let i = 0; i < months.length; i++) {
+            this.timeChartData.labels.push(
+                moment(months[i]).format("MMM YYYY")
+            );
+            this.timeChartData.datasets[0].data.push(monthCounter[i]);
+        }
+    }
+
+    private getReadableDate(date: Date | null): string {
+        if (date === null) {
+            return "N/A";
+        }
+
+        return moment(date).format("MMMM YYYY");
     }
 }
 </script>

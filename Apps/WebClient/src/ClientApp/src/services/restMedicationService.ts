@@ -57,7 +57,7 @@ export class RestMedicationService implements IMedicationService {
                 return;
             }
             this.http
-                .getWithCors<RequestResult<MedicationStatementHistory[]>>(
+                .get<RequestResult<MedicationStatementHistory[]>>(
                     `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
                     headers
                 )
@@ -83,7 +83,7 @@ export class RestMedicationService implements IMedicationService {
     ): Promise<MedicationResult> {
         return new Promise((resolve, reject) => {
             return this.http
-                .getWithCors<RequestResult<MedicationResult>>(
+                .get<RequestResult<MedicationResult>>(
                     `${this.baseUri}${this.MEDICATION_BASE_URI}/${drugIdentifier}`
                 )
                 .then((requestResult) => {

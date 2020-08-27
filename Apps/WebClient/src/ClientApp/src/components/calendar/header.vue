@@ -1,6 +1,8 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 .calendar-header {
+    padding-bottom: 15px;
+
     .btn-outline-primary {
         font-size: 2em;
         background-color: white;
@@ -35,31 +37,37 @@
 </style>
 <template>
     <b-row class="calendar-header">
-        <b-col cols="auto" class="p-0">
+        <b-col cols="col-sm-auto" class="p-0">
             <b-btn
-                class="arrow-icon left-button btn-outline-primary px-2 m-0"
+                variant="light"
+                :disabled="monthIndex == 0"
+                class="arrow-icon left-button px-2 m-0"
                 @click.stop="previousMonth"
             >
                 <font-awesome-icon :icon="leftIcon" />
             </b-btn>
         </b-col>
-        <b-col cols="auto" class="p-0">
-            <b-btn
-                class="arrow-icon right-button btn-outline-primary px-2 m-0"
-                @click.stop="nextMonth"
-            >
-                <font-awesome-icon :icon="rightIcon" />
-            </b-btn>
-        </b-col>
-        <b-col cols="auto" class="mx-4">
+        <b-col cols="col-sm-auto" class="p-0">
             <MonthYearPickerComponent
                 :current-month="currentMonth"
                 :available-months="availableMonths"
                 @date-changed="dateSelected"
             />
         </b-col>
-        <b-col class="header-right">
-            <slot name="header-right"> </slot>
+        <b-col cols="col-sm-auto" class="p-0">
+            <b-btn
+                variant="light"
+                :disabled="monthIndex == availableMonths.length - 1"
+                class="arrow-icon right-button px-2 m-0"
+                @click.stop="nextMonth"
+            >
+                <font-awesome-icon :icon="rightIcon" />
+            </b-btn>
+        </b-col>
+        <b-col
+            class="header-right px-0 col-12 order-first col-sm order-sm-last"
+        >
+            <slot name="month-list-toggle"></slot>
         </b-col>
     </b-row>
 </template>

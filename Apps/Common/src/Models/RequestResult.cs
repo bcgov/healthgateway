@@ -56,7 +56,7 @@ namespace HealthGateway.Common.Models
         public ResultType ResultStatus { get; set; }
 
         /// <summary>
-        /// Gets or sets the ResultError of the request. Can be null
+        /// Gets or sets the ResultError of the request. Can be null.
         /// </summary>
         [JsonPropertyName("resultError")]
         public RequestResultError? ResultError { get; set; } = null;

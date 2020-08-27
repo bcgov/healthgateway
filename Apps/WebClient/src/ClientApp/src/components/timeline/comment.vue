@@ -2,15 +2,14 @@
 @import "@/assets/scss/_variables.scss";
 
 .comment-body {
-    background-color: $lightGrey;
-    border-radius: 0px 0px 10px 10px;
+    background-color: $soft_background;
 }
 
 .editing {
     background-color: lightyellow;
 }
 
-.commnet-menu {
+.comment-menu {
     color: $soft_text;
 }
 
@@ -18,34 +17,34 @@
     white-space: pre-line;
 }
 
-.no-text {
+.timestamp {
+    color: $soft_text;
+    font-size: 0.7em;
+}
+
+.single-line {
     height: 38px !important;
-}
-
-.dropdown {
-    color: $primary;
-    text-decoration: none;
-}
-
-.dropdown:hover {
-    color: inherit;
 }
 </style>
 <template>
     <b-col>
         <div v-show="!isLoading">
             <b-row
-                v-if="!inputShowing"
-                class="comment-body p-3 my-1"
+                v-if="!isEditMode"
+                class="comment-body py-2 mr-0 ml-3 my-1"
                 align-v="center"
             >
-                <b-col class="comment-text">{{ comment.text }}</b-col>
+                <b-col class="comment-text">
+                    {{ comment.text }}
+                    <p class="m-0 timestamp">
+                        {{ formatDate(comment.createdDateTime) }}
+                    </p>
+                </b-col>
                 <div class="d-flex flex-row-reverse">
                     <b-dropdown
                         dropright
                         text=""
                         :no-caret="true"
-                        class="dropdown"
                         variant="link"
                     >
                         <template slot="button-content">
@@ -70,43 +69,24 @@
                     </b-dropdown>
                 </div>
             </b-row>
-            <b-row v-if="inputShowing" class="comment-body p-2">
-                <b-col
-                    v-if="isNewComment"
-                    cols="auto"
-                    class="px-0 align-self-center"
-                >
-                    <div
-                        :id="'tooltip-' + comment.parentEntryId"
-                        class="tooltip-info"
-                    >
-                        <font-awesome-icon :icon="lockIcon" size="1x">
-                        </font-awesome-icon>
-                    </div>
-                    <b-tooltip
-                        variant="secondary"
-                        :target="'tooltip-' + comment.parentEntryId"
-                        placement="left"
-                        triggers="hover"
-                    >
-                        Only you can see comments added to your medical records.
-                    </b-tooltip>
-                </b-col>
+            <b-row v-if="isEditMode" class="comment-body py-2 mr-0 ml-3 my-1">
                 <b-col class="col pl-2 pr-0">
                     <b-form @submit.prevent>
                         <b-form-textarea
+                            id="comment-input"
                             v-model="commentInput"
-                            :class="commentInput.length === 0 ? 'no-text' : ''"
-                            rows="2"
+                            :class="
+                                commentInput.length <= 30 ? 'single-line' : ''
+                            "
                             max-rows="10"
                             no-resize
-                            :placeholder="placeholder"
+                            placeholder="Editing a comment"
                             maxlength="1000"
                         ></b-form-textarea>
                     </b-form>
                 </b-col>
                 <b-col
-                    class="pl-2 pr-0 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
+                    class="px-2 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
                 >
                     <b-button
                         class="mr-2"
@@ -116,17 +96,10 @@
                     >
                         Save
                     </b-button>
-                    <b-button
-                        :disabled="commentInput === '' && isNewComment"
-                        variant="secondary"
-                        @click="onCancel"
-                    >
+                    <b-button variant="secondary" @click="onCancel">
                         Cancel
                     </b-button>
                 </b-col>
-            </b-row>
-            <b-row v-if="!isNewComment" class="px-3">
-                <span> {{ formatDate(comment.createdDateTime) }} </span>
             </b-row>
         </div>
         <div v-show="isLoading">
@@ -169,75 +142,26 @@ export default class CommentComponent extends Vue {
         );
     }
 
-    private get placeholder(): string {
-        if (this.isEditMode) {
-            return "Editing a comment";
-        } else {
-            return "Add a private comment";
-        }
-    }
-
-    private get isNewComment(): boolean {
-        return this.comment.id === "";
-    }
-
-    private get inputShowing(): boolean {
-        return this.isNewComment || this.isEditMode;
-    }
-
     private formatDate(date: Date): string {
-        return new Date(Date.parse(date + "Z")).toLocaleString();
+        return new Date(Date.parse(date + "Z")).toLocaleString([], {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
     }
 
     private get menuIcon(): IconDefinition {
         return faEllipsisV;
     }
 
-    private get lockIcon(): IconDefinition {
-        return faLock;
-    }
-
     private onSubmit(): void {
-        if (this.isEditMode) {
-            this.updateComment();
-        } else {
-            this.addComment();
-        }
+        this.updateComment();
     }
 
     private onCancel(): void {
-        if (this.isNewComment) {
-            this.commentInput = "";
-        } else {
-            this.isEditMode = false;
-        }
-    }
-
-    private addComment(): void {
-        this.isLoading = true;
-        this.commentService
-            .createComment({
-                text: this.commentInput,
-                parentEntryId: this.comment.parentEntryId,
-                userProfileId: this.user.hdid,
-                version: 0,
-                createdDateTime: new Date(),
-            })
-            .then(() => {
-                this.commentInput = "";
-                this.onCommentAdded(this.comment);
-            })
-            .catch((err) => {
-                this.logger.error(
-                    `Error adding comment on entry ${
-                        this.comment.parentEntryId
-                    }: ${JSON.stringify(err)}`
-                );
-                this.hasErrors = true;
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+        this.isEditMode = false;
     }
 
     private editComment(): void {
@@ -288,11 +212,6 @@ export default class CommentComponent extends Vue {
 
     @Emit()
     needsUpdate(comment: UserComment) {
-        return comment;
-    }
-
-    @Emit()
-    onCommentAdded(comment: UserComment) {
         return comment;
     }
 }

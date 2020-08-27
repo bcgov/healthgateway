@@ -23,7 +23,9 @@ namespace HealthGateway.Database.Context
     using System.Text;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
+    using HealthGateway.Database.Utils;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
     /// <summary>
     /// The database context used by the web client application.
@@ -70,6 +72,7 @@ namespace HealthGateway.Database.Context
         public DbSet<Comment> Comment { get; set; } = null!;
         public DbSet<Communication> Communication { get; set; } = null!;
         public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
+        public DbSet<Rating> Rating { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -107,11 +110,39 @@ namespace HealthGateway.Database.Context
                 .HasPrincipalKey(k => k.StatusCode)
                 .HasForeignKey(k => k.EmailStatusCode);
 
+            var emailFormatCodeConvertor = new ValueConverter<EmailFormat, string>(
+                    v => EnumUtility.ToEnumString<EmailFormat>(v, false),
+                    v => EnumUtility.ToEnum<EmailFormat>(v, false));
+
+            modelBuilder.Entity<Email>()
+                .Property(e => e.FormatCode)
+                .HasConversion(emailFormatCodeConvertor);
+
             modelBuilder.Entity<EmailTemplate>()
                 .HasOne<EmailFormatCode>()
                 .WithMany()
                 .HasPrincipalKey(k => k.FormatCode)
                 .HasForeignKey(k => k.FormatCode);
+
+            modelBuilder.Entity<EmailTemplate>()
+                .Property(e => e.FormatCode)
+                .HasConversion(emailFormatCodeConvertor);
+
+            modelBuilder.Entity<EmailFormatCode>()
+                .Property(e => e.FormatCode)
+                .HasConversion(emailFormatCodeConvertor);
+
+            var emailStatusCodeConvertor = new ValueConverter<EmailStatus, string>(
+                    v => EnumUtility.ToEnumString<EmailStatus>(v, false),
+                    v => EnumUtility.ToEnum<EmailStatus>(v, false));
+
+            modelBuilder.Entity<Email>()
+                .Property(e => e.EmailStatusCode)
+                .HasConversion(emailStatusCodeConvertor);
+
+            modelBuilder.Entity<EmailStatusCode>()
+                .Property(e => e.StatusCode)
+                .HasConversion(emailStatusCodeConvertor);
 
             // Create Foreign keys for Audit
             modelBuilder.Entity<AuditEvent>()
@@ -126,6 +157,18 @@ namespace HealthGateway.Database.Context
                     .HasPrincipalKey(k => k.ResultCode)
                     .HasForeignKey(k => k.TransactionResultCode)
                     .OnDelete(DeleteBehavior.Restrict);
+
+            var auditTransactionResultConvertor = new ValueConverter<AuditTransactionResult, string>(
+                    v => EnumUtility.ToEnumString<AuditTransactionResult>(v, true),
+                    v => EnumUtility.ToEnum<AuditTransactionResult>(v, true));
+
+            modelBuilder.Entity<AuditEvent>()
+                    .Property(e => e.TransactionResultCode)
+                    .HasConversion(auditTransactionResultConvertor);
+
+            modelBuilder.Entity<AuditTransactionResultCode>()
+                    .Property(e => e.ResultCode)
+                    .HasConversion(auditTransactionResultConvertor);
 
             // Create Foreign keys for FileDownload
             modelBuilder.Entity<FileDownload>()
@@ -187,6 +230,36 @@ namespace HealthGateway.Database.Context
                 .WithMany()
                 .HasPrincipalKey(k => k.StatusCode)
                 .HasForeignKey(k => k.CommunicationStatusCode);
+
+            var communicationStatusCodeConverter = new ValueConverter<CommunicationStatus, string>(
+                    v => EnumUtility.ToEnumString<CommunicationStatus>(v, false),
+                    v => EnumUtility.ToEnum<CommunicationStatus>(v, false));
+
+            modelBuilder.Entity<Communication>()
+                .Property(e => e.CommunicationStatusCode)
+                .HasConversion(communicationStatusCodeConverter);
+
+            modelBuilder.Entity<CommunicationStatusCode>()
+                .Property(e => e.StatusCode)
+                .HasConversion(communicationStatusCodeConverter);
+
+            var communicationTypeCodeConverter = new ValueConverter<CommunicationType, string>(
+                    v => EnumUtility.ToEnumString<CommunicationType>(v, false),
+                    v => EnumUtility.ToEnum<CommunicationType>(v, false));
+
+            modelBuilder.Entity<Communication>()
+                .Property(e => e.CommunicationTypeCode)
+                .HasConversion(communicationTypeCodeConverter);
+
+            modelBuilder.Entity<CommunicationTypeCode>()
+                .Property(e => e.StatusCode)
+                .HasConversion(communicationTypeCodeConverter);
+
+            modelBuilder.Entity<LegalAgreementTypeCode>()
+                .Property(e => e.LegalAgreementCode)
+                .HasConversion(new ValueConverter<LegalAgreementType, string>(
+                    v => EnumUtility.ToEnumString<LegalAgreementType>(v, true),
+                    v => EnumUtility.ToEnum<LegalAgreementType>(v, true)));
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
@@ -551,7 +624,7 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<LegalAgreementTypeCode>().HasData(
                 new LegalAgreementTypeCode
                 {
-                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
                     Description = "Terms of Service",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
@@ -562,7 +635,7 @@ namespace HealthGateway.Database.Context
                 new LegalAgreement // Terms of Service as of Launch
                 {
                     Id = Guid.Parse("f5acf1de-2f5f-431e-955d-a837d5854182"),
-                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20191206.html"),
                     EffectiveDate = this.DefaultSeedDate,
                     CreatedBy = UserId.DefaultUser,
@@ -573,7 +646,7 @@ namespace HealthGateway.Database.Context
                 new LegalAgreement // Updated Terms of Service for Notes feature
                 {
                     Id = Guid.Parse("ec438d12-f8e2-4719-8444-28e35d34674c"),
-                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200317.html"),
                     EffectiveDate = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     CreatedBy = UserId.DefaultUser,
@@ -584,7 +657,7 @@ namespace HealthGateway.Database.Context
                 new LegalAgreement // Updated Terms of Service for Lab/Covid Update
                 {
                     Id = Guid.Parse("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
-                    LegalAgreementCode = AgreementType.TermsofService,
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20200511.html"),
                     EffectiveDate = DateTime.ParseExact("07/31/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     CreatedBy = UserId.DefaultUser,

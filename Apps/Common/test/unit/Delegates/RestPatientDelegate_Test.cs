@@ -27,10 +27,7 @@ namespace HealthGateway.CommonTests.Delegates
     using Moq.Protected;
     using System.Threading;
     using System.Net;
-    using System.Text.Json;
-    using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
-    using System;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
 
@@ -51,7 +48,7 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestPatientDelegate> logger = loggerFactory.CreateLogger<RestPatientDelegate>();
 
-            string json = @"{ ""hdid"":""P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"",""personalhealthnumber"":""9735353315"",""firstname"":""BONNET"",""lastname"":""PROTERVITY"",""birthdate"":""1967-06-02T00:00:00"",""email"":""""}";
+            string json = @"{""resourcePayload"": {""hdid"": ""P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"",""personalhealthnumber"": ""9735353315"",""firstname"": ""BONNET"",""lastname"": ""PROTERVITY"",""birthdate"": ""1967-06-02T00:00:00"",""email"":""""},""totalResultCount"": null,""pageIndex"": null,""pageSize"": null,""resultStatus"": 1,""resultError"": null}";
             var handlerMock = new Mock<HttpMessageHandler>();
             handlerMock
                .Protected()
@@ -74,7 +71,7 @@ namespace HealthGateway.CommonTests.Delegates
                 mockHttpClientService.Object,
                 this.configuration);
             string phn = patientDelegate.GetPatientPHN("HDID", "Bearer Token").ResourcePayload;
-            Assert.True(phn == expectedPHN);
+            Assert.Equal(expectedPHN, phn);
         }
 
         [Fact]
@@ -83,7 +80,7 @@ namespace HealthGateway.CommonTests.Delegates
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<RestPatientDelegate> logger = loggerFactory.CreateLogger<RestPatientDelegate>();
 
-            string json = @"{ ""hdid"":""P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"",""personalhealthnumber"":""9735353315"",""firstname"":""BONNET"",""lastname"":""PROTERVITY"",""birthdate"":""1967-06-02T00:00:00"",""email"":""""}";
+            string json = @"{""resourcePayload"": {""hdid"": ""P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"",""personalhealthnumber"": ""9735353315"",""firstname"": ""BONNET"",""lastname"": ""PROTERVITY"",""birthdate"": ""1967-06-02T00:00:00"",""email"":""""},""totalResultCount"": null,""pageIndex"": null,""pageSize"": null,""resultStatus"": 1,""resultError"": null}";
             var handlerMock = new Mock<HttpMessageHandler>();
             handlerMock
                .Protected()
@@ -106,7 +103,7 @@ namespace HealthGateway.CommonTests.Delegates
                 mockHttpClientService.Object,
                 this.configuration);
             RequestResult<string> result = patientDelegate.GetPatientPHN("HDID", "Bearer Token");
-            Assert.True(result.ResultStatus == ResultType.Error);
+            Assert.Equal(ResultType.Error, result.ResultStatus);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

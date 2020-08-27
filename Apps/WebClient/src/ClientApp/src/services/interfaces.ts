@@ -19,6 +19,7 @@ import Communication from "@/models/communication";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import UserSMSInvite from "@/models/userSMSInvite";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import UserRating from "@/models/userRating";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -94,6 +95,11 @@ export interface IUserProfileService {
 export interface IUserFeedbackService {
     initialize(http: IHttpDelegate): void;
     submitFeedback(feedback: UserFeedback): Promise<boolean>;
+}
+
+export interface IUserRatingService {
+    initialize(http: IHttpDelegate): void;
+    submitRating(rating: UserRating): Promise<boolean>;
 }
 
 export interface IBetaRequestService {

@@ -98,7 +98,7 @@ namespace HealthGateway.Common.Auditing
         /// </summary>
         /// <param name="statusCode">The http context status code.</param>
         /// <returns>The mapped transaction result.</returns>
-        private static string GetTransactionResultType(int statusCode)
+        private static AuditTransactionResult GetTransactionResultType(int statusCode)
         {
             // Success codes (1xx, 2xx, 3xx)
             if (statusCode < 400)

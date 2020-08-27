@@ -6,6 +6,7 @@ import { MedicationState, RootState, StateType } from "@/models/storeState";
 
 export const state: MedicationState = {
     statusMessage: "",
+    medicationStatements: new Array(),
     medications: new Array(),
     error: false,
     stateType: StateType.NONE,

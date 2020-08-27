@@ -94,6 +94,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IEmailDelegate, DBEmailDelegate>();
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
+            services.AddTransient<IRatingDelegate, DBRatingDelegate>();
             services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<INoteDelegate, DBNoteDelegate>();
@@ -172,6 +173,14 @@ namespace HealthGateway.WebClient
                 }
             });
 
+            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            if (redirectToWWW)
+            {
+                RewriteOptions rewriteOption = new RewriteOptions()
+                    .AddRedirectToWwwPermanent();
+                app.UseRewriter(rewriteOption);
+            }
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
@@ -181,14 +190,6 @@ namespace HealthGateway.WebClient
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
                 }
             });
-
-            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
-            if (redirectToWWW)
-            {
-                RewriteOptions rewriteOption = new RewriteOptions()
-                    .AddRedirectToWwwPermanent();
-                app.UseRewriter(rewriteOption);
-            }
 
             app.UseStaticFiles(new StaticFileOptions
             {

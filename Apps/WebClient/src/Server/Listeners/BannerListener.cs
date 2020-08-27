@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Listeners
     using System;
     using System.Data;
     using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling;
@@ -107,7 +108,14 @@ namespace HealthGateway.WebClient.Listeners
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
         {
             this.logger.LogDebug($"Event received on channel {Channel}");
-            BannerChangeEvent changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                IgnoreNullValues = true,
+                WriteIndented = true,
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
+            BannerChangeEvent changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, options);
             if (this.CommunicationService != null && changeEvent.Data != null)
             {
                 DateTime utcnow = DateTime.UtcNow;

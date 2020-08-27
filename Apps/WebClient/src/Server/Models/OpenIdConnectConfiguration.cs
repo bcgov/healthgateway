@@ -33,6 +33,11 @@ namespace HealthGateway.WebClient.Models
         public string ClientId { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the Audience.
+        /// </summary>
+        public string Audience { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the OpenIDConnect Response types.
         /// </summary>
         public string ResponseType { get; set; } = string.Empty;

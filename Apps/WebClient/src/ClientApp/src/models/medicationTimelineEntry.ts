@@ -51,8 +51,8 @@ class PharmacyViewModel {
     public id: string;
     public name?: string;
     public address?: string;
-    public phoneType?: string;
     public phoneNumber?: string;
+    public faxNumber?: string;
 
     constructor(id: string | undefined) {
         this.id = id ? id : "";
@@ -60,8 +60,8 @@ class PharmacyViewModel {
 
     public populateFromModel(model: Pharmacy): void {
         this.name = model.name;
-        this.phoneType = model.phoneType;
         this.phoneNumber = model.phoneNumber;
+        this.faxNumber = model.faxNumber;
 
         this.address =
             model.addressLine1 +

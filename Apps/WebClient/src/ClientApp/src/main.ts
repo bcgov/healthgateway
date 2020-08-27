@@ -30,6 +30,7 @@ import {
     IUserFeedbackService,
     IUserNoteService,
     IUserProfileService,
+    IUserRatingService,
 } from "@/services/interfaces";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -88,6 +89,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const userCommentService: IUserCommentService = container.get(
         SERVICE_IDENTIFIER.UserCommentService
     );
+    const userRatingService: IUserRatingService = container.get(
+        SERVICE_IDENTIFIER.UserRatingService
+    );
     logger.initialize(config.webClient.logLevel);
 
     // Initialize services
@@ -102,25 +106,29 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     userNoteService.initialize(config, httpDelegate);
     communicationService.initialize(httpDelegate);
     userCommentService.initialize(config, httpDelegate);
+    userRatingService.initialize(httpDelegate);
     Vue.use(IdleVue, {
         eventEmitter: new Vue(),
         idleTime: config.webClient.timeouts!.idle || 300000,
         store,
         startAtIdle: false,
     });
-
-    store.dispatch("auth/getOidcUser").then(() => {
-        const user: User = store.getters["user/user"];
-        if (user.hdid) {
-            store
-                .dispatch("user/checkRegistration", { hdid: user.hdid })
-                .then(() => {
-                    initializeVue();
-                });
-        } else {
-            initializeVue();
-        }
-    });
+    if (window.location.pathname === "/loginCallback") {
+        initializeVue();
+    } else {
+        store.dispatch("auth/getOidcUser").then(() => {
+            const user: User = store.getters["user/user"];
+            if (user.hdid) {
+                store
+                    .dispatch("user/checkRegistration", { hdid: user.hdid })
+                    .then(() => {
+                        initializeVue();
+                    });
+            } else {
+                initializeVue();
+            }
+        });
+    }
 });
 
 function initializeVue() {

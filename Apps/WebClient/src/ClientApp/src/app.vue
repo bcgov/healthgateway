@@ -54,7 +54,7 @@ main {
             <NavHeader />
         </header>
         <b-row class="p-0 m-0">
-            <NavSidebar class="no-print" />
+            <NavSidebar class="no-print sticky-top vh-100" />
             <main class="col fill-height">
                 <ErrorCard
                     title="Whoops!"
@@ -103,6 +103,8 @@ import {
     PaginationNavPlugin,
     SpinnerPlugin,
     TooltipPlugin,
+    FormRatingPlugin,
+    IconsPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -122,6 +124,8 @@ Vue.use(PaginationNavPlugin);
 Vue.use(TooltipPlugin);
 Vue.use(FormGroupPlugin);
 Vue.use(FormRadioPlugin);
+Vue.use(FormRatingPlugin);
+Vue.use(IconsPlugin);
 
 // Load general icons
 import { config, library } from "@fortawesome/fontawesome-svg-core";

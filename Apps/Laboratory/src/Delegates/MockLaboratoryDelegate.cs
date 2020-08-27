@@ -59,7 +59,7 @@ namespace HealthGateway.Laboratory.Delegates
                             Id = Guid.Parse("dee12642-fb2c-481f-9ae4-c672b045b2b1"),
                             TestType = "COVID19",
                             OutOfRange = false,
-                            CollectionDateTime = DateTime.Now.AddDays(-1),
+                            CollectedDateTime = DateTime.Now.AddDays(-1),
                             TestStatus = "Final",
                             ResultDescription = "Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID-19 virus (2019-nCoV) detected by NAT.<br><br>This test targets the RdRP and E gene regions of COVID-19 virus (2019-nCoV) and has not been fully validated.",
                             ReceivedDateTime = DateTime.Now.AddDays(-1),

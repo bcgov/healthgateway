@@ -1,12 +1,43 @@
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.sticky-offset {
+    top: 118px;
+    background-color: white;
+    z-index: 2;
+    // TODO: Fix for filter overlaping. Remove once that is complete.
+    @media (max-width: 350px) {
+        top: 142px;
+    }
+}
+.sticky-line {
+    top: 172px;
+    background-color: white;
+    border-bottom: solid $primary 1px;
+    margin-top: -1px;
+    z-index: 1;
+    @media (max-width: 575px) {
+        top: 210px;
+    }
+    // TODO: Fix for filter overlaping. Remove once that is complete.
+    @media (max-width: 350px) {
+        top: 234px;
+    }
+}
+</style>
 <template>
     <div class="calendar mx-3">
         <!-- header pick month -->
         <CalendarHeader
+            class="sticky-top sticky-offset"
             :current-month.sync="currentMonth"
             :title-format="titleFormat"
             :available-months="availableMonths"
         >
+            <div slot="month-list-toggle">
+                <slot name="month-list-toggle"></slot>
+            </div>
         </CalendarHeader>
+        <b-row class="sticky-top sticky-line" />
         <!-- body display date day and events -->
         <CalendarBody
             :current-month="currentMonth"

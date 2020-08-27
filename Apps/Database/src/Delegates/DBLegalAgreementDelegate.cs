@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Ordinal doesn't work")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1307:Specify StringComparison", Justification = "Ordinal doesn't work")]
-        public DBResult<LegalAgreement> GetActiveByAgreementType(string agreementTypeCode)
+        public DBResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode)
         {
             LegalAgreement legalAgreement = this.dbContext.LegalAgreement
                 .Where(la => la.EffectiveDate <= DateTime.UtcNow)

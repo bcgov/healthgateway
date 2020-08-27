@@ -57,7 +57,7 @@ namespace HealthGateway.LaboratoryTests
                .ReturnsAsync(new HttpResponseMessage()
                {
                    StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent(@"[{""id"":""612d31e5-12e1-451f-a475-58d6b0a8f007"",""phn"":""9735352542"",""orderingProviderIds"":null,""orderingProviders"":""Davidson, Jana-Lea"",""reportingLab"":"""",""location"":""VCHA"",""ormOrOru"":""ORU"",""messageDateTime"":""2020-03-18T12:17:19"",""messageId"":""20200770000196"",""additionalData"":"""",""labResults"":[{""id"":""2a16cf0d-7798-4911-a533-43692e3080dc"",""testType"":""COVID19"",""outOfRange"":false,""collectedDateTime"":""2020-03-17T12:00:00"",""testStatus"":""Final"",""resultDescription"":""Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID-19 virus (2019-nCoV) detected by NAT.<br><br>This test targets the RdRP and E gene regions of COVID-19 virus (2019-nCoV) and has not been fully validated."",""receivedDateTime"":""2020-03-17T12:09:00"",""resultDateTime"":""2020-03-17T12:17:00"",""loinc"":""XXX-3286"",""loincName"":""COVID-19 n-Coronavirus  NAT""}]}]"),
+                   Content = new StringContent(@"{""result"": [{""id"":""612d31e5-12e1-451f-a475-58d6b0a8f007"",""phn"":""9735352542"",""orderingProviderIds"":null,""orderingProviders"":""Davidson, Jana-Lea"",""reportingLab"":"""",""location"":""VCHA"",""ormOrOru"":""ORU"",""messageDateTime"":""2020-03-18T12:17:19"",""messageId"":""20200770000196"",""additionalData"":"""",""labResults"":[{""id"":""2a16cf0d-7798-4911-a533-43692e3080dc"",""testType"":""COVID19"",""outOfRange"":false,""collectedDateTime"":""2020-03-17T12:00:00"",""testStatus"":""Final"",""resultDescription"":""Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID-19 virus (2019-nCoV) detected by NAT.<br><br>This test targets the RdRP and E gene regions of COVID-19 virus (2019-nCoV) and has not been fully validated."",""receivedDateTime"":""2020-03-17T12:09:00"",""resultDateTime"":""2020-03-17T12:17:00"",""loinc"":""XXX-3286"",""loincName"":""COVID-19 n-Coronavirus  NAT""}]}]}"),
                })
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -65,8 +65,8 @@ namespace HealthGateway.LaboratoryTests
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
-            Assert.True(actualResult.ResourcePayload.First<LaboratoryOrder>().PHN == "9735352542");
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal("9735352542", actualResult.ResourcePayload.First<LaboratoryOrder>().PHN);
         }
 
         [Fact]
@@ -92,8 +92,8 @@ namespace HealthGateway.LaboratoryTests
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
-            Assert.True(actualResult.ResourcePayload.Count() == 0);
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(0, actualResult.ResourcePayload.Count());
         }
 
         [Fact]
@@ -112,14 +112,14 @@ namespace HealthGateway.LaboratoryTests
                {
                    StatusCode = HttpStatusCode.Forbidden,
                    Content = new StringContent(string.Empty),
-                })
+               })
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
         [Fact]
@@ -145,7 +145,8 @@ namespace HealthGateway.LaboratoryTests
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success && actualResult.ResourcePayload.Report == expectedPDF);
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(expectedPDF, actualResult.ResourcePayload.Report);
 
         }
 
@@ -172,7 +173,7 @@ namespace HealthGateway.LaboratoryTests
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
         }
 
         [Fact]
@@ -198,7 +199,7 @@ namespace HealthGateway.LaboratoryTests
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty)).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
 

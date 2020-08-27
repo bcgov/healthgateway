@@ -46,5 +46,13 @@ namespace HealthGateway.Admin.Services
         /// <param name="endDate">Optional end date to include in the query.</param>
         /// <returns>returns a stream representing a CSV of the Comments.</returns>
         Stream GetComments(DateTime? startDate, DateTime? endDate);
+
+        /// <summary>
+        /// Retrieves a stream of Ratings in CSV format inclusive of the dates provided.
+        /// </summary>
+        /// <param name="startDate">Optional start date to include in the query.</param>
+        /// <param name="endDate">Optional end date to include in the query.</param>
+        /// <returns>returns a stream representing a CSV of the Ratings.</returns>
+        Stream GetRatings(DateTime? startDate, DateTime? endDate);
     }
 }

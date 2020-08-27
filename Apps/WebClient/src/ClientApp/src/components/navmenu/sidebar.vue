@@ -22,6 +22,30 @@
     @media (max-width: 767px) {
         min-width: 185px;
         max-width: 185px;
+
+        display: absolute;
+        position: fixed;
+        top: 0px;
+        padding-top: 80px;
+        overflow-y: scroll;
+
+        &.collapsed {
+            min-width: 0px !important;
+            max-width: 0px !important;
+            height: 100vh;
+        }
+
+        &.collapsed .row-container {
+            display: none;
+        }
+
+        &.collapsed .sidebar-footer {
+            display: none;
+        }
+
+        &.arrow-icon {
+            display: none;
+        }
     }
 }
 
@@ -144,35 +168,6 @@
     transition: all 0.5s ease-in-out;
     top: 0px;
     overflow: hidden;
-}
-
-/* Small Devices*/
-@media (max-width: 767px) {
-    #sidebar {
-        display: absolute;
-        position: fixed;
-        top: 0px;
-        padding-top: 80px;
-        overflow-y: scroll;
-    }
-
-    #sidebar.collapsed {
-        min-width: 0px;
-        max-width: 0px;
-        height: 100vh;
-    }
-
-    #sidebar.collapsed .row-container {
-        display: none;
-    }
-
-    #sidebar.collapsed .sidebar-footer {
-        display: none;
-    }
-
-    #sidebar .arrow-icon {
-        display: none;
-    }
 }
 
 #sidebar .row-container {
@@ -352,7 +347,7 @@
                         >
                             <b-col
                                 id="add-a-note-btn"
-                                title="Add a Note todo"
+                                title="Add a Note"
                                 :class="{ 'col-4': isOpen }"
                             >
                                 <font-awesome-icon
@@ -416,7 +411,6 @@
                     </div>
                     <!-- Health Insights button -->
                     <router-link
-                        v-if="false"
                         id="menuBtnHealthInsights"
                         to="/healthInsights"
                         class="my-4"
@@ -457,10 +451,13 @@
                 <b-col class="m-0 p-0">
                     <!-- Collapse Button -->
                     <b-row
-                        class="align-items-center my-4"
+                        class="align-items-center my-4 d-none d-sm-block"
                         :class="[isOpen ? 'mx-4' : 'button-container']"
                     >
-                        <b-col class :class="{ 'ml-auto col-4': isOpen }">
+                        <b-col
+                            :title="`${isOpen ? 'Collapse' : 'Expand'} Menu`"
+                            :class="{ 'ml-auto col-4': isOpen }"
+                        >
                             <font-awesome-icon
                                 class="arrow-icon p-2"
                                 icon="angle-double-left"

@@ -46,12 +46,11 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     },
     checkRegistration(context, params: { hdid: string }): Promise<boolean> {
-        logger.debug(`checkRegistration params: ${JSON.stringify(params)}`);
         return new Promise((resolve, reject) => {
-            userProfileService
+            return userProfileService
                 .getProfile(params.hdid)
                 .then((userProfile) => {
-                    logger.debug(
+                    logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
                     let isRegistered: boolean;
@@ -79,7 +78,10 @@ export const actions: ActionTree<UserState, RootState> = {
                             params.hdid
                         );
 
-                        Promise.all([latestEmailPromise, latestSMSPromise])
+                        return Promise.all([
+                            latestEmailPromise,
+                            latestSMSPromise,
+                        ])
                             .then((results) => {
                                 // Latest Email invite
                                 if (results[0]) {

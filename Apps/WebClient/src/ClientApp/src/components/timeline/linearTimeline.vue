@@ -13,17 +13,56 @@
     color: $primary;
     font-size: 1.3em;
 }
+.sticky-offset {
+    top: 117px;
+    background-color: white;
+    z-index: 2;
+    // TODO: Fix for filter overlaping. Remove once that is complete.
+    @media (max-width: 350px) {
+        top: 134px;
+    }
+}
+.sticky-line {
+    top: 187px;
+    background-color: white;
+    border-bottom: solid $primary 1px;
+    margin-top: -1px;
+    z-index: 1;
+    @media (max-width: 575px) {
+        top: 241px;
+    }
+    // TODO: Fix for filter overlaping. Remove once that is complete.
+    @media (max-width: 350px) {
+        top: 258px;
+    }
+}
 </style>
 <template>
     <div>
-        <div id="listControlls" class="no-print">
-            <b-row>
-                <b-col>
-                    Displaying {{ getVisibleCount() }} out of
-                    {{ totalEntries }} records
-                </b-col>
-            </b-row>
-        </div>
+        <b-row class="no-print sticky-top sticky-offset">
+            <b-col class="py-2">
+                <b-pagination-nav
+                    v-model="currentPage"
+                    :link-gen="linkGen"
+                    :number-of-pages="numberOfPages"
+                    first-number
+                    last-number
+                    next-text="Next"
+                    prev-text="Prev"
+                    use-router
+                ></b-pagination-nav>
+            </b-col>
+            <b-col class="py-2 col-12 col-sm-auto order-first order-sm-last">
+                <slot name="month-list-toggle"></slot>
+            </b-col>
+        </b-row>
+        <b-row class="sticky-top sticky-line" />
+        <b-row id="listControls" class="no-print">
+            <b-col>
+                Displaying {{ getVisibleCount() }} out of
+                {{ totalEntries }} records
+            </b-col>
+        </b-row>
         <div id="timeData">
             <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
                 <b-col cols="auto">
@@ -46,20 +85,6 @@
                     :entry="entry"
                     :index="index"
                 />
-            </b-row>
-            <b-row class="no-print">
-                <b-col>
-                    <b-pagination-nav
-                        v-model="currentPage"
-                        :link-gen="linkGen"
-                        :number-of-pages="numberOfPages"
-                        first-number
-                        last-number
-                        next-text="Next"
-                        prev-text="Prev"
-                        use-router
-                    ></b-pagination-nav>
-                </b-col>
             </b-row>
         </div>
     </div>

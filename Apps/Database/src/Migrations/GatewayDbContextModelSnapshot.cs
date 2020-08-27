@@ -2673,6 +2673,46 @@ namespace HealthGateway.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.Rating", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("RatingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("RatingValue")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Skip")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Rating");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>
                 {
                     b.Property<Guid>("Id")

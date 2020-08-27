@@ -116,7 +116,10 @@
             </div>
         </div>
         <div class="text">
-            <h5>Gathering your health records {{ ellipsis }}</h5>
+            <h5 class="d-none d-sm-inline">
+                Gathering your health records
+                {{ ellipsis }}
+            </h5>
         </div>
     </div>
 </template>

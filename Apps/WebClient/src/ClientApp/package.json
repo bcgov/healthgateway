@@ -10,6 +10,7 @@
     "vue-help": "vue-cli-service help"
   },
   "devDependencies": {
+    "@types/chart.js": "^2.9.24",
     "@types/jest": "^25.2.3",
     "@types/vuelidate": "^0.7.13",
     "@types/webpack-env": "^1.15.2",
@@ -83,6 +84,7 @@
     "@types/vue-clickaway": "^2.2.0",
     "axios": "^0.19.2",
     "bootstrap-vue": "^2.15.0",
+    "chart.js": "^2.9.3",
     "cookie-storage": "^6.0.0",
     "core-js": "^3.6.5",
     "idle-vue": "^2.0.5",
@@ -92,6 +94,7 @@
     "oidc-client": "^1.10.1",
     "reflect-metadata": "^0.1.13",
     "vue": "^2.6.11",
+    "vue-chartjs": "^3.5.0",
     "vue-class-component": "^7.2.3",
     "vue-clickaway": "^2.2.2",
     "vue-content-placeholders": "^0.2.1",

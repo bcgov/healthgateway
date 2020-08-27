@@ -20,7 +20,7 @@ describe("MonthYearPickerComponent", () => {
             moment(new Date()).format("MMMM yyyy")
         );
 
-        expect(wrapper.find(".select .item").text()).toBe(
+        expect(wrapper.find("#selectedYearBtn").text()).toBe(
             new Date().getFullYear().toString()
         );
     });

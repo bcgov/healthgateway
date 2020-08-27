@@ -2,7 +2,7 @@
 @import "@/assets/scss/_variables.scss";
 
 #currentDate {
-    width: 200px;
+    width: 140px;
 }
 .select {
     position: relative;
@@ -38,7 +38,8 @@
     text-align: center;
 }
 
-.item:hover {
+.item:hover,
+.selected {
     background-color: $primary;
     color: $primary_text;
 }
@@ -55,8 +56,9 @@
     <div v-on-clickaway="close" class="select">
         <b-btn
             id="currentDate"
-            class="px-2 m-0"
-            :variant="isOpen ? 'primary' : 'outline-primary'"
+            squared
+            class="m-0"
+            :variant="isOpen ? 'primary' : 'light'"
             @click="open()"
         >
             {{ dateText }}
@@ -65,19 +67,50 @@
             <b-col
                 v-for="(year, i) of years"
                 :key="i"
-                class="item col-12"
+                :class="getDisplayYearCss(year)"
                 @click="selectYear(year)"
             >
                 {{ year }}
             </b-col>
         </b-row>
         <b-row class="items" :class="{ selectHide: !isMonthOpen }">
-            <b-col class="item col-12" @click="open()">
-                {{ selectedYear }}
+            <b-col class="col-2 p-0">
+                <b-btn
+                    squared
+                    class="m-0 w-100 h-100"
+                    :disabled="years.indexOf(selectedYear) == years.length - 1"
+                    variant="light"
+                    @click="previousYear()"
+                >
+                    <font-awesome-icon icon="chevron-left" size="sm" />
+                </b-btn>
+            </b-col>
+            <b-col class="col-8 p-0">
+                <b-btn
+                    id="selectedYearBtn"
+                    squared
+                    class="m-0 w-100 h-100"
+                    variant="light"
+                    @click="open()"
+                >
+                    {{ selectedYear }}
+                </b-btn>
+            </b-col>
+            <b-col class="col-2 p-0">
+                <b-btn
+                    squared
+                    class="m-0 w-100 h-100"
+                    :disabled="years.indexOf(selectedYear) == 0"
+                    variant="light"
+                    @click="nextYear()"
+                >
+                    <font-awesome-icon icon="chevron-right" size="sm" />
+                </b-btn>
             </b-col>
             <b-col
                 v-for="(month, i) of monthsToDisplay"
                 :key="i"
+                :variant="month == selectedMonth ? 'primary' : 'light'"
                 :class="getDisplayMonthCss(month)"
                 @click="selectMonth(i)"
             >
@@ -113,7 +146,7 @@ export default class MonthYearPickerComponent extends Vue {
     public selectedMonth: number = new Date().getMonth();
     private selectedDate: Date = new Date();
     private years: number[] = [];
-    private get monthsToDisplay() {
+    private get monthsToDisplay(): MonthToDisplay[] {
         let availableMonthsOfSelectedYear = this.availableMonths.filter(
             (m) => m.getFullYear() === this.selectedYear
         );
@@ -138,9 +171,24 @@ export default class MonthYearPickerComponent extends Vue {
         return monthsToDisplay;
     }
 
+    private getDisplayYearCss(year: number) {
+        return `item col-12 ${
+            this.currentMonth.getFullYear() == year ? "selected" : ""
+        }`;
+    }
+
     private getDisplayMonthCss(displayMonth: MonthToDisplay) {
-        if (displayMonth.HasData) return "item col-4";
-        else return "item col-4 no-data";
+        if (displayMonth.HasData) {
+            return `item col-4 ${
+                this.currentMonth.getMonth() ==
+                    this.monthsToDisplay.indexOf(displayMonth) &&
+                this.currentMonth.getFullYear() == this.selectedYear
+                    ? "selected"
+                    : ""
+            }`;
+        } else {
+            return "item col-4 no-data";
+        }
     }
 
     private get isOpen(): boolean {
@@ -154,6 +202,17 @@ export default class MonthYearPickerComponent extends Vue {
     private selectYear(year: number): void {
         this.selectedYear = year;
         this.open();
+    }
+
+    private previousYear(): void {
+        this.selectedYear = this.years[
+            this.years.indexOf(this.selectedYear) + 1
+        ];
+    }
+    private nextYear(): void {
+        this.selectedYear = this.years[
+            this.years.indexOf(this.selectedYear) - 1
+        ];
     }
 
     private selectMonth(month: number): void {
@@ -204,6 +263,8 @@ export default class MonthYearPickerComponent extends Vue {
         if (!this.years.some((y) => y == currentYear)) {
             this.years.push(currentYear);
         }
+        // Sort years by descending
+        this.years = this.years.sort((a, b) => b - a);
     }
 }
 </script>

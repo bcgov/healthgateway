@@ -37,6 +37,8 @@ export class IdentityProviderConfiguration {
 export class OpenIdConnectConfiguration {
     // Gets or sets the OpenIDConnect Authority.
     public authority!: string;
+    // Gets or sets the Audience.
+    public audience!: string;
     // Gets or sets the OpenIdConnect Client ID.
     public clientId!: string;
     // Gets or sets the OpenIDConnect Response types.

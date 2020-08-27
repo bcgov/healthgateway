@@ -3,7 +3,7 @@ export interface LaboratoryResult {
     id: string;
     testType: string | null;
     outOfRange: boolean;
-    collectionDateTime: Date;
+    collectedDateTime: Date;
     testStatus: string | null;
     resultDescription: string | null;
     receivedDateTime: Date;

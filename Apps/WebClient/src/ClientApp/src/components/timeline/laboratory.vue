@@ -65,7 +65,7 @@ $radius: 15px;
             <b-col class="entryTitle">
                 <b-row class="justify-content-between">
                     <b-col cols="auto">
-                        <strong>{{ entry.summaryTestType }}</strong>
+                        <strong>{{ entry.summaryTitle }}</strong>
                     </b-col>
                     <b-col cols="auto" class="text-muted">
                         <strong> Status: {{ entry.summaryStatus }}</strong>
@@ -177,7 +177,7 @@ $radius: 15px;
                                             >
                                             {{
                                                 formatDate(
-                                                    result.collectionDateTime
+                                                    result.collectedDateTime
                                                 )
                                             }}
                                         </div>
@@ -190,6 +190,18 @@ $radius: 15px;
                                                 )
                                             }}
                                         </div>
+                                    </div>
+                                </div>
+
+                                <div class="detailSection">
+                                    <div>
+                                        <strong>What to expect next</strong>
+                                        <p>
+                                            If you receive a positive COVID-19
+                                            result, expect a phone call from
+                                            your care provider or a public
+                                            health official for next steps.
+                                        </p>
                                     </div>
                                 </div>
                             </div>

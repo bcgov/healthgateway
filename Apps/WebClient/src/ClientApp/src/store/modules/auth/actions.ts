@@ -35,7 +35,7 @@ export const actions: ActionTree<AuthState, RootState> = {
             const isAuthenticatedInStore =
                 context.state.authentication.idToken !== undefined;
 
-            authService.getUser().then((oidcUser) => {
+            return authService.getUser().then((oidcUser) => {
                 if (!oidcUser || oidcUser.expired) {
                     logger.warn("Could not get the user!");
                     context.dispatch("clearStorage");

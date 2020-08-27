@@ -35,6 +35,7 @@
 }
 
 .view-selector {
+    min-width: 170px;
     .btn-outline-primary {
         font-size: 1em;
         background-color: white;
@@ -55,15 +56,17 @@
         border-radius: 0px 5px 5px 0px;
     }
 }
+.sticky-offset {
+    padding-top: 1rem;
+    background-color: white;
+    z-index: 2;
+}
 </style>
 <template>
     <div>
         <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
         <b-row class="my-3 fluid justify-content-md-center">
-            <b-col
-                id="timeline"
-                class="col-12 col-md-10 col-lg-9 column-wrapper"
-            >
+            <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <b-alert
                     :show="hasNewTermsOfService"
                     dismissible
@@ -106,92 +109,74 @@
 
                 <div id="pageTitle">
                     <h1 id="subject">Health Care Timeline</h1>
-                    <hr />
+                    <hr class="mb-0" />
                 </div>
-                <b-row class="no-print">
-                    <b-col>
-                        <div class="form-group has-filter">
-                            <font-awesome-icon
-                                :icon="searchIcon"
-                                class="form-control-feedback"
-                                fixed-width
-                            ></font-awesome-icon>
-                            <b-form-input
-                                v-model="filterText"
-                                type="text"
-                                placeholder=""
-                                maxlength="50"
-                                debounce="250"
-                            ></b-form-input>
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row align-h="start" class="no-print">
-                    <b-col v-if="isMedicationEnabled">
-                        <b-form-checkbox
-                            id="medicationFilter"
-                            v-model="filterTypes"
-                            name="medicationFilter"
-                            value="Medication"
-                        >
-                            Medications
-                        </b-form-checkbox>
-                    </b-col>
-                    <b-col v-if="isImmunizationEnabled">
-                        <b-form-checkbox
-                            id="immunizationFilter"
-                            v-model="filterTypes"
-                            name="immunizationFilter"
-                            value="Immunization"
-                        >
-                            Immunizations
-                        </b-form-checkbox>
-                    </b-col>
-                    <b-col v-if="isLaboratoryEnabled">
-                        <b-form-checkbox
-                            id="laboratoryFilter"
-                            v-model="filterTypes"
-                            name="laboratoryFilter"
-                            value="Laboratory"
-                        >
-                            Laboratory
-                        </b-form-checkbox>
-                    </b-col>
-                    <b-col v-if="isNoteEnabled">
-                        <b-form-checkbox
-                            id="notesFilter"
-                            v-model="filterTypes"
-                            name="notesFilter"
-                            value="Note"
-                        >
-                            My Notes
-                        </b-form-checkbox>
-                    </b-col>
-                </b-row>
-                <br />
+                <div class="sticky-top sticky-offset">
+                    <b-row class="no-print">
+                        <b-col>
+                            <div class="form-group has-filter">
+                                <font-awesome-icon
+                                    :icon="searchIcon"
+                                    class="form-control-feedback"
+                                    fixed-width
+                                ></font-awesome-icon>
+                                <b-form-input
+                                    v-model="filterText"
+                                    type="text"
+                                    placeholder=""
+                                    maxlength="50"
+                                    debounce="250"
+                                ></b-form-input>
+                            </div>
+                        </b-col>
+                    </b-row>
+                    <b-row align-h="start" class="no-print sticky-top">
+                        <b-col v-if="isMedicationEnabled">
+                            <b-form-checkbox
+                                id="medicationFilter"
+                                v-model="filterTypes"
+                                name="medicationFilter"
+                                value="Medication"
+                            >
+                                Medications
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isImmunizationEnabled">
+                            <b-form-checkbox
+                                id="immunizationFilter"
+                                v-model="filterTypes"
+                                name="immunizationFilter"
+                                value="Immunization"
+                            >
+                                Immunizations
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isLaboratoryEnabled">
+                            <b-form-checkbox
+                                id="laboratoryFilter"
+                                v-model="filterTypes"
+                                name="laboratoryFilter"
+                                value="Laboratory"
+                            >
+                                Laboratory
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isNoteEnabled">
+                            <b-form-checkbox
+                                id="notesFilter"
+                                v-model="filterTypes"
+                                name="notesFilter"
+                                value="Note"
+                            >
+                                My Notes
+                            </b-form-checkbox>
+                        </b-col>
+                    </b-row>
+                    <br />
+                </div>
                 <b-row v-if="isAddingNote" class="pb-5">
                     <b-col>
                         <NoteTimelineComponent :is-add-mode="true" />
-                    </b-col>
-                </b-row>
-                <b-row class="view-selector justify-content-end">
-                    <b-col cols="auto" class="pr-0">
-                        <b-btn
-                            class="month-view-btn btn-outline-primary px-2 m-0"
-                            :class="{ active: !isListView }"
-                            @click.stop="toggleMonthView"
-                        >
-                            Month
-                        </b-btn>
-                    </b-col>
-                    <b-col cols="auto" class="pl-0">
-                        <b-btn
-                            class="list-view-btn btn-outline-primary px-2 m-0"
-                            :class="{ active: isListView }"
-                            @click.stop="toggleListView"
-                        >
-                            List
-                        </b-btn>
                     </b-col>
                 </b-row>
                 <LinearTimeline
@@ -201,7 +186,30 @@
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
-                />
+                >
+                    <b-row
+                        slot="month-list-toggle"
+                        class="view-selector justify-content-end"
+                    >
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: false }"
+                                @click.stop="toggleMonthView"
+                            >
+                                Month
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: true }"
+                            >
+                                List
+                            </b-btn>
+                        </b-col>
+                    </b-row>
+                </LinearTimeline>
                 <CalendarTimeline
                     v-show="!isListView && !isLoading"
                     :timeline-entries="timelineEntries"
@@ -209,7 +217,30 @@
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
-                />
+                >
+                    <b-row
+                        slot="month-list-toggle"
+                        class="view-selector justify-content-end"
+                    >
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: true }"
+                            >
+                                Month
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: false }"
+                                @click.stop="toggleListView"
+                            >
+                                List
+                            </b-btn>
+                        </b-col>
+                    </b-row>
+                </CalendarTimeline>
                 <b-row v-if="isLoading">
                     <b-col>
                         <content-placeholders>
@@ -231,7 +262,7 @@
                     </b-col>
                 </b-row>
             </b-col>
-            <b-col class="col-3 col-md-2 col-lg-3 column-wrapper no-print">
+            <b-col class="col-3 col-lg-3 column-wrapper no-print">
                 <HealthlinkComponent />
             </b-col>
         </b-row>
@@ -318,10 +349,18 @@ Component.registerHooks(["beforeRouteLeave"]);
 export default class TimelineView extends Vue {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("user", { namespace }) user!: User;
+
     @Action("getOrders", { namespace: "laboratory" })
     getLaboratoryOrders!: (params: {
         hdid: string;
     }) => Promise<RequestResult<LaboratoryOrder[]>>;
+
+    @Action("getMedicationStatements", { namespace: "medication" })
+    getMedicationStatements!: (params: {
+        hdid: string;
+        protectiveWord?: string;
+    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -489,18 +528,12 @@ export default class TimelineView extends Vue {
     }
 
     private fetchMedicationStatements(protectiveWord?: string) {
-        const medicationService: IMedicationService = container.get(
-            SERVICE_IDENTIFIER.MedicationService
-        );
         this.isMedicationLoading = true;
-        let promise: Promise<RequestResult<MedicationStatementHistory[]>>;
 
-        promise = medicationService.getPatientMedicationStatementHistory(
-            this.user.hdid,
-            protectiveWord
-        );
-
-        promise
+        this.getMedicationStatements({
+            hdid: this.user.hdid,
+            protectiveWord: protectiveWord,
+        })
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.protectiveWordAttempts = 0;
@@ -671,6 +704,7 @@ export default class TimelineView extends Vue {
     }
 
     private onEntryAdded(entry: TimelineEntry) {
+        this.logger.debug(`Timeline Entry added: ${JSON.stringify(entry)}`);
         this.isAddingNote = false;
         if (entry) {
             this.timelineEntries.push(entry);

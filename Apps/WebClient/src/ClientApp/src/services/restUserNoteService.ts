@@ -46,8 +46,8 @@ export class RestUserNoteService implements IUserNoteService {
                 .getWithCors<RequestResult<UserNote[]>>(
                     `${this.USER_NOTE_BASE_URI}/`
                 )
-                .then((userNotes) => {
-                    return resolve(userNotes);
+                .then((requestResult) => {
+                    return resolve(requestResult);
                 })
                 .catch((err) => {
                     this.logger.error(`getNotes error: ${err}`);

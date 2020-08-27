@@ -43,7 +43,10 @@
             @click="toggleExpanded"
         >
             <b-row v-show="!hasSubmitted">
-                <b-col :class="{ 'col-4 text-right pr-2': isSidebarOpen }">
+                <b-col
+                    title="Contact Us"
+                    :class="{ 'col-4 text-right pr-2': isSidebarOpen }"
+                >
                     <font-awesome-icon
                         icon="comments"
                         aria-hidden="true"

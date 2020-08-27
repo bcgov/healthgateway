@@ -19,16 +19,13 @@ namespace HealthGateway.Admin.Test.Services
     using Moq;
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Services;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Logging;
     using HealthGateway.Common.Models;
     using System;
-    using System.Linq;
     using HealthGateway.Admin.Models;
     using System.Collections.Generic;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
@@ -47,14 +44,14 @@ namespace HealthGateway.Admin.Test.Services
             };
 
             // Set up delegate
-            DBResult<Communication> insertResult = new DBResult<Communication>
+            DBResult<HealthGateway.Database.Models.Communication> insertResult = new DBResult<HealthGateway.Database.Models.Communication>
             {
-                Payload = comm,
+                Payload = comm.ToDbModel(),
                 Status = dBStatusCode
             };
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
-            communicationDelegateMock.Setup(s => s.Add(It.Is<Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
+            communicationDelegateMock.Setup(s => s.Add(It.Is<HealthGateway.Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
 
             // Set up service
             ICommunicationService service = new CommunicationService(
@@ -84,8 +81,8 @@ namespace HealthGateway.Admin.Test.Services
         private void ShouldGetCommunicationsWithSpecifiedDBStatusCode(DBStatusCode dBStatusCode, Common.Constants.ResultType expectedResultType)
         {
             // Sample communication to test
-            List<Communication> commsList = new List<Communication>();
-            commsList.Add(new Communication()
+            List<HealthGateway.Database.Models.Communication> commsList = new List<HealthGateway.Database.Models.Communication>();
+            commsList.Add(new HealthGateway.Database.Models.Communication()
             {
                 Text = "Test communication",
                 Subject = "Testing communication",
@@ -93,7 +90,7 @@ namespace HealthGateway.Admin.Test.Services
                 ExpiryDateTime = new DateTime(2020, 05, 13)
             });
 
-            commsList.Add(new Communication()
+            commsList.Add(new HealthGateway.Database.Models.Communication()
             {
                 Text = "Test communication 2",
                 Subject = "Testing communication 2",
@@ -101,9 +98,9 @@ namespace HealthGateway.Admin.Test.Services
                 ExpiryDateTime = new DateTime(2021, 05, 13)
             });
 
-            List<Communication> refCommsList = commsList;
+            List<HealthGateway.Database.Models.Communication> refCommsList = commsList;
 
-            DBResult<IEnumerable<Communication>> commsDBResult = new DBResult<IEnumerable<Communication>>
+            DBResult<IEnumerable<HealthGateway.Database.Models.Communication>> commsDBResult = new DBResult<IEnumerable<HealthGateway.Database.Models.Communication>>
             {
                 Payload = commsList,
                 Status = dBStatusCode
@@ -264,14 +261,14 @@ namespace HealthGateway.Admin.Test.Services
         private RequestResult<Communication> UpdateCommunication(Communication comm, DBStatusCode dbStatusCode)
         {
             // Set up delegate
-            DBResult<Communication> insertResult = new DBResult<Communication>
+            DBResult<HealthGateway.Database.Models.Communication> insertResult = new DBResult<HealthGateway.Database.Models.Communication>
             {
-                Payload = comm,
+                Payload = comm.ToDbModel(),
                 Status = dbStatusCode
             };
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
-            communicationDelegateMock.Setup(s => s.Update(It.Is<Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
+            communicationDelegateMock.Setup(s => s.Update(It.Is<HealthGateway.Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(insertResult);
 
             // Set up service
             ICommunicationService service = new CommunicationService(
@@ -285,14 +282,14 @@ namespace HealthGateway.Admin.Test.Services
         private RequestResult<Communication> DeleteCommunication(Communication comm, DBStatusCode dbStatusCode)
         {
             // Set up delegate
-            DBResult<Communication> deleteResult = new DBResult<Communication>
+            DBResult<HealthGateway.Database.Models.Communication> deleteResult = new DBResult<HealthGateway.Database.Models.Communication>
             {
-                Payload = comm,
+                Payload = comm.ToDbModel(),
                 Status = dbStatusCode
             };
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
-            communicationDelegateMock.Setup(s => s.Delete(It.Is<Communication>(x => x.Text == comm.Text), true)).Returns(deleteResult);
+            communicationDelegateMock.Setup(s => s.Delete(It.Is<HealthGateway.Database.Models.Communication>(x => x.Text == comm.Text), true)).Returns(deleteResult);
 
             // Set up service
             ICommunicationService service = new CommunicationService(
