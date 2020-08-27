@@ -239,17 +239,20 @@
                             >
                         </b-row>
                     </router-link>
-                    <div v-show="isProfile">
+                    <div v-show="isUnderProfile">
                         <!-- Terms of Service button -->
                         <router-link
                             id="termsOfService"
                             variant="primary"
-                            to="/termsOfService"
+                            to="/profile/termsOfService"
                             class="p-0"
                         >
                             <b-row
                                 class="align-items-center border rounded-pill p-2 button-container my-4"
-                                :class="{ 'sub-menu': isOpen }"
+                                :class="{
+                                    'sub-menu': isOpen,
+                                    selected: isTermsOfService && !isOpen,
+                                }"
                             >
                                 <b-col
                                     title="Terms of Service"
@@ -692,6 +695,14 @@ export default class SidebarComponent extends Vue {
 
     private get isProfile(): boolean {
         return this.$route.path == "/profile";
+    }
+
+    private get isTermsOfService(): boolean {
+        return this.$route.path == "/profile/termsOfService";
+    }
+
+    private get isUnderProfile(): boolean {
+        return this.$route.path.startsWith("/profile");
     }
 
     private get isHealthInsights(): boolean {
