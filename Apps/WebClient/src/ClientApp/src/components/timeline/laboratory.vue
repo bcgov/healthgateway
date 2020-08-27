@@ -65,7 +65,7 @@ $radius: 15px;
             <b-col class="entryTitle">
                 <b-row class="justify-content-between">
                     <b-col cols="auto">
-                        <strong>{{ entry.summaryTestType }}</strong>
+                        <strong>{{ entry.summaryTitle }}</strong>
                     </b-col>
                     <b-col cols="auto" class="text-muted">
                         <strong> Status: {{ entry.summaryStatus }}</strong>

@@ -150,11 +150,13 @@ $radius: 15px;
                                         {{ entry.pharmacy.name }}
                                     </div>
                                     <div>
+                                        <strong>Address:</strong>
                                         {{ entry.pharmacy.address }}
                                     </div>
                                     <div
                                         v-if="entry.pharmacy.phoneNumber !== ''"
                                     >
+                                        <strong>Phone number:</strong>
                                         {{
                                             formatPhoneNumber(
                                                 entry.pharmacy.phoneNumber
@@ -162,13 +164,14 @@ $radius: 15px;
                                         }}
                                     </div>
                                     <div v-if="entry.pharmacy.faxNumber !== ''">
-                                        Fax:
+                                        <strong>Fax:</strong>
                                         {{
                                             formatPhoneNumber(
                                                 entry.pharmacy.faxNumber
                                             )
                                         }}
                                     </div>
+
                                     <div
                                         class="detailSection border border-dark p-2 small"
                                     >

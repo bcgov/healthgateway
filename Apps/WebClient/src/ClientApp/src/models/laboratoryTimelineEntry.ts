@@ -11,7 +11,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     public displayDate: Date;
     public reportAvailable: boolean;
 
-    public summaryTestType: string;
+    public summaryTitle: string;
     public summaryDescription: string;
     public summaryStatus: string;
 
@@ -41,8 +41,8 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         const firstResult = this.resultList[0];
         this.displayDate = firstResult.collectedDateTime;
 
-        this.summaryTestType = firstResult.testType || "";
-        this.summaryDescription = firstResult.loincName || "";
+        this.summaryTitle = firstResult.loincName || "";
+        this.summaryDescription = firstResult.testType || "";
         this.summaryStatus = firstResult.testStatus || "";
     }
 
@@ -52,7 +52,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         }
 
         let text =
-            (this.summaryTestType! || "") + (this.summaryDescription! || "");
+            (this.summaryTitle! || "") + (this.summaryDescription! || "");
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }
