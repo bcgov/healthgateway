@@ -173,6 +173,14 @@ namespace HealthGateway.WebClient
                 }
             });
 
+            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            if (redirectToWWW)
+            {
+                RewriteOptions rewriteOption = new RewriteOptions()
+                    .AddRedirectToWwwPermanent();
+                app.UseRewriter(rewriteOption);
+            }
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
@@ -182,14 +190,6 @@ namespace HealthGateway.WebClient
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
                 }
             });
-
-            bool redirectToWWW = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
-            if (redirectToWWW)
-            {
-                RewriteOptions rewriteOption = new RewriteOptions()
-                    .AddRedirectToWwwPermanent();
-                app.UseRewriter(rewriteOption);
-            }
 
             app.UseStaticFiles(new StaticFileOptions
             {
