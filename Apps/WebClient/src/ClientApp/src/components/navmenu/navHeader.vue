@@ -11,6 +11,12 @@ nav {
     a:hover h4 {
         text-decoration: underline;
     }
+    button {
+        svg {
+            width: 1.5em;
+            height: 1.5em;
+        }
+    }
 }
 </style>
 <template>
@@ -20,8 +26,13 @@ nav {
             v-if="displayMenu"
             class="mr-1"
             target="NONE"
-            @click="toggleSidebar"
-        ></b-navbar-toggle>
+            @click="handleToggleClick"
+        >
+            <template>
+                <b-icon v-if="sidebarExpanded" icon="x"></b-icon>
+                <b-icon v-else icon="list"></b-icon>
+            </template>
+        </b-navbar-toggle>
 
         <!-- Brand -->
         <b-navbar-brand class="mx-0">
@@ -122,12 +133,19 @@ export default class HeaderComponent extends Vue {
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
+    private sidebarExpanded: boolean = false;
+
     private get displayMenu(): boolean {
         return (
             this.oidcIsAuthenticated &&
             this.userIsRegistered &&
             this.userIsActive
         );
+    }
+
+    private handleToggleClick() {
+        this.sidebarExpanded = !this.sidebarExpanded;
+        this.toggleSidebar();
     }
 
     private toggleMenu() {
