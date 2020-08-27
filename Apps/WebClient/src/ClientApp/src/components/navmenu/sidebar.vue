@@ -451,7 +451,7 @@
                 <b-col class="m-0 p-0">
                     <!-- Collapse Button -->
                     <b-row
-                        class="align-items-center my-4"
+                        class="align-items-center my-4 d-none d-sm-block"
                         :class="[isOpen ? 'mx-4' : 'button-container']"
                     >
                         <b-col
