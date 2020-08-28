@@ -18,48 +18,43 @@ namespace HealthGateway.Encounter.Models
     using System;
 
     /// <summary>
-    /// Represents a row in the MSP Visit Claim.
+    /// The Location Address data model.
     /// </summary>
-    public class Claim
+    public class LocationAddress
     {
         /// <summary>
-        /// Gets or sets the ClaimId.
+        /// Gets or sets the Address Line 1.
         /// </summary>
-        public int ClaimId { get; set; }
+        public string AddrLine1 { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Service Date.
+        /// Gets or sets the Address Line 2.
         /// </summary>
-        public DateTime ServiceDate { get; set; }
+        public string AddrLine2 { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Fee Desc.
+        /// Gets or sets the Address Line 3.
         /// </summary>
-        public string FeeDesc { get; set; } = string.Empty;
+        public string AddrLine3 { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Diagnostic Code.
+        /// Gets or sets the Address Line 4.
         /// </summary>
-        public DiagnosticCode DiagnosticCode { get; set; } = new DiagnosticCode();
+        public string AddrLine4 { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Specialty Desc.
+        /// Gets or sets the City.
         /// </summary>
-        public string SpecialtyDesc { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Practitioner Number.
+        /// Gets or sets the Postal Code.
         /// </summary>
-        public string PractitionerNumber { get; set; } = string.Empty;
+        public string PostalCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Location Name.
+        /// Gets or sets the Province.
         /// </summary>
-        public string LocationName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Location Address.
-        /// </summary>
-        public LocationAddress LocationAddress { get; set; } = new LocationAddress();
+        public string Province { get; set; } = string.Empty;
     }
 }

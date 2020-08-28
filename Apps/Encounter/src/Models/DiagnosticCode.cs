@@ -25,16 +25,16 @@ namespace HealthGateway.Encounter.Models
         /// <summary>
         /// Gets or sets the Diagnostic Code 1.
         /// </summary>
-        public string? DiagCode1 { get; set; }
+        public string DiagCode1 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Diagnostic Code 2.
         /// </summary>
-        public string? DiagCode2 { get; set; }
+        public string DiagCode2 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Diagnostic Code 3.
         /// </summary>
-        public string? DiagCode3 { get; set; }
+        public string DiagCode3 { get; set; } = string.Empty;
     }
 }
