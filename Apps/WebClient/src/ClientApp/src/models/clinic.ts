@@ -1,7 +1,7 @@
 // Clinic model
 export default interface Clinic {
     // Clinic id.
-    clinicId?: string;
+    clinicId: string;
     // Name.
     name?: string;
     // Address line 1.
