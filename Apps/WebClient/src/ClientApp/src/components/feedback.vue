@@ -57,11 +57,14 @@
                 <b-col
                     v-show="isSidebarOpen"
                     class="button-title d-none text-left p-0 pl-3"
-                    cols="7"
+                    cols="6"
                 >
                     <span>
                         Contact Us
                     </span>
+                </b-col>
+                <b-col v-show="isSidebarOpen && visible" cols="auto">
+                    <strong>-</strong>
                 </b-col>
             </b-row>
             <b-row v-show="hasSubmitted">
