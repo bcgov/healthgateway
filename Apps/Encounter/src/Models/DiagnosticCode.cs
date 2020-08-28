@@ -16,6 +16,7 @@
 namespace HealthGateway.Encounter.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Represents a row in the Diagnostic Code.
@@ -25,16 +26,19 @@ namespace HealthGateway.Encounter.Models
         /// <summary>
         /// Gets or sets the Diagnostic Code 1.
         /// </summary>
+        [JsonPropertyName("diagCode1")]
         public string DiagCode1 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Diagnostic Code 2.
         /// </summary>
+        [JsonPropertyName("diagCode2")]
         public string DiagCode2 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Diagnostic Code 3.
         /// </summary>
+        [JsonPropertyName("diagCode3")]
         public string DiagCode3 { get; set; } = string.Empty;
     }
 }

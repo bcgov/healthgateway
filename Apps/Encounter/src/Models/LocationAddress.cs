@@ -16,6 +16,7 @@
 namespace HealthGateway.Encounter.Models
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// The Location Address data model.
@@ -25,36 +26,43 @@ namespace HealthGateway.Encounter.Models
         /// <summary>
         /// Gets or sets the Address Line 1.
         /// </summary>
+        [JsonPropertyName("addrLine1")]
         public string AddrLine1 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Address Line 2.
         /// </summary>
+        [JsonPropertyName("addrLine2")]
         public string AddrLine2 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Address Line 3.
         /// </summary>
+        [JsonPropertyName("addrLine3")]
         public string AddrLine3 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Address Line 4.
         /// </summary>
+        [JsonPropertyName("addrLine4")]
         public string AddrLine4 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the City.
         /// </summary>
+        [JsonPropertyName("city")]
         public string City { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Postal Code.
         /// </summary>
+        [JsonPropertyName("postalCode")]
         public string PostalCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Province.
         /// </summary>
+        [JsonPropertyName("province")]
         public string Province { get; set; } = string.Empty;
     }
 }
