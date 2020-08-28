@@ -45,7 +45,9 @@
             <b-row v-show="!hasSubmitted">
                 <b-col
                     title="Contact Us"
-                    :class="{ 'col-4 text-right pr-2': isSidebarOpen }"
+                    :class="{
+                        'col-2 col-md-4 text-right pr-2': isSidebarOpen,
+                    }"
                 >
                     <font-awesome-icon
                         icon="comments"
@@ -56,8 +58,7 @@
                 </b-col>
                 <b-col
                     v-show="isSidebarOpen"
-                    class="button-title d-none text-left p-0 pl-3"
-                    cols="6"
+                    class="button-title d-none text-left col-7 col-md-6 p-0 pl-3"
                 >
                     <span>
                         Contact Us
