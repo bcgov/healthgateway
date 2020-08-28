@@ -130,8 +130,11 @@
                             </div>
                         </b-col>
                     </b-row>
-                    <b-row align-h="start" class="no-print sticky-top">
-                        <b-col v-if="isMedicationEnabled">
+                    <b-row
+                        align-h="start"
+                        class="no-print sticky-top justify-content-between"
+                    >
+                        <b-col v-if="isMedicationEnabled" cols="auto">
                             <b-form-checkbox
                                 id="medicationFilter"
                                 v-model="filterTypes"
@@ -141,7 +144,7 @@
                                 Medications
                             </b-form-checkbox>
                         </b-col>
-                        <b-col v-if="isImmunizationEnabled">
+                        <b-col v-if="isImmunizationEnabled" cols="auto">
                             <b-form-checkbox
                                 id="immunizationFilter"
                                 v-model="filterTypes"
@@ -151,7 +154,7 @@
                                 Immunizations
                             </b-form-checkbox>
                         </b-col>
-                        <b-col v-if="isLaboratoryEnabled">
+                        <b-col v-if="isLaboratoryEnabled" cols="auto">
                             <b-form-checkbox
                                 id="laboratoryFilter"
                                 v-model="filterTypes"
@@ -161,7 +164,7 @@
                                 Laboratory
                             </b-form-checkbox>
                         </b-col>
-                        <b-col v-if="isNoteEnabled">
+                        <b-col v-if="isNoteEnabled" cols="auto">
                             <b-form-checkbox
                                 id="notesFilter"
                                 v-model="filterTypes"
