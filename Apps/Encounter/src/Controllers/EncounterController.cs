@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Controllers
 {
-    using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
-    using Microsoft.AspNetCore.Authentication;
+    using HealthGateway.Encounter.Models;
+    using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -47,28 +45,46 @@ namespace HealthGateway.Encounter.Controllers
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
+        /// Gets or sets the Encounter data service.
+        /// </summary>
+        private readonly IEncounterService service;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="EncounterController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="service">The Encounter data service.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public EncounterController(
             ILogger<EncounterController> logger,
+            IEncounterService service,
             IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
+            this.service = service;
             this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
-        /// Gets an empty json.
+        /// Gets a json list of claims records.
         /// </summary>
-        /// <returns>Empty JSON.</returns>
+        /// <param name="hdid">The hdid patient id.</param>
+        /// <returns>a list of claim records.</returns>
+        /// <response code="200">Returns the List of Claim records.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        /// <response code="503">The service is unavailable for use.</response>
         [HttpGet]
         [Produces("application/json")]
+        [Route("{hdid}")]
         [Authorize(Policy = EncounterPolicy.Read)]
-        public IActionResult Get()
+        public async Task<IActionResult> GetClaims(string hdid)
         {
-            return new JsonResult(new object());
+            this.logger.LogDebug($"Getting claims from controller... {hdid}");
+            RequestResult<IEnumerable<Claim>> result = await this.service.GetClaims(hdid).ConfigureAwait(true);
+
+            this.logger.LogDebug($"Finished getting claims from controller... {hdid}");
+            return new JsonResult(result);
         }
     }
 }
