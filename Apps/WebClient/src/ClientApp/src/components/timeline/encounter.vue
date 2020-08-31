@@ -63,15 +63,22 @@ $radius: 15px;
                 ></font-awesome-icon>
             </b-col>
             <b-col class="entryTitle">
-                {{ entry.practitionerName }}
+                <b-row class="justify-content-between">
+                    <b-col cols="auto">
+                        <strong>{{ entry.practitionerName }}</strong>
+                    </b-col>
+                </b-row>
             </b-col>
         </b-row>
         <b-row class="my-2">
             <b-col class="leftPane"></b-col>
             <b-col>
                 <b-row>
-                    <b-col>
-                        Specialty Description: {{ entry.specialtyDescription }}
+                    <b-col cols="auto">
+                        <strong>
+                            Specialty Description:
+                        </strong>
+                        {{ entry.specialtyDescription }}
                     </b-col>
                 </b-row>
                 <b-row>
@@ -108,80 +115,22 @@ $radius: 15px;
                             <div>
                                 <div class="detailSection">
                                     <div>
-                                        <strong>Practitioner:</strong>
-                                        Section 3
+                                        <strong>Location:</strong>
+                                    </div>
+                                    <div>
+                                        {{ entry.clinic.name }}
+                                    </div>
+                                    <div>
+                                        {{ entry.clinic.address }}
+                                    </div>
+                                    <div>
+                                        {{
+                                            formatPhoneNumber(
+                                                entry.clinic.phoneNumber
+                                            )
+                                        }}
                                     </div>
                                 </div>
-                                <div class="detailSection">
-                                    <div>
-                                        <strong>Quantity:</strong>
-                                        Section 4
-                                    </div>
-                                    <div>
-                                        <strong>Strength:</strong>
-                                        Section 5
-                                    </div>
-                                    <div>
-                                        <strong>Form:</strong>
-                                        Section 6
-                                    </div>
-                                    <div>
-                                        <strong>Manufacturer:</strong>
-                                        Section 7
-                                    </div>
-                                </div>
-                                <div class="detailSection">
-                                    <strong>Section 7</strong>
-                                    {{ entry.medication.din }}
-                                </div>
-                                <div class="detailSection">
-                                    <div>
-                                        <strong>Filled At:</strong>
-                                    </div>
-                                    <div>
-                                        Section 8
-                                    </div>
-                                    <div>
-                                        <strong>Address:</strong>
-                                        Section 9
-                                    </div>
-                                    <div
-                                        v-if="entry.pharmacy.phoneNumber !== ''"
-                                    >
-                                        <strong>Phone number:</strong>
-                                        Section 10
-                                    </div>
-                                    <div v-if="entry.pharmacy.faxNumber !== ''">
-                                        <strong>Fax:</strong>
-                                        Section 11
-                                    </div>
-
-                                    <div
-                                        class="detailSection border border-dark p-2 small"
-                                    >
-                                        <div>
-                                            <strong>Directions for Use:</strong>
-                                        </div>
-                                        <div class="pt-2">
-                                            Section 12
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-if="isLoading">
-                                <div class="d-flex align-items-center">
-                                    <strong>Loading...</strong>
-                                    <b-spinner class="ml-5"></b-spinner>
-                                </div>
-                            </div>
-                            <div v-else-if="hasErrors" class="pt-1">
-                                <b-alert :show="hasErrors" variant="danger">
-                                    <h5>Error</h5>
-                                    <span
-                                        >An unexpected error occured while
-                                        processing the request.</span
-                                    >
-                                </b-alert>
                             </div>
                         </b-collapse>
                     </b-col>
@@ -194,19 +143,18 @@ $radius: 15px;
 
 <script lang="ts">
 import Vue from "vue";
+import { Component, Prop, Ref } from "vue-property-decorator";
+import { Action, Getter, State } from "vuex-class";
+import { IconDefinition, faUserMd } from "@fortawesome/free-solid-svg-icons";
+import LaboratoryTimelineEntry, {
+    LaboratoryResultViewModel,
+} from "@/models/laboratoryTimelineEntry";
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-import Pharmacy from "@/models/pharmacy";
-import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import {
-    IconDefinition,
-    faTrash,
-    faPortrait,
-    faUserMd,
-} from "@fortawesome/free-solid-svg-icons";
+import User from "@/models/user";
+import moment from "moment";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
 @Component({
@@ -214,23 +162,19 @@ import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
         CommentSection: CommentSectionComponent,
     },
 })
-export default class EncounterTimelineComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+export default class EncounterTimelineEntryComponent extends Vue {
     @Prop() entry!: EncounterTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
+    @Getter("user", { namespace: "user" }) user!: User;
 
-    private isLoadingEncounter: boolean = false;
     private hasErrors: boolean = false;
-    private encounterLoaded: boolean = false;
     private detailsVisible: boolean = false;
 
-    private get detailsLoaded(): boolean {
-        return this.encounterLoaded;
-    }
-
-    private get isLoading(): boolean {
-        return this.isLoadingEncounter;
+    private mounted() {
+        // this.encounterService = container.get<IEncounterService>(
+        //     SERVICE_IDENTIFIER.LaboratoryService
+        // );
     }
 
     private get entryIcon(): IconDefinition {
