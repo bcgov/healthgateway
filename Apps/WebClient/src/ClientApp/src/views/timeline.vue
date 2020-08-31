@@ -181,7 +181,7 @@
                                 name="encounterFilter"
                                 value="Encounter"
                             >
-                                MSP Visits
+                                Medical Encounters
                             </b-form-checkbox>
                         </b-col>
                     </b-row>
