@@ -308,6 +308,7 @@ import {
     IImmunizationService,
     ILaboratoryService,
     IMedicationService,
+    IEncounterService,
     IUserNoteService,
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
@@ -688,64 +689,44 @@ export default class TimelineView extends Vue {
     }
 
     private fetchEncounters() {
-        // Placeholder to test until service is complete
         this.isEncounterLoading = true;
-        this.timelineEntries.push(
-            new EncounterTimelineEntry({
-                id: "8bcbc841-899f-486a-a4b9-9b5172dcb70a",
-                practitionerName: "Smith, David",
-                specialtyDescription: "Doctor",
-                serviceDateTime: new Date(),
-                clinic: {
-                    name: "Best Clinic Ever",
-                    addressLine1: "1122 Fake St. V8N2C8",
-                    clinicId: "38138e65-d657-4ce1-8b52-1f51f8695cb5",
-                    phoneNumber: "2508582268",
-                },
-            })
+        const encounterService: IEncounterService = container.get(
+            SERVICE_IDENTIFIER.EncounterService
         );
-        this.isEncounterLoading = false;
-        // const encounterService: IEncounterService = container.get(
-        //     SERVICE_IDENTIFIER.EncounterService
-        // );
-        // this.isEncounterLoading = true;
-        // this.getEncounters({ hdid: this.user.hdid })
-        //     .then((results) => {
-        //         if (results.resultStatus == ResultType.Success) {
-        //             // Add the encounter entries to the timeline list
-        //             for (let result of results.resourcePayload) {
-        //                 this.timelineEntries.push(
-        //                     new EncounterTimelineEntry(result)
-        //                 );
-        //             }
-        //             this.sortEntries();
-
-        //             if (results.resourcePayload.length > 0) {
-        //                 this.protectiveWordModal.hideModal();
-        //                 this.covidModal.showModal();
-        //             }
-        //         } else {
-        //             this.logger.error(
-        //                 "Error returned from the encounter call: " +
-        //                     JSON.stringify(results.resultError)
-        //             );
-        //             this.addError(
-        //                 ErrorTranslator.toBannerError(
-        //                     "Fetch Encounter Error",
-        //                     results.resultError
-        //                 )
-        //             );
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         this.logger.error(err);
-        //         this.addError(
-        //             ErrorTranslator.toBannerError("Fetch Encounter Error", err)
-        //         );
-        //     })
-        //     .finally(() => {
-        //         this.isEncounterLoading = false;
-        //     });
+        this.isEncounterLoading = true;
+        encounterService
+            .getPatientEncounters(this.user.hdid)
+            .then((results) => {
+                if (results.resultStatus == ResultType.Success) {
+                    // Add the encounter entries to the timeline list
+                    for (let result of results.resourcePayload) {
+                        this.timelineEntries.push(
+                            new EncounterTimelineEntry(result)
+                        );
+                    }
+                    this.sortEntries();
+                } else {
+                    this.logger.error(
+                        "Error returned from the encounter call: " +
+                            JSON.stringify(results.resultError)
+                    );
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Encounter Error",
+                            results.resultError
+                        )
+                    );
+                }
+            })
+            .catch((err) => {
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Fetch Encounter Error", err)
+                );
+            })
+            .finally(() => {
+                this.isEncounterLoading = false;
+            });
     }
 
     private fetchNotes() {
