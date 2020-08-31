@@ -125,7 +125,7 @@ $radius: 15px;
                                     </div>
                                     <div>
                                         {{
-                                            phoneUtil.formatPhoneNumber(
+                                            formatPhone(
                                                 entry.clinic.phoneNumber
                                             )
                                         }}
@@ -184,11 +184,8 @@ export default class EncounterTimelineEntryComponent extends Vue {
         this.hasErrors = false;
     }
 
-    private formatPhoneNumber(phoneNumber: string): string {
-        phoneNumber = phoneNumber || "";
-        return phoneNumber
-            .replace(/[^0-9]/g, "")
-            .replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+    private formatPhone(phoneNumber: string): string {
+        return PhoneUtil.formatPhone(phoneNumber);
     }
 }
 </script>

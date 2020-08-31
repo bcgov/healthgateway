@@ -158,7 +158,7 @@ $radius: 15px;
                                     >
                                         <strong>Phone number:</strong>
                                         {{
-                                            PhoneUtil.formatPhoneNumber(
+                                            formatPhone(
                                                 entry.pharmacy.phoneNumber
                                             )
                                         }}
@@ -166,7 +166,7 @@ $radius: 15px;
                                     <div v-if="entry.pharmacy.faxNumber !== ''">
                                         <strong>Fax:</strong>
                                         {{
-                                            PhoneUtil.formatPhoneNumber(
+                                            formatPhone(
                                                 entry.pharmacy.faxNumber
                                             )
                                         }}
@@ -286,6 +286,9 @@ export default class MedicationTimelineComponent extends Vue {
                     this.isLoadingMedication = false;
                 });
         }
+    }
+    private formatPhone(phoneNumber: string): string {
+        return PhoneUtil.formatPhone(phoneNumber);
     }
 }
 </script>
