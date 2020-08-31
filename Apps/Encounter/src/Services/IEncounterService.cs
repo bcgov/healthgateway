@@ -18,6 +18,7 @@ namespace HealthGateway.Encounter.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Encounter.Models;
 
     /// <summary>
     /// The Encounter data service.
@@ -29,6 +30,6 @@ namespace HealthGateway.Encounter.Services
         /// </summary>
         /// <param name="hdid">The health directed id for the subject.</param>
         /// <returns>Returns a list of claims.</returns>
-        Task<RequestResult<IEnumerable<object>>> GetClaims(string hdid);
+        Task<RequestResult<IEnumerable<Claim>>> GetClaims(string hdid);
     }
 }

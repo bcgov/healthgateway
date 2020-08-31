@@ -20,6 +20,7 @@ namespace HealthGateway.Encounter.Controllers
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
+    using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -80,7 +81,7 @@ namespace HealthGateway.Encounter.Controllers
         public async Task<IActionResult> GetClaims(string hdid)
         {
             this.logger.LogDebug($"Getting claims from controller... {hdid}");
-            RequestResult<IEnumerable<object>> result = await this.service.GetClaims(hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<Claim>> result = await this.service.GetClaims(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting claims from controller... {hdid}");
             return new JsonResult(result);
