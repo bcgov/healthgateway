@@ -146,9 +146,6 @@ import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter, State } from "vuex-class";
 import { IconDefinition, faUserMd } from "@fortawesome/free-solid-svg-icons";
-import LaboratoryTimelineEntry, {
-    LaboratoryResultViewModel,
-} from "@/models/laboratoryTimelineEntry";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -173,7 +170,7 @@ export default class EncounterTimelineEntryComponent extends Vue {
 
     private mounted() {
         // this.encounterService = container.get<IEncounterService>(
-        //     SERVICE_IDENTIFIER.LaboratoryService
+        //     SERVICE_IDENTIFIER.EncounterService
         // );
     }
 
