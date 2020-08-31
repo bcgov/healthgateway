@@ -340,6 +340,7 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import ErrorCardComponent from "@/components/errorCard.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
+import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
 const namespace: string = "user";
 
@@ -386,6 +387,7 @@ export default class TimelineView extends Vue {
     private isMedicationLoading: boolean = false;
     private isImmunizationLoading: boolean = false;
     private isLaboratoryLoading: boolean = false;
+    private isEncounterLoading: boolean = false;
     private isNoteLoading: boolean = false;
     private idleLogoutWarning: boolean = false;
     private protectiveWordAttempts: number = 0;
@@ -407,6 +409,7 @@ export default class TimelineView extends Vue {
         this.fetchMedicationStatements();
         this.fetchImmunizations();
         this.fetchLaboratoryResults();
+        this.fetchEncounters();
         this.fetchNotes();
         window.addEventListener("beforeunload", this.onBrowserClose);
         let self = this;
@@ -494,6 +497,7 @@ export default class TimelineView extends Vue {
             this.isMedicationLoading ||
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
+            this.isEncounterLoading ||
             this.isNoteLoading
         );
     }
@@ -681,6 +685,67 @@ export default class TimelineView extends Vue {
             .finally(() => {
                 this.isLaboratoryLoading = false;
             });
+    }
+
+    private fetchEncounters() {
+        // Placeholder to test until service is complete
+        this.isEncounterLoading = true;
+        this.timelineEntries.push(
+            new EncounterTimelineEntry({
+                id: "8bcbc841-899f-486a-a4b9-9b5172dcb70a",
+                practitionerName: "Smith, David",
+                specialtyDescription: "Doctor",
+                serviceDateTime: new Date(),
+                clinic: {
+                    name: "Best Clinic Ever",
+                    addressLine1: "1122 Fake St. V8N2C8",
+                    clinicId: "38138e65-d657-4ce1-8b52-1f51f8695cb5",
+                    phoneNumber: "2508582268",
+                },
+            })
+        );
+        this.isEncounterLoading = false;
+        // const encounterService: IEncounterService = container.get(
+        //     SERVICE_IDENTIFIER.EncounterService
+        // );
+        // this.isEncounterLoading = true;
+        // this.getEncounters({ hdid: this.user.hdid })
+        //     .then((results) => {
+        //         if (results.resultStatus == ResultType.Success) {
+        //             // Add the encounter entries to the timeline list
+        //             for (let result of results.resourcePayload) {
+        //                 this.timelineEntries.push(
+        //                     new EncounterTimelineEntry(result)
+        //                 );
+        //             }
+        //             this.sortEntries();
+
+        //             if (results.resourcePayload.length > 0) {
+        //                 this.protectiveWordModal.hideModal();
+        //                 this.covidModal.showModal();
+        //             }
+        //         } else {
+        //             this.logger.error(
+        //                 "Error returned from the encounter call: " +
+        //                     JSON.stringify(results.resultError)
+        //             );
+        //             this.addError(
+        //                 ErrorTranslator.toBannerError(
+        //                     "Fetch Encounter Error",
+        //                     results.resultError
+        //                 )
+        //             );
+        //         }
+        //     })
+        //     .catch((err) => {
+        //         this.logger.error(err);
+        //         this.addError(
+        //             ErrorTranslator.toBannerError("Fetch Encounter Error", err)
+        //         );
+        //     })
+        //     .finally(() => {
+        //         this.isEncounterLoading = false;
+        //     });
     }
 
     private fetchNotes() {
