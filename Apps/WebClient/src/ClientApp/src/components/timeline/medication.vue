@@ -158,7 +158,7 @@ $radius: 15px;
                                     >
                                         <strong>Phone number:</strong>
                                         {{
-                                            formatPhoneNumber(
+                                            PhoneUtil.formatPhoneNumber(
                                                 entry.pharmacy.phoneNumber
                                             )
                                         }}
@@ -166,7 +166,7 @@ $radius: 15px;
                                     <div v-if="entry.pharmacy.faxNumber !== ''">
                                         <strong>Fax:</strong>
                                         {{
-                                            formatPhoneNumber(
+                                            PhoneUtil.formatPhoneNumber(
                                                 entry.pharmacy.faxNumber
                                             )
                                         }}
@@ -220,6 +220,7 @@ import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter, State } from "vuex-class";
 import { IconDefinition, faPills } from "@fortawesome/free-solid-svg-icons";
 import MedicationResult from "@/models/medicationResult";
+import PhoneUtil from "@/utility/phoneUtil";
 
 @Component({
     components: {
@@ -285,13 +286,6 @@ export default class MedicationTimelineComponent extends Vue {
                     this.isLoadingMedication = false;
                 });
         }
-    }
-
-    private formatPhoneNumber(phoneNumber: string): string {
-        phoneNumber = phoneNumber || "";
-        return phoneNumber
-            .replace(/[^0-9]/g, "")
-            .replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
     }
 }
 </script>

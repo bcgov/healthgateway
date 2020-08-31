@@ -125,7 +125,7 @@ $radius: 15px;
                                     </div>
                                     <div>
                                         {{
-                                            formatPhoneNumber(
+                                            phoneUtil.formatPhoneNumber(
                                                 entry.clinic.phoneNumber
                                             )
                                         }}
@@ -152,6 +152,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import User from "@/models/user";
 import moment from "moment";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import PhoneUtil from "@/utility/phoneUtil";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
 @Component({
