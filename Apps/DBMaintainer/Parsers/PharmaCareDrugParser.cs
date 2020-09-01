@@ -22,6 +22,7 @@ namespace HealthGateway.DrugMaintainer
     using System.Linq;
     using Microsoft.Extensions.Logging;
     using System;
+    using System.Globalization;
 
     /// <summary>
     /// /// Concrete implemention of the <see cref="IPharmaCareDrugParser"/>
@@ -43,18 +44,14 @@ namespace HealthGateway.DrugMaintainer
         public List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload)
         {
             this.logger.LogInformation("Parsing PharmaCare Drug file");
-            using (var reader = new StreamReader(filename))
-            {
-                using (var csv = new CsvReader(reader))
-                {
-                    csv.Configuration.HasHeaderRecord = true;
-                    csv.Configuration.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = new[] { "yyyyMMdd" };
-                    PharmaCareDrugMapper mapper = new PharmaCareDrugMapper(filedownload);
-                    csv.Configuration.RegisterClassMap(mapper);
-                    List<PharmaCareDrug> records = csv.GetRecords<PharmaCareDrug>().ToList();
-                    return records;
-                }
-            }
+            using var reader = new StreamReader(filename);
+            using var csv = new CsvReader(reader,CultureInfo.InvariantCulture);
+            csv.Configuration.HasHeaderRecord = true;
+            csv.Configuration.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = new[] { "yyyyMMdd" };
+            PharmaCareDrugMapper mapper = new PharmaCareDrugMapper(filedownload);
+            csv.Configuration.RegisterClassMap(mapper);
+            List<PharmaCareDrug> records = csv.GetRecords<PharmaCareDrug>().ToList();
+            return records;
         }
     }
 }

@@ -27,12 +27,15 @@
     height: 36px;
     overflow: hidden;
 }
+.minimize-icon {
+    font-size: 0.8em;
+}
 </style>
 
 <template>
     <div id="feedback-container" class="d-flex flex-column text-dark">
         <b-button
-            class="justify-content-center contact-us py-2"
+            class="justify-content-center contact-us py-0 rounded-0"
             :class="{
                 'bg-danger': hasSubmitted && !isSuccess,
                 'bg-success': hasSubmitted && isSuccess,
@@ -45,6 +48,7 @@
             <b-row v-show="!hasSubmitted">
                 <b-col
                     title="Contact Us"
+                    class="py-2"
                     :class="{
                         'col-2 col-md-4 text-right pr-2': isSidebarOpen,
                     }"
@@ -58,14 +62,19 @@
                 </b-col>
                 <b-col
                     v-show="isSidebarOpen"
-                    class="button-title d-none text-left col-7 col-md-6 p-0 pl-3"
+                    class="button-title d-none text-left col-7 col-md-6 p-0 pl-3 py-2"
                 >
                     <span>
                         Contact Us
                     </span>
                 </b-col>
                 <b-col v-show="isSidebarOpen && visible" cols="auto">
-                    <strong>-</strong>
+                    <font-awesome-icon
+                        icon="minus"
+                        aria-hidden="true"
+                        size="1x"
+                        class="m-0 minimize-icon"
+                    />
                 </b-col>
             </b-row>
             <b-row v-show="hasSubmitted">
@@ -207,12 +216,13 @@ import {
 import {
     faComments,
     faExclamationCircle,
+    faMinus,
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faCheckCircle,
     faTimesCircle as farTimesCircle,
 } from "@fortawesome/free-regular-svg-icons";
-library.add(faComments, faExclamationCircle);
+library.add(faComments, faExclamationCircle, faMinus);
 
 const sidebar: string = "sidebar";
 const user: string = "user";

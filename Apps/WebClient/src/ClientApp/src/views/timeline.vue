@@ -181,7 +181,7 @@
                                 name="encounterFilter"
                                 value="Encounter"
                             >
-                                MSP Visits
+                                Medical Encounters
                             </b-form-checkbox>
                         </b-col>
                     </b-row>
@@ -308,6 +308,7 @@ import {
     IImmunizationService,
     ILaboratoryService,
     IMedicationService,
+    IEncounterService,
     IUserNoteService,
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
@@ -340,6 +341,7 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import ErrorCardComponent from "@/components/errorCard.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
+import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
 const namespace: string = "user";
 
@@ -386,6 +388,7 @@ export default class TimelineView extends Vue {
     private isMedicationLoading: boolean = false;
     private isImmunizationLoading: boolean = false;
     private isLaboratoryLoading: boolean = false;
+    private isEncounterLoading: boolean = false;
     private isNoteLoading: boolean = false;
     private idleLogoutWarning: boolean = false;
     private protectiveWordAttempts: number = 0;
@@ -407,6 +410,7 @@ export default class TimelineView extends Vue {
         this.fetchMedicationStatements();
         this.fetchImmunizations();
         this.fetchLaboratoryResults();
+        this.fetchEncounters();
         this.fetchNotes();
         window.addEventListener("beforeunload", this.onBrowserClose);
         let self = this;
@@ -494,6 +498,7 @@ export default class TimelineView extends Vue {
             this.isMedicationLoading ||
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
+            this.isEncounterLoading ||
             this.isNoteLoading
         );
     }
@@ -680,6 +685,47 @@ export default class TimelineView extends Vue {
             })
             .finally(() => {
                 this.isLaboratoryLoading = false;
+            });
+    }
+
+    private fetchEncounters() {
+        this.isEncounterLoading = true;
+        const encounterService: IEncounterService = container.get(
+            SERVICE_IDENTIFIER.EncounterService
+        );
+        this.isEncounterLoading = true;
+        encounterService
+            .getPatientEncounters(this.user.hdid)
+            .then((results) => {
+                if (results.resultStatus == ResultType.Success) {
+                    // Add the encounter entries to the timeline list
+                    for (let result of results.resourcePayload) {
+                        this.timelineEntries.push(
+                            new EncounterTimelineEntry(result)
+                        );
+                    }
+                    this.sortEntries();
+                } else {
+                    this.logger.error(
+                        "Error returned from the encounter call: " +
+                            JSON.stringify(results.resultError)
+                    );
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Encounter Error",
+                            results.resultError
+                        )
+                    );
+                }
+            })
+            .catch((err) => {
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Fetch Encounter Error", err)
+                );
+            })
+            .finally(() => {
+                this.isEncounterLoading = false;
             });
     }
 
