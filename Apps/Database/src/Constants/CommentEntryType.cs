@@ -34,5 +34,10 @@ namespace HealthGateway.Database.Constants
         /// The code representing Laboratory.
         /// </summary>
         public const string Laboratory = "Lab";
+
+        /// <summary>
+        /// The code representing Encounter.
+        /// </summary>
+        public const string Encounter = "ENC"; 
     }
 }

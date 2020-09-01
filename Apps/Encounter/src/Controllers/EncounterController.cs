@@ -81,7 +81,7 @@ namespace HealthGateway.Encounter.Controllers
         public async Task<IActionResult> GetEncounters(string hdid)
         {
             this.logger.LogDebug($"Getting claims from controller... {hdid}");
-            RequestResult<IEnumerable<EncounterHistory>> result = await this.service.GetEncounters(hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncounters(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting claims from controller... {hdid}");
             return new JsonResult(result);
