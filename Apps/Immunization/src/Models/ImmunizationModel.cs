@@ -24,6 +24,11 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationModel
     {
         /// <summary>
+        /// Gets or sets the Immunization id.
+        /// </summary>
+        public string Id { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the immunization Is Self Reported.
         /// </summary>
         [JsonPropertyName("isSelfReported")]
