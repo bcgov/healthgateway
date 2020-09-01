@@ -23,12 +23,12 @@ export let errorRate = new Rate('errors');
 
 export let options = {
   stages: [
-    { duration: '10s', target: 100 }, // below normal load
-    { duration: '1m', target: 100 },
-    { duration: '10s', target: 900 }, // spike to super high users
-    { duration: '3m', target: 900 }, // stay there 
-    { duration: '10s', target: 100 }, // scale down
-    { duration: '3m', target: 100 },
+    { duration: '10s', target: 10 }, // below normal load
+    { duration: '1m', target: 10 },
+    { duration: '10s', target: 200 }, // spike to super high users
+    { duration: '3m', target: 200 }, // stay there 
+    { duration: '10s', target: 200 }, // scale down
+    { duration: '3m', target: 10 },
     { duration: '10s', target: 0 }, //
   ],
 };
@@ -43,7 +43,7 @@ export default function () {
       'Authenticated successfully': loginRes == 200
     }) || errorRate.add(1);
   }
-  if (user.expires < (Date.now() - 3000)) // milliseconds
+  if (user.expires < (Date.now() - 3000)) // milliseconds  (the bearer token is good for 5 minutes only)
   {
     common.refreshUser(user);
   }

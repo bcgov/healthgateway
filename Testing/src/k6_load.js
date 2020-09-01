@@ -59,6 +59,16 @@ export default function () {
   };
 
   let requests = {
+    'comment': {
+      method: 'GET',
+      url: common.CommentUrl + "/" + user.hdid,
+      params: params
+    },
+    'note': {
+      method: 'GET',
+      url: common.NoteUrl + "/" + user.hdid,
+      params: params
+    },
     'patient': {
       method: 'GET',
       url: common.PatientServiceUrl + "/" + user.hdid,
@@ -79,25 +89,59 @@ export default function () {
 
   let responses = http.batch(requests);
 
+  check(responses['comment'], {
+    "Comment Response Code is 200": (r) => r.status == 200,
+    "Comment Response Code is not 400": (r) => r.status != 400,
+    "Comment Response Code is not 401": (r) => r.status != 401,
+    "Comment Response Code is not 403": (r) => r.status != 403,
+    "Comment Response Code is not 408": (r) => r.status != 408,
+    "Comment Response Code is not 429": (r) => r.status != 429,
+    "Comment Response Code is not 500": (r) => r.status != 500,
+    "Comment Response Code is not 504": (r) => r.status != 504,
+  }) || errorRate.add(1);
+
+  check(responses['note'], {
+    "Note Response Code is 200": (r) => r.status == 200,
+    "Note Response Code is not 400": (r) => r.status != 400,
+    "Note Response Code is not 401": (r) => r.status != 401,
+    "Note Response Code is not 403": (r) => r.status != 403,
+    "Note Response Code is not 408": (r) => r.status != 408,
+    "Note Response Code is not 429": (r) => r.status != 429,
+    "Note Response Code is not 500": (r) => r.status != 500,
+    "Note Response Code is not 504": (r) => r.status != 504,
+  }) || errorRate.add(1);
+
   check(responses['patient'], {
     "PatientService Response Code is 200": (r) => r.status == 200,
-    "PatientService Response Code is not 504": (r) => r.status != 504,
-    "PatientService Response Code is not 500": (r) => r.status != 500,
+    "PatientService Response Code is not 400": (r) => r.status != 400,
+    "PatientService Response Code is not 401": (r) => r.status != 401,
     "PatientService Response Code is not 403": (r) => r.status != 403,
+    "PatientService Response Code is not 408": (r) => r.status != 408,
+    "PatientService Response Code is not 429": (r) => r.status != 429,
+    "PatientService Response Code is not 500": (r) => r.status != 500,
+    "PatientService Response Code is not 504": (r) => r.status != 504,
   }) || errorRate.add(1);
 
   check(responses['meds'], {
     "MedicationService Response Code is 200": (r) => r.status == 200,
-    "MedicationService Response Code is not 504": (r) => r.status != 504,
-    "MedicationService Response Code is not 500": (r) => r.status != 500,
+    "MedicationService Response Code is not 400": (r) => r.status != 400,
+    "MedicationService Response Code is not 401": (r) => r.status != 401,
     "MedicationService Response Code is not 403": (r) => r.status != 403,
+    "MedicationService Response Code is not 408": (r) => r.status != 408,
+    "MedicationService Response Code is not 429": (r) => r.status != 429,
+    "MedicationService Response Code is not 500": (r) => r.status != 500,
+    "MedicationService Response Code is not 504": (r) => r.status != 504,
   }) || errorRate.add(1);
 
   check(responses['labs'], {
     "LaboratoryService Response Code is 200": (r) => r.status == 200,
-    "LaboratoryService Response Code is not 504": (r) => r.status != 504,
-    "LaboratoryService Response Code is not 500": (r) => r.status != 500,
+    "LaboratoryService Response Code is not 400": (r) => r.status != 400,
+    "LaboratoryService Response Code is not 401": (r) => r.status != 401,
     "LaboratoryService Response Code is not 403": (r) => r.status != 403,
+    "LaboratoryService Response Code is not 408": (r) => r.status != 408,
+    "LaboratoryService Response Code is not 429": (r) => r.status != 429,
+    "LaboratoryService Response Code is not 500": (r) => r.status != 500,
+    "LaboratoryService Response Code is not 504": (r) => r.status != 504,
   }) || errorRate.add(1);
 
   sleep(common.getRandom(1, 5));

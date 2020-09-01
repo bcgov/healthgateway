@@ -14,7 +14,9 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 import http from 'k6/http';
-import { b64decode } from 'k6/encoding';
+import { b64decode, errorRate } from 'k6/encoding';
+import { check } from 'k6';
+import { Rate } from 'k6/metrics';
 
 let passwd = __ENV.HG_PASSWORD;
 let environment = (__ENV.HG_ENV != undefined) ? __ENV.HG_ENV : 'test';
@@ -82,8 +84,8 @@ export function authenticateUser(user) {
     };
     console.log("Authenticating username: " + auth_form_data.username);
     var res = http.post(TokenEndpointUrl, auth_form_data);
-    var res_json = JSON.parse(res.body);
     if (res.status == 200) {
+        var res_json = JSON.parse(res.body);
         user.token = res_json["access_token"];
         user.refresh = res_json["refresh_token"];
         var seconds = res_json["expires_in"];
@@ -92,8 +94,9 @@ export function authenticateUser(user) {
         console.log("hdid=" + user.hdid);
     }
     else {
-        console.log("Authentication Error = " + res_json["error"]);
+        console.log("Authentication Refresh Error ResponseCode = " + res.status);
     }
+
     return res.status;
 }
 
@@ -105,15 +108,15 @@ export function refreshUser(user) {
     };
     console.log("Getting Refresh Token for username: " + user.username);
     var res = http.post(TokenEndpointUrl, refresh_form_data);
-    var res_json = JSON.parse(res.body);
     if (res.status == 200) {
+        var res_json = JSON.parse(res.body);
         user.token = res_json["access_token"];
         user.refresh = res_json["refresh_token"];
         var seconds = res_json["expires_in"];
         user.expires = getExpiresTime(seconds);
     }
     else {
-        console.log("Error = " + res_json["error"]);
+        console.log("Authentication Refresh Error ResponseCode = " + res.status);
     }
     return res.status;
 }
