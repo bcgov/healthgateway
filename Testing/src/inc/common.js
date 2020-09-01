@@ -25,6 +25,14 @@ export let MedicationServiceUrl = baseUrl + "/api/medicationservice/v1/api/Medic
 export let LaboratoryServiceUrl = baseUrl + "/api/laboratoryservice/v1/api/Laboratory";
 export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
 
+// Healthgateway WebClient app APIs:
+export let BetaRequestUrl = baseUrl + "/v1/api/BetaRequest";
+export let CommentUrl = baseUrl + "/v1/api/Comment";
+export let CommunicationUrl = baseUrl + "/v1/api/Communication";
+export let ConfigurationUrl = baseUrl + "/v1/api/Configuration";
+export let NoteUrl = baseUrl + "/v1/api/Note";
+export let UserProfileUrl = baseUrl + "/v1/api/UserProfile"; 
+
 export let users = [
     { username: "loadtest_01", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_02", password: passwd, hdid: null, token: null, refresh: null, expires: null },
@@ -68,12 +76,10 @@ export function authenticateUser(user) {
         grant_type: "password",
         client_id: "healthgateway",
         audience: "healthgateway",
-        scope: "openid PL PN patient/Observation.read patient/Laboratory.read",
+        scope: "openid patient/Laboratory.read",
         username: user.username,
         password: user.password,
     };
-
-    console.log(TokenEndpointUrl);
     console.log("Authenticating username: " + auth_form_data.username);
     var res = http.post(TokenEndpointUrl, auth_form_data);
     var res_json = JSON.parse(res.body);
@@ -88,6 +94,7 @@ export function authenticateUser(user) {
     else {
         console.log("Authentication Error = " + res_json["error"]);
     }
+    return res.status;
 }
 
 export function refreshUser(user) {
@@ -96,8 +103,6 @@ export function refreshUser(user) {
         client_id: "healthgateway",
         refresh_token: user.refresh,
     };
-
-    console.log(TokenEndpointUrl);
     console.log("Getting Refresh Token for username: " + user.username);
     var res = http.post(TokenEndpointUrl, refresh_form_data);
     var res_json = JSON.parse(res.body);
@@ -110,7 +115,15 @@ export function refreshUser(user) {
     else {
         console.log("Error = " + res_json["error"]);
     }
+    return res.status;
 }
+
+export function getRandomInteger(min, max) {
+    let n = Math.floor(Math.random()* (max - min) + min);
+    console.log("random integer = " + n);
+    return n;
+}
+
 export function getRandom(min, max) {
     return Math.random() * (max - min) + min;
 }
