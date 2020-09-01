@@ -226,7 +226,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Read, FhirResourceLookup.Parameter));
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Read));
                 });
                 options.AddPolicy(EncounterPolicy.Write, policy =>
                 {

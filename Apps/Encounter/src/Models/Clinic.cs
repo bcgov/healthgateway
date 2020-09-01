@@ -27,6 +27,7 @@ namespace HealthGateway.Encounter.Models
         /// </summary>
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
+
         /// <summary>
         /// Gets or sets the Address Line 1.
         /// </summary>

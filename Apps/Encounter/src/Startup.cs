@@ -18,6 +18,9 @@ namespace HealthGateway.Encounter
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Encounter.Delegates;
+    using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -68,7 +71,12 @@ namespace HealthGateway.Encounter
 
             // Add services
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();
+            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
+            services.AddTransient<IEncounterService, EncounterService>();
             services.AddSingleton<ITraceService, TimedTraceService>();
+
+            // Add Delegates
+            services.AddTransient<IMSPVisitDelegate, RestMSPVisitDelegate>();
         }
 
         /// <summary>
