@@ -20,7 +20,7 @@ import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import UserSMSInvite from "@/models/userSMSInvite";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import UserRating from "@/models/userRating";
-import Encounter from '@/models/encounter';
+import Encounter from "@/models/encounter";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -61,9 +61,7 @@ export interface IMedicationService {
 
 export interface IEncounterService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getPatientEncounters(
-        hdid: string,
-    ): Promise<RequestResult<Encounter[]>>;
+    getPatientEncounters(hdid: string): Promise<RequestResult<Encounter[]>>;
 }
 
 export interface ILaboratoryService {

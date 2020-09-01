@@ -9,33 +9,21 @@ import {
 import { ExternalConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
-import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
 import Encounter from "@/models/encounter";
 
 @injectable()
 export class RestEncounterService implements IEncounterService {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly LABORATORY_BASE_URI: string = "v1/api/Encounter";
-    private baseUri: string = "";
-    private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
-
     constructor() {}
 
     public initialize(
         config: ExternalConfiguration,
         http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["Encounter"];
-        this.http = http;
-        this.isEnabled = config.webClient.modules["Encounter"];
-    }
+    ): void {}
 
     public getPatientEncounters(
         hdid: string
     ): Promise<RequestResult<Encounter[]>> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             resolve({
                 pageIndex: 0,
                 pageSize: 0,
@@ -44,11 +32,17 @@ export class RestEncounterService implements IEncounterService {
                         id: "8bcbc841-899f-486a-a4b9-9b5172dcb70a",
                         practitionerName: "Smith, David",
                         specialtyDescription: "Doctor",
-                        serviceDateTime: new Date(),
+                        encounterDate: new Date(),
                         clinic: {
+                            clinicId: "8bcbc841-899f-486a-a4b9-9b5172dcb70b",
                             name: "Best Clinic Ever",
-                            addressLine1: "1122 Fake St. V8N2C8",
-                            clinicId: "38138e65-d657-4ce1-8b52-1f51f8695cb5",
+                            addressLine1: "Unit 123",
+                            addressLine2: "1122 Fake St.",
+                            addressLine3: "",
+                            addressLine4: "",
+                            postalCode: "V8N2C8",
+                            city: "Monako",
+                            province: "BC",
                             phoneNumber: "2508582268",
                         },
                     },

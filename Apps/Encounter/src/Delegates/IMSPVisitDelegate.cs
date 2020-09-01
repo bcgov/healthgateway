@@ -13,23 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Encounter.Services
+namespace HealthGateway.Encounter.Delegates
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
-    using HealthGateway.Encounter.Models;
+    using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Encounter.Models.ODR;
 
     /// <summary>
-    /// The Encounter data service.
+    /// Interface to retrieve MSP Visit History.
     /// </summary>
-    public interface IEncounterService
+    public interface IMSPVisitDelegate
     {
         /// <summary>
-        /// Gets a of Encounters.
+        /// Returns a set of MSP Visits.
         /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
-        /// <returns>Returns a list of claims.</returns>
-        Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid);
+        /// <param name="query">The Encounter statement query execute against the ODR.</param>
+        /// <param name="hdid">The HDID of the user querying.</param>
+        /// <param name="ipAddress">The IP of the user querying.</param>
+        /// <returns>The Encounter Model response wrapped in an HNMessage.</returns>
+        Task<RequestResult<MSPVisitHistoryResponse>> GetMSPVisitHistoryAsync(ODRHistoryQuery query, string hdid, string ipAddress);
     }
 }
