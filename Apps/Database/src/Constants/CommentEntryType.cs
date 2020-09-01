@@ -38,6 +38,6 @@ namespace HealthGateway.Database.Constants
         /// <summary>
         /// The code representing Encounter.
         /// </summary>
-        public const string Encounter = "MSP"; 
+        public const string Encounter = "ENC"; 
     }
 }
