@@ -17,8 +17,8 @@ namespace HealthGateway.Common.Models.ODR
 {
     using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Utils;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Utils;
 
     /// <summary>
     /// The HNClient message request.

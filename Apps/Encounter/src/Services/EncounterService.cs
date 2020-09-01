@@ -62,13 +62,14 @@ namespace HealthGateway.Encounter.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<List<Encounter>>> GetEncounters(string hdid)
+        public async Task<RequestResult<IEnumerable<EncounterHistory>>> GetEncounters(string hdid)
         {
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             this.logger.LogDebug("Getting encounter history");
             this.logger.LogTrace($"User hdid: {hdid}");
 
-            RequestResult<List<Encounter>> result = new RequestResult<List<Encounter>>();
+            RequestResult<IEnumerable<EncounterHistory>> result = new RequestResult<IEnumerable<EncounterHistory>>();
+
             // Retrieve the phn
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
             RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
@@ -94,11 +95,11 @@ namespace HealthGateway.Encounter.Services
                     if (response.ResourcePayload != null && response.ResourcePayload.Claims != null)
                     {
                         result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                        result.ResourcePayload = Encounter.FromODRClaimModelList(response.ResourcePayload.Claims.ToList());
+                        result.ResourcePayload = EncounterHistory.FromODRClaimModelList(response.ResourcePayload.Claims.ToList());
                     }
                     else
                     {
-                        result.ResourcePayload = new List<Encounter>();
+                        result.ResourcePayload = new List<EncounterHistory>();
                     }
                 }
             }

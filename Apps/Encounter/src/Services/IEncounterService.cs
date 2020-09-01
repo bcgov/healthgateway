@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 //-------------------------------------------------------------------------
-=======
-//-------------------------------------------------------------------------
->>>>>>> dev
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +30,6 @@ namespace HealthGateway.Encounter.Services
         /// </summary>
         /// <param name="hdid">The health directed id for the subject.</param>
         /// <returns>Returns a list of claims.</returns>
-        Task<RequestResult<List<Encounter>>> GetEncounters(string hdid);
+        Task<RequestResult<IEnumerable<EncounterHistory>>> GetEncounters(string hdid);
     }
 }

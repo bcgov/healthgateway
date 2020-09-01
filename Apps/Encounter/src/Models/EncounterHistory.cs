@@ -22,7 +22,7 @@ namespace HealthGateway.Encounter.Models
     /// <summary>
     /// Represents a patient Encounter.
     /// </summary>
-    public class Encounter
+    public class EncounterHistory
     {
         /// <summary>
         /// Gets or sets the Id.
@@ -39,7 +39,7 @@ namespace HealthGateway.Encounter.Models
         /// <summary>
         /// Gets or sets the Specialty Description.
         /// </summary>
-        [JsonPropertyName("specialtyDesc")]
+        [JsonPropertyName("specialtyDescription")]
         public string SpecialtyDescription { get; set; } = string.Empty;
 
         /// <summary>
@@ -51,30 +51,33 @@ namespace HealthGateway.Encounter.Models
         /// <summary>
         /// Gets or sets the Location Name.
         /// </summary>
-        [JsonPropertyName("locationName")]
-        public string LocationName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Location Address.
-        /// </summary>
-        [JsonPropertyName("locationAddress")]
-        public LocationAddress LocationAddress { get; set; } = new LocationAddress();
+        [JsonPropertyName("clinic")]
+        public Clinic Clinic { get; set; } = new Clinic();
 
         /// <summary>
         /// Creates an Encounter object from an ODR model.
         /// </summary>
         /// <param name="model">The claim result to convert.</param>
         /// <returns>The newly created Encounter object.</returns>
-        public static Encounter FromODRClaimModel(Claim model)
+        public static EncounterHistory FromODRClaimModel(Claim model)
         {
-            return new Encounter()
+            return new EncounterHistory()
             {
                 Id = model.ClaimId,
                 EncounterDate = model.ServiceDate,
                 SpecialtyDescription = model.SpecialtyDesc,
                 PractitionerName = model.PractitionerName,
-                LocationName = model.LocationName,
-                LocationAddress = model.LocationAddress
+                Clinic = new Clinic()
+                {
+                    Name = model.LocationName,
+                    Province = model.LocationAddress.Province,
+                    City = model.LocationAddress.City,
+                    PostalCode = model.LocationAddress.PostalCode,
+                    AddrLine1 = model.LocationAddress.AddrLine1,
+                    AddrLine2 = model.LocationAddress.AddrLine2,
+                    AddrLine3 = model.LocationAddress.AddrLine3,
+                    AddrLine4 = model.LocationAddress.AddrLine4,
+                }
             };
         }
 
@@ -83,13 +86,13 @@ namespace HealthGateway.Encounter.Models
         /// </summary>
         /// <param name="models">The list of ODR models to convert.</param>
         /// <returns>A list of Encounter objects.</returns>
-        public static List<Encounter> FromODRClaimModelList(List<Claim> models)
+        public static List<EncounterHistory> FromODRClaimModelList(List<Claim> models)
         {
-            List<Encounter> objects = new List<Encounter>();
+            List<EncounterHistory> objects = new List<EncounterHistory>();
 
             foreach (Claim claimModel in models)
             {
-                objects.Add(Encounter.FromODRClaimModel(claimModel));
+                objects.Add(EncounterHistory.FromODRClaimModel(claimModel));
             }
 
             return objects;

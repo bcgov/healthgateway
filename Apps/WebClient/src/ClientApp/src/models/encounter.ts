@@ -11,7 +11,7 @@ export default interface Encounter {
     specialtyDescription: string;
 
     // Gets or sets the encounter timeline datetime.
-    serviceDateTime: Date;
+    encounterDate: Date;
 
     // Gets or sets the clinic.
     clinic: Clinic;
