@@ -19,9 +19,9 @@ namespace HealthGateway.Immunization.Models
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a row in the Immunization.
+    /// Represents a row in the Immunization Model.
     /// </summary>
-    public class Immunization
+    public class ImmunizationModel
     {
         /// <summary>
         /// Gets or sets a value indicating whether the immunization Is Self Reported.
