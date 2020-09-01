@@ -13,22 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models.ODR
+namespace HealthGateway.Common.Models.ODR
 {
-    using System.Collections.Generic;
+    using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.ODR;
 
     /// <summary>
-    /// The ODR Medication Response.
+    /// The ODR History Request/Response model.
     /// </summary>
-    public class MedicationHistoryResponse : ODRHistoryResponse
+    public class ODRHistoryWrapper
     {
         /// <summary>
-        /// Gets or sets the set of MedicationResults.
-        /// The set is boud by the other class properties.
+        /// Gets or sets the Id of the request.
         /// </summary>
-        [JsonPropertyName("records")]
-        public IEnumerable<MedicationResult>? Results { get; set; }
+        [JsonPropertyName("uuid")]
+        public Guid Id { get; set; } = default;
+
+        /// <summary>
+        /// Gets or sets the HDID of the requestor.
+        /// </summary>
+        [JsonPropertyName("hdid")]
+        public string RequestorHDID { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the IP of the requestor.
+        /// </summary>
+        [JsonPropertyName("requestingIP")]
+        public string RequestorIP { get; set; } = string.Empty;
     }
 }

@@ -13,17 +13,17 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models.ODR
+namespace HealthGateway.Common.Models.ODR
 {
     using System;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Medication.Constants;
+    using HealthGateway.Common.Constants;
 
     /// <summary>
     /// The HNClient message request.
     /// </summary>
-    public class MedicationHistoryQuery
+    public class ODRHistoryQuery
     {
         /// <summary>
         /// Gets or sets the Start date of the request.

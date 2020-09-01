@@ -17,35 +17,18 @@ namespace HealthGateway.Medication.Models.ODR
 {
     using System;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.ODR;
 
     /// <summary>
     /// The ODR Medication History Request/Response model.
     /// </summary>
-    public class MedicationHistory
+    public class MedicationHistory : ODRHistoryWrapper
     {
-        /// <summary>
-        /// Gets or sets the Id of the request.
-        /// </summary>
-        [JsonPropertyName("uuid")]
-        public Guid Id { get; set; } = default;
-
-        /// <summary>
-        /// Gets or sets the HDID of the requestor.
-        /// </summary>
-        [JsonPropertyName("hdid")]
-        public string RequestorHDID { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the IP of the requestor.
-        /// </summary>
-        [JsonPropertyName("requestingIP")]
-        public string RequestorIP { get; set; } = string.Empty;
-
         /// <summary>
         /// Gets or sets the QueryRequest for the MedicationHistory integration.
         /// </summary>
         [JsonPropertyName("getMedicationHistoryRequest")]
-        public MedicationHistoryQuery? Query { get; set; }
+        public ODRHistoryQuery? Query { get; set; }
 
         /// <summary>
         /// Gets or sets the MedicationHistoryResponse for the MedicationHistory integration.

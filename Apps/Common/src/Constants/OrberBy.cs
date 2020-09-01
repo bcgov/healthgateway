@@ -13,22 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models.ODR
+namespace HealthGateway.Common.Constants
 {
-    using System.Collections.Generic;
+    using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.ODR;
 
     /// <summary>
-    /// The ODR Medication Response.
+    /// Common area for error messages.
     /// </summary>
-    public class MedicationHistoryResponse : ODRHistoryResponse
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    public enum OrderBy
     {
         /// <summary>
-        /// Gets or sets the set of MedicationResults.
-        /// The set is boud by the other class properties.
+        /// Specifies that ordering should be ascending.
         /// </summary>
-        [JsonPropertyName("records")]
-        public IEnumerable<MedicationResult>? Results { get; set; }
+        [EnumMember(Value = "asc")]
+        Ascending,
+
+        /// <summary>
+        /// Specifies that order should be descending.
+        /// </summary>
+        [EnumMember(Value = "desc")]
+        Descending,
     }
 }
