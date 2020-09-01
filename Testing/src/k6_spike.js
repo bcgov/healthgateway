@@ -25,8 +25,8 @@ export let options = {
   stages: [
     { duration: '10s', target: 100 }, // below normal load
     { duration: '1m', target: 100 },
-    { duration: '10s', target: 1400 }, // spike to 1400 users
-    { duration: '3m', target: 1400 }, // stay there 
+    { duration: '10s', target: 900 }, // spike to super high users
+    { duration: '3m', target: 900 }, // stay there 
     { duration: '10s', target: 100 }, // scale down
     { duration: '3m', target: 100 },
     { duration: '10s', target: 0 }, //
@@ -37,10 +37,11 @@ export default function () {
 
   let user = common.users[__VU % common.users.length];
 
-  if (__ITER == 0) {
-    if (user.hdid == null) {
-      common.authenticateUser(user);
-    }
+  if (user.hdid == null) {
+    let loginRes = common.authenticateUser(user);
+    check(loginRes, {
+      'Authenticated successfully': loginRes == 200
+    }) || errorRate.add(1);
   }
   if (user.expires < (Date.now() - 3000)) // milliseconds
   {
@@ -65,7 +66,6 @@ export default function () {
       url: common.MedicationServiceUrl + "/" + user.hdid,
       params: params
     },
-
     'labs': {
       method: 'GET',
       url: common.LaboratoryServiceUrl + "?hdid=" + user.hdid,

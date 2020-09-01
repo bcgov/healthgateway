@@ -22,12 +22,18 @@ export let errorRate = new Rate('errors');
 
 export default function () {
 
-  let user = common.users[common.getRandomInteger(0,common.users.length-1)];
+  let user = common.users[common.getRandomInteger(0, common.users.length - 1)];
 
-  let loginRes = common.authenticateUser(user);
-  check(loginRes, {
-    'Authenticated successfully': loginRes == 200
-  }) || errorRate.add(1);
+  if (user.hdid == null) {
+    let loginRes = common.authenticateUser(user);
+    check(loginRes, {
+      'Authenticated successfully': loginRes == 200
+    }) || errorRate.add(1);
+  }
+  if (user.expires < (Date.now() - 3000)) // milliseconds
+  {
+    common.refreshUser(user);
+  }
 
   var params = {
     headers: {
@@ -35,6 +41,11 @@ export default function () {
       Authorization: "Bearer " + user.token,
     },
   };
+
+  if (user.expires < (Date.now() - 3000)) // milliseconds
+  {
+    common.refreshUser(user);
+  }
 
   let requests = {
     'beta': {

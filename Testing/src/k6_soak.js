@@ -24,8 +24,8 @@ export let errorRate = new Rate('errors');
 export let options = {
   stages: [
     { duration: '10s', target: 100 }, // below normal load
-    { duration: '2m', target: 400 },
-    { duration: '3h56m', target: 400 }, // stay at 400 users for hours 'soaking' the system
+    { duration: '2m', target: 300 },
+    { duration: '3h56m', target: 300 }, // stay at high users for hours 'soaking' the system
     { duration: '2m', target: 0 }, // drop back down 
   ],
 };
@@ -34,10 +34,11 @@ export default function () {
 
   let user = common.users[__VU % common.users.length];
 
-  if (__ITER == 0) {
-    if (user.hdid == null) {
-      common.authenticateUser(user);
-    }
+  if (user.hdid == null) {
+    let loginRes = common.authenticateUser(user);
+    check(loginRes, {
+      'Authenticated successfully': loginRes == 200
+    }) || errorRate.add(1);
   }
   if (user.expires < (Date.now() - 3000)) // milliseconds
   {

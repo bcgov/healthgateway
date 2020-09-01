@@ -25,8 +25,8 @@ export let options = {
   stages: [
     { duration: '5m', target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
     { duration: '10m', target: 60 }, // stay at 60 users for 10 minutes
-    { duration: '3m', target: 200 }, // ramp-up to users over 3 minutes (peak hour starts)
-    { duration: '2m', target: 200 }, // stay at users for short amount of time (peak hour)
+    { duration: '3m', target: 300 }, // ramp-up to users peak for 3 minutes (peak hour starts)
+    { duration: '2m', target: 300 }, // stay at users for short amount of time (peak hour)
     { duration: '3m', target: 50 }, // ramp-down to 60 users over 3 minutes (peak hour ends)
     { duration: '5m', target: 50 }, // continue at 60 for additional 10 minutes
     { duration: '3m', target: 0 }, // ramp-down to 0 users
@@ -40,15 +40,17 @@ export default function () {
 
   let user = common.users[__VU % common.users.length];
 
-  if (__ITER == 0) {
-    if (user.hdid == null) {
-      authenticateUser(user);
-    }
+  if (user.hdid == null) {
+    let loginRes = common.authenticateUser(user);
+    check(loginRes, {
+      'Authenticated successfully': loginRes == 200
+    }) || errorRate.add(1);
   }
   if (user.expires < (Date.now() - 3000)) // milliseconds
   {
-    refreshUser(user);
+    common.refreshUser(user);
   }
+  
   var params = {
     headers: {
       "Content-Type": "application/json",
@@ -98,6 +100,6 @@ export default function () {
     "LaboratoryService Response Code is not 403": (r) => r.status != 403,
   }) || errorRate.add(1);
 
-  sleep(getRandom(1, 6));
+  sleep(common.getRandom(1, 5));
 }
 
