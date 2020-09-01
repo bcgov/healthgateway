@@ -71,11 +71,11 @@ namespace HealthGateway.Encounter
 
             // Add services
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();
-            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IEncounterService, EncounterService>();
             services.AddSingleton<ITraceService, TimedTraceService>();
 
             // Add Delegates
+            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IMSPVisitDelegate, RestMSPVisitDelegate>();
         }
 
