@@ -6,7 +6,7 @@ The Smoke Test's role is to verify that your System can handle minimal load, wit
 
 Any errors here are an indication of functionality not working under basic load.
 
-### When to run the smoke test?
+### When to run the smoke test
 
 Run this test often, after each system change/release.  This ensures that functionality has not broken under basic loads.
 
@@ -26,6 +26,6 @@ Spike testing is a type of stress testing that immediately overwhelms the system
 
 While load testing is primarily concerned with performance assessment, and stress testing is concerned with system stability under extreme conditions, soak testing is concerned with reliability over a long time. The soak test uncovers performance and reliability issues stemming from a system being under pressure for an extended period.
 
-### When to run the soak test?
+### When to run the soak test
 
 Soak testing helps uncover bugs and reliability issues that surface when a system is loaded over an extended period of time. Soak testing helps reliability. Run this test only once you have successfully run other tests.

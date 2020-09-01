@@ -14,18 +14,20 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 import http from 'k6/http';
-import { b64decode, errorRate } from 'k6/encoding';
-import { check } from 'k6';
-import { Rate } from 'k6/metrics';
+import { b64decode } from 'k6/encoding';
+
 
 let passwd = __ENV.HG_PASSWORD;
-let environment = (__ENV.HG_ENV != undefined) ? __ENV.HG_ENV : 'test';
 
-let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca";
+let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
+
+let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
 let TokenEndpointUrl = "https://sso-" + environment + ".pathfinder.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
 export let MedicationServiceUrl = baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
 export let LaboratoryServiceUrl = baseUrl + "/api/laboratoryservice/v1/api/Laboratory";
 export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
+
+// console.log("Running tests against baseUrl := " + baseUrl);
 
 // Healthgateway WebClient app APIs:
 export let BetaRequestUrl = baseUrl + "/v1/api/BetaRequest";
@@ -91,7 +93,7 @@ export function authenticateUser(user) {
         var seconds = res_json["expires_in"];
         user.expires = getExpiresTime(seconds);
         user.hdid = parseHdid(user.token);
-        console.log("hdid=" + user.hdid);
+        //console.log("hdid=" + user.hdid);
     }
     else {
         console.log("Authentication Refresh Error ResponseCode = " + res.status);
@@ -122,9 +124,7 @@ export function refreshUser(user) {
 }
 
 export function getRandomInteger(min, max) {
-    let n = Math.floor(Math.random()* (max - min) + min);
-    console.log("random integer = " + n);
-    return n;
+    return Math.floor(Math.random()* (max - min) + min);
 }
 
 export function getRandom(min, max) {

@@ -23,16 +23,17 @@ export let errorRate = new Rate('errors');
 
 export let options = {
   stages: [
-    { duration: '5m', target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
-    { duration: '10m', target: 60 }, // stay at 60 users for 10 minutes
-    { duration: '3m', target: 300 }, // ramp-up to users peak for 3 minutes (peak hour starts)
-    { duration: '2m', target: 300 }, // stay at users for short amount of time (peak hour)
+    { duration: '5m', target: 80 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
+    { duration: '10m', target: 80 }, // stay at 60 users for 10 minutes
+    { duration: '3m', target: 350 }, // ramp-up to users peak for 3 minutes (peak hour starts)
+    { duration: '2m', target: 350 }, // stay at users for short amount of time (peak hour)
     { duration: '3m', target: 50 }, // ramp-down to 60 users over 3 minutes (peak hour ends)
-    { duration: '5m', target: 50 }, // continue at 60 for additional 10 minutes
+    { duration: '5m', target: 50 }, // continue at 60 for additional time
     { duration: '3m', target: 0 }, // ramp-down to 0 users
   ],
   thresholds: {
-    http_req_duration: ['p(95)<4500'], // 95% of requests must complete below 4.5s
+    'failed requests': ['rate<0.05'], // threshold on a custom metric
+    'http_req_duration': ['p(94)<5501'], // 94% of requests must complete below 5.5s
   },
 }
 
@@ -50,7 +51,7 @@ export default function () {
   {
     common.refreshUser(user);
   }
-  
+
   var params = {
     headers: {
       "Content-Type": "application/json",
@@ -144,6 +145,6 @@ export default function () {
     "LaboratoryService Response Code is not 504": (r) => r.status != 504,
   }) || errorRate.add(1);
 
-  sleep(common.getRandom(1, 5));
+  sleep(common.getRandom(1, 3));
 }
 
