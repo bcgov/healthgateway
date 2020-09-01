@@ -51,11 +51,11 @@ namespace HealthGateway.EncounterTests
             var jsonResult = Assert.IsType<JsonResult>(result.Result);
         }
 
-        private RequestResult<IEnumerable<EncounterHistory>> GetEncounters()
+        private RequestResult<IEnumerable<EncounterModel>> GetEncounters()
         {
-            RequestResult<IEnumerable<EncounterHistory>> result = new RequestResult<IEnumerable<EncounterHistory>>();
-            var encounters = new List<EncounterHistory>();
-            encounters.Add(new EncounterHistory()
+            RequestResult<IEnumerable<EncounterModel>> result = new RequestResult<IEnumerable<EncounterModel>>();
+            var encounters = new List<EncounterModel>();
+            encounters.Add(new EncounterModel()
             {
                 Id = 1,
                 EncounterDate = new DateTime(2020 - 05 - 27),
@@ -73,7 +73,7 @@ namespace HealthGateway.EncounterTests
                     Province = "BC",
                 }
             });
-            encounters.Add(new EncounterHistory()
+            encounters.Add(new EncounterModel()
             {
                 Id = 2,
                 EncounterDate = new DateTime(2020 - 06 - 27),

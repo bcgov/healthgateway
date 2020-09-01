@@ -22,7 +22,7 @@ namespace HealthGateway.Encounter.Models
     /// <summary>
     /// Represents a patient Encounter.
     /// </summary>
-    public class EncounterHistory
+    public class EncounterModel
     {
         /// <summary>
         /// Gets or sets the Id.
@@ -59,9 +59,9 @@ namespace HealthGateway.Encounter.Models
         /// </summary>
         /// <param name="model">The claim result to convert.</param>
         /// <returns>The newly created Encounter object.</returns>
-        public static EncounterHistory FromODRClaimModel(Claim model)
+        public static EncounterModel FromODRClaimModel(Claim model)
         {
-            return new EncounterHistory()
+            return new EncounterModel()
             {
                 Id = model.ClaimId,
                 EncounterDate = model.ServiceDate,
@@ -86,13 +86,13 @@ namespace HealthGateway.Encounter.Models
         /// </summary>
         /// <param name="models">The list of ODR models to convert.</param>
         /// <returns>A list of Encounter objects.</returns>
-        public static List<EncounterHistory> FromODRClaimModelList(List<Claim> models)
+        public static List<EncounterModel> FromODRClaimModelList(List<Claim> models)
         {
-            List<EncounterHistory> objects = new List<EncounterHistory>();
+            List<EncounterModel> objects = new List<EncounterModel>();
 
             foreach (Claim claimModel in models)
             {
-                objects.Add(EncounterHistory.FromODRClaimModel(claimModel));
+                objects.Add(EncounterModel.FromODRClaimModel(claimModel));
             }
 
             return objects;

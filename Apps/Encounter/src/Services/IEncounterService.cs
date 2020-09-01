@@ -30,6 +30,6 @@ namespace HealthGateway.Encounter.Services
         /// </summary>
         /// <param name="hdid">The health directed id for the subject.</param>
         /// <returns>Returns a list of claims.</returns>
-        Task<RequestResult<IEnumerable<EncounterHistory>>> GetEncounters(string hdid);
+        Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid);
     }
 }
