@@ -17,16 +17,19 @@
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Rate } from 'k6/metrics';
-import * as common from '../inc/common.js';
+import * as common from './inc/common.js';
 
 export let errorRate = new Rate('errors');
 
 export let options = {
   stages: [
     { duration: '10s', target: 100 }, // below normal load
-    { duration: '2m', target: 400 },
-    { duration: '3h56m', target: 400 }, // stay at 400 users for hours 'soaking' the system
-    { duration: '2m', target: 0 }, // drop back down 
+    { duration: '1m', target: 100 },
+    { duration: '10s', target: 1400 }, // spike to 1400 users
+    { duration: '3m', target: 1400 }, // stay there 
+    { duration: '10s', target: 100 }, // scale down
+    { duration: '3m', target: 100 },
+    { duration: '10s', target: 0 }, //
   ],
 };
 
@@ -62,6 +65,7 @@ export default function () {
       url: common.MedicationServiceUrl + "/" + user.hdid,
       params: params
     },
+
     'labs': {
       method: 'GET',
       url: common.LaboratoryServiceUrl + "?hdid=" + user.hdid,
@@ -72,15 +76,24 @@ export default function () {
   let responses = http.batch(requests);
 
   check(responses['patient'], {
-    "PatientService Response Code is 200": (r) => r.status == 200
+    "PatientService Response Code is 200": (r) => r.status == 200,
+    "PatientService Response Code is not 504": (r) => r.status != 504,
+    "PatientService Response Code is not 500": (r) => r.status != 500,
+    "PatientService Response Code is not 403": (r) => r.status != 403,
   }) || errorRate.add(1);
 
   check(responses['meds'], {
-    "MedicationService Response Code is 200": (r) => r.status == 200
+    "MedicationService Response Code is 200": (r) => r.status == 200,
+    "MedicationService Response Code is not 504": (r) => r.status != 504,
+    "MedicationService Response Code is not 500": (r) => r.status != 500,
+    "MedicationService Response Code is not 403": (r) => r.status != 403,
   }) || errorRate.add(1);
 
   check(responses['labs'], {
-    "LaboratoryService Response Code is 200": (r) => r.status == 200
+    "LaboratoryService Response Code is 200": (r) => r.status == 200,
+    "LaboratoryService Response Code is not 504": (r) => r.status != 504,
+    "LaboratoryService Response Code is not 500": (r) => r.status != 500,
+    "LaboratoryService Response Code is not 403": (r) => r.status != 403,
   }) || errorRate.add(1);
 
   sleep(1);

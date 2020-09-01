@@ -16,7 +16,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Rate } from 'k6/metrics';
-import * as common from '../inc/common.js';
+import * as common from './inc/common.js';
 
 export let errorRate = new Rate('errors');
 
@@ -101,7 +101,7 @@ export default function () {
   }) || errorRate.add(1);
 
   check(responses['conf'], {
-    "Communication Response Code is 200": (r) => r.status == 200,
+    "Configuration Response Code is 200": (r) => r.status == 200,
   }) || errorRate.add(1);
 
   check(responses['note'], {
