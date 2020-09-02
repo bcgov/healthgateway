@@ -24,6 +24,11 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationModel
     {
         /// <summary>
+        /// Gets or sets the Immunization id.
+        /// </summary>
+        public string Id { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the immunization Is Self Reported.
         /// </summary>
         [JsonPropertyName("isSelfReported")]
@@ -36,15 +41,15 @@ namespace HealthGateway.Immunization.Models
         public string Location { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Type.
+        /// Gets or sets the Name.
         /// </summary>
-        [JsonPropertyName("type")]
-        public string Type { get; set; } = string.Empty;
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunized Date and Time.
+        /// Gets or sets the Date of Immunization.
         /// </summary>
-        [JsonPropertyName("immunized")]
-        public DateTime ImmunizedAt { get; set; }
+        [JsonPropertyName("dateOfImmunization")]
+        public DateTime DateOfImmunization { get; set; }
     }
 }
