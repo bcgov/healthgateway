@@ -30,7 +30,7 @@ export default function () {
       'Authenticated successfully': loginRes == 200
     }) || errorRate.add(1);
   }
-  if (user.expires < (Date.now() - 3000)) // milliseconds
+  if (user.expires < (Date.now() - 10000)) // refresh 10 seconds before expiry
   {
     common.refreshUser(user);
   }

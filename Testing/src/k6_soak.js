@@ -24,8 +24,8 @@ export let errorRate = new Rate('errors');
 export let options = {
   stages: [
     { duration: '10s', target: 100 }, // below normal load
-    { duration: '2m', target: 300 },
-    { duration: '3h56m', target: 300 }, // stay at high users for hours 'soaking' the system
+    { duration: '2m', target: 200 },
+    { duration: '3h56m', target: 200 }, // stay at high users for hours 'soaking' the system
     { duration: '2m', target: 0 }, // drop back down 
   ],
 };
@@ -40,7 +40,7 @@ export default function () {
       'Authenticated successfully': loginRes == 200
     }) || errorRate.add(1);
   }
-  if (user.expires < (Date.now() - 3000)) // milliseconds
+  if (user.expires < (Date.now() - 10000)) // refresh 10 seconds before expiry
   {
     common.refreshUser(user);
   }

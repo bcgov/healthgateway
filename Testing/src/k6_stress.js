@@ -27,10 +27,10 @@ export let options = {
     { duration: '5m', target: 100 },
     { duration: '2m', target: 200 }, // normal load
     { duration: '5m', target: 200 },
-    { duration: '2m', target: 300 }, // around the breaking point
-    { duration: '5m', target: 300 },
-    { duration: '2m', target: 400 }, // beyond the breaking point
+    { duration: '2m', target: 400 }, // around the breaking point
     { duration: '5m', target: 400 },
+    { duration: '2m', target: 600 }, // beyond the breaking point
+    { duration: '5m', target: 600 },
     { duration: '5m', target: 0 }, // scale down. Recovery stage.
   ],
 };
@@ -45,7 +45,7 @@ export default function () {
       'Authenticated successfully': loginRes == 200
     }) || errorRate.add(1);
   }
-  if (user.expires < (Date.now() - 3000)) // milliseconds
+  if (user.expires < (Date.now() - 10000)) // refresh 10 seconds before expiry
   {
     common.refreshUser(user);
   }

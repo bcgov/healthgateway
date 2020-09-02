@@ -8,6 +8,16 @@ k6 uses the concept of virtual users. When specifying the number of virtual user
 
 For more information on virtual users, see the k6 documentation: [what are virtual users](https://k6.io/docs/cloud/cloud-faq/what-are-vus-virtual-users).
 
+### Calculation the number of VUS max
+
+```code 
+VUs = (hourly sessions * average session duration in seconds)/3600
+```
+
+> For example, if we expect up to 10,000 users hitting the Healthgateway web client within a given hour, and we expect that the average session duration is 1 minute, then the VUS would be 167.
+
+See [k6 calculation guidance](https://k6.io/docs/cloud/cloud-faq/what-are-vus-virtual-users)
+
 ## Smoke Testing
 
 The Smoke Test's role is to verify that your System can handle minimal load, without any problems. Our smoke tests uses by default 30 virtual users and executes each API call once to ensure it returns a 200 OK.

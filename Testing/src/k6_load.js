@@ -25,18 +25,18 @@ let groupDuration = Trend('groupDuration');
 
 export let options = {
   stages: [
-    { duration: '5m', target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
-    { duration: '10m', target: 60 }, // stay at 60 users for 10 minutes
-    { duration: '3m', target: 300 }, // ramp-up to users peak for 3 minutes (peak hour starts)
-    { duration: '2m', target: 300 }, // stay at users for short amount of time (peak hour)
-    { duration: '3m', target: 60 }, // ramp-down to 60 users over 3 minutes (peak hour ends)
-    { duration: '5m', target: 60 }, // continue at 60 for additional time
+    { duration: '5m', target: 50 }, // simulate ramp-up of traffic from 1 users over 5 minutes.
+    { duration: '10m', target: 50 }, // stay at number of users for 10 minutes
+    { duration: '3m', target: 200 }, // ramp-up to users peak for 3 minutes (peak hour starts)
+    { duration: '2m', target: 200 }, // stay at users for short amount of time (peak hour)
+    { duration: '3m', target: 50 }, // ramp-down to lower users over 3 minutes (peak hour ends)
+    { duration: '5m', target: 50 }, // continue for additional time
     { duration: '3m', target: 0 }, // ramp-down to 0 users
   ],
   thresholds: {
     'failed_requests': ['rate < 0.05'], // threshold on a custom metric
-    'http_req_duration': ['p(90)< 9000'], // 90% of requests must complete below 9 seconds
-    'http_req_duration': ['avg < 4001'], // average of requests must complete below 4 seconds
+    'http_req_duration': ['p(90)< 9000'], // 90% of requests must complete this threshold 
+    'http_req_duration': ['avg < 5000'], // average of requests must complete within this time
 
     //'groupDuration{groupName:userRequestBatch}': ['avg < 15000'], // average batch of all calls to backend APIs
 
@@ -60,7 +60,7 @@ export default function () {
       'Authenticated successfully': loginRes == 200
     }) || errorRate.add(1);
   }
-  if (user.expires < (Date.now() - 3000)) // milliseconds
+  if (user.expires < (Date.now() - 10000)) // refresh 10 seconds before expiry
   {
     common.refreshUser(user);
   }
