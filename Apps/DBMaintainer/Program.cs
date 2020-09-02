@@ -36,10 +36,9 @@ namespace HealthGateway.DrugMaintainer
         /// Main entry point.
         /// </summary>
         /// <param name="args">The set of command line arguments.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Main entrypoint")]
         public static void Main(string[] args)
         {
-            IHost host = CreateWebHostBuilder().Build();
+            IHost host = CreateWebHostBuilder(args).Build();
 
             // Process Federal file
             FedDrugDBApp fedDrugApp = host.Services.GetService<FedDrugDBApp>();
@@ -57,7 +56,9 @@ namespace HealthGateway.DrugMaintainer
         /// Creates the IHostBuilder for configuration, service injection etc.
         /// </summary>
         /// <returns>The IHostBuilder.</returns>
-        public static IHostBuilder CreateWebHostBuilder()
+        /// <param name="args">The set of command line arguments.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Required for migrations")]
+        public static IHostBuilder CreateWebHostBuilder(string[] args)
         {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             return new HostBuilder()
