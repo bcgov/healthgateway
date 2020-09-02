@@ -129,7 +129,11 @@ namespace HealthGateway.Medication.Services
             {
                 this.logger.LogInformation($"Invalid protective word. {hdid}");
                 result.ResultStatus = ResultType.Protected;
-                result.ResultError = new RequestResultError() { ResultMessage = validationResult.Item2, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
+                result.ResultError = new RequestResultError()
+                {
+                    ResultMessage = validationResult.Item2!,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient),
+                };
             }
 
             this.logger.LogDebug($"Finished getting history of medication statements");

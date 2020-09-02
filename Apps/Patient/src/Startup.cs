@@ -32,6 +32,7 @@ namespace HealthGateway.Patient
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using ServiceReference;
+
     /// <summary>
     /// Configures the application during startup.
     /// </summary>

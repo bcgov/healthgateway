@@ -87,8 +87,8 @@ namespace HealthGateway.Immunization.Services
                     {
                         Id = entry.Id,
                         Name = entry.VaccineCode.Text,
-                        Status = entry.Status.ToString()!,
-                        OccurrenceDateTime = System.DateTime.Parse(entry.Occurrence.ToString()!, CultureInfo.InvariantCulture),
+                        Status = entry.Status.ToString() !,
+                        OccurrenceDateTime = System.DateTime.Parse(entry.Occurrence.ToString() !, CultureInfo.InvariantCulture),
                     };
                     foreach (Hl7.Fhir.Model.Coding code in entry.VaccineCode.Coding)
                     {
@@ -102,6 +102,7 @@ namespace HealthGateway.Immunization.Services
 
                     immunizations.Add(immunizationView);
                 }
+
                 result.ResultStatus = ResultType.Success;
                 result.PageIndex = 0;
                 result.PageSize = immunizations.Count;
@@ -112,7 +113,6 @@ namespace HealthGateway.Immunization.Services
             {
                 result.ResultError = patientResult.ResultError;
             }
-
 
             this.logger.LogDebug($"Finished getting immunization records {result.TotalResultCount}");
             return result;
