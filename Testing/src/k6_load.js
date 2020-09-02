@@ -19,24 +19,26 @@ import { check, group, sleep } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
 import * as common from './inc/common.js';
 
-export let failed = new Rate('failed request');
+export let failed = new Rate('failed_requests');
 let groupDuration = Trend('groupDuration');
 
 
 export let options = {
   stages: [
-    { duration: '5m', target: 80 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
-    { duration: '10m', target: 80 }, // stay at 60 users for 10 minutes
-    { duration: '3m', target: 350 }, // ramp-up to users peak for 3 minutes (peak hour starts)
-    { duration: '2m', target: 350 }, // stay at users for short amount of time (peak hour)
-    { duration: '3m', target: 50 }, // ramp-down to 60 users over 3 minutes (peak hour ends)
-    { duration: '5m', target: 50 }, // continue at 60 for additional time
+    { duration: '5m', target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
+    { duration: '10m', target: 60 }, // stay at 60 users for 10 minutes
+    { duration: '3m', target: 300 }, // ramp-up to users peak for 3 minutes (peak hour starts)
+    { duration: '2m', target: 300 }, // stay at users for short amount of time (peak hour)
+    { duration: '3m', target: 60 }, // ramp-down to 60 users over 3 minutes (peak hour ends)
+    { duration: '5m', target: 60 }, // continue at 60 for additional time
     { duration: '3m', target: 0 }, // ramp-down to 0 users
   ],
   thresholds: {
-    'failed requests': ['rate<0.05'], // threshold on a custom metric
-    'http_req_duration': ['p(94)<5501'], // 94% of requests must complete below 5.5s
-    'groupDuration{groupName:userRequestBatch}': ['avg < 5000'], // average batch of all calls to backend APIs
+    'failed_requests': ['rate < 0.05'], // threshold on a custom metric
+    'http_req_duration': ['p(90)< 9000'], // 90% of requests must complete below 9 seconds
+    'http_req_duration': ['avg < 4001'], // average of requests must complete below 4 seconds
+
+    'groupDuration{groupName:userRequestBatch}': ['avg < 15000'], // average batch of all calls to backend APIs
 
   },
 }
