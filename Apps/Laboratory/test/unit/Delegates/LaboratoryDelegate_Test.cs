@@ -93,7 +93,7 @@ namespace HealthGateway.LaboratoryTests
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty)).Result;
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.Equal(0, actualResult.ResourcePayload.Count());
+            Assert.Empty(actualResult.ResourcePayload);
         }
 
         [Fact]
