@@ -2,7 +2,7 @@
 
 k6 is a free and open-source load testing tool written in Go language with tests scripted in JavaScript.
 
-### Virtual Users (vus)
+## Virtual Users (vus)
 
 k6 uses the concept of virtual users. When specifying the number of virtual users, they run concurrently over the script. Each iteration of the script represents a single user operating that script. So, if 10 vus ran for 1 minute and each iteration of the script took 10 seconds, then the total number of iterations run would be 10 x 60/10 = 60 iterations completed.
 
@@ -10,7 +10,7 @@ For more information on virtual users, see the k6 documentation: [what are virtu
 
 ### Calculation the number of VUS max
 
-```code 
+```code
 VUs = (hourly sessions * average session duration in seconds)/3600
 ```
 
