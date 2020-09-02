@@ -19,7 +19,7 @@ import { check, group, sleep } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
 import * as common from './inc/common.js';
 
-export let failed = new Rate('failed_requests');
+export let errorRate = new Rate('failed_requests');
 let groupDuration = Trend('groupDuration');
 
 export let options = {
@@ -107,7 +107,7 @@ export default function () {
       "Comment Response Code is not 429": (r) => r.status != 429,
       "Comment Response Code is not 500": (r) => r.status != 500,
       "Comment Response Code is not 504": (r) => r.status != 504,
-    }) || failed.add(true);
+    }) || errorRate.add(true);
 
     check(responses['note'], {
       "Note Response Code is 200": (r) => r.status == 200,
@@ -118,7 +118,7 @@ export default function () {
       "Note Response Code is not 429": (r) => r.status != 429,
       "Note Response Code is not 500": (r) => r.status != 500,
       "Note Response Code is not 504": (r) => r.status != 504,
-    }) || failed.add(true);
+    }) || errorRate.add(true);
 
     check(responses['patient'], {
       "PatientService Response Code is 200": (r) => r.status == 200,
@@ -129,7 +129,7 @@ export default function () {
       "PatientService Response Code is not 429": (r) => r.status != 429,
       "PatientService Response Code is not 500": (r) => r.status != 500,
       "PatientService Response Code is not 504": (r) => r.status != 504,
-    }) || failed.add(true);
+    }) || errorRate.add(true);
 
     check(responses['meds'], {
       "MedicationService Response Code is 200": (r) => r.status == 200,
@@ -140,7 +140,7 @@ export default function () {
       "MedicationService Response Code is not 429": (r) => r.status != 429,
       "MedicationService Response Code is not 500": (r) => r.status != 500,
       "MedicationService Response Code is not 504": (r) => r.status != 504,
-    }) || failed.add(true);
+    }) || errorRate.add(true);
 
     check(responses['labs'], {
       "LaboratoryService Response Code is 200": (r) => r.status == 200,
@@ -151,7 +151,7 @@ export default function () {
       "LaboratoryService Response Code is not 429": (r) => r.status != 429,
       "LaboratoryService Response Code is not 500": (r) => r.status != 500,
       "LaboratoryService Response Code is not 504": (r) => r.status != 504,
-    }) || failed.add(true);
+    }) || errorRate.add(true);
   });
 
   sleep(1);

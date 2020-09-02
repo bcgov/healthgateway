@@ -102,7 +102,8 @@ export function authenticateUser(user) {
 }
 
 export function refreshTokenIfNeeded(user) {
-    if (user.expires < (Date.now() - 15000)) // refresh 15 seconds before expiry
+
+    if ((user.refresh != null) && (user.expires  < (Date.now() + 15000))) // refresh 15 seconds before expiry
     {
         refreshUser(user);
     }
