@@ -333,7 +333,7 @@ export default class CalendarBodyComponent extends Vue {
         if (type == EntryType.Medication) {
             return (entry as MedicationTimelineEntry).medication.brandName;
         } else if (type == EntryType.Immunization) {
-            return (entry as ImmunizationTimelineEntry).immunization.location;
+            return (entry as ImmunizationTimelineEntry).immunization.name;
         } else if (type == EntryType.Laboratory) {
             return (entry as LaboratoryTimelineEntry).summaryTitle;
         } else if (type == EntryType.Note) {
