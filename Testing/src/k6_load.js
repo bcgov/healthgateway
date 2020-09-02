@@ -38,7 +38,7 @@ export let options = {
     'http_req_duration': ['p(90)< 9000'], // 90% of requests must complete below 9 seconds
     'http_req_duration': ['avg < 4001'], // average of requests must complete below 4 seconds
 
-    'groupDuration{groupName:userRequestBatch}': ['avg < 15000'], // average batch of all calls to backend APIs
+    //'groupDuration{groupName:userRequestBatch}': ['avg < 15000'], // average batch of all calls to backend APIs
 
   },
 }
