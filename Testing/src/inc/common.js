@@ -95,7 +95,7 @@ export function authenticateUser(user) {
         user.hdid = parseHdid(user.token);
     }
     else {
-        console.log("Authentication Refresh Error ResponseCode = " + res.status);
+        console.log("Authentication Error ResponseCode = " + res.status);
     }
 
     return res.status;
@@ -127,7 +127,7 @@ export function refreshUser(user) {
         user.expires = getExpiresTime(seconds);
     }
     else {
-        console.log("Authentication Refresh Error ResponseCode = " + res.status);
+        console.log("Authentication Refresh Token Error ResponseCode = " + res.status);
     }
     return res.status;
 }

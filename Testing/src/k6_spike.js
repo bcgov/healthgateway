@@ -23,11 +23,11 @@ export let errorRate = new Rate('errors');
 
 export let options = {
   stages: [
-    { duration: '10s', target: 10 }, // below normal load
+    { duration: '20s', target: 10 }, // below normal load
     { duration: '1m', target: 10 },
-    { duration: '10s', target: 400 }, // spike to super high users
-    { duration: '3m', target: 400 }, // stay there 
-    { duration: '10s', target: 200 }, // scale down
+    { duration: '1m', target: 400 }, // spike to super high users
+    { duration: '5m', target: 400 }, // stay there 
+    { duration: '1m', target: 200 }, // scale down
     { duration: '3m', target: 10 },
     { duration: '10s', target: 0 }, //
   ],
