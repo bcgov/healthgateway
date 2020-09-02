@@ -6,7 +6,7 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
     public immunization: ImmunizationViewModel;
 
     public constructor(model: ImmunizationModel) {
-        super(model.id, EntryType.Immunization, model.immunized);
+        super(model.id, EntryType.Immunization, model.dateOfImmunization);
         this.immunization = new ImmunizationViewModel(model);
     }
 
@@ -17,7 +17,7 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
 
         let text =
             (this.immunization.location! || "") +
-            (this.immunization.type! || "");
+            (this.immunization.name! || "");
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }
@@ -27,14 +27,14 @@ class ImmunizationViewModel {
     public id: string;
     public isSelfReported: boolean;
     public location: string;
-    public type: string;
-    public immunized: Date;
+    public name: string;
+    public dateOfImmunization: Date;
 
     constructor(model: ImmunizationModel) {
         this.id = model.id;
         this.isSelfReported = model.isSelfReported;
         this.location = model.location;
-        this.type = model.type;
-        this.immunized = model.immunized;
+        this.name = model.name;
+        this.dateOfImmunization = model.dateOfImmunization;
     }
 }
