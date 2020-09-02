@@ -24,8 +24,8 @@ namespace Healthgateway.JobScheduler.Jobs
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.Database.Utils;
+    using HealthGateway.Database.Wrapper;
     using Healthgateway.JobScheduler.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

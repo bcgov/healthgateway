@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,11 @@ namespace HealthGateway.WebClient.Services
                 {
                     ResourcePayload = dbComm.Payload,
                     ResultStatus = dbComm.Status == DBStatusCode.Read ? Common.Constants.ResultType.Success : ResultType.Error,
-                    ResultError = dbComm.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbComm.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) }
+                    ResultError = dbComm.Status == DBStatusCode.Read ? null : new RequestResultError()
+                    {
+                        ResultMessage = dbComm.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
                 };
 
                 this.SetActiveBannerCache(cacheEntry);

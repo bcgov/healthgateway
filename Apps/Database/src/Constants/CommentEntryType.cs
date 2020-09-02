@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,6 +38,6 @@ namespace HealthGateway.Database.Constants
         /// <summary>
         /// The code representing Encounter.
         /// </summary>
-        public const string Encounter = "ENC"; 
+        public const string Encounter = "ENC";
     }
 }

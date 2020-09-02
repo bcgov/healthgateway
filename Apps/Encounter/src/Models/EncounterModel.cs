@@ -77,7 +77,7 @@ namespace HealthGateway.Encounter.Models
                     AddrLine2 = model.LocationAddress.AddrLine2,
                     AddrLine3 = model.LocationAddress.AddrLine3,
                     AddrLine4 = model.LocationAddress.AddrLine4,
-                }
+                },
             };
         }
 
