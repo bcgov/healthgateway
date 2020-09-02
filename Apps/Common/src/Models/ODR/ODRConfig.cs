@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models
+namespace HealthGateway.Common.Models
 {
     /// <summary>
     /// The configuration for the ODR portion of the ResetMedStatement delegate.
@@ -44,6 +44,11 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the endpoint path for the patient profile service.
         /// </summary>
         public string PatientProfileEndpoint { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the endpoint path for the msp visits service.
+        /// </summary>
+        public string MSPVisitsEndpoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the endpoint path for the protective word service.
