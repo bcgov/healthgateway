@@ -15,7 +15,7 @@
 //-------------------------------------------------------------------------
 import http from 'k6/http';
 import { b64decode } from 'k6/encoding';
-
+import { check } from 'k6';
 
 let passwd = __ENV.HG_PASSWORD;
 

@@ -23,7 +23,7 @@ export let errorRate = new Rate('errors');
 
 export let options = {
   stages: [
-    { duration: '10s', target: 100 }, // below normal load
+    { duration: '1m', target: 10 }, // below normal load
     { duration: '2m', target: 200 },
     { duration: '3h56m', target: 200 }, // stay at high users for hours 'soaking' the system
     { duration: '2m', target: 0 }, // drop back down 

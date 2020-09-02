@@ -27,8 +27,8 @@ export let options = {
     { duration: '5m', target: 100 },
     { duration: '2m', target: 200 }, // normal load
     { duration: '5m', target: 200 },
-    { duration: '2m', target: 400 }, // around the breaking point
-    { duration: '5m', target: 400 },
+    { duration: '2m', target: 300 }, // around the breaking point
+    { duration: '5m', target: 300 },
     { duration: '2m', target: 600 }, // beyond the breaking point
     { duration: '5m', target: 600 },
     { duration: '5m', target: 0 }, // scale down. Recovery stage.
