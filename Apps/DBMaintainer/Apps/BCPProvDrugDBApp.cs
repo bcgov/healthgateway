@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,16 +20,23 @@ namespace HealthGateway.DrugMaintainer.Apps
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Utility program to load the BC Government PharmaCare drug file.
-    /// https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files
+    /// See https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files for reference.
     /// </summary>
     public class BCPProvDrugDBApp : BaseDrugApp<IPharmaCareDrugParser>
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BCPProvDrugDBApp"/> class.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="parser">The parser to use.</param>
+        /// <param name="downloadService">The Download Service Utility.</param>
+        /// <param name="configuration">The Configuration.</param>
+        /// <param name="drugDBContext">The database context.</param>
         public BCPProvDrugDBApp(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
@@ -41,14 +48,15 @@ namespace HealthGateway.DrugMaintainer.Apps
             string[] files = Directory.GetFiles(sourceFolder, "pddf*.csv");
             if (files.Length > 1)
             {
-                throw new ApplicationException($"The zip file contained {files.Length} CSV files, very confused.");
+                throw new FormatException($"The zip file contained {files.Length} CSV files, very confused.");
             }
-            this.logger.LogInformation("Parsing Provincial PharmaCare file");
+
+            this.Logger.LogInformation("Parsing Provincial PharmaCare file");
             this.RemoveOldFiles(downloadedFile);
             this.AddFileToDB(downloadedFile);
-            this.drugDbContext.AddRange(this.parser.ParsePharmaCareDrugFile(files[0], downloadedFile));
-            this.logger.LogInformation("Saving PharmaCare Drugs");
-            this.drugDbContext.SaveChanges();
+            this.DrugDbContext.AddRange(this.Parser.ParsePharmaCareDrugFile(files[0], downloadedFile));
+            this.Logger.LogInformation("Saving PharmaCare Drugs");
+            this.DrugDbContext.SaveChanges();
         }
     }
 }

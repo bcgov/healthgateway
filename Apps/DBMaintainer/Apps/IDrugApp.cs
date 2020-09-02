@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <summary>
         /// Processes the downloaded files.
         /// </summary>
-        void Process(string ConfigSectionName);
+        /// <param name="configSectionName">The name of the configuration to use for configuration.</param>
+        void Process(string configSectionName);
     }
 }
