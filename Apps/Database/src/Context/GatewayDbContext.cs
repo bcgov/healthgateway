@@ -438,6 +438,15 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
+                    ProgramCode = ApplicationType.Encounter,
+                    Description = "Encounter Service",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new ProgramTypeCode
+                {
                     ProgramCode = ApplicationType.JobScheduler,
                     Description = "Job Scheduler",
                     CreatedBy = UserId.DefaultUser,
