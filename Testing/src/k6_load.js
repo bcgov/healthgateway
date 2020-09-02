@@ -22,7 +22,6 @@ import * as common from './inc/common.js';
 export let failed = new Rate('failed_requests');
 let groupDuration = Trend('groupDuration');
 
-
 export let options = {
   stages: [
     { duration: '5m', target: 50 }, // simulate ramp-up of traffic from 1 users over 5 minutes.
