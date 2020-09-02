@@ -35,7 +35,7 @@ export let CommentUrl = baseUrl + "/v1/api/Comment";
 export let CommunicationUrl = baseUrl + "/v1/api/Communication";
 export let ConfigurationUrl = baseUrl + "/v1/api/Configuration";
 export let NoteUrl = baseUrl + "/v1/api/Note";
-export let UserProfileUrl = baseUrl + "/v1/api/UserProfile"; 
+export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
 
 export let users = [
     { username: "loadtest_01", password: passwd, hdid: null, token: null, refresh: null, expires: null },
@@ -93,7 +93,6 @@ export function authenticateUser(user) {
         var seconds = res_json["expires_in"];
         user.expires = getExpiresTime(seconds);
         user.hdid = parseHdid(user.token);
-        //console.log("hdid=" + user.hdid);
     }
     else {
         console.log("Authentication Refresh Error ResponseCode = " + res.status);
@@ -102,14 +101,24 @@ export function authenticateUser(user) {
     return res.status;
 }
 
+export function refreshTokenIfNeeded(user) {
+    if (user.expires < (Date.now() - 15000)) // refresh 15 seconds before expiry
+    {
+        refreshUser(user);
+    }
+}
+
 export function refreshUser(user) {
+
     let refresh_form_data = {
         grant_type: "refresh_token",
         client_id: "healthgateway",
         refresh_token: user.refresh,
     };
+
     console.log("Getting Refresh Token for username: " + user.username);
-    var res = http.post(TokenEndpointUrl, refresh_form_data);
+    let res = http.post(TokenEndpointUrl, refresh_form_data);
+
     if (res.status == 200) {
         var res_json = JSON.parse(res.body);
         user.token = res_json["access_token"];
@@ -124,7 +133,7 @@ export function refreshUser(user) {
 }
 
 export function getRandomInteger(min, max) {
-    return Math.floor(Math.random()* (max - min) + min);
+    return Math.floor(Math.random() * (max - min) + min);
 }
 
 export function getRandom(min, max) {

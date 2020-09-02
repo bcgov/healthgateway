@@ -39,16 +39,14 @@ export default function () {
 
   let user = common.users[__VU % common.users.length];
 
-  if (user.hdid == null) {
+  if ((__ITER == 0) && (user.hdid == null)) {
     let loginRes = common.authenticateUser(user);
     check(loginRes, {
       'Authenticated successfully': loginRes == 200
     }) || errorRate.add(1);
   }
-  if (user.expires < (Date.now() - 10000)) // refresh 10 seconds before expiry
-  {
-    common.refreshUser(user);
-  }
+
+  common.refreshTokenIfNeeded(user);
 
   let params = {
     headers: {

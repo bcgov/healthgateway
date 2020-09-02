@@ -37,9 +37,6 @@ export let options = {
     'failed_requests': ['rate < 0.05'], // threshold on a custom metric
     'http_req_duration': ['p(90)< 9000'], // 90% of requests must complete this threshold 
     'http_req_duration': ['avg < 5000'], // average of requests must complete within this time
-
-    //'groupDuration{groupName:userRequestBatch}': ['avg < 15000'], // average batch of all calls to backend APIs
-
   },
 }
 
@@ -54,16 +51,14 @@ export default function () {
 
   let user = common.users[__VU % common.users.length];
 
-  if (user.hdid == null) {
+  if ((__ITER == 0) && (user.hdid == null)) {
     let loginRes = common.authenticateUser(user);
     check(loginRes, {
       'Authenticated successfully': loginRes == 200
     }) || errorRate.add(1);
   }
-  if (user.expires < (Date.now() - 10000)) // refresh 10 seconds before expiry
-  {
-    common.refreshUser(user);
-  }
+
+  common.refreshTokenIfNeeded(user);
 
   var params = {
     headers: {
