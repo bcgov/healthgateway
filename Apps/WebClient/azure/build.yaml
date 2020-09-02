@@ -48,20 +48,6 @@ steps:
           set -e
           reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
       displayName: Create Code Coverage Report
-
-    - task: Npm@1
-      displayName: Run jest Tests
-      inputs:
-        command: 'custom'
-        customCommand: 'test'
-        workingDir: '$(App.Home)/src/ClientApp'
-
-    - task: DotNetCoreCLI@2
-      displayName: Run dotnet Tests
-      inputs:
-        command: 'test'
-        projects: '$(App.Home)/test/unit/WebClientTests.csproj'
-        testRunTitle: 'WebClient'
         
     - task: PublishCodeCoverageResults@1
       displayName: "Publish Code Coverage"
