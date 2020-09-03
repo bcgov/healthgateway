@@ -39,7 +39,7 @@
 .noTimeLineEntries {
     display: none !important;
 }
-#noTimelineEntriesText {
+.noTimelineEntriesText {
     font-size: 1.5rem;
     color: #6c757d;
 }
@@ -116,10 +116,7 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <p
-                        id="noTimelineEntriesText"
-                        class="text-center pt-2"
-                    >
+                    <p class="text-center pt-2 noTimelineEntriesText">
                         No Timeline Entries
                     </p>
                 </b-col>
