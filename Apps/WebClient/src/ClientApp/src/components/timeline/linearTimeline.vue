@@ -36,6 +36,13 @@
         top: 258px;
     }
 }
+.noTimeLineEntries {
+    display: none !important;
+}
+#noTimelineEntriesText {
+    font-size: 1.5rem;
+    color: #6c757d;
+}
 </style>
 <template>
     <div>
@@ -50,6 +57,11 @@
                     next-text="Next"
                     prev-text="Prev"
                     use-router
+                    :class="
+                        filteredTimelineEntries.length > 0
+                            ? 'withTimeLineEntries'
+                            : 'noTimeLineEntries'
+                    "
                 ></b-pagination-nav>
             </b-col>
             <b-col class="py-2 col-12 col-sm-auto order-first order-sm-last">
@@ -85,6 +97,32 @@
                     :entry="entry"
                     :index="index"
                 />
+            </b-row>
+        </div>
+        <div
+            v-if="filteredTimelineEntries.length == 0"
+            class="text-center pt-2"
+        >
+            <b-row>
+                <b-col>
+                    <img
+                        class="mx-auto d-block"
+                        src="@/assets/images/timeline/empty-state.png"
+                        width="200"
+                        height="auto"
+                        alt="..."
+                    />
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <p
+                        id="noTimelineEntriesText"
+                        class="text-center pt-2"
+                    >
+                        No Timeline Entries
+                    </p>
+                </b-col>
             </b-row>
         </div>
     </div>
