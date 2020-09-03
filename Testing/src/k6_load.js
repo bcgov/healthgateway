@@ -24,9 +24,9 @@ let groupDuration = Trend('groupDuration');
 
 export let options = {
   stages: [
-    { duration: '5m', target: 50 }, // simulate ramp-up of traffic from 1 users over 5 minutes.
-    { duration: '10m', target: 50 }, // stay at number of users for 10 minutes
-    { duration: '3m', target: 200 }, // ramp-up to users peak for 3 minutes (peak hour starts)
+    { duration: '3m', target: 50 }, // simulate ramp-up of traffic from 1 users over a few minutes.
+    { duration: '5m', target: 50 }, // stay at number of users for 10 minutes
+    { duration: '3m', target: 200 }, // ramp-up to users peak for some minutes (peak hour starts)
     { duration: '2m', target: 200 }, // stay at users for short amount of time (peak hour)
     { duration: '3m', target: 50 }, // ramp-down to lower users over 3 minutes (peak hour ends)
     { duration: '5m', target: 50 }, // continue for additional time

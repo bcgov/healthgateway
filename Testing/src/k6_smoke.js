@@ -20,6 +20,12 @@ import * as common from './inc/common.js';
 
 export let errorRate = new Rate('errors');
 
+
+export let options = {
+  vus: 5,
+  iterations: 5,
+}
+
 export default function () {
 
   let user = common.users[common.getRandomInteger(0, common.users.length - 1)];
@@ -89,7 +95,6 @@ export default function () {
     }
   };
 
-  sleep(1);
   let responses = http.batch(requests);
 
   check(responses['beta'], {
