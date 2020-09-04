@@ -167,15 +167,9 @@ export default class VerifySMSComponent extends Vue {
     }
 
     private getTimedOut(): boolean {
-        if (
-            moment()
-                .subtract(this.config.timeouts!.resendSMS, "minutes")
-                .isBefore(moment(this.SMSResendDateTime))
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        return moment()
+            .subtract(this.config.timeouts!.resendSMS, "minutes")
+            .isBefore(moment(this.SMSResendDateTime));
     }
 
     public showModal() {
