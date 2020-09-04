@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Services
+namespace HealthGateway.Immunization.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -21,16 +21,17 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Immunization.Models;
 
     /// <summary>
-    /// The Immunization data service.
+    /// Interface that defines a delegate to retrieve immunization information.
     /// </summary>
-    public interface IImmunizationService
+    public interface IImmunizationDelegate
     {
         /// <summary>
-        /// Gets a list of immunization records.
+        /// Returns a List of Immunizations for the authenticated user.
+        /// It has a collection of one or more Immunizations.
         /// </summary>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<IEnumerable<ImmunizationModel>>> GetImmunizations(string bearerToken, int pageIndex = 0);
+        /// <returns>The list of Immunizations available for the user identified by the bearerToken.</returns>
+        Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string bearerToken, int pageIndex = 0);
     }
 }

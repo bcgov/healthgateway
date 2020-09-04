@@ -36,17 +36,12 @@
         top: 258px;
     }
 }
-.noTimelineEntriesText {
-    font-size: 1.5rem;
-    color: #6c757d;
-}
 </style>
 <template>
     <div>
         <b-row class="no-print sticky-top sticky-offset">
             <b-col class="py-2">
                 <b-pagination-nav
-                    v-show="!timelineIsEmpty"
                     v-model="currentPage"
                     :link-gen="linkGen"
                     :number-of-pages="numberOfPages"
@@ -90,26 +85,6 @@
                     :entry="entry"
                     :index="index"
                 />
-            </b-row>
-        </div>
-        <div v-if="timelineIsEmpty" class="text-center pt-2">
-            <b-row>
-                <b-col>
-                    <img
-                        class="mx-auto d-block"
-                        src="@/assets/images/timeline/empty-state.png"
-                        width="200"
-                        height="auto"
-                        alt="..."
-                    />
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <p class="text-center pt-2 noTimelineEntriesText">
-                        No Timeline Entries
-                    </p>
-                </b-col>
             </b-row>
         </div>
     </div>
@@ -313,10 +288,6 @@ export default class LinearTimelineComponent extends Vue {
             (entry) => entry.date === eventDate
         );
         this.currentPage = Math.floor(index / this.numberOfEntriesPerPage) + 1;
-    }
-
-    private get timelineIsEmpty(): boolean {
-        return this.filteredTimelineEntries.length == 0;
     }
 }
 </script>
