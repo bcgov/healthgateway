@@ -114,9 +114,8 @@
                 >
                     <h4>Looks like you're in a different timezone.</h4>
                     <span>
-                        Your health records are recorded in Pacific Standard
-                        Time (UTC -8). If you are in a different time zone, your
-                        records may display an inaccurate time.
+                        Heads up: your health records are recorded and displayed
+                        in Pacific Time.
                     </span>
                 </b-alert>
 
@@ -470,9 +469,13 @@ export default class TimelineView extends Vue {
             self.isListView = true;
         });
         if (moment().isDST()) {
-            !this.checkTimezone(true) ? false : true;
+            !this.checkTimezone(true)
+                ? (this.isPacificTime = false)
+                : (this.isPacificTime = true);
         } else {
-            !this.checkTimezone(false) ? false : true;
+            !this.checkTimezone(false)
+                ? (this.isPacificTime = false)
+                : (this.isPacificTime = true);
         }
     }
 
