@@ -73,7 +73,12 @@ export const mutations: MutationTree<UserState> = {
             Vue.set(state.user, "hasSMS", false);
             Vue.set(state.user, "verifiedSMS", false);
         }
-
+        state.error = false;
+        state.statusMessage = "success";
+        state.stateType = StateType.INITIALIZED;
+    },
+    setSMSResendDateTime(state: UserState, dateTime: Date) {
+        Vue.set(state.user, "SMSResendDateTime", dateTime);
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;

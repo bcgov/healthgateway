@@ -71,4 +71,6 @@ export class TimeOutsConfiguration {
     public idle!: number;
     // Gets or sets the amount of time in seconds after which the user will be redirected from the logout page back to the home.
     public logoutRedirect?: string;
+    // Gets or sets the aount of time in seconds that a user will have to wait between resending an SMS verification code.
+    public resendSMS!: number;
 }

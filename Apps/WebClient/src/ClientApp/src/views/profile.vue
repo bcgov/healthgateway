@@ -466,6 +466,15 @@ export default class ProfileView extends Vue {
     @Action("recoverUserAccount", { namespace: userNamespace })
     recoverUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
 
+    @Action("updateSMSResendDateTime", { namespace: "user" })
+    updateSMSResendDateTime!: ({
+        hdid,
+        dateTime,
+    }: {
+        hdid: string;
+        dateTime: Date;
+    }) => void;
+
     @Getter("user", { namespace: userNamespace }) user!: User;
 
     @Getter("userIsActive", { namespace: userNamespace })
@@ -764,6 +773,11 @@ export default class ProfileView extends Vue {
         this.logger.debug(
             `Updating ${this.smsNumber ? this.smsNumber : "sms number..."}`
         );
+        // Reset timer when user submits their SMS number
+        this.updateSMSResendDateTime({
+            hdid: this.user.hdid,
+            dateTime: new Date(),
+        });
         // Send update to backend
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
