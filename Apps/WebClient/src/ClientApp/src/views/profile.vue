@@ -28,9 +28,7 @@ input {
         <div class="row py-5">
             <div class="col-lg-12 col-md-12">
                 <div id="pageTitle">
-                    <h1 id="subject">
-                        Profile
-                    </h1>
+                    <h1 id="subject">Profile</h1>
                     <hr />
                 </div>
                 <div v-if="isActiveProfile">

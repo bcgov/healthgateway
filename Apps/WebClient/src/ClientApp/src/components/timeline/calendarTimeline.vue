@@ -12,9 +12,7 @@
                 <slot name="month-list-toggle"></slot>
             </div>
         </CalendarComponent>
-        <div v-else class="text-center">
-            No records
-        </div>
+        <div v-else class="text-center">No records</div>
     </div>
 </template>
 

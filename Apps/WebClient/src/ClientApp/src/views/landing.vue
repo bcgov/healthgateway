@@ -272,9 +272,7 @@
                     class="d-flex justify-content-center align-content-around tile-row my-md-5 my-0"
                 >
                     <b-col class="col-12 col-md-6">
-                        <h1 class="text-center">
-                            Future Goals
-                        </h1>
+                        <h1 class="text-center">Future Goals</h1>
                     </b-col>
                 </b-row>
             </div>
