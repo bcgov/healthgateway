@@ -8,16 +8,12 @@ export default class EncounterTimelineEntry extends TimelineEntry {
     public specialtyDescription: string;
     public clinic: ClinicViewModel;
 
-    public constructor(model?: Encounter) {
-        super(
-            model?.id ?? "",
-            EntryType.Encounter,
-            model?.serviceDateTime ?? new Date()
-        );
+    public constructor(model: Encounter) {
+        super(model.id, EntryType.Encounter, model.encounterDate);
         this.practitionerName =
-            model?.practitionerName || "Unknown Practitioner";
-        this.specialtyDescription = model?.specialtyDescription || "";
-        this.clinic = new ClinicViewModel(model?.clinic);
+            model.practitionerName || "Unknown Practitioner";
+        this.specialtyDescription = model.specialtyDescription || "";
+        this.clinic = new ClinicViewModel(model.clinic);
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
@@ -49,6 +45,10 @@ class ClinicViewModel {
             (model?.addressLine1 || "") +
             " " +
             (model?.addressLine2 || "") +
+            " " +
+            (model?.addressLine3 || "") +
+            " " +
+            (model?.addressLine4 || "") +
             ", " +
             (model?.city || "") +
             " " +

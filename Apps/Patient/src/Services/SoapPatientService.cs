@@ -61,7 +61,7 @@ namespace HealthGateway.Patient.Services
             Patient patient;
 
             // Create request
-            HCIM_IN_GetDemographicsRequest request = this.CreateRequest(hdid);
+            HCIM_IN_GetDemographicsRequest request = CreateRequest(hdid);
 
             // Perform the request
             try
@@ -118,7 +118,7 @@ namespace HealthGateway.Patient.Services
                 string delimiter = " ";
                 string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
                 string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
-                string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).extension;
+                string phn = ((II)retrievedPerson.identifiedPerson.id.GetValue(0) !).extension;
                 string? dobStr = ((TS)retrievedPerson.identifiedPerson.birthTime).value; // yyyyMMdd
                 DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
                 patient = new Patient(hdid, phn, givenNames, lastNames, dob, string.Empty);
@@ -142,7 +142,7 @@ namespace HealthGateway.Patient.Services
             }
         }
 
-        private HCIM_IN_GetDemographicsRequest CreateRequest(string hdid)
+        private static HCIM_IN_GetDemographicsRequest CreateRequest(string hdid)
         {
             HCIM_IN_GetDemographics request = new HCIM_IN_GetDemographics();
             request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture) };

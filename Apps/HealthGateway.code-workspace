@@ -52,6 +52,9 @@
       "name": "WebClient",
       "path": "WebClient"
     },
+    {
+      "path": "Encounter"
+    }
   ],
   "settings": {
     "eslint.workingDirectories": [

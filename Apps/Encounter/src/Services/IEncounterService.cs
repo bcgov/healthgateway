@@ -26,10 +26,10 @@ namespace HealthGateway.Encounter.Services
     public interface IEncounterService
     {
         /// <summary>
-        /// Gets a list of Claim records.
+        /// Gets a of Encounters.
         /// </summary>
         /// <param name="hdid">The health directed id for the subject.</param>
         /// <returns>Returns a list of claims.</returns>
-        Task<RequestResult<IEnumerable<Claim>>> GetClaims(string hdid);
+        Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid);
     }
 }

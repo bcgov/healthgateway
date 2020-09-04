@@ -69,9 +69,11 @@ namespace HealthGateway.WebClient.Services
         RequestResult<TermsOfServiceModel> GetActiveTermsOfService();
 
         /// <summary>
-        /// Creates a User Preference in the backend.
+        /// Updates a User Preference in the backend.
         /// </summary>
-        /// <param name="userPreference">The userPreference to create.</param>
+        /// <param name="hdid">The hdid of the user.</param>
+        /// <param name="name">The name of the preference.</param>
+        /// <param name="value">The value to set.</param>
         /// <returns>A userPreference wrapped in a RequestResult.</returns>
         bool UpdateUserPreference(string hdid, string name, string value);
 

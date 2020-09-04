@@ -17,7 +17,6 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Context;
@@ -52,12 +51,15 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Getting list of drug products from DB");
             this.logger.LogTrace($"Identifiers {JsonSerializer.Serialize(drugIdentifiers)}");
             List<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
-            List<DrugProduct> retVal = this.dbContext.DrugProduct.Where(dp => uniqueDrugIdentifers.Contains(dp.DrugIdentificationNumber))
-                                        .Include(c => c.Company)
-                                        .Include(a => a.ActiveIngredient)
-                                        .Include(f => f.Form)
-                        .ToList();
-
+            List<DrugProduct> retVal = this.dbContext.DrugProduct
+                                            .Include(c => c.Company)
+                                            .Include(a => a.ActiveIngredient)
+                                            .Include(f => f.Form)
+                                            .Where(dp => uniqueDrugIdentifers.Contains(dp.DrugIdentificationNumber))
+                                            .ToList()
+                                            .GroupBy(dp => dp.DrugIdentificationNumber)
+                                            .Select(drug => drug.OrderByDescending(o => o.LastUpdate).First())
+                                            .ToList();
             this.logger.LogDebug("Finished getting list of drug products from DB");
             this.logger.LogTrace($"Products: {JsonSerializer.Serialize(retVal)}");
             return retVal;
