@@ -106,6 +106,19 @@
                         <span>.</span>
                     </span>
                 </b-alert>
+                <b-alert
+                    :show="!isPacificTime"
+                    dismissible
+                    variant="info"
+                    class="no-print"
+                >
+                    <h4>Looks like you're in a different timezone.</h4>
+                    <span>
+                        Your health records are recorded in Pacific Standard
+                        Time (UTC -8). If you are in a different time zone, your
+                        records may display an inaccurate time.
+                    </span>
+                </b-alert>
 
                 <div id="pageTitle">
                     <h1 id="subject">Health Care Timeline</h1>
@@ -394,6 +407,7 @@ export default class TimelineView extends Vue {
     private protectiveWordAttempts: number = 0;
     private isAddingNote: boolean = false;
     private isEditingEntry: boolean = false;
+    private isPacificTime: boolean = false;
     private unsavedChangesText: string =
         "You have unsaved changes. Are you sure you want to leave?";
 
@@ -455,6 +469,11 @@ export default class TimelineView extends Vue {
         this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
             self.isListView = true;
         });
+        if (moment().isDST()) {
+            !this.checkTimezone(true) ? false : true;
+        } else {
+            !this.checkTimezone(false) ? false : true;
+        }
     }
 
     private beforeRouteLeave(to: Route, from: Route, next: any) {
@@ -549,6 +568,14 @@ export default class TimelineView extends Vue {
         // Display protective word modal if required
         if (this.protectiveWordAttempts > 0) {
             this.protectiveWordModal.showModal();
+        }
+    }
+
+    private checkTimezone(isDST: boolean): boolean {
+        if (isDST) {
+            return new Date().getTimezoneOffset() / 60 === 7;
+        } else {
+            return new Date().getTimezoneOffset() / 60 === 8;
         }
     }
 
