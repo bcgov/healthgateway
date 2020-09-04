@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2020 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -93,7 +93,6 @@ CREATE TRIGGER ""UserProfileHistoryTrigger""
     FOR EACH ROW
     EXECUTE PROCEDURE {schema}.""UserProfileHistoryFunction""();";
 
-            migrationBuilder.Sql(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"";");
             migrationBuilder.Sql(triggerFunction);
             migrationBuilder.Sql(trigger);
         }
@@ -122,7 +121,6 @@ CREATE TRIGGER ""UserProfileHistoryTrigger""
             string schema = "gateway";
             migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""UserProfileHistoryTrigger"" ON {schema}.""UserProfile""");
             migrationBuilder.Sql(@$"DROP FUNCTION IF EXISTS {schema}.""UserProfileHistoryFunction""();");
-            migrationBuilder.Sql(@"DROP EXTENSION IF EXISTS ""uuid-ossp"";");
         }
     }
 }
