@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Models
     /// <summary>
     /// The Immunization agent data model.
     /// </summary>
+    [Obsolete("Use Immunization data model instead. This will need to be removed once we have refactored the Controller, Service and Delegate")]
     public class ImmunizationAgent
     {
         /// <summary>

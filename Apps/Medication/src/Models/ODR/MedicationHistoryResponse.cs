@@ -15,35 +15,15 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models.ODR
 {
-    using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Utils;
-    using HealthGateway.Medication.Constants;
+    using HealthGateway.Common.Models.ODR;
 
     /// <summary>
     /// The ODR Medication Response.
     /// </summary>
-    public class MedicationHistoryResponse
+    public class MedicationHistoryResponse : ODRHistoryResponse
     {
-        /// <summary>
-        /// Gets or sets the Id of the request.
-        /// </summary>
-        [JsonPropertyName("uuid")]
-        public Guid Id { get; set; } = default;
-
-        /// <summary>
-        /// Gets or sets the total records available from the server for the query excluding page limits.
-        /// </summary>
-        [JsonPropertyName("totalRecords")]
-        public int Records { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Total Pages available.
-        /// </summary>
-        [JsonPropertyName("totalPages")]
-        public int Pages { get; set; }
-
         /// <summary>
         /// Gets or sets the set of MedicationResults.
         /// The set is boud by the other class properties.

@@ -1,31 +1,31 @@
-// //-------------------------------------------------------------------------
-// // Copyright © 2019 Province of British Columbia
-// //
-// // Licensed under the Apache License, Version 2.0 (the "License");
-// // you may not use this file except in compliance with the License.
-// // You may obtain a copy of the License at
-// //
-// // http://www.apache.org/licenses/LICENSE-2.0
-// //
-// // Unless required by applicable law or agreed to in writing, software
-// // distributed under the License is distributed on an "AS IS" BASIS,
-// // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// // See the License for the specific language governing permissions and
-// // limitations under the License.
-// //-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+// Copyright © 2019 Province of British Columbia
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//-------------------------------------------------------------------------
 namespace HealthGateway.DrugMaintainer
 {
+    using System;
     using System.Collections.Generic;
-    using HealthGateway.Database.Models;
-    using CsvHelper;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
+    using CsvHelper;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
-    using System;
-    using System.Globalization;
 
     /// <summary>
-    /// Concrete implemention of the <see cref="IDrugProductParser"/>
+    /// Concrete implemention of the <see cref="IDrugProductParser"/>.
     /// </summary>
     public class FederalDrugProductParser : IDrugProductParser
     {
@@ -40,30 +40,14 @@ namespace HealthGateway.DrugMaintainer
             this.logger = logger;
         }
 
-        /// <summary>
-        /// Searchs teh SourceFolder and returns a single file matching the pattern.
-        /// </summary>
-        /// <param name="SourceFolder">The source folder to search</param>
-        /// <param name="FileMatch">The file pattern to match</param>
-        /// <returns>The filename of the file matching.</returns>
-        private string GetFileMatching(string SourceFolder, string FileMatch)
-        {
-            string[] files = Directory.GetFiles(SourceFolder, FileMatch);
-            if (files.Length > 1 || files.Length == 0)
-            {
-                throw new ApplicationException($"The zip file contained {files.Length} CSV files, very confused.");
-            }
-            return files[0];
-        }
-
         /// <inheritdoc/>
-        public List<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload filedownload)
+        public List<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload fileDownload)
         {
             this.logger.LogInformation("Parsing Drug file");
             using var reader = new StreamReader(GetFileMatching(sourceFolder, "drug*.txt"));
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
             csv.Configuration.HasHeaderRecord = false;
-            DrugProductMapper mapper = new DrugProductMapper(filedownload);
+            DrugProductMapper mapper = new DrugProductMapper(fileDownload);
             csv.Configuration.RegisterClassMap(mapper);
             List<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
             return records;
@@ -165,7 +149,7 @@ namespace HealthGateway.DrugMaintainer
         {
             this.logger.LogInformation("Parsing Schedule file");
             using var reader = new StreamReader(GetFileMatching(filePath, "schedule*.txt"));
-            using var csv = new CsvReader(reader,CultureInfo.InvariantCulture);
+            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
             csv.Configuration.HasHeaderRecord = false;
             ScheduleMapper mapper = new ScheduleMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
@@ -197,6 +181,23 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.RegisterClassMap(mapper);
             List<VeterinarySpecies> records = csv.GetRecords<VeterinarySpecies>().ToList();
             return records;
+        }
+
+        /// <summary>
+        /// Searchs teh SourceFolder and returns a single file matching the pattern.
+        /// </summary>
+        /// <param name="sourceFolder">The source folder to search.</param>
+        /// <param name="fileMatch">The file pattern to match.</param>
+        /// <returns>The filename of the file matching.</returns>
+        private static string GetFileMatching(string sourceFolder, string fileMatch)
+        {
+            string[] files = Directory.GetFiles(sourceFolder, fileMatch);
+            if (files.Length > 1 || files.Length == 0)
+            {
+                throw new FormatException($"The zip file contained {files.Length} CSV files, very confused.");
+            }
+
+            return files[0];
         }
     }
 }

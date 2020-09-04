@@ -3,21 +3,21 @@ export default interface Clinic {
     // Clinic id.
     clinicId: string;
     // Name.
-    name?: string;
+    name: string;
     // Address line 1.
-    addressLine1?: string;
+    addressLine1: string;
     // Address line 2.
-    addressLine2?: string;
+    addressLine2: string;
+    // Address line 3.
+    addressLine3: string;
+    // Address line 4.
+    addressLine4: string;
     // City.
-    city?: string;
+    city: string;
     // Province.
-    province?: string;
+    province: string;
     // Postal code.
-    postalCode?: string;
-    // Country code.
-    countryCode?: string;
+    postalCode: string;
     // Phone number.
     phoneNumber?: string;
-    // Fax number.
-    faxNumber?: string;
 }

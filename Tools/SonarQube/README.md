@@ -144,6 +144,18 @@ For SonarQube versions <7.1 you will need to use the [SVG Badges](https://github
 - [Troubleshooting Jenkins Slave Startup Issues](./docs/troubleshooting-jenkins-slave-startup-issues.md)
 - [Upgrading with Bundled Plugins](./docs/upgrading-with-bundled-plugins.md)
 
+# How to add a new (CS) project to SonarQube:
+	• Assuming that you create a new branch from dev branch for this work.
+	• Update the healthgateway\Tools\SonarQube\azure\build.yaml\build.yaml file as follows:
+		○ Refer to the existing Medication section (use text search) in this file. This section contains the following text or key words
+			§ … displayName: 'Medication - Run dotnet Tests'
+			§ …displayName: 'Medication - On Fail'
+		○ Copy and Paste this section then replace the Medication of the pasted text to the new project name, i.e. replace Medication by Encounter to have new sonarqube for the new Encounter project.
+	• Check in these changes, Create new PR to merge to DEV branch.
+# How to check/validate your SonarQube updates above:
+	• Assuming that your PR for the sonarqube update has been merged to DEV branch.
+You can confirm/validate these changes by going to the Sonarqube site <https://sonarqube-gateway.pathfinder.gov.bc.ca/projects?sort=-analysis_date>
+
 # Getting Help or Reporting an Issue
 To report bugs/issues/feature requests, please file an [issue](../../issues).
 
