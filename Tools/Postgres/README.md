@@ -18,6 +18,37 @@ The objects created include:
     7) Config map that stores the database configuration like "max_connections" (patroni-postgres-config).
     8) Secret containing username and password.
 
+## Initial Configuration
+
+Connect to the database as postgres user and execute the following:
+
+```bash
+CREATE ROLE gateway WITH
+  LOGIN
+  INHERIT
+  NOCREATEDB
+  NOCREATEROLE
+  PASSWORD 'UPDATEME';
+
+CREATE DATABASE gateway WITH
+  OWNER = gateway
+  ENCODING = 'UTF8'
+  LC_COLLATE = 'en_US.UTF-8'
+  LC_CTYPE = 'en_US.UTF-8'
+  TABLESPACE = pg_default
+  CONNECTION LIMIT = -1
+  TEMPLATE template0;
+
+ALTER DATABASE gateway OWNER TO gateway;
+```
+
+Connect to the database as postgres but set the maintenance DB to gateway and execute
+
+```bash
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+ALTER SCHEMA public OWNER to gateway;
+```
+
 ## Troubleshooting
 
 ### Identifying the master node
