@@ -26,6 +26,7 @@ namespace HealthGateway.Laboratory.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Laboratory.Models;
     using Microsoft.AspNetCore.WebUtilities;
@@ -102,7 +103,7 @@ namespace HealthGateway.Laboratory.Delegates
                             WriteIndented = true,
                         };
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult phsaResult = JsonSerializer.Deserialize<PHSAResult>(payload, options);
+                        PHSAResult<LaboratoryOrder> phsaResult = JsonSerializer.Deserialize<PHSAResult<LaboratoryOrder>>(payload, options);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -155,7 +156,6 @@ namespace HealthGateway.Laboratory.Delegates
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
-
 
             this.logger.LogTrace($"Getting laboratory report...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
