@@ -63,6 +63,6 @@ npm run serve
 
 ## Admin WebClient Verification
 
-* Open a Chrome session to [http://localhost:5010/admin](http://localhost:5010/admin)
+* Open a Chrome session to [https://localhost:5010/admin](https://localhost:5010/admin)
 * Authenticate with your IDIR
 * All functionality should work
