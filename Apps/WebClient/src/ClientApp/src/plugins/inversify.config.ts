@@ -27,7 +27,7 @@ import { RestImmunizationService } from "@/services/restImmunizationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestPatientService } from "@/services/restPatientService";
 import { RestMedicationService } from "@/services/restMedicationService";
-import { RestEncounterService } from "@/services/mockRestEncounterService";
+import { RestEncounterService } from "@/services/restEncounterService";
 import { RestLaboratoryService } from "@/services/restLaboratoryService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
