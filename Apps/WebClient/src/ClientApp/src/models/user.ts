@@ -8,6 +8,7 @@ export default class User {
     public hasSMS: boolean = false;
     public verifiedSMS: boolean = false;
     public hasTermsOfServiceUpdated: boolean = false;
+    public SMSResendDateTime?: Date;
     public closedDateTime?: Date;
     public preferences: Dictionary<string> = {};
 }

@@ -159,6 +159,9 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
+    updateSMSResendDateTime(context, params: { dateTime: Date }): void {
+        context.commit("setSMSResendDateTime", params.dateTime);
+    },
     updateUserPreference(
         context,
         params: { hdid: string; name: string; value: string }
