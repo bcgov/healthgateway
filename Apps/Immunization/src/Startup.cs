@@ -16,10 +16,8 @@
 namespace HealthGateway.Immunization
 {
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Immunization.Delegates;
-    using HealthGateway.Immunization.Factories;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
