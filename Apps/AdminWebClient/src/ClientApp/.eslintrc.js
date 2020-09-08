@@ -4,18 +4,17 @@ module.exports = {
         node: true
     },
     extends: [
-        "eslint:recommended",
         "plugin:vue/recommended",
-        "@vue/prettier",
-        "@vue/typescript",
-        "plugin:sonarjs/recommended"
+        "plugin:prettier-vue/recommended",
+        "prettier/vue"
     ],
     rules: {
         "no-console": "off",
-        "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off"
+        "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
+        "linebreak-style": ["error", "unix"]
     },
     parserOptions: {
         parser: "@typescript-eslint/parser"
     },
-    plugins: ["sonarjs"]
+    plugins: ["sonarjs", "prettier"]
 };
