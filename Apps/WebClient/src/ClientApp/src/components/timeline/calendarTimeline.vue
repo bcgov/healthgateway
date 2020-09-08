@@ -2,18 +2,34 @@
 <template>
     <div class="timeline-calendar">
         <CalendarComponent
-            v-if="filteredTimelineEntries.length > 0"
             :date-groups="dateGroups"
             :filter-text="filterText"
             :filter-types="filterTypes"
-            :is-visible="isVisible"
+            :is-visible="isVisible && !timelineIsEmpty"
         >
             <div slot="month-list-toggle">
                 <slot name="month-list-toggle"></slot>
             </div>
         </CalendarComponent>
-        <div v-else class="text-center">
-            No records
+        <div v-if="timelineIsEmpty" class="text-center pt-2">
+            <b-row>
+                <b-col>
+                    <img
+                        class="mx-auto d-block"
+                        src="@/assets/images/timeline/empty-state.png"
+                        width="200"
+                        height="auto"
+                        alt="..."
+                    />
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <p class="text-center pt-2 noTimelineEntriesText">
+                        No Timeline Entries
+                    </p>
+                </b-col>
+            </b-row>
         </div>
     </div>
 </template>
@@ -88,6 +104,10 @@ export default class CalendarTimelineComponent extends Vue {
             a.date > b.date ? 1 : a.date < b.date ? -1 : 0
         );
         return groupArrays;
+    }
+
+    private get timelineIsEmpty(): boolean {
+        return this.filteredTimelineEntries.length == 0;
     }
 }
 </script>
