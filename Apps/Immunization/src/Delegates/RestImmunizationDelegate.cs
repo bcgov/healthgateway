@@ -70,10 +70,10 @@ namespace HealthGateway.Immunization.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0)
         {
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-            RequestResult<IEnumerable<ImmunizationView>> retVal = new RequestResult<IEnumerable<ImmunizationView>>()
+            RequestResult<IEnumerable<ImmunizationResponse>> retVal = new RequestResult<IEnumerable<ImmunizationResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 PageIndex = pageIndex,
@@ -104,7 +104,7 @@ namespace HealthGateway.Immunization.Delegates
                             WriteIndented = true,
                         };
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<ImmunizationView> phsaResult = JsonSerializer.Deserialize<PHSAResult<ImmunizationView>>(payload, options);
+                        PHSAResult<ImmunizationResponse> phsaResult = JsonSerializer.Deserialize<PHSAResult<ImmunizationResponse>>(payload, options);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -122,7 +122,7 @@ namespace HealthGateway.Immunization.Delegates
                         break;
                     case HttpStatusCode.NoContent: // No Immunizations exits for this user
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
-                        retVal.ResourcePayload = new List<ImmunizationView>();
+                        retVal.ResourcePayload = new List<ImmunizationResponse>();
                         retVal.TotalResultCount = 0;
 #pragma warning disable CA1305 // Specify IFormatProvider
                         retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize);

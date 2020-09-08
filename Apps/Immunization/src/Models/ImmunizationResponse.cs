@@ -21,7 +21,7 @@ namespace HealthGateway.Immunization.Models
     /// <summary>
     /// The Immunization record data model.
     /// </summary>
-    public class ImmunizationView
+    public class ImmunizationResponse
     {
         /// <summary>
         /// Gets or sets the Immunization id.
@@ -30,10 +30,10 @@ namespace HealthGateway.Immunization.Models
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization location.
+        /// Gets or sets the SourceSystemId.
         /// </summary>
-        [JsonPropertyName("location")]
-        public string Location { get; set; } = string.Empty;
+        [JsonPropertyName("sourceSystemId")]
+        public string SourceSystemId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Immunization Name.
