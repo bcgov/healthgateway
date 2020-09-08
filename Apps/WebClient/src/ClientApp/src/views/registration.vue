@@ -57,9 +57,7 @@ label {
             <b-row v-if="isRegistrationClosed">
                 <b-col>
                     <div id="pageTitle">
-                        <h1 id="Subject">
-                            Closed Registration
-                        </h1>
+                        <h1 id="Subject">Closed Registration</h1>
                         <div id="Description">
                             Thank you for your interest in the Health Gateway
                             service. At this time, the registration is closed.
@@ -198,9 +196,7 @@ label {
                 <b-row class="my-3">
                     <b-col>
                         <div id="pageTitle">
-                            <h1 id="Subject">
-                                Communication Preferences
-                            </h1>
+                            <h1 id="Subject">Communication Preferences</h1>
                             <div id="Description">
                                 Health Gateway will send you notifications via
                                 email and based on your preference, may send

@@ -32,9 +32,7 @@
         <b-row>
             <b-col>
                 <div id="pageTitle">
-                    <h1 id="Subject">
-                        Terms of Service
-                    </h1>
+                    <h1 id="Subject">Terms of Service</h1>
                     <hr />
                 </div>
             </b-col>

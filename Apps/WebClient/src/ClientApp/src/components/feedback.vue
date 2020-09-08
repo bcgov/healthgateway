@@ -64,9 +64,7 @@
                     v-show="isSidebarOpen"
                     class="button-title d-none text-left col-7 col-md-6 p-0 pl-3 py-2"
                 >
-                    <span>
-                        Contact Us
-                    </span>
+                    <span> Contact Us </span>
                 </b-col>
                 <b-col v-show="isSidebarOpen && visible" cols="auto">
                     <font-awesome-icon

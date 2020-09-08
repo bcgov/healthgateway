@@ -30,7 +30,7 @@ export default class HttpDelegate implements IHttpDelegate {
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            let config: AxiosRequestConfig = {
+            const config: AxiosRequestConfig = {
                 headers
             };
             Axios.get(url, config)
@@ -50,7 +50,7 @@ export default class HttpDelegate implements IHttpDelegate {
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            let config: AxiosRequestConfig = {
+            const config: AxiosRequestConfig = {
                 headers
             };
             Axios.post(url, payload, config)
@@ -71,7 +71,7 @@ export default class HttpDelegate implements IHttpDelegate {
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            let config: AxiosRequestConfig = {
+            const config: AxiosRequestConfig = {
                 headers
             };
             Axios.put(url, payload, config)
@@ -92,7 +92,7 @@ export default class HttpDelegate implements IHttpDelegate {
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            let config: AxiosRequestConfig = {
+            const config: AxiosRequestConfig = {
                 headers
             };
             Axios.patch(url, payload, config)

@@ -75,9 +75,7 @@ $radius: 15px;
             <b-col>
                 <b-row>
                     <b-col cols="auto">
-                        <strong>
-                            Specialty Description:
-                        </strong>
+                        <strong> Specialty Description: </strong>
                         {{ entry.specialtyDescription }}
                     </b-col>
                 </b-row>

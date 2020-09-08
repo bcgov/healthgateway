@@ -16,7 +16,7 @@ export class RestCommunicationService implements ICommunicationService {
 
     public add(communication: Communication): Promise<void> {
         return new Promise((resolve, reject) => {
-            let headers: Dictionary<string> = {};
+            const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
             this.http
                 .post<RequestResult<Communication>>(
