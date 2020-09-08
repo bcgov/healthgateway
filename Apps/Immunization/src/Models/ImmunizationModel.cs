@@ -58,8 +58,9 @@ namespace HealthGateway.Immunization.Models
             return new ImmunizationModel()
             {
                 Id = model.Id,
-                Name = model.Type,
+                Name = model.Name,
                 Location = model.Location,
+                DateOfImmunization = model.OccurrenceDateTime
             };
         }
 

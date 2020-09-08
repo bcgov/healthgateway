@@ -30,21 +30,21 @@ namespace HealthGateway.Immunization.Models
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization name.
+        /// Gets or sets the Immunization location.
         /// </summary>
         [JsonPropertyName("location")]
         public string Location { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization status (completed | not-done).
+        /// Gets or sets the Immunization Name.
         /// </summary>
-        [JsonPropertyName("type")]
-        public string Type { get; set; } = string.Empty;
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Immunization occurence date time.
         /// </summary>
-        [JsonPropertyName("immunized")]
-        public DateTime Immunized { get; set; } = System.DateTime.MinValue;
+        [JsonPropertyName("occurrenceDateTime")]
+        public DateTime OccurrenceDateTime { get; set; }
     }
 }
