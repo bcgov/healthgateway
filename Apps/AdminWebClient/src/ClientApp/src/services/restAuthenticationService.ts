@@ -69,13 +69,6 @@ export class RestAuthenticationService implements IAuthenticationService {
             );
 
             window.location.href = authPathUrl.href;
-            this.expireSiteMinderCookie();
         });
-    }
-
-    public expireSiteMinderCookie() {
-        // This expires the siteminder cookie preventing the app from login in using the cache.
-        const d = new Date();
-        document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;
     }
 }

@@ -11,9 +11,6 @@
                 <slot name="month-list-toggle"></slot>
             </div>
         </CalendarComponent>
-<<<<<<< HEAD
-        <div v-else class="text-center">No records</div>
-=======
         <div v-if="timelineIsEmpty" class="text-center pt-2">
             <b-row>
                 <b-col>
@@ -34,7 +31,6 @@
                 </b-col>
             </b-row>
         </div>
->>>>>>> dev
     </div>
 </template>
 
