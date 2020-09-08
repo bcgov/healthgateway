@@ -28,8 +28,9 @@ namespace HealthGateway.Immunization.Services
         /// <summary>
         /// Gets a list of immunization records.
         /// </summary>
-        /// <param name="hdid">The health directed id for the subject.</param>
+        /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <param name="pageIndex">The page index to return.</param>
         /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string hdid);
+        Task<RequestResult<IEnumerable<ImmunizationModel>>> GetImmunizations(string bearerToken, int pageIndex = 0);
     }
 }

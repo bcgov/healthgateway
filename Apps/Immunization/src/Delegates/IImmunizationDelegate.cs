@@ -15,20 +15,23 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Delegates
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Models;
-    using Hl7.Fhir.Model;
 
     /// <summary>
-    /// Interface that defines a delegate to retrieve patient information.
+    /// Interface that defines a delegate to retrieve immunization information.
     /// </summary>
-    public interface IImmunizationFhirDelegate
+    public interface IImmunizationDelegate
     {
         /// <summary>
-        /// Gets the immunization fhir bundle for the provided phn and dob.
+        /// Returns a List of Immunizations for the authenticated user.
+        /// It has a collection of one or more Immunizations.
         /// </summary>
-        /// <param name="request">The immunization request.</param>
-        /// <returns>The immunization fhir bundle.</returns>
-        Task<Bundle> GetImmunizationBundle(ImmunizationRequest request);
+        /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <param name="pageIndex">The page index to return.</param>
+        /// <returns>The list of Immunizations available for the user identified by the bearerToken.</returns>
+        Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string bearerToken, int pageIndex = 0);
     }
 }
