@@ -13,21 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Laboratory.Models
+namespace HealthGateway.Immunization.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// Provides configuration data for the Immunization Delegate.
     /// </summary>
-    public class PHSAResult
+    public class ImmunizationConfig
     {
         /// <summary>
-        /// Gets or sets the result section.
+        /// Gets or sets the Lab external endpoint.
         /// </summary>
-        [JsonPropertyName("result")]
-        public List<LaboratoryOrder>? Result { get; set; }
+        public string Endpoint { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the total number of records to retrieve in one call.
+        /// </summary>
+        public string FetchSize { get; set; } = string.Empty;
     }
 }

@@ -16,37 +16,35 @@
 namespace HealthGateway.Immunization.Models
 {
     using System;
-    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// The Immunization record data model.
     /// </summary>
-    [Obsolete("Use Immunization instead. This will need to be removed once we have refactored the Controller, Service and Delegate")]
     public class ImmunizationView
     {
         /// <summary>
         /// Gets or sets the Immunization id.
         /// </summary>
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization name.
+        /// Gets or sets the Immunization location.
         /// </summary>
-        public string? Name { get; set; }
+        [JsonPropertyName("location")]
+        public string Location { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization status (completed | not-done).
+        /// Gets or sets the Immunization Name.
         /// </summary>
-        public string Status { get; set; } = string.Empty;
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Immunization occurence date time.
         /// </summary>
-        public DateTime OccurrenceDateTime { get; set; } = System.DateTime.MinValue;
-
-        /// <summary>
-        /// Gets the List of Immunization agents.
-        /// </summary>
-        public List<ImmunizationAgent> ImmunizationAgents { get; } = new List<ImmunizationAgent>();
+        [JsonPropertyName("occurrenceDateTime")]
+        public DateTime OccurrenceDateTime { get; set; }
     }
 }

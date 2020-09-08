@@ -31,6 +31,7 @@ import {
     IUserNoteService,
     IUserProfileService,
     IUserRatingService,
+    IEncounterService,
 } from "@/services/interfaces";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -71,6 +72,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const laboratoryService: ILaboratoryService = container.get(
         SERVICE_IDENTIFIER.LaboratoryService
     );
+    const encounterService: IEncounterService = container.get(
+        SERVICE_IDENTIFIER.EncounterService
+    );
     const userProfileService: IUserProfileService = container.get(
         SERVICE_IDENTIFIER.UserProfileService
     );
@@ -100,6 +104,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     patientService.initialize(config, httpDelegate);
     medicationService.initialize(config, httpDelegate);
     laboratoryService.initialize(config, httpDelegate);
+    encounterService.initialize(config, httpDelegate);
     userProfileService.initialize(httpDelegate);
     userFeedbackService.initialize(httpDelegate);
     betaRequestService.initialize(httpDelegate);

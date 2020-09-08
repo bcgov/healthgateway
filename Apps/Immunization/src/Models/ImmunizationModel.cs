@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -26,13 +27,8 @@ namespace HealthGateway.Immunization.Models
         /// <summary>
         /// Gets or sets the Immunization id.
         /// </summary>
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the immunization Is Self Reported.
-        /// </summary>
-        [JsonPropertyName("isSelfReported")]
-        public bool IsSelfReported { get; set; }
 
         /// <summary>
         /// Gets or sets the Location.
@@ -51,5 +47,40 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("dateOfImmunization")]
         public DateTime DateOfImmunization { get; set; }
+
+        /// <summary>
+        /// Creates a Immunization Model object from a PHSA model.
+        /// </summary>
+        /// <param name="model">The medication result to convert.</param>
+        /// <returns>The newly created medicationStatementHistory object.</returns>
+        public static ImmunizationModel FromPHSAModel(ImmunizationView model)
+        {
+            return new ImmunizationModel()
+            {
+                Id = model.Id,
+                Name = model.Name,
+                Location = model.Location,
+                DateOfImmunization = model.OccurrenceDateTime
+            };
+        }
+
+        /// <summary>
+        /// Creates a Immunization Model object from a PHSA model.
+        /// </summary>
+        /// <param name="models">The list of PHSA models to convert.</param>
+        /// <returns>A list of ImmunizationModel objects.</returns>
+        public static IEnumerable<ImmunizationModel> FromPHSAModelList(IEnumerable<ImmunizationView>? models)
+        {
+            List<ImmunizationModel> objects = new List<ImmunizationModel>();
+            if (models != null)
+            {
+                foreach (ImmunizationView immunizationModel in models)
+                {
+                    objects.Add(ImmunizationModel.FromPHSAModel(immunizationModel));
+                }
+            }
+
+            return objects;
+        }
     }
 }

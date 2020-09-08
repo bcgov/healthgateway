@@ -17,8 +17,6 @@ namespace HealthGateway.Laboratory.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -26,15 +24,14 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Laboratory.Models;
-    using Microsoft.AspNetCore.Http.Extensions;
-    using Microsoft.AspNetCore.Mvc.RazorPages;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Logging.Abstractions;
 
     /// <summary>
     /// Implementation that uses HTTP to retrieve laboratory information.
@@ -44,6 +41,7 @@ namespace HealthGateway.Laboratory.Delegates
         private const string LabConfigSectionKey = "Laboratory";
 
         private readonly ILogger logger;
+        private readonly ITraceService traceService;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
         private readonly LaboratoryConfig labConfig;
@@ -52,14 +50,17 @@ namespace HealthGateway.Laboratory.Delegates
         /// Initializes a new instance of the <see cref="RestLaboratoryDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestLaboratoryDelegate(
             ILogger<RestLaboratoryDelegate> logger,
+            ITraceService traceService,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {
             this.logger = logger;
+            this.traceService = traceService;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
             this.labConfig = new LaboratoryConfig();
@@ -69,13 +70,13 @@ namespace HealthGateway.Laboratory.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
         {
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 PageIndex = pageIndex,
             };
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
+
             this.logger.LogDebug($"Getting laboratory orders...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
@@ -102,7 +103,7 @@ namespace HealthGateway.Laboratory.Delegates
                             WriteIndented = true,
                         };
                         this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult phsaResult = JsonSerializer.Deserialize<PHSAResult>(payload, options);
+                        PHSAResult<LaboratoryOrder> phsaResult = JsonSerializer.Deserialize<PHSAResult<LaboratoryOrder>>(payload, options);
                         if (phsaResult != null && phsaResult.Result != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -143,20 +144,19 @@ namespace HealthGateway.Laboratory.Delegates
                 this.logger.LogError($"Unexpected exception in Get Lab Orders {e}");
             }
 
-            timer.Stop();
-            this.logger.LogDebug($"Finished getting Laboratory Orders, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting Laboratory Orders");
             return retVal;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken)
         {
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             RequestResult<LaboratoryReport> retVal = new RequestResult<LaboratoryReport>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
+
             this.logger.LogTrace($"Getting laboratory report...");
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
@@ -213,8 +213,7 @@ namespace HealthGateway.Laboratory.Delegates
                 this.logger.LogError($"Unexpected exception in Lab Report {e}");
             }
 
-            timer.Stop();
-            this.logger.LogDebug($"Finished getting Laboratory Report, Time Elapsed: {timer.Elapsed}");
+            this.logger.LogDebug($"Finished getting Laboratory Report");
             return retVal;
         }
     }

@@ -39,6 +39,7 @@
     <b-row class="calendar-header">
         <b-col cols="col-sm-auto" class="p-0">
             <b-btn
+                v-show="hasAvailableMonths"
                 variant="light"
                 :disabled="monthIndex == 0"
                 class="arrow-icon left-button px-2 m-0"
@@ -49,6 +50,7 @@
         </b-col>
         <b-col cols="col-sm-auto" class="p-0">
             <MonthYearPickerComponent
+                v-show="hasAvailableMonths"
                 :current-month="currentMonth"
                 :available-months="availableMonths"
                 @date-changed="dateSelected"
@@ -56,6 +58,7 @@
         </b-col>
         <b-col cols="col-sm-auto" class="p-0">
             <b-btn
+                v-show="hasAvailableMonths"
                 variant="light"
                 :disabled="monthIndex == availableMonths.length - 1"
                 class="arrow-icon right-button px-2 m-0"
@@ -100,6 +103,10 @@ export default class CalendarComponent extends Vue {
 
     public get title(): string {
         return moment(this.currentMonth).format(this.titleFormat);
+    }
+
+    private get hasAvailableMonths() {
+        return this.availableMonths.length > 0;
     }
 
     @Watch("currentMonth")
@@ -147,8 +154,10 @@ export default class CalendarComponent extends Vue {
     }
 
     private dispatchEvent() {
-        let firstMonthDate = DateUtil.getMonthFirstDate(this.headerDate);
-        this.$emit("update:currentMonth", firstMonthDate);
+        if (this.headerDate) {
+            let firstMonthDate = DateUtil.getMonthFirstDate(this.headerDate);
+            this.$emit("update:currentMonth", firstMonthDate);
+        }
     }
 }
 </script>

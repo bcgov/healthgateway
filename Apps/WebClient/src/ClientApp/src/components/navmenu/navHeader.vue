@@ -135,6 +135,11 @@ export default class HeaderComponent extends Vue {
 
     private sidebarExpanded: boolean = false;
 
+    @Watch("$route")
+    private closeSidebar() {
+        this.sidebarExpanded = false;
+    }
+
     private get displayMenu(): boolean {
         return (
             this.oidcIsAuthenticated &&

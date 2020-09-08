@@ -40,6 +40,7 @@
         <b-row class="sticky-top sticky-line" />
         <!-- body display date day and events -->
         <CalendarBody
+            v-show="isVisible"
             :current-month="currentMonth"
             :date-groups="dateGroups"
             :month-names="monthNames"

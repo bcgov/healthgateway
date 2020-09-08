@@ -16,14 +16,14 @@
 namespace HealthGateway.Immunization.Controllers
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -83,7 +83,9 @@ namespace HealthGateway.Immunization.Controllers
         public async Task<IActionResult> GetImmunizations(string hdid)
         {
             this.logger.LogDebug($"Getting immunizations from controller... {hdid}");
-            RequestResult<IEnumerable<ImmunizationView>> result = await this.service.GetImmunizations(hdid).ConfigureAwait(true);
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+            RequestResult<IEnumerable<ImmunizationModel>> result = await this.service.GetImmunizations(accessToken).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting immunizations from controller... {hdid}");
             return new JsonResult(result);

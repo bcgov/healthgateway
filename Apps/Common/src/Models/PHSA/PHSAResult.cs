@@ -13,21 +13,22 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Factories
+namespace HealthGateway.Common.Models.PHSA
 {
-    using System;
-    using HealthGateway.Immunization.Delegates;
-    using Microsoft.Extensions.Configuration;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Creates the Immunization Delegate dynamically.
+    /// Representation of the result sent by PHSA.
     /// </summary>
-    public interface IImmunizationDelegateFactory
+    /// <typeparam name="T">The result object type.</typeparam>
+    public class PHSAResult<T>
     {
         /// <summary>
-        /// Returns a new instance of IImunizationFhirDelegate via configuration.
+        /// Gets or sets the result section.
         /// </summary>
-        /// <returns>The IImunizationFhirDelegate.</returns>
-        public IImmunizationFhirDelegate CreateInstance();
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        [JsonPropertyName("result")]
+        public List<T>? Result { get; set; }
     }
 }
