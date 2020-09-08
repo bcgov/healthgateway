@@ -31,12 +31,6 @@ namespace HealthGateway.Immunization.Models
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Location.
-        /// </summary>
-        [JsonPropertyName("location")]
-        public string Location { get; set; } = string.Empty;
-
-        /// <summary>
         /// Gets or sets the Name.
         /// </summary>
         [JsonPropertyName("name")]
@@ -53,13 +47,12 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         /// <param name="model">The medication result to convert.</param>
         /// <returns>The newly created medicationStatementHistory object.</returns>
-        public static ImmunizationModel FromPHSAModel(ImmunizationView model)
+        public static ImmunizationModel FromPHSAModel(ImmunizationResponse model)
         {
             return new ImmunizationModel()
             {
                 Id = model.Id,
                 Name = model.Name,
-                Location = model.Location,
                 DateOfImmunization = model.OccurrenceDateTime
             };
         }
@@ -69,12 +62,12 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         /// <param name="models">The list of PHSA models to convert.</param>
         /// <returns>A list of ImmunizationModel objects.</returns>
-        public static IEnumerable<ImmunizationModel> FromPHSAModelList(IEnumerable<ImmunizationView>? models)
+        public static IEnumerable<ImmunizationModel> FromPHSAModelList(IEnumerable<ImmunizationResponse>? models)
         {
             List<ImmunizationModel> objects = new List<ImmunizationModel>();
             if (models != null)
             {
-                foreach (ImmunizationView immunizationModel in models)
+                foreach (ImmunizationResponse immunizationModel in models)
                 {
                     objects.Add(ImmunizationModel.FromPHSAModel(immunizationModel));
                 }

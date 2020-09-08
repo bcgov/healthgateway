@@ -32,6 +32,6 @@ namespace HealthGateway.Immunization.Delegates
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>The list of Immunizations available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string bearerToken, int pageIndex = 0);
+        Task<RequestResult<IEnumerable<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0);
     }
 }
