@@ -10,26 +10,23 @@ variables:
 pr:
     branches:
         include:
-            - dev
+        - dev
     paths:
         include:
-            - Apps/Immunization
-            - Apps/Common
-            - Apps/Database
-        exclude:
-            - Apps/AdminWebClient
-            - Apps/Common
+        - Apps/Immunization
+        - Apps/Common
+        - Apps/Database
 
 trigger:
     batch: "true"
     branches:
         include:
-            - dev
+        - dev
     paths:
         include:
-            - Apps/Immunization
-            - Apps/Common
-            - Apps/Database
+        - Apps/Immunization
+        - Apps/Common
+        - Apps/Database
 
 pool:
     name: "HealthGateway"
