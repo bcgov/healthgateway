@@ -35,7 +35,7 @@ namespace HealthGateway.Immunization.Test.Controller
                 {
                     new ImmunizationResponse()
                     {
-                        Id = "MockID",
+                        Id = Guid.NewGuid(),
                         Name = "MockImmunization",
                         OccurrenceDateTime = DateTime.Now,
                         SourceSystemId = "MockSourceID"
