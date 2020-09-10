@@ -419,7 +419,6 @@ export default class TimelineView extends Vue {
     readonly covidModal!: CovidModalComponent;
 
     private mounted() {
-        this.initializeFilters();
         this.fetchMedicationStatements();
         this.fetchImmunizations();
         this.fetchLaboratoryResults();
@@ -543,24 +542,6 @@ export default class TimelineView extends Vue {
 
     private get isEncounterEnabled(): boolean {
         return this.config.modules["Encounter"];
-    }
-
-    private initializeFilters(): void {
-        if (this.isMedicationEnabled) {
-            this.filterTypes.push("Medication");
-        }
-        if (this.isImmunizationEnabled) {
-            this.filterTypes.push("Immunization");
-        }
-        if (this.isLaboratoryEnabled) {
-            this.filterTypes.push("Laboratory");
-        }
-        if (this.isNoteEnabled) {
-            this.filterTypes.push("Note");
-        }
-        if (this.isEncounterEnabled) {
-            this.filterTypes.push("Encounter");
-        }
     }
 
     private onCovidSubmit() {

@@ -17,7 +17,7 @@ export default class EncounterTimelineEntry extends TimelineEntry {
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
-        if (!filterTypes.includes("Encounter")) {
+        if (filterTypes.length > 0 && !filterTypes.includes("Encounter")) {
             return false;
         }
 

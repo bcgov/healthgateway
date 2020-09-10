@@ -47,7 +47,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
-        if (!filterTypes.includes("Laboratory")) {
+        if (filterTypes.length > 0 && !filterTypes.includes("Laboratory")) {
             return false;
         }
 
