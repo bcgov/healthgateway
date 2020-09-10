@@ -20,21 +20,15 @@ namespace HealthGateway.Laboratory.Models
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// An instance of a Laboratory Order.
+    /// An instance of a Laboratory Model.
     /// </summary>
-    public class LaboratoryOrder
+    public class LaboratoryModel
     {
         /// <summary>
-        /// Gets or sets the id for the lab order.
+        /// Gets or sets the id for the lab result.
         /// </summary>
         [JsonPropertyName("id")]
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the sourceSystemId for the lab order.
-        /// </summary>
-        [JsonPropertyName("sourceSystemId")]
-        public string SourceSystemId { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the PHN the report is for.
@@ -43,7 +37,7 @@ namespace HealthGateway.Laboratory.Models
         public string PHN { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Provider IDs for the Order.
+        /// Gets or sets the Provider IDs for the Model.
         /// </summary>
         [JsonPropertyName("orderingProviderIds")]
         public string OrderProviderIDs { get; set; } = string.Empty;
@@ -101,5 +95,48 @@ namespace HealthGateway.Laboratory.Models
         /// </summary>
         [JsonPropertyName("labResults")]
         public IEnumerable<LaboratoryResult>? LabResults { get; set; }
+
+        /// <summary>
+        /// Creates a LaboratoryModel object from a PHSA model.
+        /// </summary>
+        /// <param name="model">The laboratory result to convert.</param>
+        /// <returns>The newly created laboratory object.</returns>
+        public static LaboratoryModel FromPHSAModel(LaboratoryOrder model)
+        {
+            return new LaboratoryModel()
+            {
+                Id = model.SourceSystemId,
+                PHN = model.PHN,
+                OrderProviderIDs = model.OrderProviderIDs,
+                OrderingProviders = model.OrderingProviders,
+                ReportingLab = model.ReportingLab,
+                Location = model.Location,
+                LabType = model.LabType,
+                MessageDateTime = model.MessageDateTime,
+                MessageID = model.MessageID,
+                AdditionalData = model.AdditionalData,
+                ReportAvailable = model.ReportAvailable,
+                LabResults = model.LabResults,
+            };
+        }
+
+        /// <summary>
+        /// Creates a LaboratoryModel object from a PHSA model.
+        /// </summary>
+        /// <param name="models">The list of PHSA models to convert.</param>
+        /// <returns>A list of LaboratoryModel objects.</returns>
+        public static IEnumerable<LaboratoryModel> FromPHSAModelList(IEnumerable<LaboratoryOrder>? models)
+        {
+            List<LaboratoryModel> objects = new List<LaboratoryModel>();
+            if (models != null)
+            {
+                foreach (LaboratoryOrder immunizationModel in models)
+                {
+                    objects.Add(LaboratoryModel.FromPHSAModel(immunizationModel));
+                }
+            }
+
+            return objects;
+        }
     }
 }
