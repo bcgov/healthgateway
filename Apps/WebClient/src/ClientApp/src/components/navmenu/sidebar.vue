@@ -446,6 +446,33 @@
                             </b-col>
                         </b-row>
                     </router-link>
+                    <!-- Reports button -->
+                    <router-link id="menuBtnReports" to="/reports" class="my-4">
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isReports }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
+                                <font-awesome-icon
+                                    icon="download"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="7"
+                                class="button-title d-none"
+                            >
+                                <span>Reports</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
                     <br />
                 </b-col>
             </b-row>
@@ -707,6 +734,10 @@ export default class SidebarComponent extends Vue {
 
     private get isHealthInsights(): boolean {
         return this.$route.path == "/healthInsights";
+    }
+
+    private get isReports(): boolean {
+        return this.$route.path == "/reports";
     }
 
     private get isNoteEnabled(): boolean {
