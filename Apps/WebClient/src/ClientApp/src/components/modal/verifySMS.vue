@@ -63,7 +63,7 @@
         </b-row>
         <template v-slot:modal-footer>
             <b-row class="w-100">
-                <b-col v-if="!tooManyRetries && !getTimedOut()">
+                <b-col v-if="!tooManyRetries && allowRetry">
                     Didn't receive a code?
                     <b-button
                         id="resendSMSVerification"
@@ -75,9 +75,10 @@
                         Resend
                     </b-button>
                 </b-col>
-                <b-col v-if="getTimedOut()">
+                <b-col v-if="!allowRetry">
                     Your code has been sent. You can resend after
-                    {{ config.timeouts.resendSMS }} minutes.
+                    {{ config.timeouts.resendSMS }}
+                    {{ config.timeouts.resendSMS > 1 ? "minutes" : "minute" }}.
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <b-button
@@ -141,6 +142,7 @@ export default class VerifySMSComponent extends Vue {
     private userProfileService!: IUserProfileService;
 
     private tooManyRetries: boolean = false;
+    private allowRetry: boolean = false;
     private smsVerificationSent: boolean = false;
     private smsVerificationCode: string = "";
     private isVisible: boolean = false;
@@ -153,6 +155,7 @@ export default class VerifySMSComponent extends Vue {
             SERVICE_IDENTIFIER.UserProfileService
         );
         this.getVerification();
+        this.setResendTimeout();
     }
 
     private getVerification() {
@@ -167,11 +170,24 @@ export default class VerifySMSComponent extends Vue {
         });
     }
 
-    private getTimedOut(): boolean {
-        return moment()
-            .subtract(this.config.timeouts!.resendSMS, "minutes")
-            .isBefore(moment(this.SMSResendDateTime));
+
+    @Watch("SMSResendDateTime")
+    private onSMSResendDateTimeChanged() {
+        this.setResendTimeout();
     }
+
+    private setResendTimeout(): void {
+        let smsTimeoutMilliseconds = moment(this.SMSResendDateTime)
+            .add(this.config.timeouts!.resendSMS, "minutes")
+            .diff(moment(), "milliseconds");
+
+        this.allowRetry = smsTimeoutMilliseconds <= 0;
+        if (!this.allowRetry) {
+            setTimeout(() => {
+                this.allowRetry = true;
+            }, smsTimeoutMilliseconds);
+        }
+}
 
     public showModal() {
         this.isVisible = true;
