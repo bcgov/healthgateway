@@ -45,13 +45,13 @@ namespace HealthGateway.Immunization.Models
         /// <summary>
         /// Creates a Immunization Model object from a PHSA model.
         /// </summary>
-        /// <param name="model">The medication result to convert.</param>
-        /// <returns>The newly created medicationStatementHistory object.</returns>
+        /// <param name="model">The immunization object to convert.</param>
+        /// <returns>The newly created ImmunizationModel object.</returns>
         public static ImmunizationModel FromPHSAModel(ImmunizationResponse model)
         {
             return new ImmunizationModel()
             {
-                Id = model.Id,
+                Id = model.SourceSystemId,
                 Name = model.Name,
                 DateOfImmunization = model.OccurrenceDateTime
             };
