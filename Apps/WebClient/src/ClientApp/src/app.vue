@@ -161,7 +161,7 @@ import {
     faUserMd,
     faClipboardList,
     faChartLine,
-    faDownload,
+    faStream,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
     faUser,
@@ -190,7 +190,7 @@ library.add(
     faUserMd,
     faClipboardList,
     faChartLine,
-    faDownload
+    faStream
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";

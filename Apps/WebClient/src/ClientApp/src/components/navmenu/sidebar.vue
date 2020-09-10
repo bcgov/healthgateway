@@ -459,7 +459,7 @@
                             ></b-col>
                             <b-col title="Reports" :class="{ 'col-3': isOpen }">
                                 <font-awesome-icon
-                                    icon="download"
+                                    icon="stream"
                                     class="button-icon"
                                     size="3x"
                                 />
