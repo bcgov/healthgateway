@@ -170,7 +170,6 @@ export default class VerifySMSComponent extends Vue {
         });
     }
 
-
     @Watch("SMSResendDateTime")
     private onSMSResendDateTimeChanged() {
         this.setResendTimeout();
@@ -187,7 +186,7 @@ export default class VerifySMSComponent extends Vue {
                 this.allowRetry = true;
             }, smsTimeoutMilliseconds);
         }
-}
+    }
 
     public showModal() {
         this.isVisible = true;
