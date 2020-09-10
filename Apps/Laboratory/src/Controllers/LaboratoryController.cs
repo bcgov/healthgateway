@@ -88,7 +88,7 @@ namespace HealthGateway.Laboratory.Controllers
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            RequestResult<IEnumerable<LaboratoryOrder>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
+            RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
 
             return new JsonResult(result);
