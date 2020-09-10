@@ -1,21 +1,19 @@
 namespace HealthGateway.Immunization.Test.Controller
 {
-    using Microsoft.AspNetCore.Authentication;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
-    using Moq;
-    using System.Collections.Generic;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Xunit;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using System;
-    using HealthGateway.Immunization.Delegates;
 
     public class ImmunizationController_Test
     {

@@ -53,7 +53,7 @@ namespace HealthGateway.Immunization.Models
             {
                 Id = model.Id,
                 Name = model.Name,
-                DateOfImmunization = model.OccurrenceDateTime
+                DateOfImmunization = model.OccurrenceDateTime,
             };
         }
 
