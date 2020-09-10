@@ -76,7 +76,8 @@
                     </b-button>
                 </b-col>
                 <b-col v-if="getTimedOut()">
-                    Your code has been sent. You can resend after 5 minutes.
+                    Your code has been sent. You can resend after
+                    {{ config.timeouts.resendSMS }} minutes.
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <b-button
