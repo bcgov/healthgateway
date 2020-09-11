@@ -14,7 +14,6 @@
 </style>
 <template>
     <div>
-        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
         <b-row class="my-3 fluid justify-content-md-center">
             <b-col
                 id="healthInsights"
@@ -45,11 +44,21 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-button variant="info" class="mx-auto d-block">
+                <b-button
+                    variant="primary"
+                    class="mx-auto mt-3 d-block"
+                    @click="showConfirmationModal"
+                >
                     Download your report
                 </b-button>
             </b-col>
         </b-row>
+        <MessageModalComponent
+            ref="messageModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="generateMedicationHistoryPdf"
+        />
     </div>
 </template>
 
@@ -58,26 +67,27 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import PageTitleComponent from "@/components/pageTitle.vue";
-import ErrorCardComponent from "@/components/errorCard.vue";
-import User from "@/models/user";
 import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import BannerError from "@/models/bannerError";
-
-const namespace: string = "user";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 
 @Component({
     components: {
         PageTitleComponent,
-        ErrorCard: ErrorCardComponent,
+        MessageModalComponent,
     },
 })
 export default class ReportsView extends Vue {
-    @Getter("user", { namespace }) user!: User;
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
-
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    @Ref("messageModal")
+    readonly messageModal!: MessageModalComponent;
+    private showConfirmationModal() {
+        this.messageModal.showModal();
+    }
+    private generateMedicationHistoryPdf() {
+        this.logger.debug("generating Medication History PDF...");
+    }
 }
 </script>
