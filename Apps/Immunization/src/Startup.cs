@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Immunization.Delegates;
@@ -23,7 +24,6 @@ namespace HealthGateway.Immunization
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Configures the application during startup.

@@ -93,7 +93,7 @@ namespace HealthGateway.Encounter.Delegates
         {
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             RequestResult<MSPVisitHistoryResponse> retVal = new RequestResult<MSPVisitHistoryResponse>();
-            using (this.traceService.TraceSection(this.GetType().Name, "ODRQuery"))
+            this.traceService.TraceSection(this.GetType().Name, "ODRQuery");
             this.logger.LogTrace($"Getting MSP visits... {query.PHN.Substring(0, 3)}");
 
             using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -147,6 +147,5 @@ namespace HealthGateway.Encounter.Delegates
 
             return retVal;
         }
-
     }
 }
