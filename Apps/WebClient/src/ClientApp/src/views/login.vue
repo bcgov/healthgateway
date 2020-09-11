@@ -4,7 +4,7 @@
         <b-row>
             <b-col>
                 <b-alert
-                    style="max-width: 25rem"
+                    style="max-width: 25rem;"
                     :show="isRetry"
                     dismissible
                     variant="danger"
@@ -19,7 +19,7 @@
                     v-if="identityProviders && identityProviders.length > 0"
                     id="loginPicker"
                     class="shadow-lg bg-white"
-                    style="max-width: 25rem"
+                    style="max-width: 25rem;"
                     align="center"
                 >
                     <h3 slot="header">Log In</h3>

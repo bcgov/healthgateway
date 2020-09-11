@@ -2,7 +2,6 @@
     <b-navbar toggleable="lg" type="dark">
         <!-- Navbar content -->
         <b-navbar-nav>
-
             <b-nav-item class="nav-link" to="/termsOfService" target="_blank"
                 >Terms Of Service</b-nav-item
             >
