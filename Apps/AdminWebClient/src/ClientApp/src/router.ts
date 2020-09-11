@@ -88,11 +88,11 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
     if (to.meta.requiresAuth) {
-        let isAuthenticated = store.getters["auth/isAuthenticated"];
+        const isAuthenticated = store.getters["auth/isAuthenticated"];
         if (!isAuthenticated) {
             next({ path: "/signin", query: { redirect: to.path } });
         } else {
-            let isAuthorized = store.getters["auth/isAuthorized"];
+            const isAuthorized = store.getters["auth/isAuthorized"];
             if (!isAuthorized) {
                 next({ path: "/unauthorized" });
             } else {

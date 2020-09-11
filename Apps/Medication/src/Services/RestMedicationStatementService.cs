@@ -17,8 +17,6 @@ namespace HealthGateway.Medication.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Text.RegularExpressions;
@@ -28,6 +26,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.ODR;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
@@ -35,7 +34,6 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// The Medication data service.
@@ -57,21 +55,21 @@ namespace HealthGateway.Medication.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="patientService">The injected patientService patient registry provider.</param>
+        /// <param name="patientDelegate">The injected patient registry provider.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
             ITraceService traceService,
             IHttpContextAccessor httpAccessor,
-            IPatientDelegate patientService,
+            IPatientDelegate patientDelegate,
             IDrugLookupDelegate drugLookupDelegate,
             IMedStatementDelegate medicationStatementDelegate)
         {
             this.logger = logger;
             this.traceService = traceService;
             this.httpContextAccessor = httpAccessor;
-            this.patientDelegate = patientService;
+            this.patientDelegate = patientDelegate;
             this.drugLookupDelegate = drugLookupDelegate;
             this.medicationStatementDelegate = medicationStatementDelegate;
         }
@@ -94,7 +92,7 @@ namespace HealthGateway.Medication.Services
                 if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
                     Patient patient = patientResult.ResourcePayload;
-                    MedicationHistoryQuery historyQuery = new MedicationHistoryQuery()
+                    ODRHistoryQuery historyQuery = new ODRHistoryQuery()
                     {
                         StartDate = patient.Birthdate,
                         EndDate = System.DateTime.Now,
@@ -112,7 +110,7 @@ namespace HealthGateway.Medication.Services
                         result.PageIndex = historyQuery.PageNumber;
                         if (response.ResourcePayload != null && response.ResourcePayload.Results != null)
                         {
-                            result.TotalResultCount = response.ResourcePayload.Records;
+                            result.TotalResultCount = response.ResourcePayload.TotalRecords;
                             result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.ResourcePayload.Results.ToList());
                             this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
                         }
@@ -131,7 +129,11 @@ namespace HealthGateway.Medication.Services
             {
                 this.logger.LogInformation($"Invalid protective word. {hdid}");
                 result.ResultStatus = ResultType.Protected;
-                result.ResultError = new RequestResultError() { ResultMessage = validationResult.Item2, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
+                result.ResultError = new RequestResultError()
+                {
+                    ResultMessage = validationResult.Item2!,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient),
+                };
             }
 
             this.logger.LogDebug($"Finished getting history of medication statements");

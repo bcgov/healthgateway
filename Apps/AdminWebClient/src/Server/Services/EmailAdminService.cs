@@ -67,6 +67,7 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1309:Use ordinal stringcomparison", Justification = "Does not translate to DB query.")]
         public RequestResult<IEnumerable<AdminEmail>> GetEmails()
         {
             int pageIndex = 0;

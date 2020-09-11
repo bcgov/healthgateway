@@ -63,7 +63,7 @@
         </b-row>
         <template v-slot:modal-footer>
             <b-row class="w-100">
-                <b-col v-if="!tooManyRetries">
+                <b-col v-if="!tooManyRetries && allowRetry">
                     Didn't receive a code?
                     <b-button
                         id="resendSMSVerification"
@@ -74,6 +74,11 @@
                     >
                         Resend
                     </b-button>
+                </b-col>
+                <b-col v-if="!allowRetry">
+                    Your code has been sent. You can resend after
+                    {{ config.timeouts.resendSMS }}
+                    {{ config.timeouts.resendSMS > 1 ? "minutes" : "minute" }}.
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <b-button
@@ -102,6 +107,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import UserSMSInvite from "@/models/userSMSInvite";
+import { WebClientConfiguration } from "@/models/configData";
+import moment from "moment";
 
 @Component({
     components: {
@@ -114,12 +121,28 @@ export default class VerifySMSComponent extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Action("getUserSMS", { namespace: "user" })
     getUserSMS!: (params: { hdid: string }) => Promise<UserSMSInvite>;
+
+    @Action("updateSMSResendDateTime", { namespace: "user" })
+    updateSMSResendDateTime!: ({
+        hdid,
+        dateTime,
+    }: {
+        hdid: string;
+        dateTime: Date;
+    }) => void;
+
+    @Getter("SMSResendDateTime", { namespace: "user" })
+    SMSResendDateTime!: Date;
 
     private userProfileService!: IUserProfileService;
 
     private tooManyRetries: boolean = false;
+    private allowRetry: boolean = false;
     private smsVerificationSent: boolean = false;
     private smsVerificationCode: string = "";
     private isVisible: boolean = false;
@@ -132,6 +155,7 @@ export default class VerifySMSComponent extends Vue {
             SERVICE_IDENTIFIER.UserProfileService
         );
         this.getVerification();
+        this.setResendTimeout();
     }
 
     private getVerification() {
@@ -144,6 +168,24 @@ export default class VerifySMSComponent extends Vue {
                 this.sendUserSMSUpdate();
             }
         });
+    }
+
+    @Watch("SMSResendDateTime")
+    private onSMSResendDateTimeChanged() {
+        this.setResendTimeout();
+    }
+
+    private setResendTimeout(): void {
+        let smsTimeoutMilliseconds = moment(this.SMSResendDateTime)
+            .add(this.config.timeouts!.resendSMS, "minutes")
+            .diff(moment(), "milliseconds");
+
+        this.allowRetry = smsTimeoutMilliseconds <= 0;
+        if (!this.allowRetry) {
+            setTimeout(() => {
+                this.allowRetry = true;
+            }, smsTimeoutMilliseconds);
+        }
     }
 
     public showModal() {
@@ -203,6 +245,10 @@ export default class VerifySMSComponent extends Vue {
 
     private sendUserSMSUpdate(): void {
         this.smsVerificationSent = true;
+        this.updateSMSResendDateTime({
+            hdid: this.user.hdid,
+            dateTime: new Date(),
+        });
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
             .then(() => {

@@ -18,6 +18,7 @@ namespace HealthGateway.Laboratory.Services
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
@@ -49,9 +50,28 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryModel>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
         {
-            return await this.laboratoryDelegate.GetLaboratoryOrders(bearerToken, pageIndex).ConfigureAwait(true);
+            RequestResult<IEnumerable<LaboratoryOrder>> delegateResult = await this.laboratoryDelegate.GetLaboratoryOrders(bearerToken, pageIndex).ConfigureAwait(true);
+            if (delegateResult.ResultStatus == ResultType.Success)
+            {
+                return new RequestResult<IEnumerable<LaboratoryModel>>()
+                {
+                    ResultStatus = delegateResult.ResultStatus,
+                    ResourcePayload = LaboratoryModel.FromPHSAModelList(delegateResult.ResourcePayload),
+                    PageIndex = delegateResult.PageIndex,
+                    PageSize = delegateResult.PageSize,
+                    TotalResultCount = delegateResult.TotalResultCount,
+                };
+            }
+            else
+            {
+                return new RequestResult<IEnumerable<LaboratoryModel>>()
+                {
+                    ResultStatus = delegateResult.ResultStatus,
+                    ResultError = delegateResult.ResultError,
+                };
+            }
         }
 
         /// <inheritdoc/>

@@ -7,18 +7,26 @@ variables:
     App.UnitTests: $(App.Home)/test/unit
     App.FunctionalTests: $(App.Home)/test/functional
 
-pr: none
+pr:
+    branches:
+        include:
+        - dev
+    paths:
+        include:
+        - Apps/Immunization
+        - Apps/Common
+        - Apps/Database
 
 trigger:
     batch: "true"
     branches:
         include:
-            - dev
+        - dev
     paths:
         include:
-            - Apps/Immunization
-            - Apps/Common
-            - Apps/Database
+        - Apps/Immunization
+        - Apps/Common
+        - Apps/Database
 
 pool:
     name: "HealthGateway"
@@ -63,6 +71,7 @@ steps:
           oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
           echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
       displayName: "Build OpenShift Image and push to Image Stream"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
     - task: CopyFiles@2
       displayName: Copy Functional Tests to Staging
@@ -70,8 +79,10 @@ steps:
           SourceFolder: "$(App.FunctionalTests)"
           Contents: "**"
           TargetFolder: "$(Build.ArtifactStagingDirectory)"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
     - task: PublishPipelineArtifact@0
       displayName: "Publish Pipeline Artifact"
       inputs:
           targetPath: "$(Build.ArtifactStagingDirectory)"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

@@ -34,6 +34,7 @@ namespace HealthGateway.Medication.Test
     using HealthGateway.Medication.Models.ODR;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Instrumentation;
+    using HealthGateway.Common.Models.ODR;
 
     public class MedicationService_Test
     {
@@ -89,7 +90,7 @@ namespace HealthGateway.Medication.Test
             Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
             RequestResult<MedicationHistoryResponse> requestResult = new RequestResult<MedicationHistoryResponse>();
             requestResult.ResourcePayload = new MedicationHistoryResponse();
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(requestResult);
+            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<ODRHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(requestResult);
 
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
@@ -140,115 +141,115 @@ namespace HealthGateway.Medication.Test
             Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
         }
 
-/** TODO: needs tweaking to work with ODR
-        [Fact]
-        public async Task ValidProtectiveWord()
-        {
-            // Setup
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string protectiveWord = "TestWord";
-            string phn = "0009735353315";
-            string userId = "1001";
-            string ipAddress = "10.0.0.1";
+        /** TODO: needs tweaking to work with ODR
+                [Fact]
+                public async Task ValidProtectiveWord()
+                {
+                    // Setup
+                    string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+                    string protectiveWord = "TestWord";
+                    string phn = "0009735353315";
+                    string userId = "1001";
+                    string ipAddress = "10.0.0.1";
 
-            Mock<IIdentity> identityMock = new Mock<IIdentity>();
-            identityMock.Setup(s => s.Name).Returns(userId);
+                    Mock<IIdentity> identityMock = new Mock<IIdentity>();
+                    identityMock.Setup(s => s.Name).Returns(userId);
 
-            Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
-            claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
+                    Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+                    claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
 
-            Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
-            connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
+                    Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
+                    connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", "Bearer TestJWT");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+                    IHeaderDictionary headerDictionary = new HeaderDictionary();
+                    headerDictionary.Add("Authorization", "Bearer TestJWT");
+                    Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+                    httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+                    Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+                    httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
+                    httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
+                    httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+                    Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+                    httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
-            patientDelegateMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
+                    Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
+                    patientDelegateMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+                    Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+                    drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new HNMessage<MedicationHistoryResponse>(new MedicationHistoryResponse()));
+                    Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
+                    medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new HNMessage<MedicationHistoryResponse>(new MedicationHistoryResponse()));
 
-            IMedicationStatementService service = new RestMedicationStatementService(
-                new Mock<ILogger<RestMedicationStatementService>>().Object,
-                new Mock<ITraceService>().Object,
-                httpContextAccessorMock.Object,
-                patientDelegateMock.Object,
-                drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                    IMedicationStatementService service = new RestMedicationStatementService(
+                        new Mock<ILogger<RestMedicationStatementService>>().Object,
+                        new Mock<ITraceService>().Object,
+                        httpContextAccessorMock.Object,
+                        patientDelegateMock.Object,
+                        drugLookupDelegateMock.Object,
+                        medStatementDelegateMock.Object);
 
-            // Run and Verify
-            RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, protectiveWord);
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success);
-        }
+                    // Run and Verify
+                    RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, protectiveWord);
+                    Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success);
+                }
 
 
-        [Fact]
-        public async Task ShouldGetMedications()
-        {
-            // Setup
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string phn = "0009735353315";
-            string userId = "1001";
-            string ipAddress = "10.0.0.1";
+                [Fact]
+                public async Task ShouldGetMedications()
+                {
+                    // Setup
+                    string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+                    string phn = "0009735353315";
+                    string userId = "1001";
+                    string ipAddress = "10.0.0.1";
 
-            Mock<IIdentity> identityMock = new Mock<IIdentity>();
-            identityMock.Setup(s => s.Name).Returns(userId);
+                    Mock<IIdentity> identityMock = new Mock<IIdentity>();
+                    identityMock.Setup(s => s.Name).Returns(userId);
 
-            Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
-            claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
+                    Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+                    claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
 
-            Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
-            connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
+                    Mock<ConnectionInfo> connectionInfoMock = new Mock<ConnectionInfo>();
+                    connectionInfoMock.Setup(s => s.RemoteIpAddress).Returns(IPAddress.Parse(ipAddress));
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", "Bearer TestJWT");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+                    IHeaderDictionary headerDictionary = new HeaderDictionary();
+                    headerDictionary.Add("Authorization", "Bearer TestJWT");
+                    Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+                    httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+                    Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+                    httpContextMock.Setup(s => s.Connection).Returns(connectionInfoMock.Object);
+                    httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
+                    httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+                    Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+                    httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
-            Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
-            patientDelegateMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
+                    Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
+                    patientDelegateMock.Setup(s => s.GetPatientPHNAsync(hdid, "Bearer TestJWT")).ReturnsAsync(phn);
 
-            Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
-            drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
+                    Mock<IDrugLookupDelegate> drugLookupDelegateMock = new Mock<IDrugLookupDelegate>();
+                    drugLookupDelegateMock.Setup(p => p.GetDrugProductsByDIN(It.IsAny<List<string>>())).Returns(new List<DrugProduct>());
 
-            Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
-            medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new HNMessage<MedicationHistoryResponse>(new MedicationHistoryResponse()));
+                    Mock<IMedStatementDelegate> medStatementDelegateMock = new Mock<IMedStatementDelegate>();
+                    medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<MedicationHistoryQuery>(), null, It.IsAny<string>(), ipAddress)).ReturnsAsync(new HNMessage<MedicationHistoryResponse>(new MedicationHistoryResponse()));
 
-            IMedicationStatementService service = new RestMedicationStatementService(
-                new Mock<ILogger<RestMedicationStatementService>>().Object,
-                new Mock<ITraceService>().Object,
-                httpContextAccessorMock.Object,
-                patientDelegateMock.Object,
-                drugLookupDelegateMock.Object,
-                medStatementDelegateMock.Object);
+                    IMedicationStatementService service = new RestMedicationStatementService(
+                        new Mock<ILogger<RestMedicationStatementService>>().Object,
+                        new Mock<ITraceService>().Object,
+                        httpContextAccessorMock.Object,
+                        patientDelegateMock.Object,
+                        drugLookupDelegateMock.Object,
+                        medStatementDelegateMock.Object);
 
-            // Act
-            RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true);
+                    // Act
+                    RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true);
 
-            // Verify
-            Assert.True(actual.ResourcePayload.Count == 0);
-        }**/
+                    // Verify
+                    Assert.True(actual.ResourcePayload.Count == 0);
+                }**/
     }
 }

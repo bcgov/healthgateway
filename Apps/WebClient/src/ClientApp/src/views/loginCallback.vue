@@ -1,7 +1,5 @@
 <template>
-    <div>
-        Waiting...
-    </div>
+    <div>Waiting...</div>
 </template>
 
 <script lang="ts">

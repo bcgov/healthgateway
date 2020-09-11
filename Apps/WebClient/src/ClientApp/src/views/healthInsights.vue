@@ -51,9 +51,7 @@
                         v-if="!isLoading && visibleCount === 0"
                         class="text-center pt-5"
                     >
-                        <b-col>
-                            No medication records
-                        </b-col>
+                        <b-col> No medication records </b-col>
                     </b-row>
                     <b-row v-if="isLoading">
                         <b-col>

@@ -21,7 +21,7 @@ import { DashboardService } from "@/services/dashboardService";
 import { RestEmailAdminService } from "@/services/restEmailAdminService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
 
-let container = new Container();
+const container = new Container();
 container
     .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
     .to(RestConfigService)

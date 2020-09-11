@@ -106,6 +106,18 @@
                         <span>.</span>
                     </span>
                 </b-alert>
+                <b-alert
+                    :show="!isPacificTime"
+                    dismissible
+                    variant="info"
+                    class="no-print"
+                >
+                    <h4>Looks like you're in a different timezone.</h4>
+                    <span>
+                        Heads up: your health records are recorded and displayed
+                        in Pacific Time.
+                    </span>
+                </b-alert>
 
                 <div id="pageTitle">
                     <h1 id="subject">Health Care Timeline</h1>
@@ -130,8 +142,11 @@
                             </div>
                         </b-col>
                     </b-row>
-                    <b-row align-h="start" class="no-print sticky-top">
-                        <b-col v-if="isMedicationEnabled">
+                    <b-row
+                        align-h="start"
+                        class="no-print sticky-top justify-content-between"
+                    >
+                        <b-col v-if="isMedicationEnabled" cols="auto">
                             <b-form-checkbox
                                 id="medicationFilter"
                                 v-model="filterTypes"
@@ -141,7 +156,7 @@
                                 Medications
                             </b-form-checkbox>
                         </b-col>
-                        <b-col v-if="isImmunizationEnabled">
+                        <b-col v-if="isImmunizationEnabled" cols="auto">
                             <b-form-checkbox
                                 id="immunizationFilter"
                                 v-model="filterTypes"
@@ -151,7 +166,7 @@
                                 Immunizations
                             </b-form-checkbox>
                         </b-col>
-                        <b-col v-if="isLaboratoryEnabled">
+                        <b-col v-if="isLaboratoryEnabled" cols="auto">
                             <b-form-checkbox
                                 id="laboratoryFilter"
                                 v-model="filterTypes"
@@ -161,7 +176,7 @@
                                 Laboratory
                             </b-form-checkbox>
                         </b-col>
-                        <b-col v-if="isNoteEnabled">
+                        <b-col v-if="isNoteEnabled" cols="auto">
                             <b-form-checkbox
                                 id="notesFilter"
                                 v-model="filterTypes"
@@ -169,6 +184,16 @@
                                 value="Note"
                             >
                                 My Notes
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isEncounterEnabled">
+                            <b-form-checkbox
+                                id="encounterFilter"
+                                v-model="filterTypes"
+                                name="encounterFilter"
+                                value="Encounter"
+                            >
+                                MSP Visits
                             </b-form-checkbox>
                         </b-col>
                     </b-row>
@@ -295,6 +320,7 @@ import {
     IImmunizationService,
     ILaboratoryService,
     IMedicationService,
+    IEncounterService,
     IUserNoteService,
 } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
@@ -327,6 +353,7 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import ErrorCardComponent from "@/components/errorCard.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
+import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
 const namespace: string = "user";
 
@@ -373,11 +400,13 @@ export default class TimelineView extends Vue {
     private isMedicationLoading: boolean = false;
     private isImmunizationLoading: boolean = false;
     private isLaboratoryLoading: boolean = false;
+    private isEncounterLoading: boolean = false;
     private isNoteLoading: boolean = false;
     private idleLogoutWarning: boolean = false;
     private protectiveWordAttempts: number = 0;
     private isAddingNote: boolean = false;
     private isEditingEntry: boolean = false;
+    private isPacificTime: boolean = false;
     private unsavedChangesText: string =
         "You have unsaved changes. Are you sure you want to leave?";
 
@@ -394,6 +423,7 @@ export default class TimelineView extends Vue {
         this.fetchMedicationStatements();
         this.fetchImmunizations();
         this.fetchLaboratoryResults();
+        this.fetchEncounters();
         this.fetchNotes();
         window.addEventListener("beforeunload", this.onBrowserClose);
         let self = this;
@@ -438,6 +468,15 @@ export default class TimelineView extends Vue {
         this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
             self.isListView = true;
         });
+        if (moment().isDST()) {
+            !this.checkTimezone(true)
+                ? (this.isPacificTime = false)
+                : (this.isPacificTime = true);
+        } else {
+            !this.checkTimezone(false)
+                ? (this.isPacificTime = false)
+                : (this.isPacificTime = true);
+        }
     }
 
     private beforeRouteLeave(to: Route, from: Route, next: any) {
@@ -481,6 +520,7 @@ export default class TimelineView extends Vue {
             this.isMedicationLoading ||
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
+            this.isEncounterLoading ||
             this.isNoteLoading
         );
     }
@@ -501,6 +541,10 @@ export default class TimelineView extends Vue {
         return this.config.modules["Note"];
     }
 
+    private get isEncounterEnabled(): boolean {
+        return this.config.modules["Encounter"];
+    }
+
     private initializeFilters(): void {
         if (this.isMedicationEnabled) {
             this.filterTypes.push("Medication");
@@ -514,6 +558,9 @@ export default class TimelineView extends Vue {
         if (this.isNoteEnabled) {
             this.filterTypes.push("Note");
         }
+        if (this.isEncounterEnabled) {
+            this.filterTypes.push("Encounter");
+        }
     }
 
     private onCovidSubmit() {
@@ -524,6 +571,14 @@ export default class TimelineView extends Vue {
         // Display protective word modal if required
         if (this.protectiveWordAttempts > 0) {
             this.protectiveWordModal.showModal();
+        }
+    }
+
+    private checkTimezone(isDST: boolean): boolean {
+        if (isDST) {
+            return new Date().getTimezoneOffset() / 60 === 7;
+        } else {
+            return new Date().getTimezoneOffset() / 60 === 8;
         }
     }
 
@@ -660,6 +715,47 @@ export default class TimelineView extends Vue {
             })
             .finally(() => {
                 this.isLaboratoryLoading = false;
+            });
+    }
+
+    private fetchEncounters() {
+        this.isEncounterLoading = true;
+        const encounterService: IEncounterService = container.get(
+            SERVICE_IDENTIFIER.EncounterService
+        );
+        this.isEncounterLoading = true;
+        encounterService
+            .getPatientEncounters(this.user.hdid)
+            .then((results) => {
+                if (results.resultStatus == ResultType.Success) {
+                    // Add the encounter entries to the timeline list
+                    for (let result of results.resourcePayload) {
+                        this.timelineEntries.push(
+                            new EncounterTimelineEntry(result)
+                        );
+                    }
+                    this.sortEntries();
+                } else {
+                    this.logger.error(
+                        "Error returned from the encounter call: " +
+                            JSON.stringify(results.resultError)
+                    );
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Encounter Error",
+                            results.resultError
+                        )
+                    );
+                }
+            })
+            .catch((err) => {
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Fetch Encounter Error", err)
+                );
+            })
+            .finally(() => {
+                this.isEncounterLoading = false;
             });
     }
 

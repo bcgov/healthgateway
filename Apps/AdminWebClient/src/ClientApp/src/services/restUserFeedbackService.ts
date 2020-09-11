@@ -32,7 +32,7 @@ export class RestUserFeedbackService implements IUserFeedbackService {
 
     public toggleReviewed(feedback: UserFeedback): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let headers: Dictionary<string> = {};
+            const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
             this.http
                 .patch<boolean>(

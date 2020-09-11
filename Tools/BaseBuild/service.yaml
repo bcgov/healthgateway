@@ -128,7 +128,8 @@ objects:
       app: ${NAME}
     name: ${NAME}
   spec:
-    host: ${ENV}-${APP_NAME}-${WEB_HOST}.pathfinder.gov.bc.ca
+    host: ${ENV}.healthgateway.gov.bc.ca
+    path: /api/${NAME}service
     tls:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge

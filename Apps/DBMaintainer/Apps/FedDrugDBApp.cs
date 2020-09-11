@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,17 +19,24 @@ namespace HealthGateway.DrugMaintainer.Apps
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Utility program to load the Federal Government Drug Product database.
     /// Reads the AllFiles zip as located and documented at
-    /// https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html
+    /// See https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html for reference.
     /// </summary>
     public class FedDrugDBApp : BaseDrugApp<IDrugProductParser>
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FedDrugDBApp"/> class.
+        /// </summary>
+        /// <param name="logger">The logger to use.</param>
+        /// <param name="parser">The parser to use.</param>
+        /// <param name="downloadService">The Download Service Utility.</param>
+        /// <param name="configuration">The Configuration.</param>
+        /// <param name="drugDBContext">The database context.</param>
         public FedDrugDBApp(ILogger<FedDrugDBApp> logger, IDrugProductParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
@@ -38,25 +45,25 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <inheritdoc/>
         public override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
         {
-            this.logger.LogInformation("Parsing Drug File and adding to DB Context");
-            List<DrugProduct> drugProducts = this.parser.ParseDrugFile(sourceFolder, downloadedFile);
-            this.drugDbContext.DrugProduct.AddRange(drugProducts);
-            this.logger.LogInformation("Parsing Other files and adding to DB Context");
-            this.drugDbContext.ActiveIngredient.AddRange(this.parser.ParseActiveIngredientFile(sourceFolder, drugProducts));
-            this.drugDbContext.Company.AddRange(this.parser.ParseCompanyFile(sourceFolder, drugProducts));
-            this.drugDbContext.Status.AddRange(this.parser.ParseStatusFile(sourceFolder, drugProducts));
-            this.drugDbContext.Form.AddRange(this.parser.ParseFormFile(sourceFolder, drugProducts));
-            this.drugDbContext.Packaging.AddRange(this.parser.ParsePackagingFile(sourceFolder, drugProducts));
-            this.drugDbContext.PharmaceuticalStd.AddRange(this.parser.ParsePharmaceuticalStdFile(sourceFolder, drugProducts));
-            this.drugDbContext.Route.AddRange(this.parser.ParseRouteFile(sourceFolder, drugProducts));
-            this.drugDbContext.Schedule.AddRange(this.parser.ParseScheduleFile(sourceFolder, drugProducts));
-            this.drugDbContext.TherapeuticClass.AddRange(this.parser.ParseTherapeuticFile(sourceFolder, drugProducts));
-            this.drugDbContext.VeterinarySpecies.AddRange(this.parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts));
+            this.Logger.LogInformation("Parsing Drug File and adding to DB Context");
+            List<DrugProduct> drugProducts = this.Parser.ParseDrugFile(sourceFolder, downloadedFile);
+            this.DrugDbContext.DrugProduct.AddRange(drugProducts);
+            this.Logger.LogInformation("Parsing Other files and adding to DB Context");
+            this.DrugDbContext.ActiveIngredient.AddRange(this.Parser.ParseActiveIngredientFile(sourceFolder, drugProducts));
+            this.DrugDbContext.Company.AddRange(this.Parser.ParseCompanyFile(sourceFolder, drugProducts));
+            this.DrugDbContext.Status.AddRange(this.Parser.ParseStatusFile(sourceFolder, drugProducts));
+            this.DrugDbContext.Form.AddRange(this.Parser.ParseFormFile(sourceFolder, drugProducts));
+            this.DrugDbContext.Packaging.AddRange(this.Parser.ParsePackagingFile(sourceFolder, drugProducts));
+            this.DrugDbContext.PharmaceuticalStd.AddRange(this.Parser.ParsePharmaceuticalStdFile(sourceFolder, drugProducts));
+            this.DrugDbContext.Route.AddRange(this.Parser.ParseRouteFile(sourceFolder, drugProducts));
+            this.DrugDbContext.Schedule.AddRange(this.Parser.ParseScheduleFile(sourceFolder, drugProducts));
+            this.DrugDbContext.TherapeuticClass.AddRange(this.Parser.ParseTherapeuticFile(sourceFolder, drugProducts));
+            this.DrugDbContext.VeterinarySpecies.AddRange(this.Parser.ParseVeterinarySpeciesFile(sourceFolder, drugProducts));
             this.AddFileToDB(downloadedFile);
-            this.logger.LogInformation("Removing old Drug File from DB");
+            this.Logger.LogInformation("Removing old Drug File from DB");
             this.RemoveOldFiles(downloadedFile);
-            this.logger.LogInformation("Saving Entities to the database");
-            this.drugDbContext.SaveChanges();
+            this.Logger.LogInformation("Saving Entities to the database");
+            this.DrugDbContext.SaveChanges();
         }
     }
 }

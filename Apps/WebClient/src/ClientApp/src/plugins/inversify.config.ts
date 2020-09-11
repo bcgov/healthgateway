@@ -12,6 +12,7 @@ import {
     IImmunizationService,
     ILaboratoryService,
     IMedicationService,
+    IEncounterService,
     IPatientService,
     IUserCommentService,
     IUserFeedbackService,
@@ -26,6 +27,7 @@ import { RestImmunizationService } from "@/services/restImmunizationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestPatientService } from "@/services/restPatientService";
 import { RestMedicationService } from "@/services/restMedicationService";
+import { RestEncounterService } from "@/services/restEncounterService";
 import { RestLaboratoryService } from "@/services/restLaboratoryService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
@@ -59,6 +61,10 @@ container
 container
     .bind<IMedicationService>(SERVICE_IDENTIFIER.MedicationService)
     .to(RestMedicationService)
+    .inSingletonScope();
+container
+    .bind<IEncounterService>(SERVICE_IDENTIFIER.EncounterService)
+    .to(RestEncounterService)
     .inSingletonScope();
 container
     .bind<ILaboratoryService>(SERVICE_IDENTIFIER.LaboratoryService)

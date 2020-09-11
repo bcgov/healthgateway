@@ -26,6 +26,7 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
@@ -87,7 +88,8 @@ namespace HealthGateway.Medication.Delegates
                     { "serviceHost", serviceHost! },
                     { "servicePort", servicePort! },
                 };
-                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData)!);
+
+                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData) !);
             }
             else
             {
@@ -98,73 +100,62 @@ namespace HealthGateway.Medication.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(MedicationHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
+        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(ODRHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
         {
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-            if (query == null)
-            {
-                throw new ArgumentNullException(nameof(query), "Query cannot be null");
-            }
-            else if (query.PHN == null)
-            {
-                throw new ArgumentNullException(nameof(query), "Query PHN cannot be null");
-            }
-
             RequestResult<MedicationHistoryResponse> retVal = new RequestResult<MedicationHistoryResponse>();
             if (this.ValidateProtectiveWord(query.PHN, protectiveWord, hdid, ipAddress))
             {
                 using (this.traceService.TraceSection(this.GetType().Name, "ODRQuery"))
-                {
-                    this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
+                this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
 
-                    using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                    MedicationHistory request = new MedicationHistory()
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                MedicationHistory request = new MedicationHistory()
+                {
+                    Id = System.Guid.NewGuid(),
+                    RequestorHDID = hdid,
+                    RequestorIP = ipAddress,
+                    Query = query,
+                };
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true,
+                    WriteIndented = true,
+                };
+                try
+                {
+                    string json = JsonSerializer.Serialize(request, options);
+                    using HttpContent content = new StringContent(json);
+                    Uri endpoint = new Uri(this.baseURL, this.odrConfig.PatientProfileEndpoint);
+                    HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
                     {
-                        Id = System.Guid.NewGuid(),
-                        RequestorHDID = hdid,
-                        RequestorIP = ipAddress,
-                        Query = query,
-                    };
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                        IgnoreNullValues = true,
-                        WriteIndented = true,
-                    };
-                    try
-                    {
-                        string json = JsonSerializer.Serialize(request, options);
-                        using HttpContent content = new StringContent(json);
-                        Uri endpoint = new Uri(this.baseURL, this.odrConfig.PatientProfileEndpoint);
-                        HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
-                        string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            MedicationHistory medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
-                            retVal.ResultStatus = Common.Constants.ResultType.Success;
-                            retVal.ResourcePayload = medicationHistory.Response!;
-                        }
-                        else
-                        {
-                            retVal.ResultStatus = Common.Constants.ResultType.Error;
-                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
-                            this.logger.LogError(retVal.ResultError.ResultMessage);
-                        }
+                        MedicationHistory medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
+                        retVal.ResultStatus = Common.Constants.ResultType.Success;
+                        retVal.ResourcePayload = medicationHistory.Response!;
                     }
-#pragma warning disable CA1031 // Do not catch general exception types
-                    catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
+                    else
                     {
                         retVal.ResultStatus = Common.Constants.ResultType.Error;
-                        retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
-                        this.logger.LogError($"Unable to post message {e.ToString()}");
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                        this.logger.LogError(retVal.ResultError.ResultMessage);
                     }
-
-                    this.logger.LogDebug($"Finished getting medication statements");
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
+                catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
+                {
+                    retVal.ResultStatus = Common.Constants.ResultType.Error;
+                    retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                    this.logger.LogError($"Unable to post message {e.ToString()}");
+                }
+
+                this.logger.LogDebug($"Finished getting medication statements");
             }
             else
             {

@@ -220,6 +220,20 @@ namespace HealthGateway.Common.AspNetConfiguration
                     policy.RequireAuthenticatedUser();
                     policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
                 });
+
+                // Encounter Policies
+                options.AddPolicy(EncounterPolicy.Read, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Read));
+                });
+                options.AddPolicy(EncounterPolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
+                });
             });
         }
 

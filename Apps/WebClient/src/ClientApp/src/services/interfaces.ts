@@ -3,7 +3,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import ImmunizationData from "@/models/immunizationData";
+import ImmunizationModel from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserComment from "@/models/userComment";
@@ -20,6 +20,7 @@ import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import UserSMSInvite from "@/models/userSMSInvite";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import UserRating from "@/models/userRating";
+import Encounter from "@/models/encounter";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -41,7 +42,7 @@ export interface IImmunizationService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientImmunizations(
         hdid: string
-    ): Promise<RequestResult<ImmunizationData[]>>;
+    ): Promise<RequestResult<ImmunizationModel[]>>;
 }
 
 export interface IPatientService {
@@ -56,6 +57,11 @@ export interface IMedicationService {
         protectiveWord?: string
     ): Promise<RequestResult<MedicationStatementHistory[]>>;
     getMedicationInformation(drugIdentifier: string): Promise<MedicationResult>;
+}
+
+export interface IEncounterService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    getPatientEncounters(hdid: string): Promise<RequestResult<Encounter[]>>;
 }
 
 export interface ILaboratoryService {

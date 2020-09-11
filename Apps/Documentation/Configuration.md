@@ -95,6 +95,12 @@ PostgreSQL init process complete; ready for start up.
 2020-07-21 22:28:10.572 UTC [1] LOG:  database system is ready to accept connections
 ```
 
+Configure the database
+
+```bash
+docker exec -it gatewaydb psql --username=postgres --dbname postgres -a -f /scripts/SetupDevDB.sql
+```
+
 Run the initial migrations to create the database tables and other objects:
 
 ```bash

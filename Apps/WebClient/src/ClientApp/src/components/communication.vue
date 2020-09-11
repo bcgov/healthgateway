@@ -9,8 +9,8 @@
 <template>
     <b-row v-if="hasCommunication">
         <b-col class="p-0">
-            <div class="m-0 py-3 text-center communication">
-                <span>{{ text }}</span>
+            <div class="m-0 py-0 text-center communication">
+                <span v-html="text"></span>
             </div>
         </b-col>
     </b-row>
