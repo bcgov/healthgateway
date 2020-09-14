@@ -11,7 +11,7 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
-        if (filterTypes.length > 0 && !filterTypes.includes("Immunization")) {
+        if (!filterTypes.includes("Immunization")) {
             return false;
         }
 

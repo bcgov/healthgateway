@@ -143,6 +143,7 @@ export default class LinearTimelineComponent extends Vue {
 
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
+    @Prop() private allFilterTypes!: string[];
 
     private filteredTimelineEntries: TimelineEntry[] = [];
     private visibleTimelineEntries: TimelineEntry[] = [];
@@ -157,7 +158,12 @@ export default class LinearTimelineComponent extends Vue {
     @Watch("filterTypes")
     private applyTimelineFilter() {
         this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(this.filterText, this.filterTypes)
+            entry.filterApplies(
+                this.filterText,
+                this.filterTypes.length > 0
+                    ? this.filterTypes
+                    : this.allFilterTypes
+            )
         );
     }
 

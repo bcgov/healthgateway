@@ -23,7 +23,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
-        if (filterTypes.length > 0 && !filterTypes.includes("Note")) {
+        if (!filterTypes.includes("Note")) {
             return false;
         }
 

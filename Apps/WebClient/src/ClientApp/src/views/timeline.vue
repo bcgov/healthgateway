@@ -211,6 +211,7 @@
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
+                    :all-filter-types="allFilterTypes"
                 >
                     <b-row
                         slot="month-list-toggle"
@@ -242,6 +243,7 @@
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
+                    :all-filter-types="allFilterTypes"
                 >
                     <b-row
                         slot="month-list-toggle"
@@ -412,6 +414,26 @@ export default class TimelineView extends Vue {
 
     private isListView: boolean = true;
     private eventBus = EventBus;
+
+    private get allFilterTypes(): string[] {
+        let allFilterTypes: string[] = [];
+        if (this.isMedicationEnabled) {
+            allFilterTypes.push("Medication");
+        }
+        if (this.isImmunizationEnabled) {
+            allFilterTypes.push("Immunization");
+        }
+        if (this.isLaboratoryEnabled) {
+            allFilterTypes.push("Laboratory");
+        }
+        if (this.isNoteEnabled) {
+            allFilterTypes.push("Note");
+        }
+        if (this.isEncounterEnabled) {
+            allFilterTypes.push("Encounter");
+        }
+        return allFilterTypes;
+    }
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;

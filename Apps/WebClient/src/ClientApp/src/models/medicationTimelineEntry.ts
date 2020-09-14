@@ -34,7 +34,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
-        if (filterTypes.length > 0 && !filterTypes.includes("Medication")) {
+        if (!filterTypes.includes("Medication")) {
             return false;
         }
 
