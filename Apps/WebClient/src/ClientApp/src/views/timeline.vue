@@ -287,9 +287,6 @@
                     </b-col>
                 </b-row>
             </b-col>
-            <b-col class="col-3 col-lg-3 column-wrapper no-print">
-                <HealthlinkComponent />
-            </b-col>
         </b-row>
         <CovidModalComponent
             ref="covidModal"
@@ -341,7 +338,6 @@ import TimelineLoadingComponent from "@/components/timelineLoading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
-import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 import NoteTimelineComponent from "@/components/timeline/note.vue";
 import {
     LaboratoryOrder,
@@ -366,7 +362,6 @@ Component.registerHooks(["beforeRouteLeave"]);
         ProtectiveWordComponent,
         CovidModalComponent,
         EntryCardComponent: EntryCardTimelineComponent,
-        HealthlinkComponent: HealthlinkSidebarComponent,
         NoteTimelineComponent,
         LinearTimeline: LinearTimelineComponent,
         CalendarTimeline: CalendarTimelineComponent,
