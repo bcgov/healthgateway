@@ -24,9 +24,9 @@
                 />
                 <div>
                     <p>
-                        This is where we can explain a bit what this page is
-                        about. Lorem Ipsum is a way of writing bdas skaow dowsk
-                        peosas
+                        Download a copy of your PharmaNet record of prescription
+                        medication dispenses. This report will generate your
+                        full history in the PharmaNet system.
                     </p>
                 </div>
             </b-col>
