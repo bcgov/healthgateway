@@ -96,9 +96,9 @@ const routes = [
         meta: { requiresRegistration: true, roles: ["user"] },
     },
     {
-        path: "/profile/termsOfService",
+        path: "/termsOfService",
         component: TermsOfServiceView,
-        meta: { requiresAuth: true, roles: ["user"] },
+        meta: { requiresAuth: false, roles: ["user"] },
     },
     {
         path: "/login",
