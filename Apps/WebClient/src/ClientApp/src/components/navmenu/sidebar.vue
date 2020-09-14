@@ -239,72 +239,6 @@
                             >
                         </b-row>
                     </router-link>
-                    <div v-show="isUnderProfile">
-                        <!-- Terms of Service button -->
-                        <router-link
-                            id="termsOfService"
-                            variant="primary"
-                            to="/profile/termsOfService"
-                            class="p-0"
-                        >
-                            <b-row
-                                class="align-items-center border rounded-pill p-2 button-container my-4"
-                                :class="{
-                                    'sub-menu': isOpen,
-                                    selected: isTermsOfService && !isOpen,
-                                }"
-                            >
-                                <b-col
-                                    title="Terms of Service"
-                                    :class="{ 'col-4': isOpen }"
-                                >
-                                    <font-awesome-icon
-                                        icon="file-alt"
-                                        class="button-icon sub-menu"
-                                        size="2x"
-                                    />
-                                </b-col>
-                                <b-col
-                                    v-if="isOpen"
-                                    cols="8"
-                                    class="button-title sub-menu d-none"
-                                >
-                                    <span>Terms of Service</span>
-                                </b-col>
-                            </b-row>
-                        </router-link>
-
-                        <!-- Release Notes Button -->
-                        <b-link
-                            id="releaseNotes"
-                            variant="primary"
-                            href="https://github.com/bcgov/healthgateway/wiki"
-                            target="_blank"
-                        >
-                            <b-row
-                                class="align-items-center border rounded-pill p-2 button-container my-4"
-                                :class="{ 'sub-menu': isOpen }"
-                            >
-                                <b-col
-                                    title="Release Notes"
-                                    :class="{ 'col-4': isOpen }"
-                                >
-                                    <font-awesome-icon
-                                        icon="chart-bar"
-                                        class="button-icon sub-menu m-auto"
-                                        size="2x"
-                                    />
-                                </b-col>
-                                <b-col
-                                    v-if="isOpen"
-                                    cols="8"
-                                    class="button-title sub-menu d-none"
-                                >
-                                    <span>Release Notes</span>
-                                </b-col>
-                            </b-row>
-                        </b-link>
-                    </div>
                     <!-- Timeline button -->
                     <router-link
                         id="menuBtnTimeline"
@@ -443,6 +377,33 @@
                                 class="button-title d-none"
                             >
                                 <span>Health Insights</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
+                    <!-- Reports button -->
+                    <router-link id="menuBtnReports" to="/reports" class="my-4">
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isReports }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
+                                <font-awesome-icon
+                                    icon="stream"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="7"
+                                class="button-title d-none"
+                            >
+                                <span>Reports</span>
                             </b-col>
                         </b-row>
                     </router-link>
@@ -707,6 +668,10 @@ export default class SidebarComponent extends Vue {
 
     private get isHealthInsights(): boolean {
         return this.$route.path == "/healthInsights";
+    }
+
+    private get isReports(): boolean {
+        return this.$route.path == "/reports";
     }
 
     private get isNoteEnabled(): boolean {
