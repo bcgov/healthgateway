@@ -52,6 +52,7 @@ export default class CalendarTimelineComponent extends Vue {
     @Prop() private totalEntries!: number;
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
+    @Prop() private allFilterTypes!: string[];
 
     private filteredTimelineEntries: TimelineEntry[] = [];
 
@@ -59,7 +60,12 @@ export default class CalendarTimelineComponent extends Vue {
     @Watch("filterTypes")
     private applyTimelineFilter() {
         this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(this.filterText, this.filterTypes)
+            entry.filterApplies(
+                this.filterText,
+                this.filterTypes.length > 0
+                    ? this.filterTypes
+                    : this.allFilterTypes
+            )
         );
     }
 
