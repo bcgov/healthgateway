@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
     using Microsoft.Extensions.Hosting;
 
     /// <summary>
     /// The entry point for the project.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         /// <summary>.

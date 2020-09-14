@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +13,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.EncounterTests
+namespace HealthGateway.Encounter.Test.Delegate
 {
-    using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Configuration;
     using Moq;
@@ -27,23 +26,18 @@ namespace HealthGateway.EncounterTests
     using Moq.Protected;
     using System.Threading;
     using System.Net;
-    using System.Linq;
-    using System;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models.ODR;
     using HealthGateway.Common.Models.ODR;
+    using System.Collections.Generic;
 
     public class EncounterDelegate_Test
     {
 
         public EncounterDelegate_Test()
         {
-            this.configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .Build();
+            this.configuration = GetIConfigurationRoot(string.Empty);
         }
 
         private readonly IConfiguration configuration;
@@ -102,9 +96,9 @@ namespace HealthGateway.EncounterTests
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
-                loggerFactory.CreateLogger<RestMSPVisitDelegate>(), 
+                loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
                 mockTrace.Object,
-                mockHttpClientService.Object, 
+                mockHttpClientService.Object,
                 this.configuration);
             ODRHistoryQuery query = new ODRHistoryQuery()
             {
@@ -114,6 +108,51 @@ namespace HealthGateway.EncounterTests
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.Single(actualResult.ResourcePayload.Claims);
             Assert.Equal(1, actualResult.TotalResultCount);
+        }
+
+        [Fact]
+        public void ShouldErrorDynamicLookup()
+        {
+            var handlerMock = new Mock<HttpMessageHandler>();
+            handlerMock
+               .Protected()
+               .Setup<Task<HttpResponseMessage>>(
+                  "SendAsync",
+                  ItExpr.IsAny<HttpRequestMessage>(),
+                  ItExpr.IsAny<CancellationToken>()
+               )
+               .ReturnsAsync(new HttpResponseMessage()
+               {
+                   StatusCode = HttpStatusCode.Unauthorized,
+                   Content = new StringContent(string.Empty),
+               })
+               .Verifiable();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<ITraceService> mockTrace = new Mock<ITraceService>(MockBehavior.Loose);
+            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+
+            var myConfiguration = new Dictionary<string, string>
+            {
+                {"ODR:DynamicServiceLookup", "True"},
+                {"ODR:BaseEndpoint", "http://mockendpoint/"},
+            };
+
+            var localConfig = new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration)
+                .Build();
+
+            IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
+                loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
+                mockTrace.Object,
+                mockHttpClientService.Object,
+                localConfig);
+            ODRHistoryQuery query = new ODRHistoryQuery()
+            {
+                PHN = "123456789",
+            };
+            RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty)).Result;
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
         [Fact]
@@ -148,6 +187,46 @@ namespace HealthGateway.EncounterTests
             };
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+        }
+
+        [Fact]
+        public void ShouldException()
+        {
+            var handlerMock = new Mock<HttpMessageHandler>();
+            handlerMock
+               .Protected()
+               .Setup<Task<HttpResponseMessage>>(
+                  "SendAsync",
+                  ItExpr.IsAny<HttpRequestMessage>(),
+                  ItExpr.IsAny<CancellationToken>()
+               )
+               .Throws<HttpRequestException>()
+               .Verifiable();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<ITraceService> mockTrace = new Mock<ITraceService>(MockBehavior.Loose);
+            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+            IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
+                loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
+                mockTrace.Object,
+                mockHttpClientService.Object,
+                this.configuration);
+            ODRHistoryQuery query = new ODRHistoryQuery()
+            {
+                PHN = "123456789",
+            };
+            RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty)).Result;
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error && actualResult.ResultError.ErrorCode == "testhostServer-CE-ODR");
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot(string outputPath)
+        {
+            return new ConfigurationBuilder()
+                // .SetBasePath(outputPath)
+                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("appsettings.Development.json", optional: true)
+                .AddJsonFile("appsettings.local.json", optional: true)
+                .Build();
         }
     }
 }

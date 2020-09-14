@@ -48,51 +48,17 @@
                     </b-col>
                 </b-row>
                 <div class="px-4">
-                    <b-form-checkbox
-                        v-if="isMedicationEnabled"
-                        id="medicationFilter"
-                        v-model="filterTypes"
-                        name="medicationFilter"
-                        value="Medication"
-                    >
-                        Medications
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                        v-if="isImmunizationEnabled"
-                        id="immunizationFilter"
-                        v-model="filterTypes"
-                        name="immunizationFilter"
-                        value="Immunization"
-                    >
-                        Immunizations
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                        v-if="isLaboratoryEnabled"
-                        id="laboratoryFilter"
-                        v-model="filterTypes"
-                        name="laboratoryFilter"
-                        value="Laboratory"
-                    >
-                        Laboratory
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                        v-if="isNoteEnabled"
-                        id="notesFilter"
-                        v-model="filterTypes"
-                        name="notesFilter"
-                        value="Note"
-                    >
-                        My Notes
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                        v-if="isEncounterEnabled"
-                        id="encounterFilter"
-                        v-model="filterTypes"
-                        name="encounterFilter"
-                        value="Encounter"
-                    >
-                        MSP Visits
-                    </b-form-checkbox>
+                    <div v-for="(filter, index) in filters" :key="index">
+                        <b-form-checkbox
+                            v-show="filter.isEnabled"
+                            :id="filter.name + '-filter'"
+                            v-model="selectedFilters"
+                            :name="filter.name + '-filter'"
+                            :value="filter.value"
+                        >
+                            {{ filter.display }}
+                        </b-form-checkbox>
+                    </div>
                 </div>
             </b-dropdown>
         </div>
@@ -145,51 +111,17 @@
             <b-row class="justify-content-center py-2">
                 <b-col class="col-10">
                     <h5>Type</h5>
-                    <b-form-checkbox
-                        v-if="isMedicationEnabled"
-                        id="medicationFilter"
-                        v-model="filterTypes"
-                        name="medicationFilter"
-                        value="Medication"
-                    >
-                        Medications
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                        v-if="isImmunizationEnabled"
-                        id="immunizationFilter"
-                        v-model="filterTypes"
-                        name="immunizationFilter"
-                        value="Immunization"
-                    >
-                        Immunizations
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                        v-if="isLaboratoryEnabled"
-                        id="laboratoryFilter"
-                        v-model="filterTypes"
-                        name="laboratoryFilter"
-                        value="Laboratory"
-                    >
-                        Laboratory
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                        v-if="isNoteEnabled"
-                        id="notesFilter"
-                        v-model="filterTypes"
-                        name="notesFilter"
-                        value="Note"
-                    >
-                        My Notes
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                        v-if="isEncounterEnabled"
-                        id="encounterFilter"
-                        v-model="filterTypes"
-                        name="encounterFilter"
-                        value="Encounter"
-                    >
-                        MSP Visits
-                    </b-form-checkbox>
+                    <div v-for="(filter, index) in filters" :key="index">
+                        <b-form-checkbox
+                            v-show="filter.isEnabled"
+                            :id="filter.name + '-filter'"
+                            v-model="selectedFilters"
+                            :name="filter.name + '-filter'"
+                            :value="filter.value"
+                        >
+                            {{ filter.display }}
+                        </b-form-checkbox>
+                    </div>
                 </b-col>
             </b-row>
         </b-modal>
@@ -203,7 +135,18 @@ import { Getter } from "vuex-class";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { Emit, Watch } from "vue-property-decorator";
+import { ILogger } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import EventBus from "@/eventbus";
 library.add(faSlidersH);
+
+interface Filter {
+    name: string;
+    value: string;
+    display: string;
+    isEnabled: boolean;
+}
 
 @Component
 export default class FilterComponent extends Vue {
@@ -211,29 +154,43 @@ export default class FilterComponent extends Vue {
     config!: WebClientConfiguration;
     @Getter("isOpen", { namespace: "sidebar" }) isOpen!: boolean;
 
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private eventBus = EventBus;
     private isVisible: boolean = false;
-    private filterTypes: string[] = [];
+    private selectedFilters: string[] = [];
     private windowWidth: number = 0;
-
-    private get isMedicationEnabled(): boolean {
-        return this.config.modules["Medication"];
-    }
-
-    private get isImmunizationEnabled(): boolean {
-        return this.config.modules["Immunization"];
-    }
-
-    private get isLaboratoryEnabled(): boolean {
-        return this.config.modules["Laboratory"];
-    }
-
-    private get isNoteEnabled(): boolean {
-        return this.config.modules["Note"];
-    }
-
-    private get isEncounterEnabled(): boolean {
-        return this.config.modules["Encounter"];
-    }
+    private filters: Filter[] = [
+        {
+            name: "medication",
+            value: "Medication",
+            display: "Medications",
+            isEnabled: false,
+        },
+        {
+            name: "immunization",
+            value: "Immunization",
+            display: "Immunizations",
+            isEnabled: false,
+        },
+        {
+            name: "laboratory",
+            value: "Laboratory",
+            display: "Laboratory",
+            isEnabled: false,
+        },
+        {
+            name: "note",
+            value: "Note",
+            display: "My Notes",
+            isEnabled: false,
+        },
+        {
+            name: "encounter",
+            value: "Encounter",
+            display: "MSP Visits",
+            isEnabled: false,
+        },
+    ];
 
     private get isMobileView(): boolean {
         return this.windowWidth < 576;
@@ -249,14 +206,18 @@ export default class FilterComponent extends Vue {
         this.isVisible = false;
     }
 
-    @Watch("filterTypes")
+    @Watch("selectedFilters")
     private onFilterUpdate() {
         this.filtersChanged();
     }
 
     @Emit()
     public filtersChanged() {
-        return this.filterTypes;
+        if (this.selectedFilters.length > 0) {
+            return this.selectedFilters;
+        } else {
+            return this.getAllFilters();
+        }
     }
 
     private created() {
@@ -265,7 +226,17 @@ export default class FilterComponent extends Vue {
     }
 
     private mounted() {
-        this.initializeFilters();
+        this.filters[0].isEnabled = this.config.modules["Medication"];
+        this.filters[1].isEnabled = this.config.modules["Note"];
+        this.filters[2].isEnabled = this.config.modules["Immunization"];
+        this.filters[3].isEnabled = this.config.modules["Laboratory"];
+        this.filters[4].isEnabled = this.config.modules["Encounter"];
+        this.selectedFilters = [];
+
+        var self = this;
+        this.eventBus.$on("filterSelected", function (filterName: string) {
+            self.onExternalFilterSelection(filterName);
+        });
     }
 
     private destroyed() {
@@ -280,26 +251,27 @@ export default class FilterComponent extends Vue {
         this.isVisible = !this.isVisible;
     }
 
-    private initializeFilters(): void {
-        if (this.isMedicationEnabled) {
-            this.filterTypes.push("Medication");
-        }
-        if (this.isImmunizationEnabled) {
-            this.filterTypes.push("Immunization");
-        }
-        if (this.isLaboratoryEnabled) {
-            this.filterTypes.push("Laboratory");
-        }
-        if (this.isNoteEnabled) {
-            this.filterTypes.push("Note");
-        }
-        if (this.isEncounterEnabled) {
-            this.filterTypes.push("Encounter");
+    private clearFilters(): void {
+        this.selectedFilters = [];
+    }
+
+    private onExternalFilterSelection(filterName: string) {
+        var externalFilter = this.filters.find((x) => x.name === filterName);
+        if (externalFilter) {
+            this.selectedFilters = [];
+            this.selectedFilters.push(externalFilter.value);
+        } else {
+            this.logger.error("Invalid filter attempted to be selected");
         }
     }
 
-    private clearFilters(): void {
-        this.filterTypes = [];
+    private getAllFilters(): string[] {
+        return this.filters.reduce<string[]>((groups, entry) => {
+            if (entry.isEnabled) {
+                groups.push(entry.value);
+            }
+            return groups;
+        }, []);
     }
 }
 </script>

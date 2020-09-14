@@ -259,15 +259,17 @@ export default class CommunicationTable extends Vue {
         this.isNewCommunication = false;
         if (item.communicationTypeCode === CommunicationType.Email) {
             this.editedEmail = item;
-            this.editedEmail.scheduledDateTime = new Date(
-                item.scheduledDateTime
-            );
+            this.editedEmail.scheduledDateTime = moment
+                .utc(item.scheduledDateTime)
+                .toDate();
         } else {
             this.editedBanner = item;
-            this.editedBanner.effectiveDateTime = new Date(
-                item.effectiveDateTime
-            );
-            this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
+            this.editedBanner.effectiveDateTime = moment
+                .utc(item.effectiveDateTime)
+                .toDate();
+            this.editedBanner.expiryDateTime = moment
+                .utc(item.expiryDateTime)
+                .toDate();
         }
     }
 
