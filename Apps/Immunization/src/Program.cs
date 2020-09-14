@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
     using Microsoft.Extensions.Hosting;
-    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// The entry point for the project.
