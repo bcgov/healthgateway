@@ -152,7 +152,7 @@ interface Filter {
 export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-    @Getter("isOpen", { namespace: "sidebar" }) isOpen!: boolean;
+    @Getter("isOpen", { namespace: "sidebar" }) isSidebarOpen!: boolean;
 
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private eventBus = EventBus;
@@ -201,8 +201,8 @@ export default class FilterComponent extends Vue {
         this.isVisible = false;
     }
 
-    @Watch("isOpen")
-    private onIsOpen(newValue: boolean, oldValue: boolean) {
+    @Watch("isSidebarOpen")
+    private onIsSidebarOpen(newValue: boolean, oldValue: boolean) {
         this.isVisible = false;
     }
 
