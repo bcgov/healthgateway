@@ -27,7 +27,7 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the Immunization id.
         /// </summary>
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the SourceSystemId.

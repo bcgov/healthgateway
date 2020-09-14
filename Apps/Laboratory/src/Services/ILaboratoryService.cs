@@ -33,7 +33,7 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>The list of Lab Reports available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0);
+        Task<RequestResult<IEnumerable<LaboratoryModel>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0);
 
         /// <summary>
         /// Gets the Lab report for the supplied id belonging to the authenticated user.
