@@ -43,6 +43,9 @@
                 target="_blank"
                 >Contact Us</b-nav-item
             >
+            <b-nav-item class="nav-link" href="/release-notes"
+                >Release Notes</b-nav-item
+            >
         </b-navbar-nav>
     </b-navbar>
 </template>

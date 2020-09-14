@@ -44,6 +44,8 @@ const HealthInsightsView = () =>
     import(
         /* webpackChunkName: "healthInsights" */ "@/views/healthInsights.vue"
     );
+const ReleaseNotesView = () =>
+    import(/* webpackChunkName: "releaseNotes" */ "@/views/releaseNotes.vue");
 
 Vue.use(VueRouter);
 
@@ -54,6 +56,11 @@ const routes = [
     {
         path: "/",
         component: LandingView,
+        meta: { requiresAuth: false },
+    },
+    {
+        path: "/release-notes",
+        component: ReleaseNotesView,
         meta: { requiresAuth: false },
     },
     {
