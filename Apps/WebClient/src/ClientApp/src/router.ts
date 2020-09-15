@@ -46,13 +46,11 @@ const HealthInsightsView = () =>
     );
 const ReportsView = () =>
     import(/* webpackChunkName: "reports" */ "@/views/reports.vue");
-    );
 const ReleaseNotesView = () =>
     import(/* webpackChunkName: "releaseNotes" */ "@/views/releaseNotes.vue"
     );
 const ContactUsView = () =>
     import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
-    );
 
 Vue.use(VueRouter);
 
