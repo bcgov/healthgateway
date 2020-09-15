@@ -13,29 +13,24 @@
     color: $primary;
     font-size: 1.3em;
 }
+
 .sticky-offset {
-    top: 117px;
+    top: 70px;
     background-color: white;
     z-index: 2;
-    // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 350px) {
-        top: 134px;
-    }
 }
+
 .sticky-line {
-    top: 187px;
+    top: 139px;
     background-color: white;
-    border-bottom: solid $primary 1px;
-    margin-top: -1px;
+    border-bottom: solid $primary 2px;
+    margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
-        top: 241px;
-    }
-    // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 350px) {
-        top: 258px;
+        top: 193px;
     }
 }
+
 .noTimelineEntriesText {
     font-size: 1.5rem;
     color: #6c757d;
@@ -61,7 +56,7 @@
                 <slot name="month-list-toggle"></slot>
             </b-col>
         </b-row>
-        <b-row class="sticky-top sticky-line" />
+        <b-row v-if="!timelineIsEmpty" class="sticky-top sticky-line" />
         <b-row id="listControls" class="no-print">
             <b-col>
                 Displaying {{ getVisibleCount() }} out of
@@ -143,7 +138,6 @@ export default class LinearTimelineComponent extends Vue {
 
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
-    @Prop() private allFilterTypes!: string[];
 
     private filteredTimelineEntries: TimelineEntry[] = [];
     private visibleTimelineEntries: TimelineEntry[] = [];
@@ -158,12 +152,7 @@ export default class LinearTimelineComponent extends Vue {
     @Watch("filterTypes")
     private applyTimelineFilter() {
         this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(
-                this.filterText,
-                this.filterTypes.length > 0
-                    ? this.filterTypes
-                    : this.allFilterTypes
-            )
+            entry.filterApplies(this.filterText, this.filterTypes)
         );
     }
 

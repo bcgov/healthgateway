@@ -56,6 +56,14 @@
         border-radius: 0px 5px 5px 0px;
     }
 }
+
+.z-index-large {
+    z-index: 50;
+}
+
+.sticky-top {
+    z-index: 49 !important;
+}
 .sticky-offset {
     padding-top: 1rem;
     background-color: white;
@@ -124,8 +132,8 @@
                     <hr class="mb-0" />
                 </div>
                 <div class="sticky-top sticky-offset">
-                    <b-row class="no-print">
-                        <b-col>
+                    <b-row class="no-print justify-content-between">
+                        <b-col class="col">
                             <div class="form-group has-filter">
                                 <font-awesome-icon
                                     :icon="searchIcon"
@@ -141,63 +149,10 @@
                                 ></b-form-input>
                             </div>
                         </b-col>
-                    </b-row>
-                    <b-row
-                        align-h="start"
-                        class="no-print sticky-top justify-content-between"
-                    >
-                        <b-col v-if="isMedicationEnabled" cols="auto">
-                            <b-form-checkbox
-                                id="medicationFilter"
-                                v-model="filterTypes"
-                                name="medicationFilter"
-                                value="Medication"
-                            >
-                                Medications
-                            </b-form-checkbox>
-                        </b-col>
-                        <b-col v-if="isImmunizationEnabled" cols="auto">
-                            <b-form-checkbox
-                                id="immunizationFilter"
-                                v-model="filterTypes"
-                                name="immunizationFilter"
-                                value="Immunization"
-                            >
-                                Immunizations
-                            </b-form-checkbox>
-                        </b-col>
-                        <b-col v-if="isLaboratoryEnabled" cols="auto">
-                            <b-form-checkbox
-                                id="laboratoryFilter"
-                                v-model="filterTypes"
-                                name="laboratoryFilter"
-                                value="Laboratory"
-                            >
-                                Laboratory
-                            </b-form-checkbox>
-                        </b-col>
-                        <b-col v-if="isNoteEnabled" cols="auto">
-                            <b-form-checkbox
-                                id="notesFilter"
-                                v-model="filterTypes"
-                                name="notesFilter"
-                                value="Note"
-                            >
-                                My Notes
-                            </b-form-checkbox>
-                        </b-col>
-                        <b-col v-if="isEncounterEnabled">
-                            <b-form-checkbox
-                                id="encounterFilter"
-                                v-model="filterTypes"
-                                name="encounterFilter"
-                                value="Encounter"
-                            >
-                                MSP Visits
-                            </b-form-checkbox>
+                        <b-col class="col-auto pl-0">
+                            <Filters @filters-changed="filtersChanged" />
                         </b-col>
                     </b-row>
-                    <br />
                 </div>
                 <b-row v-if="isAddingNote" class="pb-5">
                     <b-col>
@@ -211,7 +166,6 @@
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
-                    :all-filter-types="allFilterTypes"
                 >
                     <b-row
                         slot="month-list-toggle"
@@ -243,7 +197,6 @@
                     :total-entries="getTotalCount()"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
-                    :all-filter-types="allFilterTypes"
                 >
                     <b-row
                         slot="month-list-toggle"
@@ -352,6 +305,7 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
+import FilterComponent from "@/components/timeline/filters.vue";
 
 const namespace: string = "user";
 
@@ -368,6 +322,7 @@ Component.registerHooks(["beforeRouteLeave"]);
         LinearTimeline: LinearTimelineComponent,
         CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
+        Filters: FilterComponent,
     },
 })
 export default class TimelineView extends Vue {
@@ -409,26 +364,6 @@ export default class TimelineView extends Vue {
 
     private isListView: boolean = true;
     private eventBus = EventBus;
-
-    private get allFilterTypes(): string[] {
-        let allFilterTypes: string[] = [];
-        if (this.isMedicationEnabled) {
-            allFilterTypes.push("Medication");
-        }
-        if (this.isImmunizationEnabled) {
-            allFilterTypes.push("Immunization");
-        }
-        if (this.isLaboratoryEnabled) {
-            allFilterTypes.push("Laboratory");
-        }
-        if (this.isNoteEnabled) {
-            allFilterTypes.push("Note");
-        }
-        if (this.isEncounterEnabled) {
-            allFilterTypes.push("Encounter");
-        }
-        return allFilterTypes;
-    }
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
@@ -541,28 +476,8 @@ export default class TimelineView extends Vue {
         );
     }
 
-    private get isMedicationEnabled(): boolean {
-        return this.config.modules["Medication"];
-    }
-
-    private get isImmunizationEnabled(): boolean {
-        return this.config.modules["Immunization"];
-    }
-
-    private get isLaboratoryEnabled(): boolean {
-        return this.config.modules["Laboratory"];
-    }
-
-    private get isNoteEnabled(): boolean {
-        return this.config.modules["Note"];
-    }
-
-    private get isEncounterEnabled(): boolean {
-        return this.config.modules["Encounter"];
-    }
-
     private onCovidSubmit() {
-        this.filterTypes = ["Laboratory"];
+        this.eventBus.$emit("filterSelected", "laboratory");
     }
 
     private onCovidCancel() {
@@ -866,6 +781,10 @@ export default class TimelineView extends Vue {
 
     private printRecords() {
         window.print();
+    }
+
+    private filtersChanged(newFilters: string[]) {
+        this.filterTypes = newFilters;
     }
 }
 </script>
