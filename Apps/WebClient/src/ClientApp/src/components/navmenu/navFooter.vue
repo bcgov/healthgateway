@@ -13,17 +13,6 @@
                 >Release Notes</b-nav-item
             >
 
-            <b-nav-item class="nav-link" to="/contactUs" target="_blank"
-                >Contact Us</b-nav-item
-            >
-
-            <b-nav-item
-                class="nav-link"
-                href="https://www2.gov.bc.ca/gov/content/health/healthgateway"
-                target="_blank"
-                >About Us</b-nav-item
-            >
-
             <b-nav-item class="nav-link" href="/contact-us"
                 >Contact Us</b-nav-item
             >
