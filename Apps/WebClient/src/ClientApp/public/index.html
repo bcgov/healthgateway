@@ -21,6 +21,12 @@
 
         <!-- Snowplow starts plowing - Standalone vE.2.14.0 -->
         <script type="text/javascript">
+            var sBrowser, sUsrAg = window.navigator.userAgent;
+            if (sUsrAg.indexOf("Trident") > -1) {
+                console.info("Is Microsoft Internet Explorer - sUsrAg: " + sUsrAg);
+                alert("Health Gateway is not compatible with this browser. Please use another browser.");
+            }
+
             (function (p, l, o, w, i, n, g) {
                 if (!p[i]) {
                     p.GlobalSnowplowNamespace = p.GlobalSnowplowNamespace || [];
