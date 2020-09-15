@@ -1,26 +1,18 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 .sticky-offset {
-    top: 118px;
+    top: 70px;
     background-color: white;
     z-index: 2;
-    // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 350px) {
-        top: 142px;
-    }
 }
 .sticky-line {
-    top: 172px;
+    top: 122px;
     background-color: white;
-    border-bottom: solid $primary 1px;
-    margin-top: -1px;
+    border-bottom: solid $primary 2px;
+    margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
-        top: 210px;
-    }
-    // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 350px) {
-        top: 234px;
+        top: 160px;
     }
 }
 </style>
