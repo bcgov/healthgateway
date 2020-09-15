@@ -44,6 +44,8 @@ const HealthInsightsView = () =>
     import(
         /* webpackChunkName: "healthInsights" */ "@/views/healthInsights.vue"
     );
+const ReportsView = () =>
+    import(/* webpackChunkName: "reports" */ "@/views/reports.vue");
 const ContactUsView = () =>
     import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
 
@@ -95,6 +97,11 @@ const routes = [
     {
         path: "/healthInsights",
         component: HealthInsightsView,
+        meta: { requiresRegistration: true, roles: ["user"] },
+    },
+    {
+        path: "/reports",
+        component: ReportsView,
         meta: { requiresRegistration: true, roles: ["user"] },
     },
     {
