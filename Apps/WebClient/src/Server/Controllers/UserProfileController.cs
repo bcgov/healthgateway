@@ -184,6 +184,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("termsofservice")]
         [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public IActionResult GetLastTermsOfService()
         {
             RequestResult<TermsOfServiceModel> result = this.userProfileService.GetActiveTermsOfService();
