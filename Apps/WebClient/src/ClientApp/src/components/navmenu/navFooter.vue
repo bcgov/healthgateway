@@ -23,6 +23,14 @@
                 target="_blank"
                 >About Us</b-nav-item
             >
+
+            <b-nav-item class="nav-link" href="/contact-us"
+                >Contact Us</b-nav-item
+            >
+
+            <b-nav-item class="nav-link" href="/termsOfService"
+                >Terms of Service</b-nav-item
+            >
         </b-navbar-nav>
     </b-navbar>
 </template>
