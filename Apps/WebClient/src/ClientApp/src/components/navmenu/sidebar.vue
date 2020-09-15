@@ -259,7 +259,7 @@
                                 :class="{ 'col-3': isOpen }"
                             >
                                 <font-awesome-icon
-                                    icon="clipboard-list"
+                                    icon="stream"
                                     class="button-icon"
                                     size="3x"
                                 />
@@ -393,7 +393,7 @@
                             ></b-col>
                             <b-col title="Reports" :class="{ 'col-3': isOpen }">
                                 <font-awesome-icon
-                                    icon="stream"
+                                    icon="clipboard-list"
                                     class="button-icon"
                                     size="3x"
                                 />
