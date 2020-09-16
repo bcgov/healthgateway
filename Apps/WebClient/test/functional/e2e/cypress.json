@@ -5,9 +5,9 @@
     "env":
     {
         "bcsc.username": "hthgtwy11",
-        "bcsc.password": "98911",    
+        "bcsc.password": "",    
         "keycloak.username": "healthgateway",
-        "keycloak.password": "Passw0rd"    
+        "keycloak.password": ""    
     } 
 }
 

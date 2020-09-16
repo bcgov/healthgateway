@@ -8,12 +8,21 @@ A Developer should have gone through the Health Gateway installation and configu
 
 ## Cypress
 
-### Installation
+### Installation and configuration
 
 Installation of Cypress is as easy as running npm install.
 
 ```bash
 npm install
+```
+
+Create a cypress.env.json and update with passwords or any other environment variables you would like to override.
+
+```bash
+{
+    "bcsc.password": "THE PASSWORD",
+    "keycloak.password": "THE PASSWORD"
+}
 ```
 
 ### Running Interactively
