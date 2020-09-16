@@ -91,7 +91,8 @@
                 <b-row class="p-3 description-container">
                     <b-col class="text-left small"
                         ><span class="button-title d-none"
-                            >Do you have a suggestion or idea? Let us know in the field below.</span
+                            >Do you have a suggestion or idea? Let us know in
+                            the field below.</span
                         >
                     </b-col>
                 </b-row>
