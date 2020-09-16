@@ -1,0 +1,25 @@
+{
+  "name": "functional",
+  "version": "1.0.0",
+  "description": "Health Gateway WebClient functional tests",
+  "main": "index.js",
+  "scripts": {
+    "launch": "cypress open",
+    "e2e": "cypress run"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "browserstack-cypress-cli": "^1.4.0",
+    "cypress": "^5.2.0",
+    "cypress-xpath": "^1.6.0",
+    "eslint": "^7.9.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-cypress": "^2.11.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "dependencies": {}
+}

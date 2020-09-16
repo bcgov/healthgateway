@@ -1,0 +1,13 @@
+{
+    "baseUrl": "https://dev.healthgateway.gov.bc.ca",
+    "defaultCommandTimeout": 30000,
+    "blockHosts": ["spt.apps.gov.bc.ca"],
+    "env":
+    {
+        "bcsc.username": "hthgtwy11",
+        "bcsc.password": "",    
+        "keycloak.username": "healthgateway",
+        "keycloak.password": ""    
+    } 
+}
+
