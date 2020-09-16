@@ -119,7 +119,7 @@ const routes = [
     {
         path: "/contact-us",
         component: ContactUsView,
-        meta: { requiresRegistration: true, roles: ["user"] },
+        meta: { requiresAuth: false },
     },
     {
         path: "/login",
