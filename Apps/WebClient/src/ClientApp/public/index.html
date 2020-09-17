@@ -22,12 +22,6 @@
         </script>
         <!-- Snowplow starts plowing - Standalone vE.2.14.0 -->
         <script type="text/javascript">
-            function detectBrowser() {
-                if (!Modernizr.es6number) {
-                    const unsupportedBrowserMsg = "Health Gateway is not compatible with this browser. Please use another browser.";
-                    document.getElementById("app-root").innerHTML = unsupportedBrowserMsg;
-                } 
-            }
             (function (p, l, o, w, i, n, g) {
                 if (!p[i]) {
                     p.GlobalSnowplowNamespace = p.GlobalSnowplowNamespace || [];
@@ -66,8 +60,24 @@
             window.snowplow("trackPageView");
         </script>
         <!-- Snowplow stop plowing -->
+        
+        <script type="text/javascript">
+            function detectBrowser() {
+                const body = document.getElementsByTagName("BODY")[0];
+                const unsupportedBrowser = document.getElementById("unsupported-browser");
+                if (!Modernizr.es6number) {                    
+                    body.removeChild(document.getElementById("app-root"));
+                    const unsupportedBrowserMsg = "Health Gateway is not compatible with this browser. Please use another browser.";
+                    unsupportedBrowser.innerHTML = unsupportedBrowserMsg;
+                }
+                else {
+                    body.removeChild(unsupportedBrowser);
+                }
+            }
+        </script>
     </head>
     <body class="d-flex flex-column" onload="detectBrowser()">
         <div id="app-root">Loading...</div>
+        <div id="unsupported-browser"></div>
     </body>
 </html>
