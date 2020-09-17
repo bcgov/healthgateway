@@ -3,7 +3,7 @@
         <!-- Navbar content -->
         <b-navbar-nav>
             <b-nav-item class="nav-link" to="/termsOfService"
-                >Terms Of Service</b-nav-item
+                >Terms of Service</b-nav-item
             >
 
             <b-nav-item class="nav-link" href="/release-notes"
