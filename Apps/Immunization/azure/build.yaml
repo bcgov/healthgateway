@@ -54,7 +54,7 @@ steps:
       displayName: "Create Code Coverage Report for $(App.Name)"
 
     - task: PublishCodeCoverageResults@1
-      displayName: "ublishing Code Coverage for $(App.Name)"
+      displayName: "Publishing Code Coverage for $(App.Name)"
       inputs:
           codeCoverageTool: Cobertura
           summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
@@ -82,6 +82,7 @@ steps:
       condition: and(succeeded(), eq(variables['PullRequest'], false))
 
     - task: CopyFiles@2
+    -- ${{ if and(succeeded(), eq(variables['PublishFunctionalTests'], true)) }}
       displayName: "Copy Functional Tests to Staging for $(App.Name)"
       condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
       inputs:
