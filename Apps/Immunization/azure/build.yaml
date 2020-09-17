@@ -1,11 +1,19 @@
-name: 1.0.0$(Rev:.r) #Build number
+name: $(BuildPrefix)-$(Date:yyyyMMdd)$(Rev:.r) #Build number
 
 #Build variables
 variables:
-    App.Home: $(Build.SourcesDirectory)/Apps/Immunization
-    App.Name: immunization
+    App.Name: Immunization
+    FunctionalTests: false
+    App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
+    OpenShift.Name: $[lower(variables['App.Name'])]
     App.UnitTests: $(App.Home)/test/unit
     App.FunctionalTests: $(App.Home)/test/functional
+    PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
+    PublishFunctionalTests: $[and(eq(variables['FunctionalTests'],true), eq(variables['PullRequest'],false))]
+    ${{ if eq(variables['PullRequest'], true) }}: 
+        BuildPrefix: "PR-$(SourceBranchName)"
+    ${{ if eq(variables['PullRequest'], false) }}: 
+        BuildPrefix: "$(SourceBranchName)"
 
 pr:
     branches:
@@ -13,7 +21,7 @@ pr:
         - dev
     paths:
         include:
-        - Apps/Immunization
+        - Apps/Immunization     # Should be set to App.Name
         - Apps/Common
         - Apps/Database
 
@@ -24,7 +32,7 @@ trigger:
         - dev
     paths:
         include:
-        - Apps/Immunization
+        - Apps/Immunization     # Should be set to App.Name
         - Apps/Common
         - Apps/Database
 
@@ -33,20 +41,20 @@ pool:
 
 steps:
     - task: DotNetCoreCLI@2
-      displayName: Run dotnet Tests
+      displayName: "$(App.Name): Runing Unit Tests"
       inputs:
           command: "test"
-          projects: "$(App.Home)/test/unit/ImmunizationTests.csproj"
+          projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
           arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
-          testRunTitle: "Immunization Service Tests"
+          testRunTitle: "$(App.Name): Performing Unit Tests"
 
     - script: |
           set -e
           reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-      displayName: Create Code Coverage Report
+      displayName: "$(App.Name): Create Code Coverage Report"
 
     - task: PublishCodeCoverageResults@1
-      displayName: "Publish Code Coverage"
+      displayName: "$(App.Name): Publishing Code Coverage"
       inputs:
           codeCoverageTool: Cobertura
           summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
@@ -54,7 +62,7 @@ steps:
           reportDirectory: "$(App.Home)/CodeCoverage"
 
     - task: DotNetCoreCLI@2
-      displayName: Publish dotnet code
+      displayName: "$(App.Name): Publishing code"
       inputs:
           modifyOutputPath: false
           command: "publish"
@@ -66,23 +74,24 @@ steps:
     - script: |
           set -e
           cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-          oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
-          oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-          oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
+          oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(OpenShift.Name) | oc apply -f -
+          oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+          oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
           echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-      displayName: "Build OpenShift Image and push to Image Stream"
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+      displayName: "Build OpenShift Image for $(App.Name) and pushing to Image Stream"
+      condition: and(succeeded(), eq(variables['PullRequest'], false))
 
     - task: CopyFiles@2
-      displayName: Copy Functional Tests to Staging
+      displayName: "$(App.Name): Copy Functional Tests to Staging"
+      condition: eq(variables['PublishFunctionalTests'], true)
       inputs:
           SourceFolder: "$(App.FunctionalTests)"
           Contents: "**"
           TargetFolder: "$(Build.ArtifactStagingDirectory)"
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+        
 
     - task: PublishPipelineArtifact@0
       displayName: "Publish Pipeline Artifact"
+      condition: and(succeeded(), eq(variables['PullRequest'], false))
       inputs:
           targetPath: "$(Build.ArtifactStagingDirectory)"
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
