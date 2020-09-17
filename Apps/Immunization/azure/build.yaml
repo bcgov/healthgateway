@@ -1,4 +1,4 @@
-name: $(BuildPrefix)-$(Date:yyyyMMdd)$(Rev:.r) #Build number
+name: 1.1.0$(Rev:.r) #Build number
 
 #Build variables
 variables:
@@ -41,7 +41,7 @@ pool:
 
 steps:
     - task: DotNetCoreCLI@2
-      displayName: "$(App.Name): Runing Unit Tests"
+      displayName: "Runing Unit Tests for $(App.Name)"
       inputs:
           command: "test"
           projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
@@ -51,10 +51,10 @@ steps:
     - script: |
           set -e
           reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-      displayName: "$(App.Name): Create Code Coverage Report"
+      displayName: "Create Code Coverage Report for $(App.Name)"
 
     - task: PublishCodeCoverageResults@1
-      displayName: "$(App.Name): Publishing Code Coverage"
+      displayName: "ublishing Code Coverage for $(App.Name)"
       inputs:
           codeCoverageTool: Cobertura
           summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
@@ -62,7 +62,7 @@ steps:
           reportDirectory: "$(App.Home)/CodeCoverage"
 
     - task: DotNetCoreCLI@2
-      displayName: "$(App.Name): Publishing code"
+      displayName: "Publishing code for $(App.Name)"
       inputs:
           modifyOutputPath: false
           command: "publish"
@@ -82,8 +82,8 @@ steps:
       condition: and(succeeded(), eq(variables['PullRequest'], false))
 
     - task: CopyFiles@2
-      displayName: "$(App.Name): Copy Functional Tests to Staging"
-      condition: eq(variables['PublishFunctionalTests'], true)
+      displayName: "Copy Functional Tests to Staging for $(App.Name)"
+      condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
       inputs:
           SourceFolder: "$(App.FunctionalTests)"
           Contents: "**"
@@ -91,7 +91,7 @@ steps:
         
 
     - task: PublishPipelineArtifact@0
-      displayName: "Publish Pipeline Artifact"
-      condition: and(succeeded(), eq(variables['PullRequest'], false))
+      displayName: "Publish Pipeline Artifact for $(App.Name)"
+      condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
       inputs:
           targetPath: "$(Build.ArtifactStagingDirectory)"
