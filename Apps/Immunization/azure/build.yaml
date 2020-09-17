@@ -80,16 +80,14 @@ steps:
           echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
       displayName: "Build OpenShift Image for $(App.Name) and pushing to Image Stream"
       condition: and(succeeded(), eq(variables['PullRequest'], false))
-
+    
     - task: CopyFiles@2
-    -- ${{ if and(succeeded(), eq(variables['PublishFunctionalTests'], true)) }}
       displayName: "Copy Functional Tests to Staging for $(App.Name)"
       condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
       inputs:
           SourceFolder: "$(App.FunctionalTests)"
           Contents: "**"
           TargetFolder: "$(Build.ArtifactStagingDirectory)"
-        
 
     - task: PublishPipelineArtifact@0
       displayName: "Publish Pipeline Artifact for $(App.Name)"
