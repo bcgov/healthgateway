@@ -1,20 +1,5 @@
 name: 1.1.0$(Rev:.r) #Build number
 
-#Build variables
-variables:
-    App.Name: Immunization
-    FunctionalTests: false
-    App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
-    OpenShift.Name: $[lower(variables['App.Name'])]
-    App.UnitTests: $(App.Home)/test/unit
-    App.FunctionalTests: $(App.Home)/test/functional
-    PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
-    PublishFunctionalTests: $[and(eq(variables['FunctionalTests'],true), eq(variables['PullRequest'],false))]
-    ${{ if eq(variables['PullRequest'], true) }}: 
-        BuildPrefix: "PR-$(SourceBranchName)"
-    ${{ if eq(variables['PullRequest'], false) }}: 
-        BuildPrefix: "$(SourceBranchName)"
-
 pr:
     branches:
         include:
@@ -36,12 +21,30 @@ trigger:
         - Apps/Common
         - Apps/Database
 
+#Build variables
+variables:
+    App.Name: Immunization
+    UnitTests: true
+    FunctionalTests: false
+    #### You should not have to edit anything below this point unless you're adding new steps.
+    App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
+    OpenShift.Name: $[lower(variables['App.Name'])]
+    App.UnitTests: $(App.Home)/test/unit
+    App.FunctionalTests: $(App.Home)/test/functional
+    PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
+    PublishFunctionalTests: $[and(eq(variables['FunctionalTests'],true), eq(variables['PullRequest'],false))]
+    ${{ if eq(variables['PullRequest'], true) }}: 
+        BuildPrefix: "PR-$(SourceBranchName)"
+    ${{ if eq(variables['PullRequest'], false) }}: 
+        BuildPrefix: "$(SourceBranchName)"
+
 pool:
     name: "HealthGateway"
 
 steps:
     - task: DotNetCoreCLI@2
       displayName: "Runing Unit Tests for $(App.Name)"
+      condition: and(succeeded(), eq(variables['UnitTests'], true))
       inputs:
           command: "test"
           projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
@@ -52,9 +55,11 @@ steps:
           set -e
           reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
       displayName: "Create Code Coverage Report for $(App.Name)"
+      condition: and(succeeded(), eq(variables['UnitTests'], true))
 
     - task: PublishCodeCoverageResults@1
       displayName: "Publishing Code Coverage for $(App.Name)"
+      condition: and(succeeded(), eq(variables['UnitTests'], true))
       inputs:
           codeCoverageTool: Cobertura
           summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
@@ -78,11 +83,11 @@ steps:
           oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
           oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
           echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-      displayName: "Build OpenShift Image for $(App.Name) and pushing to Image Stream"
+      displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
       condition: and(succeeded(), eq(variables['PullRequest'], false))
     
     - task: CopyFiles@2
-      displayName: "Copy Functional Tests to Staging for $(App.Name)"
+      displayName: "Copying Functional Tests to Staging for $(App.Name)"
       condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
       inputs:
           SourceFolder: "$(App.FunctionalTests)"
@@ -90,7 +95,7 @@ steps:
           TargetFolder: "$(Build.ArtifactStagingDirectory)"
 
     - task: PublishPipelineArtifact@0
-      displayName: "Publish Pipeline Artifact for $(App.Name)"
+      displayName: "Publishing Pipeline Artifact for $(App.Name)"
       condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
       inputs:
           targetPath: "$(Build.ArtifactStagingDirectory)"
