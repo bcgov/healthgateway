@@ -1,5 +1,25 @@
 name: 1.1.0$(Rev:.r) #Build number
 
+#Template Parameters
+parameters:
+    - name: Application # name of the parameter; required
+      type: string # data type of the parameter; required
+      default: Immunization
+      values:
+      - AdminWebClient
+      - Encounter
+      - Immunization
+      - JobScheduler
+      - Laboratory
+      - Medication
+      - Patient
+      - WebClient
+    - name: UnitTests
+      type: boolean
+      default: true
+    - name: FunctionalTests
+      type: boolean
+      default: false
 pr:
     branches:
         include:
@@ -23,7 +43,7 @@ trigger:
 
 #Build variables
 variables:
-    App.Name: Immunization
+    App.Name: ${{ parameters.Application }}
     UnitTests: true
     FunctionalTests: false
     #### You should not have to edit anything below this point unless you're adding new steps.
@@ -54,7 +74,7 @@ steps:
     - script: |
           set -e
           reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-      displayName: "Create Code Coverage Report for $(App.Name)"
+      displayName: "Creating Code Coverage Report for $(App.Name)"
       condition: and(succeeded(), eq(variables['UnitTests'], true))
 
     - task: PublishCodeCoverageResults@1
