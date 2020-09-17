@@ -58,12 +58,11 @@
             window.snowplow("trackPageView");
         </script>
         <!-- Snowplow stop plowing -->
-        
-        <script src="modernizr-custom.js"></script>
-        <script src="index.js"></script>
     </head>
-    <body class="d-flex flex-column" onload="detectBrowser()">
+    <body class="d-flex flex-column">
         <div id="app-root">Loading...</div>
         <div id="unsupported-browser"></div>
+        <script src="/modernizr-custom.js"></script>
+        <script src="/index.js"></script>
     </body>
 </html>

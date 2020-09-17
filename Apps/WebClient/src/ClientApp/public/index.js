@@ -1,4 +1,3 @@
-/*! index.js */
 function detectBrowser() {
     const body = document.getElementsByTagName("BODY")[0];
     const unsupportedBrowser = document.getElementById("unsupported-browser");
@@ -12,3 +11,6 @@ function detectBrowser() {
         unsupportedBrowser.innerHTML = unsupportedBrowserMsg;
     }
 }
+window.onload = function () {
+    detectBrowser();
+};
