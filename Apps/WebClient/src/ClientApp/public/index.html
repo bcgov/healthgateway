@@ -18,8 +18,6 @@
             name="google-site-verification"
             content="doAsS2f0kVQcQMjZcJuo2Pdj60GkhXI2iKbwfaUBImk"
         />
-        <script src="modernizr-custom.js">
-        </script>
         <!-- Snowplow starts plowing - Standalone vE.2.14.0 -->
         <script type="text/javascript">
             (function (p, l, o, w, i, n, g) {
@@ -61,20 +59,8 @@
         </script>
         <!-- Snowplow stop plowing -->
         
-        <script type="text/javascript">
-            function detectBrowser() {
-                const body = document.getElementsByTagName("BODY")[0];
-                const unsupportedBrowser = document.getElementById("unsupported-browser");
-                if (Modernizr.es6number) {          
-                    body.removeChild(unsupportedBrowser);
-                }
-                else {          
-                    body.removeChild(document.getElementById("app-root"));
-                    const unsupportedBrowserMsg = "Health Gateway is not compatible with this browser. Please use another browser.";
-                    unsupportedBrowser.innerHTML = unsupportedBrowserMsg;
-                }
-            }
-        </script>
+        <script src="modernizr-custom.js"></script>
+        <script src="index.js"></script>
     </head>
     <body class="d-flex flex-column" onload="detectBrowser()">
         <div id="app-root">Loading...</div>
