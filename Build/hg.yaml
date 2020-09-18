@@ -28,7 +28,11 @@ parameters:
 
     - name: NPMTests
       type: boolean
-      default: false           
+      default: false
+    
+    - name: Library
+      type: boolean
+      default: false
 
 #Build variables
 variables:
@@ -37,12 +41,14 @@ variables:
     NPMTests: ${{ parameters.NPMTests }}
     UnitTests: ${{ parameters.DotNetTests }}
     FunctionalTests: ${{ parameters.FunctionalTests }}
+    Library: ${{ parameters.Library }}
     App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
     OpenShift.Name: $[lower(variables['App.Name'])]
     App.UnitTests: $(App.Home)/test/unit
     App.FunctionalTests: $(App.Home)/test/functional
     PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
     PublishFunctionalTests: $[and(eq(variables['FunctionalTests'],true), eq(variables['PullRequest'],false))]
+    RunOpenShift: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
     ${{ if eq(variables['PullRequest'], true) }}: 
         BuildPrefix: "PR-$(SourceBranchName)"
     ${{ if eq(variables['PullRequest'], false) }}: 
@@ -106,7 +112,7 @@ steps:
           oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
           echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
       displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
-      condition: and(succeeded(), eq(variables['PullRequest'], false))
+      condition: and(succeeded(), eq(variables['RunOpenShift'], true))
     
     - task: CopyFiles@2
       displayName: "Copying Functional Tests to Staging for $(App.Name)"
