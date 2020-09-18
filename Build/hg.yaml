@@ -38,9 +38,6 @@ variables:
     ${{ if eq(variables['PullRequest'], false) }}: 
         BuildPrefix: "$(SourceBranchName)"
 
-pool:
-    name: "HealthGateway"
-
 steps:
     - task: DotNetCoreCLI@2
       displayName: "Runing Unit Tests for $(App.Name)"
