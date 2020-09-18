@@ -33,6 +33,8 @@ parameters:
 #Build variables
 variables:
     App.Name: ${{ parameters.Application }}
+    NPMInstall: ${{ parameters.NPMInstall }}
+    NPMTests: ${{ parameters.NPMTests }}
     UnitTests: ${{ parameters.DotNetTests }}
     FunctionalTests: ${{ parameters.FunctionalTests }}
     App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
@@ -47,9 +49,9 @@ variables:
         BuildPrefix: "$(SourceBranchName)"
 
 steps:
-- ${{ if eq(parameters.NPMInstall, true) }}:
     - task: Npm@1
       displayName: Installing NPM Packages"
+      condition: and(succeeded(), eq(variables['NPMInstall'], true))
       inputs:
           command: "install"
           workingDir: "$(App.Home)/src/ClientApp"
@@ -57,11 +59,12 @@ steps:
 - ${{ if eq(parameters.NPMTests, true) }}:          
     - task: Npm@1
       displayName: "Running NPM Tests for $(App.Name)"
+      condition: and(succeeded(), eq(variables['NPMTests'], true))
       inputs:
           command: "custom"
           customCommand: "test"
           workingDir: "$(App.Home)/src/ClientApp"
-
+         
     - task: DotNetCoreCLI@2
       displayName: "Runing Unit Tests for $(App.Name)"
       condition: and(succeeded(), eq(variables['UnitTests'], true))
@@ -76,7 +79,7 @@ steps:
           reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
       displayName: "Creating Code Coverage Report for $(App.Name)"
       condition: and(succeeded(), eq(variables['UnitTests'], true))
-
+      
     - task: PublishCodeCoverageResults@1
       displayName: "Publishing Code Coverage for $(App.Name)"
       condition: and(succeeded(), eq(variables['UnitTests'], true))
@@ -85,7 +88,7 @@ steps:
           summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
           pathToSources: "$(App.Home)/src"
           reportDirectory: "$(App.Home)/CodeCoverage"
-
+          
     - task: DotNetCoreCLI@2
       displayName: "Publishing code for $(App.Name)"
       inputs:
