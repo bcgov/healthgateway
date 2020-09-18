@@ -1,15 +1,5 @@
 name: 1.1.0$(Rev:.r) #Build number
 
-pr:
-    branches:
-        include:
-        - dev
-    paths:
-        include:
-        - Apps/Immunization
-        - Apps/Common
-        - Apps/Database
-
 trigger:
     batch: "true"
     branches:

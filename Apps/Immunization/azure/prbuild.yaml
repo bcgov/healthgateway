@@ -1,13 +1,12 @@
-name: 1.0.0$(Rev:.r) #Build number
+name: 1.1.0$(Rev:.r) #Build number
 
-trigger:
-    batch: "true"
+pr:
     branches:
         include:
         - dev
     paths:
         include:
-        - Apps/AdminWebClient
+        - Apps/Immunization
         - Apps/Common
         - Apps/Database
 
@@ -17,9 +16,9 @@ pool:
 extends:
   template: /Build/hg.yaml
   parameters:
-    Application: AdminWebClient
+    Application: Immunization
     DotNetTests: true
     FunctionalTests: false
-    NPMInstall: true
+    NPMInstall: false
     NPMTests: false
 

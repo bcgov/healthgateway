@@ -1,7 +1,6 @@
 name: 1.0.0$(Rev:.r) #Build number
 
-trigger:
-    batch: "true"
+pr:
     branches:
         include:
         - dev
@@ -10,7 +9,7 @@ trigger:
         - Apps/AdminWebClient
         - Apps/Common
         - Apps/Database
-
+        
 pool:
     name: "HealthGateway"
 
