@@ -126,7 +126,7 @@ steps:
     - script: |
           set -e
           echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-      displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
+      displayName: "Create Trigger Build Artifact for $(App.Name)"
       condition: and(succeeded(), eq(variables['Library'], true))         
 
     - task: PublishPipelineArtifact@0
