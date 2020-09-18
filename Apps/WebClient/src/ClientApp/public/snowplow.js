@@ -1,3 +1,4 @@
+// Snowplow starts plowing - Standalone vE.2.14.0
 (function (p, l, o, w, i, n, g) {
     if (!p[i]) {
         p.GlobalSnowplowNamespace = p.GlobalSnowplowNamespace || [];
@@ -20,8 +21,6 @@
     "snowplow"
 );
 var collector = "spt.apps.gov.bc.ca";
-console.info("starting snowplow...");
-/* Snowplow starts plowing - Standalone vE.2.14.0 */
 window.snowplow("newTracker", "rt", collector, {
     appId: "Snowplow_standalone",
     cookieLifetime: 86400 * 548,
@@ -36,4 +35,4 @@ window.snowplow("newTracker", "rt", collector, {
 window.snowplow("enableActivityTracking", 30, 30); // Ping every 30 seconds after 30 seconds
 window.snowplow("enableLinkClickTracking");
 window.snowplow("trackPageView");
-console.info("snowplow started...");
+// Snowplow stop plowing
