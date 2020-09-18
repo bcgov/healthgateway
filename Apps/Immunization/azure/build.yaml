@@ -22,9 +22,8 @@ trigger:
         - Apps/Database
 
 extends:
-  template: hg.yml
+  template: Build/hg.yml
   parameters:
     Application: Immunization
     UnitTests: true
     FunctionalTests: false
-    
