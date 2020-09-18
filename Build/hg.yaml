@@ -125,6 +125,7 @@ steps:
 
     - script: |
           set -e
+          echo Creating Artifact
           echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
       displayName: "Create Trigger Build Artifact for $(App.Name)"
       condition: and(succeeded(), eq(variables['Library'], true))         
