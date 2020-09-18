@@ -14,18 +14,26 @@ parameters:
       - WebClient
       - NotSpecified
 
-    - name: UnitTests
+    - name: DotNetTests
       type: boolean
       default: true
 
     - name: FunctionalTests
       type: boolean
       default: false
+ 
+    - name: NPMInstall
+      type: boolean
+      default: false
+
+    - name: NPMTests
+      type: boolean
+      default: false           
 
 #Build variables
 variables:
     App.Name: ${{ parameters.Application }}
-    UnitTests: ${{ parameters.UnitTests }}
+    UnitTests: ${{ parameters.DotNetTests }}
     FunctionalTests: ${{ parameters.FunctionalTests }}
     App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
     OpenShift.Name: $[lower(variables['App.Name'])]
@@ -39,6 +47,21 @@ variables:
         BuildPrefix: "$(SourceBranchName)"
 
 steps:
+- ${{ if eq(parameters.NPMInstall, true) }}:
+    - task: Npm@1
+      displayName: Installing NPM Packages"
+      inputs:
+          command: "install"
+          workingDir: "$(App.Home)/src/ClientApp"
+
+- ${{ if eq(parameters.NPMTests, true) }}:          
+    - task: Npm@1
+      displayName: "Running NPM Tests for $(App.Name)"
+      inputs:
+          command: "custom"
+          customCommand: "test"
+          workingDir: "$(App.Home)/src/ClientApp"
+
     - task: DotNetCoreCLI@2
       displayName: "Runing Unit Tests for $(App.Name)"
       condition: and(succeeded(), eq(variables['UnitTests'], true))

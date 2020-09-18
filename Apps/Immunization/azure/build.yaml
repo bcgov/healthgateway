@@ -6,7 +6,7 @@ pr:
         - dev
     paths:
         include:
-        - Apps/Immunization     # Should be set to App.Name
+        - Apps/Immunization
         - Apps/Common
         - Apps/Database
 
@@ -17,7 +17,7 @@ trigger:
         - dev
     paths:
         include:
-        - Apps/Immunization     # Should be set to App.Name
+        - Apps/Immunization
         - Apps/Common
         - Apps/Database
 
@@ -30,3 +30,6 @@ extends:
     Application: Immunization
     UnitTests: true
     FunctionalTests: false
+    NPMInstall: false
+    NPMTests: false
+
