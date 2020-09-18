@@ -46,6 +46,8 @@ const HealthInsightsView = () =>
     );
 const ReportsView = () =>
     import(/* webpackChunkName: "reports" */ "@/views/reports.vue");
+const ReleaseNotesView = () =>
+    import(/* webpackChunkName: "releaseNotes" */ "@/views/releaseNotes.vue");
 const ContactUsView = () =>
     import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
 
@@ -58,6 +60,11 @@ const routes = [
     {
         path: "/",
         component: LandingView,
+        meta: { requiresAuth: false },
+    },
+    {
+        path: "/release-notes",
+        component: ReleaseNotesView,
         meta: { requiresAuth: false },
     },
     {
@@ -112,7 +119,7 @@ const routes = [
     {
         path: "/contact-us",
         component: ContactUsView,
-        meta: { requiresRegistration: true, roles: ["user"] },
+        meta: { requiresAuth: false },
     },
     {
         path: "/login",

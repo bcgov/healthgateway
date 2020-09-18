@@ -21,7 +21,7 @@
                 class="col-12 col-md-10 col-lg-9 column-wrapper"
             >
                 <PageTitleComponent
-                    :title="`Health Gateway Drug History Report`"
+                    :title="`Health Gateway Medication History Report`"
                 />
                 <div>
                     <p>

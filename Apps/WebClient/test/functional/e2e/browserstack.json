@@ -1,0 +1,50 @@
+{
+    "auth": {
+        "username": "",
+        "access_key": ""
+    },
+    "browsers": [
+        {
+            "browser": "chrome",
+            "os": "Windows 10",
+            "versions": [
+                "85"
+            ]
+        },
+        {
+            "browser": "edge",
+            "os": "Windows 10",
+            "versions": [
+                "85"
+            ]
+        },
+        {
+            "browser": "firefox",
+            "os": "Windows 10",
+            "versions": [
+                "80"
+            ]
+        },
+        {
+            "browser": "chrome",
+            "os": "OS X Catalina",
+            "versions": [
+                "85"
+            ]
+        }
+    ],
+    "run_settings": {
+        "cypress_proj_dir": "./",
+        "project_name": "Health Gateway",
+        "build_name": "Unknown Build",
+        "exclude": [],
+        "parallels": "5",
+        "npm_dependencies": {},
+        "package_config_options": {}
+    },
+    "connection_settings": {
+        "local": false,
+        "local_identifier": null
+    },
+    "disable_usage_reporting": false
+}
