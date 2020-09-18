@@ -2,6 +2,14 @@ name: 1.0.0$(Rev:.r) #Build number
 
 pr: none
 
+resources:
+    pipelines:
+      - pipeline: Common
+        source: Common
+        trigger:
+          branches:
+          - dev
+
 trigger:
     batch: "true"
     branches:
@@ -10,8 +18,6 @@ trigger:
     paths:
         include:
         - Apps/Patient
-        # - Apps/Common
-        # - Apps/Database
 
 pool:
     name: "HealthGateway"

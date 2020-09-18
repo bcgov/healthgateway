@@ -18,8 +18,6 @@ trigger:
     paths:
         include:
         - Apps/WebClient
-        # - Apps/Common
-        # - Apps/Database
 
 pool:
     name: "HealthGateway"
