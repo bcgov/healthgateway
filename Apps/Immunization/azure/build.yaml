@@ -7,7 +7,7 @@ resources:
    - pipeline: Common
      source: Common
      trigger:
-       branches: 
+       branches:
        - dev
        
 trigger:
