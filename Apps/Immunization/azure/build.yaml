@@ -1,25 +1,5 @@
 name: 1.1.0$(Rev:.r) #Build number
 
-#Template Parameters
-parameters:
-    - name: Application # name of the parameter; required
-      type: string # data type of the parameter; required
-      default: Immunization
-      values:
-      - AdminWebClient
-      - Encounter
-      - Immunization
-      - JobScheduler
-      - Laboratory
-      - Medication
-      - Patient
-      - WebClient
-    - name: UnitTests
-      type: boolean
-      default: true
-    - name: FunctionalTests
-      type: boolean
-      default: false
 pr:
     branches:
         include:
@@ -41,81 +21,10 @@ trigger:
         - Apps/Common
         - Apps/Database
 
-#Build variables
-variables:
-    App.Name: ${{ parameters.Application }}
+extends:
+  template: hg.yml
+  parameters:
+    Application: Immunization
     UnitTests: true
     FunctionalTests: false
-    #### You should not have to edit anything below this point unless you're adding new steps.
-    App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
-    OpenShift.Name: $[lower(variables['App.Name'])]
-    App.UnitTests: $(App.Home)/test/unit
-    App.FunctionalTests: $(App.Home)/test/functional
-    PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
-    PublishFunctionalTests: $[and(eq(variables['FunctionalTests'],true), eq(variables['PullRequest'],false))]
-    ${{ if eq(variables['PullRequest'], true) }}: 
-        BuildPrefix: "PR-$(SourceBranchName)"
-    ${{ if eq(variables['PullRequest'], false) }}: 
-        BuildPrefix: "$(SourceBranchName)"
-
-pool:
-    name: "HealthGateway"
-
-steps:
-    - task: DotNetCoreCLI@2
-      displayName: "Runing Unit Tests for $(App.Name)"
-      condition: and(succeeded(), eq(variables['UnitTests'], true))
-      inputs:
-          command: "test"
-          projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
-          arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
-          testRunTitle: "$(App.Name): Performing Unit Tests"
-
-    - script: |
-          set -e
-          reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-      displayName: "Creating Code Coverage Report for $(App.Name)"
-      condition: and(succeeded(), eq(variables['UnitTests'], true))
-
-    - task: PublishCodeCoverageResults@1
-      displayName: "Publishing Code Coverage for $(App.Name)"
-      condition: and(succeeded(), eq(variables['UnitTests'], true))
-      inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
-          pathToSources: "$(App.Home)/src"
-          reportDirectory: "$(App.Home)/CodeCoverage"
-
-    - task: DotNetCoreCLI@2
-      displayName: "Publishing code for $(App.Name)"
-      inputs:
-          modifyOutputPath: false
-          command: "publish"
-          publishWebProjects: false
-          projects: "$(App.Home)/src"
-          arguments: "-o $(Build.BinariesDirectory)"
-          zipAfterPublish: false
-
-    - script: |
-          set -e
-          cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-          oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(OpenShift.Name) | oc apply -f -
-          oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-          oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
-          echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-      displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
-      condition: and(succeeded(), eq(variables['PullRequest'], false))
     
-    - task: CopyFiles@2
-      displayName: "Copying Functional Tests to Staging for $(App.Name)"
-      condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
-      inputs:
-          SourceFolder: "$(App.FunctionalTests)"
-          Contents: "**"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)"
-
-    - task: PublishPipelineArtifact@0
-      displayName: "Publishing Pipeline Artifact for $(App.Name)"
-      condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
-      inputs:
-          targetPath: "$(Build.ArtifactStagingDirectory)"
