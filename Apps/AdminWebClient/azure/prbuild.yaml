@@ -9,7 +9,9 @@ pr:
         - Apps/AdminWebClient
         - Apps/Common
         - Apps/Database
-        
+
+trigger: none  
+
 pool:
     name: "HealthGateway"
 
