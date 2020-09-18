@@ -86,7 +86,6 @@
                 },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
             }"
-            pdf-format="a4"
             @hasGenerated="hasGenerated()"
         >
             <MedicationHistoryReportComponent
