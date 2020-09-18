@@ -58,6 +58,6 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the medication for the current MedicationStatement.
         /// </summary>
-        public MedicationSumary? MedicationSumary { get; set; }
+        public MedicationSummary? MedicationSummary { get; set; }
     }
 }

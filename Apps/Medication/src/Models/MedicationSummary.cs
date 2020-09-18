@@ -15,12 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Models
 {
-    using System.Diagnostics.Contracts;
-
     /// <summary>
     /// Contains sumary information of a medication.
     /// </summary>
-    public class MedicationSumary
+    public class MedicationSummary
     {
         /// <summary>
         /// Gets or sets the Drug Identification Number for the prescribed medication.
@@ -51,5 +49,30 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the date the Drug was discontinued if applicable.
         /// </summary>
         public System.DateTime? DrugDiscontinuedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the form.
+        /// </summary>
+        public string Form { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the manufacturer.
+        /// </summary>
+        public string Manufacturer { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the strength.
+        /// </summary>
+        public string Strength { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the strength unit.
+        /// </summary>
+        public string StrengthUnit { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether it is a provincial drug.
+        /// </summary>
+        public bool IsPin { get; set; }
     }
 }

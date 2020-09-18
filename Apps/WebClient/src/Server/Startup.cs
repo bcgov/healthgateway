@@ -168,7 +168,7 @@ namespace HealthGateway.WebClient
                         new SpaOptions { SourcePath = "ClientApp" },
                         npmScript: "serve",
                         port: 8585,
-                        regex: "Compiled successfully",
+                        regex: "Compiled *",
                         forceKill: true);
                 }
             });

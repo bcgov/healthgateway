@@ -1,6 +1,6 @@
 import { Wrapper, createLocalVue, mount } from "@vue/test-utils";
 import BootstrapVue from "bootstrap-vue";
-import TimelineComponent from "@/views/timeline.vue";
+import ReportsView from "@/views/reports.vue";
 import VueRouter from "vue-router";
 import VueContentPlaceholders from "vue-content-placeholders";
 import Vuex, { ActionTree } from "vuex";
@@ -10,7 +10,6 @@ import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
-import { LaboratoryOrder } from "@/models/laboratory";
 import {
     LaboratoryState,
     MedicationState,
@@ -78,26 +77,6 @@ let userGetters = {
     },
 };
 
-let laboratoryActions: ActionTree<LaboratoryState, RootState> = {
-    getOrders(): Promise<RequestResult<LaboratoryOrder[]>> {
-        return new Promise((resolve) => {
-            resolve({
-                pageIndex: 0,
-                pageSize: 0,
-                resourcePayload: [],
-                resultStatus: ResultType.Success,
-                totalResultCount: 0,
-            });
-        });
-    },
-};
-
-let laboratoryGetters = {
-    getStoredLaboratoryOrders: () => (): LaboratoryOrder[] => {
-        return [];
-    },
-};
-
 let medicationActions: ActionTree<MedicationState, RootState> = {
     getMedicationStatements(
         context,
@@ -136,7 +115,7 @@ const configGetters = {
     },
 };
 
-function createWrapper(): Wrapper<TimelineComponent> {
+function createWrapper(): Wrapper<ReportsView> {
     const localVue = createLocalVue();
     localVue.use(Vuex);
     localVue.use(BootstrapVue);
@@ -152,11 +131,6 @@ function createWrapper(): Wrapper<TimelineComponent> {
             config: {
                 namespaced: true,
                 getters: configGetters,
-            },
-            laboratory: {
-                namespaced: true,
-                getters: laboratoryGetters,
-                actions: laboratoryActions,
             },
             medication: {
                 namespaced: true,
@@ -179,7 +153,7 @@ function createWrapper(): Wrapper<TimelineComponent> {
     });
 }
 
-describe("Timeline view", () => {
+describe("Reports view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
     const localVue = createLocalVue();
@@ -194,82 +168,8 @@ describe("Timeline view", () => {
     });
 
     test("has header element with static text", () => {
-        const expectedH1Text = "Health Care Timeline";
+        const expectedH1Text = "Health Gateway Drug History Report";
         const wrapper = createWrapper();
         expect(wrapper.find("h1").text()).toBe(expectedH1Text);
-    });
-
-    test("Has entries", () => {
-        userGetters = {
-            user: (): User => {
-                return userWithResults;
-            },
-        };
-
-        const wrapper = createWrapper();
-        // Verify the number of records
-        var unwatch = wrapper.vm.$watch(
-            () => {
-                return wrapper.vm.$data.isLoading;
-            },
-            () => {
-                expect(wrapper.findAll(".entryCard").length).toEqual(3);
-                expect(wrapper.findAll(".entryCard").length).toEqual(3);
-                expect(wrapper.findAll(".date").length).toEqual(2);
-                unwatch();
-            }
-        );
-    });
-
-    test("sort button toggles", () => {
-        userGetters = {
-            user: (): User => {
-                const user = new User();
-                user.hdid = "hdid_with_results";
-                return user;
-            },
-        };
-
-        const wrapper = createWrapper();
-        var unwatch = wrapper.vm.$watch(
-            () => {
-                return wrapper.vm.$data.isLoading;
-            },
-            () => {
-                expect(
-                    wrapper
-                        .find(".sortContainer button [name='descending']")
-                        .isVisible()
-                ).toBe(true);
-                expect(
-                    wrapper
-                        .find(".sortContainer button [name='ascending']")
-                        .isVisible()
-                ).toBe(false);
-                let dates = wrapper.findAll(".date");
-                let topDate = new Date(dates.at(0).text());
-                let bottomDate = new Date(dates.at(1).text());
-                expect(topDate > bottomDate).toBe(true);
-
-                wrapper.find(".sortContainer button").trigger("click");
-                wrapper.vm.$nextTick(() => {
-                    expect(
-                        wrapper
-                            .find(".sortContainer button [name='descending']")
-                            .isVisible()
-                    ).toBe(false);
-                    expect(
-                        wrapper
-                            .find(".sortContainer button [name='ascending']")
-                            .isVisible()
-                    ).toBe(true);
-                    dates = wrapper.findAll(".date");
-                    topDate = new Date(dates.at(0).text());
-                    bottomDate = new Date(dates.at(1).text());
-                    expect(topDate > bottomDate).toBe(false);
-                });
-                unwatch();
-            }
-        );
     });
 });
