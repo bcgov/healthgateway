@@ -112,7 +112,6 @@ steps:
           oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(OpenShift.Name) | oc apply -f -
           oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
           oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
-          echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
       displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
       condition: and(succeeded(), eq(variables['RunOpenShift'], true))
     
@@ -123,6 +122,12 @@ steps:
           SourceFolder: "$(App.FunctionalTests)"
           Contents: "**"
           TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+      - script: |
+            set -e
+            echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+      displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
+      condition: and(succeeded(), eq(variables['Library'], true))         
 
     - task: PublishPipelineArtifact@0
       displayName: "Publishing Pipeline Artifact for $(App.Name)"
