@@ -7,8 +7,8 @@ pr:
     paths:
         include:
         - Apps/WebClient
-        - Apps/Common
-        - Apps/Database
+        # - Apps/Common
+        # - Apps/Database
 
 trigger: none
         

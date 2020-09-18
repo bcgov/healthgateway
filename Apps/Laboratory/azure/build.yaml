@@ -10,8 +10,8 @@ trigger:
     paths:
         include:
         - Apps/Laboratory
-        - Apps/Common
-        - Apps/Database
+        # - Apps/Common
+        # - Apps/Database
 
 pool:
     name: "HealthGateway"

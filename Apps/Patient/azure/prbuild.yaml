@@ -7,8 +7,8 @@ pr:
     paths:
         include:
         - Apps/Patient
-        - Apps/Common
-        - Apps/Database
+        # - Apps/Common
+        # - Apps/Database
 
 trigger: none
         
