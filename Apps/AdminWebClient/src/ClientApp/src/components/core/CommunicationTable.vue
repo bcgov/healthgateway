@@ -369,7 +369,6 @@ export default class CommunicationTable extends Vue {
             (comm: Communication) =>
                 comm.communicationTypeCode === CommunicationType.Email
         );
-        debugger;
         if (this.tab === 0) {
             this.communicationList = this.bannerList;
         } else {
