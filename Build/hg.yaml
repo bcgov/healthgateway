@@ -131,6 +131,6 @@ steps:
 
     - task: PublishPipelineArtifact@0
       displayName: "Publishing Pipeline Artifact for $(App.Name)"
-      condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
+      condition: and(succeeded(), or(eq(variables['PublishFunctionalTests'], true), eq(variables['Library'], true)))
       inputs:
           targetPath: "$(Build.ArtifactStagingDirectory)"
