@@ -123,9 +123,9 @@ steps:
           Contents: "**"
           TargetFolder: "$(Build.ArtifactStagingDirectory)"
 
-      - script: |
-            set -e
-            echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+    - script: |
+          set -e
+          echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
       displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
       condition: and(succeeded(), eq(variables['Library'], true))         
 
