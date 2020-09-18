@@ -28,7 +28,7 @@ extends:
   template: /Build/hg.yaml
   parameters:
     Application: Immunization
-    UnitTests: true
+    DotNetTests: true
     FunctionalTests: false
     NPMInstall: false
     NPMTests: false
