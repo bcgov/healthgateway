@@ -55,8 +55,7 @@ steps:
       inputs:
           command: "install"
           workingDir: "$(App.Home)/src/ClientApp"
-
-- ${{ if eq(parameters.NPMTests, true) }}:          
+         
     - task: Npm@1
       displayName: "Running NPM Tests for $(App.Name)"
       condition: and(succeeded(), eq(variables['NPMTests'], true))
