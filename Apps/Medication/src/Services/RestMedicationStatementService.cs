@@ -180,7 +180,6 @@ namespace HealthGateway.Medication.Services
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
 
-
             this.logger.LogDebug("Getting drugs from DB");
             this.logger.LogTrace($"Identifiers: {JsonSerializer.Serialize(medicationIdentifiers)}");
             List<string> uniqueDrugIdentifers = medicationIdentifiers.Distinct().ToList();
@@ -208,13 +207,15 @@ namespace HealthGateway.Medication.Services
                 if (drugProductsDict.ContainsKey(din))
                 {
                     mdSummary.BrandName = drugProductsDict[din].BrandName;
-                    mdSummary.Form = drugProductsDict[din].Form?.PharmaceuticalForm ?? "";
-                    mdSummary.Strength = drugProductsDict[din].ActiveIngredient?.Strength ?? "";
-                    mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? "";
-                    mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? "";
-                } else if (provicialDict.ContainsKey(din)) {
+                    mdSummary.Form = drugProductsDict[din].Form?.PharmaceuticalForm ?? "N/A";
+                    mdSummary.Strength = drugProductsDict[din].ActiveIngredient?.Strength ?? "N/A";
+                    mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? "N/A";
+                    mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? "N/A";
+                }
+                else if (provicialDict.ContainsKey(din))
+                {
                     mdSummary.BrandName = provicialDict[din].BrandName;
-                    mdSummary.Form = provicialDict[din].DosageForm ?? "";
+                    mdSummary.Form = provicialDict[din].DosageForm ?? "N/A";
                     mdSummary.IsPin = true;
                 }
             }
