@@ -5,6 +5,8 @@ parameters:
       default: NotSpecified
       values:
       - AdminWebClient
+      - Common
+      - Database
       - Encounter
       - Immunization
       - JobScheduler
