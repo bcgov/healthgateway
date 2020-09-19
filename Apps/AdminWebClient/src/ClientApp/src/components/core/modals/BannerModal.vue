@@ -68,6 +68,11 @@
                                 required
                             ></v-text-field>
                         </v-col>
+                        <v-col>
+                            <b-button :pressed="true" variant="success"
+                                >Draft</b-button
+                            >
+                        </v-col>
                     </v-row>
                     <v-row>
                         <v-col>
