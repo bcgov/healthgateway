@@ -4,6 +4,7 @@
             id="rating-modal"
             ref="rating-modal"
             v-model="isVisible"
+            data-testid="ratingModal"
             title="Rating"
             size="md"
             header-bg-variant="primary"
@@ -15,7 +16,7 @@
             centered
         >
             <b-row class="text-center">
-                <b-col>
+                <b-col data-testid="ratingModalQuestionText">
                     {{ question }}
                 </b-col>
             </b-row>
@@ -36,6 +37,7 @@
                     <b-col>
                         <b-button
                             id="skipButton"
+                            data-testid="ratingModalSkipBtn"
                             variant="outline-primary"
                             @click="handleRating(0, true)"
                             >Skip</b-button
