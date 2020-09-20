@@ -18,7 +18,8 @@ describe('Authentication', () => {
 
     it('Logout', () => {
         cy.server()
-        cy.route('GET', '/v1/api/configuration/', 'fixture:LogoutConfig.json')
+        cy.fixture('AllDisabledConfig').as('config')
+        cy.route('GET', '/v1/api/configuration/', '@config')
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
         cy.get('#menuBtnLogout').click()
         cy.get('#skipButton').click()
@@ -26,5 +27,18 @@ describe('Authentication', () => {
         cy.get('#menuBtnLogin').should('be.visible')
             .should('have.attr', 'href', '/login')
             .should('have.text', ' Login ')
+    })
+
+    it('Idle Timeout', () => {
+        cy.server()
+        cy.fixture('AllDisabledConfig').then((config) => {
+            config.webClient.timeouts.idle = 1000
+        }).as('config')
+        cy.route('GET', '/v1/api/configuration/', '@config')
+        cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
+        cy.get('.modal-header').contains('Are you still there?')
+        cy.get('.modal-body').contains('You will be automatically logged out in 59 seconds.')
+        cy.get('.modal-body').contains('You will be automatically logged out in 55 seconds.')
+        cy.get('.btn-primary').should('have.text', "I'm here!");
     })
 })
