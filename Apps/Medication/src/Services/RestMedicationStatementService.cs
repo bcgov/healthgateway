@@ -19,6 +19,7 @@ namespace HealthGateway.Medication.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Text.Json;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
@@ -28,6 +29,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
@@ -112,7 +114,7 @@ namespace HealthGateway.Medication.Services
                         {
                             result.TotalResultCount = response.ResourcePayload.TotalRecords;
                             result.ResourcePayload = MedicationStatementHistory.FromODRModelList(response.ResourcePayload.Results.ToList());
-                            this.PopulateBrandName(result.ResourcePayload.Select(r => r.MedicationSumary).ToList());
+                            this.PopulateMedicationSummary(result.ResourcePayload.Select(r => r.MedicationSummary).ToList());
                         }
                         else
                         {
@@ -173,22 +175,52 @@ namespace HealthGateway.Medication.Services
             return Tuple.Create(valid, errMsg);
         }
 
-        private void PopulateBrandName(List<MedicationSumary> medSummaries)
+        private void PopulateMedicationSummary(List<MedicationSummary> medSummaries)
         {
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
             List<string> medicationIdentifiers = medSummaries.Select(s => s.DIN.PadLeft(8, '0')).ToList();
 
-            Dictionary<string, string> brandNameMap = this.drugLookupDelegate.GetDrugsBrandNameByDIN(medicationIdentifiers);
+            this.logger.LogDebug("Getting drugs from DB");
+            this.logger.LogTrace($"Identifiers: {JsonSerializer.Serialize(medicationIdentifiers)}");
+            List<string> uniqueDrugIdentifers = medicationIdentifiers.Distinct().ToList();
+            this.logger.LogDebug($"Total DrugIdentifiers: {medicationIdentifiers.Count} | Unique identifiers:{uniqueDrugIdentifers.Count} ");
 
-            this.logger.LogTrace($"Populating brand name... {medSummaries.Count} records");
-            foreach (MedicationSumary mdSummary in medSummaries)
+            // Retrieve the brand names using the Federal data
+            List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(uniqueDrugIdentifers);
+            Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
+            Dictionary<string, PharmaCareDrug> provicialDict = new Dictionary<string, PharmaCareDrug>();
+            if (uniqueDrugIdentifers.Count > drugProductsDict.Count)
             {
-                string din = mdSummary.DIN.PadLeft(8, '0');
-                mdSummary.BrandName =
-                    brandNameMap.ContainsKey(din) ? brandNameMap[din] : "Unknown brand name";
+                // Get the DINs not found on the previous query
+                List<string> notFoundDins = uniqueDrugIdentifers.Where(din => !drugProductsDict.Keys.Contains(din)).ToList();
+
+                // Retrieve the brand names using the provincial data
+                List<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(notFoundDins);
+                provicialDict = pharmaCareDrugs.ToDictionary(dp => dp.DINPIN, dp => dp);
             }
 
-            this.logger.LogDebug($"Finished populating brand name. {medSummaries.Count} records");
+            this.logger.LogDebug("Finished getting drugs from DB");
+            this.logger.LogTrace($"Populating medication summary... {medSummaries.Count} records");
+            foreach (MedicationSummary mdSummary in medSummaries)
+            {
+                string din = mdSummary.DIN.PadLeft(8, '0');
+                if (drugProductsDict.ContainsKey(din))
+                {
+                    mdSummary.BrandName = drugProductsDict[din].BrandName;
+                    mdSummary.Form = drugProductsDict[din].Form?.PharmaceuticalForm ?? "N/A";
+                    mdSummary.Strength = drugProductsDict[din].ActiveIngredient?.Strength ?? "N/A";
+                    mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? "N/A";
+                    mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? "N/A";
+                }
+                else if (provicialDict.ContainsKey(din))
+                {
+                    mdSummary.BrandName = provicialDict[din].BrandName;
+                    mdSummary.Form = provicialDict[din].DosageForm ?? "N/A";
+                    mdSummary.IsPin = true;
+                }
+            }
+
+            this.logger.LogDebug($"Finished populating medication summary. {medSummaries.Count} records");
         }
     }
 }

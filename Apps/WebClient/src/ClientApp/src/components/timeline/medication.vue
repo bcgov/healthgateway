@@ -84,7 +84,7 @@ $radius: 15px;
                                 "
                                 variant="link"
                                 class="detailsButton"
-                                @click="toggleDetails(entry)"
+                                @click="detailsVisible = !detailsVisible"
                             >
                                 <span class="when-opened">
                                     <font-awesome-icon
@@ -106,7 +106,7 @@ $radius: 15px;
                             :id="'entryDetails-' + index + '-' + datekey"
                             v-model="detailsVisible"
                         >
-                            <div v-if="detailsLoaded">
+                            <div>
                                 <div class="detailSection">
                                     <div>
                                         <strong>Practitioner:</strong>
@@ -184,21 +184,6 @@ $radius: 15px;
                                     </div>
                                 </div>
                             </div>
-                            <div v-else-if="isLoading">
-                                <div class="d-flex align-items-center">
-                                    <strong>Loading...</strong>
-                                    <b-spinner class="ml-5"></b-spinner>
-                                </div>
-                            </div>
-                            <div v-else-if="hasErrors" class="pt-1">
-                                <b-alert :show="hasErrors" variant="danger">
-                                    <h5>Error</h5>
-                                    <span
-                                        >An unexpected error occured while
-                                        processing the request.</span
-                                    >
-                                </b-alert>
-                            </div>
                         </b-collapse>
                     </b-col>
                 </b-row>
@@ -233,60 +218,12 @@ export default class MedicationTimelineComponent extends Vue {
     @Prop() index!: number;
     @Prop() datekey!: string;
 
-    @Action("getMedicationInformation", { namespace: "medication" })
-    getMedication!: (params: { din: string }) => Promise<MedicationResult>;
-
-    private isLoadingMedication: boolean = false;
-    private isLoadingPharmacy: boolean = false;
-    private hasErrors: boolean = false;
-    private medicationLoaded: boolean = false;
     private detailsVisible: boolean = false;
-
-    private get detailsLoaded(): boolean {
-        return this.medicationLoaded;
-    }
-
-    private get isLoading(): boolean {
-        return this.isLoadingMedication || this.isLoadingPharmacy;
-    }
 
     private get entryIcon(): IconDefinition {
         return faPills;
     }
 
-    private toggleDetails(medicationEntry: MedicationTimelineEntry): void {
-        this.detailsVisible = !this.detailsVisible;
-        this.hasErrors = false;
-
-        if (!this.detailsVisible) {
-            return;
-        }
-
-        // Load medication details
-        if (!this.medicationLoaded) {
-            this.isLoadingMedication = true;
-            this.logger.debug(
-                `Loading Medication Entry : ${JSON.stringify(medicationEntry)}`
-            );
-            var medicationPromise = this.getMedication({
-                din: medicationEntry.medication.din,
-            })
-                .then((result) => {
-                    if (result) {
-                        medicationEntry.medication.populateFromModel(result);
-                    }
-                    this.medicationLoaded = true;
-                    this.isLoadingMedication = false;
-                })
-                .catch((err) => {
-                    this.logger.error(
-                        `Error loading medication details : ${err}`
-                    );
-                    this.hasErrors = true;
-                    this.isLoadingMedication = false;
-                });
-        }
-    }
     private formatPhone(phoneNumber: string): string {
         return PhoneUtil.formatPhone(phoneNumber);
     }
