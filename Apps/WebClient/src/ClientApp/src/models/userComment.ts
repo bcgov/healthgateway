@@ -1,19 +1,19 @@
-export default interface UserComment {
+export default class UserComment {
     // Gets or sets the id.
-    id?: string;
+    public id?: string;
 
     // Gets or sets the user hdid.
-    userProfileId: string;
+    public userProfileId: string = "";
 
     // The entry this comment belongs to.
-    parentEntryId: string;
+    public parentEntryId: string = "";
 
     // Gets or sets the text of the comment.
-    text: string;
+    public text: string = "";
 
     // Gets or sets the comment datetime.
-    createdDateTime: Date;
+    public createdDateTime: Date = new Date();
 
     // Gets or sets the comment db version.
-    version: number;
+    public version: number = -1;
 }
