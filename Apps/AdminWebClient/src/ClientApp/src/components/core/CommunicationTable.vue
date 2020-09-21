@@ -76,8 +76,7 @@ import container from "@/plugins/inversify.config";
 import BannerFeedback from "@/models/bannerFeedback";
 import Communication, {
     CommunicationType,
-    CommunicationStatus,
-    PublishingStatus
+    CommunicationStatus
 } from "@/models/adminCommunication";
 import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
