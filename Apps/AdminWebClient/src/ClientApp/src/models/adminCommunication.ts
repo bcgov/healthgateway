@@ -8,7 +8,8 @@ export enum CommunicationStatus {
     Processed = "Processed",
     Error = "Error",
     Pending = "Pending",
-    Processing = "Processing"
+    Processing = "Processing",
+    Draft = "Draft"
 }
 
 export enum PublishingStatus {

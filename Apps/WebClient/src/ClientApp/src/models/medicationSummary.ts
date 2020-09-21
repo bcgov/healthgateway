@@ -1,5 +1,5 @@
 // Medication model
-export default interface MedicationSumary {
+export default interface MedicationSummary {
     // Drug Identification Number for the medication.
     din: string;
     // Brand name of the medication.
@@ -12,4 +12,14 @@ export default interface MedicationSumary {
     quantity?: number;
     // Drug medication discontinued date, if applicable.
     drugDiscontinuedDate?: Date;
+    // Manufacturer
+    manufacturer?: string;
+    // Form
+    form?: string;
+    // Strength
+    strength?: string;
+    // Strength Unit
+    strengthUnit?: string;
+    // Is Provincial Drug
+    isPin: boolean;
 }
