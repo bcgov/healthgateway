@@ -60,7 +60,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the medication for the current MedicationStatementHistory.
         /// </summary>
-        public MedicationSumary MedicationSumary { get; set; } = new MedicationSumary();
+        public MedicationSummary MedicationSummary { get; set; } = new MedicationSummary();
 
         /// <summary>
         /// Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
@@ -76,7 +76,7 @@ namespace HealthGateway.Medication.Models
         {
             return new MedicationStatementHistory()
             {
-                MedicationSumary = new MedicationSumary() { DIN = model.DIN, Quantity = model.Quantity, GenericName = model.GenericName },
+                MedicationSummary = new MedicationSummary() { DIN = model.DIN, Quantity = model.Quantity, GenericName = model.GenericName, BrandName = "Unknown brand name" },
                 Directions = model.Directions,
                 DispensedDate = model.DispenseDate,
                 DispensingPharmacy = Pharmacy.FromODRModel(model.DispensingPharmacy),

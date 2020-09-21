@@ -8,12 +8,8 @@ export enum CommunicationStatus {
     Processed = "Processed",
     Error = "Error",
     Pending = "Pending",
-    Processing = "Processing"
-}
-
-export enum PublishingStatus {
-    Draft = "Draft",
-    Publish = "Publish"
+    Processing = "Processing",
+    Draft = "Draft"
 }
 
 // Model that provides a user representation of admin communications.
@@ -44,9 +40,6 @@ export default interface Communication {
 
     // Gets or sets the communication status code: new or processed
     communicationStatusCode: string;
-
-    // Gets or sets the communication publishing status code: Draft or Publish
-    publishingStatusCode: string;
 
     // The communication version number.
     version: number;

@@ -8,6 +8,7 @@
     <b-modal
         id="covid-modal"
         v-model="isVisible"
+        data-testid="covidModal"
         title="COVID-19"
         header-bg-variant="danger"
         header-text-variant="light"
@@ -19,7 +20,7 @@
         <b-row>
             <b-col>
                 <form @submit.stop.prevent="handleSubmit">
-                    <b-row>
+                    <b-row data-testid="covidModalText">
                         <b-col>
                             <span
                                 >Check the status of your COVID-19 test and view
@@ -36,6 +37,7 @@
                     <b-row>
                         <b-col>
                             <b-button
+                                data-testid="covidViewResultBtn"
                                 variant="outline-primary"
                                 @click="handleSubmit($event)"
                             >
