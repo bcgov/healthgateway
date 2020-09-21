@@ -114,7 +114,6 @@ export default class CommunicationTable extends Vue {
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
         communicationStatusCode: CommunicationStatus.New,
-        publishingStatusCode: PublishingStatus.Draft,
         priority: 10,
         version: 0,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -129,7 +128,6 @@ export default class CommunicationTable extends Vue {
         subject: "",
         communicationTypeCode: CommunicationType.Email,
         communicationStatusCode: CommunicationStatus.New,
-        publishingStatusCode: PublishingStatus.Draft,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -144,7 +142,6 @@ export default class CommunicationTable extends Vue {
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
         communicationStatusCode: CommunicationStatus.New,
-        publishingStatusCode: PublishingStatus.Draft,
         version: 0,
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -159,7 +156,6 @@ export default class CommunicationTable extends Vue {
         subject: "",
         communicationTypeCode: CommunicationType.Email,
         communicationStatusCode: CommunicationStatus.New,
-        publishingStatusCode: PublishingStatus.Draft,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -198,8 +194,8 @@ export default class CommunicationTable extends Vue {
             sortable: false
         },
         {
-            text: "Publishing Status",
-            value: "publishingStatusCode",
+            text: "Status",
+            value: "communicationStatusCode",
             width: "130px",
             sortable: false
         },
@@ -242,10 +238,6 @@ export default class CommunicationTable extends Vue {
         {
             text: "Status",
             value: "communicationStatusCode"
-        },
-        {
-            text: "Publishing Status",
-            value: "publishingStatusCode"
         },
         {
             text: "Actions",
@@ -385,7 +377,6 @@ export default class CommunicationTable extends Vue {
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
                 communicationStatusCode: CommunicationStatus.New,
-                publishingStatusCode: PublishingStatus.Draft,
                 priority: comm.priority,
                 version: 0,
                 scheduledDateTime: comm.scheduledDateTime,
@@ -425,7 +416,6 @@ export default class CommunicationTable extends Vue {
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
                 communicationStatusCode: CommunicationStatus.New,
-                publishingStatusCode: PublishingStatus.Draft,
                 priority: comm.priority,
                 version: comm.version,
                 scheduledDateTime: comm.scheduledDateTime,
