@@ -1,3 +1,13 @@
+<style scoped lang="scss">
+.publishing-status {
+    .btn {
+        width: 120px;
+        .active {
+            background-color: blue;
+        }
+    }
+}
+</style>
 <template>
     <v-dialog v-model="dialog" persistent max-width="1000px">
         <template v-slot:activator="{ on, attrs }">
@@ -68,9 +78,12 @@
                                 required
                             ></v-text-field>
                         </v-col>
-                        <v-col>
-                            <b-button :pressed="true" variant="success"
-                                >Draft</b-button
+                        <v-col class="publishing-status">
+                            <b-button
+                                :pressed.sync="isDraft"
+                                :variant="publishingStatusVariant"
+                            >
+                                {{ publishingStatus }}</b-button
                             >
                         </v-col>
                     </v-row>
@@ -166,6 +179,23 @@ export default class BannerModal extends Vue {
 
     @Prop() editedItem!: Communication;
     @Prop() isNew!: number;
+
+    private isDraft: boolean = true;
+
+    @Watch("editedisDraftItem")
+    private onisDraftChange(draft: boolean) {
+        if (this.isDraft) {
+            this.editedItem.publishingStatusCode = "Draft";
+        } else {
+            this.editedItem.publishingStatusCode = "Publish";
+        }
+    }
+    private get publishingStatus(): string {
+        return this.isDraft ? "Draft" : "Publish";
+    }
+    private get publishingStatusVariant(): string {
+        return this.isDraft ? "secondary" : "primary";
+    }
 
     @Watch("editedItem")
     private onPropChange() {
