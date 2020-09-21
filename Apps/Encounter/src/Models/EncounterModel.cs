@@ -28,7 +28,7 @@ namespace HealthGateway.Encounter.Models
         /// Gets or sets the Id.
         /// </summary>
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the EncounterDate.
@@ -63,7 +63,7 @@ namespace HealthGateway.Encounter.Models
         {
             return new EncounterModel()
             {
-                Id = model.ClaimId,
+                Id = model.ClaimId.ToString(),
                 EncounterDate = model.ServiceDate,
                 SpecialtyDescription = model.SpecialtyDesc,
                 PractitionerName = model.PractitionerName,
