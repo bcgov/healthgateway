@@ -13,7 +13,8 @@
     "bcsc.username": "hthgtwy11",
     "bcsc.password": "",
     "keycloak.username": "healthgateway",
-    "keycloak.password": ""
+    "keycloak.password": "",
+    "keycloak.protected.username": "protected"
   },
   "projectId": "ofnepc"
 }
