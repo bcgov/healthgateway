@@ -77,6 +77,8 @@ export default class ErrorTranslator {
 
     private static getServiceName(serviceName: string): string {
         switch (serviceName) {
+            case ServiceName.HealthGatewayUser:
+                return "User Profile";
             case ServiceName.DataBase:
                 return "Data Base";
             case ServiceName.ClientRegistries:

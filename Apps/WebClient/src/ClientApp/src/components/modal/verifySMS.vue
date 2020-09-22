@@ -108,7 +108,8 @@ import container from "@/plugins/inversify.config";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import UserSMSInvite from "@/models/userSMSInvite";
 import { WebClientConfiguration } from "@/models/configData";
-import moment from "moment";
+import { DateWrapper } from "@/models/dateWrapper";
+import { debug } from "winston";
 
 @Component({
     components: {
@@ -133,11 +134,11 @@ export default class VerifySMSComponent extends Vue {
         dateTime,
     }: {
         hdid: string;
-        dateTime: Date;
+        dateTime: DateWrapper;
     }) => void;
 
-    @Getter("SMSResendDateTime", { namespace: "user" })
-    SMSResendDateTime!: Date;
+    @Getter("smsResendDateTime", { namespace: "user" })
+    smsResendDateTime?: DateWrapper;
 
     private userProfileService!: IUserProfileService;
 
@@ -170,21 +171,28 @@ export default class VerifySMSComponent extends Vue {
         });
     }
 
-    @Watch("SMSResendDateTime")
+    @Watch("smsResendDateTime")
     private onSMSResendDateTimeChanged() {
         this.setResendTimeout();
     }
 
     private setResendTimeout(): void {
-        let smsTimeoutMilliseconds = moment(this.SMSResendDateTime)
-            .add(this.config.timeouts!.resendSMS, "minutes")
-            .diff(moment(), "milliseconds");
+        if (this.smsResendDateTime === undefined) {
+            this.allowRetry = true;
+            return;
+        }
 
-        this.allowRetry = smsTimeoutMilliseconds <= 0;
+        let smsTimeWhenEnabled: DateWrapper = this.smsResendDateTime.add({
+            minutes: this.config.timeouts!.resendSMS,
+        });
+
+        let now = new DateWrapper();
+        this.allowRetry = smsTimeWhenEnabled.isBefore(now);
         if (!this.allowRetry) {
+            let millisecondsToExpire = smsTimeWhenEnabled.diff(now);
             setTimeout(() => {
                 this.allowRetry = true;
-            }, smsTimeoutMilliseconds);
+            }, millisecondsToExpire);
         }
     }
 
@@ -247,7 +255,7 @@ export default class VerifySMSComponent extends Vue {
         this.smsVerificationSent = true;
         this.updateSMSResendDateTime({
             hdid: this.user.hdid,
-            dateTime: new Date(),
+            dateTime: new DateWrapper(),
         });
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)

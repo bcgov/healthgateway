@@ -78,6 +78,7 @@ import {
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component
 export default class AddCommentComponent extends Vue {
@@ -111,7 +112,7 @@ export default class AddCommentComponent extends Vue {
                 parentEntryId: this.comment.parentEntryId,
                 userProfileId: this.user.hdid,
                 version: 0,
-                createdDateTime: new Date(),
+                createdDateTime: new DateWrapper().toISO(),
             })
             .then(() => {
                 this.commentInput = "";

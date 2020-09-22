@@ -1,5 +1,6 @@
 import MedicationSumary from "./medicationSumary";
 import Pharmacy from "./pharmacy";
+import { StringISODate } from "./dateWrapper";
 
 // Medication statement model
 export default interface MedicationStatementHistory {
@@ -8,13 +9,13 @@ export default interface MedicationStatementHistory {
     // Medication statement prescription status.
     prescriptionStatus?: string;
     // Date the medication statement was dispensed.
-    dispensedDate: Date;
+    dispensedDate: StringISODate;
     // Surname of the Practitioner who issued the medication statement.
     practitionerSurname?: string;
     // Drug medication discontinued date, if applicable.
     directions?: string;
     // Date the medication statement was entered.
-    dateEntered?: Date;
+    dateEntered?: StringISODate;
     // The medication of this MedicationStatement.
     medicationSumary: MedicationSumary;
     // The pharmacy where the medication was filled.

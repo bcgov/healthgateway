@@ -1,3 +1,4 @@
+import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 
 // A calendar month includes weeks that are being displayed that could be outside the regular month
@@ -18,7 +19,7 @@ export interface CalendarDay {
     isToday: boolean;
     isCurMonth: boolean;
     weekDay: number;
-    date: Date;
+    date: DateWrapper;
     events: CalendarEntry[];
 }
 

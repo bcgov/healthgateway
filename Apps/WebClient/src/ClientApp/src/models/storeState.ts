@@ -6,6 +6,7 @@ import Pharmacy from "@/models/pharmacy";
 import { LaboratoryOrder, LaboratoryReport } from "@/models//laboratory";
 import BannerError from "./bannerError";
 import MedicationStatementHistory from "./medicationStatementHistory";
+import { DateWrapper } from "./dateWrapper";
 
 export enum StateType {
     NONE,
@@ -35,6 +36,7 @@ export interface ConfigState {
 
 export interface UserState {
     user: User;
+    smsResendDateTime?: DateWrapper;
     statusMessage: string;
     error: boolean;
     stateType: StateType;

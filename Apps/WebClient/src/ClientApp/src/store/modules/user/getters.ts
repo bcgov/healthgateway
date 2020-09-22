@@ -1,6 +1,7 @@
 import { GetterTree } from "vuex";
 import { RootState, UserState } from "@/models/storeState";
 import User from "@/models/user";
+import { DateWrapper } from "@/models/dateWrapper";
 
 export const getters: GetterTree<UserState, RootState> = {
     user(state: UserState): User {
@@ -15,10 +16,7 @@ export const getters: GetterTree<UserState, RootState> = {
         const { user } = state;
         return user === undefined ? false : !user.closedDateTime;
     },
-    SMSResendDateTime(state: UserState): Date {
-        const { user } = state;
-        return user.SMSResendDateTime === undefined
-            ? new Date()
-            : user.SMSResendDateTime;
+    smsResendDateTime(state: UserState): DateWrapper | undefined {
+        return state.smsResendDateTime;
     },
 };

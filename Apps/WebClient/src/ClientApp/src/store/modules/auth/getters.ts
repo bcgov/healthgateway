@@ -1,5 +1,6 @@
 import { GetterTree } from "vuex";
 import { AuthState, RootState } from "@/models/storeState";
+import { DateWrapper } from "@/models/dateWrapper";
 
 export const parseJwt = (token: string) => {
     try {
@@ -22,7 +23,7 @@ function tokenExp(token: string | undefined): number | undefined {
 function tokenIsExpired(token: string | undefined) {
     const tokenExpiryTime = tokenExp(token);
     if (tokenExpiryTime) {
-        return tokenExpiryTime < new Date().getTime();
+        return tokenExpiryTime < Number(new DateWrapper().fromEpoch());
     }
     return false;
 }

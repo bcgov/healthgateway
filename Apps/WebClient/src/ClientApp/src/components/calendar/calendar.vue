@@ -57,9 +57,8 @@ import {
     CalendarWeek,
     CalendarMonth,
 } from "@/components/calendar/models";
-import DateUtil from "@/utility/dateUtil";
-import moment from "moment";
 import EventBus from "@/eventbus";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
     components: {
@@ -107,38 +106,35 @@ export default class CalendarComponent extends Vue {
     })
     weekNames!: Array<string>;
 
-    private availableMonths: Date[] = [];
-    private currentMonth: Date = new Date();
+    private availableMonths: DateWrapper[] = [];
+    private currentMonth: DateWrapper = new DateWrapper();
     private eventBus = EventBus;
 
     private mounted() {
         this.updateAvailableMonths();
         var self = this;
-        this.eventBus.$on("timelinePageUpdate", function (eventDate: Date) {
-            self.currentMonth = DateUtil.getMonthFirstDate(eventDate);
+        this.eventBus.$on("timelinePageUpdate", function (
+            eventDate: DateWrapper
+        ) {
+            self.currentMonth = eventDate.startOf("month");
         });
     }
 
     @Watch("dateGroups")
     private updateAvailableMonths() {
-        this.availableMonths = this.dateGroups.reduce<Date[]>(
+        this.availableMonths = this.dateGroups.reduce<DateWrapper[]>(
             (groups, entry) => {
-                const fullYear = entry.date.getFullYear();
+                const fullYear = entry.date.year();
                 if (!isNaN(fullYear)) {
                     // Get the month and year and dismiss the day
-                    const monthYear = new Date(
-                        fullYear,
-                        entry.date.getMonth(),
-                        1
-                    );
+                    const monthYear = entry.date.startOf("month");
 
                     // Create a new group if it the date doesnt exist in the map
                     if (
                         groups.findIndex(
                             (month) =>
-                                month.getFullYear() ===
-                                    monthYear.getFullYear() &&
-                                month.getMonth() === monthYear.getMonth()
+                                month.year() === monthYear.year() &&
+                                month.month() === monthYear.month()
                         ) === -1
                     ) {
                         groups.push(monthYear);

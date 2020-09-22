@@ -327,12 +327,12 @@ input {
                         </b-col>
                     </b-row>
                 </div>
-                <b-row class="mb-3">
+                <b-row v-if="isActiveProfile" class="mb-3">
                     <b-col>
                         <label>Other</label>
                         <div>
                             <b-button
-                                v-if="isActiveProfile && !showCloseWarning"
+                                v-if="!showCloseWarning"
                                 id="showCloseWarningBtn"
                                 class="p-0 pt-2"
                                 variant="link"
@@ -421,9 +421,10 @@ import {
     faCheck,
     faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { DateWrapper } from "@/models/dateWrapper";
+import { Duration } from "luxon";
 
 library.add(faExclamationTriangle);
 
@@ -470,7 +471,7 @@ export default class ProfileView extends Vue {
         dateTime,
     }: {
         hdid: string;
-        dateTime: Date;
+        dateTime: DateWrapper;
     }) => void;
 
     @Getter("user", { namespace: userNamespace }) user!: User;
@@ -508,7 +509,6 @@ export default class ProfileView extends Vue {
     private userProfile!: UserProfile;
 
     private lastLoginDateString: string = "";
-    private plannedDeletionDateTime: Date = new Date();
 
     private showCloseWarning = false;
 
@@ -567,9 +567,9 @@ export default class ProfileView extends Vue {
                     this.logger.verbose(
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
-                    this.lastLoginDateString = moment(
+                    this.lastLoginDateString = new DateWrapper(
                         this.userProfile.lastLoginDateTime
-                    ).format("lll");
+                    ).format("LLL d, yyyy");
                 }
 
                 this.isLoading = false;
@@ -636,9 +636,9 @@ export default class ProfileView extends Vue {
             return undefined;
         }
 
-        let endDate = moment(this.user.closedDateTime);
-        endDate.add(this.webClientConfig.hoursForDeletion, "h");
-        this.timeForDeletion = endDate.diff(moment());
+        let endDate = new DateWrapper(this.user.closedDateTime);
+        endDate = endDate.add({ hour: this.webClientConfig.hoursForDeletion });
+        this.timeForDeletion = endDate.diff(new DateWrapper());
     }
 
     private get timeForDeletionString(): string {
@@ -650,21 +650,21 @@ export default class ProfileView extends Vue {
             return "Your account will be closed imminently";
         }
 
-        let duration = moment.duration(this.timeForDeletion);
-        let timeRemaining = duration.asDays();
+        let duration = Duration.fromMillis(this.timeForDeletion);
+        let timeRemaining = duration.as("days");
         if (timeRemaining > 1) {
             return this.pluralize(timeRemaining, "day");
         }
-        timeRemaining = duration.asHours();
+        timeRemaining = duration.as("hours");
         if (timeRemaining > 1) {
             return this.pluralize(timeRemaining, "hour");
         }
-        timeRemaining = duration.asMinutes();
+        timeRemaining = duration.as("minutes");
         if (timeRemaining > 1) {
             return this.pluralize(timeRemaining, "minute");
         }
 
-        timeRemaining = duration.asSeconds();
+        timeRemaining = duration.as("seconds");
         return this.pluralize(timeRemaining, "second");
     }
 
@@ -774,7 +774,7 @@ export default class ProfileView extends Vue {
         // Reset timer when user submits their SMS number
         this.updateSMSResendDateTime({
             hdid: this.user.hdid,
-            dateTime: new Date(),
+            dateTime: new DateWrapper(),
         });
         // Send update to backend
         this.userProfileService

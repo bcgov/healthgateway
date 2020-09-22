@@ -1,4 +1,5 @@
 import { Dictionary } from "vue-router/types/router";
+import { StringISODate } from "./dateWrapper";
 
 export default interface UserProfile {
     // The user hdid.
@@ -17,10 +18,10 @@ export default interface UserProfile {
     hasTermsOfServiceUpdated?: boolean;
 
     // Datetime of the user's last login
-    lastLoginDateTime?: Date;
+    lastLoginDateTime?: StringISODate;
 
     // Date when the user profile will be deleted
-    closedDateTime?: Date;
+    closedDateTime?: StringISODate;
 
     // The User Preference
     preferences: Dictionary<string>;

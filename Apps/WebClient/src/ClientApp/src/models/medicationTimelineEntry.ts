@@ -18,7 +18,6 @@ export default class MedicationTimelineEntry extends TimelineEntry {
             EntryType.Medication,
             model.dispensedDate
         );
-
         this.medication = new MedicationViewModel(model.medicationSumary);
         this.pharmacy = new PharmacyViewModel(
             model.dispensingPharmacy?.pharmacyId

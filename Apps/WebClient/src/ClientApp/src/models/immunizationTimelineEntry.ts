@@ -1,5 +1,6 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import ImmunizationModel from "@/models/immunizationModel";
+import { DateWrapper } from "./dateWrapper";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
@@ -28,13 +29,13 @@ class ImmunizationViewModel {
     public isSelfReported: boolean;
     public location: string;
     public name: string;
-    public dateOfImmunization: Date;
+    public dateOfImmunization: DateWrapper;
 
     constructor(model: ImmunizationModel) {
         this.id = model.id;
         this.isSelfReported = model.isSelfReported;
         this.location = model.location;
         this.name = model.name;
-        this.dateOfImmunization = model.dateOfImmunization;
+        this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
     }
 }

@@ -78,7 +78,6 @@
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import moment from "moment";
 
 import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
@@ -99,6 +98,7 @@ import { Dictionary } from "vue-router/types/router";
 import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { DateWrapper } from "@/models/dateWrapper";
 
 const namespace: string = "user";
 
@@ -131,8 +131,8 @@ export default class HealthInsightsView extends Vue {
     private isMedicationLoading: boolean = false;
     private protectiveWordAttempts: number = 0;
 
-    private startDate: Date | null = null;
-    private endDate: Date | null = null;
+    private startDate: DateWrapper | null = null;
+    private endDate: DateWrapper | null = null;
 
     private timeChartData: any | null = null;
     private chartOptions: {} = { responsive: true, maintainAspectRatio: false };
@@ -232,18 +232,18 @@ export default class HealthInsightsView extends Vue {
     /**
      * Gets an array of months between two dates
      */
-    private getMonthsBetweenDates(start: Date, end: Date): string[] {
-        var startDate = moment(start);
-        var endDate = moment(end);
-
+    private getMonthsBetweenDates(
+        startDate: DateWrapper,
+        endDate: DateWrapper
+    ): string[] {
         if (endDate.isBefore(startDate)) {
             throw "End date must be greated than start date.";
         }
 
         var result: string[] = [];
         while (startDate.isBefore(endDate)) {
-            result.push(startDate.format("YYYY-MM-01"));
-            startDate.add(1, "month");
+            result.push(startDate.format("yyyy-LL-01"));
+            startDate = startDate.add({ months: 1 });
         }
         return result;
     }
@@ -253,8 +253,8 @@ export default class HealthInsightsView extends Vue {
      */
     private prepareMonthlyChart() {
         let months: string[] = this.getMonthsBetweenDates(
-            this.startDate as Date,
-            this.endDate as Date
+            this.startDate as DateWrapper,
+            this.endDate as DateWrapper
         );
 
         let entryIndex = 0;
@@ -265,7 +265,7 @@ export default class HealthInsightsView extends Vue {
 
             while (entryIndex < this.timelineEntries.length) {
                 let entry = this.timelineEntries[entryIndex];
-                if (moment(currentMonth).isSame(entry.date, "month")) {
+                if (new DateWrapper(currentMonth).isSame(entry.date, "month")) {
                     monthCounter[monthIndex] += 1;
                     entryIndex++;
                 } else {
@@ -278,18 +278,18 @@ export default class HealthInsightsView extends Vue {
 
         for (let i = 0; i < months.length; i++) {
             this.timeChartData.labels.push(
-                moment(months[i]).format("MMM YYYY")
+                new DateWrapper(months[i]).format("LLL yyyy")
             );
             this.timeChartData.datasets[0].data.push(monthCounter[i]);
         }
     }
 
-    private getReadableDate(date: Date | null): string {
+    private getReadableDate(date: DateWrapper | null): string {
         if (date === null) {
             return "N/A";
         }
 
-        return moment(date).format("MMMM YYYY");
+        return date.format("LLL yyyy");
     }
 }
 </script>
