@@ -143,6 +143,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting Communications by Type and Status Code from DB...");
             List<Communication> retVal = this.dbContext.Communication.Where(c =>
                 c.CommunicationTypeCode == CommunicationType.Email &&
+                c.CommunicationStatusCode != CommunicationStatus.Draft &&
                 c.CommunicationStatusCode != CommunicationStatus.Processed &&
                 c.ScheduledDateTime <= DateTime.UtcNow)
                 .OrderByDescending(c => c.CreatedDateTime).ToList();
