@@ -112,7 +112,7 @@ export default class CommunicationTable extends Vue {
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         priority: 10,
         version: 0,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -126,7 +126,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         subject: "",
         communicationTypeCode: CommunicationType.Email,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -140,7 +140,7 @@ export default class CommunicationTable extends Vue {
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         version: 0,
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -154,7 +154,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         subject: "",
         communicationTypeCode: CommunicationType.Email,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -323,7 +323,16 @@ export default class CommunicationTable extends Vue {
     }
 
     private checkDisabled(item: Communication) {
-        if (
+        if (item.communicationTypeCode === CommunicationType.Banner) {
+            const now = new Date();
+            const expiryDateTime = new Date(item.expiryDateTime);
+            if (
+                item.communicationStatusCode != CommunicationStatus.Draft &&
+                expiryDateTime < now
+            ) {
+                return true;
+            }
+        } else if (
             item.communicationTypeCode === CommunicationType.Email &&
             item.communicationStatusCode != CommunicationStatus.New
         ) {
@@ -375,7 +384,7 @@ export default class CommunicationTable extends Vue {
                 subject: comm.subject,
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
-                communicationStatusCode: CommunicationStatus.New,
+                communicationStatusCode: comm.communicationStatusCode,
                 priority: comm.priority,
                 version: 0,
                 scheduledDateTime: comm.scheduledDateTime,
@@ -414,7 +423,7 @@ export default class CommunicationTable extends Vue {
                 subject: comm.subject,
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
-                communicationStatusCode: CommunicationStatus.New,
+                communicationStatusCode: comm.communicationStatusCode,
                 priority: comm.priority,
                 version: comm.version,
                 scheduledDateTime: comm.scheduledDateTime,

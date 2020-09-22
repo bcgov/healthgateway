@@ -28,6 +28,7 @@
                                     v-model="editedItem.effectiveDateTime"
                                     requried
                                     label="Effective On"
+                                    :disabled="!isDraft"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
                                     errors[0]
@@ -50,6 +51,7 @@
                                     v-model="editedItem.expiryDateTime"
                                     required
                                     label="Expires On"
+                                    :disabled="!isDraft"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
                                     errors[0]
@@ -66,7 +68,23 @@
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
+                                :disabled="!isDraft"
                             ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-text-field
+                                v-model="editedItem.communicationStatusCode"
+                                label="Status"
+                                disabled
+                            ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="togglePublish()"
+                                >{{ publishingStatus }}</v-btn
+                            >
                         </v-col>
                     </v-row>
                     <v-row>
@@ -76,6 +94,7 @@
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the banner content here..."
                                 :extensions="extensions"
+                                :disabled="!isDraft"
                             />
                         </v-col>
                     </v-row>
@@ -94,7 +113,9 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/adminCommunication";
+import Communication, {
+    CommunicationStatus
+} from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import { ValidationProvider, extend, validate } from "vee-validate";
 import { required, email } from "vee-validate/dist/rules";
@@ -162,6 +183,17 @@ export default class BannerModal extends Vue {
     @Prop() editedItem!: Communication;
     @Prop() isNew!: number;
 
+    private get isDraft(): boolean {
+        return (
+            this.editedItem.communicationStatusCode ===
+            CommunicationStatus.Draft
+        );
+    }
+
+    private get publishingStatus(): string {
+        return this.isDraft ? "Publish" : "Draft";
+    }
+
     @Watch("editedItem")
     private onPropChange() {
         if (!this.isNew) {
@@ -201,6 +233,15 @@ export default class BannerModal extends Vue {
             }
             this.close();
         }
+    }
+
+    private togglePublish() {
+        if (this.isDraft) {
+            this.editedItem.communicationStatusCode = CommunicationStatus.New;
+        } else {
+            this.editedItem.communicationStatusCode = CommunicationStatus.Draft;
+        }
+        this.save();
     }
 
     private close() {
