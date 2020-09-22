@@ -56,7 +56,7 @@ namespace HealthGateway.Database.Delegates
             result.Payload = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
                 .Where(c => c.CommunicationTypeCode == CommunicationType.Banner)
-                .Where(c => c.CommunicationStatusCode != CommunicationStatus.Draft)
+                .Where(c => c.CommunicationStatusCode == CommunicationStatus.New)
                 .Where(c => DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime)
                 .FirstOrDefault();
 
