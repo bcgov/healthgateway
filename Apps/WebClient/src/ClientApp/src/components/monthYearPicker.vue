@@ -191,8 +191,8 @@ export default class MonthYearPickerComponent extends Vue {
         ];
         availableMonthsOfSelectedYear.forEach((date) => {
             // Months are indexed 0-11
-            let month: number = date.month() - 1;
-            monthsToDisplay[month].HasData = true;
+            let monthIndex: number = date.month() - 1;
+            monthsToDisplay[monthIndex].HasData = true;
         });
         return monthsToDisplay;
     }

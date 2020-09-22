@@ -29,10 +29,6 @@
     .right-button {
         border-radius: 0px 5px 5px 0px;
     }
-
-    .title {
-        font-size: 1.5em;
-    }
 }
 </style>
 <template>
@@ -91,7 +87,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 })
 export default class CalendarComponent extends Vue {
     @Prop() currentMonth!: DateWrapper;
-    @Prop() titleFormat!: string;
     @Prop() availableMonths!: DateWrapper[];
 
     private monthIndex: number = 0;
@@ -99,10 +94,6 @@ export default class CalendarComponent extends Vue {
     private eventBus = EventBus;
     private leftIcon: string = "chevron-left";
     private rightIcon: string = "chevron-right";
-
-    public get title(): string {
-        return this.currentMonth.format(this.titleFormat);
-    }
 
     private get hasAvailableMonths() {
         return this.availableMonths.length > 0;
@@ -146,7 +137,7 @@ export default class CalendarComponent extends Vue {
 
     private dateSelected(date: DateWrapper) {
         this.monthIndex = this.availableMonths.findIndex(
-            (d) => d.year() == date.year() && d.month() == date.month()
+            (d) => d.year() === date.year() && d.month() === date.month()
         );
     }
 
