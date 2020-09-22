@@ -207,7 +207,7 @@ export default class MonthYearPickerComponent extends Vue {
 
     private getDisplayYearCss(year: number) {
         return `item col-12 ${
-            this.currentMonth.year() == year ? "selected" : ""
+            this.currentMonth.year() === year ? "selected" : ""
         }`;
     }
 
