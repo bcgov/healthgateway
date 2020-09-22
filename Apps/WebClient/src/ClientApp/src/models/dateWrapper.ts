@@ -259,6 +259,10 @@ export class DateWrapper {
         return new DateWrapper(temp_date);
     }
 
+    /**
+     * Checks if the date is in DST.
+     * @returns True if the date is in DST, false otherwise.
+     */
     public isInDST(): boolean {
         return this._internal_date.isInDST;
     }
