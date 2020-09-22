@@ -49,7 +49,7 @@ export class DateWrapper {
                     console.log("Is utc!");
                     this._internal_date = DateTime.fromISO(param, {
                         zone: "utc",
-                    });
+                    }).setZone("America/Vancouver");
                 } else {
                     this._internal_date = DateTime.fromISO(param, {
                         zone: "America/Vancouver",
@@ -252,5 +252,9 @@ export class DateWrapper {
     public add(duration: Duration | number | DurationObject): DateWrapper {
         let temp_date = this.internalDate.plus(duration);
         return new DateWrapper(temp_date);
+    }
+
+    public isInDST(): boolean {
+        return this._internal_date.isInDST;
     }
 }

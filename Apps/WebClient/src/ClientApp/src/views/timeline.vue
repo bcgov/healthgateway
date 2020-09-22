@@ -421,7 +421,7 @@ export default class TimelineView extends Vue {
         ) {
             self.isListView = true;
         });
-        /*if (moment().isDST()) {
+        if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
                 ? (this.isPacificTime = false)
                 : (this.isPacificTime = true);
@@ -429,7 +429,7 @@ export default class TimelineView extends Vue {
             !this.checkTimezone(false)
                 ? (this.isPacificTime = false)
                 : (this.isPacificTime = true);
-        }*/
+        }
     }
 
     private beforeRouteLeave(to: Route, from: Route, next: any) {

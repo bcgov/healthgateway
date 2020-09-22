@@ -37,8 +37,6 @@
                 <b-col class="comment-text">
                     {{ comment.text }}
                     <p class="m-0 timestamp">
-                        {{ comment.createdDateTime }}
-                        ----
                         {{ formatDate(comment.createdDateTime) }}
                     </p>
                 </b-col>
@@ -146,15 +144,7 @@ export default class CommentComponent extends Vue {
     }
 
     private formatDate(date: string): string {
-        /*return new Date(Date.parse(date + "Z")).toLocaleString([], {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });*/
-        //August 25, 2020, 02:01 PM
-        return new DateWrapper(date, true).toISO();
+        return new DateWrapper(date, true).format("DDD, t");
     }
 
     private get menuIcon(): IconDefinition {
