@@ -187,10 +187,6 @@ export default class CommunicationTable extends Vue {
         }
     }
 
-    private getStatus(commStatusCode: string): string {
-        return commStatusCode == "New" ? "Draft" : commStatusCode;
-    }
-
     private bannerHeaders: any[] = [
         {
             text: "Subject",
