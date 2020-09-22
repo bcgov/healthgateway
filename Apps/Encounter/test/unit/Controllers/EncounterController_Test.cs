@@ -57,7 +57,7 @@ namespace HealthGateway.EncounterTests
             var encounters = new List<EncounterModel>();
             encounters.Add(new EncounterModel()
             {
-                Id = 1,
+                Id = "1",
                 EncounterDate = new DateTime(2020 - 05 - 27),
                 SpecialtyDescription = "LABORATORY MEDICINE",
                 PractitionerName = "PRACTITIONER NAME",
@@ -75,7 +75,7 @@ namespace HealthGateway.EncounterTests
             });
             encounters.Add(new EncounterModel()
             {
-                Id = 2,
+                Id = "2",
                 EncounterDate = new DateTime(2020 - 06 - 27),
                 SpecialtyDescription = "LABORATORY MEDICINE",
                 PractitionerName = "PRACTITIONER NAME",
