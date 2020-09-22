@@ -55,7 +55,10 @@ namespace HealthGateway.Database.Delegates
             };
             result.Payload = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
-                .FirstOrDefault(c => c.CommunicationTypeCode == CommunicationType.Banner && (DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime));
+                .Where(c => c.CommunicationTypeCode == CommunicationType.Banner)
+                .Where(c => c.CommunicationStatusCode != CommunicationStatus.Draft)
+                .Where(c => DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime)
+                .FirstOrDefault();
 
             if (result.Payload != null)
             {
