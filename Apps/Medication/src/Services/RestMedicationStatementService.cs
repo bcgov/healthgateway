@@ -207,16 +207,16 @@ namespace HealthGateway.Medication.Services
                 if (drugProductsDict.ContainsKey(din))
                 {
                     mdSummary.BrandName = drugProductsDict[din].BrandName;
-                    mdSummary.Form = drugProductsDict[din].Form?.PharmaceuticalForm ?? "N/A";
-                    mdSummary.Strength = drugProductsDict[din].ActiveIngredient?.Strength ?? "N/A";
-                    mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? "N/A";
-                    mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? "N/A";
+                    mdSummary.Form = drugProductsDict[din].Form?.PharmaceuticalForm ?? string.Empty;
+                    mdSummary.Strength = drugProductsDict[din].ActiveIngredient?.Strength ?? string.Empty;
+                    mdSummary.StrengthUnit = drugProductsDict[din].ActiveIngredient?.StrengthUnit ?? string.Empty;
+                    mdSummary.Manufacturer = drugProductsDict[din].Company?.CompanyName ?? string.Empty;
                 }
                 else if (provicialDict.ContainsKey(din))
                 {
-                    mdSummary.BrandName = provicialDict[din].BrandName;
-                    mdSummary.Form = provicialDict[din].DosageForm ?? "N/A";
                     mdSummary.IsPin = true;
+                    mdSummary.BrandName = provicialDict[din].BrandName;
+                    mdSummary.Form = provicialDict[din].DosageForm ?? string.Empty;
                 }
             }
 
