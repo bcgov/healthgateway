@@ -28,6 +28,7 @@
                                     v-model="editedItem.effectiveDateTime"
                                     requried
                                     label="Effective On"
+                                    :disabled="!isDraft"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
                                     errors[0]
@@ -50,6 +51,7 @@
                                     v-model="editedItem.expiryDateTime"
                                     required
                                     label="Expires On"
+                                    :disabled="!isDraft"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
                                     errors[0]
@@ -66,6 +68,7 @@
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
+                                :disabled="!isDraft"
                             ></v-text-field>
                         </v-col>
                         <v-col>
@@ -91,6 +94,7 @@
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the banner content here..."
                                 :extensions="extensions"
+                                :disabled="!isDraft"
                             />
                         </v-col>
                     </v-row>
@@ -181,7 +185,7 @@ export default class BannerModal extends Vue {
 
     private get isDraft(): boolean {
         if (
-            this.editedItem.communicationStatusCode == CommunicationStatus.New
+            this.editedItem.communicationStatusCode == CommunicationStatus.Draft
         ) {
             return true;
         } else {
@@ -236,9 +240,9 @@ export default class BannerModal extends Vue {
 
     private publishOrDraft() {
         if (this.isDraft) {
-            this.editedItem.communicationStatusCode = CommunicationStatus.Ready;
-        } else {
             this.editedItem.communicationStatusCode = CommunicationStatus.New;
+        } else {
+            this.editedItem.communicationStatusCode = CommunicationStatus.Draft;
         }
         this.save();
     }

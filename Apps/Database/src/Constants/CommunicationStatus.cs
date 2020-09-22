@@ -46,8 +46,8 @@ namespace HealthGateway.Database.Constants
         Processing,
 
         /// <summary>
-        /// Constant value to represent a Ready communication.
+        /// Constant value to represent a Draft communication.
         /// </summary>
-        Ready,
+        Draft,
     }
 }

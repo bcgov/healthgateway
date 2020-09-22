@@ -20,6 +20,7 @@
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
+                                :disabled="!isDraft"
                             ></v-text-field>
                         </v-col>
                         <v-col>
@@ -27,6 +28,7 @@
                                 v-model="editedItem.scheduledDateTime"
                                 requried
                                 label="Scheduled For"
+                                :disabled="!isDraft"
                             ></v-datetime-picker>
                         </v-col>
                         <v-col>
@@ -39,6 +41,7 @@
                                 :rules="[v => !!v || 'Priority is required']"
                                 validate-on-blur
                                 required
+                                :disabled="!isDraft"
                             ></v-select>
                         </v-col>
                     </v-row>
@@ -68,6 +71,7 @@
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the email content here..."
                                 :extensions="extensions"
+                                :disabled="!isDraft"
                             />
                         </v-col>
                     </v-row>
@@ -211,7 +215,7 @@ export default class EmailModal extends Vue {
 
     private get isDraft(): boolean {
         if (
-            this.editedItem.communicationStatusCode == CommunicationStatus.New
+            this.editedItem.communicationStatusCode == CommunicationStatus.Draft
         ) {
             return true;
         } else {
@@ -225,9 +229,9 @@ export default class EmailModal extends Vue {
 
     private publishOrDraft() {
         if (this.isDraft) {
-            this.editedItem.communicationStatusCode = CommunicationStatus.Ready;
-        } else {
             this.editedItem.communicationStatusCode = CommunicationStatus.New;
+        } else {
+            this.editedItem.communicationStatusCode = CommunicationStatus.Draft;
         }
         this.saveChanges();
     }

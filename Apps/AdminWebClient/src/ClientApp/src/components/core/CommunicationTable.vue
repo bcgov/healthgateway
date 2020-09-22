@@ -51,16 +51,13 @@
         <template v-slot:item.actions="{ item }">
             <v-btn
                 class="mr-2"
-                :disabled="checkDisabled(item, false)"
+                :disabled="checkDisabled(item)"
                 @click="edit(item)"
             >
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
 
-            <v-btn
-                :disabled="checkDisabled(item, true)"
-                @click="deleteComm(item)"
-            >
+            <v-btn :disabled="checkDisabled(item)" @click="deleteComm(item)">
                 <font-awesome-icon icon="trash" size="1x"> </font-awesome-icon>
             </v-btn>
         </template>
@@ -115,7 +112,7 @@ export default class CommunicationTable extends Vue {
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         priority: 10,
         version: 0,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -129,7 +126,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         subject: "",
         communicationTypeCode: CommunicationType.Email,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -143,7 +140,7 @@ export default class CommunicationTable extends Vue {
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         version: 0,
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -157,7 +154,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         subject: "",
         communicationTypeCode: CommunicationType.Email,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -325,14 +322,14 @@ export default class CommunicationTable extends Vue {
         return this.communicationList;
     }
 
-    private checkDisabled(item: Communication, deleteIcon: boolean) {
-        if (
-            item.communicationTypeCode === CommunicationType.Banner &&
-            !deleteIcon
-        ) {
+    private checkDisabled(item: Communication) {
+        if (item.communicationTypeCode === CommunicationType.Banner) {
             const now = new Date();
             const expiryDateTime = new Date(item.expiryDateTime);
-            if (expiryDateTime < now) {
+            if (
+                item.communicationStatusCode != CommunicationStatus.Draft &&
+                expiryDateTime < now
+            ) {
                 return true;
             }
         } else if (
