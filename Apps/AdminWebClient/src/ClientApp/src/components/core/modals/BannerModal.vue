@@ -82,7 +82,7 @@
                             <v-btn
                                 color="blue darken-1"
                                 text
-                                @click="publishOrDraft()"
+                                @click="togglePublish()"
                                 >{{ publishingStatus }}</v-btn
                             >
                         </v-col>
@@ -185,7 +185,8 @@ export default class BannerModal extends Vue {
 
     private get isDraft(): boolean {
         if (
-            this.editedItem.communicationStatusCode == CommunicationStatus.Draft
+            this.editedItem.communicationStatusCode ===
+            CommunicationStatus.Draft
         ) {
             return true;
         } else {
@@ -238,7 +239,7 @@ export default class BannerModal extends Vue {
         }
     }
 
-    private publishOrDraft() {
+    private togglePublish() {
         if (this.isDraft) {
             this.editedItem.communicationStatusCode = CommunicationStatus.New;
         } else {
