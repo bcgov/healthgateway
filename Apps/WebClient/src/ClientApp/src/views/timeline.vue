@@ -263,7 +263,6 @@
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import moment from "moment";
 import { Route } from "vue-router";
 import EventBus from "@/eventbus";
 import { WebClientConfiguration } from "@/models/configData";
@@ -306,6 +305,7 @@ import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import FilterComponent from "@/components/timeline/filters.vue";
+import { DateWrapper } from "@/models/dateWrapper";
 
 const namespace: string = "user";
 
@@ -416,10 +416,12 @@ export default class TimelineView extends Vue {
         ) {
             self.onEntryEditClose(entry);
         });
-        this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
+        this.eventBus.$on("calendarDateEventClick", function (
+            eventDate: DateWrapper
+        ) {
             self.isListView = true;
         });
-        if (moment().isDST()) {
+        if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
                 ? (this.isPacificTime = false)
                 : (this.isPacificTime = true);
@@ -766,7 +768,7 @@ export default class TimelineView extends Vue {
 
     private sortEntries() {
         this.timelineEntries.sort((a, b) =>
-            a.date > b.date ? -1 : a.date < b.date ? 1 : 0
+            a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
         );
     }
 

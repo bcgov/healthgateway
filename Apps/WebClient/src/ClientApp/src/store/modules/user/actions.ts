@@ -11,6 +11,7 @@ import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
+import { DateWrapper } from "@/models/dateWrapper";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -159,7 +160,7 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-    updateSMSResendDateTime(context, params: { dateTime: Date }): void {
+    updateSMSResendDateTime(context, params: { dateTime: DateWrapper }): void {
         context.commit("setSMSResendDateTime", params.dateTime);
     },
     updateUserPreference(

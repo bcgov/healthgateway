@@ -1,9 +1,9 @@
 import { shallowMount } from "@vue/test-utils";
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
-import moment from "moment";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import { DateWrapper } from "@/models/dateWrapper";
 
 describe("MonthYearPickerComponent", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -11,17 +11,17 @@ describe("MonthYearPickerComponent", () => {
     test("renders component correctly", () => {
         const wrapper = shallowMount(MonthYearPickerComponent, {
             propsData: {
-                currentMonth: new Date(),
-                availableMonths: [new Date()],
+                currentMonth: new DateWrapper(),
+                availableMonths: [new DateWrapper()],
             },
         });
 
         expect(wrapper.find("#currentDate").text()).toBe(
-            moment(new Date()).format("MMMM yyyy")
+            new DateWrapper().format("MMMM yyyy")
         );
 
         expect(wrapper.find("#selectedYearBtn").text()).toBe(
-            new Date().getFullYear().toString()
+            new DateWrapper().format("yyyy")
         );
     });
 });

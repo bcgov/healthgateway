@@ -156,8 +156,6 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Ref, Watch } from "vue-property-decorator";
-import DateUtil from "@/utility/dateUtil";
-import moment from "moment";
 import TimelineEntry, { EntryType, DateGroup } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -167,10 +165,11 @@ import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import EventBus from "@/eventbus";
 import { CalendarEntry, CalendarWeek } from "./models";
 import { EventMessageName } from "@/constants/eventMessageName";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({})
 export default class CalendarBodyComponent extends Vue {
-    @Prop() currentMonth!: Date;
+    @Prop() currentMonth!: DateWrapper;
     @Prop() dateGroups!: DateGroup[];
     @Prop() weekNames!: string[];
     @Prop() monthNames!: string[];
@@ -187,11 +186,15 @@ export default class CalendarBodyComponent extends Vue {
 
     @Watch("currentMonth")
     private onCurrentMonthUpdate() {
-        this.monthData = this.getMonthCalendar(this.currentMonth);
+        // Make sure it does not attempt to update if there is no data
+        if (this.dateGroups.length === 0) {
+            return;
+        }
 
+        this.monthData = this.getMonthCalendar(this.currentMonth);
         if (this.isVisible) {
             let dateGroup: DateGroup = this.dateGroups.find((d) =>
-                moment(this.currentMonth).isSame(d.date, "month")
+                this.currentMonth.isSame(d.date, "month")
             ) as DateGroup;
             this.eventBus.$emit(
                 EventMessageName.CalendarMonthUpdated,
@@ -200,38 +203,37 @@ export default class CalendarBodyComponent extends Vue {
         }
     }
 
-    private getMonthCalendar(monthDate: Date): CalendarWeek[] {
-        let firstMonthDate = DateUtil.getMonthFirstDate(monthDate);
+    private getMonthCalendar(monthDate: DateWrapper): CalendarWeek[] {
+        let firstMonthDate = monthDate.startOf("month");
+        let curWeekDay = firstMonthDate.weekday();
 
-        let curWeekDay = firstMonthDate.getDay();
         // begin date of this table may be some day of last month
-        firstMonthDate.setDate(
-            firstMonthDate.getDate() - curWeekDay + this.firstDay
-        );
+        let dateIndex = firstMonthDate.subtract({
+            day: curWeekDay + this.firstDay,
+        });
 
         let calendar: CalendarWeek[] = [];
 
-        let today = new Date();
+        let today = new DateWrapper();
         for (let perWeek = 0; perWeek < 6; perWeek++) {
             let week: CalendarWeek = {
-                id: firstMonthDate.getTime().toString(),
+                id: dateIndex.fromEpoch(),
                 days: [],
             };
 
             for (let perDay = 0; perDay < 7; perDay++) {
                 let dayEvent = {
-                    id: firstMonthDate.getTime().toString() + "-" + perDay,
-                    monthDay: firstMonthDate.getDate(),
-                    isToday: moment(today).isSame(firstMonthDate),
-                    isCurMonth:
-                        firstMonthDate.getMonth() === monthDate.getMonth(),
+                    id: dateIndex.fromEpoch() + "-" + perDay,
+                    monthDay: dateIndex.day(),
+                    isToday: today.isSame(dateIndex, "day"),
+                    isCurMonth: dateIndex.month() === monthDate.month(),
                     weekDay: perDay,
-                    date: new Date(firstMonthDate),
-                    events: this.slotEvents(firstMonthDate),
+                    date: dateIndex,
+                    events: this.slotEvents(dateIndex),
                 };
                 week.days.push(dayEvent);
 
-                firstMonthDate.setDate(firstMonthDate.getDate() + 1);
+                dateIndex = dateIndex.add({ day: 1 });
             }
 
             calendar.push(week);
@@ -239,17 +241,17 @@ export default class CalendarBodyComponent extends Vue {
         return calendar;
     }
 
-    private slotEvents(date: Date): CalendarEntry[] {
+    private slotEvents(date: DateWrapper): CalendarEntry[] {
         //TODO: It should do this computation once instead of every single time
 
         // find all events start from this date
         let cellIndexArr = [];
 
         let dateGroup: DateGroup = this.dateGroups.find((d) =>
-            moment(date).isSame(d.date, "day")
+            date.isSame(d.date, "day")
         ) || {
             key: "",
-            date: new Date(),
+            date: new DateWrapper(),
             entries: [],
         };
 
@@ -271,7 +273,7 @@ export default class CalendarBodyComponent extends Vue {
         let groupArrays = Object.keys(groups).map<CalendarEntry>((typeKey) => {
             index++;
             return {
-                id: date.getTime().toString() + "-type-" + typeKey,
+                id: date.fromEpoch() + "-type-" + typeKey,
                 cellIndex: index,
                 type: Number(typeKey),
                 entries: groups[

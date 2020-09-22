@@ -20,14 +20,13 @@ import Router from "vue-router";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import { DateWrapper } from "@/models/dateWrapper";
 
-const today = new Date();
-const yesterday = new Date(today);
+const today = new DateWrapper();
+const yesterday = today.subtract({ day: 1 });
 
 const userWithResults = new User();
 userWithResults.hdid = "hdid_with_results";
-
-yesterday.setDate(today.getDate() - 1);
 const medicationStatements: MedicationStatementHistory[] = [
     {
         medicationSummary: {
@@ -37,7 +36,7 @@ const medicationStatements: MedicationStatementHistory[] = [
             isPin: false,
         },
         prescriptionIdentifier: "abcmed1",
-        dispensedDate: today,
+        dispensedDate: today.format("YYYY-MM-DDTHH:mm:ss"),
         dispensingPharmacy: {},
     },
     {
@@ -48,7 +47,7 @@ const medicationStatements: MedicationStatementHistory[] = [
             isPin: false,
         },
         prescriptionIdentifier: "abcmed2",
-        dispensedDate: today,
+        dispensedDate: today.format("YYYY-MM-DDTHH:mm:ss"),
         dispensingPharmacy: {},
     },
     {
@@ -59,7 +58,7 @@ const medicationStatements: MedicationStatementHistory[] = [
             isPin: true,
         },
         prescriptionIdentifier: "abcmed3",
-        dispensedDate: yesterday,
+        dispensedDate: yesterday.format("YYYY-MM-DDTHH:mm:ss"),
         dispensingPharmacy: {},
     },
 ];
@@ -216,58 +215,6 @@ describe("Timeline view", () => {
                 expect(wrapper.findAll(".entryCard").length).toEqual(3);
                 expect(wrapper.findAll(".entryCard").length).toEqual(3);
                 expect(wrapper.findAll(".date").length).toEqual(2);
-                unwatch();
-            }
-        );
-    });
-
-    test("sort button toggles", () => {
-        userGetters = {
-            user: (): User => {
-                const user = new User();
-                user.hdid = "hdid_with_results";
-                return user;
-            },
-        };
-
-        const wrapper = createWrapper();
-        var unwatch = wrapper.vm.$watch(
-            () => {
-                return wrapper.vm.$data.isLoading;
-            },
-            () => {
-                expect(
-                    wrapper
-                        .find(".sortContainer button [name='descending']")
-                        .isVisible()
-                ).toBe(true);
-                expect(
-                    wrapper
-                        .find(".sortContainer button [name='ascending']")
-                        .isVisible()
-                ).toBe(false);
-                let dates = wrapper.findAll(".date");
-                let topDate = new Date(dates.at(0).text());
-                let bottomDate = new Date(dates.at(1).text());
-                expect(topDate > bottomDate).toBe(true);
-
-                wrapper.find(".sortContainer button").trigger("click");
-                wrapper.vm.$nextTick(() => {
-                    expect(
-                        wrapper
-                            .find(".sortContainer button [name='descending']")
-                            .isVisible()
-                    ).toBe(false);
-                    expect(
-                        wrapper
-                            .find(".sortContainer button [name='ascending']")
-                            .isVisible()
-                    ).toBe(true);
-                    dates = wrapper.findAll(".date");
-                    topDate = new Date(dates.at(0).text());
-                    bottomDate = new Date(dates.at(1).text());
-                    expect(topDate > bottomDate).toBe(false);
-                });
                 unwatch();
             }
         );

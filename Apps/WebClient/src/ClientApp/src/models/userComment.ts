@@ -1,3 +1,5 @@
+import { StringISODate } from "@/models/dateWrapper";
+
 export default interface UserComment {
     // Gets or sets the id.
     id?: string;
@@ -12,7 +14,7 @@ export default interface UserComment {
     text: string;
 
     // Gets or sets the comment datetime.
-    createdDateTime: Date;
+    createdDateTime: StringISODate;
 
     // Gets or sets the comment db version.
     version: number;

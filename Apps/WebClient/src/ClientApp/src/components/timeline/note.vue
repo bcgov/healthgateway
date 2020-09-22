@@ -196,16 +196,6 @@ $radius: 15px;
                 </b-col>
             </b-row>
         </b-form>
-        <div v-if="hasErrors" class="pt-1">
-            <b-alert :show="hasErrors" variant="danger">
-                <h5>Error</h5>
-                <span
-                    >An unexpected error occured while processing the
-                    request.</span
-                >
-                <p>{{ errorDescription }}</p>
-            </b-alert>
-        </div>
     </b-col>
 </template>
 
@@ -225,22 +215,23 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import ErrorTranslator from "@/utility/errorTranslator";
 import container from "@/plugins/inversify.config";
 import UserNote from "@/models/userNote";
-import moment from "moment";
 import User from "@/models/user";
+import { DateWrapper } from "@/models/dateWrapper";
+import BannerError from "@/models/bannerError";
 
 @Component
 export default class NoteTimelineComponent extends Vue {
     @Prop() isAddMode!: boolean;
     @Prop() entry!: NoteTimelineEntry;
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
     @Getter("user", { namespace: "user" }) user!: User;
 
     private noteService!: IUserNoteService;
     private text: string = "";
     private title: string = "";
-    private dateString: string = new Date().toISOString().slice(0, 10);
+    private dateString: string = new DateWrapper().toISODate();
     private detailsVisible = false;
-    private hasErrors: boolean = false;
-    private errorDescription: string = "";
     private isEditMode: boolean = false;
     private isSaving: boolean = false;
     private eventBus = EventBus;
@@ -281,7 +272,7 @@ export default class NoteTimelineComponent extends Vue {
                 id: this.entry.id,
                 text: this.text,
                 title: this.title,
-                journalDateTime: new Date(this.dateString),
+                journalDateTime: new DateWrapper(this.dateString).toISODate(),
                 version: this.entry.version as number,
                 hdId: this.user.hdid,
             })
@@ -289,8 +280,10 @@ export default class NoteTimelineComponent extends Vue {
                 this.isEditMode = false;
                 this.onNoteUpdated(result);
             })
-            .catch(() => {
-                this.hasErrors = true;
+            .catch((err) => {
+                this.addError(
+                    ErrorTranslator.toBannerError("Update Note Error", err)
+                );
             })
             .finally(() => {
                 this.isSaving = false;
@@ -303,15 +296,17 @@ export default class NoteTimelineComponent extends Vue {
             .createNote({
                 text: this.text,
                 title: this.title,
-                journalDateTime: new Date(this.dateString),
+                journalDateTime: new DateWrapper(this.dateString).toISODate(),
                 hdId: this.user.hdid,
                 version: 0,
             })
             .then((result) => {
                 this.onNoteAdded(result);
             })
-            .catch(() => {
-                this.hasErrors = true;
+            .catch((err) => {
+                this.addError(
+                    ErrorTranslator.toBannerError("Create Note Error", err)
+                );
             })
             .finally(() => {
                 this.isSaving = false;
@@ -321,7 +316,7 @@ export default class NoteTimelineComponent extends Vue {
     private editNote(): void {
         this.text = this.entry.text;
         this.title = this.entry.title;
-        this.dateString = moment(this.entry.date).toISOString().slice(0, 10);
+        this.dateString = this.entry.date.toISODate();
         this.isEditMode = true;
         this.onEditStarted(this.entry);
     }
@@ -335,10 +330,9 @@ export default class NoteTimelineComponent extends Vue {
                     this.onNoteDeleted(this.entry);
                 })
                 .catch((err) => {
-                    this.errorDescription = ErrorTranslator.getDisplayMessage(
-                        err
+                    this.addError(
+                        ErrorTranslator.toBannerError("Delete Note Error", err)
                     );
-                    this.hasErrors = true;
                 });
         }
     }

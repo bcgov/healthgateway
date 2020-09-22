@@ -29,10 +29,6 @@
     .right-button {
         border-radius: 0px 5px 5px 0px;
     }
-
-    .title {
-        font-size: 1.5em;
-    }
 }
 </style>
 <template>
@@ -79,10 +75,9 @@ import Vue from "vue";
 import EventBus from "@/eventbus";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
-import moment from "moment";
 import CalendarBody from "./body.vue";
-import DateUtil from "@/utility/dateUtil";
 import { DateGroup } from "@/models/timelineEntry";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
     components: {
@@ -91,26 +86,21 @@ import { DateGroup } from "@/models/timelineEntry";
     },
 })
 export default class CalendarComponent extends Vue {
-    @Prop() currentMonth!: Date;
-    @Prop() titleFormat!: string;
-    @Prop() availableMonths!: Date[];
+    @Prop() currentMonth!: DateWrapper;
+    @Prop() availableMonths!: DateWrapper[];
 
     private monthIndex: number = 0;
-    private headerDate: Date = new Date();
+    private headerDate: DateWrapper = new DateWrapper();
     private eventBus = EventBus;
     private leftIcon: string = "chevron-left";
     private rightIcon: string = "chevron-right";
-
-    public get title(): string {
-        return moment(this.currentMonth).format(this.titleFormat);
-    }
 
     private get hasAvailableMonths() {
         return this.availableMonths.length > 0;
     }
 
     @Watch("currentMonth")
-    public onCurrentMonthChange(currentMonth: Date) {
+    public onCurrentMonthChange(currentMonth: DateWrapper) {
         this.dateSelected(currentMonth);
     }
 
@@ -145,17 +135,15 @@ export default class CalendarComponent extends Vue {
         }
     }
 
-    private dateSelected(date: Date) {
+    private dateSelected(date: DateWrapper) {
         this.monthIndex = this.availableMonths.findIndex(
-            (d) =>
-                d.getFullYear() == date.getFullYear() &&
-                d.getMonth() == date.getMonth()
+            (d) => d.year() === date.year() && d.month() === date.month()
         );
     }
 
     private dispatchEvent() {
         if (this.headerDate) {
-            let firstMonthDate = DateUtil.getMonthFirstDate(this.headerDate);
+            let firstMonthDate = this.headerDate.startOf("month");
             this.$emit("update:currentMonth", firstMonthDate);
         }
     }

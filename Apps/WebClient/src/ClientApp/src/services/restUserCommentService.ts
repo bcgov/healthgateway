@@ -16,7 +16,6 @@ import { ServiceName } from "@/models/errorInterfaces";
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    NOT_IMPLENTED: string = "Method not implemented.";
     private readonly USER_COMMENT_BASE_URI: string = "/v1/api/Comment";
     private http!: IHttpDelegate;
     private isEnabled: boolean = false;

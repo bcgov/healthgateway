@@ -1,4 +1,5 @@
 import Clinic from "@/models/clinic";
+import { StringISODate } from "@/models/dateWrapper";
 
 export default interface Encounter {
     // Gets or sets the id.
@@ -11,7 +12,7 @@ export default interface Encounter {
     specialtyDescription: string;
 
     // Gets or sets the encounter timeline datetime.
-    encounterDate: Date;
+    encounterDate: StringISODate;
 
     // Gets or sets the clinic.
     clinic: Clinic;

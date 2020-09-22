@@ -123,9 +123,9 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch, Emit } from "vue-property-decorator";
-import moment from "moment";
 import { directive as onClickaway } from "vue-clickaway";
 import { DateGroup } from "@/models/timelineEntry";
+import { DateWrapper } from "@/models/dateWrapper";
 
 class MonthToDisplay {
     public Title: string = "";
@@ -138,18 +138,43 @@ class MonthToDisplay {
     },
 })
 export default class MonthYearPickerComponent extends Vue {
-    @Prop() currentMonth!: Date;
-    @Prop() availableMonths!: Date[];
+    @Prop() currentMonth!: DateWrapper;
+    @Prop() availableMonths!: DateWrapper[];
+
     public isYearOpen: boolean = false;
     public isMonthOpen: boolean = false;
-    public selectedYear: number = new Date().getFullYear();
-    public selectedMonth: number = new Date().getMonth();
-    private selectedDate: Date = new Date();
+    public selectedYear: number = new DateWrapper().year();
+    public selectedMonth: number = new DateWrapper().month();
+    private selectedDate: DateWrapper = new DateWrapper();
     private years: number[] = [];
+
+    @Watch("currentMonth")
+    public onCurrentMonthChange(currentMonth: DateWrapper) {
+        this.selectedDate = currentMonth;
+        this.close();
+    }
+
+    @Watch("availableMonths")
+    public onAvailableMonths() {
+        this.availableMonths.forEach((date) => {
+            var year: number = date.year();
+            if (!this.years.some((y) => y == year)) {
+                this.years.push(year);
+            }
+        });
+        var currentYear: number = this.selectedDate.year();
+        if (!this.years.some((y) => y == currentYear)) {
+            this.years.push(currentYear);
+        }
+        // Sort years by descending
+        this.years = this.years.sort((a, b) => b - a);
+    }
+
     private get monthsToDisplay(): MonthToDisplay[] {
         let availableMonthsOfSelectedYear = this.availableMonths.filter(
-            (m) => m.getFullYear() === this.selectedYear
+            (m) => m.year() === this.selectedYear
         );
+
         let monthsToDisplay = [
             { Title: "Jan", HasData: false },
             { Title: "Feb", HasData: false },
@@ -165,30 +190,11 @@ export default class MonthYearPickerComponent extends Vue {
             { Title: "Dec", HasData: false },
         ];
         availableMonthsOfSelectedYear.forEach((date) => {
-            const month: number = date.getMonth();
-            monthsToDisplay[month].HasData = true;
+            // Months are indexed 0-11
+            let monthIndex: number = date.month() - 1;
+            monthsToDisplay[monthIndex].HasData = true;
         });
         return monthsToDisplay;
-    }
-
-    private getDisplayYearCss(year: number) {
-        return `item col-12 ${
-            this.currentMonth.getFullYear() == year ? "selected" : ""
-        }`;
-    }
-
-    private getDisplayMonthCss(displayMonth: MonthToDisplay) {
-        if (displayMonth.HasData) {
-            return `item col-4 ${
-                this.currentMonth.getMonth() ==
-                    this.monthsToDisplay.indexOf(displayMonth) &&
-                this.currentMonth.getFullYear() == this.selectedYear
-                    ? "selected"
-                    : ""
-            }`;
-        } else {
-            return "item col-4 no-data";
-        }
     }
 
     private get isOpen(): boolean {
@@ -196,7 +202,27 @@ export default class MonthYearPickerComponent extends Vue {
     }
 
     private get dateText(): string {
-        return moment(this.selectedDate).format("MMMM yyyy");
+        return this.selectedDate.format("MMMM yyyy");
+    }
+
+    private getDisplayYearCss(year: number) {
+        return `item col-12 ${
+            this.currentMonth.year() === year ? "selected" : ""
+        }`;
+    }
+
+    private getDisplayMonthCss(displayMonth: MonthToDisplay) {
+        if (displayMonth.HasData) {
+            return `item col-4 ${
+                this.currentMonth.month() ===
+                    this.monthsToDisplay.indexOf(displayMonth) &&
+                this.currentMonth.year() === this.selectedYear
+                    ? "selected"
+                    : ""
+            }`;
+        } else {
+            return "item col-4 no-data";
+        }
     }
 
     private selectYear(year: number): void {
@@ -215,10 +241,10 @@ export default class MonthYearPickerComponent extends Vue {
         ];
     }
 
-    private selectMonth(month: number): void {
-        if (this.monthsToDisplay[month].HasData) {
-            this.selectedMonth = month;
-            this.selectedDate = new Date(
+    private selectMonth(monthIndex: number): void {
+        if (this.monthsToDisplay[monthIndex].HasData) {
+            this.selectedMonth = monthIndex + 1;
+            this.selectedDate = DateWrapper.fromNumerical(
                 this.selectedYear,
                 this.selectedMonth,
                 1
@@ -236,35 +262,13 @@ export default class MonthYearPickerComponent extends Vue {
     private close(): void {
         this.isYearOpen = false;
         this.isMonthOpen = false;
-        this.selectedMonth = this.selectedDate.getMonth();
-        this.selectedYear = this.selectedDate.getFullYear();
+        this.selectedMonth = this.selectedDate.month();
+        this.selectedYear = this.selectedDate.year();
     }
 
     private open(): void {
         this.isMonthOpen = !this.isMonthOpen;
         this.isYearOpen = !this.isMonthOpen;
-    }
-
-    @Watch("currentMonth")
-    public onCurrentMonthChange(currentMonth: Date) {
-        this.selectedDate = currentMonth;
-        this.close();
-    }
-
-    @Watch("availableMonths")
-    public onAvailableMonths() {
-        this.availableMonths.forEach((date) => {
-            var year: number = date.getFullYear();
-            if (!this.years.some((y) => y == year)) {
-                this.years.push(year);
-            }
-        });
-        var currentYear: number = this.selectedDate.getFullYear();
-        if (!this.years.some((y) => y == currentYear)) {
-            this.years.push(currentYear);
-        }
-        // Sort years by descending
-        this.years = this.years.sort((a, b) => b - a);
     }
 }
 </script>

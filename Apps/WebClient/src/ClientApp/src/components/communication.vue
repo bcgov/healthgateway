@@ -54,7 +54,7 @@ export default class CommunicationComponent extends Vue {
                 self.communication = requestResult.resourcePayload;
             })
             .catch((err) => {
-                this.logger.error(err);
+                this.logger.error(JSON.stringify(err));
             });
     }
 }

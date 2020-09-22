@@ -159,13 +159,8 @@ export default class FilterComponent extends Vue {
     private isVisible: boolean = false;
     private selectedFilters: string[] = [];
     private windowWidth: number = 0;
+
     private filters: Filter[] = [
-        {
-            name: "medication",
-            value: "Medication",
-            display: "Medications",
-            isEnabled: false,
-        },
         {
             name: "immunization",
             value: "Immunization",
@@ -173,21 +168,28 @@ export default class FilterComponent extends Vue {
             isEnabled: false,
         },
         {
+            name: "medication",
+            value: "Medication",
+            display: "Medications",
+            isEnabled: false,
+        },
+
+        {
             name: "laboratory",
             value: "Laboratory",
             display: "Laboratory",
             isEnabled: false,
         },
         {
-            name: "note",
-            value: "Note",
-            display: "My Notes",
-            isEnabled: false,
-        },
-        {
             name: "encounter",
             value: "Encounter",
             display: "MSP Visits",
+            isEnabled: false,
+        },
+        {
+            name: "note",
+            value: "Note",
+            display: "My Notes",
             isEnabled: false,
         },
     ];
@@ -226,11 +228,11 @@ export default class FilterComponent extends Vue {
     }
 
     private mounted() {
-        this.filters[0].isEnabled = this.config.modules["Medication"];
-        this.filters[1].isEnabled = this.config.modules["Note"];
-        this.filters[2].isEnabled = this.config.modules["Immunization"];
-        this.filters[3].isEnabled = this.config.modules["Laboratory"];
-        this.filters[4].isEnabled = this.config.modules["Encounter"];
+        this.filters[0].isEnabled = this.config.modules["Immunization"];
+        this.filters[1].isEnabled = this.config.modules["Medication"];
+        this.filters[2].isEnabled = this.config.modules["Laboratory"];
+        this.filters[3].isEnabled = this.config.modules["Encounter"];
+        this.filters[4].isEnabled = this.config.modules["Note"];
         this.selectedFilters = [];
 
         var self = this;
