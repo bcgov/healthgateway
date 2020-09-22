@@ -795,6 +795,15 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Draft,
+                    Description = "A draft Communication which has not been published",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 });
         }
     }
