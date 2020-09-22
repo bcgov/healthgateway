@@ -30,6 +30,11 @@ export class DateWrapper {
         return this._internal_date;
     }
 
+    /**
+     * Creates an immutable DateWrapper object.
+     * @param param type of object to base this object. If none passed creates sets the current date time to NOW.
+     * @param isUtc True if the date passed is in UTC, false by default.
+     */
     constructor(param?: StringISODate | DateWrapper | DateTime, isUtc = false) {
         if (param) {
             if (param instanceof DateWrapper) {
