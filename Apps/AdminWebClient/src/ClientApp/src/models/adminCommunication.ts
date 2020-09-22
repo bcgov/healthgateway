@@ -9,7 +9,7 @@ export enum CommunicationStatus {
     Error = "Error",
     Pending = "Pending",
     Processing = "Processing",
-    Draft = "Draft"
+    Ready = "Ready"
 }
 
 // Model that provides a user representation of admin communications.

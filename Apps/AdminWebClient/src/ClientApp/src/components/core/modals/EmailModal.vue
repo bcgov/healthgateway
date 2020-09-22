@@ -42,6 +42,24 @@
                             ></v-select>
                         </v-col>
                     </v-row>
+                    <!-- Email Status & Draft/Publish button row -->
+                    <v-row>
+                        <v-col>
+                            <v-text-field
+                                v-model="editedItem.communicationStatusCode"
+                                label="Status"
+                                disabled
+                            ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="publishOrDraft()"
+                                >{{ publishingStatus }}</v-btn
+                            >
+                        </v-col>
+                    </v-row>
                     <!-- WYSIWYG Editor -->
                     <v-row>
                         <v-col>
@@ -78,7 +96,9 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/adminCommunication";
+import Communication, {
+    CommunicationStatus
+} from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import moment from "moment";
 import {
@@ -187,6 +207,29 @@ export default class EmailModal extends Vue {
                 resetValidation: () => any;
             }).resetValidation();
         }
+    }
+
+    private get isDraft(): boolean {
+        if (
+            this.editedItem.communicationStatusCode == CommunicationStatus.New
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private get publishingStatus(): string {
+        return this.isDraft ? "Publish" : "Draft";
+    }
+
+    private publishOrDraft() {
+        if (this.isDraft) {
+            this.editedItem.communicationStatusCode = CommunicationStatus.Ready;
+        } else {
+            this.editedItem.communicationStatusCode = CommunicationStatus.New;
+        }
+        this.saveChanges();
     }
 
     @Emit()

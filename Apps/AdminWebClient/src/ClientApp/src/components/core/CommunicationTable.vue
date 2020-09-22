@@ -51,13 +51,16 @@
         <template v-slot:item.actions="{ item }">
             <v-btn
                 class="mr-2"
-                :disabled="checkDisabled(item)"
+                :disabled="checkDisabled(item, false)"
                 @click="edit(item)"
             >
                 <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
             </v-btn>
 
-            <v-btn :disabled="checkDisabled(item)" @click="deleteComm(item)">
+            <v-btn
+                :disabled="checkDisabled(item, true)"
+                @click="deleteComm(item)"
+            >
                 <font-awesome-icon icon="trash" size="1x"> </font-awesome-icon>
             </v-btn>
         </template>
@@ -182,6 +185,10 @@ export default class CommunicationTable extends Vue {
             this.communicationList = this.emailList;
             this.headers = this.emailHeaders;
         }
+    }
+
+    private getStatus(commStatusCode: string): string {
+        return commStatusCode == "New" ? "Draft" : commStatusCode;
     }
 
     private bannerHeaders: any[] = [
@@ -322,8 +329,17 @@ export default class CommunicationTable extends Vue {
         return this.communicationList;
     }
 
-    private checkDisabled(item: Communication) {
+    private checkDisabled(item: Communication, deleteIcon: boolean) {
         if (
+            item.communicationTypeCode === CommunicationType.Banner &&
+            !deleteIcon
+        ) {
+            const now = new Date();
+            const expiryDateTime = new Date(item.expiryDateTime);
+            if (expiryDateTime < now) {
+                return true;
+            }
+        } else if (
             item.communicationTypeCode === CommunicationType.Email &&
             item.communicationStatusCode != CommunicationStatus.New
         ) {
@@ -375,7 +391,7 @@ export default class CommunicationTable extends Vue {
                 subject: comm.subject,
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
-                communicationStatusCode: CommunicationStatus.New,
+                communicationStatusCode: comm.communicationStatusCode,
                 priority: comm.priority,
                 version: 0,
                 scheduledDateTime: comm.scheduledDateTime,
@@ -414,7 +430,7 @@ export default class CommunicationTable extends Vue {
                 subject: comm.subject,
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
-                communicationStatusCode: CommunicationStatus.New,
+                communicationStatusCode: comm.communicationStatusCode,
                 priority: comm.priority,
                 version: comm.version,
                 scheduledDateTime: comm.scheduledDateTime,

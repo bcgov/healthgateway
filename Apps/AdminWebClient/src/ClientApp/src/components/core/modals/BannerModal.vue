@@ -1,13 +1,3 @@
-<style scoped lang="scss">
-.publishing-status {
-    .btn {
-        width: 120px;
-        .active {
-            background-color: blue;
-        }
-    }
-}
-</style>
 <template>
     <v-dialog v-model="dialog" persistent max-width="1000px">
         <template v-slot:activator="{ on, attrs }">
@@ -78,12 +68,19 @@
                                 required
                             ></v-text-field>
                         </v-col>
-                        <v-col class="publishing-status">
-                            <b-button
-                                :pressed.sync="isDraft"
-                                :variant="publishingStatusVariant"
-                            >
-                                {{ publishingStatus }}</b-button
+                        <v-col>
+                            <v-text-field
+                                v-model="editedItem.communicationStatusCode"
+                                label="Status"
+                                disabled
+                            ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="publishOrDraft()"
+                                >{{ publishingStatus }}</v-btn
                             >
                         </v-col>
                     </v-row>
@@ -112,7 +109,9 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/adminCommunication";
+import Communication, {
+    CommunicationStatus
+} from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
 import { ValidationProvider, extend, validate } from "vee-validate";
 import { required, email } from "vee-validate/dist/rules";
@@ -180,21 +179,18 @@ export default class BannerModal extends Vue {
     @Prop() editedItem!: Communication;
     @Prop() isNew!: number;
 
-    private isDraft: boolean = true;
-
-    @Watch("editedisDraftItem")
-    private onisDraftChange(draft: boolean) {
-        if (this.isDraft) {
-            this.editedItem.publishingStatusCode = "Draft";
+    private get isDraft(): boolean {
+        if (
+            this.editedItem.communicationStatusCode == CommunicationStatus.New
+        ) {
+            return true;
         } else {
-            this.editedItem.publishingStatusCode = "Publish";
+            return false;
         }
     }
+
     private get publishingStatus(): string {
-        return this.isDraft ? "Draft" : "Publish";
-    }
-    private get publishingStatusVariant(): string {
-        return this.isDraft ? "secondary" : "primary";
+        return this.isDraft ? "Publish" : "Draft";
     }
 
     @Watch("editedItem")
@@ -236,6 +232,15 @@ export default class BannerModal extends Vue {
             }
             this.close();
         }
+    }
+
+    private publishOrDraft() {
+        if (this.isDraft) {
+            this.editedItem.communicationStatusCode = CommunicationStatus.Ready;
+        } else {
+            this.editedItem.communicationStatusCode = CommunicationStatus.New;
+        }
+        this.save();
     }
 
     private close() {
