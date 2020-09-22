@@ -20,10 +20,6 @@ import {
     ICommunicationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
-// Load Bootstrap
-import BootstrapVue from "bootstrap-vue";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import container from "@/plugins/inversify.config";
@@ -33,7 +29,6 @@ import "tiptap-vuetify/dist/main.css";
 
 Vue.config.productionTip = false;
 
-Vue.use(BootstrapVue);
 Vue.use(DatetimePicker);
 Vue.use(TiptapVuetifyPlugin, {
     vuetify,
