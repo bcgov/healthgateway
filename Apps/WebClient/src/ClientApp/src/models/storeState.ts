@@ -4,9 +4,9 @@ import User from "@/models/user";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
 import { LaboratoryOrder, LaboratoryReport } from "@/models//laboratory";
-import BannerError from "./bannerError";
-import MedicationStatementHistory from "./medicationStatementHistory";
-import { DateWrapper } from "./dateWrapper";
+import BannerError from "@/models/bannerError";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import { DateWrapper } from "@/models/dateWrapper";
 
 export enum StateType {
     NONE,

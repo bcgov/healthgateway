@@ -1,4 +1,4 @@
-import { DateWrapper, StringISODate } from "./dateWrapper";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 
 export enum EntryType {
     Medication,

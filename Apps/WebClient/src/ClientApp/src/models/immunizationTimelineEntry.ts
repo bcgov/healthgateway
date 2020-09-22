@@ -1,6 +1,6 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import ImmunizationModel from "@/models/immunizationModel";
-import { DateWrapper } from "./dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {

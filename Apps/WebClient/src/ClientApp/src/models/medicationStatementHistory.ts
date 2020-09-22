@@ -1,6 +1,6 @@
-import Pharmacy from "./pharmacy";
-import MedicationSummary from "./medicationSummary";
-import { StringISODate } from "./dateWrapper";
+import Pharmacy from "@/models/pharmacy";
+import MedicationSummary from "@/models/medicationSummary";
+import { StringISODate } from "@/models/dateWrapper";
 
 // Medication statement model
 export default interface MedicationStatementHistory {

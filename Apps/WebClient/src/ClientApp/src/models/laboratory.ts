@@ -1,4 +1,4 @@
-import { StringISODate } from "./dateWrapper";
+import { StringISODate } from "@/models/dateWrapper";
 
 // Laboratory model
 export interface LaboratoryResult {

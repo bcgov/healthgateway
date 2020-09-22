@@ -1,4 +1,4 @@
-import { StringISODate } from "./dateWrapper";
+import { StringISODate } from "@/models/dateWrapper";
 
 export default interface ImmunizationModel {
     id: string;

@@ -1,4 +1,4 @@
-import { StringISODate } from "./dateWrapper";
+import { StringISODate } from "@/models/dateWrapper";
 
 export default interface UserNote {
     // Gets or sets the id.

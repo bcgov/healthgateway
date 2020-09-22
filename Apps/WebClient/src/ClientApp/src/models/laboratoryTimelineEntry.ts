@@ -1,6 +1,6 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import { LaboratoryOrder, LaboratoryResult } from "./laboratory";
-import { DateWrapper } from "./dateWrapper";
+import { LaboratoryOrder, LaboratoryResult } from "@/models/laboratory";
+import { DateWrapper } from "@/models/dateWrapper";
 
 // The laboratory timeline entry model
 export default class LaboratoryTimelineEntry extends TimelineEntry {

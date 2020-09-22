@@ -1,5 +1,5 @@
 import Clinic from "@/models/clinic";
-import { StringISODate } from "./dateWrapper";
+import { StringISODate } from "@/models/dateWrapper";
 
 export default interface Encounter {
     // Gets or sets the id.

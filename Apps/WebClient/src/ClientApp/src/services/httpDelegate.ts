@@ -1,8 +1,7 @@
 import Axios, { AxiosRequestConfig } from "axios";
-import { IHttpDelegate } from "./interfaces";
 import { injectable } from "inversify";
 import { Dictionary } from "vue-router/types/router";
-import { ILogger } from "@/services/interfaces";
+import { IHttpDelegate, ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 

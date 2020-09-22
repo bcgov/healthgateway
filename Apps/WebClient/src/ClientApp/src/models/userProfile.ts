@@ -1,5 +1,5 @@
 import { Dictionary } from "vue-router/types/router";
-import { StringISODate } from "./dateWrapper";
+import { StringISODate } from "@/models/dateWrapper";
 
 export default interface UserProfile {
     // The user hdid.
