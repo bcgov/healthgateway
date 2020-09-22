@@ -184,14 +184,10 @@ export default class BannerModal extends Vue {
     @Prop() isNew!: number;
 
     private get isDraft(): boolean {
-        if (
+        return (
             this.editedItem.communicationStatusCode ===
             CommunicationStatus.Draft
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        );
     }
 
     private get publishingStatus(): string {

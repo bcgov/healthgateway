@@ -214,14 +214,10 @@ export default class EmailModal extends Vue {
     }
 
     private get isDraft(): boolean {
-        if (
+        return (
             this.editedItem.communicationStatusCode ===
             CommunicationStatus.Draft
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        );
     }
 
     private get publishingStatus(): string {
