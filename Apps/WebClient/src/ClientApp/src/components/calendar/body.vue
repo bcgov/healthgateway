@@ -7,6 +7,7 @@
         border-bottom: 1px solid #e0e0e0;
         border-left: 1px solid #e0e0e0;
         .week {
+            min-width: 35px;
             text-align: center;
             border-right: 1px solid #e0e0e0;
         }
@@ -17,6 +18,7 @@
             border-left: 1px solid #e0e0e0;
             .day-cell {
                 min-height: 110px;
+                min-width: 35px;
                 border-right: 1px solid #e0e0e0;
                 border-bottom: 1px solid #e0e0e0;
                 .day-number {
@@ -85,7 +87,7 @@
 <template>
     <div class="calendar-body">
         <b-row class="weeks">
-            <b-col v-for="week in weekNames" :key="week" class="week"
+            <b-col v-for="week in weekNames" :key="week" class="week px-0"
                 ><strong>{{ week }}</strong></b-col
             >
         </b-row>
