@@ -8,6 +8,7 @@
     <b-modal
         id="idle-modal"
         v-model="visible"
+        data-testid="idleModal"
         header-bg-variant="primary"
         header-text-variant="light"
         :ok-only="true"
@@ -18,7 +19,7 @@
         @hidden="refresh"
     >
         <b-row>
-            <b-col>
+            <b-col data-testid="idleModalText">
                 You will be automatically logged out in {{ totalTime }} seconds.
             </b-col>
         </b-row>

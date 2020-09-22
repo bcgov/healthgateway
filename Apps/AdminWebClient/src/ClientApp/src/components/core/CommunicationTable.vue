@@ -193,6 +193,12 @@ export default class CommunicationTable extends Vue {
             sortable: false
         },
         {
+            text: "Status",
+            value: "communicationStatusCode",
+            width: "130px",
+            sortable: false
+        },
+        {
             text: "Effective On",
             value: "effectiveDateTime"
         },

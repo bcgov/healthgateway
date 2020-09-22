@@ -1,8 +1,7 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import Pharmacy from "./pharmacy";
-import MedicationSumary from "./medicationSumary";
-import MedicationResult from "./medicationResult";
-import MedicationStatementHistory from "./medicationStatementHistory";
+import Pharmacy from "@/models/pharmacy";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationSummary from "@/models//medicationSummary";
 
 // The medication timeline entry model
 export default class MedicationTimelineEntry extends TimelineEntry {
@@ -18,7 +17,8 @@ export default class MedicationTimelineEntry extends TimelineEntry {
             EntryType.Medication,
             model.dispensedDate
         );
-        this.medication = new MedicationViewModel(model.medicationSumary);
+
+        this.medication = new MedicationViewModel(model.medicationSummary);
         this.pharmacy = new PharmacyViewModel(
             model.dispensingPharmacy?.pharmacyId
         );
@@ -83,39 +83,15 @@ class MedicationViewModel {
     public strengthUnit?: string;
     public manufacturer?: string;
     public isPin!: boolean;
-    constructor(model: MedicationSumary) {
+    constructor(model: MedicationSummary) {
         this.din = model.din ? model.din : "";
         this.brandName = model.brandName;
         this.genericName = model.genericName;
         this.quantity = model.quantity;
-    }
-
-    public populateFromModel(model: MedicationResult): void {
-        if (model.federalData) {
-            const federalModel = model.federalData;
-
-            this.form = federalModel.drugProduct!.form!.pharmaceuticalForm
-                ? federalModel.drugProduct!.form!.pharmaceuticalForm
-                : "";
-
-            this.strength = federalModel.drugProduct!.activeIngredient!.strength
-                ? federalModel.drugProduct!.activeIngredient!.strength
-                : "";
-
-            this.strengthUnit = federalModel.drugProduct!.activeIngredient!
-                .strengthUnit
-                ? federalModel.drugProduct!.activeIngredient!.strengthUnit
-                : "";
-
-            this.manufacturer = federalModel.drugProduct!.company!.companyName
-                ? federalModel.drugProduct!.company!.companyName
-                : "";
-        } else if (model.provincialData) {
-            const provincialModel = model.provincialData;
-            this.isPin = true;
-            this.form = provincialModel.pharmaCareDrug
-                ? provincialModel.pharmaCareDrug.dosageForm
-                : "";
-        }
+        this.form = model.form;
+        this.strength = model.strength;
+        this.strengthUnit = model.strengthUnit;
+        this.manufacturer = model.manufacturer;
+        this.isPin = model.isPin;
     }
 }

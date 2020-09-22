@@ -12,6 +12,7 @@
     <b-modal
         id="verify-sms-modal"
         v-model="isVisible"
+        data-testid="verifySMSModal"
         title="Phone Verification"
         size="sm"
         header-bg-variant="primary"
@@ -21,12 +22,18 @@
         <b-row>
             <b-col>
                 <form>
-                    <b-row v-if="tooManyRetries">
+                    <b-row
+                        v-if="tooManyRetries"
+                        data-testid="verifySMSModalErrorAttemptsText"
+                    >
                         <b-col class="text-center">
                             Too many failed attempts.
                         </b-col>
                     </b-row>
-                    <b-row v-if="!tooManyRetries">
+                    <b-row
+                        v-if="!tooManyRetries"
+                        data-testid="verifySMSModalText"
+                    >
                         <b-col>
                             <label
                                 for="verificationCode-input"
@@ -40,6 +47,7 @@
                             <b-form-input
                                 id="verificationCode-input"
                                 v-model="smsVerificationCode"
+                                data-testid="verifySMSModalCodeInput"
                                 size="lg"
                                 :autofocus="true"
                                 class="text-center"
@@ -53,7 +61,9 @@
                     </b-row>
                     <b-row v-if="error && !tooManyRetries">
                         <b-col>
-                            <span class="text-danger"
+                            <span
+                                class="text-danger"
+                                data-testid="verifySMSModalErrorInvalidText"
                                 >Invalid verification code. Try again.</span
                             >
                         </b-col>

@@ -47,6 +47,11 @@ You can also run Cypress as a specific browser by executing although this will l
 npx cypress run --browser chrome
 ```
 
+Run and record the results to the Cypress dashboard
+```bash
+npx cypress run --record --key KEY
+```
+
 ## BrowserStack
 
 Installation

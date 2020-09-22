@@ -12,6 +12,7 @@
     <b-modal
         id="protective-word-modal"
         v-model="isVisible"
+        data-testid="protectiveWordModal"
         title="Restricted PharmaNet Records"
         header-bg-variant="primary"
         header-text-variant="light"
@@ -28,12 +29,16 @@
                             <b-form-input
                                 id="protectiveWord-input"
                                 v-model="protectiveWord"
+                                data-testid="protectiveWordInput"
                                 type="password"
                                 required
                             />
                         </b-col>
                     </b-row>
-                    <b-row v-if="error">
+                    <b-row
+                        v-if="error"
+                        data-testid="protectiveWordModalErrorText"
+                    >
                         <b-col>
                             <span class="text-danger"
                                 >Invalid protective word. Try again.</span
@@ -49,6 +54,7 @@
                     <b-row>
                         <b-col>
                             <b-button
+                                data-testid="protectiveWordContinueBtn"
                                 size="lg"
                                 variant="primary"
                                 :disabled="!protectiveWord"
@@ -59,7 +65,7 @@
                         </b-col>
                     </b-row>
                     <br />
-                    <b-row>
+                    <b-row data-testid="protectiveWordModalText">
                         <b-col>
                             <small>
                                 Please enter the protective word required to
@@ -67,11 +73,12 @@
                             </small>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row data-testid="protectiveWordModalMoreInfoText">
                         <b-col>
                             <small>
                                 For more information visit
                                 <a
+                                    data-testid="protectiveWordModalRulesHREF"
                                     href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record"
                                     >protective-word-for-a-pharmanet-record</a
                                 >

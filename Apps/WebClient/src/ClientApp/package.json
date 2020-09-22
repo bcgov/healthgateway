@@ -99,6 +99,7 @@
         "vue-class-component": "^7.2.5",
         "vue-clickaway": "^2.2.2",
         "vue-content-placeholders": "^0.2.1",
+        "vue-html2pdf": "^1.6.6",
         "vue-loading-overlay": "^3.4.0",
         "vue-property-decorator": "^9.0.0",
         "vue-router": "^3.4.3",
