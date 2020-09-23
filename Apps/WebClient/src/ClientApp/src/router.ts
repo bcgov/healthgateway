@@ -107,16 +107,12 @@ const routes = [
         meta: { requiresRegistration: true, roles: ["user"] },
     },
     {
-<<<<<<< HEAD
         path: "/reports",
         component: ReportsView,
         meta: { requiresRegistration: true, roles: ["user"] },
     },
     {
         path: "/termsOfService",
-=======
-        path: "/profile/termsOfService",
->>>>>>> master
         component: TermsOfServiceView,
         meta: { requiresAuth: false, roles: ["user"] },
     },

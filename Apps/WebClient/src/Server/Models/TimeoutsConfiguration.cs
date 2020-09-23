@@ -33,11 +33,7 @@ namespace HealthGateway.WebClient.Models
         public string LogoutRedirect { get; set; } = string.Empty;
 
         /// <summary>
-<<<<<<< HEAD
         /// Gets or sets the amount of time in minutes after which the user
-=======
-        /// Gets or sets the amount of time in minutes after which the user 
->>>>>>> master
         /// can retry the verification code.
         /// </summary>
         public int ResendSMS { get; set; }

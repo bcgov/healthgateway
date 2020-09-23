@@ -11,15 +11,12 @@
     <DocumentationFile>bin\Debug\netcoreapp3.1\Immunization.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <Compile Remove="Factories\**" />
     <Content Remove="Factories\**" />
     <EmbeddedResource Remove="Factories\**" />
     <None Remove="Factories\**" />
   </ItemGroup>
   <ItemGroup>
-=======
->>>>>>> master
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.7.0" />

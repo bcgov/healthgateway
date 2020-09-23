@@ -22,7 +22,6 @@ trigger:
 pool:
     name: "HealthGateway"
 
-<<<<<<< HEAD
 extends:
   template: /Build/hg.yaml
   parameters:
@@ -31,65 +30,4 @@ extends:
     FunctionalTests: true
     NPMInstall: true
     NPMTests: true
-=======
-steps:
-    - task: Npm@1
-      displayName: Install NPM Packages
-      inputs:
-          command: "install"
-          workingDir: "$(App.Home)/src/ClientApp"
-
-    - task: Npm@1
-      displayName: Run jest Tests
-      inputs:
-          command: "custom"
-          customCommand: "test"
-          workingDir: "$(App.Home)/src/ClientApp"
-
-    - task: DotNetCoreCLI@2
-      displayName: Run dotnet Tests
-      inputs:
-          command: "test"
-          projects: "$(App.Home)/test/unit/WebClientTests.csproj"
-          arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
-          testRunTitle: "WebClient"
-
-    - script: |
-          set -e
-          reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-      displayName: Create Code Coverage Report
-        
-    - task: PublishCodeCoverageResults@1
-      displayName: "Publish Code Coverage"
-      inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
-          pathToSources: "$(App.Home)/src"
-          reportDirectory: "$(App.Home)/CodeCoverage"
-
-    - task: DotNetCoreCLI@2
-      displayName: Publish dotnet code
-      inputs:
-          modifyOutputPath: false
-          command: "publish"
-          publishWebProjects: false
-          projects: "$(App.Home)/src"
-          arguments: "-o $(Build.BinariesDirectory)"
-          zipAfterPublish: false
-
-    - script: |
-          set -e
-          cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
-          oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
-          oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
-          oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
-      displayName: "Build OpenShift Image and push to Image Stream"
-
-    - task: CopyFiles@2
-      displayName: Copy Functional Tests to Staging
-      inputs:
-          SourceFolder: "$(App.FunctionalTests)"
-          Contents: "**"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)"
->>>>>>> master
 

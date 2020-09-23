@@ -148,10 +148,6 @@ import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import User from "@/models/user";
-<<<<<<< HEAD
-=======
-import moment from "moment";
->>>>>>> master
 import { library } from "@fortawesome/fontawesome-svg-core";
 import PhoneUtil from "@/utility/phoneUtil";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";

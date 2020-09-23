@@ -106,11 +106,7 @@ namespace HealthGateway.Medication.Delegates
             RequestResult<MedicationHistoryResponse> retVal = new RequestResult<MedicationHistoryResponse>();
             if (this.ValidateProtectiveWord(query.PHN, protectiveWord, hdid, ipAddress))
             {
-<<<<<<< HEAD
                 using var traceSection = this.traceService.TraceSection(this.GetType().Name, "ODRQuery");
-=======
-                using (this.traceService.TraceSection(this.GetType().Name, "ODRQuery"))
->>>>>>> master
                 this.logger.LogTrace($"Getting medication statements... {query.PHN.Substring(0, 3)}");
 
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();

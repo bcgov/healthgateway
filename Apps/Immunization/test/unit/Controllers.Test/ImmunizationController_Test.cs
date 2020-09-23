@@ -15,15 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Test.Controller
 {
-<<<<<<< HEAD
-=======
-    using Microsoft.AspNetCore.Authentication;
->>>>>>> master
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
-<<<<<<< HEAD
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
@@ -31,12 +26,6 @@ namespace HealthGateway.Immunization.Test.Controller
     using Microsoft.Extensions.Logging;
     using Moq;
     using System.Collections.Generic;
-=======
-    using Moq;
-    using System.Collections.Generic;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
->>>>>>> master
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Xunit;

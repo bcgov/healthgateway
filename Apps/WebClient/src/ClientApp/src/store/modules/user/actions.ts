@@ -160,11 +160,7 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-<<<<<<< HEAD
     updateSMSResendDateTime(context, params: { dateTime: DateWrapper }): void {
-=======
-    updateSMSResendDateTime(context, params: { dateTime: Date }): void {
->>>>>>> master
         context.commit("setSMSResendDateTime", params.dateTime);
     },
     updateUserPreference(

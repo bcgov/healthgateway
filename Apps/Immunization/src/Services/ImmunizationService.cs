@@ -31,34 +31,18 @@ namespace HealthGateway.Immunization.Services
     public class ImmunizationService : IImmunizationService
     {
         private readonly ILogger logger;
-<<<<<<< HEAD
-=======
-        private readonly IHttpContextAccessor httpContextAccessor;
->>>>>>> master
         private readonly IImmunizationDelegate immunizationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-<<<<<<< HEAD
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
         public ImmunizationService(
             ILogger<ImmunizationService> logger,
             IImmunizationDelegate immunizationDelegate)
         {
             this.logger = logger;
-=======
-        /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
-        public ImmunizationService(
-            ILogger<ImmunizationService> logger,
-            IHttpContextAccessor httpAccessor,
-            IImmunizationDelegate immunizationDelegate)
-        {
-            this.logger = logger;
-            this.httpContextAccessor = httpAccessor;
->>>>>>> master
             this.immunizationDelegate = immunizationDelegate;
         }
 

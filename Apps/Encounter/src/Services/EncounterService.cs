@@ -112,8 +112,4 @@ namespace HealthGateway.Encounter.Services
             return result;
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> master

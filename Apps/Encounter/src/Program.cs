@@ -15,20 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter
 {
-<<<<<<< HEAD
     using System.Diagnostics.CodeAnalysis;
-=======
->>>>>>> master
     using HealthGateway.Common.AspNetConfiguration;
     using Microsoft.Extensions.Hosting;
 
     /// <summary>
     /// The entry point for the project.
     /// </summary>
-<<<<<<< HEAD
     [ExcludeFromCodeCoverage]
-=======
->>>>>>> master
     public static class Program
     {
         /// <summary>.

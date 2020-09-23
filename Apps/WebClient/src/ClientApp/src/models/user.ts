@@ -9,11 +9,6 @@ export default class User {
     public hasSMS: boolean = false;
     public verifiedSMS: boolean = false;
     public hasTermsOfServiceUpdated: boolean = false;
-<<<<<<< HEAD
     public closedDateTime?: StringISODate;
-=======
-    public SMSResendDateTime?: Date;
-    public closedDateTime?: Date;
->>>>>>> master
     public preferences: Dictionary<string> = {};
 }

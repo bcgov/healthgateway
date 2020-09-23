@@ -35,11 +35,7 @@
 <template>
     <div id="feedback-container" class="d-flex flex-column text-dark">
         <b-button
-<<<<<<< HEAD
             class="justify-content-center feedback py-0 rounded-0"
-=======
-            class="justify-content-center contact-us py-0 rounded-0"
->>>>>>> master
             :class="{
                 'bg-danger': hasSubmitted && !isSuccess,
                 'bg-success': hasSubmitted && isSuccess,
@@ -51,11 +47,7 @@
         >
             <b-row v-show="!hasSubmitted">
                 <b-col
-<<<<<<< HEAD
                     title="Feedback"
-=======
-                    title="Contact Us"
->>>>>>> master
                     class="py-2"
                     :class="{
                         'col-2 col-md-4 text-right pr-2': isSidebarOpen,
@@ -72,11 +64,7 @@
                     v-show="isSidebarOpen"
                     class="button-title d-none text-left col-7 col-md-6 p-0 pl-3 py-2"
                 >
-<<<<<<< HEAD
                     <span> Feedback </span>
-=======
-                    <span> Contact Us </span>
->>>>>>> master
                 </b-col>
                 <b-col v-show="isSidebarOpen && visible" cols="auto">
                     <font-awesome-icon

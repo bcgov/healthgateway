@@ -14,11 +14,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-<<<<<<< HEAD
       "applicationUrl": "http://localhost:3005;"
-=======
-      "applicationUrl": "https://localhost:3005;"
->>>>>>> master
     }
   }
 }

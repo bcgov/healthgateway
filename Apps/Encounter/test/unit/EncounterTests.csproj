@@ -35,10 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Encounter.csproj" />
   </ItemGroup>
-<<<<<<< HEAD
   <ItemGroup>
     <Folder Include="Services\" />
   </ItemGroup>
-=======
->>>>>>> master
 </Project>

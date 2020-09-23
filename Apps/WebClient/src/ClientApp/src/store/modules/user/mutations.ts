@@ -78,13 +78,8 @@ export const mutations: MutationTree<UserState> = {
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
     },
-<<<<<<< HEAD
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper) {
         Vue.set(state, "smsResendDateTime", dateTime);
-=======
-    setSMSResendDateTime(state: UserState, dateTime: Date) {
-        Vue.set(state.user, "SMSResendDateTime", dateTime);
->>>>>>> master
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;

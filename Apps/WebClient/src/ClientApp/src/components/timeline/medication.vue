@@ -224,42 +224,6 @@ export default class MedicationTimelineComponent extends Vue {
         return faPills;
     }
 
-<<<<<<< HEAD
-=======
-    private toggleDetails(medicationEntry: MedicationTimelineEntry): void {
-        this.detailsVisible = !this.detailsVisible;
-        this.hasErrors = false;
-
-        if (!this.detailsVisible) {
-            return;
-        }
-
-        // Load medication details
-        if (!this.medicationLoaded) {
-            this.isLoadingMedication = true;
-            this.logger.debug(
-                `Loading Medication Entry : ${JSON.stringify(medicationEntry)}`
-            );
-            var medicationPromise = this.getMedication({
-                din: medicationEntry.medication.din,
-            })
-                .then((result) => {
-                    if (result) {
-                        medicationEntry.medication.populateFromModel(result);
-                    }
-                    this.medicationLoaded = true;
-                    this.isLoadingMedication = false;
-                })
-                .catch((err) => {
-                    this.logger.error(
-                        `Error loading medication details : ${err}`
-                    );
-                    this.hasErrors = true;
-                    this.isLoadingMedication = false;
-                });
-        }
-    }
->>>>>>> master
     private formatPhone(phoneNumber: string): string {
         return PhoneUtil.formatPhone(phoneNumber);
     }

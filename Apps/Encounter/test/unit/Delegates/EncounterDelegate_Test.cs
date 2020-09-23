@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // -------------------------------------------------------------------------
-=======
-﻿// -------------------------------------------------------------------------
->>>>>>> master
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +13,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-<<<<<<< HEAD
 namespace HealthGateway.Encounter.Test.Delegate
 {
-=======
-namespace HealthGateway.EncounterTests
-{
-    using System.Collections.Generic;
->>>>>>> master
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Configuration;
     using Moq;
@@ -36,34 +26,18 @@ namespace HealthGateway.EncounterTests
     using Moq.Protected;
     using System.Threading;
     using System.Net;
-<<<<<<< HEAD
-=======
-    using System.Linq;
-    using System;
->>>>>>> master
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models.ODR;
     using HealthGateway.Common.Models.ODR;
-<<<<<<< HEAD
     using System.Collections.Generic;
-=======
->>>>>>> master
 
     public class EncounterDelegate_Test
     {
 
         public EncounterDelegate_Test()
         {
-<<<<<<< HEAD
             this.configuration = GetIConfigurationRoot(string.Empty);
-=======
-            this.configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .Build();
->>>>>>> master
         }
 
         private readonly IConfiguration configuration;
@@ -122,15 +96,9 @@ namespace HealthGateway.EncounterTests
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
-<<<<<<< HEAD
                 loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
                 mockTrace.Object,
                 mockHttpClientService.Object,
-=======
-                loggerFactory.CreateLogger<RestMSPVisitDelegate>(), 
-                mockTrace.Object,
-                mockHttpClientService.Object, 
->>>>>>> master
                 this.configuration);
             ODRHistoryQuery query = new ODRHistoryQuery()
             {
@@ -143,7 +111,6 @@ namespace HealthGateway.EncounterTests
         }
 
         [Fact]
-<<<<<<< HEAD
         public void ShouldErrorDynamicLookup()
         {
             var handlerMock = new Mock<HttpMessageHandler>();
@@ -189,8 +156,6 @@ namespace HealthGateway.EncounterTests
         }
 
         [Fact]
-=======
->>>>>>> master
         public void ShouldErrorGetMSPVisits()
         {
             var handlerMock = new Mock<HttpMessageHandler>();
@@ -223,7 +188,6 @@ namespace HealthGateway.EncounterTests
             RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
-<<<<<<< HEAD
 
         [Fact]
         public void ShouldException()
@@ -264,7 +228,5 @@ namespace HealthGateway.EncounterTests
                 .AddJsonFile("appsettings.local.json", optional: true)
                 .Build();
         }
-=======
->>>>>>> master
     }
 }
