@@ -15,7 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter
 {
+<<<<<<< HEAD
     using System.Diagnostics.CodeAnalysis;
+=======
+>>>>>>> master
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
@@ -30,7 +33,10 @@ namespace HealthGateway.Encounter
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+<<<<<<< HEAD
     [ExcludeFromCodeCoverage]
+=======
+>>>>>>> master
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;

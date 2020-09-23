@@ -16,7 +16,15 @@ export const getters: GetterTree<UserState, RootState> = {
         const { user } = state;
         return user === undefined ? false : !user.closedDateTime;
     },
+<<<<<<< HEAD
     smsResendDateTime(state: UserState): DateWrapper | undefined {
         return state.smsResendDateTime;
+=======
+    SMSResendDateTime(state: UserState): Date {
+        const { user } = state;
+        return user.SMSResendDateTime === undefined
+            ? new Date()
+            : user.SMSResendDateTime;
+>>>>>>> master
     },
 };

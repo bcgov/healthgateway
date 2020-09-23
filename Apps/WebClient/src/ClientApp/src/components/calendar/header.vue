@@ -99,6 +99,10 @@ export default class CalendarComponent extends Vue {
         return this.availableMonths.length > 0;
     }
 
+    private get hasAvailableMonths() {
+        return this.availableMonths.length > 0;
+    }
+
     @Watch("currentMonth")
     public onCurrentMonthChange(currentMonth: DateWrapper) {
         this.dateSelected(currentMonth);
@@ -143,7 +147,11 @@ export default class CalendarComponent extends Vue {
 
     private dispatchEvent() {
         if (this.headerDate) {
+<<<<<<< HEAD
             let firstMonthDate = this.headerDate.startOf("month");
+=======
+            let firstMonthDate = DateUtil.getMonthFirstDate(this.headerDate);
+>>>>>>> master
             this.$emit("update:currentMonth", firstMonthDate);
         }
     }

@@ -1,5 +1,6 @@
 name: 1.0.0$(Rev:.r) #Build number
 
+<<<<<<< HEAD
 pr: none
 
 resources:
@@ -9,19 +10,39 @@ resources:
         trigger:
           branches:
           - dev
+=======
+#Build variables
+variables:
+    App.Home: $(Build.SourcesDirectory)/Apps/Encounter
+    App.Name: encounter
+    App.UnitTests: $(App.Home)/test/unit
+    App.FunctionalTests: $(App.Home)/test/functional
+
+pr: none
+>>>>>>> master
 
 trigger:
     batch: "true"
     branches:
         include:
+<<<<<<< HEAD
         - dev
     paths:
         include:
         - Apps/Encounter
+=======
+            - dev
+    paths:
+        include:
+            - Apps/Encounter
+            - Apps/Common
+            - Apps/Database
+>>>>>>> master
 
 pool:
     name: "HealthGateway"
 
+<<<<<<< HEAD
 extends:
   template: /Build/hg.yaml
   parameters:
@@ -31,3 +52,57 @@ extends:
     NPMInstall: false
     NPMTests: false
 
+=======
+steps:
+    - task: DotNetCoreCLI@2
+      displayName: Run dotnet Tests
+      inputs:
+          command: "test"
+          projects: "$(App.Home)/test/unit/EncounterTests.csproj"
+          arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+          testRunTitle: "Encounter Tests"
+
+    - script: |
+          set -e
+          reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+      displayName: Create Code Coverage Report
+
+    - task: PublishCodeCoverageResults@1
+      displayName: "Publish Code Coverage"
+      inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
+          pathToSources: "$(App.Home)/src"
+          reportDirectory: "$(App.Home)/CodeCoverage"
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish dotnet code
+      inputs:
+          modifyOutputPath: false
+          command: "publish"
+          publishWebProjects: false
+          projects: "$(App.Home)/src"
+          arguments: "-o $(Build.BinariesDirectory)"
+          zipAfterPublish: false
+
+    - script: |
+          set -e
+          cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+          oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(App.Name) | oc apply -f -
+          oc start-build $(App.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+          oc tag $(App.Name):latest $(App.Name):$(Build.BuildNumber)
+          echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+      displayName: "Build OpenShift Image and push to Image Stream"
+
+    - task: CopyFiles@2
+      displayName: Copy Functional Tests to Staging
+      inputs:
+          SourceFolder: "$(App.FunctionalTests)"
+          Contents: "**"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+    - task: PublishPipelineArtifact@0
+      displayName: "Publish Pipeline Artifact"
+      inputs:
+          targetPath: "$(Build.ArtifactStagingDirectory)"
+>>>>>>> master

@@ -30,7 +30,10 @@
         top: 193px;
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 .noTimelineEntriesText {
     font-size: 1.5rem;
     color: #6c757d;

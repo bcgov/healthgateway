@@ -94,7 +94,10 @@
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the banner content here..."
                                 :extensions="extensions"
+<<<<<<< HEAD
                                 :disabled="!isDraft"
+=======
+>>>>>>> master
                             />
                         </v-col>
                     </v-row>

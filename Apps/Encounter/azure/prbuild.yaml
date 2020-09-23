@@ -1,5 +1,6 @@
 name: PR$(Rev:.r) #Build number
 
+<<<<<<< HEAD
 pr:
     branches:
         include:
@@ -24,3 +25,58 @@ extends:
     NPMInstall: false
     NPMTests: false
 
+=======
+#Build variables
+variables:
+    App.Home: $(Build.SourcesDirectory)/Apps/Encounter
+    App.Name: encounter
+    App.UnitTests: $(App.Home)/test/unit
+    App.FunctionalTests: $(App.Home)/test/functional
+
+pool:
+    name: "HealthGateway"
+
+trigger: none
+
+pr:
+    branches:
+        include:
+            - dev
+    paths:
+        include:
+            - Apps/Encounter
+            - Apps/Common
+            - Apps/Database
+
+steps:
+    - task: DotNetCoreCLI@2
+      displayName: Run dotnet Tests
+      inputs:
+          command: "test"
+          projects: "$(App.Home)/test/unit/EncounterTests.csproj"
+          arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+          testRunTitle: "Encounter Tests"
+
+    - script: |
+          set -e
+          reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+      displayName: Create Code Coverage Report
+
+    - task: PublishCodeCoverageResults@1
+      displayName: "Publish Code Coverage"
+      inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
+          pathToSources: "$(App.Home)/src"
+          reportDirectory: "$(App.Home)/CodeCoverage"
+
+    - task: DotNetCoreCLI@2
+      displayName: "Publish dotnet Code"
+      inputs:
+          modifyOutputPath: false
+          command: "publish"
+          publishWebProjects: false
+          projects: "$(App.Home)/src"
+          arguments: "-o $(Build.BinariesDirectory)"
+          zipAfterPublish: false
+>>>>>>> master

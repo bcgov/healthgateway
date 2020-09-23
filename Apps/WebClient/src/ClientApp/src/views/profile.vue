@@ -471,7 +471,11 @@ export default class ProfileView extends Vue {
         dateTime,
     }: {
         hdid: string;
+<<<<<<< HEAD
         dateTime: DateWrapper;
+=======
+        dateTime: Date;
+>>>>>>> master
     }) => void;
 
     @Getter("user", { namespace: userNamespace }) user!: User;
@@ -774,7 +778,11 @@ export default class ProfileView extends Vue {
         // Reset timer when user submits their SMS number
         this.updateSMSResendDateTime({
             hdid: this.user.hdid,
+<<<<<<< HEAD
             dateTime: new DateWrapper(),
+=======
+            dateTime: new Date(),
+>>>>>>> master
         });
         // Send update to backend
         this.userProfileService

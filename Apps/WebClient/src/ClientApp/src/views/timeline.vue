@@ -149,8 +149,65 @@
                                 ></b-form-input>
                             </div>
                         </b-col>
+<<<<<<< HEAD
                         <b-col class="col-auto pl-0">
                             <Filters @filters-changed="filtersChanged" />
+=======
+                    </b-row>
+                    <b-row
+                        align-h="start"
+                        class="no-print sticky-top justify-content-between"
+                    >
+                        <b-col v-if="isMedicationEnabled" cols="auto">
+                            <b-form-checkbox
+                                id="medicationFilter"
+                                v-model="filterTypes"
+                                name="medicationFilter"
+                                value="Medication"
+                            >
+                                Medications
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isImmunizationEnabled" cols="auto">
+                            <b-form-checkbox
+                                id="immunizationFilter"
+                                v-model="filterTypes"
+                                name="immunizationFilter"
+                                value="Immunization"
+                            >
+                                Immunizations
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isLaboratoryEnabled" cols="auto">
+                            <b-form-checkbox
+                                id="laboratoryFilter"
+                                v-model="filterTypes"
+                                name="laboratoryFilter"
+                                value="Laboratory"
+                            >
+                                Laboratory
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col v-if="isNoteEnabled" cols="auto">
+                            <b-form-checkbox
+                                id="notesFilter"
+                                v-model="filterTypes"
+                                name="notesFilter"
+                                value="Note"
+                            >
+                                My Notes
+                            </b-form-checkbox>
+>>>>>>> master
+                        </b-col>
+                        <b-col v-if="isEncounterEnabled">
+                            <b-form-checkbox
+                                id="encounterFilter"
+                                v-model="filterTypes"
+                                name="encounterFilter"
+                                value="Encounter"
+                            >
+                                MSP Visits
+                            </b-form-checkbox>
                         </b-col>
                     </b-row>
                 </div>
@@ -304,8 +361,11 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
+<<<<<<< HEAD
 import FilterComponent from "@/components/timeline/filters.vue";
 import { DateWrapper } from "@/models/dateWrapper";
+=======
+>>>>>>> master
 
 const namespace: string = "user";
 
@@ -421,7 +481,11 @@ export default class TimelineView extends Vue {
         ) {
             self.isListView = true;
         });
+<<<<<<< HEAD
         if (new DateWrapper().isInDST()) {
+=======
+        if (moment().isDST()) {
+>>>>>>> master
             !this.checkTimezone(true)
                 ? (this.isPacificTime = false)
                 : (this.isPacificTime = true);
@@ -478,6 +542,47 @@ export default class TimelineView extends Vue {
         );
     }
 
+<<<<<<< HEAD
+=======
+    private get isMedicationEnabled(): boolean {
+        return this.config.modules["Medication"];
+    }
+
+    private get isImmunizationEnabled(): boolean {
+        return this.config.modules["Immunization"];
+    }
+
+    private get isLaboratoryEnabled(): boolean {
+        return this.config.modules["Laboratory"];
+    }
+
+    private get isNoteEnabled(): boolean {
+        return this.config.modules["Note"];
+    }
+
+    private get isEncounterEnabled(): boolean {
+        return this.config.modules["Encounter"];
+    }
+
+    private initializeFilters(): void {
+        if (this.isMedicationEnabled) {
+            this.filterTypes.push("Medication");
+        }
+        if (this.isImmunizationEnabled) {
+            this.filterTypes.push("Immunization");
+        }
+        if (this.isLaboratoryEnabled) {
+            this.filterTypes.push("Laboratory");
+        }
+        if (this.isNoteEnabled) {
+            this.filterTypes.push("Note");
+        }
+        if (this.isEncounterEnabled) {
+            this.filterTypes.push("Encounter");
+        }
+    }
+
+>>>>>>> master
     private onCovidSubmit() {
         this.eventBus.$emit("filterSelected", "laboratory");
     }
