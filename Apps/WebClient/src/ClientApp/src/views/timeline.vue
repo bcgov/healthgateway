@@ -152,16 +152,6 @@
                         <b-col class="col-auto pl-0">
                             <Filters @filters-changed="filtersChanged" />
                         </b-col>
-                        <b-col v-if="isEncounterEnabled">
-                            <b-form-checkbox
-                                id="encounterFilter"
-                                v-model="filterTypes"
-                                name="encounterFilter"
-                                value="Encounter"
-                            >
-                                MSP Visits
-                            </b-form-checkbox>
-                        </b-col>
                     </b-row>
                 </div>
                 <b-row v-if="isAddingNote" class="pb-5">
