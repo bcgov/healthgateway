@@ -99,10 +99,6 @@ export default class CalendarComponent extends Vue {
         return this.availableMonths.length > 0;
     }
 
-    private get hasAvailableMonths() {
-        return this.availableMonths.length > 0;
-    }
-
     @Watch("currentMonth")
     public onCurrentMonthChange(currentMonth: DateWrapper) {
         this.dateSelected(currentMonth);

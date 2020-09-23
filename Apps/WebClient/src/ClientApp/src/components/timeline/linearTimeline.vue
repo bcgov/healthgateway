@@ -30,6 +30,7 @@
         top: 193px;
     }
 }
+
 .noTimelineEntriesText {
     font-size: 1.5rem;
     color: #6c757d;
