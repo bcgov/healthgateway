@@ -43,6 +43,7 @@ namespace HealthGateway.WebClient.Listeners
         private const string UpdateAction = "UPDATE";
         private const string InsertAction = "INSERT";
         private const string Channel = "BannerChange";
+        private const int SleepDuration = 10000;
 
         private readonly ILogger<BannerListener> logger;
         private readonly IConfiguration configuration;
@@ -74,40 +75,52 @@ namespace HealthGateway.WebClient.Listeners
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "Abstract class property")]
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            this.logger.LogDebug($"Registering Channel Notification on channel {Channel}");
+            this.logger.LogInformation("DBChangeListener is starting");
             stoppingToken.Register(() =>
-                this.logger.LogInformation($"DBChangeListener exiting..."));
-            try
+                this.logger.LogInformation($"DBChangeListener Shutdown as cancellation requested    "));
+            int attempts = 0;
+            while (!stoppingToken.IsCancellationRequested)
             {
-                using var scope = this.services.CreateScope();
-                GatewayDbContext dbContext = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
-                this.CommunicationService = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
-                NpgsqlConnection con = (NpgsqlConnection)dbContext.Database.GetDbConnection();
-                con.Open();
-                con.Notification += this.ReceiveEvent;
-                using NpgsqlCommand cmd = new NpgsqlCommand();
-                cmd.CommandText = @$"LISTEN ""{Channel}"";";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = con;
-                cmd.ExecuteNonQuery();
-
-                while (!stoppingToken.IsCancellationRequested)
+                attempts++;
+                this.logger.LogInformation($"Registering Channel Notification on channel {Channel}, attempts = {attempts}");
+                try
                 {
-                    // Wait for the event
-                    await con.WaitAsync(stoppingToken).ConfigureAwait(true);
+                    using var scope = this.services.CreateScope();
+                    using GatewayDbContext dbContext = scope.ServiceProvider.GetRequiredService<GatewayDbContext>();
+                    this.CommunicationService = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
+                    using NpgsqlConnection con = (NpgsqlConnection)dbContext.Database.GetDbConnection();
+                    con.Open();
+                    con.Notification += this.ReceiveEvent;
+                    using NpgsqlCommand cmd = new NpgsqlCommand();
+                    cmd.CommandText = @$"LISTEN ""{Channel}"";";
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Connection = con;
+                    cmd.ExecuteNonQuery();
+
+                    while (!stoppingToken.IsCancellationRequested)
+                    {
+                        // Wait for the event
+                        await con.WaitAsync(stoppingToken).ConfigureAwait(true);
+                    }
+
+                    con.Close();
+                }
+                catch (NpgsqlException e)
+                {
+                    this.logger.LogError($"DB Error encountered in WaitChannelNotification: {Channel}\n{e.ToString()}");
+                    if (!stoppingToken.IsCancellationRequested)
+                    {
+                        Thread.Sleep(SleepDuration);
+                    }
                 }
 
-                this.logger.LogInformation($"Exiting WaitChannelNotification: {Channel}");
-            }
-            catch (NpgsqlException e)
-            {
-                this.logger.LogError($"DB Error encountered in WaitChannelNotification: {Channel}\n{e.ToString()}");
+                this.logger.LogWarning($"DBChangeListener on {Channel} exiting...");
             }
         }
 
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
         {
-            this.logger.LogDebug($"Event received on channel {Channel}");
+            this.logger.LogInformation($"Event received on channel {Channel}");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,

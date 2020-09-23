@@ -1,13 +1,15 @@
+import { StringISODate } from "@/models/dateWrapper";
+
 // Laboratory model
 export interface LaboratoryResult {
     id: string;
     testType: string | null;
     outOfRange: boolean;
-    collectedDateTime: Date;
+    collectedDateTime: StringISODate;
     testStatus: string | null;
     resultDescription: string | null;
-    receivedDateTime: Date;
-    resultDateTime: Date;
+    receivedDateTime: StringISODate;
+    resultDateTime: StringISODate;
     loinc: string | null;
     loincName: string | null;
 }
@@ -20,7 +22,7 @@ export interface LaboratoryOrder {
     reportingLab: string | null;
     location: string | null;
     ormOrOru: string | null;
-    messageDateTime: Date;
+    messageDateTime: StringISODate;
     messageId: string | null;
     additionalData: string | null;
     reportAvailable: boolean;

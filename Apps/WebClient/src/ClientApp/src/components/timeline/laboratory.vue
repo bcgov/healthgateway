@@ -235,9 +235,9 @@ import { ILaboratoryService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import User from "@/models/user";
-import moment from "moment";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import { DateWrapper } from "@/models/dateWrapper";
 library.add(faFileDownload);
 
 @Component({
@@ -276,8 +276,8 @@ export default class LaboratoryTimelineComponent extends Vue {
         this.hasErrors = false;
     }
 
-    private formatDate(date: Date): string {
-        return moment(date).format("lll");
+    private formatDate(date: DateWrapper): string {
+        return date.format("LLL dd, yyyy t");
     }
 
     private showConfirmationModal(): void {
@@ -290,9 +290,9 @@ export default class LaboratoryTimelineComponent extends Vue {
             .getReportDocument(this.entry.id, this.user.hdid)
             .then((result) => {
                 const link = document.createElement("a");
-                let dateString = moment(this.entry.displayDate)
-                    .local()
-                    .format("YYYY_MM_DD-HH_mm");
+                let dateString = this.entry.displayDate.format(
+                    "YYYY_MM_DD-HH_mm"
+                );
                 let report: LaboratoryReport = result.resourcePayload;
                 link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
                 link.download = `COVID_Result_${dateString}.pdf`;

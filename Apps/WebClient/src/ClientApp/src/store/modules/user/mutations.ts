@@ -10,6 +10,7 @@ import User from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
+import { DateWrapper } from "@/models/dateWrapper";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 export const mutations: MutationTree<UserState> = {
@@ -77,8 +78,8 @@ export const mutations: MutationTree<UserState> = {
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
     },
-    setSMSResendDateTime(state: UserState, dateTime: Date) {
-        Vue.set(state.user, "SMSResendDateTime", dateTime);
+    setSMSResendDateTime(state: UserState, dateTime: DateWrapper) {
+        Vue.set(state, "smsResendDateTime", dateTime);
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;

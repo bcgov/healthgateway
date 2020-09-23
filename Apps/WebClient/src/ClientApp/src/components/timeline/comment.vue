@@ -124,6 +124,7 @@ import {
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component
 export default class CommentComponent extends Vue {
@@ -142,14 +143,8 @@ export default class CommentComponent extends Vue {
         );
     }
 
-    private formatDate(date: Date): string {
-        return new Date(Date.parse(date + "Z")).toLocaleString([], {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
+    private formatDate(date: string): string {
+        return new DateWrapper(date, true).format("DDD, t");
     }
 
     private get menuIcon(): IconDefinition {
@@ -184,7 +179,7 @@ export default class CommentComponent extends Vue {
                 this.needsUpdate(this.comment);
             })
             .catch((err) => {
-                this.logger.error(err);
+                this.logger.error(JSON.stringify(err));
                 this.hasErrors = true;
             })
             .finally(() => {
@@ -202,7 +197,7 @@ export default class CommentComponent extends Vue {
                     this.needsUpdate(this.comment);
                 })
                 .catch((err) => {
-                    this.logger.error(err);
+                    this.logger.error(JSON.stringify(err));
                 })
                 .finally(() => {
                     this.isLoading = false;

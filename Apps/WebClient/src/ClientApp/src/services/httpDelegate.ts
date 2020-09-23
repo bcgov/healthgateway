@@ -1,8 +1,7 @@
 import Axios, { AxiosRequestConfig } from "axios";
-import { IHttpDelegate } from "./interfaces";
 import { injectable } from "inversify";
 import { Dictionary } from "vue-router/types/router";
-import { ILogger } from "@/services/interfaces";
+import { IHttpDelegate, ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
@@ -120,10 +119,10 @@ export default class HttpDelegate implements IHttpDelegate {
         return new Promise<T>((resolve, reject) => {
             const config: AxiosRequestConfig = {
                 headers,
-                data: payload,
             };
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
-            Axios.delete(url, config)
+
+            Axios.request({ data: payload, url, headers, method: "delete" })
                 .then((response) => {
                     return resolve(response.data);
                 })
@@ -132,6 +131,18 @@ export default class HttpDelegate implements IHttpDelegate {
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
+
+            // TODO: Axios has bug with the delete method not using data fields.
+            // Change it back once a new version that fixes it comes availiable
+            /*Axios.delete(url, config)
+                .then((response) => {
+                    return resolve(response.data);
+                })
+                .catch((err) => {
+                    const errorMessage: string = `DELETE error: ${err.toString()}`;
+                    this.logger.error(errorMessage);
+                    return reject(errorMessage);
+                });*/
         });
     }
 }

@@ -10,9 +10,9 @@ import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
-import moment from "moment";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
+import { Dictionary } from "vue-router/types/router";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
@@ -73,12 +73,10 @@ export class RestUserNoteService implements IUserNoteService {
             }
 
             this.http
-                .post<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, {
-                    ...note,
-                    journalDateTime: moment(note.journalDateTime)
-                        .toISOString()
-                        .slice(0, 10),
-                })
+                .post<RequestResult<UserNote>>(
+                    `${this.USER_NOTE_BASE_URI}/`,
+                    note
+                )
                 .then((result) => {
                     return this.handleResult(result, resolve, reject);
                 })
@@ -97,12 +95,10 @@ export class RestUserNoteService implements IUserNoteService {
     public updateNote(note: UserNote): Promise<UserNote> {
         return new Promise((resolve, reject) => {
             this.http
-                .put<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, {
-                    ...note,
-                    journalDateTime: moment(note.journalDateTime)
-                        .toISOString()
-                        .slice(0, 10),
-                })
+                .put<RequestResult<UserNote>>(
+                    `${this.USER_NOTE_BASE_URI}/`,
+                    note
+                )
                 .then((result) => {
                     return this.handleResult(result, resolve, reject);
                 })
@@ -120,10 +116,14 @@ export class RestUserNoteService implements IUserNoteService {
 
     public deleteNote(note: UserNote): Promise<void> {
         return new Promise((resolve, reject) => {
+            const headers: Dictionary<string> = {};
+            headers["Content-Type"] = "application/json; charset=utf-8";
+
             this.http
                 .delete<RequestResult<UserNote>>(
                     `${this.USER_NOTE_BASE_URI}/`,
-                    note
+                    JSON.stringify(note),
+                    headers
                 )
                 .then((result) => {
                     return this.handleResult(result, resolve, reject);
@@ -148,7 +148,6 @@ export class RestUserNoteService implements IUserNoteService {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            console.log(requestResult);
             reject(requestResult.resultError);
         }
     }

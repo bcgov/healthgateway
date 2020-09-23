@@ -44,6 +44,12 @@ const HealthInsightsView = () =>
     import(
         /* webpackChunkName: "healthInsights" */ "@/views/healthInsights.vue"
     );
+const ReportsView = () =>
+    import(/* webpackChunkName: "reports" */ "@/views/reports.vue");
+const ReleaseNotesView = () =>
+    import(/* webpackChunkName: "releaseNotes" */ "@/views/releaseNotes.vue");
+const ContactUsView = () =>
+    import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
 
 Vue.use(VueRouter);
 
@@ -54,6 +60,11 @@ const routes = [
     {
         path: "/",
         component: LandingView,
+        meta: { requiresAuth: false },
+    },
+    {
+        path: "/release-notes",
+        component: ReleaseNotesView,
         meta: { requiresAuth: false },
     },
     {
@@ -96,9 +107,19 @@ const routes = [
         meta: { requiresRegistration: true, roles: ["user"] },
     },
     {
-        path: "/profile/termsOfService",
+        path: "/reports",
+        component: ReportsView,
+        meta: { requiresRegistration: true, roles: ["user"] },
+    },
+    {
+        path: "/termsOfService",
         component: TermsOfServiceView,
-        meta: { requiresAuth: true, roles: ["user"] },
+        meta: { requiresAuth: false, roles: ["user"] },
+    },
+    {
+        path: "/contact-us",
+        component: ContactUsView,
+        meta: { requiresAuth: false },
     },
     {
         path: "/login",

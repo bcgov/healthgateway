@@ -1,6 +1,6 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.contact-us {
+.feedback {
     background-color: $aquaBlue;
     display: inline;
     font-size: 1.3em;
@@ -35,7 +35,7 @@
 <template>
     <div id="feedback-container" class="d-flex flex-column text-dark">
         <b-button
-            class="justify-content-center contact-us py-0 rounded-0"
+            class="justify-content-center feedback py-0 rounded-0"
             :class="{
                 'bg-danger': hasSubmitted && !isSuccess,
                 'bg-success': hasSubmitted && isSuccess,
@@ -47,7 +47,7 @@
         >
             <b-row v-show="!hasSubmitted">
                 <b-col
-                    title="Contact Us"
+                    title="Feedback"
                     class="py-2"
                     :class="{
                         'col-2 col-md-4 text-right pr-2': isSidebarOpen,
@@ -64,7 +64,7 @@
                     v-show="isSidebarOpen"
                     class="button-title d-none text-left col-7 col-md-6 p-0 pl-3 py-2"
                 >
-                    <span> Contact Us </span>
+                    <span> Feedback </span>
                 </b-col>
                 <b-col v-show="isSidebarOpen && visible" cols="auto">
                     <font-awesome-icon
@@ -91,8 +91,8 @@
                 <b-row class="p-3 description-container">
                     <b-col class="text-left small"
                         ><span class="button-title d-none"
-                            >Do you have a question or suggestion? Let us know
-                            in the field below.</span
+                            >Do you have a suggestion or idea? Let us know in
+                            the field below.</span
                         >
                     </b-col>
                 </b-row>

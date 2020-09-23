@@ -1,3 +1,5 @@
+import { StringISODate } from "@/models/dateWrapper";
+
 export default interface UserNote {
     // Gets or sets the id.
     id?: string;
@@ -12,7 +14,7 @@ export default interface UserNote {
     text: string;
 
     // Gets or sets the Note timeline datetime.
-    journalDateTime: Date;
+    journalDateTime: StringISODate;
 
     // Gets or sets the note db version.
     version: number;

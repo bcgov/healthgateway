@@ -13,29 +13,24 @@
     color: $primary;
     font-size: 1.3em;
 }
+
 .sticky-offset {
-    top: 117px;
+    top: 70px;
     background-color: white;
     z-index: 2;
-    // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 350px) {
-        top: 134px;
-    }
 }
+
 .sticky-line {
-    top: 187px;
+    top: 139px;
     background-color: white;
-    border-bottom: solid $primary 1px;
-    margin-top: -1px;
+    border-bottom: solid $primary 2px;
+    margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
-        top: 241px;
-    }
-    // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 350px) {
-        top: 258px;
+        top: 193px;
     }
 }
+
 .noTimelineEntriesText {
     font-size: 1.5rem;
     color: #6c757d;
@@ -61,7 +56,7 @@
                 <slot name="month-list-toggle"></slot>
             </b-col>
         </b-row>
-        <b-row class="sticky-top sticky-line" />
+        <b-row v-if="!timelineIsEmpty" class="sticky-top sticky-line" />
         <b-row id="listControls" class="no-print">
             <b-col>
                 Displaying {{ getVisibleCount() }} out of
@@ -119,17 +114,11 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import moment from "moment";
 import EventBus from "@/eventbus";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import { EventMessageName } from "@/constants/eventMessageName";
-
-interface DateGroup {
-    key: string;
-    date: Date;
-    entries: TimelineEntry[];
-}
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
     components: {
@@ -153,6 +142,8 @@ export default class LinearTimelineComponent extends Vue {
 
     private eventBus = EventBus;
 
+    private dateGroups: DateGroup[] = [];
+
     @Watch("filterText")
     @Watch("filterTypes")
     private applyTimelineFilter() {
@@ -172,19 +163,24 @@ export default class LinearTimelineComponent extends Vue {
             if (this.isVisible) {
                 this.eventBus.$emit(
                     "timelinePageUpdate",
-                    new Date(this.visibleTimelineEntries[0].date)
+                    this.visibleTimelineEntries[0].date
                 );
             }
         }
+
+        this.dateGroups = DateGroup.createGroups(this.visibleTimelineEntries);
+        this.dateGroups = DateGroup.sortGroup(this.dateGroups);
     }
 
     private created() {
         let self = this;
-        this.eventBus.$on("calendarDateEventClick", function (eventDate: Date) {
+        this.eventBus.$on("calendarDateEventClick", function (
+            eventDate: DateWrapper
+        ) {
             self.setPageFromDate(eventDate);
             // Wait for next render cycle until the pages have been calculated and displayed
             self.$nextTick().then(function () {
-                const date = new Date(eventDate).setHours(0, 0, 0, 0);
+                const date = eventDate.fromEpoch();
                 let container: HTMLElement[] = self.$refs[
                     date
                 ] as HTMLElement[];
@@ -193,7 +189,7 @@ export default class LinearTimelineComponent extends Vue {
         });
 
         this.eventBus.$on(EventMessageName.CalendarMonthUpdated, function (
-            firstEntryDate: Date
+            firstEntryDate: DateWrapper
         ) {
             self.setPageFromDate(firstEntryDate);
         });
@@ -242,8 +238,8 @@ export default class LinearTimelineComponent extends Vue {
         return result;
     }
 
-    private getHeadingDate(date: Date): string {
-        return moment(date).format("ll");
+    private getHeadingDate(date: DateWrapper): string {
+        return date.format("LLL d, yyyy");
     }
 
     @Watch("currentPage")
@@ -266,49 +262,11 @@ export default class LinearTimelineComponent extends Vue {
         );
     }
 
-    private get dateGroups(): DateGroup[] {
-        if (this.visibleTimelineEntries.length === 0) {
-            return [];
-        }
-        let groups = this.visibleTimelineEntries.reduce<
-            Record<string, TimelineEntry[]>
-        >((groups, entry) => {
-            // Get the string version of the date and get the date
-            const date = new Date(entry.date).setHours(0, 0, 0, 0);
-
-            // Create a new group if it the date doesnt exist in the map
-            if (!groups[date]) {
-                groups[date] = [];
-            }
-            groups[date].push(entry);
-            return groups;
-        }, {});
-        let groupArrays = Object.keys(groups).map<DateGroup>((dateKey) => {
-            return {
-                key: dateKey,
-                date: new Date(groups[dateKey][0].date),
-                entries: groups[
-                    dateKey
-                ].sort((a: TimelineEntry, b: TimelineEntry) =>
-                    a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-                ),
-            };
-        });
-        return groupArrays;
-    }
-
-    private sortGroup(groupArrays: DateGroup[]) {
-        groupArrays.sort((a, b) =>
-            a.date > b.date ? -1 : a.date < b.date ? 1 : 0
-        );
-        return groupArrays;
-    }
-
     private getVisibleCount(): number {
         return this.visibleTimelineEntries.length;
     }
 
-    private setPageFromDate(eventDate: Date) {
+    private setPageFromDate(eventDate: DateWrapper) {
         let index = this.filteredTimelineEntries.findIndex(
             (entry) => entry.date === eventDate
         );

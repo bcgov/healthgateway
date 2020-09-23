@@ -44,5 +44,10 @@ namespace HealthGateway.Database.Constants
         /// Constant value to represent a Processing communication.
         /// </summary>
         Processing,
+
+        /// <summary>
+        /// Constant value to represent a Draft communication.
+        /// </summary>
+        Draft,
     }
 }

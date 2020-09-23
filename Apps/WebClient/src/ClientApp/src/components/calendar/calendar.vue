@@ -1,26 +1,18 @@
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 .sticky-offset {
-    top: 118px;
+    top: 70px;
     background-color: white;
     z-index: 2;
-    // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 350px) {
-        top: 142px;
-    }
 }
 .sticky-line {
-    top: 172px;
+    top: 122px;
     background-color: white;
-    border-bottom: solid $primary 1px;
-    margin-top: -1px;
+    border-bottom: solid $primary 2px;
+    margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
-        top: 210px;
-    }
-    // TODO: Fix for filter overlaping. Remove once that is complete.
-    @media (max-width: 350px) {
-        top: 234px;
+        top: 160px;
     }
 }
 </style>
@@ -65,9 +57,8 @@ import {
     CalendarWeek,
     CalendarMonth,
 } from "@/components/calendar/models";
-import DateUtil from "@/utility/dateUtil";
-import moment from "moment";
 import EventBus from "@/eventbus";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
     components: {
@@ -115,38 +106,35 @@ export default class CalendarComponent extends Vue {
     })
     weekNames!: Array<string>;
 
-    private availableMonths: Date[] = [];
-    private currentMonth: Date = new Date();
+    private availableMonths: DateWrapper[] = [];
+    private currentMonth: DateWrapper = new DateWrapper();
     private eventBus = EventBus;
 
     private mounted() {
         this.updateAvailableMonths();
         var self = this;
-        this.eventBus.$on("timelinePageUpdate", function (eventDate: Date) {
-            self.currentMonth = DateUtil.getMonthFirstDate(eventDate);
+        this.eventBus.$on("timelinePageUpdate", function (
+            eventDate: DateWrapper
+        ) {
+            self.currentMonth = eventDate.startOf("month");
         });
     }
 
     @Watch("dateGroups")
     private updateAvailableMonths() {
-        this.availableMonths = this.dateGroups.reduce<Date[]>(
+        this.availableMonths = this.dateGroups.reduce<DateWrapper[]>(
             (groups, entry) => {
-                const fullYear = entry.date.getFullYear();
+                const fullYear = entry.date.year();
                 if (!isNaN(fullYear)) {
                     // Get the month and year and dismiss the day
-                    const monthYear = new Date(
-                        fullYear,
-                        entry.date.getMonth(),
-                        1
-                    );
+                    const monthYear = entry.date.startOf("month");
 
                     // Create a new group if it the date doesnt exist in the map
                     if (
                         groups.findIndex(
                             (month) =>
-                                month.getFullYear() ===
-                                    monthYear.getFullYear() &&
-                                month.getMonth() === monthYear.getMonth()
+                                month.year() === monthYear.year() &&
+                                month.month() === monthYear.month()
                         ) === -1
                     ) {
                         groups.push(monthYear);

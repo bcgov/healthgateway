@@ -79,6 +79,7 @@ import { Component, Prop } from "vue-property-decorator";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
     components: {
@@ -87,8 +88,9 @@ import container from "@/plugins/inversify.config";
     },
 })
 export default class CommentSectionComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() parentEntry!: MedicationTimelineEntry;
+
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private commentService!: IUserCommentService;
     private showComments: boolean = false;
     private showInput: boolean = false;
@@ -100,7 +102,7 @@ export default class CommentSectionComponent extends Vue {
         text: "",
         parentEntryId: this.parentEntry.id,
         userProfileId: "",
-        createdDateTime: new Date(),
+        createdDateTime: new DateWrapper().toISODate(),
         version: 0,
     };
 

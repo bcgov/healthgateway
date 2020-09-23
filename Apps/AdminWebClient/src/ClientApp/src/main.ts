@@ -20,6 +20,7 @@ import {
     ICommunicationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import container from "@/plugins/inversify.config";
 import ExternalConfiguration from "@/models/externalConfiguration";
