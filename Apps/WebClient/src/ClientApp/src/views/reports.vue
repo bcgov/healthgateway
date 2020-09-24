@@ -69,31 +69,10 @@
             @cancel="onProtectiveWordCancel"
         />
 
-        <vue-html2pdf
-            ref="pdfGenerator"
-            :show-layout="false"
-            :enable-download="true"
-            :paginate-elements-by-height="950"
-            :html-to-pdf-options="{
-                margin: [15, 15],
-                filename: 'HealthGateway_MedicationHistory.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, letterRendering: true },
-                jsPDF: {
-                    unit: 'pt',
-                    format: 'letter',
-                    orientation: 'portrait',
-                },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-            }"
-            @hasGenerated="hasGenerated()"
-        >
-            <MedicationHistoryReportComponent
-                slot="pdf-content"
-                :medication-statement-history="medicationStatementHistory"
-                :name="fullName"
-            />
-        </vue-html2pdf>
+        <MedicationHistoryReportComponent
+            :medication-statement-history="medicationStatementHistory"
+            :name="fullName"
+        />
     </div>
 </template>
 
@@ -108,7 +87,6 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import BannerError from "@/models/bannerError";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
-import VueHtml2pdf from "vue-html2pdf";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -117,10 +95,10 @@ import User from "@/models/user";
 import { ResultType } from "@/constants/resulttype";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { IAuthenticationService } from "@/services/interfaces";
+import html2pdf from "html2pdf";
 
 @Component({
     components: {
-        VueHtml2pdf,
         PageTitleComponent,
         MessageModalComponent,
         MedicationHistoryReportComponent,
@@ -163,7 +141,27 @@ export default class ReportsView extends Vue {
     private generateMedicationHistoryPdf() {
         this.logger.debug("generating Medication History PDF...");
         this.isLoading = true;
-        this.pdfGenerator.generatePdf();
+
+        html2pdf(this.$refs.document, {
+            margin: 10,
+            filename: "my.pdf",
+            image: { type: "jpeg", quality: 1 },
+            html2canvas: { dpi: 72, letterRendering: true },
+            jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+            pdfCallback: this.pdfCallback,
+        });
+    }
+
+    private pdfCallback(pdfObject) {
+        var number_of_pages = pdfObject.internal.getNumberOfPages();
+        var pdf_pages = pdfObject.internal.pages;
+        var myFooter = "Footer info";
+        for (var i = 1; i < pdf_pages.length; i++) {
+            // We are telling our pdfObject that we are now working on this page
+            pdfObject.setPage(i);
+            // The 10,200 value is only for A4 landscape. You need to define your own for other page sizes
+            pdfObject.text(myFooter, 10, 200);
+        }
     }
 
     private mounted() {
