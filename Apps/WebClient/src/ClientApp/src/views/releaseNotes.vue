@@ -24,6 +24,43 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
+                                    >September 23, 2020 - v1.2.7 - Advance
+                                    Filter, Footer Menu, Medication History
+                                    Report
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added a filter menu which expands and
+                                        collapses, to free up space for content.
+                                    </li>
+                                    <li>
+                                        The links in the footer menu were
+                                        updated, making it easier to find more
+                                        information about the Health Gateway,
+                                        such as release notes, contact
+                                        information, terms of service and more.
+                                    </li>
+                                    <li>
+                                        We implemented the first iteration of
+                                        our Reports section which will allow
+                                        users to save pdf reports of their
+                                        health records, starting with medication
+                                        history.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
                                     >September 10, 2020 - v1.2.6 - Menu
                                     Enhancements, MSP and Immunization
                                     Records</strong
