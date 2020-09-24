@@ -140,7 +140,7 @@ export default class HeaderComponent extends Vue {
         this.sidebarExpanded = false;
     }
 
-    private mouned() {
+    private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
