@@ -82,15 +82,17 @@ import { DateWrapper } from "@/models/dateWrapper";
 
 @Component
 export default class AddCommentComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("user", { namespace: "user" }) user!: User;
     @Prop() comment!: UserComment;
     private commentInput: string = "";
+
+    private logger!: ILogger;
     private commentService!: IUserCommentService;
-    private hasErrors: boolean = false;
+
     private isSaving: boolean = false;
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.commentService = container.get<IUserCommentService>(
             SERVICE_IDENTIFIER.UserCommentService
         );
@@ -124,7 +126,6 @@ export default class AddCommentComponent extends Vue {
                         this.comment.parentEntryId
                     }: ${JSON.stringify(err)}`
                 );
-                this.hasErrors = true;
             })
             .finally(() => {
                 this.isSaving = false;

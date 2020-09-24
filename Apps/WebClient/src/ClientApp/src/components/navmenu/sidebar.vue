@@ -472,7 +472,6 @@ const sidebar: string = "sidebar";
     },
 })
 export default class SidebarComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("updateUserPreference", { namespace: "user" })
     updateUserPreference!: (params: {
         hdid: string;
@@ -501,6 +500,7 @@ export default class SidebarComponent extends Vue {
 
     private eventBus = EventBus;
 
+    private logger!: ILogger;
     private authenticationService!: IAuthenticationService;
     private name: string = "";
     private windowWidth: number = 0;
@@ -526,6 +526,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.authenticationService = container.get(
             SERVICE_IDENTIFIER.AuthenticationService
         );

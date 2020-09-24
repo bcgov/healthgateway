@@ -113,7 +113,6 @@ const sidebar: string = "sidebar";
     },
 })
 export default class HeaderComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
     @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
 
@@ -134,10 +133,15 @@ export default class HeaderComponent extends Vue {
     readonly ratingComponent!: RatingComponent;
 
     private sidebarExpanded: boolean = false;
+    private logger!: ILogger;
 
     @Watch("$route")
     private closeSidebar() {
         this.sidebarExpanded = false;
+    }
+
+    private mouned() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
     private get displayMenu(): boolean {

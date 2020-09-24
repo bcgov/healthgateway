@@ -14,7 +14,6 @@ import User from "@/models/user";
 
 @Component
 export default class LoginCallbackView extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("oidcSignInCallback", { namespace: "auth" })
     oidcSignInCallback!: () => Promise<string>;
 
@@ -25,7 +24,10 @@ export default class LoginCallbackView extends Vue {
 
     @Getter("userIsRegistered", { namespace: "user" })
     userIsRegistered!: boolean;
+
     @Getter("user", { namespace: "user" }) user!: User;
+
+    private logger!: ILogger;
 
     private created() {
         this.oidcSignInCallback()
@@ -59,6 +61,10 @@ export default class LoginCallbackView extends Vue {
                     query: { isRetry: "true" },
                 });
             });
+    }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 }
 </script>

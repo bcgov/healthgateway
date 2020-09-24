@@ -90,13 +90,12 @@ import { DateWrapper } from "@/models/dateWrapper";
 export default class CommentSectionComponent extends Vue {
     @Prop() parentEntry!: MedicationTimelineEntry;
 
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger!: ILogger;
     private commentService!: IUserCommentService;
     private showComments: boolean = false;
     private showInput: boolean = false;
     private isLoadingComments: boolean = false;
     private comments: UserComment[] = [];
-    private hasErrors: boolean = false;
     private newComment: UserComment = {
         id: "",
         text: "",
@@ -107,6 +106,7 @@ export default class CommentSectionComponent extends Vue {
     };
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.commentService = container.get<IUserCommentService>(
             SERVICE_IDENTIFIER.UserCommentService
         );
@@ -150,7 +150,6 @@ export default class CommentSectionComponent extends Vue {
                         this.parentEntry.id
                     }: ${JSON.stringify(err)}`
                 );
-                this.hasErrors = true;
             })
             .finally(() => {
                 this.isLoadingComments = false;

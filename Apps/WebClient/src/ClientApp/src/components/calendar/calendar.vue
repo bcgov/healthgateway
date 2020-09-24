@@ -67,7 +67,6 @@ import { DateWrapper } from "@/models/dateWrapper";
     },
 })
 export default class CalendarComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() dateGroups!: DateGroup[];
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
@@ -109,8 +108,10 @@ export default class CalendarComponent extends Vue {
     private availableMonths: DateWrapper[] = [];
     private currentMonth: DateWrapper = new DateWrapper();
     private eventBus = EventBus;
+    private logger!: ILogger;
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.updateAvailableMonths();
         var self = this;
         this.eventBus.$on("timelinePageUpdate", function (

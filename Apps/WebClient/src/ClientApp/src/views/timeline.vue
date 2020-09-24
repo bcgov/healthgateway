@@ -326,7 +326,6 @@ Component.registerHooks(["beforeRouteLeave"]);
     },
 })
 export default class TimelineView extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("user", { namespace }) user!: User;
 
     @Action("getOrders", { namespace: "laboratory" })
@@ -365,12 +364,16 @@ export default class TimelineView extends Vue {
     private isListView: boolean = true;
     private eventBus = EventBus;
 
+    private logger!: ILogger;
+
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
     @Ref("covidModal")
     readonly covidModal!: CovidModalComponent;
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         this.fetchMedicationStatements();
         this.fetchImmunizations();
         this.fetchLaboratoryResults();

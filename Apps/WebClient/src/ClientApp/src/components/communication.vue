@@ -26,11 +26,12 @@ import { ILogger, ICommunicationService } from "@/services/interfaces";
 
 @Component
 export default class CommunicationComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger!: ILogger;
     private isLoaded: boolean = false;
     private communication!: Communication;
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchCommunication();
     }
 
@@ -44,9 +45,10 @@ export default class CommunicationComponent extends Vue {
 
     private fetchCommunication() {
         let self = this;
-        const communicationService: ICommunicationService = container.get(
-            SERVICE_IDENTIFIER.CommunicationService
-        );
+        const communicationService: ICommunicationService = container.get<
+            ICommunicationService
+        >(SERVICE_IDENTIFIER.CommunicationService);
+
         communicationService
             .getActive()
             .then((requestResult) => {
