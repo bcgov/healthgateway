@@ -51,6 +51,7 @@
                                 </ul>
                             </b-col>
                         </b-row>
+                </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
