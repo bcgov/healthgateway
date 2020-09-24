@@ -20,7 +20,6 @@
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
-                                :disabled="!isDraft"
                             ></v-text-field>
                         </v-col>
                         <v-col>
@@ -28,7 +27,6 @@
                                 v-model="editedItem.scheduledDateTime"
                                 requried
                                 label="Scheduled For"
-                                :disabled="!isDraft"
                             ></v-datetime-picker>
                         </v-col>
                         <v-col>
@@ -41,7 +39,6 @@
                                 :rules="[v => !!v || 'Priority is required']"
                                 validate-on-blur
                                 required
-                                :disabled="!isDraft"
                             ></v-select>
                         </v-col>
                     </v-row>
@@ -71,7 +68,6 @@
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the email content here..."
                                 :extensions="extensions"
-                                :disabled="!isDraft"
                             />
                         </v-col>
                     </v-row>
