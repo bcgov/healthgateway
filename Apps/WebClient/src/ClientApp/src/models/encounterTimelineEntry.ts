@@ -36,22 +36,26 @@ class ClinicViewModel {
     public address?: string;
     public phoneNumber?: string;
 
-    constructor(model?: Clinic) {
-        this.id = model?.clinicId || "";
-        this.name = model?.name;
-        this.phoneNumber = model?.phoneNumber;
+    constructor(model: Clinic) {
+        this.id = model.clinicId || "";
+        this.name = model.name;
+        this.phoneNumber = model.phoneNumber;
+
+        let addressArray = [
+            model.addressLine1,
+            model.addressLine2,
+            model.addressLine3,
+            model.addressLine4,
+        ];
+        console.log(addressArray.filter((val) => val.length > 0).join(" "));
 
         this.address =
-            (model?.addressLine1 || "") +
-            " " +
-            (model?.addressLine2 || "") +
-            " " +
-            (model?.addressLine3 || "") +
-            " " +
-            (model?.addressLine4 || "") +
+            addressArray.filter((val) => val.length > 0).join(" ") +
             ", " +
-            (model?.city || "") +
+            (model.city || "") +
             " " +
-            (model?.province || "");
+            (model.province || "") +
+            ", " +
+            (model.postalCode || "");
     }
 }
