@@ -245,7 +245,6 @@ export default class ReportsView extends Vue {
         );
         authenticationService.getOidcUserProfile().then((oidcUser) => {
             if (oidcUser) {
-                console.log(oidcUser);
                 this.fullName =
                     oidcUser.given_name + " " + oidcUser.family_name;
             }
