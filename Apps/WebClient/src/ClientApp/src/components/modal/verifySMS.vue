@@ -127,7 +127,6 @@ import { debug } from "winston";
     },
 })
 export default class VerifySMSComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() smsNumber!: string;
 
     @Getter("user", { namespace: "user" }) user!: User;
@@ -150,6 +149,7 @@ export default class VerifySMSComponent extends Vue {
     @Getter("smsResendDateTime", { namespace: "user" })
     smsResendDateTime?: DateWrapper;
 
+    private logger!: ILogger;
     private userProfileService!: IUserProfileService;
 
     private tooManyRetries: boolean = false;
@@ -162,6 +162,7 @@ export default class VerifySMSComponent extends Vue {
     public error: boolean = false;
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );

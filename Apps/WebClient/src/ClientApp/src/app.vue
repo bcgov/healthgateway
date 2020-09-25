@@ -80,9 +80,6 @@ import Process, { EnvironmentType } from "@/constants/process.ts";
 import { ILogger, IMedicationService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
 // Load Bootstrap general plugins
 import {
     AlertPlugin,
@@ -200,6 +197,8 @@ import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
 import ErrorCard from "@/components/errorCard.vue";
+
+const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 @Component({
     components: {

@@ -213,7 +213,6 @@ import PhoneUtil from "@/utility/phoneUtil";
     },
 })
 export default class MedicationTimelineComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Prop() entry!: MedicationTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;

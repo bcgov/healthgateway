@@ -125,7 +125,7 @@ export default class HealthInsightsView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger!: ILogger;
 
     private timelineEntries: TimelineEntry[] = [];
     private isMedicationLoading: boolean = false;
@@ -141,6 +141,7 @@ export default class HealthInsightsView extends Vue {
     readonly protectiveWordModal!: ProtectiveWordComponent;
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.timeChartData = {
             labels: [],
             datasets: [

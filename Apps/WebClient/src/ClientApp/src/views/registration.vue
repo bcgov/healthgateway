@@ -369,7 +369,9 @@ library.add(faCheck);
     },
 })
 export default class RegistrationView extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    @Prop() inviteKey?: string;
+    @Prop() inviteEmail?: string;
+
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
 
@@ -377,9 +379,6 @@ export default class RegistrationView extends Vue {
 
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
-
-    @Prop() inviteKey?: string;
-    @Prop() inviteEmail?: string;
 
     private accepted: boolean = false;
     private email: string = "";
@@ -397,6 +396,7 @@ export default class RegistrationView extends Vue {
     private hasErrors: boolean = false;
     private errorMessage: string = "";
 
+    private logger!: ILogger;
     private betaRequestService!: IBetaRequestService;
     private waitlistEdditable = true;
     private waitlistTempEmail: string = "";
@@ -408,6 +408,7 @@ export default class RegistrationView extends Vue {
     private termsOfService: string = "";
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.betaRequestService = container.get(
             SERVICE_IDENTIFIER.BetaRequestService
         );

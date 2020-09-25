@@ -129,20 +129,10 @@ import { IAuthenticationService } from "@/services/interfaces";
     },
 })
 export default class ReportsView extends Vue {
-    private authenticationService: IAuthenticationService = container.get(
-        SERVICE_IDENTIFIER.AuthenticationService
-    );
-    private fullName: string = "";
-    private medicationStatementHistory: MedicationStatementHistory[] = [];
-    private isLoading: boolean = false;
-    private protectiveWordAttempts: number = 0;
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private isDataLoaded: boolean = false;
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
-
     @Ref("pdfGenerator")
     readonly pdfGenerator!: any;
 
@@ -157,9 +147,17 @@ export default class ReportsView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
+    private fullName: string = "";
+    private medicationStatementHistory: MedicationStatementHistory[] = [];
+    private isLoading: boolean = false;
+    private protectiveWordAttempts: number = 0;
+    private logger!: ILogger;
+    private isDataLoaded: boolean = false;
+
     private showConfirmationModal() {
         this.messageModal.showModal();
     }
+
     private generateMedicationHistoryPdf() {
         this.logger.debug("generating Medication History PDF...");
         this.isLoading = true;
@@ -167,6 +165,7 @@ export default class ReportsView extends Vue {
     }
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.loadName();
         this.fetchMedicationStatements();
     }
@@ -240,8 +239,13 @@ export default class ReportsView extends Vue {
     }
 
     private loadName(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
+        // Load the user name and current email
+        let authenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        authenticationService.getOidcUserProfile().then((oidcUser) => {
             if (oidcUser) {
+                console.log(oidcUser);
                 this.fullName =
                     oidcUser.given_name + " " + oidcUser.family_name;
             }

@@ -438,7 +438,6 @@ const authNamespace: string = "auth";
     },
 })
 export default class ProfileView extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Getter("oidcIsAuthenticated", {
         namespace: authNamespace,
     })
@@ -505,6 +504,7 @@ export default class ProfileView extends Vue {
 
     private tempEmail: string = "";
     private submitStatus: string = "";
+    private logger!: ILogger;
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
 
@@ -517,6 +517,7 @@ export default class ProfileView extends Vue {
     private intervalHandler: number = 0;
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
