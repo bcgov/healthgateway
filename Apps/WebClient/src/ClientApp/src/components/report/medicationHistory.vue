@@ -8,6 +8,10 @@ span {
     color: $primary;
 }
 
+#disclaimer {
+    font-size: 0.7em;
+}
+
 #disclaimer,
 span {
     font-weight: bold;

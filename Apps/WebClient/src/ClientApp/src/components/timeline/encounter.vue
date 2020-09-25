@@ -163,14 +163,7 @@ export default class EncounterTimelineEntryComponent extends Vue {
     @Prop() datekey!: string;
     @Getter("user", { namespace: "user" }) user!: User;
 
-    private hasErrors: boolean = false;
     private detailsVisible: boolean = false;
-
-    private mounted() {
-        // this.encounterService = container.get<IEncounterService>(
-        //     SERVICE_IDENTIFIER.EncounterService
-        // );
-    }
 
     private get entryIcon(): IconDefinition {
         return faUserMd;
@@ -178,7 +171,6 @@ export default class EncounterTimelineEntryComponent extends Vue {
 
     private toggleDetails(): void {
         this.detailsVisible = !this.detailsVisible;
-        this.hasErrors = false;
     }
 
     private formatPhone(phoneNumber: string): string {

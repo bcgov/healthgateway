@@ -64,10 +64,10 @@ namespace HealthGateway.EncounterTests
                 Clinic = new Clinic()
                 {
                     Name = "LOCATION NAME",
-                    AddrLine1 = "address line 1",
-                    AddrLine2 = "address line 2",
-                    AddrLine3 = "address line 3",
-                    AddrLine4 = "address line 4",
+                    AddressLine1 = "address line 1",
+                    AddressLine2 = "address line 2",
+                    AddressLine3 = "address line 3",
+                    AddressLine4 = "address line 4",
                     City = "Victoria",
                     PostalCode = "V9V9V9",
                     Province = "BC",
@@ -82,10 +82,10 @@ namespace HealthGateway.EncounterTests
                 Clinic = new Clinic()
                 {
                     Name = "LOCATION NAME",
-                    AddrLine1 = "address line 1",
-                    AddrLine2 = "address line 2",
-                    AddrLine3 = "address line 3",
-                    AddrLine4 = "address line 4",
+                    AddressLine1 = "address line 1",
+                    AddressLine2 = "address line 2",
+                    AddressLine3 = "address line 3",
+                    AddressLine4 = "address line 4",
                     City = "Victoria",
                     PostalCode = "V9V9V9",
                     Province = "BC",
