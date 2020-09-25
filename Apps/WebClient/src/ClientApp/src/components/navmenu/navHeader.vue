@@ -70,7 +70,7 @@ nav {
                 id="menuBtnLogout"
                 variant="link"
                 class="nav-link"
-                @click="showRating()"
+                @click="handleLogoutClick()"
             >
                 <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
                 Logout
@@ -79,7 +79,7 @@ nav {
                 <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login
             </router-link>
         </b-navbar-nav>
-        <RatingComponent ref="ratingComponent" @on-close="modalClosed()" />
+        <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
     </b-navbar>
 </template>
 
@@ -129,6 +129,8 @@ export default class HeaderComponent extends Vue {
     @Getter("userIsActive", { namespace: user })
     userIsActive!: boolean;
 
+    @Getter("user", { namespace: "user" }) user!: User;
+
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
@@ -161,11 +163,19 @@ export default class HeaderComponent extends Vue {
         this.toggleSidebar();
     }
 
+    private handleLogoutClick() {
+        if (this.user.loggedInWithIDIR) {
+            this.processLogout();
+        } else {
+            this.showRating();
+        }
+    }
+
     private showRating() {
         this.ratingComponent.showModal();
     }
 
-    private modalClosed() {
+    private processLogout() {
         this.logger.debug(`redirecting to logout view ...`);
         this.$router.push({ path: "/logout" });
     }
