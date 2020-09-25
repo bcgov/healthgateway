@@ -164,7 +164,7 @@ export default class ReportsView extends Vue {
                 fileIndex + 1
             }.pdf`,
             image: { type: "jpeg", quality: 1 },
-            html2canvas: { dpi: 192, scale: 1, letterRendering: true },
+            html2canvas: { dpi: 192, scale: 1.2, letterRendering: true },
             jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
         };
