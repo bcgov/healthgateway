@@ -154,7 +154,7 @@ export default class FilterComponent extends Vue {
     config!: WebClientConfiguration;
     @Getter("isOpen", { namespace: "sidebar" }) isSidebarOpen!: boolean;
 
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger!: ILogger;
     private eventBus = EventBus;
     private isVisible: boolean = false;
     private selectedFilters: string[] = [];
@@ -228,6 +228,8 @@ export default class FilterComponent extends Vue {
     }
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
         this.filters[0].isEnabled = this.config.modules["Immunization"];
         this.filters[1].isEnabled = this.config.modules["Medication"];
         this.filters[2].isEnabled = this.config.modules["Laboratory"];

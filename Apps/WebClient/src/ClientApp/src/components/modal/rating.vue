@@ -59,14 +59,18 @@ import { WebClientConfiguration } from "@/models/configData";
 
 @Component
 export default class RatingComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     private question: string =
         "Did the Health Gateway improve your access to health information today? Please provide a rating.";
     private ratingValue: number = 0;
     private isVisible: boolean = false;
+    private logger!: ILogger;
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+    public mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
 
     public showModal() {
         this.isVisible = true;

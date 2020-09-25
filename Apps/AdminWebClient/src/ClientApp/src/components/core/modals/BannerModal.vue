@@ -28,7 +28,6 @@
                                     v-model="editedItem.effectiveDateTime"
                                     requried
                                     label="Effective On"
-                                    :disabled="!isDraft"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
                                     errors[0]
@@ -51,7 +50,6 @@
                                     v-model="editedItem.expiryDateTime"
                                     required
                                     label="Expires On"
-                                    :disabled="!isDraft"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
                                     errors[0]
@@ -68,7 +66,6 @@
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
-                                :disabled="!isDraft"
                             ></v-text-field>
                         </v-col>
                         <v-col>
@@ -94,7 +91,6 @@
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the banner content here..."
                                 :extensions="extensions"
-                                :disabled="!isDraft"
                             />
                         </v-col>
                     </v-row>

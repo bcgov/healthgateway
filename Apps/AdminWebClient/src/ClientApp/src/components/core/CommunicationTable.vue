@@ -323,8 +323,8 @@ export default class CommunicationTable extends Vue {
     }
 
     private checkDisabled(item: Communication) {
+        const now = new Date();
         if (item.communicationTypeCode === CommunicationType.Banner) {
-            const now = new Date();
             const expiryDateTime = new Date(item.expiryDateTime);
             if (
                 item.communicationStatusCode != CommunicationStatus.Draft &&
@@ -332,11 +332,14 @@ export default class CommunicationTable extends Vue {
             ) {
                 return true;
             }
-        } else if (
-            item.communicationTypeCode === CommunicationType.Email &&
-            item.communicationStatusCode != CommunicationStatus.New
-        ) {
-            return true;
+        } else if (item.communicationTypeCode === CommunicationType.Email) {
+            const scheduledDateTime = new Date(item.scheduledDateTime);
+            if (
+                item.communicationStatusCode != CommunicationStatus.Draft &&
+                scheduledDateTime < now
+            ) {
+                return true;
+            }
         }
         return false;
     }

@@ -71,7 +71,9 @@
         <div class="d-none">
             <div ref="report">
                 <MedicationHistoryReportComponent
-                    :medication-statement-history="medicationStatementHistoryPage"
+                    :medication-statement-history="
+                        medicationStatementHistoryPage
+                    "
                     :name="fullName"
                 />
             </div>
@@ -110,28 +112,25 @@ import html2pdf from "html2pdf.js";
     },
 })
 export default class ReportsView extends Vue {
-    private authenticationService: IAuthenticationService = container.get(
-        SERVICE_IDENTIFIER.AuthenticationService
-    );
-    private fullName: string = "";
-    private medicationStatementHistoryPage: MedicationStatementHistory[] = [];
-    private medicationStatementHistoryTotal: MedicationStatementHistory[] = [];
-    private isLoading: boolean = false;
-    private protectiveWordAttempts: number = 0;
-    private logger: ILogger;
-    private isDataLoaded: boolean = false;
-    private fileMaxRecords: number = 1000;
     @Ref("report")
     readonly report!: HTMLElement;
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
-
     @Ref("pdfGenerator")
     readonly pdfGenerator!: any;
+    @Getter("user", { namespace: "user" })
+    private user!: User;
 
-    @Getter("user", { namespace: "user" }) user!: User;
+    private fullName: string = "";
+    private medicationStatementHistoryPage: MedicationStatementHistory[] = [];
+    private medicationStatementHistoryTotal: MedicationStatementHistory[] = [];
+    private isLoading: boolean = false;
+    private protectiveWordAttempts: number = 0;
+    private logger!: ILogger;
+    private isDataLoaded: boolean = false;
+    private fileMaxRecords: number = 1000;
 
     @Action("getMedicationStatements", { namespace: "medication" })
     getMedicationStatements!: (params: {
@@ -208,7 +207,7 @@ export default class ReportsView extends Vue {
     }
 
     private mounted() {
-        this.logger == container.get(SERVICE_IDENTIFIER.Logger);
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.loadName();
         this.fetchMedicationStatements();
     }
@@ -283,8 +282,13 @@ export default class ReportsView extends Vue {
     }
 
     private loadName(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
+        // Load the user name and current email
+        let authenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        authenticationService.getOidcUserProfile().then((oidcUser) => {
             if (oidcUser) {
+                console.log(oidcUser);
                 this.fullName =
                     oidcUser.given_name + " " + oidcUser.family_name;
             }

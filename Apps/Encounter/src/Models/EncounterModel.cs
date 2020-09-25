@@ -73,10 +73,10 @@ namespace HealthGateway.Encounter.Models
                     Province = model.LocationAddress.Province,
                     City = model.LocationAddress.City,
                     PostalCode = model.LocationAddress.PostalCode,
-                    AddrLine1 = model.LocationAddress.AddrLine1,
-                    AddrLine2 = model.LocationAddress.AddrLine2,
-                    AddrLine3 = model.LocationAddress.AddrLine3,
-                    AddrLine4 = model.LocationAddress.AddrLine4,
+                    AddressLine1 = model.LocationAddress.AddrLine1,
+                    AddressLine2 = model.LocationAddress.AddrLine2,
+                    AddressLine3 = model.LocationAddress.AddrLine3,
+                    AddressLine4 = model.LocationAddress.AddrLine4,
                 },
             };
         }
