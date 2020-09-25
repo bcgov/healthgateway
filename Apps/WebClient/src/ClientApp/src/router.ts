@@ -24,6 +24,10 @@ const UnauthorizedView = () =>
     import(
         /* webpackChunkName: "unauthorized" */ "@/views/errors/unauthorized.vue"
     );
+const IdirLoggedInView = () =>
+    import(
+        /* webpackChunkName: "idirLoggedIn" */ "@/views/errors/idirLoggedIn.vue"
+    );
 const LoginCallbackView = () =>
     import(/* webpackChunkName: "loginCallback" */ "@/views/loginCallback.vue");
 const RegistrationView = () =>
@@ -148,6 +152,11 @@ const routes = [
         component: UnauthorizedView,
         meta: { requiresAuth: false },
     }, // Unauthorized
+    {
+        path: "/idirLoggedIn",
+        component: IdirLoggedInView,
+        meta: { requiresAuth: true },
+    }, // IDIR Logged In warning
     { path: "/*", component: NotFoundView }, // Not found; Will catch all other paths not covered previously
 ];
 
