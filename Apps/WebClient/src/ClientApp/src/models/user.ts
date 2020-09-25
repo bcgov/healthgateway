@@ -11,5 +11,4 @@ export default class User {
     public hasTermsOfServiceUpdated: boolean = false;
     public closedDateTime?: StringISODate;
     public preferences: Dictionary<string> = {};
-    public loggedInWithIDIR: boolean = false;
 }

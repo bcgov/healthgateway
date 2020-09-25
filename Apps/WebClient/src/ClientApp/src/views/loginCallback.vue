@@ -35,30 +35,24 @@ export default class LoginCallbackView extends Vue {
                 this.logger.debug(
                     `oidcSignInCallback for user: ${JSON.stringify(this.user)}`
                 );
-                if (this.user.loggedInWithIDIR) {
-                    this.$router.push({ path: "/idirLoggedIn" });
-                } else {
-                    this.checkRegistration({ hdid: this.user.hdid }).then(
-                        () => {
-                            if (this.userIsRegistered) {
-                                this.$router.push({ path: redirectPath });
-                            } else {
-                                if (redirectPath.startsWith("/registration")) {
-                                    this.$router.push({ path: redirectPath });
-                                } else {
-                                    this.$router.push({
-                                        path: "/registration",
-                                    });
-                                }
-                            }
-                            this.logger.debug(
-                                `checkRegistration RedirectPath: ${JSON.stringify(
-                                    redirectPath
-                                )}`
-                            );
+                this.checkRegistration({ hdid: this.user.hdid }).then(() => {
+                    if (this.userIsRegistered) {
+                        this.$router.push({ path: redirectPath });
+                    } else {
+                        if (redirectPath.startsWith("/registration")) {
+                            this.$router.push({ path: redirectPath });
+                        } else {
+                            this.$router.push({
+                                path: "/registration",
+                            });
                         }
+                    }
+                    this.logger.debug(
+                        `checkRegistration RedirectPath: ${JSON.stringify(
+                            redirectPath
+                        )}`
                     );
-                }
+                });
             })
             .catch((err) => {
                 // Login failed redirect it back to the login page.

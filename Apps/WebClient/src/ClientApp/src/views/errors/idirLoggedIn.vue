@@ -18,7 +18,7 @@ import PageError from "@/models/pageError";
 export default class IdirLoggedInView extends Vue {
     public errorDescription: PageError = new PageError(
         "403",
-        "IDIR Login",
+        "Not BC Services Card login",
         "You've logged in with your IDIR. Please log out and use your BC Services Card."
     );
 }
