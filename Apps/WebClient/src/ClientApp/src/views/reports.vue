@@ -71,7 +71,7 @@
         <div class="d-none">
             <div ref="report">
                 <MedicationHistoryReportComponent
-                    :medication-statement-history="medicationStatementHistory"
+                    :medication-statement-history="medicationStatementHistoryPage"
                     :name="fullName"
                 />
             </div>
@@ -114,11 +114,11 @@ export default class ReportsView extends Vue {
         SERVICE_IDENTIFIER.AuthenticationService
     );
     private fullName: string = "";
-    private medicationStatementHistory: MedicationStatementHistory[] = [];
+    private medicationStatementHistoryPage: MedicationStatementHistory[] = [];
     private medicationStatementHistoryTotal: MedicationStatementHistory[] = [];
     private isLoading: boolean = false;
     private protectiveWordAttempts: number = 0;
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger;
     private isDataLoaded: boolean = false;
     private fileMaxRecords: number = 1000;
     @Ref("report")
@@ -156,7 +156,7 @@ export default class ReportsView extends Vue {
         this.isLoading = true;
 
         // Breaks records into chunks for multiple files.
-        this.medicationStatementHistory = this.medicationStatementHistoryTotal.slice(
+        this.medicationStatementHistoryPage = this.medicationStatementHistoryTotal.slice(
             fileIndex * this.fileMaxRecords,
             (fileIndex + 1) * this.fileMaxRecords
         );
@@ -208,6 +208,7 @@ export default class ReportsView extends Vue {
     }
 
     private mounted() {
+        this.logger == container.get(SERVICE_IDENTIFIER.Logger);
         this.loadName();
         this.fetchMedicationStatements();
     }
@@ -226,11 +227,6 @@ export default class ReportsView extends Vue {
                     this.medicationStatementHistoryTotal =
                         results.resourcePayload;
                     this.sortEntries();
-                    console.log(
-                        this.medicationStatementHistoryTotal[
-                            this.medicationStatementHistoryTotal.length - 1
-                        ]
-                    );
                     this.isDataLoaded = true;
                 } else if (results.resultStatus == ResultType.Protected) {
                     this.protectiveWordModal.showModal();
@@ -268,7 +264,7 @@ export default class ReportsView extends Vue {
     }
 
     private sortEntries() {
-        this.medicationStatementHistory.sort((a, b) =>
+        this.medicationStatementHistoryPage.sort((a, b) =>
             a.dispensedDate > b.dispensedDate
                 ? -1
                 : a.dispensedDate < b.dispensedDate
