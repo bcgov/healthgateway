@@ -68,11 +68,14 @@
             @submit="onProtectiveWordSubmit"
             @cancel="onProtectiveWordCancel"
         />
-
-        <MedicationHistoryReportComponent
-            :medication-statement-history="medicationStatementHistory"
-            :name="fullName"
-        />
+        <div class="d-none">
+            <div ref="report">
+                <MedicationHistoryReportComponent
+                    :medication-statement-history="medicationStatementHistory"
+                    :name="fullName"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -95,7 +98,7 @@ import User from "@/models/user";
 import { ResultType } from "@/constants/resulttype";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { IAuthenticationService } from "@/services/interfaces";
-import html2pdf from "html2pdf";
+import html2pdf from "html2pdf.js";
 
 @Component({
     components: {
@@ -112,10 +115,14 @@ export default class ReportsView extends Vue {
     );
     private fullName: string = "";
     private medicationStatementHistory: MedicationStatementHistory[] = [];
+    private medicationStatementHistoryTotal: MedicationStatementHistory[] = [];
     private isLoading: boolean = false;
     private protectiveWordAttempts: number = 0;
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private isDataLoaded: boolean = false;
+    private fileMaxRecords: number = 1000;
+    @Ref("report")
+    readonly report!: HTMLElement;
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
     @Ref("protectiveWordModal")
@@ -135,33 +142,69 @@ export default class ReportsView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
+    private get totalFiles(): number {
+        return Math.ceil(
+            this.medicationStatementHistoryTotal.length / this.fileMaxRecords
+        );
+    }
+
     private showConfirmationModal() {
         this.messageModal.showModal();
     }
-    private generateMedicationHistoryPdf() {
+    private async generateMedicationHistoryPdf(fileIndex: number = 0) {
         this.logger.debug("generating Medication History PDF...");
         this.isLoading = true;
 
-        html2pdf(this.$refs.document, {
-            margin: 10,
-            filename: "my.pdf",
-            image: { type: "jpeg", quality: 1 },
-            html2canvas: { dpi: 72, letterRendering: true },
-            jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
-            pdfCallback: this.pdfCallback,
-        });
-    }
+        // Breaks records into chunks for multiple files.
+        this.medicationStatementHistory = this.medicationStatementHistoryTotal.slice(
+            fileIndex * this.fileMaxRecords,
+            (fileIndex + 1) * this.fileMaxRecords
+        );
 
-    private pdfCallback(pdfObject) {
-        var number_of_pages = pdfObject.internal.getNumberOfPages();
-        var pdf_pages = pdfObject.internal.pages;
-        var myFooter = "Footer info";
-        for (var i = 1; i < pdf_pages.length; i++) {
-            // We are telling our pdfObject that we are now working on this page
-            pdfObject.setPage(i);
-            // The 10,200 value is only for A4 landscape. You need to define your own for other page sizes
-            pdfObject.text(myFooter, 10, 200);
-        }
+        let opt = {
+            margin: [15, 15],
+            filename: `HealthGateway_MedicationHistory_File${
+                fileIndex + 1
+            }.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { dpi: 96, scale: 1, letterRendering: true },
+            jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
+            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        };
+        html2pdf()
+            .set(opt)
+            .from(this.report)
+            .toPdf()
+            .get("pdf")
+            .then((pdf: any) => {
+                // Add footer with page numbers
+                var totalPages = pdf.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    pdf.setPage(i);
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(150);
+                    pdf.text(
+                        `Page ${i} of ${totalPages} - File ${
+                            fileIndex + 1
+                        } of ${this.totalFiles}`,
+                        pdf.internal.pageSize.getWidth() / 2 - 55,
+                        pdf.internal.pageSize.getHeight() - 10
+                    );
+                }
+            })
+            .save()
+            .output("bloburl")
+            .then((pdfBlobUrl: any) => {
+                fetch(pdfBlobUrl).then((res) => {
+                    res.blob().then(() => {
+                        if (fileIndex + 1 < this.totalFiles) {
+                            this.generateMedicationHistoryPdf(fileIndex + 1);
+                        } else {
+                            this.isLoading = false;
+                        }
+                    });
+                });
+            });
     }
 
     private mounted() {
@@ -180,8 +223,14 @@ export default class ReportsView extends Vue {
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.protectiveWordAttempts = 0;
-                    this.medicationStatementHistory = results.resourcePayload;
+                    this.medicationStatementHistoryTotal =
+                        results.resourcePayload;
                     this.sortEntries();
+                    console.log(
+                        this.medicationStatementHistoryTotal[
+                            this.medicationStatementHistoryTotal.length - 1
+                        ]
+                    );
                     this.isDataLoaded = true;
                 } else if (results.resultStatus == ResultType.Protected) {
                     this.protectiveWordModal.showModal();
