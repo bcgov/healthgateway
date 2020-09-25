@@ -132,7 +132,7 @@ export default class ReportsView extends Vue {
 
     private fullName: string = "";
     private medicationStatementHistoryPage: MedicationStatementHistory[] = [];
-    private medicationStatementHistoryTotal: MedicationStatementHistory[] = [];
+    private medicationStatementHistory: MedicationStatementHistory[] = [];
     private isLoading: boolean = false;
     private protectiveWordAttempts: number = 0;
     private logger!: ILogger;
@@ -141,7 +141,7 @@ export default class ReportsView extends Vue {
 
     private get totalFiles(): number {
         return Math.ceil(
-            this.medicationStatementHistoryTotal.length / this.fileMaxRecords
+            this.medicationStatementHistory.length / this.fileMaxRecords
         );
     }
 
@@ -153,7 +153,7 @@ export default class ReportsView extends Vue {
         this.isLoading = true;
 
         // Breaks records into chunks for multiple files.
-        this.medicationStatementHistoryPage = this.medicationStatementHistoryTotal.slice(
+        this.medicationStatementHistoryPage = this.medicationStatementHistory.slice(
             fileIndex * this.fileMaxRecords,
             (fileIndex + 1) * this.fileMaxRecords
         );
@@ -221,8 +221,7 @@ export default class ReportsView extends Vue {
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.protectiveWordAttempts = 0;
-                    this.medicationStatementHistoryTotal =
-                        results.resourcePayload;
+                    this.medicationStatementHistory = results.resourcePayload;
                     this.sortEntries();
                     this.isDataLoaded = true;
                 } else if (results.resultStatus == ResultType.Protected) {
