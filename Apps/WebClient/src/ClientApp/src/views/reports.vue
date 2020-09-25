@@ -122,6 +122,13 @@ export default class ReportsView extends Vue {
     readonly pdfGenerator!: any;
     @Getter("user", { namespace: "user" })
     private user!: User;
+    @Action("getMedicationStatements", { namespace: "medication" })
+    private getMedicationStatements!: (params: {
+        hdid: string;
+        protectiveWord?: string;
+    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
+    @Action("addError", { namespace: "errorBanner" })
+    private addError!: (error: BannerError) => void;
 
     private fullName: string = "";
     private medicationStatementHistoryPage: MedicationStatementHistory[] = [];
@@ -131,15 +138,6 @@ export default class ReportsView extends Vue {
     private logger!: ILogger;
     private isDataLoaded: boolean = false;
     private fileMaxRecords: number = 1000;
-
-    @Action("getMedicationStatements", { namespace: "medication" })
-    getMedicationStatements!: (params: {
-        hdid: string;
-        protectiveWord?: string;
-    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
-
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
 
     private get totalFiles(): number {
         return Math.ceil(
