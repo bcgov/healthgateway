@@ -40,7 +40,7 @@ namespace HealthGateway.Database.Migrations
                 ALTER TABLE {schema}.""Communication"" DROP CONSTRAINT unique_date_range";
 
             string constraint2 = @$"
-                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&) AND CHECK(""CommunicationStatusCode"" = ""Banner"" )";
+                ALTER TABLE {schema}.""Communication"" ADD CONSTRAINT unique_date_range EXCLUDE USING gist (tsrange(""EffectiveDateTime"", ""ExpiryDateTime"") WITH &&)";
 
             migrationBuilder.Sql(constraint1);
             migrationBuilder.Sql(constraint2);
