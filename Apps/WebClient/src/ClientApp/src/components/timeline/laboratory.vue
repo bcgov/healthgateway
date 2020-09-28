@@ -198,10 +198,19 @@ $radius: 15px;
                                         <strong>What to expect next</strong>
                                         <p>
                                             If you receive a positive COVID-19
-                                            result, expect a phone call from
-                                            your care provider or a public
-                                            health official for next steps.
+                                            result:
                                         </p>
+                                        <ul>
+                                            <li>
+                                                Public health will contact you
+                                                soon with instructions
+                                            </li>
+                                            <li>
+                                                Wait before notifying others
+                                                until you've been briefed
+                                            </li>
+                                            <li>Self-isolate and stay calm</li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
