@@ -24,4 +24,4 @@ declare module "vue-loading-overlay";
 declare module "vue-fullcalendar";
 declare module "vue-content-placeholders";
 declare module "vue-clickaway";
-declare module "vue-html2pdf";
+declare module "html2pdf.js";
