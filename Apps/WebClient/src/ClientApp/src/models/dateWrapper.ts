@@ -51,7 +51,6 @@ export class DateWrapper {
                 if (param.includes("z")) {
                     this._internal_date = DateTime.fromISO(param);
                 } else if (isUtc) {
-                    console.log("Is utc!");
                     this._internal_date = DateTime.fromISO(param, {
                         zone: "utc",
                     }).setZone("America/Vancouver");
