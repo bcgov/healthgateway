@@ -131,10 +131,10 @@ export default class HeaderComponent extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
-    @Getter("isBcscLogin", {
+    @Getter("isValidIdentityProvider", {
         namespace: auth,
     })
-    isBcscLogin!: boolean;
+    isValidIdentityProvider!: boolean;
 
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
@@ -169,7 +169,7 @@ export default class HeaderComponent extends Vue {
     }
 
     private handleLogoutClick() {
-        if (this.isBcscLogin) {
+        if (this.isValidIdentityProvider) {
             this.showRating();
         } else {
             this.processLogout();
