@@ -19,6 +19,48 @@
                         </div>
                     </b-col>
                 </b-row>
+                		<b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >September 28, 2020 - v1.2.7.3 - Bug Fix for Record Details
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We fixed a bug which was causing record details to collapse 
+					when trying to expand. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+		<b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >September 25, 2020 - v1.2.7.2 - Medication History Report Bug Fix
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We fixed a bug causing reports with large numbers of medication
+					records to generate blank pdf reports. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
