@@ -60,9 +60,9 @@ export const getters: GetterTree<AuthState, RootState> = {
     oidcError(state: AuthState): any {
         return state.error;
     },
-    isBcscLogin(state: AuthState): boolean {
+    isValidIdentityProvider(state: AuthState): boolean {
         return state.authentication === undefined
             ? false
-            : state.authentication.identityProvider === "BCSC";
+            : state.authentication.identityProvider !== "IDIR";
     },
 };
