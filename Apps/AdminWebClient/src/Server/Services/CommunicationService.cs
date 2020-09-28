@@ -74,7 +74,16 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<Communication> Update(Communication communication)
         {
-            if (ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
+            if (communication.CommunicationTypeCode == CommunicationType.Banner && !ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
+            {
+                return new RequestResult<Communication>()
+                {
+                    ResourcePayload = null,
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Effective Date should be before Expiry Date.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
+            else
             {
                 this.logger.LogTrace($"Updating communication... {JsonSerializer.Serialize(communication)}");
 
@@ -84,15 +93,6 @@ namespace HealthGateway.Admin.Services
                     ResourcePayload = new Communication(dbResult.Payload),
                     ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
                     ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
-                };
-            }
-            else
-            {
-                return new RequestResult<Communication>()
-                {
-                    ResourcePayload = null,
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Effective Date should be before Expiry Date.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
                 };
             }
         }
@@ -134,7 +134,7 @@ namespace HealthGateway.Admin.Services
             return result;
         }
 
-        private static bool ValidateDates(DateTime effectiveDate, DateTime expiryDate)
+        private static bool ValidateDates(DateTime? effectiveDate, DateTime? expiryDate)
         {
             if (effectiveDate > expiryDate)
             {
