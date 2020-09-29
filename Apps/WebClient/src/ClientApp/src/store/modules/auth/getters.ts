@@ -60,4 +60,9 @@ export const getters: GetterTree<AuthState, RootState> = {
     oidcError(state: AuthState): any {
         return state.error;
     },
+    isValidIdentityProvider(state: AuthState): boolean {
+        return state.authentication === undefined
+            ? false
+            : state.authentication.identityProvider !== "IDIR";
+    },
 };
