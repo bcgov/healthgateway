@@ -54,13 +54,14 @@ namespace HealthGateway.Admin.Services
                 {
                     throw new ArgumentException("One of: Email Subject, Email Content is invalid.");
                 }
+
                 communication.EffectiveDateTime = DateTime.Now;
                 communication.ExpiryDateTime = DateTime.Now;
             }
 
             this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
 
-            if (communication.effectiveDate < communication.exipiryDate)
+            if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
                 this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
                 DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Add(communication.ToDbModel());
@@ -85,7 +86,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc />
         public RequestResult<Communication> Update(Communication communication)
         {
-            if (communication.EffectiveDate < communication.ExpiryDate)
+            if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
                 this.logger.LogTrace($"Updating communication... {JsonSerializer.Serialize(communication)}");
 
