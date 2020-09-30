@@ -57,6 +57,33 @@ const ContactUsView = () =>
 
 Vue.use(VueRouter);
 
+enum UserState {
+    unauthenticated = "unauthenticated",
+    notRegistered = "notRegistered",
+    registered = "registered",
+    pendingDeletion = "pendingDeletion",
+    invalidLogin = "invalidLogin",
+}
+
+function calculateUserState() {
+    let isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
+    let isValid: boolean = store.getters["auth/isValidIdentityProvider"];
+    let isRegistered: boolean = store.getters["user/userIsRegistered"];
+    let userIsActive: boolean = store.getters["user/userIsActive"];
+
+    if (!isAuthenticated) {
+        return UserState.unauthenticated;
+    } else if (!isValid) {
+        return UserState.invalidLogin;
+    } else if (!isRegistered) {
+        return UserState.notRegistered;
+    } else if (!userIsActive) {
+        return UserState.pendingDeletion;
+    } else {
+        return UserState.registered;
+    }
+}
+
 const REGISTRATION_PATH = "/registration";
 const REGISTRATION_INFO_PATH = "/registrationInfo";
 
@@ -64,12 +91,9 @@ const routes = [
     {
         path: "/",
         component: LandingView,
-        meta: { requiresAuth: false },
-    },
-    {
-        path: "/release-notes",
-        component: ReleaseNotesView,
-        meta: { requiresAuth: false },
+        meta: {
+            validStates: [UserState.unauthenticated, UserState.registered],
+        },
     },
     {
         path: REGISTRATION_INFO_PATH,
@@ -78,7 +102,9 @@ const routes = [
             inviteKey: route.query.inviteKey,
             email: route.query.email,
         }),
-        meta: { requiresAuth: false },
+        meta: {
+            validStates: [UserState.unauthenticated, UserState.notRegistered],
+        },
     },
     {
         path: REGISTRATION_PATH,
@@ -87,43 +113,68 @@ const routes = [
             inviteKey: route.query.inviteKey,
             inviteEmail: route.query.email,
         }),
-        meta: { requiresAuth: true },
+        meta: { validStates: [UserState.notRegistered] },
     },
     {
         path: "/validateEmail/:inviteKey",
         component: ValidateEmailView,
         props: true,
-        meta: { requiresAuth: true },
+        meta: { validStates: [UserState.registered] },
     },
     {
         path: "/profile",
         component: ProfileView,
-        meta: { requiresRegistration: true, roles: ["user"] },
+        meta: {
+            validStates: [UserState.registered, UserState.pendingDeletion],
+        },
     },
     {
         path: "/timeline",
         component: TimelineView,
-        meta: { requiresRegistration: true, roles: ["user"] },
+        meta: { validStates: [UserState.registered] },
     },
     {
         path: "/healthInsights",
         component: HealthInsightsView,
-        meta: { requiresRegistration: true, roles: ["user"] },
+        meta: { validStates: [UserState.registered] },
     },
     {
         path: "/reports",
         component: ReportsView,
-        meta: { requiresRegistration: true, roles: ["user"] },
+        meta: { validStates: [UserState.registered] },
     },
     {
         path: "/termsOfService",
         component: TermsOfServiceView,
-        meta: { requiresAuth: false, roles: ["user"] },
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+        },
+    },
+    {
+        path: "/release-notes",
+        component: ReleaseNotesView,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+        },
     },
     {
         path: "/contact-us",
         component: ContactUsView,
-        meta: { requiresAuth: false },
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+        },
     },
     {
         path: "/login",
@@ -131,33 +182,39 @@ const routes = [
         props: (route: Route) => ({
             isRetry: route.query.isRetry,
         }),
-        meta: { requiresAuth: false, roles: ["user"] },
+        meta: { validStates: [UserState.unauthenticated] },
     },
     {
         path: "/loginCallback",
         component: LoginCallbackView,
         meta: {
-            requiresAuth: false,
-            roles: ["user"],
             routeIsOidcCallback: true,
+            stateless: true,
         },
     },
     {
         path: "/logout",
         component: LogoutView,
-        meta: { requiresAuth: false },
+        meta: { stateless: true },
     },
-    {
-        path: "/unauthorized",
-        component: UnauthorizedView,
-        meta: { requiresAuth: false },
-    }, // Unauthorized
     {
         path: "/idirLoggedIn",
         component: IdirLoggedInView,
-        meta: { requiresAuth: true },
+        meta: { validStates: [UserState.invalidLogin] },
     }, // IDIR Logged In warning
-    { path: "/*", component: NotFoundView }, // Not found; Will catch all other paths not covered previously
+    {
+        path: "/unauthorized",
+        component: UnauthorizedView,
+        meta: { stateless: true },
+    }, // Unauthorized
+
+    {
+        path: "/*",
+        component: NotFoundView,
+        meta: {
+            stateless: true,
+        },
+    }, // Not found; Will catch all other paths not covered previously
 ];
 
 const router = new VueRouter({
@@ -171,34 +228,29 @@ router.beforeEach(async (to, from, next) => {
             from.fullPath
         )}; to.fullPath: ${JSON.stringify(to.fullPath)}`
     );
-    if (to.meta.requiresAuth || to.meta.requiresRegistration) {
-        store.dispatch("auth/oidcCheckAccess", to).then((isAuthorized) => {
-            if (!isAuthorized) {
-                next({ path: "/login", query: { redirect: to.fullPath } });
-            } else {
-                handleUserIsAuthorized(to, from, next);
-            }
-        });
+    if (to.meta.routeIsOidcCallback || to.meta.stateless) {
+        next();
     } else {
-        const userIsAuthenticated: boolean =
-            store.getters["auth/oidcIsAuthenticated"];
-        const userIsRegistered: boolean =
-            store.getters["user/userIsRegistered"];
-
-        // If the user is authenticated but not registered, the registration must be completed
-        const isRegistrationPath =
-            to.path.startsWith(REGISTRATION_PATH) ||
-            to.path.startsWith(REGISTRATION_INFO_PATH);
-        if (
-            userIsAuthenticated &&
-            !userIsRegistered &&
-            !to.meta.routeIsOidcCallback &&
-            !to.path.startsWith("/logout") &&
-            !isRegistrationPath
-        ) {
-            next({ path: REGISTRATION_PATH });
-        } else {
+        // Make sure that the route accepts the current state
+        let currentUserState = calculateUserState();
+        logger.debug(`current state: ${currentUserState}`);
+        if (to.meta.validStates.includes(currentUserState)) {
             next();
+        } else {
+            // If the route does not accept the state, go to one of the default locations
+            if (currentUserState === UserState.pendingDeletion) {
+                next({ path: "/profile" });
+            } else if (currentUserState === UserState.registered) {
+                next({ path: "/timeline" });
+            } else if (currentUserState === UserState.notRegistered) {
+                next({ path: REGISTRATION_PATH });
+            } else if (currentUserState === UserState.invalidLogin) {
+                next({ path: "/idirLoggedIn" });
+            } else if (currentUserState === UserState.unauthenticated) {
+                next({ path: "/login" });
+            } else {
+                next({ path: "/unauthorized" });
+            }
         }
     }
 });
@@ -206,26 +258,5 @@ router.beforeEach(async (to, from, next) => {
 router.afterEach((to, from) => {
     window.snowplow("trackPageView");
 });
-
-function handleUserIsAuthorized(to: Route, from: Route, next: any) {
-    const userIsRegistered: boolean = store.getters["user/userIsRegistered"];
-    const userIsActive: boolean = store.getters["user/userIsActive"];
-
-    // If the user is registerd and is attempting to go to the registration flow pages, re-route to the timeline.
-    if (userIsRegistered && to.path.startsWith(REGISTRATION_PATH)) {
-        next({ path: "/timeline", replace: true });
-    } else if (
-        userIsRegistered &&
-        !userIsActive &&
-        !to.path.startsWith("/termsOfService") &&
-        !to.path.startsWith("/profile")
-    ) {
-        next({ path: "/profile" });
-    } else if (to.meta.requiresRegistration && !userIsRegistered) {
-        next({ path: REGISTRATION_PATH });
-    } else {
-        next();
-    }
-}
 
 export default router;

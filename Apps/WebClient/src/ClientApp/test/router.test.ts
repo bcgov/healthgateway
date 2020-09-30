@@ -23,7 +23,6 @@ describe("Router", () => {
         expect(result.resolved.matched[0].components.default.name).toBe(
             ProfileComponent.name
         );
-        expect(result.route.meta.requiresRegistration).toBe(true);
     });
 
     test("has registration route", () => {
