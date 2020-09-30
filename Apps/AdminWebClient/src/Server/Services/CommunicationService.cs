@@ -54,27 +54,38 @@ namespace HealthGateway.Admin.Services
                 {
                     throw new ArgumentException("One of: Email Subject, Email Content is invalid.");
                 }
-
                 communication.EffectiveDateTime = DateTime.Now;
                 communication.ExpiryDateTime = DateTime.Now;
             }
 
             this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
 
-            DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Add(communication.ToDbModel());
-            RequestResult<Communication> requestResult = new RequestResult<Communication>()
+            if (communication.effectiveDate < communication.exipiryDate)
             {
-                ResourcePayload = new Communication(dbResult.Payload),
-                ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
-            };
-            return requestResult;
+                this.logger.LogTrace($"Adding communication... {JsonSerializer.Serialize(communication)}");
+                DBResult<HealthGateway.Database.Models.Communication> dbResult = this.communicationDelegate.Add(communication.ToDbModel());
+                return new RequestResult<Communication>()
+                {
+                    ResourcePayload = new Communication(dbResult.Payload),
+                    ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                    ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                };
+            }
+            else
+            {
+                return new RequestResult<Communication>()
+                {
+                    ResourcePayload = null,
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Effective Date should be before Expiry Date.", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
         }
 
         /// <inheritdoc />
         public RequestResult<Communication> Update(Communication communication)
         {
-            if (ValidateDates(communication.EffectiveDateTime, communication.ExpiryDateTime))
+            if (communication.EffectiveDate < communication.ExpiryDate)
             {
                 this.logger.LogTrace($"Updating communication... {JsonSerializer.Serialize(communication)}");
 
@@ -132,18 +143,6 @@ namespace HealthGateway.Admin.Services
                 ResultError = dbResult.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
-        }
-
-        private static bool ValidateDates(DateTime effectiveDate, DateTime expiryDate)
-        {
-            if (effectiveDate > expiryDate)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
         }
     }
 }
