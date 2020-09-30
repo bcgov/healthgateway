@@ -59,7 +59,7 @@ Vue.use(VueRouter);
 
 enum UserState {
     unauthenticated = "unauthenticated",
-    unregistered = "unregistered",
+    notRegistered = "notRegistered",
     registered = "registered",
     pendingDeletion = "pendingDeletion",
     invalidLogin = "invalidLogin",
@@ -76,7 +76,7 @@ function calculateUserState() {
     } else if (!isValid) {
         return UserState.invalidLogin;
     } else if (!isRegistered) {
-        return UserState.unregistered;
+        return UserState.notRegistered;
     } else if (!userIsActive) {
         return UserState.pendingDeletion;
     } else {
@@ -103,7 +103,7 @@ const routes = [
             email: route.query.email,
         }),
         meta: {
-            validStates: [UserState.unauthenticated, UserState.unregistered],
+            validStates: [UserState.unauthenticated, UserState.notRegistered],
         },
     },
     {
@@ -113,7 +113,7 @@ const routes = [
             inviteKey: route.query.inviteKey,
             inviteEmail: route.query.email,
         }),
-        meta: { validStates: [UserState.unregistered] },
+        meta: { validStates: [UserState.notRegistered] },
     },
     {
         path: "/validateEmail/:inviteKey",
@@ -242,7 +242,7 @@ router.beforeEach(async (to, from, next) => {
                 next({ path: "/profile" });
             } else if (currentUserState === UserState.registered) {
                 next({ path: "/timeline" });
-            } else if (currentUserState === UserState.unregistered) {
+            } else if (currentUserState === UserState.notRegistered) {
                 next({ path: REGISTRATION_PATH });
             } else if (currentUserState === UserState.invalidLogin) {
                 next({ path: "/idirLoggedIn" });
