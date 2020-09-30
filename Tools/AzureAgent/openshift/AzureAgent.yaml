@@ -182,6 +182,7 @@ objects:
           from:
             kind: ImageStreamTag
             name: '${NAME}:latest'
+            namespace: ${TOOLS_NAMESPACE}
         type: ImageChange
 
 parameters:
@@ -225,3 +226,7 @@ parameters:
   name: AZ_DEVOPS_WORK_DIR
   required: true
   value: /opt/az/_work
+- name: TOOLS_NAMESPACE
+  displayName: Tools Project Namespace
+  description: The namespace of the tools project
+  value: q6qfzk-tools  

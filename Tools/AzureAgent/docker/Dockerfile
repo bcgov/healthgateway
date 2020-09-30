@@ -22,6 +22,7 @@ RUN  export DEBIAN_FRONTEND=noninteractive && \
     rm packages-microsoft-prod.deb && \
     apt-get update -y && \ 
     apt-get install -y dotnet-sdk-${DOTNET_VERSION} && \
+    apt-get install -y postgresql-client && \
     ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
 
