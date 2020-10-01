@@ -47,8 +47,6 @@ class ClinicViewModel {
             model.addressLine3,
             model.addressLine4,
         ];
-        console.log(addressArray.filter((val) => val.length > 0).join(" "));
-
         this.address =
             addressArray.filter((val) => val.length > 0).join(" ") +
             ", " +

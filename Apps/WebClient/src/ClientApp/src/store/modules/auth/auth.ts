@@ -3,11 +3,10 @@ import { getters } from "./getters";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
 import { AuthState, RootState, StateType } from "@/models/storeState";
-import AuthenticationData from "@/models/authenticationData";
 
 export const state: AuthState = {
     statusMessage: "",
-    authentication: new AuthenticationData(),
+    authentication: { isChecked: false, identityProvider: "" },
     error: undefined,
     isAuthenticated: false,
     stateType: StateType.NONE,

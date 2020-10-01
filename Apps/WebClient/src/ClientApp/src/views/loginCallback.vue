@@ -42,7 +42,9 @@ export default class LoginCallbackView extends Vue {
                         if (redirectPath.startsWith("/registration")) {
                             this.$router.push({ path: redirectPath });
                         } else {
-                            this.$router.push({ path: "/registration" });
+                            this.$router.push({
+                                path: "/registration",
+                            });
                         }
                     }
                     this.logger.debug(
