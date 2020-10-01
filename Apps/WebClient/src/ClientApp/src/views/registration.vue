@@ -402,6 +402,7 @@ export default class RegistrationView extends Vue {
                                     !waitlistedSuccessfully
                                 "
                                 id="waitlistEditEmail"
+                                data-testid="makeWaitlistEdditableBtn"
                                 class="mx-auto"
                                 variant="link"
                                 @click="makeWaitlistEdditable()"
@@ -411,6 +412,7 @@ export default class RegistrationView extends Vue {
                                 <b-form-input
                                     id="waitlistEmail"
                                     v-model="$v.email.$model"
+                                    data-testid="waitlistEmailInput"
                                     type="email"
                                     placeholder="Your email address"
                                     :disabled="!waitlistEdditable"
@@ -440,6 +442,7 @@ export default class RegistrationView extends Vue {
                             <b-form-input
                                 id="waitlistEmailConfirmation"
                                 v-model="$v.emailConfirmation.$model"
+                                data-testid="waitlistEmailConfirmationInput"
                                 type="email"
                                 placeholder="Confirm your email address"
                                 :state="isValid($v.emailConfirmation)"
@@ -458,13 +461,15 @@ export default class RegistrationView extends Vue {
                         <b-col class="text-right">
                             <b-button
                                 v-if="waitlistTempEmail"
-                                id="cancelBtn"
+                                id="cancelWaitlistEditBtn"
+                                data-testid="cancelWaitlistEditBtn"
                                 class="mx-2 actionButton"
                                 @click="cancelWaitlistEdit()"
                                 >Cancel
                             </b-button>
                             <b-button
-                                id="saveBtn"
+                                id="saveWaitlistEditBtn"
+                                data-testid="saveWaitlistEditBtn"
                                 variant="primary"
                                 class="mx-2 actionButton"
                                 :disabled="waitlistTempEmail === email"
@@ -515,8 +520,9 @@ export default class RegistrationView extends Vue {
                             </b-col>
                         </b-row>
                         <b-form-input
-                            id="email"
+                            id="emailInput"
                             v-model="$v.email.$model"
+                            data-testid="emailInput"
                             type="email"
                             placeholder="Your email address"
                             :disabled="isPredefinedEmail || !isEmailChecked"
@@ -530,8 +536,9 @@ export default class RegistrationView extends Vue {
                 <b-row v-if="!isPredefinedEmail" class="mb-3">
                     <b-col>
                         <b-form-input
-                            id="emailConfirmation"
+                            id="emailConfirmationInput"
                             v-model="$v.emailConfirmation.$model"
+                            data-testid="emailConfirmationInput"
                             type="email"
                             placeholder="Confirm your email address"
                             :disabled="!isEmailChecked"
