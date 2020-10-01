@@ -567,8 +567,9 @@ export default class RegistrationView extends Vue {
                             </b-col>
                         </b-row>
                         <b-form-input
-                            id="smsNumber"
+                            id="smsNumberInput"
                             v-model="$v.smsNumber.$model"
+                            data-testid="smsNumberInput"
                             class="d-flex"
                             type="text"
                             placeholder="Your phone number"
