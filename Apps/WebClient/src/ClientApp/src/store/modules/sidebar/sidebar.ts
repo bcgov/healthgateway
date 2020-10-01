@@ -8,7 +8,7 @@ export const state: SidebarState = {
     isOpen: false,
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const sidebar: Module<SidebarState, RootState> = {
     namespaced,

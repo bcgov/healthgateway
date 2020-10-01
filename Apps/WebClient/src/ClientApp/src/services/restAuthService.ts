@@ -57,9 +57,8 @@ export class RestAuthenticationService implements IAuthenticationService {
         this.http = httpDelegate;
         this.authorityUri = config.authority;
         this.oidcUserManager = new UserManager(oidcConfig);
-        let seft = this;
-        this.oidcUserManager.events.addAccessTokenExpiring(function () {
-            seft.logger.debug("Token expiring...");
+        this.oidcUserManager.events.addAccessTokenExpiring(() => {
+            this.logger.debug("Token expiring...");
         });
     }
 

@@ -18,7 +18,7 @@ export class RestUserCommentService implements IUserCommentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_COMMENT_BASE_URI: string = "/v1/api/Comment";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     public initialize(
         config: ExternalConfiguration,

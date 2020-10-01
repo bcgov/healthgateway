@@ -1,36 +1,83 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.calendar-header {
-    padding-bottom: 15px;
+<script lang="ts">
+import Vue from "vue";
+import EventBus from "@/eventbus";
+import { Component, Prop, Watch } from "vue-property-decorator";
+import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
+import CalendarBody from "./body.vue";
+import { DateGroup } from "@/models/timelineEntry";
+import { DateWrapper } from "@/models/dateWrapper";
 
-    .btn-outline-primary {
-        font-size: 2em;
-        background-color: white;
-    }
-    .btn-outline-primary:focus {
-        color: $primary;
-        background-color: white;
-    }
-    .btn-outline-primary:hover {
-        color: white;
-        background-color: $primary;
-    }
-    .btn-outline-primary:active {
-        color: white;
+@Component({
+    components: {
+        CalendarBody,
+        MonthYearPickerComponent,
+    },
+})
+export default class CalendarComponent extends Vue {
+    @Prop() currentMonth!: DateWrapper;
+    @Prop() availableMonths!: DateWrapper[];
+
+    private monthIndex = 0;
+    private headerDate: DateWrapper = new DateWrapper();
+    private eventBus = EventBus;
+    private leftIcon = "chevron-left";
+    private rightIcon = "chevron-right";
+
+    private get hasAvailableMonths() {
+        return this.availableMonths.length > 0;
     }
 
-    .arrow-icon {
-        font-size: 1em;
+    @Watch("currentMonth")
+    public onCurrentMonthChange(currentMonth: DateWrapper): void {
+        this.dateSelected(currentMonth);
     }
-    .left-button {
-        border-radius: 5px 0px 0px 5px;
-        border-right: 0px;
+
+    @Watch("availableMonths")
+    public onAvailableMonthsChange(): void {
+        if (this.monthIndex !== this.availableMonths.length - 1) {
+            this.monthIndex = this.availableMonths.length - 1;
+        } else {
+            this.onMonthIndexChange();
+        }
     }
-    .right-button {
-        border-radius: 0px 5px 5px 0px;
+
+    @Watch("monthIndex")
+    public onMonthIndexChange(): void {
+        this.headerDate = this.availableMonths[this.monthIndex];
+        this.dispatchEvent();
+    }
+
+    private created() {
+        this.dispatchEvent();
+    }
+
+    private previousMonth() {
+        if (this.monthIndex > 0) {
+            this.monthIndex -= 1;
+        }
+    }
+
+    private nextMonth() {
+        if (this.monthIndex + 1 < this.availableMonths.length) {
+            this.monthIndex += 1;
+        }
+    }
+
+    private dateSelected(date: DateWrapper) {
+        this.monthIndex = this.availableMonths.findIndex(
+            (d) => d.year() === date.year() && d.month() === date.month()
+        );
+    }
+
+    private dispatchEvent() {
+        if (this.headerDate) {
+            let firstMonthDate = this.headerDate.startOf("month");
+            this.$emit("update:currentMonth", firstMonthDate);
+        }
     }
 }
-</style>
+</script>
+
 <template>
     <b-row class="calendar-header">
         <b-col cols="col-sm-auto" class="p-0">
@@ -70,82 +117,37 @@
         </b-col>
     </b-row>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import EventBus from "@/eventbus";
-import { Component, Prop, Watch } from "vue-property-decorator";
-import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
-import CalendarBody from "./body.vue";
-import { DateGroup } from "@/models/timelineEntry";
-import { DateWrapper } from "@/models/dateWrapper";
 
-@Component({
-    components: {
-        CalendarBody,
-        MonthYearPickerComponent,
-    },
-})
-export default class CalendarComponent extends Vue {
-    @Prop() currentMonth!: DateWrapper;
-    @Prop() availableMonths!: DateWrapper[];
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.calendar-header {
+    padding-bottom: 15px;
 
-    private monthIndex: number = 0;
-    private headerDate: DateWrapper = new DateWrapper();
-    private eventBus = EventBus;
-    private leftIcon: string = "chevron-left";
-    private rightIcon: string = "chevron-right";
-
-    private get hasAvailableMonths() {
-        return this.availableMonths.length > 0;
+    .btn-outline-primary {
+        font-size: 2em;
+        background-color: white;
+    }
+    .btn-outline-primary:focus {
+        color: $primary;
+        background-color: white;
+    }
+    .btn-outline-primary:hover {
+        color: white;
+        background-color: $primary;
+    }
+    .btn-outline-primary:active {
+        color: white;
     }
 
-    @Watch("currentMonth")
-    public onCurrentMonthChange(currentMonth: DateWrapper) {
-        this.dateSelected(currentMonth);
+    .arrow-icon {
+        font-size: 1em;
     }
-
-    @Watch("availableMonths")
-    public onAvailableMonthsChange() {
-        if (this.monthIndex !== this.availableMonths.length - 1) {
-            this.monthIndex = this.availableMonths.length - 1;
-        } else {
-            this.onMonthIndexChange();
-        }
+    .left-button {
+        border-radius: 5px 0px 0px 5px;
+        border-right: 0px;
     }
-
-    @Watch("monthIndex")
-    public onMonthIndexChange() {
-        this.headerDate = this.availableMonths[this.monthIndex];
-        this.dispatchEvent();
-    }
-
-    private created() {
-        this.dispatchEvent();
-    }
-
-    private previousMonth() {
-        if (this.monthIndex > 0) {
-            this.monthIndex -= 1;
-        }
-    }
-
-    private nextMonth() {
-        if (this.monthIndex + 1 < this.availableMonths.length) {
-            this.monthIndex += 1;
-        }
-    }
-
-    private dateSelected(date: DateWrapper) {
-        this.monthIndex = this.availableMonths.findIndex(
-            (d) => d.year() === date.year() && d.month() === date.month()
-        );
-    }
-
-    private dispatchEvent() {
-        if (this.headerDate) {
-            let firstMonthDate = this.headerDate.startOf("month");
-            this.$emit("update:currentMonth", firstMonthDate);
-        }
+    .right-button {
+        border-radius: 0px 5px 5px 0px;
     }
 }
-</script>
+</style>

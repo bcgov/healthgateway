@@ -1,3 +1,8 @@
+<script lang="ts">
+import Vue from "vue";
+export default Vue.extend({});
+</script>
+
 <template>
     <b-navbar toggleable="lg" type="dark">
         <!-- Navbar content -->
@@ -23,8 +28,3 @@
         </b-navbar-nav>
     </b-navbar>
 </template>
-
-<script lang="ts">
-import Vue from "vue";
-export default Vue.extend({});
-</script>

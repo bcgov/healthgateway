@@ -6,12 +6,12 @@ import { LaboratoryState, RootState, StateType } from "@/models/storeState";
 
 export const state: LaboratoryState = {
     statusMessage: "",
-    laboratoryOrders: new Array(),
+    laboratoryOrders: [],
     error: false,
     stateType: StateType.NONE,
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const laboratory: Module<LaboratoryState, RootState> = {
     namespaced,

@@ -1,3 +1,68 @@
+<script lang="ts">
+import Vue from "vue";
+import { Component, Prop, Emit } from "vue-property-decorator";
+import { ILogger, IUserRatingService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { Action, Getter } from "vuex-class";
+import { WebClientConfiguration } from "@/models/configData";
+
+@Component
+export default class RatingComponent extends Vue {
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
+    private question =
+        "Did the Health Gateway improve your access to health information today? Please provide a rating.";
+    private ratingValue = 0;
+    private isVisible = false;
+    private logger!: ILogger;
+
+    public mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
+    public showModal() {
+        this.isVisible = true;
+        setTimeout(() => {
+            if (this.isVisible) {
+                this.handleRating(0, true);
+            }
+        }, Number(this.config.timeouts!.logoutRedirect));
+    }
+
+    public hideModal() {
+        this.isVisible = false;
+    }
+
+    private handleRating(value: number, skip = false) {
+        const ratingService: IUserRatingService = container.get(
+            SERVICE_IDENTIFIER.UserRatingService
+        );
+        this.logger.debug(
+            `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
+        );
+        ratingService
+            .submitRating({ ratingValue: value, skip: skip })
+            .then(() => {
+                this.logger.debug(`submitRating with success.`);
+            })
+            .catch((err) => {
+                this.logger.error(`submitRating with error: ${err}`);
+            })
+            .finally(() => {
+                this.hideModal();
+                this.onClose();
+            });
+    }
+
+    @Emit()
+    public onClose() {
+        return;
+    }
+}
+</script>
+
 <template>
     <div>
         <b-modal
@@ -32,7 +97,7 @@
                     ></b-form-rating>
                 </b-col>
             </b-row>
-            <template v-slot:modal-footer>
+            <template #modal-footer>
                 <b-row>
                     <b-col>
                         <b-button
@@ -48,67 +113,3 @@
         </b-modal>
     </div>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop, Emit } from "vue-property-decorator";
-import { ILogger, IUserRatingService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { Action, Getter } from "vuex-class";
-import { WebClientConfiguration } from "@/models/configData";
-
-@Component
-export default class RatingComponent extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    private question: string =
-        "Did the Health Gateway improve your access to health information today? Please provide a rating.";
-    private ratingValue: number = 0;
-    private isVisible: boolean = false;
-    private logger!: ILogger;
-
-    public mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    public showModal() {
-        this.isVisible = true;
-        setTimeout(() => {
-            if (this.isVisible) {
-                this.handleRating(0, true);
-            }
-        }, Number(this.config.timeouts!.logoutRedirect));
-    }
-
-    public hideModal() {
-        this.isVisible = false;
-    }
-
-    private handleRating(value: number, skip: boolean = false) {
-        const ratingService: IUserRatingService = container.get(
-            SERVICE_IDENTIFIER.UserRatingService
-        );
-        this.logger.debug(
-            `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
-        );
-        ratingService
-            .submitRating({ ratingValue: value, skip: skip })
-            .then(() => {
-                this.logger.debug(`submitRating with success.`);
-            })
-            .catch((err) => {
-                this.logger.error(`submitRating with error: ${err}`);
-            })
-            .finally(() => {
-                this.hideModal();
-                this.onClose();
-            });
-    }
-
-    @Emit()
-    public onClose() {
-        return;
-    }
-}
-</script>

@@ -1,14 +1,74 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import UserComment from "@/models/userComment";
+import User from "@/models/user";
+import { Getter } from "vuex-class";
+import { Component, Emit, Prop } from "vue-property-decorator";
+import { IconDefinition, faLock } from "@fortawesome/free-solid-svg-icons";
+import { ILogger, IUserCommentService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { DateWrapper } from "@/models/dateWrapper";
 
-.comment-input-style:not(:focus) {
-    background-color: $soft_background;
-}
+@Component
+export default class AddCommentComponent extends Vue {
+    @Getter("user", { namespace: "user" }) user!: User;
+    @Prop() comment!: UserComment;
+    private commentInput = "";
 
-.single-line {
-    height: 38px !important;
+    private logger!: ILogger;
+    private commentService!: IUserCommentService;
+
+    private isSaving = false;
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.commentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
+    }
+
+    private get lockIcon(): IconDefinition {
+        return faLock;
+    }
+
+    private onSubmit(): void {
+        this.addComment();
+    }
+
+    private addComment(): void {
+        this.isSaving = true;
+        this.commentService
+            .createComment({
+                text: this.commentInput,
+                parentEntryId: this.comment.parentEntryId,
+                userProfileId: this.user.hdid,
+                version: 0,
+                createdDateTime: new DateWrapper().toISO(),
+            })
+            .then(() => {
+                this.commentInput = "";
+                this.onCommentAdded(this.comment);
+            })
+            .catch((err) => {
+                this.logger.error(
+                    `Error adding comment on entry ${
+                        this.comment.parentEntryId
+                    }: ${JSON.stringify(err)}`
+                );
+            })
+            .finally(() => {
+                this.isSaving = false;
+            });
+    }
+
+    @Emit()
+    private onCommentAdded(comment: UserComment) {
+        return comment;
+    }
 }
-</style>
+</script>
+
 <template>
     <b-col>
         <div>
@@ -64,77 +124,15 @@
         </div>
     </b-col>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import UserComment from "@/models/userComment";
-import User from "@/models/user";
-import { Getter } from "vuex-class";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import {
-    IconDefinition,
-    faEllipsisV,
-    faLock,
-} from "@fortawesome/free-solid-svg-icons";
-import { ILogger, IUserCommentService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { DateWrapper } from "@/models/dateWrapper";
 
-@Component
-export default class AddCommentComponent extends Vue {
-    @Getter("user", { namespace: "user" }) user!: User;
-    @Prop() comment!: UserComment;
-    private commentInput: string = "";
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-    private logger!: ILogger;
-    private commentService!: IUserCommentService;
-
-    private isSaving: boolean = false;
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.commentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
-    }
-
-    private get lockIcon(): IconDefinition {
-        return faLock;
-    }
-
-    private onSubmit(): void {
-        this.addComment();
-    }
-
-    private addComment(): void {
-        this.isSaving = true;
-        this.commentService
-            .createComment({
-                text: this.commentInput,
-                parentEntryId: this.comment.parentEntryId,
-                userProfileId: this.user.hdid,
-                version: 0,
-                createdDateTime: new DateWrapper().toISO(),
-            })
-            .then(() => {
-                this.commentInput = "";
-                this.onCommentAdded(this.comment);
-            })
-            .catch((err) => {
-                this.logger.error(
-                    `Error adding comment on entry ${
-                        this.comment.parentEntryId
-                    }: ${JSON.stringify(err)}`
-                );
-            })
-            .finally(() => {
-                this.isSaving = false;
-            });
-    }
-
-    @Emit()
-    onCommentAdded(comment: UserComment) {
-        return comment;
-    }
+.comment-input-style:not(:focus) {
+    background-color: $soft_background;
 }
-</script>
+
+.single-line {
+    height: 38px !important;
+}
+</style>

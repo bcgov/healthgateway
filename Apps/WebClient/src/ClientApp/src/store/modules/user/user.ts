@@ -12,7 +12,7 @@ export const state: UserState = {
     stateType: StateType.NONE,
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const user: Module<UserState, RootState> = {
     namespaced,
