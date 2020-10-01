@@ -43,7 +43,7 @@
         "eslint-plugin-vue": "^6.2.2",
         "event-source-polyfill": "^1.0.17",
         "file-loader": "^6.1.0",
-        "isomorphic-fetch": "^2.2.1",
+        "isomorphic-fetch": "^3.0.0",
         "jest": "^26.4.2",
         "jest-sonar-reporter": "^2.0.0",
         "jest-transform-stub": "^2.0.0",
