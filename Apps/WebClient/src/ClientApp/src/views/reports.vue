@@ -15,7 +15,7 @@
 <template>
     <div>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row class="my-3 fluid justify-content-md-center">
+        <b-row class="my-3 fluid">
             <b-col
                 id="healthInsights"
                 class="col-12 col-md-10 col-lg-9 column-wrapper"
