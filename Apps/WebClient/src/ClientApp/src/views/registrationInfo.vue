@@ -78,7 +78,11 @@
                         <b-row class="mt-5">
                             <b-col>
                                 <router-link :to="registrationLink">
-                                    <b-button size="lg" variant="primary">
+                                    <b-button
+                                        size="lg"
+                                        variant="primary"
+                                        data-testid="registerBtn"
+                                    >
                                         <img
                                             class="mr-3"
                                             :src="mobileCardImg"
@@ -94,6 +98,7 @@
                     <b-col class="text-left mt-5">
                         <b-button
                             id="servicesCardBtn"
+                            data-testid="servicesCardBtn"
                             :class="signupProcessVisible ? 'collapsed' : null"
                             :aria-expanded="
                                 signupProcessVisible ? 'true' : 'false'
@@ -210,6 +215,7 @@
                     <b-col>
                         <b-button
                             id="moreOptionsBtn"
+                            data-testid="moreOptionsBtn"
                             class="my-3"
                             :class="dongleVisible ? 'collapsed' : null"
                             :aria-expanded="dongleVisible ? 'true' : 'false'"

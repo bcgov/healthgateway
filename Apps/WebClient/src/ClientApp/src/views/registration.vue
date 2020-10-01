@@ -108,6 +108,7 @@ label {
                                     !waitlistedSuccessfully
                                 "
                                 id="waitlistEditEmail"
+                                data-testid="makeWaitlistEdditableBtn"
                                 class="mx-auto"
                                 variant="link"
                                 @click="makeWaitlistEdditable()"
@@ -117,6 +118,7 @@ label {
                                 <b-form-input
                                     id="waitlistEmail"
                                     v-model="$v.email.$model"
+                                    data-testid="waitlistEmailInput"
                                     type="email"
                                     placeholder="Your email address"
                                     :disabled="!waitlistEdditable"
@@ -146,6 +148,7 @@ label {
                             <b-form-input
                                 id="waitlistEmailConfirmation"
                                 v-model="$v.emailConfirmation.$model"
+                                data-testid="waitlistEmailConfirmationInput"
                                 type="email"
                                 placeholder="Confirm your email address"
                                 :state="isValid($v.emailConfirmation)"
@@ -165,12 +168,14 @@ label {
                             <b-button
                                 v-if="waitlistTempEmail"
                                 id="cancelBtn"
+                                data-testid="cancelWaitlistEditBtn"
                                 class="mx-2 actionButton"
                                 @click="cancelWaitlistEdit()"
                                 >Cancel
                             </b-button>
                             <b-button
                                 id="saveBtn"
+                                data-testid="saveWaitlistEditBtn"
                                 variant="primary"
                                 class="mx-2 actionButton"
                                 :disabled="waitlistTempEmail === email"
@@ -223,6 +228,7 @@ label {
                         <b-form-input
                             id="email"
                             v-model="$v.email.$model"
+                            data-testid="emailInput"
                             type="email"
                             placeholder="Your email address"
                             :disabled="isPredefinedEmail || !isEmailChecked"
@@ -238,6 +244,7 @@ label {
                         <b-form-input
                             id="emailConfirmation"
                             v-model="$v.emailConfirmation.$model"
+                            data-testid="emailConfirmationInput"
                             type="email"
                             placeholder="Confirm your email address"
                             :disabled="!isEmailChecked"
@@ -268,6 +275,7 @@ label {
                         <b-form-input
                             id="smsNumber"
                             v-model="$v.smsNumber.$model"
+                            data-testid="smsNumberInput"
                             class="d-flex"
                             type="text"
                             placeholder="Your phone number"

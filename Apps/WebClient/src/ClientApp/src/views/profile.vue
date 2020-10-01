@@ -54,6 +54,7 @@ input {
                             <b-button
                                 v-if="!isEmailEditable"
                                 id="editEmail"
+                                data-testid="editEmailBtn"
                                 class="mx-auto"
                                 variant="link"
                                 @click="makeEmailEditable()"
@@ -63,6 +64,7 @@ input {
                             <b-button
                                 v-if="email"
                                 id="removeEmail"
+                                data-testid="removeEmailBtn"
                                 class="text-danger"
                                 variant="link"
                                 @click="
@@ -76,6 +78,7 @@ input {
                                 <b-form-input
                                     id="email"
                                     v-model="$v.email.$model"
+                                    data-testid="emailInput"
                                     type="email"
                                     class="mb-1"
                                     :placeholder="
@@ -110,6 +113,7 @@ input {
                                         email
                                     "
                                     id="resendEmail"
+                                    data-testid="resendEmailBtn"
                                     variant="warning"
                                     class="ml-3"
                                     :disabled="emailVerificationSent"
@@ -132,6 +136,7 @@ input {
                             <b-form-input
                                 id="emailConfirmation"
                                 v-model="$v.emailConfirmation.$model"
+                                data-testid="emailConfirmationInput"
                                 type="email"
                                 placeholder="Confirm your email address"
                                 :state="isValid($v.emailConfirmation)"
@@ -163,6 +168,7 @@ input {
                         <b-col class="text-right">
                             <b-button
                                 id="cancelBtn"
+                                data-testid="editEmailCancelBtn"
                                 class="mx-2 actionButton"
                                 @click="cancelEmailEdit()"
                             >
@@ -170,6 +176,7 @@ input {
                             </b-button>
                             <b-button
                                 id="saveBtn"
+                                data-testid="editEmailSaveBtn"
                                 variant="primary"
                                 class="mx-2 actionButton"
                                 :disabled="tempEmail === email"
@@ -187,6 +194,7 @@ input {
                             <b-button
                                 v-if="!isSMSEditable"
                                 id="editSMS"
+                                data-testid="editSMSBtn"
                                 class="mx-auto"
                                 variant="link"
                                 @click="makeSMSEditable()"
@@ -195,6 +203,7 @@ input {
                             <b-button
                                 v-if="smsNumber"
                                 id="removeSMS"
+                                data-testid="removeSMSBtn"
                                 class="text-danger"
                                 variant="link"
                                 @click="
@@ -208,6 +217,7 @@ input {
                                 <b-form-input
                                     id="smsNumber"
                                     v-model="$v.smsNumber.$model"
+                                    data-testid="smsNumberInput"
                                     type="text"
                                     class="mb-1"
                                     :placeholder="
@@ -236,6 +246,7 @@ input {
                                     (Not Verified)
                                     <b-button
                                         id="verifySMS"
+                                        data-testid="verifySMSBtn"
                                         variant="warning"
                                         class="ml-3"
                                         @click="verifySMS()"
@@ -276,12 +287,14 @@ input {
                         <b-col class="text-right">
                             <b-button
                                 id="cancelBtn"
+                                data-testid="editSMSCancelBtn"
                                 class="mx-2 actionButton"
                                 @click="cancelSMSEdit()"
                                 >Cancel
                             </b-button>
                             <b-button
                                 id="saveBtn"
+                                data-testid="editSMSSaveBtn"
                                 variant="primary"
                                 class="mx-2 actionButton"
                                 :disabled="tempSMS === smsNumber"
@@ -319,6 +332,7 @@ input {
                         <b-col>
                             <b-button
                                 id="recoverBtn"
+                                data-testid="recoverAccountCancelBtn"
                                 class="mx-auto"
                                 variant="warning"
                                 @click="recoverAccount()"
@@ -334,6 +348,7 @@ input {
                             <b-button
                                 v-if="!showCloseWarning"
                                 id="showCloseWarningBtn"
+                                data-testid="recoverAccountShowCloseWarningBtn"
                                 class="p-0 pt-2"
                                 variant="link"
                                 @click="showCloseWarningBtn()"
@@ -362,12 +377,14 @@ input {
                                 <b-col class="text-right">
                                     <b-button
                                         id="cancelCloseBtn"
+                                        data-testid="closeAccountCancelBtn"
                                         class="mx-2"
                                         @click="cancelClose()"
                                         >Cancel
                                     </b-button>
                                     <b-button
                                         id="closeAccountBtn"
+                                        data-testid="closeAccountBtn"
                                         class="mx-2"
                                         variant="danger"
                                         @click="closeAccount()"

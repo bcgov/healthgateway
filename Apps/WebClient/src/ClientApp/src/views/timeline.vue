@@ -73,7 +73,7 @@
 <template>
     <div>
         <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
-        <b-row class="my-3 fluid justify-content-md-center">
+        <b-row class="my-3 fluid">
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <b-alert
                     :show="hasNewTermsOfService"
