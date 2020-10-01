@@ -222,7 +222,7 @@ export default class HealthInsightsView extends Vue {
 <template>
     <div>
         <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
-        <b-row class="my-3 fluid justify-content-md-center">
+        <b-row class="my-3 fluid">
             <b-col
                 id="healthInsights"
                 class="col-12 col-md-10 col-lg-9 column-wrapper"
