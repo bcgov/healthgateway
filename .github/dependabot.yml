@@ -10,7 +10,7 @@ updates:
     directory: "/Apps/WebClient/src" # Location of package manifests
     schedule:
       interval: "daily"
-    assignees:
+    reviewers:
       - "sslaws"
       - "FuriousLlama"
       - "tiagograf-AOT"
@@ -20,7 +20,7 @@ updates:
     directory: "/Apps/WebClient/src/ClientApp" # Location of package manifests
     schedule:
       interval: "daily"
-    assignees:
+    reviewers:
       - "sslaws"
       - "FuriousLlama"
       - "tiagograf-AOT"
@@ -30,7 +30,7 @@ updates:
     directory: "/Apps/AdminWebClient/src/ClientApp" # Location of package manifests
     schedule:
       interval: "daily"
-    assignees:
+    reviewers:
       - "sslaws"
       - "FuriousLlama"
       - "tiagograf-AOT"
