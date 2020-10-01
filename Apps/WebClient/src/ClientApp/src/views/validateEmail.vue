@@ -1,55 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.title {
-    color: $primary;
-    font-size: 2.1em;
-}
-</style>
-<template>
-    <b-container>
-        <b-row class="pt-5">
-            <b-col class="text-center mb-5">
-                <h4 v-if="isLoading" class="title">
-                    We are verifying your email...
-                </h4>
-                <h4
-                    v-if="!isLoading && isSuccess === true"
-                    class="text-success"
-                >
-                    Your email was successfully verified!
-                </h4>
-                <h4
-                    v-if="!isLoading && isSuccess === false"
-                    class="text-danger"
-                >
-                    Something is not right, are you sure this is the correct
-                    link?
-                </h4>
-            </b-col>
-        </b-row>
-        <b-row class="pt-5">
-            <b-col class="text-center mb-5">
-                <b-spinner v-if="isLoading"></b-spinner>
-                <span
-                    v-if="!isLoading && isSuccess === true"
-                    class="text-success"
-                    ><font-awesome-icon
-                        icon="check-circle"
-                        size="10x"
-                    ></font-awesome-icon
-                ></span>
-                <span
-                    v-if="!isLoading && isSuccess === false"
-                    class="text-danger"
-                    ><font-awesome-icon
-                        icon="times-circle"
-                        size="10x"
-                    ></font-awesome-icon
-                ></span>
-            </b-col>
-        </b-row>
-    </b-container>
-</template>
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
@@ -98,3 +46,57 @@ export default class ValidateEmailView extends Vue {
     }
 }
 </script>
+
+<template>
+    <b-container>
+        <b-row class="pt-5">
+            <b-col class="text-center mb-5">
+                <h4 v-if="isLoading" class="title">
+                    We are verifying your email...
+                </h4>
+                <h4
+                    v-if="!isLoading && isSuccess === true"
+                    class="text-success"
+                >
+                    Your email was successfully verified!
+                </h4>
+                <h4
+                    v-if="!isLoading && isSuccess === false"
+                    class="text-danger"
+                >
+                    Something is not right, are you sure this is the correct
+                    link?
+                </h4>
+            </b-col>
+        </b-row>
+        <b-row class="pt-5">
+            <b-col class="text-center mb-5">
+                <b-spinner v-if="isLoading"></b-spinner>
+                <span
+                    v-if="!isLoading && isSuccess === true"
+                    class="text-success"
+                    ><font-awesome-icon
+                        icon="check-circle"
+                        size="10x"
+                    ></font-awesome-icon
+                ></span>
+                <span
+                    v-if="!isLoading && isSuccess === false"
+                    class="text-danger"
+                    ><font-awesome-icon
+                        icon="times-circle"
+                        size="10x"
+                    ></font-awesome-icon
+                ></span>
+            </b-col>
+        </b-row>
+    </b-container>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.title {
+    color: $primary;
+    font-size: 2.1em;
+}
+</style>

@@ -1,113 +1,4 @@
-﻿<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.modal-footer {
-    justify-content: flex-start;
-    button {
-        padding: 5px 20px 5px 20px;
-    }
-}
-</style>
-
-<template>
-    <b-modal
-        id="verify-sms-modal"
-        v-model="isVisible"
-        data-testid="verifySMSModal"
-        title="Phone Verification"
-        size="sm"
-        header-bg-variant="primary"
-        header-text-variant="light"
-        centered
-    >
-        <b-row>
-            <b-col>
-                <form>
-                    <b-row
-                        v-if="tooManyRetries"
-                        data-testid="verifySMSModalErrorAttemptsText"
-                    >
-                        <b-col class="text-center">
-                            Too many failed attempts.
-                        </b-col>
-                    </b-row>
-                    <b-row
-                        v-if="!tooManyRetries"
-                        data-testid="verifySMSModalText"
-                    >
-                        <b-col>
-                            <label
-                                for="verificationCode-input"
-                                class="text-center w-100"
-                            >
-                                Enter the verification code sent to <br />
-                                <strong>{{
-                                    formatPhoneNumber(smsNumber)
-                                }}</strong>
-                            </label>
-                            <b-form-input
-                                id="verificationCode-input"
-                                v-model="smsVerificationCode"
-                                data-testid="verifySMSModalCodeInput"
-                                size="lg"
-                                :autofocus="true"
-                                class="text-center"
-                                :state="error ? false : undefined"
-                                max-length="6"
-                                :disabled="isLoading"
-                                required
-                                @update="onVerificationChange"
-                            />
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="error && !tooManyRetries">
-                        <b-col>
-                            <span
-                                class="text-danger"
-                                data-testid="verifySMSModalErrorInvalidText"
-                                >Invalid verification code. Try again.</span
-                            >
-                        </b-col>
-                    </b-row>
-                </form>
-            </b-col>
-        </b-row>
-        <template v-slot:modal-footer>
-            <b-row class="w-100">
-                <b-col v-if="!tooManyRetries && allowRetry">
-                    Didn't receive a code?
-                    <b-button
-                        id="resendSMSVerification"
-                        variant="link"
-                        class="ml-0 pl-0"
-                        :disabled="smsVerificationSent"
-                        @click="sendUserSMSUpdate()"
-                    >
-                        Resend
-                    </b-button>
-                </b-col>
-                <b-col v-if="!allowRetry">
-                    Your code has been sent. You can resend after
-                    {{ config.timeouts.resendSMS }}
-                    {{ config.timeouts.resendSMS > 1 ? "minutes" : "minute" }}.
-                </b-col>
-                <b-col v-if="tooManyRetries">
-                    <b-button
-                        id="resendSMSVerification"
-                        variant="link"
-                        class="text-center w-100"
-                        :disabled="smsVerificationSent"
-                        @click="sendUserSMSUpdate()"
-                    >
-                        Send new code
-                    </b-button>
-                </b-col>
-            </b-row>
-        </template>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-    </b-modal>
-</template>
-
-<script lang="ts">
+﻿<script lang="ts">
 import Vue from "vue";
 import LoadingComponent from "@/components/loading.vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
@@ -297,3 +188,112 @@ export default class VerifySMSComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <b-modal
+        id="verify-sms-modal"
+        v-model="isVisible"
+        data-testid="verifySMSModal"
+        title="Phone Verification"
+        size="sm"
+        header-bg-variant="primary"
+        header-text-variant="light"
+        centered
+    >
+        <b-row>
+            <b-col>
+                <form>
+                    <b-row
+                        v-if="tooManyRetries"
+                        data-testid="verifySMSModalErrorAttemptsText"
+                    >
+                        <b-col class="text-center">
+                            Too many failed attempts.
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="!tooManyRetries"
+                        data-testid="verifySMSModalText"
+                    >
+                        <b-col>
+                            <label
+                                for="verificationCode-input"
+                                class="text-center w-100"
+                            >
+                                Enter the verification code sent to <br />
+                                <strong>{{
+                                    formatPhoneNumber(smsNumber)
+                                }}</strong>
+                            </label>
+                            <b-form-input
+                                id="verificationCode-input"
+                                v-model="smsVerificationCode"
+                                data-testid="verifySMSModalCodeInput"
+                                size="lg"
+                                :autofocus="true"
+                                class="text-center"
+                                :state="error ? false : undefined"
+                                max-length="6"
+                                :disabled="isLoading"
+                                required
+                                @update="onVerificationChange"
+                            />
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="error && !tooManyRetries">
+                        <b-col>
+                            <span
+                                class="text-danger"
+                                data-testid="verifySMSModalErrorInvalidText"
+                                >Invalid verification code. Try again.</span
+                            >
+                        </b-col>
+                    </b-row>
+                </form>
+            </b-col>
+        </b-row>
+        <template #modal-footer>
+            <b-row class="w-100">
+                <b-col v-if="!tooManyRetries && allowRetry">
+                    Didn't receive a code?
+                    <b-button
+                        id="resendSMSVerification"
+                        variant="link"
+                        class="ml-0 pl-0"
+                        :disabled="smsVerificationSent"
+                        @click="sendUserSMSUpdate()"
+                    >
+                        Resend
+                    </b-button>
+                </b-col>
+                <b-col v-if="!allowRetry">
+                    Your code has been sent. You can resend after
+                    {{ config.timeouts.resendSMS }}
+                    {{ config.timeouts.resendSMS > 1 ? "minutes" : "minute" }}.
+                </b-col>
+                <b-col v-if="tooManyRetries">
+                    <b-button
+                        id="resendSMSVerification"
+                        variant="link"
+                        class="text-center w-100"
+                        :disabled="smsVerificationSent"
+                        @click="sendUserSMSUpdate()"
+                    >
+                        Send new code
+                    </b-button>
+                </b-col>
+            </b-row>
+        </template>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+    </b-modal>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.modal-footer {
+    justify-content: flex-start;
+    button {
+        padding: 5px 20px 5px 20px;
+    }
+}
+</style>

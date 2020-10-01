@@ -1,52 +1,3 @@
-<style lang="scss" scoped>
-.entryCard {
-    width: 100%;
-    padding-left: 50px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-</style>
-
-<template>
-    <b-row class="entryCard">
-        <MedicationComponent
-            v-if="entry.type === EntryType.Medication"
-            :key="entry.id"
-            :datekey="datekey"
-            :entry="entry"
-            :index="index"
-        />
-        <ImmunizationComponent
-            v-if="entry.type === EntryType.Immunization"
-            :key="entry.id"
-            :datekey="datekey"
-            :entry="entry"
-            :index="index"
-        />
-        <LaboratoryComponent
-            v-if="entry.type === EntryType.Laboratory"
-            :key="entry.id"
-            :datekey="datekey"
-            :entry="entry"
-            :index="index"
-        />
-        <EncounterComponent
-            v-if="entry.type === EntryType.Encounter"
-            :key="entry.id"
-            :datekey="datekey"
-            :entry="entry"
-            :index="index"
-        />
-        <NoteComponent
-            v-if="entry.type === EntryType.Note"
-            :key="entry.id"
-            :datekey="datekey"
-            :entry="entry"
-            :index="index"
-        />
-    </b-row>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 
@@ -98,3 +49,52 @@ export default class EntrycardTimelineComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <b-row class="entryCard">
+        <MedicationComponent
+            v-if="entry.type === EntryType.Medication"
+            :key="entry.id"
+            :datekey="datekey"
+            :entry="entry"
+            :index="index"
+        />
+        <ImmunizationComponent
+            v-if="entry.type === EntryType.Immunization"
+            :key="entry.id"
+            :datekey="datekey"
+            :entry="entry"
+            :index="index"
+        />
+        <LaboratoryComponent
+            v-if="entry.type === EntryType.Laboratory"
+            :key="entry.id"
+            :datekey="datekey"
+            :entry="entry"
+            :index="index"
+        />
+        <EncounterComponent
+            v-if="entry.type === EntryType.Encounter"
+            :key="entry.id"
+            :datekey="datekey"
+            :entry="entry"
+            :index="index"
+        />
+        <NoteComponent
+            v-if="entry.type === EntryType.Note"
+            :key="entry.id"
+            :datekey="datekey"
+            :entry="entry"
+            :index="index"
+        />
+    </b-row>
+</template>
+
+<style lang="scss" scoped>
+.entryCard {
+    width: 100%;
+    padding-left: 50px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+</style>

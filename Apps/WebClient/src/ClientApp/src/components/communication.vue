@@ -1,21 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-
-.communication {
-    background-color: $bcgold;
-    color: black;
-}
-</style>
-<template>
-    <b-row v-if="hasCommunication">
-        <b-col class="p-0">
-            <div class="m-0 py-0 text-center communication">
-                <span v-html="text"></span>
-            </div>
-        </b-col>
-    </b-row>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
@@ -61,3 +43,22 @@ export default class CommunicationComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <b-row v-if="hasCommunication">
+        <b-col class="p-0">
+            <div class="m-0 py-0 text-center communication">
+                <span v-html="text"></span>
+            </div>
+        </b-col>
+    </b-row>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.communication {
+    background-color: $bcgold;
+    color: black;
+}
+</style>

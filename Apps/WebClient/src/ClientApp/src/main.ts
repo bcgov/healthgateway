@@ -38,8 +38,8 @@ import container from "@/plugins/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 
-Vue.component("font-awesome-icon", FontAwesomeIcon);
-Vue.component("b-popover", BPopover);
+Vue.component("FontAwesomeIcon", FontAwesomeIcon);
+Vue.component("BPopover", BPopover);
 
 Vue.use(VueRouter);
 Vue.use(Vuelidate);

@@ -1,211 +1,237 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import { Component, Prop, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import { ILogger, IAuthenticationService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import VueRouter, { Route } from "vue-router";
+import EventBus, { EventMessageName } from "@/eventbus";
+import { WebClientConfiguration } from "@/models/configData";
+import FeedbackComponent from "@/components/feedback.vue";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faStream } from "@fortawesome/free-solid-svg-icons";
+import User from "@/models/user";
+library.add(faStream);
 
-.wrapper {
-    display: flex;
-    align-items: stretch;
-}
+const auth: string = "auth";
+const user: string = "user";
+const sidebar: string = "sidebar";
 
-#sidebar {
-    min-width: 300px;
-    max-width: 300px;
-    background: $primary;
-    color: #fff;
-    transition: all 0.3s;
-    text-align: center;
-    height: 100%;
-    z-index: $z_sidebar;
-    position: static;
-    display: flex;
-    flex-direction: column;
-    /* Small devices */
-    @media (max-width: 767px) {
-        min-width: 185px;
-        max-width: 185px;
+@Component({
+    components: {
+        FeedbackComponent,
+    },
+})
+export default class SidebarComponent extends Vue {
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        hdid: string;
+        name: string;
+        value: string;
+    }) => void;
 
-        display: absolute;
-        position: fixed;
-        top: 0px;
-        padding-top: 80px;
-        overflow-y: scroll;
+    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
 
-        &.collapsed {
-            min-width: 0px !important;
-            max-width: 0px !important;
-            height: 100vh;
-        }
+    @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
 
-        &.collapsed .row-container {
-            display: none;
-        }
+    @Getter("oidcIsAuthenticated", {
+        namespace: auth,
+    })
+    oidcIsAuthenticated!: boolean;
 
-        &.collapsed .sidebar-footer {
-            display: none;
-        }
+    @Getter("userIsRegistered", {
+        namespace: user,
+    })
+    userIsRegistered!: boolean;
 
-        &.arrow-icon {
-            display: none;
-        }
-    }
-}
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
 
-#sidebar.collapsed {
-    min-width: 80px;
-    max-width: 80px;
-}
+    @Getter("user", { namespace: "user" }) user!: User;
 
-#sidebar.collapsed .button-container {
-    border-color: $primary !important;
-    margin: 0px;
-    border-radius: 0px !important;
-}
+    private eventBus = EventBus;
 
-#sidebar .button-container {
-    margin-right: 0em;
-    &.sub-menu {
-        margin-left: 5em;
-        margin-right: 2em;
-        @media (max-width: 767px) {
-            margin-left: 3em;
-            margin-right: 0.5em;
+    private logger!: ILogger;
+    private authenticationService!: IAuthenticationService;
+    private name: string = "";
+    private windowWidth: number = 0;
+
+    private isTutorialEnabled: boolean = false;
+
+    @Watch("oidcIsAuthenticated")
+    private onPropertyChanged() {
+        // If there is no name in the scope, retrieve it from the service.
+        if (this.oidcIsAuthenticated && !this.name) {
+            this.loadName();
         }
     }
-    &.selected {
-        background-color: $lightBlue;
-        .button-spacer {
-            background-color: $aquaBlue !important;
+
+    @Watch("$route")
+    private onRouteChanged() {
+        this.clearOverlay();
+    }
+
+    @Watch("isOpen")
+    private onIsOpen(newValue: boolean, oldValue: boolean) {
+        this.isTutorialEnabled = false;
+    }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.authenticationService = container.get(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        if (this.oidcIsAuthenticated) {
+            this.loadName();
+        }
+
+        var self = this;
+
+        // Setup the transition listener to avoid text wrapping
+        var transition = document.querySelector("#sidebar");
+        transition?.addEventListener("transitionend", function (event: Event) {
+            let transitionEvent = event as TransitionEvent;
+            if (
+                transition !== transitionEvent.target ||
+                transitionEvent.propertyName !== "max-width"
+            ) {
+                return;
+            } else {
+                self.isTutorialEnabled = false;
+            }
+
+            self.isTutorialEnabled = true;
+
+            var buttonText = document
+                .querySelectorAll(".button-title")
+                .forEach((button) => {
+                    if (transition?.classList.contains("collapsed")) {
+                        button?.classList.add("d-none");
+                    } else {
+                        button?.classList.remove("d-none");
+                    }
+                });
+        });
+
+        this.$nextTick(() => {
+            window.addEventListener("resize", this.onResize);
+        });
+        this.windowWidth = window.innerWidth;
+    }
+
+    private beforeDestroy() {
+        window.removeEventListener("resize", this.onResize);
+    }
+
+    private toggleOpen() {
+        this.toggleSidebar();
+    }
+
+    private loadName(): void {
+        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
+            if (oidcUser) {
+                this.name = this.getFullname(
+                    oidcUser.given_name,
+                    oidcUser.family_name
+                );
+            }
+            this.isTutorialEnabled = true;
+        });
+    }
+
+    private getFullname(firstName: string, lastName: string): string {
+        return firstName + " " + lastName;
+    }
+
+    private clearOverlay() {
+        if (this.isOverlayVisible) {
+            this.toggleSidebar();
         }
     }
-}
 
-#sidebar .button-spacer {
-    width: 100%;
-    height: 100%;
-}
-
-#sidebar .button-container:hover {
-    text-decoration: underline;
-    cursor: pointer;
-    background-color: $lightBlue !important;
-}
-
-#sidebar .button-icon {
-    display: inline-block;
-    margin: auto !important;
-    &.sub-menu {
-        font-size: 1.3em;
+    private createNote() {
+        this.clearOverlay();
+        this.eventBus.$emit(EventMessageName.TimelineCreateNote);
     }
-    @media (max-width: 767px) {
-        font-size: 1.5em;
-        &.sub-menu {
-            font-size: 1em;
+
+    private dismissTutorial() {
+        this.logger.debug("Dismissing tutorial...");
+        this.updateUserPreference({
+            hdid: this.user.hdid,
+            name: "tutorialPopover",
+            value: "false",
+        });
+    }
+
+    private printView() {
+        this.clearOverlay();
+        this.eventBus.$emit(EventMessageName.TimelinePrintView);
+    }
+
+    private onResize() {
+        this.windowWidth = window.innerWidth;
+    }
+
+    private get showTutorialPopover(): boolean {
+        if (this.isMobileWidth) {
+            return (
+                this.isTutorialEnabled &&
+                this.user.preferences["tutorialPopover"] === "true" &&
+                this.isOpen
+            );
+        } else {
+            return (
+                this.isTutorialEnabled &&
+                this.user.preferences["tutorialPopover"] === "true"
+            );
         }
     }
-}
 
-#sidebar .button-title {
-    display: inline;
-    font-size: 1.3em;
-    text-align: left;
-    margin: 0px;
-    padding: 0px;
-    &.sub-menu {
-        font-size: 1em;
+    private set showTutorialPopover(value: boolean) {
+        this.isTutorialEnabled = value;
     }
-    @media (max-width: 767px) {
-        font-size: 1.1em;
-        &.sub-menu {
-            font-size: 0.8em;
-        }
+
+    private get isOverlayVisible() {
+        return this.isOpen && this.isMobileWidth;
     }
-}
 
-#sidebar .name-wrapper {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    @media (max-width: 767px) {
-        height: 55px;
+    private get isMobileWidth(): boolean {
+        return this.windowWidth < 768;
     }
-}
 
-#sidebar hr {
-    border-top: 1px solid $soft_text;
-}
+    private get isTimeline(): boolean {
+        let isTimeLine = this.$route.path == "/timeline";
+        if (isTimeLine && !this.isTutorialEnabled)
+            this.isTutorialEnabled = true;
+        return isTimeLine;
+    }
 
-#sidebar.collapsed .arrow-icon {
-    transform: scaleX(-1);
-}
+    private get isProfile(): boolean {
+        return this.$route.path == "/profile";
+    }
 
-#sidebar .arrow-icon:hover {
-    text-decoration: underline;
-    cursor: pointer;
-    background-color: $lightBlue !important;
-}
+    private get isTermsOfService(): boolean {
+        return this.$route.path == "/profile/termsOfService";
+    }
 
-#sidebar a {
-    text-decoration: none;
-    color: white !important;
-    caret-color: white !important;
-}
+    private get isUnderProfile(): boolean {
+        return this.$route.path.startsWith("/profile");
+    }
 
-#sidebar a:hover {
-    text-decoration: underline;
-}
+    private get isHealthInsights(): boolean {
+        return this.$route.path == "/healthInsights";
+    }
 
-.overlay {
-    display: block;
-    opacity: 1;
-    position: fixed;
-    /* full screen */
-    width: 100vw;
-    height: 100vh;
-    /* transparent black */
-    background: rgba(0, 0, 0, 0.7);
-    /* middle layer, i.e. appears below the sidebar */
-    z-index: $z_overlay;
-    /* animate the transition */
-    transition: all 0.5s ease-in-out;
-    top: 0px;
-    overflow: hidden;
-}
+    private get isReports(): boolean {
+        return this.$route.path == "/reports";
+    }
 
-#sidebar .row-container {
-    flex: 1 0 auto;
-}
-
-#sidebar .sidebar-footer {
-    width: 100%;
-    flex-shrink: 0;
-    position: sticky;
-    bottom: 0rem;
-    align-self: flex-end;
-}
-
-.popover-body {
-    padding: 0.5px 0px 0.5px 0px !important;
-}
-
-.pop-over-close {
-    float: right;
-    padding-top: 0px;
-    color: black;
-    border: none;
-    background-color: transparent;
-}
-
-.popover-content {
-    max-width: 20rem;
-    color: black;
-}
-
-/* Small Devices*/
-@media (max-width: 470px) {
-    .popover-content {
-        max-width: 8rem;
+    private get isNoteEnabled(): boolean {
+        return this.config.modules["Note"];
     }
 }
-</style>
+</script>
 
 <template>
     <div v-show="oidcIsAuthenticated && userIsRegistered" class="wrapper">
@@ -446,237 +472,211 @@
     </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
-import { ILogger, IAuthenticationService } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import VueRouter, { Route } from "vue-router";
-import EventBus from "@/eventbus";
-import { WebClientConfiguration } from "@/models/configData";
-import FeedbackComponent from "@/components/feedback.vue";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faStream } from "@fortawesome/free-solid-svg-icons";
-import User from "@/models/user";
-library.add(faStream);
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-const auth: string = "auth";
-const user: string = "user";
-const sidebar: string = "sidebar";
+.wrapper {
+    display: flex;
+    align-items: stretch;
+}
 
-@Component({
-    components: {
-        FeedbackComponent,
-    },
-})
-export default class SidebarComponent extends Vue {
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: {
-        hdid: string;
-        name: string;
-        value: string;
-    }) => void;
+#sidebar {
+    min-width: 300px;
+    max-width: 300px;
+    background: $primary;
+    color: #fff;
+    transition: all 0.3s;
+    text-align: center;
+    height: 100%;
+    z-index: $z_sidebar;
+    position: static;
+    display: flex;
+    flex-direction: column;
+    /* Small devices */
+    @media (max-width: 767px) {
+        min-width: 185px;
+        max-width: 185px;
 
-    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
+        display: absolute;
+        position: fixed;
+        top: 0px;
+        padding-top: 80px;
+        overflow-y: scroll;
 
-    @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
-
-    @Getter("oidcIsAuthenticated", {
-        namespace: auth,
-    })
-    oidcIsAuthenticated!: boolean;
-
-    @Getter("userIsRegistered", {
-        namespace: user,
-    })
-    userIsRegistered!: boolean;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("user", { namespace: "user" }) user!: User;
-
-    private eventBus = EventBus;
-
-    private logger!: ILogger;
-    private authenticationService!: IAuthenticationService;
-    private name: string = "";
-    private windowWidth: number = 0;
-
-    private isTutorialEnabled: boolean = false;
-
-    @Watch("oidcIsAuthenticated")
-    private onPropertyChanged() {
-        // If there is no name in the scope, retrieve it from the service.
-        if (this.oidcIsAuthenticated && !this.name) {
-            this.loadName();
-        }
-    }
-
-    @Watch("$route")
-    private onRouteChanged() {
-        this.clearOverlay();
-    }
-
-    @Watch("isOpen")
-    private onIsOpen(newValue: boolean, oldValue: boolean) {
-        this.isTutorialEnabled = false;
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.authenticationService = container.get(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-        if (this.oidcIsAuthenticated) {
-            this.loadName();
+        &.collapsed {
+            min-width: 0px !important;
+            max-width: 0px !important;
+            height: 100vh;
         }
 
-        var self = this;
-
-        // Setup the transition listener to avoid text wrapping
-        var transition = document.querySelector("#sidebar");
-        transition?.addEventListener("transitionend", function (event: Event) {
-            let transitionEvent = event as TransitionEvent;
-            if (
-                transition !== transitionEvent.target ||
-                transitionEvent.propertyName !== "max-width"
-            ) {
-                return;
-            } else {
-                self.isTutorialEnabled = false;
-            }
-
-            self.isTutorialEnabled = true;
-
-            var buttonText = document
-                .querySelectorAll(".button-title")
-                .forEach((button) => {
-                    if (transition?.classList.contains("collapsed")) {
-                        button?.classList.add("d-none");
-                    } else {
-                        button?.classList.remove("d-none");
-                    }
-                });
-        });
-
-        this.$nextTick(() => {
-            window.addEventListener("resize", this.onResize);
-        });
-        this.windowWidth = window.innerWidth;
-    }
-
-    private beforeDestroy() {
-        window.removeEventListener("resize", this.onResize);
-    }
-
-    private toggleOpen() {
-        this.toggleSidebar();
-    }
-
-    private loadName(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
-            if (oidcUser) {
-                this.name = this.getFullname(
-                    oidcUser.given_name,
-                    oidcUser.family_name
-                );
-            }
-            this.isTutorialEnabled = true;
-        });
-    }
-
-    private getFullname(firstName: string, lastName: string): string {
-        return firstName + " " + lastName;
-    }
-
-    private clearOverlay() {
-        if (this.isOverlayVisible) {
-            this.toggleSidebar();
+        &.collapsed .row-container {
+            display: none;
         }
-    }
 
-    private createNote() {
-        this.clearOverlay();
-        this.eventBus.$emit("timelineCreateNote");
-    }
-
-    private dismissTutorial() {
-        this.logger.debug("Dismissing tutorial...");
-        this.updateUserPreference({
-            hdid: this.user.hdid,
-            name: "tutorialPopover",
-            value: "false",
-        });
-    }
-
-    private printView() {
-        this.clearOverlay();
-        this.eventBus.$emit("timelinePrintView");
-    }
-
-    private onResize() {
-        this.windowWidth = window.innerWidth;
-    }
-
-    private get showTutorialPopover(): boolean {
-        if (this.isMobileWidth) {
-            return (
-                this.isTutorialEnabled &&
-                this.user.preferences["tutorialPopover"] === "true" &&
-                this.isOpen
-            );
-        } else {
-            return (
-                this.isTutorialEnabled &&
-                this.user.preferences["tutorialPopover"] === "true"
-            );
+        &.collapsed .sidebar-footer {
+            display: none;
         }
-    }
 
-    private set showTutorialPopover(value: boolean) {
-        this.isTutorialEnabled = value;
-    }
-
-    private get isOverlayVisible() {
-        return this.isOpen && this.isMobileWidth;
-    }
-
-    private get isMobileWidth(): boolean {
-        return this.windowWidth < 768;
-    }
-
-    private get isTimeline(): boolean {
-        let isTimeLine = this.$route.path == "/timeline";
-        if (isTimeLine && !this.isTutorialEnabled)
-            this.isTutorialEnabled = true;
-        return isTimeLine;
-    }
-
-    private get isProfile(): boolean {
-        return this.$route.path == "/profile";
-    }
-
-    private get isTermsOfService(): boolean {
-        return this.$route.path == "/profile/termsOfService";
-    }
-
-    private get isUnderProfile(): boolean {
-        return this.$route.path.startsWith("/profile");
-    }
-
-    private get isHealthInsights(): boolean {
-        return this.$route.path == "/healthInsights";
-    }
-
-    private get isReports(): boolean {
-        return this.$route.path == "/reports";
-    }
-
-    private get isNoteEnabled(): boolean {
-        return this.config.modules["Note"];
+        &.arrow-icon {
+            display: none;
+        }
     }
 }
-</script>
+
+#sidebar.collapsed {
+    min-width: 80px;
+    max-width: 80px;
+}
+
+#sidebar.collapsed .button-container {
+    border-color: $primary !important;
+    margin: 0px;
+    border-radius: 0px !important;
+}
+
+#sidebar .button-container {
+    margin-right: 0em;
+    &.sub-menu {
+        margin-left: 5em;
+        margin-right: 2em;
+        @media (max-width: 767px) {
+            margin-left: 3em;
+            margin-right: 0.5em;
+        }
+    }
+    &.selected {
+        background-color: $lightBlue;
+        .button-spacer {
+            background-color: $aquaBlue !important;
+        }
+    }
+}
+
+#sidebar .button-spacer {
+    width: 100%;
+    height: 100%;
+}
+
+#sidebar .button-container:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    background-color: $lightBlue !important;
+}
+
+#sidebar .button-icon {
+    display: inline-block;
+    margin: auto !important;
+    &.sub-menu {
+        font-size: 1.3em;
+    }
+    @media (max-width: 767px) {
+        font-size: 1.5em;
+        &.sub-menu {
+            font-size: 1em;
+        }
+    }
+}
+
+#sidebar .button-title {
+    display: inline;
+    font-size: 1.3em;
+    text-align: left;
+    margin: 0px;
+    padding: 0px;
+    &.sub-menu {
+        font-size: 1em;
+    }
+    @media (max-width: 767px) {
+        font-size: 1.1em;
+        &.sub-menu {
+            font-size: 0.8em;
+        }
+    }
+}
+
+#sidebar .name-wrapper {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    @media (max-width: 767px) {
+        height: 55px;
+    }
+}
+
+#sidebar hr {
+    border-top: 1px solid $soft_text;
+}
+
+#sidebar.collapsed .arrow-icon {
+    transform: scaleX(-1);
+}
+
+#sidebar .arrow-icon:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    background-color: $lightBlue !important;
+}
+
+#sidebar a {
+    text-decoration: none;
+    color: white !important;
+    caret-color: white !important;
+}
+
+#sidebar a:hover {
+    text-decoration: underline;
+}
+
+.overlay {
+    display: block;
+    opacity: 1;
+    position: fixed;
+    /* full screen */
+    width: 100vw;
+    height: 100vh;
+    /* transparent black */
+    background: rgba(0, 0, 0, 0.7);
+    /* middle layer, i.e. appears below the sidebar */
+    z-index: $z_overlay;
+    /* animate the transition */
+    transition: all 0.5s ease-in-out;
+    top: 0px;
+    overflow: hidden;
+}
+
+#sidebar .row-container {
+    flex: 1 0 auto;
+}
+
+#sidebar .sidebar-footer {
+    width: 100%;
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0rem;
+    align-self: flex-end;
+}
+
+.popover-body {
+    padding: 0.5px 0px 0.5px 0px !important;
+}
+
+.pop-over-close {
+    float: right;
+    padding-top: 0px;
+    color: black;
+    border: none;
+    background-color: transparent;
+}
+
+.popover-content {
+    max-width: 20rem;
+    color: black;
+}
+
+/* Small Devices*/
+@media (max-width: 470px) {
+    .popover-content {
+        max-width: 8rem;
+    }
+}
+</style>

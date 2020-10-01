@@ -1,160 +1,3 @@
-<style lang="scss">
-@import "@/assets/scss/_variables.scss";
-
-.calendar-body {
-    .weeks {
-        border-top: 1px solid #e0e0e0;
-        border-bottom: 1px solid #e0e0e0;
-        border-left: 1px solid #e0e0e0;
-        .week {
-            min-width: 35px;
-            text-align: center;
-            border-right: 1px solid #e0e0e0;
-        }
-    }
-    .dates {
-        position: relative;
-        .week-row {
-            border-left: 1px solid #e0e0e0;
-            .day-cell {
-                min-height: 110px;
-                min-width: 35px;
-                border-right: 1px solid #e0e0e0;
-                border-bottom: 1px solid #e0e0e0;
-                .day-number {
-                    text-align: right;
-                }
-                &.today {
-                    background-color: #fcf8e3;
-                }
-                &.not-cur-month {
-                    .day-number {
-                        color: rgba(0, 0, 0, 0.24);
-                    }
-                }
-                .event-box {
-                    .event-item {
-                        cursor: pointer;
-                        display: inline-block;
-                        padding: 2px;
-                        margin: 2px;
-                        color: white !important;
-                        .medication {
-                            background-color: $primary !important;
-                        }
-                        .laboratory {
-                            background-color: $primary !important;
-                        }
-                        .note {
-                            background-color: $bcgold !important;
-                        }
-                        .immunization {
-                            background-color: $primary !important;
-                        }
-                        .encounter {
-                            background-color: $primary !important;
-                        }
-
-                        .icon {
-                            text-align: center;
-                            border-radius: 50%;
-                            width: 34px;
-                            height: 34px;
-                            line-height: 34px;
-                            color: white;
-                            font-size: 20px;
-                        }
-                    }
-                    /* Small Devices */
-                    @media (max-width: 440px) {
-                        .event-item {
-                            padding: 1px;
-                            margin: 1px;
-                            .icon {
-                                width: 30px;
-                                height: 30px;
-                                line-height: 30px;
-                                font-size: 18px;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-</style>
-<template>
-    <div class="calendar-body">
-        <b-row class="weeks">
-            <b-col v-for="week in weekNames" :key="week" class="week px-0"
-                ><strong>{{ week }}</strong></b-col
-            >
-        </b-row>
-        <b-row class="dates">
-            <b-col>
-                <b-row
-                    v-for="week in monthData"
-                    :key="week.id"
-                    class="week-row"
-                >
-                    <b-col
-                        v-for="day in week.days"
-                        :key="day.id"
-                        class="day-cell p-0"
-                        :class="{
-                            today: day.isToday,
-                            'not-cur-month': !day.isCurMonth,
-                        }"
-                    >
-                        <b-row align-h="end" class="day-number m-1 p-0">{{
-                            day.monthDay
-                        }}</b-row>
-                        <b-row class="event-box p-0 m-1">
-                            <b-col
-                                v-for="event in day.events"
-                                v-show="event.cellIndex <= eventLimit"
-                                :key="event.id"
-                                cols="auto"
-                                class="event-item"
-                                @click="eventClick(event, $event)"
-                            >
-                                <div
-                                    :id="'event-' + event.id"
-                                    class="icon"
-                                    :class="getBackground(event)"
-                                >
-                                    <font-awesome-icon :icon="getIcon(event)" />
-                                </div>
-                                <b-tooltip
-                                    variant="secondary"
-                                    placement="right-bottom"
-                                    fallback-placement="clockwise"
-                                    :target="'event-' + event.id"
-                                    triggers="hover"
-                                >
-                                    <strong>
-                                        {{ getTypeName(event.type) }}
-                                    </strong>
-                                    <ul class="text-left pl-3">
-                                        <li
-                                            v-for="entry in event.entries"
-                                            :key="entry.id"
-                                        >
-                                            {{
-                                                getEntryText(entry, event.type)
-                                            }}
-                                        </li>
-                                    </ul>
-                                </b-tooltip>
-                            </b-col>
-                        </b-row>
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-row>
-    </div>
-</template>
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Ref, Watch } from "vue-property-decorator";
@@ -164,9 +7,8 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
-import EventBus from "@/eventbus";
+import EventBus, { EventMessageName } from "@/eventbus";
 import { CalendarEntry, CalendarWeek } from "./models";
-import { EventMessageName } from "@/constants/eventMessageName";
 import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({})
@@ -326,7 +168,10 @@ export default class CalendarBodyComponent extends Vue {
 
     private eventClick(event: CalendarEntry, jsEvent: Event) {
         jsEvent.stopPropagation();
-        this.eventBus.$emit("calendarDateEventClick", event.entries[0].date);
+        this.eventBus.$emit(
+            EventMessageName.CalendarDateEventClick,
+            event.entries[0].date
+        );
     }
 
     private getTypeName(type: EntryType): string {
@@ -350,3 +195,162 @@ export default class CalendarBodyComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <div class="calendar-body">
+        <b-row class="weeks">
+            <b-col v-for="week in weekNames" :key="week" class="week px-0"
+                ><strong>{{ week }}</strong></b-col
+            >
+        </b-row>
+        <b-row class="dates">
+            <b-col>
+                <b-row
+                    v-for="week in monthData"
+                    :key="week.id"
+                    class="week-row"
+                >
+                    <b-col
+                        v-for="day in week.days"
+                        :key="day.id"
+                        class="day-cell p-0"
+                        :class="{
+                            today: day.isToday,
+                            'not-cur-month': !day.isCurMonth,
+                        }"
+                    >
+                        <b-row align-h="end" class="day-number m-1 p-0">{{
+                            day.monthDay
+                        }}</b-row>
+                        <b-row class="event-box p-0 m-1">
+                            <b-col
+                                v-for="event in day.events"
+                                v-show="event.cellIndex <= eventLimit"
+                                :key="event.id"
+                                cols="auto"
+                                class="event-item"
+                                @click="eventClick(event, $event)"
+                            >
+                                <div
+                                    :id="'event-' + event.id"
+                                    class="icon"
+                                    :class="getBackground(event)"
+                                >
+                                    <font-awesome-icon :icon="getIcon(event)" />
+                                </div>
+                                <b-tooltip
+                                    variant="secondary"
+                                    placement="right-bottom"
+                                    fallback-placement="clockwise"
+                                    :target="'event-' + event.id"
+                                    triggers="hover"
+                                >
+                                    <strong>
+                                        {{ getTypeName(event.type) }}
+                                    </strong>
+                                    <ul class="text-left pl-3">
+                                        <li
+                                            v-for="entry in event.entries"
+                                            :key="entry.id"
+                                        >
+                                            {{
+                                                getEntryText(entry, event.type)
+                                            }}
+                                        </li>
+                                    </ul>
+                                </b-tooltip>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
+    </div>
+</template>
+
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+
+.calendar-body {
+    .weeks {
+        border-top: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e0e0e0;
+        border-left: 1px solid #e0e0e0;
+        .week {
+            min-width: 35px;
+            text-align: center;
+            border-right: 1px solid #e0e0e0;
+        }
+    }
+    .dates {
+        position: relative;
+        .week-row {
+            border-left: 1px solid #e0e0e0;
+            .day-cell {
+                min-height: 110px;
+                min-width: 35px;
+                border-right: 1px solid #e0e0e0;
+                border-bottom: 1px solid #e0e0e0;
+                .day-number {
+                    text-align: right;
+                }
+                &.today {
+                    background-color: #fcf8e3;
+                }
+                &.not-cur-month {
+                    .day-number {
+                        color: rgba(0, 0, 0, 0.24);
+                    }
+                }
+                .event-box {
+                    .event-item {
+                        cursor: pointer;
+                        display: inline-block;
+                        padding: 2px;
+                        margin: 2px;
+                        color: white !important;
+                        .medication {
+                            background-color: $primary !important;
+                        }
+                        .laboratory {
+                            background-color: $primary !important;
+                        }
+                        .note {
+                            background-color: $bcgold !important;
+                        }
+                        .immunization {
+                            background-color: $primary !important;
+                        }
+                        .encounter {
+                            background-color: $primary !important;
+                        }
+
+                        .icon {
+                            text-align: center;
+                            border-radius: 50%;
+                            width: 34px;
+                            height: 34px;
+                            line-height: 34px;
+                            color: white;
+                            font-size: 20px;
+                        }
+                    }
+                    /* Small Devices */
+                    @media (max-width: 440px) {
+                        .event-item {
+                            padding: 1px;
+                            margin: 1px;
+                            .icon {
+                                width: 30px;
+                                height: 30px;
+                                line-height: 30px;
+                                font-size: 18px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+</style>

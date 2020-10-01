@@ -1,270 +1,9 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.column-wrapper {
-    border: 1px;
-}
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-
-.has-filter .form-control {
-    padding-left: 2.375rem;
-}
-
-.has-filter .form-control-feedback {
-    position: absolute;
-    z-index: 2;
-    display: block;
-    width: 2.375rem;
-    height: 2.375rem;
-    line-height: 2.375rem;
-    text-align: center;
-    pointer-events: none;
-    color: #aaa;
-    padding: 12px;
-}
-
-.btn-light {
-    border-color: $primary;
-    color: $primary;
-}
-
-.view-selector {
-    min-width: 170px;
-    .btn-outline-primary {
-        font-size: 1em;
-        background-color: white;
-    }
-    .btn-outline-primary:focus {
-        color: white;
-        background-color: $primary;
-    }
-    .btn-outline-primary:hover {
-        color: white;
-        background-color: $primary;
-    }
-    .month-view-btn {
-        border-radius: 5px 0px 0px 5px;
-        border-right: 0px;
-    }
-    .list-view-btn {
-        border-radius: 0px 5px 5px 0px;
-    }
-}
-
-.z-index-large {
-    z-index: 50;
-}
-
-.sticky-top {
-    z-index: 49 !important;
-}
-.sticky-offset {
-    padding-top: 1rem;
-    background-color: white;
-    z-index: 2;
-}
-</style>
-<template>
-    <div>
-        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
-        <b-row class="my-3 fluid justify-content-md-center">
-            <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
-                <b-alert
-                    :show="hasNewTermsOfService"
-                    dismissible
-                    variant="info"
-                    class="no-print"
-                >
-                    <h4>Updated Terms of Service</h4>
-                    <span>
-                        The Terms of Service have been updated since your last
-                        login. You can review them
-                        <router-link
-                            id="termsOfServiceLink"
-                            variant="primary"
-                            to="/termsOfService"
-                        >
-                            here </router-link
-                        >.
-                    </span>
-                </b-alert>
-                <b-alert
-                    :show="unverifiedEmail || unverifiedSMS"
-                    dismissible
-                    variant="info"
-                    class="no-print"
-                >
-                    <h4>Please complete your profile</h4>
-                    <span>
-                        Your email or cell phone number have not been verified.
-                        To complete your profile and receive notifications from
-                        the Health Gateway, visit the
-                        <router-link
-                            id="profilePageLink"
-                            variant="primary"
-                            to="/profile"
-                            >Profile Page</router-link
-                        >
-                        <span>.</span>
-                    </span>
-                </b-alert>
-                <b-alert
-                    :show="!isPacificTime"
-                    dismissible
-                    variant="info"
-                    class="no-print"
-                >
-                    <h4>Looks like you're in a different timezone.</h4>
-                    <span>
-                        Heads up: your health records are recorded and displayed
-                        in Pacific Time.
-                    </span>
-                </b-alert>
-
-                <div id="pageTitle">
-                    <h1 id="subject">Health Care Timeline</h1>
-                    <hr class="mb-0" />
-                </div>
-                <div class="sticky-top sticky-offset">
-                    <b-row class="no-print justify-content-between">
-                        <b-col class="col">
-                            <div class="form-group has-filter">
-                                <font-awesome-icon
-                                    :icon="searchIcon"
-                                    class="form-control-feedback"
-                                    fixed-width
-                                ></font-awesome-icon>
-                                <b-form-input
-                                    v-model="filterText"
-                                    type="text"
-                                    placeholder=""
-                                    maxlength="50"
-                                    debounce="250"
-                                ></b-form-input>
-                            </div>
-                        </b-col>
-                        <b-col class="col-auto pl-0">
-                            <Filters @filters-changed="filtersChanged" />
-                        </b-col>
-                    </b-row>
-                </div>
-                <b-row v-if="isAddingNote" class="pb-5">
-                    <b-col>
-                        <NoteTimelineComponent :is-add-mode="true" />
-                    </b-col>
-                </b-row>
-                <LinearTimeline
-                    v-show="isListView && !isLoading"
-                    :timeline-entries="timelineEntries"
-                    :is-visible="isListView"
-                    :total-entries="getTotalCount()"
-                    :filter-text="filterText"
-                    :filter-types="filterTypes"
-                >
-                    <b-row
-                        slot="month-list-toggle"
-                        class="view-selector justify-content-end"
-                    >
-                        <b-col cols="auto" class="pr-0">
-                            <b-btn
-                                class="month-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: false }"
-                                @click.stop="toggleMonthView"
-                            >
-                                Month
-                            </b-btn>
-                        </b-col>
-                        <b-col cols="auto" class="pl-0">
-                            <b-btn
-                                class="list-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: true }"
-                            >
-                                List
-                            </b-btn>
-                        </b-col>
-                    </b-row>
-                </LinearTimeline>
-                <CalendarTimeline
-                    v-show="!isListView && !isLoading"
-                    :timeline-entries="timelineEntries"
-                    :is-visible="!isListView"
-                    :total-entries="getTotalCount()"
-                    :filter-text="filterText"
-                    :filter-types="filterTypes"
-                >
-                    <b-row
-                        slot="month-list-toggle"
-                        class="view-selector justify-content-end"
-                    >
-                        <b-col cols="auto" class="pr-0">
-                            <b-btn
-                                class="month-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: true }"
-                            >
-                                Month
-                            </b-btn>
-                        </b-col>
-                        <b-col cols="auto" class="pl-0">
-                            <b-btn
-                                class="list-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: false }"
-                                @click.stop="toggleListView"
-                            >
-                                List
-                            </b-btn>
-                        </b-col>
-                    </b-row>
-                </CalendarTimeline>
-                <b-row v-if="isLoading">
-                    <b-col>
-                        <content-placeholders>
-                            <content-placeholders-text :lines="1" />
-                        </content-placeholders>
-                        <br />
-                        <div class="px-2">
-                            <content-placeholders>
-                                <content-placeholders-heading :img="true" />
-                                <content-placeholders-text :lines="3" />
-                            </content-placeholders>
-                            <br />
-                            <br />
-                            <content-placeholders>
-                                <content-placeholders-heading :img="true" />
-                                <content-placeholders-img />
-                            </content-placeholders>
-                        </div>
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-row>
-        <CovidModalComponent
-            ref="covidModal"
-            :is-loading="isLoading"
-            @submit="onCovidSubmit"
-            @cancel="onCovidCancel"
-        />
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :error="protectiveWordAttempts > 1"
-            :is-loading="isLoading"
-            @submit="onProtectiveWordSubmit"
-            @cancel="onProtectiveWordCancel"
-        />
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import { Route } from "vue-router";
-import EventBus from "@/eventbus";
+import EventBus, { EventMessageName } from "@/eventbus";
 import { WebClientConfiguration } from "@/models/configData";
 import {
     ILogger,
@@ -381,45 +120,49 @@ export default class TimelineView extends Vue {
         this.fetchNotes();
         window.addEventListener("beforeunload", this.onBrowserClose);
         let self = this;
-        this.eventBus.$on("timelineCreateNote", function () {
+        this.eventBus.$on(EventMessageName.TimelineCreateNote, function () {
             self.isAddingNote = true;
         });
-        this.eventBus.$on("timelinePrintView", function () {
+        this.eventBus.$on(EventMessageName.TimelinePrintView, function () {
             self.printRecords();
         });
-        this.eventBus.$on("idleLogoutWarning", function (isVisible: boolean) {
+        this.eventBus.$on(EventMessageName.IdleLogoutWarning, function (
+            isVisible: boolean
+        ) {
             self.idleLogoutWarning = isVisible;
         });
 
-        this.eventBus.$on("timelineEntryAdded", function (
+        this.eventBus.$on(EventMessageName.TimelineEntryAdded, function (
             entry: TimelineEntry
         ) {
             self.onEntryAdded(entry);
         });
-        this.eventBus.$on("timelineEntryEdit", function (entry: TimelineEntry) {
+        this.eventBus.$on(EventMessageName.TimelineEntryEdit, function (
+            entry: TimelineEntry
+        ) {
             self.onEntryEdit(entry);
         });
-        this.eventBus.$on("timelineEntryUpdated", function (
+        this.eventBus.$on(EventMessageName.TimelineEntryUpdated, function (
             entry: TimelineEntry
         ) {
             self.onEntryUpdated(entry);
         });
-        this.eventBus.$on("timelineEntryDeleted", function (
+        this.eventBus.$on(EventMessageName.TimelineEntryDeleted, function (
             entry: TimelineEntry
         ) {
             self.onEntryDeleted(entry);
         });
-        this.eventBus.$on("timelineEntryAddClose", function (
+        this.eventBus.$on(EventMessageName.TimelineEntryAddClose, function (
             entry: TimelineEntry
         ) {
             self.onEntryAddClose(entry);
         });
-        this.eventBus.$on("timelineEntryEditClose", function (
+        this.eventBus.$on(EventMessageName.TimelineEntryEditClose, function (
             entry: TimelineEntry
         ) {
             self.onEntryEditClose(entry);
         });
-        this.eventBus.$on("calendarDateEventClick", function (
+        this.eventBus.$on(EventMessageName.CalendarDateEventClick, function (
             eventDate: DateWrapper
         ) {
             self.isListView = true;
@@ -482,7 +225,7 @@ export default class TimelineView extends Vue {
     }
 
     private onCovidSubmit() {
-        this.eventBus.$emit("filterSelected", "laboratory");
+        this.eventBus.$emit("filter-selected", "laboratory");
     }
 
     private onCovidCancel() {
@@ -793,3 +536,265 @@ export default class TimelineView extends Vue {
     }
 }
 </script>
+
+<template>
+    <div>
+        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
+        <b-row class="my-3 fluid justify-content-md-center">
+            <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
+                <b-alert
+                    :show="hasNewTermsOfService"
+                    dismissible
+                    variant="info"
+                    class="no-print"
+                >
+                    <h4>Updated Terms of Service</h4>
+                    <span>
+                        The Terms of Service have been updated since your last
+                        login. You can review them
+                        <router-link
+                            id="termsOfServiceLink"
+                            variant="primary"
+                            to="/termsOfService"
+                        >
+                            here </router-link
+                        >.
+                    </span>
+                </b-alert>
+                <b-alert
+                    :show="unverifiedEmail || unverifiedSMS"
+                    dismissible
+                    variant="info"
+                    class="no-print"
+                >
+                    <h4>Please complete your profile</h4>
+                    <span>
+                        Your email or cell phone number have not been verified.
+                        To complete your profile and receive notifications from
+                        the Health Gateway, visit the
+                        <router-link
+                            id="profilePageLink"
+                            variant="primary"
+                            to="/profile"
+                            >Profile Page</router-link
+                        >
+                        <span>.</span>
+                    </span>
+                </b-alert>
+                <b-alert
+                    :show="!isPacificTime"
+                    dismissible
+                    variant="info"
+                    class="no-print"
+                >
+                    <h4>Looks like you're in a different timezone.</h4>
+                    <span>
+                        Heads up: your health records are recorded and displayed
+                        in Pacific Time.
+                    </span>
+                </b-alert>
+
+                <div id="pageTitle">
+                    <h1 id="subject">Health Care Timeline</h1>
+                    <hr class="mb-0" />
+                </div>
+                <div class="sticky-top sticky-offset">
+                    <b-row class="no-print justify-content-between">
+                        <b-col class="col">
+                            <div class="form-group has-filter">
+                                <font-awesome-icon
+                                    :icon="searchIcon"
+                                    class="form-control-feedback"
+                                    fixed-width
+                                ></font-awesome-icon>
+                                <b-form-input
+                                    v-model="filterText"
+                                    type="text"
+                                    placeholder=""
+                                    maxlength="50"
+                                    debounce="250"
+                                ></b-form-input>
+                            </div>
+                        </b-col>
+                        <b-col class="col-auto pl-0">
+                            <Filters @filters-changed="filtersChanged" />
+                        </b-col>
+                    </b-row>
+                </div>
+                <b-row v-if="isAddingNote" class="pb-5">
+                    <b-col>
+                        <NoteTimelineComponent :is-add-mode="true" />
+                    </b-col>
+                </b-row>
+                <LinearTimeline
+                    v-show="isListView && !isLoading"
+                    :timeline-entries="timelineEntries"
+                    :is-visible="isListView"
+                    :total-entries="getTotalCount()"
+                    :filter-text="filterText"
+                    :filter-types="filterTypes"
+                >
+                    <b-row
+                        slot="month-list-toggle"
+                        class="view-selector justify-content-end"
+                    >
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: false }"
+                                @click.stop="toggleMonthView"
+                            >
+                                Month
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: true }"
+                            >
+                                List
+                            </b-btn>
+                        </b-col>
+                    </b-row>
+                </LinearTimeline>
+                <CalendarTimeline
+                    v-show="!isListView && !isLoading"
+                    :timeline-entries="timelineEntries"
+                    :is-visible="!isListView"
+                    :total-entries="getTotalCount()"
+                    :filter-text="filterText"
+                    :filter-types="filterTypes"
+                >
+                    <b-row
+                        slot="month-list-toggle"
+                        class="view-selector justify-content-end"
+                    >
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: true }"
+                            >
+                                Month
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: false }"
+                                @click.stop="toggleListView"
+                            >
+                                List
+                            </b-btn>
+                        </b-col>
+                    </b-row>
+                </CalendarTimeline>
+                <b-row v-if="isLoading">
+                    <b-col>
+                        <content-placeholders>
+                            <content-placeholders-text :lines="1" />
+                        </content-placeholders>
+                        <br />
+                        <div class="px-2">
+                            <content-placeholders>
+                                <content-placeholders-heading :img="true" />
+                                <content-placeholders-text :lines="3" />
+                            </content-placeholders>
+                            <br />
+                            <br />
+                            <content-placeholders>
+                                <content-placeholders-heading :img="true" />
+                                <content-placeholders-img />
+                            </content-placeholders>
+                        </div>
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
+        <CovidModalComponent
+            ref="covidModal"
+            :is-loading="isLoading"
+            @submit="onCovidSubmit"
+            @cancel="onCovidCancel"
+        />
+        <ProtectiveWordComponent
+            ref="protectiveWordModal"
+            :error="protectiveWordAttempts > 1"
+            :is-loading="isLoading"
+            @submit="onProtectiveWordSubmit"
+            @cancel="onProtectiveWordCancel"
+        />
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.column-wrapper {
+    border: 1px;
+}
+
+#pageTitle {
+    color: $primary;
+}
+
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+
+.has-filter .form-control {
+    padding-left: 2.375rem;
+}
+
+.has-filter .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+    padding: 12px;
+}
+
+.btn-light {
+    border-color: $primary;
+    color: $primary;
+}
+
+.view-selector {
+    min-width: 170px;
+    .btn-outline-primary {
+        font-size: 1em;
+        background-color: white;
+    }
+    .btn-outline-primary:focus {
+        color: white;
+        background-color: $primary;
+    }
+    .btn-outline-primary:hover {
+        color: white;
+        background-color: $primary;
+    }
+    .month-view-btn {
+        border-radius: 5px 0px 0px 5px;
+        border-right: 0px;
+    }
+    .list-view-btn {
+        border-radius: 0px 5px 5px 0px;
+    }
+}
+
+.z-index-large {
+    z-index: 50;
+}
+
+.sticky-top {
+    z-index: 49 !important;
+}
+.sticky-offset {
+    padding-top: 1rem;
+    background-color: white;
+    z-index: 2;
+}
+</style>

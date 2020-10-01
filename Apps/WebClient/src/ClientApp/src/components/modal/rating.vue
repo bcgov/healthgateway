@@ -1,53 +1,3 @@
-<template>
-    <div>
-        <b-modal
-            id="rating-modal"
-            ref="rating-modal"
-            v-model="isVisible"
-            data-testid="ratingModal"
-            title="Rating"
-            size="md"
-            header-bg-variant="primary"
-            header-text-variant="light"
-            footer-class="modal-footer"
-            no-close-on-backdrop
-            hide-header-close
-            no-close-on-esc
-            centered
-        >
-            <b-row class="text-center">
-                <b-col data-testid="ratingModalQuestionText">
-                    {{ question }}
-                </b-col>
-            </b-row>
-            <b-row class="text-center px-2 pt-3">
-                <b-col>
-                    <b-form-rating
-                        v-model="ratingValue"
-                        variant="warning"
-                        class="mb-2"
-                        no-border
-                        size="lg"
-                        @change="handleRating(ratingValue)"
-                    ></b-form-rating>
-                </b-col>
-            </b-row>
-            <template v-slot:modal-footer>
-                <b-row>
-                    <b-col>
-                        <b-button
-                            id="skipButton"
-                            data-testid="ratingModalSkipBtn"
-                            variant="outline-primary"
-                            @click="handleRating(0, true)"
-                            >Skip</b-button
-                        >
-                    </b-col>
-                </b-row>
-            </template>
-        </b-modal>
-    </div>
-</template>
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Emit } from "vue-property-decorator";
@@ -112,3 +62,54 @@ export default class RatingComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <div>
+        <b-modal
+            id="rating-modal"
+            ref="rating-modal"
+            v-model="isVisible"
+            data-testid="ratingModal"
+            title="Rating"
+            size="md"
+            header-bg-variant="primary"
+            header-text-variant="light"
+            footer-class="modal-footer"
+            no-close-on-backdrop
+            hide-header-close
+            no-close-on-esc
+            centered
+        >
+            <b-row class="text-center">
+                <b-col data-testid="ratingModalQuestionText">
+                    {{ question }}
+                </b-col>
+            </b-row>
+            <b-row class="text-center px-2 pt-3">
+                <b-col>
+                    <b-form-rating
+                        v-model="ratingValue"
+                        variant="warning"
+                        class="mb-2"
+                        no-border
+                        size="lg"
+                        @change="handleRating(ratingValue)"
+                    ></b-form-rating>
+                </b-col>
+            </b-row>
+            <template #modal-footer>
+                <b-row>
+                    <b-col>
+                        <b-button
+                            id="skipButton"
+                            data-testid="ratingModalSkipBtn"
+                            variant="outline-primary"
+                            @click="handleRating(0, true)"
+                            >Skip</b-button
+                        >
+                    </b-col>
+                </b-row>
+            </template>
+        </b-modal>
+    </div>
+</template>

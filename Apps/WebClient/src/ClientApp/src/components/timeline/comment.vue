@@ -1,115 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-
-.comment-body {
-    background-color: $soft_background;
-}
-
-.editing {
-    background-color: lightyellow;
-}
-
-.comment-menu {
-    color: $soft_text;
-}
-
-.comment-text {
-    white-space: pre-line;
-}
-
-.timestamp {
-    color: $soft_text;
-    font-size: 0.7em;
-}
-
-.single-line {
-    height: 38px !important;
-}
-</style>
-<template>
-    <b-col>
-        <div v-show="!isLoading">
-            <b-row
-                v-if="!isEditMode"
-                class="comment-body py-2 mr-0 ml-3 my-1"
-                align-v="center"
-            >
-                <b-col class="comment-text">
-                    {{ comment.text }}
-                    <p class="m-0 timestamp">
-                        {{ formatDate(comment.createdDateTime) }}
-                    </p>
-                </b-col>
-                <div class="d-flex flex-row-reverse">
-                    <b-dropdown
-                        dropright
-                        text=""
-                        :no-caret="true"
-                        variant="link"
-                    >
-                        <template slot="button-content">
-                            <font-awesome-icon
-                                class="comment-menu"
-                                :icon="menuIcon"
-                                size="1x"
-                            ></font-awesome-icon>
-                        </template>
-                        <b-dropdown-item
-                            class="menuItem"
-                            @click="editComment()"
-                        >
-                            Edit
-                        </b-dropdown-item>
-                        <b-dropdown-item
-                            class="menuItem"
-                            @click="deleteComment()"
-                        >
-                            Delete
-                        </b-dropdown-item>
-                    </b-dropdown>
-                </div>
-            </b-row>
-            <b-row v-if="isEditMode" class="comment-body py-2 mr-0 ml-3 my-1">
-                <b-col class="col pl-2 pr-0">
-                    <b-form @submit.prevent>
-                        <b-form-textarea
-                            id="comment-input"
-                            v-model="commentInput"
-                            :class="
-                                commentInput.length <= 30 ? 'single-line' : ''
-                            "
-                            max-rows="10"
-                            no-resize
-                            placeholder="Editing a comment"
-                            maxlength="1000"
-                        ></b-form-textarea>
-                    </b-form>
-                </b-col>
-                <b-col
-                    class="px-2 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
-                >
-                    <b-button
-                        class="mr-2"
-                        variant="primary"
-                        :disabled="commentInput === ''"
-                        @click="onSubmit"
-                    >
-                        Save
-                    </b-button>
-                    <b-button variant="secondary" @click="onCancel">
-                        Cancel
-                    </b-button>
-                </b-col>
-            </b-row>
-        </div>
-        <div v-show="isLoading">
-            <div class="d-flex align-items-center">
-                <strong>Loading...</strong>
-                <b-spinner class="ml-5"></b-spinner>
-            </div>
-        </div>
-    </b-col>
-</template>
 <script lang="ts">
 import Vue from "vue";
 import UserComment from "@/models/userComment";
@@ -211,3 +99,117 @@ export default class CommentComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <b-col>
+        <div v-show="!isLoading">
+            <b-row
+                v-if="!isEditMode"
+                class="comment-body py-2 mr-0 ml-3 my-1"
+                align-v="center"
+            >
+                <b-col class="comment-text">
+                    {{ comment.text }}
+                    <p class="m-0 timestamp">
+                        {{ formatDate(comment.createdDateTime) }}
+                    </p>
+                </b-col>
+                <div class="d-flex flex-row-reverse">
+                    <b-dropdown
+                        dropright
+                        text=""
+                        :no-caret="true"
+                        variant="link"
+                    >
+                        <template slot="button-content">
+                            <font-awesome-icon
+                                class="comment-menu"
+                                :icon="menuIcon"
+                                size="1x"
+                            ></font-awesome-icon>
+                        </template>
+                        <b-dropdown-item
+                            class="menuItem"
+                            @click="editComment()"
+                        >
+                            Edit
+                        </b-dropdown-item>
+                        <b-dropdown-item
+                            class="menuItem"
+                            @click="deleteComment()"
+                        >
+                            Delete
+                        </b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </b-row>
+            <b-row v-if="isEditMode" class="comment-body py-2 mr-0 ml-3 my-1">
+                <b-col class="col pl-2 pr-0">
+                    <b-form @submit.prevent>
+                        <b-form-textarea
+                            id="comment-input"
+                            v-model="commentInput"
+                            :class="
+                                commentInput.length <= 30 ? 'single-line' : ''
+                            "
+                            max-rows="10"
+                            no-resize
+                            placeholder="Editing a comment"
+                            maxlength="1000"
+                        ></b-form-textarea>
+                    </b-form>
+                </b-col>
+                <b-col
+                    class="px-2 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
+                >
+                    <b-button
+                        class="mr-2"
+                        variant="primary"
+                        :disabled="commentInput === ''"
+                        @click="onSubmit"
+                    >
+                        Save
+                    </b-button>
+                    <b-button variant="secondary" @click="onCancel">
+                        Cancel
+                    </b-button>
+                </b-col>
+            </b-row>
+        </div>
+        <div v-show="isLoading">
+            <div class="d-flex align-items-center">
+                <strong>Loading...</strong>
+                <b-spinner class="ml-5"></b-spinner>
+            </div>
+        </div>
+    </b-col>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.comment-body {
+    background-color: $soft_background;
+}
+
+.editing {
+    background-color: lightyellow;
+}
+
+.comment-menu {
+    color: $soft_text;
+}
+
+.comment-text {
+    white-space: pre-line;
+}
+
+.timestamp {
+    color: $soft_text;
+    font-size: 0.7em;
+}
+
+.single-line {
+    height: 38px !important;
+}
+</style>

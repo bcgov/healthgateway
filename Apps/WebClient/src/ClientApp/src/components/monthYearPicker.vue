@@ -1,125 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-
-#currentDate {
-    width: 140px;
-}
-.select {
-    position: relative;
-    width: 100%;
-    text-align: left;
-    outline: none;
-}
-
-.items {
-    margin-top: 2px;
-    line-height: 45px;
-    min-width: 200px;
-    overflow: hidden;
-    box-shadow: $lightGrey 4px 4px 4px;
-    border-right: 1px solid $soft_background;
-    border-left: 1px solid $soft_background;
-    border-bottom: 1px solid $soft_background;
-    position: absolute;
-    background-color: $light_background;
-    left: 0;
-    right: 0;
-    z-index: 10000;
-}
-
-.years {
-    max-height: 250px;
-    overflow-y: scroll;
-}
-
-.item {
-    color: $soft_text;
-    cursor: pointer;
-    text-align: center;
-}
-
-.item:hover,
-.selected {
-    background-color: $primary;
-    color: $primary_text;
-}
-
-.selectHide {
-    display: none;
-}
-
-.no-data {
-    background-color: lightgray;
-}
-</style>
-<template>
-    <div v-on-clickaway="close" class="select">
-        <b-btn
-            id="currentDate"
-            squared
-            class="m-0"
-            :variant="isOpen ? 'primary' : 'light'"
-            @click="open()"
-        >
-            {{ dateText }}
-        </b-btn>
-        <b-row class="items years" :class="{ selectHide: !isYearOpen }">
-            <b-col
-                v-for="(year, i) of years"
-                :key="i"
-                :class="getDisplayYearCss(year)"
-                @click="selectYear(year)"
-            >
-                {{ year }}
-            </b-col>
-        </b-row>
-        <b-row class="items" :class="{ selectHide: !isMonthOpen }">
-            <b-col class="col-2 p-0">
-                <b-btn
-                    squared
-                    class="m-0 w-100 h-100"
-                    :disabled="years.indexOf(selectedYear) == years.length - 1"
-                    variant="light"
-                    @click="previousYear()"
-                >
-                    <font-awesome-icon icon="chevron-left" size="sm" />
-                </b-btn>
-            </b-col>
-            <b-col class="col-8 p-0">
-                <b-btn
-                    id="selectedYearBtn"
-                    squared
-                    class="m-0 w-100 h-100"
-                    variant="light"
-                    @click="open()"
-                >
-                    {{ selectedYear }}
-                </b-btn>
-            </b-col>
-            <b-col class="col-2 p-0">
-                <b-btn
-                    squared
-                    class="m-0 w-100 h-100"
-                    :disabled="years.indexOf(selectedYear) == 0"
-                    variant="light"
-                    @click="nextYear()"
-                >
-                    <font-awesome-icon icon="chevron-right" size="sm" />
-                </b-btn>
-            </b-col>
-            <b-col
-                v-for="(month, i) of monthsToDisplay"
-                :key="i"
-                :variant="month == selectedMonth ? 'primary' : 'light'"
-                :class="getDisplayMonthCss(month)"
-                @click="selectMonth(i)"
-            >
-                {{ month.Title }}
-            </b-col>
-        </b-row>
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch, Emit } from "vue-property-decorator";
@@ -272,3 +150,126 @@ export default class MonthYearPickerComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <div v-on-clickaway="close" class="select">
+        <b-btn
+            id="currentDate"
+            squared
+            class="m-0"
+            :variant="isOpen ? 'primary' : 'light'"
+            @click="open()"
+        >
+            {{ dateText }}
+        </b-btn>
+        <b-row class="items years" :class="{ selectHide: !isYearOpen }">
+            <b-col
+                v-for="(year, i) of years"
+                :key="i"
+                :class="getDisplayYearCss(year)"
+                @click="selectYear(year)"
+            >
+                {{ year }}
+            </b-col>
+        </b-row>
+        <b-row class="items" :class="{ selectHide: !isMonthOpen }">
+            <b-col class="col-2 p-0">
+                <b-btn
+                    squared
+                    class="m-0 w-100 h-100"
+                    :disabled="years.indexOf(selectedYear) == years.length - 1"
+                    variant="light"
+                    @click="previousYear()"
+                >
+                    <font-awesome-icon icon="chevron-left" size="sm" />
+                </b-btn>
+            </b-col>
+            <b-col class="col-8 p-0">
+                <b-btn
+                    id="selectedYearBtn"
+                    squared
+                    class="m-0 w-100 h-100"
+                    variant="light"
+                    @click="open()"
+                >
+                    {{ selectedYear }}
+                </b-btn>
+            </b-col>
+            <b-col class="col-2 p-0">
+                <b-btn
+                    squared
+                    class="m-0 w-100 h-100"
+                    :disabled="years.indexOf(selectedYear) == 0"
+                    variant="light"
+                    @click="nextYear()"
+                >
+                    <font-awesome-icon icon="chevron-right" size="sm" />
+                </b-btn>
+            </b-col>
+            <b-col
+                v-for="(month, i) of monthsToDisplay"
+                :key="i"
+                :variant="month == selectedMonth ? 'primary' : 'light'"
+                :class="getDisplayMonthCss(month)"
+                @click="selectMonth(i)"
+            >
+                {{ month.Title }}
+            </b-col>
+        </b-row>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+#currentDate {
+    width: 140px;
+}
+.select {
+    position: relative;
+    width: 100%;
+    text-align: left;
+    outline: none;
+}
+
+.items {
+    margin-top: 2px;
+    line-height: 45px;
+    min-width: 200px;
+    overflow: hidden;
+    box-shadow: $lightGrey 4px 4px 4px;
+    border-right: 1px solid $soft_background;
+    border-left: 1px solid $soft_background;
+    border-bottom: 1px solid $soft_background;
+    position: absolute;
+    background-color: $light_background;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+}
+
+.years {
+    max-height: 250px;
+    overflow-y: scroll;
+}
+
+.item {
+    color: $soft_text;
+    cursor: pointer;
+    text-align: center;
+}
+
+.item:hover,
+.selected {
+    background-color: $primary;
+    color: $primary_text;
+}
+
+.selectHide {
+    display: none;
+}
+
+.no-data {
+    background-color: lightgray;
+}
+</style>

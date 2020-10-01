@@ -1,58 +1,38 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
+import Pharmacy from "@/models/pharmacy";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+import { Component, Prop } from "vue-property-decorator";
+import { Action, Getter, State } from "vuex-class";
+import { IconDefinition, faPills } from "@fortawesome/free-solid-svg-icons";
+import MedicationResult from "@/models/medicationResult";
+import PhoneUtil from "@/utility/phoneUtil";
 
-$radius: 15px;
+@Component({
+    components: {
+        CommentSection: CommentSectionComponent,
+    },
+})
+export default class MedicationTimelineComponent extends Vue {
+    @Prop() entry!: MedicationTimelineEntry;
+    @Prop() index!: number;
+    @Prop() datekey!: string;
 
-.timelineCard {
-    border-radius: $radius $radius $radius $radius;
-    border-color: $soft_background;
-    border-style: solid;
-    border-width: 2px;
+    private detailsVisible: boolean = false;
+
+    private get entryIcon(): IconDefinition {
+        return faPills;
+    }
+
+    private formatPhone(phoneNumber: string): string {
+        return PhoneUtil.formatPhone(phoneNumber);
+    }
 }
-
-.entryTitle {
-    background-color: $soft_background;
-    color: $primary;
-    padding: 13px 15px;
-    font-weight: bold;
-    margin-right: -1px;
-    border-radius: 0px $radius 0px 0px;
-}
-
-.icon {
-    background-color: $primary;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    border-radius: $radius 0px 0px 0px;
-}
-
-.leftPane {
-    width: 60px;
-    max-width: 60px;
-}
-
-.detailsButton {
-    padding: 0px;
-}
-
-.detailSection {
-    margin-top: 15px;
-}
-
-.commentButton {
-    border-radius: $radius;
-}
-
-.newComment {
-    border-radius: $radius;
-}
-
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
-}
-</style>
+</script>
 
 <template>
     <b-col class="timelineCard">
@@ -193,38 +173,58 @@ $radius: 15px;
     </b-col>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-import Pharmacy from "@/models/pharmacy";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import { IconDefinition, faPills } from "@fortawesome/free-solid-svg-icons";
-import MedicationResult from "@/models/medicationResult";
-import PhoneUtil from "@/utility/phoneUtil";
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-@Component({
-    components: {
-        CommentSection: CommentSectionComponent,
-    },
-})
-export default class MedicationTimelineComponent extends Vue {
-    @Prop() entry!: MedicationTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
+$radius: 15px;
 
-    private detailsVisible: boolean = false;
-
-    private get entryIcon(): IconDefinition {
-        return faPills;
-    }
-
-    private formatPhone(phoneNumber: string): string {
-        return PhoneUtil.formatPhone(phoneNumber);
-    }
+.timelineCard {
+    border-radius: $radius $radius $radius $radius;
+    border-color: $soft_background;
+    border-style: solid;
+    border-width: 2px;
 }
-</script>
+
+.entryTitle {
+    background-color: $soft_background;
+    color: $primary;
+    padding: 13px 15px;
+    font-weight: bold;
+    margin-right: -1px;
+    border-radius: 0px $radius 0px 0px;
+}
+
+.icon {
+    background-color: $primary;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: $radius 0px 0px 0px;
+}
+
+.leftPane {
+    width: 60px;
+    max-width: 60px;
+}
+
+.detailsButton {
+    padding: 0px;
+}
+
+.detailSection {
+    margin-top: 15px;
+}
+
+.commentButton {
+    border-radius: $radius;
+}
+
+.newComment {
+    border-radius: $radius;
+}
+
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+    display: none;
+}
+</style>

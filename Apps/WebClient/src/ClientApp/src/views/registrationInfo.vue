@@ -1,25 +1,51 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.title {
-    color: $primary;
-    font-size: 2.1em;
+<script lang="ts">
+import Vue from "vue";
+import { Getter } from "vuex-class";
+import { Component, Prop } from "vue-property-decorator";
+import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import Image00 from "@/assets/images/registration/000_Logo-Dark.png";
+import Image01 from "@/assets/images/registration/001_BC-Services-Card.png";
+import Image02 from "@/assets/images/registration/002_App-Store.png";
+import Image03 from "@/assets/images/registration/003_Mobile-App.png";
+import Image04 from "@/assets/images/registration/004_USB-Card-Reader.png";
+import Image05 from "@/assets/images/registration/005_Mobile-Card.png";
+
+@Component
+export default class RegistrationInfoView extends Vue {
+    @Prop() inviteKey?: string;
+    @Prop() email?: string;
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
+    private logoImg: string = Image00;
+    private bcServicesCardImg: string = Image01;
+    private appStoreImg: string = Image02;
+    private mobileAppImg: string = Image03;
+    private cardReaderImg: string = Image04;
+    private mobileCardImg: string = Image05;
+    private signupProcessVisible: boolean = false;
+    private dongleVisible: boolean = false;
+    private registrationLink: string = "/registration/";
+    private isRegistrationInviteOnly: boolean = false;
+    private isRegistrationClosed: boolean = false;
+
+    private mounted() {
+        this.isRegistrationInviteOnly =
+            this.webClientConfig.registrationStatus ==
+            RegistrationStatus.InviteOnly;
+        this.isRegistrationClosed =
+            this.webClientConfig.registrationStatus ==
+            RegistrationStatus.Closed;
+
+        if (this.isRegistrationInviteOnly && this.inviteKey) {
+            this.registrationLink += `?inviteKey=${this.inviteKey}`;
+            this.registrationLink += this.email ? `&email=${this.email}` : "";
+        }
+    }
 }
-.logo {
-    width: 300px;
-    margin-bottom: 1em;
-}
-.image-step {
-    height: 100px;
-    margin-bottom: 1em;
-}
-.bullet {
-    background-color: $bcgold;
-    color: white;
-}
-.btn-light {
-    color: $primary;
-}
-</style>
+</script>
+
 <template>
     <b-container>
         <b-row class="pt-5">
@@ -281,50 +307,26 @@
         </b-row>
     </b-container>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import { Getter } from "vuex-class";
-import { Component, Prop } from "vue-property-decorator";
-import { WebClientConfiguration } from "@/models/configData";
-import { RegistrationStatus } from "@/constants/registrationStatus";
-import Image00 from "@/assets/images/registration/000_Logo-Dark.png";
-import Image01 from "@/assets/images/registration/001_BC-Services-Card.png";
-import Image02 from "@/assets/images/registration/002_App-Store.png";
-import Image03 from "@/assets/images/registration/003_Mobile-App.png";
-import Image04 from "@/assets/images/registration/004_USB-Card-Reader.png";
-import Image05 from "@/assets/images/registration/005_Mobile-Card.png";
 
-@Component
-export default class RegistrationInfoView extends Vue {
-    @Prop() inviteKey?: string;
-    @Prop() email?: string;
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
-    private logoImg: string = Image00;
-    private bcServicesCardImg: string = Image01;
-    private appStoreImg: string = Image02;
-    private mobileAppImg: string = Image03;
-    private cardReaderImg: string = Image04;
-    private mobileCardImg: string = Image05;
-    private signupProcessVisible: boolean = false;
-    private dongleVisible: boolean = false;
-    private registrationLink: string = "/registration/";
-    private isRegistrationInviteOnly: boolean = false;
-    private isRegistrationClosed: boolean = false;
-
-    private mounted() {
-        this.isRegistrationInviteOnly =
-            this.webClientConfig.registrationStatus ==
-            RegistrationStatus.InviteOnly;
-        this.isRegistrationClosed =
-            this.webClientConfig.registrationStatus ==
-            RegistrationStatus.Closed;
-
-        if (this.isRegistrationInviteOnly && this.inviteKey) {
-            this.registrationLink += `?inviteKey=${this.inviteKey}`;
-            this.registrationLink += this.email ? `&email=${this.email}` : "";
-        }
-    }
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.title {
+    color: $primary;
+    font-size: 2.1em;
 }
-</script>
+.logo {
+    width: 300px;
+    margin-bottom: 1em;
+}
+.image-step {
+    height: 100px;
+    margin-bottom: 1em;
+}
+.bullet {
+    background-color: $bcgold;
+    color: white;
+}
+.btn-light {
+    color: $primary;
+}
+</style>

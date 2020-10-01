@@ -1,12 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-#pageTitle {
-    color: $primary;
-}
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>
 <template>
     <div class="px-4">
         <b-row>
@@ -840,3 +831,13 @@
         </b-row>
     </div>
 </template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+#pageTitle {
+    color: $primary;
+}
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+</style>

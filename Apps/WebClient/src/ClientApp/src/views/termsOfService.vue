@@ -1,52 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-
-#termsOfService {
-    background-color: $light_background;
-    color: $soft_text;
-}
-</style>
-<template>
-    <b-container class="py-5">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row>
-            <b-col>
-                <b-alert :show="hasErrors" dismissible variant="danger">
-                    <h4>Error</h4>
-                    <p>
-                        An unexpected error occured while processing the
-                        request:
-                    </p>
-                    <span>{{ errorMessage }}</span>
-                </b-alert>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <div id="pageTitle">
-                    <h1 id="Subject">Terms of Service</h1>
-                    <hr />
-                </div>
-            </b-col>
-        </b-row>
-        <div v-if="!isLoading">
-            <b-row class="mb-3">
-                <b-col>
-                    <HtmlTextAreaComponent :input="termsOfService" />
-                </b-col>
-            </b-row>
-        </div>
-    </b-container>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
@@ -105,3 +56,53 @@ export default class TermsOfServiceView extends Vue {
     }
 }
 </script>
+
+<template>
+    <b-container class="py-5">
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <b-row>
+            <b-col>
+                <b-alert :show="hasErrors" dismissible variant="danger">
+                    <h4>Error</h4>
+                    <p>
+                        An unexpected error occured while processing the
+                        request:
+                    </p>
+                    <span>{{ errorMessage }}</span>
+                </b-alert>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <div id="pageTitle">
+                    <h1 id="Subject">Terms of Service</h1>
+                    <hr />
+                </div>
+            </b-col>
+        </b-row>
+        <div v-if="!isLoading">
+            <b-row class="mb-3">
+                <b-col>
+                    <HtmlTextAreaComponent :input="termsOfService" />
+                </b-col>
+            </b-row>
+        </div>
+    </b-container>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+#pageTitle {
+    color: $primary;
+}
+
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+
+#termsOfService {
+    background-color: $light_background;
+    color: $soft_text;
+}
+</style>

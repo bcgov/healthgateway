@@ -1,132 +1,3 @@
-<style lang="scss" scoped>
-.filters-wrapper {
-    z-index: 3;
-}
-.filters-width {
-    width: 175px;
-}
-</style>
-<style lang="scss">
-.filters-mobile-content {
-    position: fixed;
-    top: auto;
-    right: auto;
-    border: 0px;
-    left: 0;
-    bottom: 0;
-    border-radius: 0px;
-    .btn-mobile {
-        color: #494949;
-        border: none;
-    }
-    .btn-close {
-        font-size: 1.5em;
-    }
-}
-</style>
-<template>
-    <div class="filters-wrapper">
-        <div class="filters-width d-none d-sm-block">
-            <b-dropdown
-                text="Filter"
-                class="w-100"
-                toggle-class="w-100"
-                menu-class="z-index-large w-100"
-                variant="outline-primary"
-                right
-            >
-                <b-row class="px-4">
-                    <b-col><strong>Type</strong> </b-col>
-                    <b-col class="col-auto">
-                        <b-button
-                            variant="link"
-                            class="p-0 m-0 btn-mobile"
-                            @click="clearFilters()"
-                        >
-                            Clear
-                        </b-button>
-                    </b-col>
-                </b-row>
-                <div class="px-4">
-                    <div v-for="(filter, index) in filters" :key="index">
-                        <b-form-checkbox
-                            v-show="filter.isEnabled"
-                            :id="filter.name + '-filter'"
-                            v-model="selectedFilters"
-                            :name="filter.name + '-filter'"
-                            :value="filter.value"
-                        >
-                            {{ filter.display }}
-                        </b-form-checkbox>
-                    </div>
-                </div>
-            </b-dropdown>
-        </div>
-        <b-button
-            class="d-d-sm-inline d-sm-none"
-            variant="outline-primary"
-            @click.stop="toggleMobileView"
-        >
-            <font-awesome-icon icon="sliders-h" aria-hidden="true" size="1x" />
-        </b-button>
-        <b-modal
-            id="generic-message"
-            v-model="isVisible"
-            title="Filter"
-            content-class="filters-mobile-content"
-            header-bg-variant="outline"
-            :hide-footer="true"
-            no-fade
-        >
-            <template v-slot:modal-header="{ close }">
-                <b-row class="w-100 text-center p-0 m-0">
-                    <b-col class="col-3">
-                        <!-- Emulate built in modal header close button action -->
-                        <b-button
-                            variant="link"
-                            class="m-0 p-0 btn-mobile btn-close"
-                            @click="close()"
-                        >
-                            <font-awesome-icon
-                                icon="times"
-                                aria-hidden="true"
-                                size="1x"
-                                class="m-0"
-                            />
-                        </b-button> </b-col
-                    ><b-col class="col-6 pt-1">
-                        <h5>Filter</h5>
-                    </b-col>
-                    <b-col class="col-3 pt-1">
-                        <b-button
-                            variant="link"
-                            class="p-0 m-0 btn-mobile"
-                            @click="clearFilters()"
-                        >
-                            Clear
-                        </b-button>
-                    </b-col>
-                </b-row>
-            </template>
-            <b-row class="justify-content-center py-2">
-                <b-col class="col-10">
-                    <h5>Type</h5>
-                    <div v-for="(filter, index) in filters" :key="index">
-                        <b-form-checkbox
-                            v-show="filter.isEnabled"
-                            :id="filter.name + '-filter'"
-                            v-model="selectedFilters"
-                            :name="filter.name + '-filter'"
-                            :value="filter.value"
-                        >
-                            {{ filter.display }}
-                        </b-form-checkbox>
-                    </div>
-                </b-col>
-            </b-row>
-        </b-modal>
-    </div>
-</template>
 <script lang="ts">
 import { WebClientConfiguration } from "@/models/configData";
 import Vue from "vue";
@@ -279,3 +150,134 @@ export default class FilterComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <div class="filters-wrapper">
+        <div class="filters-width d-none d-sm-block">
+            <b-dropdown
+                text="Filter"
+                class="w-100"
+                toggle-class="w-100"
+                menu-class="z-index-large w-100"
+                variant="outline-primary"
+                right
+            >
+                <b-row class="px-4">
+                    <b-col><strong>Type</strong> </b-col>
+                    <b-col class="col-auto">
+                        <b-button
+                            variant="link"
+                            class="p-0 m-0 btn-mobile"
+                            @click="clearFilters()"
+                        >
+                            Clear
+                        </b-button>
+                    </b-col>
+                </b-row>
+                <div class="px-4">
+                    <div v-for="(filter, index) in filters" :key="index">
+                        <b-form-checkbox
+                            v-show="filter.isEnabled"
+                            :id="filter.name + '-filter'"
+                            v-model="selectedFilters"
+                            :name="filter.name + '-filter'"
+                            :value="filter.value"
+                        >
+                            {{ filter.display }}
+                        </b-form-checkbox>
+                    </div>
+                </div>
+            </b-dropdown>
+        </div>
+        <b-button
+            class="d-d-sm-inline d-sm-none"
+            variant="outline-primary"
+            @click.stop="toggleMobileView"
+        >
+            <font-awesome-icon icon="sliders-h" aria-hidden="true" size="1x" />
+        </b-button>
+        <b-modal
+            id="generic-message"
+            v-model="isVisible"
+            title="Filter"
+            content-class="filters-mobile-content"
+            header-bg-variant="outline"
+            :hide-footer="true"
+            no-fade
+        >
+            <template #modal-header="{ close }">
+                <b-row class="w-100 text-center p-0 m-0">
+                    <b-col class="col-3">
+                        <!-- Emulate built in modal header close button action -->
+                        <b-button
+                            variant="link"
+                            class="m-0 p-0 btn-mobile btn-close"
+                            @click="close()"
+                        >
+                            <font-awesome-icon
+                                icon="times"
+                                aria-hidden="true"
+                                size="1x"
+                                class="m-0"
+                            />
+                        </b-button> </b-col
+                    ><b-col class="col-6 pt-1">
+                        <h5>Filter</h5>
+                    </b-col>
+                    <b-col class="col-3 pt-1">
+                        <b-button
+                            variant="link"
+                            class="p-0 m-0 btn-mobile"
+                            @click="clearFilters()"
+                        >
+                            Clear
+                        </b-button>
+                    </b-col>
+                </b-row>
+            </template>
+            <b-row class="justify-content-center py-2">
+                <b-col class="col-10">
+                    <h5>Type</h5>
+                    <div v-for="(filter, index) in filters" :key="index">
+                        <b-form-checkbox
+                            v-show="filter.isEnabled"
+                            :id="filter.name + '-filter'"
+                            v-model="selectedFilters"
+                            :name="filter.name + '-filter'"
+                            :value="filter.value"
+                        >
+                            {{ filter.display }}
+                        </b-form-checkbox>
+                    </div>
+                </b-col>
+            </b-row>
+        </b-modal>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+.filters-wrapper {
+    z-index: 3;
+}
+.filters-width {
+    width: 175px;
+}
+</style>
+<style lang="scss">
+.filters-mobile-content {
+    position: fixed;
+    top: auto;
+    right: auto;
+    border: 0px;
+    left: 0;
+    bottom: 0;
+    border-radius: 0px;
+    .btn-mobile {
+        color: #494949;
+        border: none;
+    }
+    .btn-close {
+        font-size: 1.5em;
+    }
+}
+</style>

@@ -1,51 +1,29 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import { Component, Prop } from "vue-property-decorator";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import moment from "moment";
 
-#pageTitle,
-#disclaimer,
-label,
-span {
-    color: $primary;
-}
+@Component
+export default class MedicationHistoryReportComponent extends Vue {
+    private notFoundText: string = "Not Found";
+    @Prop() private medicationStatementHistory!: MedicationStatementHistory[];
+    @Prop() private name!: string;
 
-#disclaimer {
-    font-size: 0.7em;
-}
+    private get currentDate() {
+        return moment(new Date()).format("ll");
+    }
 
-#disclaimer,
-span {
-    font-weight: bold;
-}
+    private get isEmpty() {
+        return this.medicationStatementHistory.length == 0;
+    }
 
-label,
-#disclaimer {
-    font-size: 0.9em;
+    private formatDate(date: Date): string {
+        return moment(date).format("yyyy-MM-DD");
+    }
 }
-hr {
-    border-top: 2px solid $primary;
-}
+</script>
 
-.header {
-    background-color: $soft_background;
-    font-weight: bold;
-    font-size: 0.7em;
-    text-align: center;
-}
-
-.item {
-    font-size: 0.6em;
-    border-bottom: solid 1px $soft_background;
-    page-break-inside: avoid;
-    text-align: center;
-}
-
-.item:nth-child(odd) {
-    background-color: $medium_background;
-}
-.item:nth-child(even) {
-    background-color: $soft_background;
-}
-</style>
 <template>
     <section class="pdf-item">
         <div id="pageTitle">
@@ -119,28 +97,51 @@ hr {
     </section>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import moment from "moment";
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-@Component
-export default class MedicationHistoryReportComponent extends Vue {
-    private notFoundText: string = "Not Found";
-    @Prop() private medicationStatementHistory!: MedicationStatementHistory[];
-    @Prop() private name!: string;
-
-    private get currentDate() {
-        return moment(new Date()).format("ll");
-    }
-
-    private get isEmpty() {
-        return this.medicationStatementHistory.length == 0;
-    }
-
-    private formatDate(date: Date): string {
-        return moment(date).format("yyyy-MM-DD");
-    }
+#pageTitle,
+#disclaimer,
+label,
+span {
+    color: $primary;
 }
-</script>
+
+#disclaimer {
+    font-size: 0.7em;
+}
+
+#disclaimer,
+span {
+    font-weight: bold;
+}
+
+label,
+#disclaimer {
+    font-size: 0.9em;
+}
+hr {
+    border-top: 2px solid $primary;
+}
+
+.header {
+    background-color: $soft_background;
+    font-weight: bold;
+    font-size: 0.7em;
+    text-align: center;
+}
+
+.item {
+    font-size: 0.6em;
+    border-bottom: solid 1px $soft_background;
+    page-break-inside: avoid;
+    text-align: center;
+}
+
+.item:nth-child(odd) {
+    background-color: $medium_background;
+}
+.item:nth-child(even) {
+    background-color: $soft_background;
+}
+</style>

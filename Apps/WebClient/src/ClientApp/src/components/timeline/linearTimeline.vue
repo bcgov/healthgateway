@@ -1,123 +1,10 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.column-wrapper {
-    border: 1px;
-}
-
-.dateBreakLine {
-    border-top: dashed 2px $primary;
-}
-
-.date {
-    padding-top: 0px;
-    color: $primary;
-    font-size: 1.3em;
-}
-
-.sticky-offset {
-    top: 70px;
-    background-color: white;
-    z-index: 2;
-}
-
-.sticky-line {
-    top: 139px;
-    background-color: white;
-    border-bottom: solid $primary 2px;
-    margin-top: -2px;
-    z-index: 1;
-    @media (max-width: 575px) {
-        top: 193px;
-    }
-}
-
-.noTimelineEntriesText {
-    font-size: 1.5rem;
-    color: #6c757d;
-}
-</style>
-<template>
-    <div>
-        <b-row class="no-print sticky-top sticky-offset">
-            <b-col class="py-2">
-                <b-pagination-nav
-                    v-show="!timelineIsEmpty"
-                    v-model="currentPage"
-                    :link-gen="linkGen"
-                    :number-of-pages="numberOfPages"
-                    first-number
-                    last-number
-                    next-text="Next"
-                    prev-text="Prev"
-                    use-router
-                ></b-pagination-nav>
-            </b-col>
-            <b-col class="py-2 col-12 col-sm-auto order-first order-sm-last">
-                <slot name="month-list-toggle"></slot>
-            </b-col>
-        </b-row>
-        <b-row v-if="!timelineIsEmpty" class="sticky-top sticky-line" />
-        <b-row id="listControls" class="no-print">
-            <b-col>
-                Displaying {{ getVisibleCount() }} out of
-                {{ totalEntries }} records
-            </b-col>
-        </b-row>
-        <div id="timeData">
-            <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
-                <b-col cols="auto">
-                    <div
-                        :id="dateGroup.key"
-                        :ref="dateGroup.key"
-                        class="date"
-                        tabindex="1"
-                    >
-                        {{ getHeadingDate(dateGroup.date) }}
-                    </div>
-                </b-col>
-                <b-col>
-                    <hr class="dateBreakLine" />
-                </b-col>
-                <EntryCardComponent
-                    v-for="(entry, index) in dateGroup.entries"
-                    :key="entry.type + '-' + entry.id"
-                    :datekey="dateGroup.key"
-                    :entry="entry"
-                    :index="index"
-                />
-            </b-row>
-        </div>
-        <div v-if="timelineIsEmpty" class="text-center pt-2">
-            <b-row>
-                <b-col>
-                    <img
-                        class="mx-auto d-block"
-                        src="@/assets/images/timeline/empty-state.png"
-                        width="200"
-                        height="auto"
-                        alt="..."
-                    />
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <p class="text-center pt-2 noTimelineEntriesText">
-                        No Timeline Entries
-                    </p>
-                </b-col>
-            </b-row>
-        </div>
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import EventBus from "@/eventbus";
+import EventBus, { EventMessageName } from "@/eventbus";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
-import { EventMessageName } from "@/constants/eventMessageName";
 import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
@@ -162,7 +49,7 @@ export default class LinearTimelineComponent extends Vue {
         if (this.visibleTimelineEntries.length > 0) {
             if (this.isVisible) {
                 this.eventBus.$emit(
-                    "timelinePageUpdate",
+                    EventMessageName.TimelinePageUpdate,
                     this.visibleTimelineEntries[0].date
                 );
             }
@@ -174,7 +61,7 @@ export default class LinearTimelineComponent extends Vue {
 
     private created() {
         let self = this;
-        this.eventBus.$on("calendarDateEventClick", function (
+        this.eventBus.$on(EventMessageName.CalendarDateEventClick, function (
             eventDate: DateWrapper
         ) {
             self.setPageFromDate(eventDate);
@@ -278,3 +165,116 @@ export default class LinearTimelineComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <div>
+        <b-row class="no-print sticky-top sticky-offset">
+            <b-col class="py-2">
+                <b-pagination-nav
+                    v-show="!timelineIsEmpty"
+                    v-model="currentPage"
+                    :link-gen="linkGen"
+                    :number-of-pages="numberOfPages"
+                    first-number
+                    last-number
+                    next-text="Next"
+                    prev-text="Prev"
+                    use-router
+                ></b-pagination-nav>
+            </b-col>
+            <b-col class="py-2 col-12 col-sm-auto order-first order-sm-last">
+                <slot name="month-list-toggle"></slot>
+            </b-col>
+        </b-row>
+        <b-row v-if="!timelineIsEmpty" class="sticky-top sticky-line" />
+        <b-row id="listControls" class="no-print">
+            <b-col>
+                Displaying {{ getVisibleCount() }} out of
+                {{ totalEntries }} records
+            </b-col>
+        </b-row>
+        <div id="timeData">
+            <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
+                <b-col cols="auto">
+                    <div
+                        :id="dateGroup.key"
+                        :ref="dateGroup.key"
+                        class="date"
+                        tabindex="1"
+                    >
+                        {{ getHeadingDate(dateGroup.date) }}
+                    </div>
+                </b-col>
+                <b-col>
+                    <hr class="dateBreakLine" />
+                </b-col>
+                <EntryCardComponent
+                    v-for="(entry, index) in dateGroup.entries"
+                    :key="entry.type + '-' + entry.id"
+                    :datekey="dateGroup.key"
+                    :entry="entry"
+                    :index="index"
+                />
+            </b-row>
+        </div>
+        <div v-if="timelineIsEmpty" class="text-center pt-2">
+            <b-row>
+                <b-col>
+                    <img
+                        class="mx-auto d-block"
+                        src="@/assets/images/timeline/empty-state.png"
+                        width="200"
+                        height="auto"
+                        alt="..."
+                    />
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <p class="text-center pt-2 noTimelineEntriesText">
+                        No Timeline Entries
+                    </p>
+                </b-col>
+            </b-row>
+        </div>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.column-wrapper {
+    border: 1px;
+}
+
+.dateBreakLine {
+    border-top: dashed 2px $primary;
+}
+
+.date {
+    padding-top: 0px;
+    color: $primary;
+    font-size: 1.3em;
+}
+
+.sticky-offset {
+    top: 70px;
+    background-color: white;
+    z-index: 2;
+}
+
+.sticky-line {
+    top: 139px;
+    background-color: white;
+    border-bottom: solid $primary 2px;
+    margin-top: -2px;
+    z-index: 1;
+    @media (max-width: 575px) {
+        top: 193px;
+    }
+}
+
+.noTimelineEntriesText {
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+</style>

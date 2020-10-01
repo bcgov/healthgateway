@@ -1,37 +1,3 @@
-<style lang="scss" scoped>
-.box {
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    max-width: 280px;
-}
-
-.card-image {
-    max-height: 140px;
-}
-</style>
-
-<template>
-    <b-card
-        class="box d-none d-lg-block mx-auto bg-white border-0 rounded shadow"
-        no-body
-    >
-        <b-card-body @click="handleClick(currentCard.urlLink)">
-            <img
-                class="img-fluid mx-auto d-block card-image"
-                :src="currentCard.imageSrc"
-                width="auto"
-                height="auto"
-                :alt="currentCard.title"
-            />
-            <a></a>
-            <b-card-text class="mt-3">{{
-                currentCard.description
-            }}</b-card-text>
-        </b-card-body>
-    </b-card>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
@@ -105,3 +71,37 @@ export default class HealthlinkSidebarComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <b-card
+        class="box d-none d-lg-block mx-auto bg-white border-0 rounded shadow"
+        no-body
+    >
+        <b-card-body @click="handleClick(currentCard.urlLink)">
+            <img
+                class="img-fluid mx-auto d-block card-image"
+                :src="currentCard.imageSrc"
+                width="auto"
+                height="auto"
+                :alt="currentCard.title"
+            />
+            <a></a>
+            <b-card-text class="mt-3">{{
+                currentCard.description
+            }}</b-card-text>
+        </b-card-body>
+    </b-card>
+</template>
+
+<style lang="scss" scoped>
+.box {
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    max-width: 280px;
+}
+
+.card-image {
+    max-height: 140px;
+}
+</style>
