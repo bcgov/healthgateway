@@ -3,12 +3,8 @@ import Vue from "vue";
 import UserComment from "@/models/userComment";
 import User from "@/models/user";
 import { Getter } from "vuex-class";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import {
-    IconDefinition,
-    faEllipsisV,
-    faLock,
-} from "@fortawesome/free-solid-svg-icons";
+import { Component, Emit, Prop } from "vue-property-decorator";
+import { IconDefinition, faLock } from "@fortawesome/free-solid-svg-icons";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -67,7 +63,7 @@ export default class AddCommentComponent extends Vue {
     }
 
     @Emit()
-    onCommentAdded(comment: UserComment) {
+    private onCommentAdded(comment: UserComment) {
         return comment;
     }
 }

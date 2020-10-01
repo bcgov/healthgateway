@@ -59,7 +59,7 @@ export default class HealthInsightsView extends Vue {
     private endDate: DateWrapper | null = null;
 
     private timeChartData: any | null = null;
-    private chartOptions: {} = { responsive: true, maintainAspectRatio: false };
+    private chartOptions = { responsive: true, maintainAspectRatio: false };
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;

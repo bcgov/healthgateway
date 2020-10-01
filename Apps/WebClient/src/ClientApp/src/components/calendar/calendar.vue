@@ -68,12 +68,12 @@ export default class CalendarComponent extends Vue {
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.updateAvailableMonths();
-        var self = this;
-        this.eventBus.$on(EventMessageName.TimelinePageUpdate, function (
-            eventDate: DateWrapper
-        ) {
-            self.currentMonth = eventDate.startOf("month");
-        });
+        this.eventBus.$on(
+            EventMessageName.TimelinePageUpdate,
+            (eventDate: DateWrapper) => {
+                this.currentMonth = eventDate.startOf("month");
+            }
+        );
     }
 
     @Watch("dateGroups")

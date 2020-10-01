@@ -18,23 +18,23 @@ export default class IdleComponent extends Vue {
     private eventBus = EventBus;
 
     @Emit()
-    public show() {
+    public show(): void {
         if (!this.visible) {
             this.$bvModal.show(this.modalId);
-            var self = this;
-            this.timerHandle = window.setInterval(() => self.countdown(), 1000);
+            this.timerHandle = window.setInterval(() => this.countdown(), 1000);
             this.timeoutHandle = window.setTimeout(() => {
                 this.eventBus.$emit(EventMessageName.IdleLogoutWarning, true);
-                self.logout();
+                this.logout();
             }, 1000 * 60);
         }
     }
+
     @Emit()
-    public logout() {
+    public logout(): void {
         this.$router.push("/logout");
     }
 
-    private refresh(bvModalEvt: Event) {
+    private refresh() {
         this.authenticateOidcSilent();
         this.reset();
     }

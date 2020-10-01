@@ -60,26 +60,27 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private created() {
-        let self = this;
-        this.eventBus.$on(EventMessageName.CalendarDateEventClick, function (
-            eventDate: DateWrapper
-        ) {
-            self.setPageFromDate(eventDate);
-            // Wait for next render cycle until the pages have been calculated and displayed
-            self.$nextTick().then(function () {
-                const date = eventDate.fromEpoch();
-                let container: HTMLElement[] = self.$refs[
-                    date
-                ] as HTMLElement[];
-                container[0].focus();
-            });
-        });
+        this.eventBus.$on(
+            EventMessageName.CalendarDateEventClick,
+            (eventDate: DateWrapper) => {
+                this.setPageFromDate(eventDate);
+                // Wait for next render cycle until the pages have been calculated and displayed
+                this.$nextTick().then(() => {
+                    const date = eventDate.fromEpoch();
+                    let container: HTMLElement[] = this.$refs[
+                        date
+                    ] as HTMLElement[];
+                    container[0].focus();
+                });
+            }
+        );
 
-        this.eventBus.$on(EventMessageName.CalendarMonthUpdated, function (
-            firstEntryDate: DateWrapper
-        ) {
-            self.setPageFromDate(firstEntryDate);
-        });
+        this.eventBus.$on(
+            EventMessageName.CalendarMonthUpdated,
+            (firstEntryDate: DateWrapper) => {
+                this.setPageFromDate(firstEntryDate);
+            }
+        );
 
         window.addEventListener("resize", this.handleResize);
         this.handleResize();

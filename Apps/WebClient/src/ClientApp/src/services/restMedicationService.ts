@@ -26,8 +26,6 @@ export class RestMedicationService implements IMedicationService {
     private isEnabled = false;
     private readonly FETCH_ERROR = "Fetch error:";
 
-    constructor() {}
-
     public initialize(
         config: ExternalConfiguration,
         http: IHttpDelegate

@@ -8,7 +8,6 @@ export class RestPatientService implements IPatientService {
     private readonly PATIENT_BASE_URI: string = "v1/api/Patient";
     private baseUri = "";
     private http!: IHttpDelegate;
-    constructor() {}
 
     public initialize(
         config: ExternalConfiguration,

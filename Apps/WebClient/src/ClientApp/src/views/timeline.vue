@@ -1,15 +1,13 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { Route } from "vue-router";
+import { NavigationGuardNext, Route } from "vue-router";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { WebClientConfiguration } from "@/models/configData";
 import {
     ILogger,
     IImmunizationService,
-    ILaboratoryService,
-    IMedicationService,
     IEncounterService,
     IUserNoteService,
 } from "@/services/interfaces";
@@ -17,13 +15,12 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import MedicationStatementHistory from "../models/medicationStatementHistory";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import UserNote from "@/models/userNote";
 import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
 
@@ -32,11 +29,7 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import NoteTimelineComponent from "@/components/timeline/note.vue";
-import {
-    LaboratoryOrder,
-    LaboratoryReport,
-    LaboratoryResult,
-} from "@/models/laboratory";
+import { LaboratoryOrder } from "@/models/laboratory";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
@@ -119,53 +112,48 @@ export default class TimelineView extends Vue {
         this.fetchEncounters();
         this.fetchNotes();
         window.addEventListener("beforeunload", this.onBrowserClose);
-        let self = this;
-        this.eventBus.$on(EventMessageName.TimelineCreateNote, function () {
-            self.isAddingNote = true;
+        this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
+            this.isAddingNote = true;
         });
-        this.eventBus.$on(EventMessageName.TimelinePrintView, function () {
-            self.printRecords();
+        this.eventBus.$on(EventMessageName.TimelinePrintView, () => {
+            this.printRecords();
         });
-        this.eventBus.$on(EventMessageName.IdleLogoutWarning, function (
-            isVisible: boolean
-        ) {
-            self.idleLogoutWarning = isVisible;
-        });
+        this.eventBus.$on(
+            EventMessageName.IdleLogoutWarning,
+            (isVisible: boolean) => {
+                this.idleLogoutWarning = isVisible;
+            }
+        );
 
-        this.eventBus.$on(EventMessageName.TimelineEntryAdded, function (
-            entry: TimelineEntry
-        ) {
-            self.onEntryAdded(entry);
+        this.eventBus.$on(
+            EventMessageName.TimelineEntryAdded,
+            (entry: TimelineEntry) => {
+                this.onEntryAdded(entry);
+            }
+        );
+        this.eventBus.$on(EventMessageName.TimelineEntryEdit, () => {
+            this.onEntryEdit();
         });
-        this.eventBus.$on(EventMessageName.TimelineEntryEdit, function (
-            entry: TimelineEntry
-        ) {
-            self.onEntryEdit(entry);
+        this.eventBus.$on(
+            EventMessageName.TimelineEntryUpdated,
+            (entry: TimelineEntry) => {
+                this.onEntryUpdated(entry);
+            }
+        );
+        this.eventBus.$on(
+            EventMessageName.TimelineEntryDeleted,
+            (entry: TimelineEntry) => {
+                this.onEntryDeleted(entry);
+            }
+        );
+        this.eventBus.$on(EventMessageName.TimelineEntryAddClose, () => {
+            this.onEntryAddClose();
         });
-        this.eventBus.$on(EventMessageName.TimelineEntryUpdated, function (
-            entry: TimelineEntry
-        ) {
-            self.onEntryUpdated(entry);
+        this.eventBus.$on(EventMessageName.TimelineEntryEditClose, () => {
+            this.onEntryEditClose();
         });
-        this.eventBus.$on(EventMessageName.TimelineEntryDeleted, function (
-            entry: TimelineEntry
-        ) {
-            self.onEntryDeleted(entry);
-        });
-        this.eventBus.$on(EventMessageName.TimelineEntryAddClose, function (
-            entry: TimelineEntry
-        ) {
-            self.onEntryAddClose(entry);
-        });
-        this.eventBus.$on(EventMessageName.TimelineEntryEditClose, function (
-            entry: TimelineEntry
-        ) {
-            self.onEntryEditClose(entry);
-        });
-        this.eventBus.$on(EventMessageName.CalendarDateEventClick, function (
-            eventDate: DateWrapper
-        ) {
-            self.isListView = true;
+        this.eventBus.$on(EventMessageName.CalendarDateEventClick, () => {
+            this.isListView = true;
         });
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
@@ -178,7 +166,11 @@ export default class TimelineView extends Vue {
         }
     }
 
-    private beforeRouteLeave(to: Route, from: Route, next: any) {
+    private beforeRouteLeave(
+        to: Route,
+        from: Route,
+        next: NavigationGuardNext
+    ) {
         if (
             !this.idleLogoutWarning &&
             (this.isAddingNote || this.isEditingEntry) &&
@@ -336,9 +328,6 @@ export default class TimelineView extends Vue {
     }
 
     private fetchLaboratoryResults() {
-        const laboratoryService: ILaboratoryService = container.get(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
         this.isLaboratoryLoading = true;
         this.getLaboratoryOrders({ hdid: this.user.hdid })
             .then((results) => {
@@ -469,15 +458,15 @@ export default class TimelineView extends Vue {
         }
     }
 
-    private onEntryEdit(entry: TimelineEntry) {
+    private onEntryEdit() {
         this.isEditingEntry = true;
     }
 
-    private onEntryEditClose(entry: TimelineEntry) {
+    private onEntryEditClose() {
         this.isEditingEntry = false;
     }
 
-    private onEntryAddClose(entry: TimelineEntry) {
+    private onEntryAddClose() {
         this.isAddingNote = false;
     }
 

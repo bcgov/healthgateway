@@ -141,7 +141,7 @@ export default class NoteTimelineComponent extends Vue {
         this.isEditMode = false;
     }
 
-    public onEditClose(note: NoteTimelineEntry) {
+    private onEditClose(note: NoteTimelineEntry) {
         if (this.isAddMode) {
             this.eventBus.$emit(EventMessageName.TimelineEntryAddClose, note);
         } else {
@@ -149,22 +149,22 @@ export default class NoteTimelineComponent extends Vue {
         }
     }
 
-    public onEditStarted(note: NoteTimelineEntry) {
+    private onEditStarted(note: NoteTimelineEntry) {
         this.eventBus.$emit(EventMessageName.TimelineEntryEdit, note);
     }
 
-    public onNoteDeleted(note: NoteTimelineEntry) {
+    private onNoteDeleted(note: NoteTimelineEntry) {
         this.eventBus.$emit(EventMessageName.TimelineEntryDeleted, note);
     }
 
-    public onNoteAdded(note: UserNote) {
+    private onNoteAdded(note: UserNote) {
         this.eventBus.$emit(
             EventMessageName.TimelineEntryAdded,
             new NoteTimelineEntry(note)
         );
     }
 
-    public onNoteUpdated(note: UserNote) {
+    private onNoteUpdated(note: UserNote) {
         this.eventBus.$emit(
             EventMessageName.TimelineEntryUpdated,
             new NoteTimelineEntry(note)

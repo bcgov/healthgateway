@@ -1,11 +1,10 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import { ILogger, IAuthenticationService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import VueRouter, { Route } from "vue-router";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { WebClientConfiguration } from "@/models/configData";
 import FeedbackComponent from "@/components/feedback.vue";
@@ -73,7 +72,7 @@ export default class SidebarComponent extends Vue {
     }
 
     @Watch("isOpen")
-    private onIsOpen(newValue: boolean, oldValue: boolean) {
+    private onIsOpen() {
         this.isTutorialEnabled = false;
     }
 
@@ -86,11 +85,9 @@ export default class SidebarComponent extends Vue {
             this.loadName();
         }
 
-        var self = this;
-
         // Setup the transition listener to avoid text wrapping
         var transition = document.querySelector("#sidebar");
-        transition?.addEventListener("transitionend", function (event: Event) {
+        transition?.addEventListener("transitionend", (event: Event) => {
             let transitionEvent = event as TransitionEvent;
             if (
                 transition !== transitionEvent.target ||
@@ -98,20 +95,18 @@ export default class SidebarComponent extends Vue {
             ) {
                 return;
             } else {
-                self.isTutorialEnabled = false;
+                this.isTutorialEnabled = false;
             }
 
-            self.isTutorialEnabled = true;
+            this.isTutorialEnabled = true;
 
-            var buttonText = document
-                .querySelectorAll(".button-title")
-                .forEach((button) => {
-                    if (transition?.classList.contains("collapsed")) {
-                        button?.classList.add("d-none");
-                    } else {
-                        button?.classList.remove("d-none");
-                    }
-                });
+            document.querySelectorAll(".button-title").forEach((button) => {
+                if (transition?.classList.contains("collapsed")) {
+                    button?.classList.add("d-none");
+                } else {
+                    button?.classList.remove("d-none");
+                }
+            });
         });
 
         this.$nextTick(() => {

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";

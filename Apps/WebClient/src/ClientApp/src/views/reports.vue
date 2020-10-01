@@ -108,7 +108,7 @@ export default class ReportsView extends Vue {
             })
             .save()
             .output("bloburl")
-            .then((pdfBlobUrl: any) => {
+            .then((pdfBlobUrl: RequestInfo) => {
                 fetch(pdfBlobUrl).then((res) => {
                     res.blob().then(() => {
                         if (fileIndex + 1 < this.totalFiles) {

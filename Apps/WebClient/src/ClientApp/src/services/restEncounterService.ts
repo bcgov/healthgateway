@@ -21,8 +21,6 @@ export class RestEncounterService implements IEncounterService {
     private http!: IHttpDelegate;
     private isEnabled = false;
 
-    constructor() {}
-
     public initialize(
         config: ExternalConfiguration,
         http: IHttpDelegate

@@ -21,8 +21,6 @@ export class RestImmunizationService implements IImmunizationService {
     private http!: IHttpDelegate;
     private isEnabled = false;
 
-    constructor() {}
-
     public initialize(
         config: ExternalConfiguration,
         http: IHttpDelegate

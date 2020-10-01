@@ -75,7 +75,7 @@ export default class FilterComponent extends Vue {
     }
 
     @Watch("isSidebarOpen")
-    private onIsSidebarOpen(newValue: boolean, oldValue: boolean) {
+    private onIsSidebarOpen() {
         this.isVisible = false;
     }
 
@@ -85,7 +85,7 @@ export default class FilterComponent extends Vue {
     }
 
     @Emit()
-    public filtersChanged() {
+    private filtersChanged() {
         if (this.selectedFilters.length > 0) {
             return this.selectedFilters;
         } else {
@@ -108,9 +108,8 @@ export default class FilterComponent extends Vue {
         this.filters[4].isEnabled = this.config.modules["Note"];
         this.selectedFilters = [];
 
-        var self = this;
-        this.eventBus.$on("filterSelected", function (filterName: string) {
-            self.onExternalFilterSelection(filterName);
+        this.eventBus.$on("filterSelected", (filterName: string) => {
+            this.onExternalFilterSelection(filterName);
         });
     }
 
