@@ -126,7 +126,7 @@ describe("Auth mutations", () => {
     test("Sets oidc error", () => {
         const state = initialState;
 
-        const errorMessage: string = "some error string";
+        const errorMessage = "some error string";
 
         // apply mutation
         mutations.setOidcError(state, errorMessage);

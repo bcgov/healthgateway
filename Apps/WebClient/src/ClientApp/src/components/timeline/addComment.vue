@@ -18,12 +18,12 @@ import { DateWrapper } from "@/models/dateWrapper";
 export default class AddCommentComponent extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
     @Prop() comment!: UserComment;
-    private commentInput: string = "";
+    private commentInput = "";
 
     private logger!: ILogger;
     private commentService!: IUserCommentService;
 
-    private isSaving: boolean = false;
+    private isSaving = false;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

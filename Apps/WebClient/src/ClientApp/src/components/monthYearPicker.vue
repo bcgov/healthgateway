@@ -6,8 +6,8 @@ import { DateGroup } from "@/models/timelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 
 class MonthToDisplay {
-    public Title: string = "";
-    public HasData: boolean = false;
+    public Title = "";
+    public HasData = false;
 }
 
 @Component({
@@ -19,21 +19,21 @@ export default class MonthYearPickerComponent extends Vue {
     @Prop() currentMonth!: DateWrapper;
     @Prop() availableMonths!: DateWrapper[];
 
-    public isYearOpen: boolean = false;
-    public isMonthOpen: boolean = false;
+    public isYearOpen = false;
+    public isMonthOpen = false;
     public selectedYear: number = new DateWrapper().year();
     public selectedMonth: number = new DateWrapper().month();
     private selectedDate: DateWrapper = new DateWrapper();
     private years: number[] = [];
 
     @Watch("currentMonth")
-    public onCurrentMonthChange(currentMonth: DateWrapper) {
+    public onCurrentMonthChange(currentMonth: DateWrapper): void {
         this.selectedDate = currentMonth;
         this.close();
     }
 
     @Watch("availableMonths")
-    public onAvailableMonths() {
+    public onAvailableMonths(): void {
         this.availableMonths.forEach((date) => {
             var year: number = date.year();
             if (!this.years.some((y) => y == year)) {
@@ -133,7 +133,7 @@ export default class MonthYearPickerComponent extends Vue {
     }
 
     @Emit()
-    public dateChanged() {
+    public dateChanged(): DateWrapper {
         return this.selectedDate;
     }
 

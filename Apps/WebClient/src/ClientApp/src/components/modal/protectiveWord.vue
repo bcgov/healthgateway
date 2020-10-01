@@ -7,9 +7,9 @@ export default class ProtectiveWordComponent extends Vue {
     @Prop() error!: boolean;
     @Prop({ default: false }) isLoading!: boolean;
 
-    private protectiveWord: string = "";
-    private show: boolean = false;
-    private isVisible: boolean = false;
+    private protectiveWord = "";
+    private show = false;
+    private isVisible = false;
 
     public showModal() {
         this.show = true;

@@ -41,7 +41,7 @@ class ClinicViewModel {
         this.name = model.name;
         this.phoneNumber = model.phoneNumber;
 
-        let addressArray = [
+        const addressArray = [
             model.addressLine1,
             model.addressLine2,
             model.addressLine3,

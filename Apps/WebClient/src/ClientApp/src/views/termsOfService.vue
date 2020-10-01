@@ -17,11 +17,11 @@ export default class TermsOfServiceView extends Vue {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
     private userProfileService!: IUserProfileService;
-    private isLoading: boolean = true;
-    private hasErrors: boolean = false;
-    private errorMessage: string = "";
+    private isLoading = true;
+    private hasErrors = false;
+    private errorMessage = "";
 
-    private termsOfService: string = "";
+    private termsOfService = "";
 
     private mounted() {
         this.userProfileService = container.get(

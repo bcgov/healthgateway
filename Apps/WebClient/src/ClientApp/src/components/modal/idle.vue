@@ -11,8 +11,8 @@ export default class IdleComponent extends Vue {
     authenticateOidcSilent!: () => Promise<void>;
 
     private readonly modalId: string = "idle-modal";
-    private totalTime: number = 60;
-    private visible: boolean = false;
+    private totalTime = 60;
+    private visible = false;
     private timerHandle?: number;
     private timeoutHandle?: number;
     private eventBus = EventBus;

@@ -35,9 +35,9 @@ export default class LaboratoryTimelineComponent extends Vue {
 
     private laboratoryService!: ILaboratoryService;
 
-    private hasErrors: boolean = false;
-    private detailsVisible: boolean = false;
-    private isLoadingDocument: boolean = false;
+    private hasErrors = false;
+    private detailsVisible = false;
+    private isLoadingDocument = false;
 
     private mounted() {
         this.laboratoryService = container.get<ILaboratoryService>(

@@ -17,9 +17,9 @@ import { ServiceName } from "@/models/errorInterfaces";
 export class RestImmunizationService implements IImmunizationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly IMMS_BASE_URI: string = "v1/api/Immunization";
-    private baseUri: string = "";
+    private baseUri = "";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     constructor() {}
 

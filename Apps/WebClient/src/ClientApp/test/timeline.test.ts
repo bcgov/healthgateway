@@ -77,7 +77,7 @@ let userGetters = {
     },
 };
 
-let laboratoryActions: ActionTree<LaboratoryState, RootState> = {
+const laboratoryActions: ActionTree<LaboratoryState, RootState> = {
     getOrders(): Promise<RequestResult<LaboratoryOrder[]>> {
         return new Promise((resolve) => {
             resolve({
@@ -91,13 +91,13 @@ let laboratoryActions: ActionTree<LaboratoryState, RootState> = {
     },
 };
 
-let laboratoryGetters = {
+const laboratoryGetters = {
     getStoredLaboratoryOrders: () => (): LaboratoryOrder[] => {
         return [];
     },
 };
 
-let medicationActions: ActionTree<MedicationState, RootState> = {
+const medicationActions: ActionTree<MedicationState, RootState> = {
     getMedicationStatements(
         context,
         params: {
@@ -125,7 +125,7 @@ let medicationActions: ActionTree<MedicationState, RootState> = {
     },
 };
 
-let medicationGetters = {};
+const medicationGetters = {};
 
 const configGetters = {
     webClient: (): WebClientConfiguration => {
@@ -207,7 +207,7 @@ describe("Timeline view", () => {
 
         const wrapper = createWrapper();
         // Verify the number of records
-        var unwatch = wrapper.vm.$watch(
+        const unwatch = wrapper.vm.$watch(
             () => {
                 return wrapper.vm.$data.isLoading;
             },

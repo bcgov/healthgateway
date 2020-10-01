@@ -24,7 +24,7 @@ import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { DateWrapper } from "@/models/dateWrapper";
 
-const namespace: string = "user";
+const namespace = "user";
 
 @Component({
     components: {
@@ -52,8 +52,8 @@ export default class HealthInsightsView extends Vue {
     private logger!: ILogger;
 
     private timelineEntries: TimelineEntry[] = [];
-    private isMedicationLoading: boolean = false;
-    private protectiveWordAttempts: number = 0;
+    private isMedicationLoading = false;
+    private protectiveWordAttempts = 0;
 
     private startDate: DateWrapper | null = null;
     private endDate: DateWrapper | null = null;

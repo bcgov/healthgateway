@@ -46,7 +46,7 @@ import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import FilterComponent from "@/components/timeline/filters.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 
-const namespace: string = "user";
+const namespace = "user";
 
 // Register the router hooks with their names
 Component.registerHooks(["beforeRouteLeave"]);
@@ -84,23 +84,23 @@ export default class TimelineView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
-    private filterText: string = "";
+    private filterText = "";
     private filterTypes: string[] = [];
     private timelineEntries: TimelineEntry[] = [];
-    private isMedicationLoading: boolean = false;
-    private isImmunizationLoading: boolean = false;
-    private isLaboratoryLoading: boolean = false;
-    private isEncounterLoading: boolean = false;
-    private isNoteLoading: boolean = false;
-    private idleLogoutWarning: boolean = false;
-    private protectiveWordAttempts: number = 0;
-    private isAddingNote: boolean = false;
-    private isEditingEntry: boolean = false;
-    private isPacificTime: boolean = false;
-    private unsavedChangesText: string =
+    private isMedicationLoading = false;
+    private isImmunizationLoading = false;
+    private isLaboratoryLoading = false;
+    private isEncounterLoading = false;
+    private isNoteLoading = false;
+    private idleLogoutWarning = false;
+    private protectiveWordAttempts = 0;
+    private isAddingNote = false;
+    private isEditingEntry = false;
+    private isPacificTime = false;
+    private unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
 
-    private isListView: boolean = true;
+    private isListView = true;
     private eventBus = EventBus;
 
     private logger!: ILogger;

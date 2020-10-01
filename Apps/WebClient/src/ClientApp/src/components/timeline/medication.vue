@@ -22,7 +22,7 @@ export default class MedicationTimelineComponent extends Vue {
     @Prop() index!: number;
     @Prop() datekey!: string;
 
-    private detailsVisible: boolean = false;
+    private detailsVisible = false;
 
     private get entryIcon(): IconDefinition {
         return faPills;

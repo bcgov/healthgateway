@@ -21,9 +21,9 @@ export default class CommentSectionComponent extends Vue {
 
     private logger!: ILogger;
     private commentService!: IUserCommentService;
-    private showComments: boolean = false;
-    private showInput: boolean = false;
-    private isLoadingComments: boolean = false;
+    private showComments = false;
+    private showInput = false;
+    private isLoadingComments = false;
     private comments: UserComment[] = [];
     private newComment: UserComment = {
         id: "",

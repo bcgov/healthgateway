@@ -21,9 +21,9 @@ export class RestMedicationService implements IMedicationService {
     private readonly MEDICATION_STATEMENT_BASE_URI: string =
         "v1/api/MedicationStatement";
     private readonly MEDICATION_BASE_URI: string = "v1/api/Medication";
-    private baseUri: string = "";
+    private baseUri = "";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
     private readonly FETCH_ERROR = "Fetch error:";
 
     constructor() {}

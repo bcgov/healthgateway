@@ -9,7 +9,7 @@ export default class MessageModalComponent extends Vue {
 
     @Prop({ default: "Info" }) private title!: string;
     @Prop({ default: "Message" }) private message!: string;
-    private isVisible: boolean = false;
+    private isVisible = false;
 
     public showModal() {
         this.isVisible = true;

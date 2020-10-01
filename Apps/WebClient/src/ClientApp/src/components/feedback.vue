@@ -22,8 +22,8 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 library.add(faComments, faExclamationCircle, faMinus);
 
-const sidebar: string = "sidebar";
-const user: string = "user";
+const sidebar = "sidebar";
+const user = "user";
 
 @Component
 export default class FeedbackComponent extends Vue {
@@ -32,16 +32,16 @@ export default class FeedbackComponent extends Vue {
     @Getter("isOpen", { namespace: sidebar }) isSidebarOpen!: boolean;
     @Getter("user", { namespace: user }) user!: User;
 
-    private comment: string = "";
+    private comment = "";
 
-    private visible: boolean = false;
-    private hasSubmitted: boolean = false;
-    private isSuccess: boolean = false;
-    private isLoading: boolean = false;
+    private visible = false;
+    private hasSubmitted = false;
+    private isSuccess = false;
+    private isLoading = false;
     private userFeedbackService!: IUserFeedbackService;
 
     @Watch("isSidebarOpen")
-    private onIsSidebarOpen(newValue: boolean, oldValue: boolean) {
+    private onIsSidebarOpen(newValue: boolean) {
         // Make sure it closes if the sidebar is closing and reset state
         if (!newValue) {
             this.resetFeedback();

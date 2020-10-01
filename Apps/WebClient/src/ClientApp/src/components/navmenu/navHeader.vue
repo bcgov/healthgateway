@@ -18,9 +18,9 @@ interface ILanguage {
     description: string;
 }
 
-const auth: string = "auth";
-const user: string = "user";
-const sidebar: string = "sidebar";
+const auth = "auth";
+const user = "user";
+const sidebar = "sidebar";
 
 @Component({
     components: {
@@ -54,7 +54,7 @@ export default class HeaderComponent extends Vue {
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
-    private sidebarExpanded: boolean = false;
+    private sidebarExpanded = false;
     private logger!: ILogger;
 
     @Watch("$route")

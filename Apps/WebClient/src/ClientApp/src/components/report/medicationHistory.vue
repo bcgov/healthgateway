@@ -6,7 +6,7 @@ import moment from "moment";
 
 @Component
 export default class MedicationHistoryReportComponent extends Vue {
-    private notFoundText: string = "Not Found";
+    private notFoundText = "Not Found";
     @Prop() private medicationStatementHistory!: MedicationStatementHistory[];
     @Prop() private name!: string;
 

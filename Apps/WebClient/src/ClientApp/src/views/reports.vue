@@ -47,14 +47,14 @@ export default class ReportsView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
 
-    private fullName: string = "";
+    private fullName = "";
     private medicationStatementHistoryPage: MedicationStatementHistory[] = [];
     private medicationStatementHistory: MedicationStatementHistory[] = [];
-    private isLoading: boolean = false;
-    private protectiveWordAttempts: number = 0;
+    private isLoading = false;
+    private protectiveWordAttempts = 0;
     private logger!: ILogger;
-    private isDataLoaded: boolean = false;
-    private fileMaxRecords: number = 1000;
+    private isDataLoaded = false;
+    private fileMaxRecords = 1000;
 
     private get totalFiles(): number {
         return Math.ceil(
@@ -65,7 +65,7 @@ export default class ReportsView extends Vue {
     private showConfirmationModal() {
         this.messageModal.showModal();
     }
-    private async generateMedicationHistoryPdf(fileIndex: number = 0) {
+    private async generateMedicationHistoryPdf(fileIndex = 0) {
         this.logger.debug("generating Medication History PDF...");
         this.isLoading = true;
 

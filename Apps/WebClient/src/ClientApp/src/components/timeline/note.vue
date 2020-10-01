@@ -27,12 +27,12 @@ export default class NoteTimelineComponent extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 
     private noteService!: IUserNoteService;
-    private text: string = "";
-    private title: string = "";
+    private text = "";
+    private title = "";
     private dateString: string = new DateWrapper().toISODate();
     private detailsVisible = false;
-    private isEditMode: boolean = false;
-    private isSaving: boolean = false;
+    private isEditMode = false;
+    private isSaving = false;
     private eventBus = EventBus;
 
     private mounted() {

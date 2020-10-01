@@ -22,7 +22,7 @@ export default class EncounterTimelineEntryComponent extends Vue {
     @Prop() datekey!: string;
     @Getter("user", { namespace: "user" }) user!: User;
 
-    private detailsVisible: boolean = false;
+    private detailsVisible = false;
 
     private get entryIcon(): IconDefinition {
         return faUserMd;

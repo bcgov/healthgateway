@@ -1,6 +1,6 @@
 ﻿<script lang="ts">
 import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import {
     IconDefinition,
     faPills,
@@ -11,8 +11,8 @@ import {
 
 @Component
 export default class TimelineLoadingComponent extends Vue {
-    private step: number = 0;
-    private intervalId: number = 0;
+    private step = 0;
+    private intervalId = 0;
     private get ellipsis(): string {
         return ".".padEnd(this.step + 1, ".");
     }

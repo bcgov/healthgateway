@@ -27,9 +27,9 @@ export default class FilterComponent extends Vue {
 
     private logger!: ILogger;
     private eventBus = EventBus;
-    private isVisible: boolean = false;
+    private isVisible = false;
     private selectedFilters: string[] = [];
-    private windowWidth: number = 0;
+    private windowWidth = 0;
 
     private filters: Filter[] = [
         {

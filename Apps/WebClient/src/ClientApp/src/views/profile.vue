@@ -38,8 +38,8 @@ import { Duration } from "luxon";
 
 library.add(faExclamationTriangle);
 
-const userNamespace: string = "user";
-const authNamespace: string = "auth";
+const userNamespace = "user";
+const authNamespace = "auth";
 
 @Component({
     components: {
@@ -97,34 +97,34 @@ export default class ProfileView extends Vue {
     @Ref("verifySMSModal")
     readonly verifySMSModal!: VerifySMSComponent;
 
-    private isLoading: boolean = true;
+    private isLoading = true;
 
     private emailVerified = false;
-    private email: string = "";
-    private emailConfirmation: string = "";
-    private isEmailEditable: boolean = false;
+    private email = "";
+    private emailConfirmation = "";
+    private isEmailEditable = false;
     private oidcUser: any = {};
-    private emailVerificationSent: boolean = false;
+    private emailVerificationSent = false;
 
     private smsVerified = false;
-    private smsNumber: string = "";
-    private isSMSEditable: boolean = false;
-    private tempSMS: string = "";
-    private invalidSMSVerificationCode: boolean = false;
+    private smsNumber = "";
+    private isSMSEditable = false;
+    private tempSMS = "";
+    private invalidSMSVerificationCode = false;
 
-    private tempEmail: string = "";
-    private submitStatus: string = "";
+    private tempEmail = "";
+    private submitStatus = "";
     private logger!: ILogger;
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
 
-    private lastLoginDateString: string = "";
+    private lastLoginDateString = "";
 
     private showCloseWarning = false;
 
-    private timeForDeletion: number = -1;
+    private timeForDeletion = -1;
 
-    private intervalHandler: number = 0;
+    private intervalHandler = 0;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

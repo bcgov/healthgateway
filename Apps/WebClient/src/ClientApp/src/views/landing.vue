@@ -44,7 +44,7 @@ export default class LandingView extends Vue {
     private logo: string = Image00;
     private devices: string = Image02;
     private bottomImage: string = Image07;
-    private isOpenRegistration: boolean = false;
+    private isOpenRegistration = false;
     private getTileClass(index: number): string {
         return index % 2 == 0 ? "order-md-1" : "order-md-2";
     }

@@ -20,9 +20,9 @@ export default class CalendarBodyComponent extends Vue {
     @Prop() firstDay!: number;
     @Prop() private isVisible!: boolean;
 
-    private eventLimit: number = 4;
+    private eventLimit = 4;
 
-    private isHovering: boolean = false;
+    private isHovering = false;
     private hoveringEvent: CalendarEntry | null = null;
     private eventBus = EventBus;
 
@@ -89,8 +89,6 @@ export default class CalendarBodyComponent extends Vue {
         //TODO: It should do this computation once instead of every single time
 
         // find all events start from this date
-        let cellIndexArr = [];
-
         let dateGroup: DateGroup = this.dateGroups.find((d) =>
             date.isSame(d.date, "day")
         ) || {
@@ -113,7 +111,7 @@ export default class CalendarBodyComponent extends Vue {
             {}
         );
 
-        let index: number = 0;
+        let index = 0;
         let groupArrays = Object.keys(groups).map<CalendarEntry>((typeKey) => {
             index++;
             return {

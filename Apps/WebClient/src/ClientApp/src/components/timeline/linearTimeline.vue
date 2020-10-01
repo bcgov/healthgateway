@@ -23,9 +23,9 @@ export default class LinearTimelineComponent extends Vue {
     private filteredTimelineEntries: TimelineEntry[] = [];
     private visibleTimelineEntries: TimelineEntry[] = [];
 
-    private windowWidth: number = 0;
-    private currentPage: number = 1;
-    private hasErrors: boolean = false;
+    private windowWidth = 0;
+    private currentPage = 1;
+    private hasErrors = false;
 
     private eventBus = EventBus;
 

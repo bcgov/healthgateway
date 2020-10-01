@@ -46,32 +46,32 @@ export default class RegistrationView extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
 
-    private accepted: boolean = false;
-    private email: string = "";
-    private emailConfirmation: string = "";
-    private smsNumber: string = "";
+    private accepted = false;
+    private email = "";
+    private emailConfirmation = "";
+    private smsNumber = "";
 
-    private isEmailChecked: boolean = true;
-    private isSMSNumberChecked: boolean = true;
+    private isEmailChecked = true;
+    private isSMSNumberChecked = true;
 
     private oidcUser: any = {};
     private userProfileService!: IUserProfileService;
-    private submitStatus: string = "";
-    private loadingUserData: boolean = true;
-    private loadingTermsOfService: boolean = true;
-    private hasErrors: boolean = false;
-    private errorMessage: string = "";
+    private submitStatus = "";
+    private loadingUserData = true;
+    private loadingTermsOfService = true;
+    private hasErrors = false;
+    private errorMessage = "";
 
     private logger!: ILogger;
     private betaRequestService!: IBetaRequestService;
     private waitlistEdditable = true;
-    private waitlistTempEmail: string = "";
-    private waitlistEmail: string = "";
-    private waitlistEmailConfirmation: string = "";
+    private waitlistTempEmail = "";
+    private waitlistEmail = "";
+    private waitlistEmailConfirmation = "";
 
     private waitlistedSuccessfully = false;
 
-    private termsOfService: string = "";
+    private termsOfService = "";
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

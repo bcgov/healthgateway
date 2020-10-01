@@ -9,7 +9,7 @@ import {
     IdentityProviderConfiguration,
 } from "@/models/configData";
 
-const namespace: string = "auth";
+const namespace = "auth";
 
 @Component({
     components: {
@@ -30,8 +30,8 @@ export default class LoginView extends Vue {
 
     @Prop() isRetry?: boolean;
 
-    private isLoading: boolean = true;
-    private redirectPath: string = "";
+    private isLoading = true;
+    private redirectPath = "";
     private routeHandler!: VueRouter;
 
     private mounted() {

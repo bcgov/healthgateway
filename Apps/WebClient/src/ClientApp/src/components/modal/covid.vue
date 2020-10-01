@@ -7,17 +7,17 @@ export default class CovidModalComponent extends Vue {
     @Prop() error!: boolean;
     @Prop({ default: false }) isLoading!: boolean;
 
-    public isVisible: boolean = false;
-    public show: boolean = false;
+    public isVisible = false;
+    public show = false;
 
-    public showModal() {
+    public showModal(): void {
         this.show = true;
         if (!this.isLoading) {
             this.isVisible = true;
         }
     }
 
-    public hideModal() {
+    public hideModal(): void {
         this.show = false;
         this.isVisible = false;
     }

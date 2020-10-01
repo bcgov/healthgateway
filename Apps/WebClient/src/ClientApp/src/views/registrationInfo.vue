@@ -24,11 +24,11 @@ export default class RegistrationInfoView extends Vue {
     private mobileAppImg: string = Image03;
     private cardReaderImg: string = Image04;
     private mobileCardImg: string = Image05;
-    private signupProcessVisible: boolean = false;
-    private dongleVisible: boolean = false;
-    private registrationLink: string = "/registration/";
-    private isRegistrationInviteOnly: boolean = false;
-    private isRegistrationClosed: boolean = false;
+    private signupProcessVisible = false;
+    private dongleVisible = false;
+    private registrationLink = "/registration/";
+    private isRegistrationInviteOnly = false;
+    private isRegistrationClosed = false;
 
     private mounted() {
         this.isRegistrationInviteOnly =

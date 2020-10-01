@@ -17,23 +17,23 @@ export default class CalendarComponent extends Vue {
     @Prop() currentMonth!: DateWrapper;
     @Prop() availableMonths!: DateWrapper[];
 
-    private monthIndex: number = 0;
+    private monthIndex = 0;
     private headerDate: DateWrapper = new DateWrapper();
     private eventBus = EventBus;
-    private leftIcon: string = "chevron-left";
-    private rightIcon: string = "chevron-right";
+    private leftIcon = "chevron-left";
+    private rightIcon = "chevron-right";
 
     private get hasAvailableMonths() {
         return this.availableMonths.length > 0;
     }
 
     @Watch("currentMonth")
-    public onCurrentMonthChange(currentMonth: DateWrapper) {
+    public onCurrentMonthChange(currentMonth: DateWrapper): void {
         this.dateSelected(currentMonth);
     }
 
     @Watch("availableMonths")
-    public onAvailableMonthsChange() {
+    public onAvailableMonthsChange(): void {
         if (this.monthIndex !== this.availableMonths.length - 1) {
             this.monthIndex = this.availableMonths.length - 1;
         } else {
@@ -42,7 +42,7 @@ export default class CalendarComponent extends Vue {
     }
 
     @Watch("monthIndex")
-    public onMonthIndexChange() {
+    public onMonthIndexChange(): void {
         this.headerDate = this.availableMonths[this.monthIndex];
         this.dispatchEvent();
     }

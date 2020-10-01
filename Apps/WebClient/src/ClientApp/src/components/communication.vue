@@ -9,7 +9,7 @@ import { ILogger, ICommunicationService } from "@/services/interfaces";
 @Component
 export default class CommunicationComponent extends Vue {
     private logger!: ILogger;
-    private isLoaded: boolean = false;
+    private isLoaded = false;
     private communication!: Communication;
 
     private mounted() {
@@ -26,7 +26,6 @@ export default class CommunicationComponent extends Vue {
     }
 
     private fetchCommunication() {
-        let self = this;
         const communicationService: ICommunicationService = container.get<
             ICommunicationService
         >(SERVICE_IDENTIFIER.CommunicationService);
@@ -34,8 +33,8 @@ export default class CommunicationComponent extends Vue {
         communicationService
             .getActive()
             .then((requestResult) => {
-                self.isLoaded = true;
-                self.communication = requestResult.resourcePayload;
+                this.isLoaded = true;
+                this.communication = requestResult.resourcePayload;
             })
             .catch((err) => {
                 this.logger.error(JSON.stringify(err));

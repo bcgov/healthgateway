@@ -14,9 +14,9 @@ import { faStream } from "@fortawesome/free-solid-svg-icons";
 import User from "@/models/user";
 library.add(faStream);
 
-const auth: string = "auth";
-const user: string = "user";
-const sidebar: string = "sidebar";
+const auth = "auth";
+const user = "user";
+const sidebar = "sidebar";
 
 @Component({
     components: {
@@ -54,10 +54,10 @@ export default class SidebarComponent extends Vue {
 
     private logger!: ILogger;
     private authenticationService!: IAuthenticationService;
-    private name: string = "";
-    private windowWidth: number = 0;
+    private name = "";
+    private windowWidth = 0;
 
-    private isTutorialEnabled: boolean = false;
+    private isTutorialEnabled = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {

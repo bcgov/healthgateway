@@ -46,7 +46,7 @@ export default class HealthlinkSidebarComponent extends Vue {
             urlLink: "https://www.healthlinkbc.ca",
         },
     ];
-    private cardIndex: number = 1;
+    private cardIndex = 1;
 
     private mounted() {
         this.rotate();

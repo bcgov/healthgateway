@@ -17,9 +17,9 @@ import Encounter from "@/models/encounter";
 export class RestEncounterService implements IEncounterService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly ENCOUNTER_BASE_URI: string = "v1/api/Encounter";
-    private baseUri: string = "";
+    private baseUri = "";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     constructor() {}
 

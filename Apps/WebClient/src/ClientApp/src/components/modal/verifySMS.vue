@@ -43,14 +43,14 @@ export default class VerifySMSComponent extends Vue {
     private logger!: ILogger;
     private userProfileService!: IUserProfileService;
 
-    private tooManyRetries: boolean = false;
-    private allowRetry: boolean = false;
-    private smsVerificationSent: boolean = false;
-    private smsVerificationCode: string = "";
-    private isVisible: boolean = false;
-    private isLoading: boolean = false;
-    private isValid: boolean = false;
-    public error: boolean = false;
+    private tooManyRetries = false;
+    private allowRetry = false;
+    private smsVerificationSent = false;
+    private smsVerificationCode = "";
+    private isVisible = false;
+    private isLoading = false;
+    private isValid = false;
+    public error = false;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

@@ -12,10 +12,10 @@ export default class RatingComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    private question: string =
+    private question =
         "Did the Health Gateway improve your access to health information today? Please provide a rating.";
-    private ratingValue: number = 0;
-    private isVisible: boolean = false;
+    private ratingValue = 0;
+    private isVisible = false;
     private logger!: ILogger;
 
     public mounted() {
@@ -35,7 +35,7 @@ export default class RatingComponent extends Vue {
         this.isVisible = false;
     }
 
-    private handleRating(value: number, skip: boolean = false) {
+    private handleRating(value: number, skip = false) {
         const ratingService: IUserRatingService = container.get(
             SERVICE_IDENTIFIER.UserRatingService
         );

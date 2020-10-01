@@ -9,7 +9,7 @@ export const state: ErrorBannerState = {
     errors: [],
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const errorBanner: Module<ErrorBannerState, RootState> = {
     namespaced,

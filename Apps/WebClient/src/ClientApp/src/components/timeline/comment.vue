@@ -19,11 +19,11 @@ export default class CommentComponent extends Vue {
     @Prop() comment!: UserComment;
     @Getter("user", { namespace: "user" }) user!: User;
 
-    private commentInput: string = "";
+    private commentInput = "";
     private logger!: ILogger;
     private commentService!: IUserCommentService;
-    private isEditMode: boolean = false;
-    private isLoading: boolean = false;
+    private isEditMode = false;
+    private isLoading = false;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

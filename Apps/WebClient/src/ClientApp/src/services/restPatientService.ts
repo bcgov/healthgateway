@@ -6,7 +6,7 @@ import { ExternalConfiguration } from "@/models/configData";
 @injectable()
 export class RestPatientService implements IPatientService {
     private readonly PATIENT_BASE_URI: string = "v1/api/Patient";
-    private baseUri: string = "";
+    private baseUri = "";
     private http!: IHttpDelegate;
     constructor() {}
 
