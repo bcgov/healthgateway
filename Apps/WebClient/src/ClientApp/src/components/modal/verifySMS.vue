@@ -15,6 +15,7 @@
         data-testid="verifySMSModal"
         title="Phone Verification"
         size="sm"
+        @show="getTimeout"
         header-bg-variant="primary"
         header-text-variant="light"
         centered
@@ -87,8 +88,8 @@
                 </b-col>
                 <b-col v-if="!allowRetry">
                     Your code has been sent. You can resend after
-                    {{ config.timeouts.resendSMS }}
-                    {{ config.timeouts.resendSMS > 1 ? "minutes" : "minute" }}.
+                    {{ countdownRemaining }}
+                    {{ countdownRemaining > 1 ? "minutes" : "minute" }}.
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <b-button
@@ -120,6 +121,7 @@ import UserSMSInvite from "@/models/userSMSInvite";
 import { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import { debug } from "winston";
+import moment from "moment";
 
 @Component({
     components: {
@@ -159,6 +161,8 @@ export default class VerifySMSComponent extends Vue {
     private isVisible: boolean = false;
     private isLoading: boolean = false;
     private isValid: boolean = false;
+    private timeoutMinutes: number = 5;
+    private countdownRemaining: number = 5;
     public error: boolean = false;
 
     private mounted() {
@@ -180,6 +184,28 @@ export default class VerifySMSComponent extends Vue {
                 this.sendUserSMSUpdate();
             }
         });
+    }
+
+    private getTimeout() {
+        if (this.smsVerificationSent) {
+            let timeUntilResend = moment(
+                this.smsResendDateTime!.toJSDate()
+            ).add(5, "minutes");
+            /* Add 1 for readaiblity sake (starts at 5 minutes and ends at 1 minute remaining, rather than 4 to 0) */
+            this.timeoutMinutes =
+                timeUntilResend.diff(moment.utc(), "minutes") + 1;
+            this.countdownRemaining = this.timeoutMinutes;
+            this.runTimer();
+        }
+    }
+
+    private runTimer() {
+        if (this.countdownRemaining > 1) {
+            setTimeout(() => {
+                this.countdownRemaining -= 1;
+                this.runTimer();
+            }, 60000);
+        }
     }
 
     @Watch("smsResendDateTime")
@@ -268,6 +294,7 @@ export default class VerifySMSComponent extends Vue {
             hdid: this.user.hdid,
             dateTime: new DateWrapper(),
         });
+        this.getTimeout();
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
             .then(() => {
