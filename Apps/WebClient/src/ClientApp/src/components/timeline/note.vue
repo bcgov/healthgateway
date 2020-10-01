@@ -78,7 +78,7 @@ $radius: 15px;
                         ></font-awesome-icon>
                     </div>
                     <div v-if="!isEditing" class="entryTitle d-flex">
-                        <div class="pt-1 w-100">
+                        <div class="pt-1 w-100" data-testid="noteTitle">
                             {{ entry.title }}
                         </div>
                         <div>
@@ -92,18 +92,21 @@ $radius: 15px;
                                     <!-- Using 'button-content' slot -->
                                     <template slot="button-content">
                                         <font-awesome-icon
+                                            data-testid="noteMenuBtn"
                                             class="noteMenu"
                                             :icon="menuIcon"
                                             size="1x"
                                         ></font-awesome-icon>
                                     </template>
                                     <b-dropdown-item
+                                        data-testid="editNoteMenuBtn"
                                         class="menuItem"
                                         @click="editNote()"
                                     >
                                         Edit
                                     </b-dropdown-item>
                                     <b-dropdown-item
+                                        data-testid="deleteNoteMenuBtn"
                                         class="menuItem"
                                         @click="deleteNote()"
                                     >
@@ -118,6 +121,7 @@ $radius: 15px;
                             <b-form-input
                                 id="title"
                                 v-model="title"
+                                data-testid="noteTitleInput"
                                 type="text"
                                 placeholder="Title"
                                 maxlength="100"
@@ -127,6 +131,7 @@ $radius: 15px;
                             <b-form-input
                                 id="date"
                                 v-model="dateString"
+                                data-testid="noteDateInput"
                                 required
                                 type="date"
                             />
@@ -165,6 +170,7 @@ $radius: 15px;
                             <b-form-textarea
                                 id="text"
                                 v-model="text"
+                                data-testid="noteTextInput"
                                 placeholder="Your note here"
                                 rows="3"
                                 max-rows="6"
@@ -176,6 +182,7 @@ $radius: 15px;
                         <b-col class="d-flex flex-row-reverse">
                             <div>
                                 <b-btn
+                                    data-testid="saveNoteBtn"
                                     variant="primary"
                                     type="submit"
                                     class="mr-2"

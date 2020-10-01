@@ -34,7 +34,7 @@
                 class="comment-body py-2 mr-0 ml-3 my-1"
                 align-v="center"
             >
-                <b-col class="comment-text">
+                <b-col data-testid="commentText" class="comment-text">
                     {{ comment.text }}
                     <p class="m-0 timestamp">
                         {{ formatDate(comment.createdDateTime) }}
@@ -49,6 +49,7 @@
                     >
                         <template slot="button-content">
                             <font-awesome-icon
+                                data-testid="commentMenuBtn"
                                 class="comment-menu"
                                 :icon="menuIcon"
                                 size="1x"
@@ -56,12 +57,14 @@
                         </template>
                         <b-dropdown-item
                             class="menuItem"
+                            data-testid="commentMenuEditBtn"
                             @click="editComment()"
                         >
                             Edit
                         </b-dropdown-item>
                         <b-dropdown-item
                             class="menuItem"
+                            data-testid="commentMenuDeleteBtn"
                             @click="deleteComment()"
                         >
                             Delete
@@ -75,6 +78,7 @@
                         <b-form-textarea
                             id="comment-input"
                             v-model="commentInput"
+                            data-testid="editCommentInput"
                             :class="
                                 commentInput.length <= 30 ? 'single-line' : ''
                             "
@@ -89,6 +93,7 @@
                     class="px-2 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
                 >
                     <b-button
+                        data-testid="saveCommentBtn"
                         class="mr-2"
                         variant="primary"
                         :disabled="commentInput === ''"

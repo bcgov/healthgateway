@@ -7,11 +7,14 @@ describe('Menu System', () => {
                  AuthMethod.KeyCloak)
     })
 
-    it('Test1', () => {
-
-    })
-
-    it('Test2', () => {
-
+    it('Validate Toggle Sidebar', () => {
+        cy.get('[data-testid=sidebarUserName]').should('not.be.visible');
+        cy.get('[data-testid=sidebarToggle]').click();
+        cy.get('[data-testid=sidebarUserName]')
+            .should('be.visible')
+            .should('have.text', 'Dr Gateway');
+        cy.get('[data-testid=sidebarToggle]').click();
+        cy.get('[data-testid=sidebarUserName]')
+            .should('not.be.visible');
     })
 })

@@ -233,6 +233,7 @@
                             </b-col>
                             <b-col
                                 v-if="isOpen"
+                                data-testid="sidebarUserName"
                                 cols="7"
                                 class="button-title d-none"
                                 >{{ name }}</b-col
@@ -277,6 +278,7 @@
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
+                            data-testid="addNoteBtn"
                             id="add-a-note-row"
                             class="align-items-center border rounded-pill py-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
@@ -423,6 +425,7 @@
                             :class="{ 'ml-auto col-4': isOpen }"
                         >
                             <font-awesome-icon
+                                data-testid="sidebarToggle"
                                 class="arrow-icon p-2"
                                 icon="angle-double-left"
                                 aria-hidden="true"

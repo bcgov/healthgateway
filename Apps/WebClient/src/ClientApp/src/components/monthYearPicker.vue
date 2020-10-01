@@ -67,6 +67,7 @@
             <b-col
                 v-for="(year, i) of years"
                 :key="i"
+                :data-testid="`yearBtn${year}`"
                 :class="getDisplayYearCss(year)"
                 @click="selectYear(year)"
             >
@@ -110,11 +111,12 @@
             <b-col
                 v-for="(month, i) of monthsToDisplay"
                 :key="i"
+                :data-testid="`monthBtn${month.title}`"
                 :variant="month == selectedMonth ? 'primary' : 'light'"
                 :class="getDisplayMonthCss(month)"
                 @click="selectMonth(i)"
             >
-                {{ month.Title }}
+                {{ month.title }}
             </b-col>
         </b-row>
     </div>
@@ -128,8 +130,8 @@ import { DateGroup } from "@/models/timelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 
 class MonthToDisplay {
-    public Title: string = "";
-    public HasData: boolean = false;
+    public title: string = "";
+    public hasData: boolean = false;
 }
 
 @Component({
@@ -176,23 +178,23 @@ export default class MonthYearPickerComponent extends Vue {
         );
 
         let monthsToDisplay = [
-            { Title: "Jan", HasData: false },
-            { Title: "Feb", HasData: false },
-            { Title: "Mar", HasData: false },
-            { Title: "Apr", HasData: false },
-            { Title: "May", HasData: false },
-            { Title: "Jun", HasData: false },
-            { Title: "Jul", HasData: false },
-            { Title: "Aug", HasData: false },
-            { Title: "Sep", HasData: false },
-            { Title: "Oct", HasData: false },
-            { Title: "Nov", HasData: false },
-            { Title: "Dec", HasData: false },
+            { title: "Jan", hasData: false },
+            { title: "Feb", hasData: false },
+            { title: "Mar", hasData: false },
+            { title: "Apr", hasData: false },
+            { title: "May", hasData: false },
+            { title: "Jun", hasData: false },
+            { title: "Jul", hasData: false },
+            { title: "Aug", hasData: false },
+            { title: "Sep", hasData: false },
+            { title: "Oct", hasData: false },
+            { title: "Nov", hasData: false },
+            { title: "Dec", hasData: false },
         ];
         availableMonthsOfSelectedYear.forEach((date) => {
             // Months are indexed 0-11
             let monthIndex: number = date.month() - 1;
-            monthsToDisplay[monthIndex].HasData = true;
+            monthsToDisplay[monthIndex].hasData = true;
         });
         return monthsToDisplay;
     }
@@ -212,7 +214,7 @@ export default class MonthYearPickerComponent extends Vue {
     }
 
     private getDisplayMonthCss(displayMonth: MonthToDisplay) {
-        if (displayMonth.HasData) {
+        if (displayMonth.hasData) {
             return `item col-4 ${
                 this.currentMonth.month() ===
                     this.monthsToDisplay.indexOf(displayMonth) &&
@@ -242,7 +244,7 @@ export default class MonthYearPickerComponent extends Vue {
     }
 
     private selectMonth(monthIndex: number): void {
-        if (this.monthsToDisplay[monthIndex].HasData) {
+        if (this.monthsToDisplay[monthIndex].hasData) {
             this.selectedMonth = monthIndex + 1;
             this.selectedDate = DateWrapper.fromNumerical(
                 this.selectedYear,

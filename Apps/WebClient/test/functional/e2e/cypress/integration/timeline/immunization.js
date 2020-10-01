@@ -7,11 +7,10 @@ describe('Immunization', () => {
                  AuthMethod.KeyCloak)
     })
 
-    it('Test1', () => {
-
-    })
-
-    it('Test2', () => {
-
+    it('Validate Card Details', () => {
+        cy.get('[data-testid=filterDropdown]').click();
+        cy.get('[data-testid=immunization-filter]').click();
+        cy.get('[data-testid=dateGroup]').should('have.text', 'Jan 22, 2020');
+        cy.get('[data-testid=immunizationTitle]').should('have.text', 'Shingles');
     })
 })

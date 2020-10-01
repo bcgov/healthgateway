@@ -64,7 +64,7 @@ $radius: 15px;
             </b-col>
             <b-col class="entryTitle">
                 <b-row class="justify-content-between">
-                    <b-col cols="auto">
+                    <b-col cols="auto" data-testid="encounterTitle">
                         <strong>{{ entry.practitionerName }}</strong>
                     </b-col>
                 </b-row>
@@ -74,7 +74,7 @@ $radius: 15px;
             <b-col class="leftPane"></b-col>
             <b-col>
                 <b-row>
-                    <b-col cols="auto">
+                    <b-col cols="auto" data-testid="encounterDescription">
                         <strong> Specialty Description: </strong>
                         {{ entry.specialtyDescription }}
                     </b-col>

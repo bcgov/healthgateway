@@ -28,6 +28,7 @@
     <div class="filters-wrapper">
         <div class="filters-width d-none d-sm-block">
             <b-dropdown
+                data-testid="filterDropdown"
                 text="Filter"
                 class="w-100"
                 toggle-class="w-100"
@@ -53,6 +54,7 @@
                             v-show="filter.isEnabled"
                             :id="filter.name + '-filter'"
                             v-model="selectedFilters"
+                            :data-testid="`${filter.name}-filter`"
                             :name="filter.name + '-filter'"
                             :value="filter.value"
                         >

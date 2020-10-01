@@ -142,6 +142,7 @@
                                 ></font-awesome-icon>
                                 <b-form-input
                                     v-model="filterText"
+                                    data-testid="filterTextInput"
                                     type="text"
                                     placeholder=""
                                     maxlength="50"
@@ -173,6 +174,7 @@
                     >
                         <b-col cols="auto" class="pr-0">
                             <b-btn
+                                data-testid="monthViewToggle"
                                 class="month-view-btn btn-outline-primary px-2 m-0"
                                 :class="{ active: false }"
                                 @click.stop="toggleMonthView"
@@ -182,6 +184,7 @@
                         </b-col>
                         <b-col cols="auto" class="pl-0">
                             <b-btn
+                                data-testid="listViewToggle"
                                 class="list-view-btn btn-outline-primary px-2 m-0"
                                 :class="{ active: true }"
                             >
@@ -204,6 +207,7 @@
                     >
                         <b-col cols="auto" class="pr-0">
                             <b-btn
+                                data-testid="monthViewToggle"
                                 class="month-view-btn btn-outline-primary px-2 m-0"
                                 :class="{ active: true }"
                             >
@@ -212,6 +216,7 @@
                         </b-col>
                         <b-col cols="auto" class="pl-0">
                             <b-btn
+                                data-testid="listViewToggle"
                                 class="list-view-btn btn-outline-primary px-2 m-0"
                                 :class="{ active: false }"
                                 @click.stop="toggleListView"

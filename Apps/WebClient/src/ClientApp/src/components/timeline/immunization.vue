@@ -55,7 +55,7 @@ $radius: 15px;
                     size="2x"
                 ></font-awesome-icon>
             </b-col>
-            <b-col class="entryTitle">
+            <b-col class="entryTitle" data-testid="immunizationTitle">
                 {{ entry.immunization.name }}
             </b-col>
         </b-row>

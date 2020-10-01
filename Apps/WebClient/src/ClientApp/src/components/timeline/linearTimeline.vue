@@ -43,6 +43,7 @@
                 <b-pagination-nav
                     v-show="!timelineIsEmpty"
                     v-model="currentPage"
+                    data-testid="pagination"
                     :link-gen="linkGen"
                     :number-of-pages="numberOfPages"
                     first-number
@@ -57,7 +58,11 @@
             </b-col>
         </b-row>
         <b-row v-if="!timelineIsEmpty" class="sticky-top sticky-line" />
-        <b-row id="listControls" class="no-print">
+        <b-row
+            id="listControls"
+            class="no-print"
+            data-testid="displayCountText"
+        >
             <b-col>
                 Displaying {{ getVisibleCount() }} out of
                 {{ totalEntries }} records
@@ -69,6 +74,7 @@
                     <div
                         :id="dateGroup.key"
                         :ref="dateGroup.key"
+                        data-testid="dateGroup"
                         class="date"
                         tabindex="1"
                     >
@@ -101,7 +107,10 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <p class="text-center pt-2 noTimelineEntriesText">
+                    <p
+                        class="text-center pt-2 noTimelineEntriesText"
+                        data-testid="noTimelineEntriesText"
+                    >
                         No Timeline Entries
                     </p>
                 </b-col>

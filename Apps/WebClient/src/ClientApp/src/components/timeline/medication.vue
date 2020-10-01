@@ -63,7 +63,7 @@ $radius: 15px;
                     size="2x"
                 ></font-awesome-icon>
             </b-col>
-            <b-col class="entryTitle">
+            <b-col class="entryTitle" data-testid="medicationTitle">
                 {{ entry.medication.brandName }}
             </b-col>
         </b-row>
@@ -82,6 +82,7 @@ $radius: 15px;
                                 v-b-toggle="
                                     'entryDetails-' + index + '-' + datekey
                                 "
+                                data-testid="medicationViewDetailsBtn"
                                 variant="link"
                                 class="detailsButton"
                                 @click="detailsVisible = !detailsVisible"
@@ -108,7 +109,7 @@ $radius: 15px;
                         >
                             <div>
                                 <div class="detailSection">
-                                    <div>
+                                    <div data-testid="medicationPractitioner">
                                         <strong>Practitioner:</strong>
                                         {{ entry.practitionerSurname }}
                                     </div>
