@@ -247,6 +247,7 @@
                 >
                     <b-button
                         id="btnStart"
+                        data-testid="btnStart"
                         :to="
                             isOpenRegistration
                                 ? 'registration'
@@ -258,6 +259,7 @@
                     >
                     <b-button
                         id="btnLogin"
+                        data-testid="btnLogin"
                         to="login"
                         variant="outline-secondary"
                         class="col-12 col-sm-5 col-lg-4 my-2 m-sm-2 mx-lg-3"

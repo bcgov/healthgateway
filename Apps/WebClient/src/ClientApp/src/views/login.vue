@@ -36,6 +36,7 @@
                                 <b-col>
                                     <b-button
                                         :id="`${provider.id}Btn`"
+                                        :data-testid="`${provider.id}Btn`"
                                         block
                                         :disabled="provider.disabled"
                                         variant="primary"
