@@ -13,7 +13,7 @@
     <div class="px-4">
         <b-row>
             <b-col>
-                <b-row class="my-3 fluid justify-content-md-center">
+                <b-row class="my-3 fluid">
                     <b-col>
                         <div id="pageTitle">
                             <h1 id="subject">Contact Us</h1>
