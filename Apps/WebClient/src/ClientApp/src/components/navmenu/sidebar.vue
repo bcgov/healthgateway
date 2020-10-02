@@ -248,7 +248,12 @@ export default class SidebarComponent extends Vue {
             <b-row class="row-container m-0 p-0">
                 <b-col class="m-0 p-0">
                     <!-- Profile Button -->
-                    <router-link id="menuBtnProfile" to="/profile" class="my-4">
+                    <router-link
+                        id="menuBtnProfile"
+                        data-testid="menuBtnProfileLink"
+                        to="/profile"
+                        class="my-4"
+                    >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
                             :class="{ selected: isProfile }"
@@ -278,6 +283,7 @@ export default class SidebarComponent extends Vue {
                     <router-link
                         v-show="isActiveProfile"
                         id="menuBtnTimeline"
+                        data-testid="menuBtnTimelineLink"
                         to="/timeline"
                         class="my-4"
                     >
@@ -363,6 +369,7 @@ export default class SidebarComponent extends Vue {
                         </b-popover>
                         <!-- Print Button -->
                         <b-row
+                            data-testid="printViewBtn"
                             class="align-items-center border rounded-pill py-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
                             @click="printView"
@@ -387,6 +394,7 @@ export default class SidebarComponent extends Vue {
                     <router-link
                         v-show="isActiveProfile"
                         id="menuBtnHealthInsights"
+                        data-testid="menuBtnHealthInsightsLink"
                         to="/healthInsights"
                         class="my-4"
                     >
@@ -422,6 +430,7 @@ export default class SidebarComponent extends Vue {
                     <router-link
                         v-show="isActiveProfile"
                         id="menuBtnReports"
+                        data-testid="menuBtnReportsLink"
                         to="/reports"
                         class="my-4"
                     >

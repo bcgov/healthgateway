@@ -145,6 +145,7 @@ export default class HeaderComponent extends Vue {
             <div
                 v-if="oidcIsAuthenticated"
                 id="menuBtnLogout"
+                data-testid="logoutBtn"
                 variant="link"
                 class="nav-link"
                 @click="handleLogoutClick()"
