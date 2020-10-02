@@ -95,6 +95,7 @@ export default class AddCommentComponent extends Vue {
                         <b-form-textarea
                             :id="'comment-input-' + comment.parentEntryId"
                             v-model="commentInput"
+                            data-testid="addCommentTextArea"
                             class="comment-input-style"
                             :class="
                                 commentInput.length <= 30 ? 'single-line' : ''
@@ -112,6 +113,7 @@ export default class AddCommentComponent extends Vue {
                     class="pl-2 pr-0 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
                 >
                     <b-button
+                        data-testid="postCommentBtn"
                         class="mr-2 px-4"
                         variant="primary"
                         :disabled="commentInput === '' || isSaving"

@@ -15,7 +15,13 @@ describe('Pagination', () => {
         cy.get('#listControls').find('.col').contains('Displaying 13 out of 442 records')
     })
 
-    it('Test2', () => {
-
+    it('Validate Pages', () => {
+        cy.get('[data-testid=dateGroup]').should('have.text', 'Jul 15, 2020');
+        cy.get('[data-testid=pagination]').contains("Next").click();
+        cy.get('[data-testid=dateGroup]').should('have.text', 'Jul 13, 2020');
+        cy.get('[data-testid=pagination]').contains("Prev").click();
+        cy.get('[data-testid=dateGroup]').should('have.text', 'Jul 15, 2020');
+        cy.get('[data-testid=pagination]').contains("4").click();
+        cy.get('[data-testid=dateGroup]').should('have.text', 'Jul 10, 2020');
     })
 })
