@@ -235,7 +235,12 @@ export default class SidebarComponent extends Vue {
             <b-row class="row-container m-0 p-0">
                 <b-col class="m-0 p-0">
                     <!-- Profile Button -->
-                    <router-link id="menuBtnProfile" to="/profile" class="my-4">
+                    <router-link
+                        id="menuBtnProfile"
+                        data-testid="menuBtnProfileLink"
+                        to="/profile"
+                        class="my-4"
+                    >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
                             :class="{ selected: isProfile }"

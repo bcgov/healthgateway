@@ -243,7 +243,10 @@ export default class HealthInsightsView extends Vue {
                             >{{ getReadableDate(endDate) }}
                         </b-col>
                         <b-col cols="auto">
-                            <strong>Total records: </strong>{{ visibleCount }}
+                            <strong>Total records: </strong
+                            ><span data-testid="totalRecordsText">{{
+                                visibleCount
+                            }}</span>
                         </b-col>
                     </b-row>
                     <b-row v-if="!isLoading && visibleCount > 0">

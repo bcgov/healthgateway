@@ -9,6 +9,6 @@ describe('User Profile - Account Closure', () => {
     })
 
     it('Profile page should contain the Account Closure details', () => {
-        cy.get('#recoverBtn').should('have.text', 'Recover Account ')
+        cy.get('[data-testid=recoverAccountCancelBtn]').should('have.text', 'Recover Account ')
     })
 })

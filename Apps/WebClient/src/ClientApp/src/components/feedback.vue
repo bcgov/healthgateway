@@ -251,7 +251,11 @@ export default class FeedbackComponent extends Vue {
                         >
                     </b-col>
                     <b-col class="p-0 mr-auto ml-2" cols="auto">
-                        <router-link id="menuBtnProfile" to="/profile">
+                        <router-link
+                            id="menuBtnProfile"
+                            data-testid="menuBtnProfileLink"
+                            to="/profile"
+                        >
                             <b-button size="sm" class="aqua-button"
                                 >Update my email
                             </b-button>
