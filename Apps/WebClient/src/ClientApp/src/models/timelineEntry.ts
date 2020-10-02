@@ -49,7 +49,10 @@ export class DateGroup {
         return groupArrays;
     }
 
-    public static sortGroup(groupArrays: DateGroup[], ascending = true) {
+    public static sortGroup(
+        groupArrays: DateGroup[],
+        ascending = true
+    ): DateGroup[] {
         groupArrays.sort((a, b) =>
             a.date.isAfter(b.date)
                 ? -1 * (ascending ? 1 : -1)

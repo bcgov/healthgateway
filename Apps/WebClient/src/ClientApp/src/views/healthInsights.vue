@@ -1,13 +1,13 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import TimelineEntry from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
@@ -18,7 +18,6 @@ import TimelineLoadingComponent from "@/components/timelineLoading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 
-import { Dictionary } from "vue-router/types/router";
 import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
@@ -58,25 +57,18 @@ export default class HealthInsightsView extends Vue {
     private startDate: DateWrapper | null = null;
     private endDate: DateWrapper | null = null;
 
-    private timeChartData: any | null = null;
-    private chartOptions = { responsive: true, maintainAspectRatio: false };
+    private timeChartData: Chart.ChartData = {};
+
+    private chartOptions: Chart.ChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+    };
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.timeChartData = {
-            labels: [],
-            datasets: [
-                {
-                    label: "Monthly medications count",
-                    backgroundColor: "#ff6666",
-                    data: [],
-                },
-            ],
-        };
-
         this.fetchMedicationStatements();
     }
 
@@ -108,7 +100,7 @@ export default class HealthInsightsView extends Vue {
                             new MedicationTimelineEntry(result)
                         );
                     }
-                    let timelineEntries = this.timelineEntries.reverse();
+                    this.timelineEntries = this.timelineEntries.reverse();
                     this.startDate = this.timelineEntries[0].date;
                     this.endDate = this.timelineEntries[
                         this.timelineEntries.length - 1
@@ -199,6 +191,14 @@ export default class HealthInsightsView extends Vue {
             }
         }
 
+        this.timeChartData.labels = [];
+        this.timeChartData.datasets = [
+            {
+                label: "Monthly medications count",
+                backgroundColor: "#ff6666",
+                data: [],
+            },
+        ];
         this.timeChartData.datasets[0].data = [];
 
         for (let i = 0; i < months.length; i++) {

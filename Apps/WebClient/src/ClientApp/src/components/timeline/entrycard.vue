@@ -3,7 +3,7 @@ import Vue from "vue";
 
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 
-import { Component, Emit, Prop } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 import MedicationTimelineComponent from "./medication.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
 import LaboratoryTimelineComponent from "./laboratory.vue";
@@ -26,26 +26,6 @@ export default class EntrycardTimelineComponent extends Vue {
 
     private get EntryType(): typeof EntryType {
         return EntryType;
-    }
-
-    @Emit()
-    public onChange(object: any) {
-        return object;
-    }
-
-    @Emit()
-    public onRemove(object: any) {
-        return object;
-    }
-
-    @Emit()
-    public onEdit(object: any) {
-        return object;
-    }
-
-    @Emit()
-    public onClose(object: any) {
-        return object;
     }
 }
 </script>

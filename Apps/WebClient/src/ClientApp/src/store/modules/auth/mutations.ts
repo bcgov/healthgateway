@@ -35,8 +35,8 @@ export const mutations: MutationTree<AuthState> = {
         logger.verbose("setOidcAuthIsChecked");
         Vue.set(state.authentication, "isChecked", true);
     },
-    setOidcError(state: AuthState, error: any) {
+    setOidcError(state: AuthState, error: unknown) {
         logger.verbose("setOidcError...");
-        state.error = error && error.message ? error.message : error;
+        state.error = error;
     },
 };

@@ -6,6 +6,7 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 
 describe("Landing view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -18,8 +19,12 @@ describe("Landing view", () => {
     const configGetters = {
         webClient: (): WebClientConfiguration => {
             return {
+                logLevel: "",
+                timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
+                registrationStatus: RegistrationStatus.Closed,
+                externalURLs: {},
                 modules: {},
-                registrationStatus: undefined,
+                hoursForDeletion: 1,
             };
         },
     };

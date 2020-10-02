@@ -21,6 +21,7 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { DateWrapper } from "@/models/dateWrapper";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 
 const today = new DateWrapper();
 const yesterday = today.subtract({ day: 1 });
@@ -130,7 +131,12 @@ const medicationGetters = {};
 const configGetters = {
     webClient: (): WebClientConfiguration => {
         return {
+            logLevel: "",
+            timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
+            registrationStatus: RegistrationStatus.Closed,
+            externalURLs: {},
             modules: { Note: true },
+            hoursForDeletion: 1,
         };
     },
 };

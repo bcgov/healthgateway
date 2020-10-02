@@ -6,7 +6,7 @@ import {
 import ImmunizationModel from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
-import UserComment from "@/models/userComment";
+import { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
 import { Dictionary } from "vue-router/types/router";
 import MedicationResult from "@/models/medicationResult";
@@ -21,6 +21,7 @@ import UserSMSInvite from "@/models/userSMSInvite";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import UserRating from "@/models/userRating";
 import Encounter from "@/models/encounter";
+import { OidcUserProfile } from "@/models/user";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -35,7 +36,7 @@ export interface IAuthenticationService {
     removeUser(): Promise<void>;
     storeUser(user: OidcUser): Promise<void>;
     clearStaleState(): Promise<void>;
-    getOidcUserProfile(): Promise<any>;
+    getOidcUserProfile(): Promise<OidcUserProfile>;
 }
 
 export interface IImmunizationService {
@@ -86,7 +87,7 @@ export interface IUserProfileService {
     closeAccount(hdid: string): Promise<UserProfile>;
     recoverAccount(hdid: string): Promise<UserProfile>;
     getLatestEmailInvite(hdid: string): Promise<UserEmailInvite>;
-    getLatestSMSInvite(hdid: string): Promise<UserSMSInvite>;
+    getLatestSMSInvite(hdid: string): Promise<UserSMSInvite | null>;
     validateEmail(hdid: string, inviteKey: string): Promise<boolean>;
     validateSMS(hdid: string, digit: string): Promise<boolean>;
     updateEmail(hdid: string, email: string): Promise<boolean>;
@@ -142,20 +143,20 @@ export interface IHttpDelegate {
     setAuthorizationHeader(accessToken: string): void;
     getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
-    post<T>(url: string, payload: Object): Promise<T>;
+    post<T>(url: string, payload: unknown): Promise<T>;
     put<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
     patch<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
     delete<T>(
         url: string,
-        payload?: Object,
+        payload?: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
 }

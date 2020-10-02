@@ -50,27 +50,27 @@ export class OpenIdConnectConfiguration {
 }
 
 // Configuration data to be used by the Health Gateway Webclient.
-export class WebClientConfiguration {
+export interface WebClientConfiguration {
     // Gets or sets the logging level used by the Webclient.
-    public logLevel?: string;
+    logLevel: string;
     // Gets or sets the Webclient timeout values.
-    public timeouts?: TimeOutsConfiguration;
+    timeouts: TimeOutsConfiguration;
     // Gets or sets the Webclient timeout values.
-    public registrationStatus?: RegistrationStatus;
+    registrationStatus: RegistrationStatus;
     // Gets or sets the ExternalURLs used by the Webclient.
-    public externalURLs?: { [id: string]: string };
+    externalURLs?: { [id: string]: string };
     // Gets or sets the Module state.
-    public modules!: { [id: string]: boolean };
+    modules: { [id: string]: boolean };
     // Gets or sets the hours for deletion.
-    public hoursForDeletion?: number;
+    hoursForDeletion: number;
 }
 
 // Various timeout values used by the VUE WebClient application.
-export class TimeOutsConfiguration {
+export interface TimeOutsConfiguration {
     // Gets or sets the idle time in seconds that the Webclient will use before it automatically logs the user out.
-    public idle!: number;
+    idle: number;
     // Gets or sets the amount of time in seconds after which the user will be redirected from the logout page back to the home.
-    public logoutRedirect?: string;
+    logoutRedirect: string;
     // Gets or sets the aount of time in seconds that a user will have to wait between resending an SMS verification code.
-    public resendSMS!: number;
+    resendSMS: number;
 }

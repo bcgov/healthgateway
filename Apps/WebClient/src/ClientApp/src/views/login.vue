@@ -1,13 +1,10 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import VueRouter, { Route } from "vue-router";
+import { Action, Getter } from "vuex-class";
+import VueRouter from "vue-router";
 import LoadingComponent from "@/components/loading.vue";
-import {
-    ExternalConfiguration,
-    IdentityProviderConfiguration,
-} from "@/models/configData";
+import { IdentityProviderConfiguration } from "@/models/configData";
 
 const namespace = "auth";
 
@@ -17,6 +14,8 @@ const namespace = "auth";
     },
 })
 export default class LoginView extends Vue {
+    @Prop() isRetry?: boolean;
+
     @Action("authenticateOidc", { namespace }) authenticateOidc!: (params: {
         idpHint: string;
         redirectPath: string;
@@ -27,8 +26,6 @@ export default class LoginView extends Vue {
     userIsRegistered!: boolean;
     @Getter("identityProviders", { namespace: "config" })
     identityProviders!: IdentityProviderConfiguration[];
-
-    @Prop() isRetry?: boolean;
 
     private isLoading = true;
     private redirectPath = "";
@@ -57,11 +54,11 @@ export default class LoginView extends Vue {
         }
     }
 
-    get hasMultipleProviders(): boolean {
+    private get hasMultipleProviders(): boolean {
         return this.identityProviders.length > 1;
     }
 
-    oidcLogin(hint: string) {
+    private oidcLogin(hint: string) {
         // if the login action returns it means that the user already had credentials.
         this.authenticateOidc({
             idpHint: hint,

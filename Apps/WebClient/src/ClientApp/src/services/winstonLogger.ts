@@ -1,7 +1,6 @@
 import { Logger, createLogger, format, transports } from "winston";
 import { ILogger } from "@/services/interfaces";
 import { injectable } from "inversify";
-import { ExternalConfiguration } from "@/models/configData";
 
 @injectable()
 export class WinstonLogger implements ILogger {
