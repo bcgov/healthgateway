@@ -4,13 +4,30 @@ import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 @Component
 export default class FooterComponent extends Vue {
+    @Getter("oidcIsAuthenticated", {
+        namespace: "auth",
+    })
+    oidcIsAuthenticated!: boolean;
+
+    @Getter("userIsRegistered", {
+        namespace: "user",
+    })
+    userIsRegistered!: boolean;
+
     @Getter("isValidIdentityProvider", { namespace: "auth" })
     isValidIdentityProvider!: boolean;
+
+    private get showFooter(): boolean {
+        return (
+            !this.oidcIsAuthenticated ||
+            (this.userIsRegistered && this.isValidIdentityProvider)
+        );
+    }
 }
 </script>
 
 <template>
-    <b-navbar v-show="isValidIdentityProvider" toggleable="lg" type="dark">
+    <b-navbar v-show="showFooter" toggleable="lg" type="dark">
         <!-- Navbar content -->
         <b-navbar-nav>
             <b-nav-item class="nav-link" to="/termsOfService"
