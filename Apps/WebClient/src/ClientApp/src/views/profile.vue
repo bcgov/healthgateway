@@ -758,7 +758,7 @@ export default class ProfileView extends Vue {
                                     aria-hidden="true"
                                     class="text-danger"
                                 ></font-awesome-icon>
-                                <label for="deletionWarning">
+                                <label for="deletionWarning" class="ml-1">
                                     Account marked for removal
                                 </label>
                                 <div id="deletionWarning">
