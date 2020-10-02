@@ -1,57 +1,4 @@
-﻿<style lang="scss" scoped>
-.modal-footer {
-    justify-content: flex-end;
-}
-</style>
-
-<template>
-    <b-modal
-        id="covid-modal"
-        v-model="isVisible"
-        data-testid="covidModal"
-        title="COVID-19"
-        header-bg-variant="danger"
-        header-text-variant="light"
-        footer-class="modal-footer"
-        :no-close-on-backdrop="true"
-        centered
-        @close="cancel"
-    >
-        <b-row>
-            <b-col>
-                <form @submit.stop.prevent="handleSubmit">
-                    <b-row data-testid="covidModalText">
-                        <b-col>
-                            <span
-                                >Check the status of your COVID-19 test and view
-                                your result when it is available</span
-                            >
-                        </b-col>
-                    </b-row>
-                </form>
-            </b-col>
-        </b-row>
-        <template v-slot:modal-footer>
-            <b-row>
-                <b-col>
-                    <b-row>
-                        <b-col>
-                            <b-button
-                                data-testid="covidViewResultBtn"
-                                variant="outline-primary"
-                                @click="handleSubmit($event)"
-                            >
-                                View Result
-                            </b-button>
-                        </b-col>
-                    </b-row>
-                </b-col>
-            </b-row>
-        </template>
-    </b-modal>
-</template>
-
-<script lang="ts">
+﻿<script lang="ts">
 import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 
@@ -60,17 +7,17 @@ export default class CovidModalComponent extends Vue {
     @Prop() error!: boolean;
     @Prop({ default: false }) isLoading!: boolean;
 
-    public isVisible: boolean = false;
-    public show: boolean = false;
+    public isVisible = false;
+    public show = false;
 
-    public showModal() {
+    public showModal(): void {
         this.show = true;
         if (!this.isLoading) {
             this.isVisible = true;
         }
     }
 
-    public hideModal() {
+    public hideModal(): void {
         this.show = false;
         this.isVisible = false;
     }
@@ -122,3 +69,56 @@ export default class CovidModalComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <b-modal
+        id="covid-modal"
+        v-model="isVisible"
+        data-testid="covidModal"
+        title="COVID-19"
+        header-bg-variant="danger"
+        header-text-variant="light"
+        footer-class="modal-footer"
+        :no-close-on-backdrop="true"
+        centered
+        @close="cancel"
+    >
+        <b-row>
+            <b-col>
+                <form @submit.stop.prevent="handleSubmit">
+                    <b-row data-testid="covidModalText">
+                        <b-col>
+                            <span
+                                >Check the status of your COVID-19 test and view
+                                your result when it is available</span
+                            >
+                        </b-col>
+                    </b-row>
+                </form>
+            </b-col>
+        </b-row>
+        <template #modal-footer>
+            <b-row>
+                <b-col>
+                    <b-row>
+                        <b-col>
+                            <b-button
+                                data-testid="covidViewResultBtn"
+                                variant="outline-primary"
+                                @click="handleSubmit($event)"
+                            >
+                                View Result
+                            </b-button>
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-row>
+        </template>
+    </b-modal>
+</template>
+
+<style lang="scss" scoped>
+.modal-footer {
+    justify-content: flex-end;
+}
+</style>

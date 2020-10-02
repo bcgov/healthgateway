@@ -1,9 +1,3 @@
-<template>
-    <div>
-        <ErrorComponent :error="errorDescription" />
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
@@ -23,3 +17,9 @@ export default class NotFoundView extends Vue {
     );
 }
 </script>
+
+<template>
+    <div>
+        <ErrorComponent :error="errorDescription" />
+    </div>
+</template>

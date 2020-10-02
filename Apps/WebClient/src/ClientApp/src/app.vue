@@ -1,77 +1,3 @@
-<style lang="scss">
-@import "@/assets/scss/_variables.scss";
-
-@media print {
-    .navbar {
-        display: flex !important;
-    }
-
-    .no-print,
-    .no-print * {
-        display: none !important;
-    }
-}
-
-html {
-    height: 100vh;
-}
-
-body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-main {
-    padding-bottom: 0px;
-    padding-top: 0px;
-}
-
-#app-root {
-    min-height: 100vh;
-}
-
-.fill-height {
-    margin: 0px;
-    min-height: 100vh;
-}
-
-.devBanner {
-    z-index: $z_top_layer;
-}
-</style>
-
-<template>
-    <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
-        <div v-if="!isProduction" class="devBanner">
-            <div class="text-center bg-warning small">
-                Non-production environment:
-                <b>{{ host }}</b>
-            </div>
-        </div>
-
-        <header>
-            <NavHeader />
-        </header>
-        <b-row class="p-0 m-0">
-            <NavSidebar class="no-print sticky-top vh-100" />
-            <main class="col fill-height">
-                <ErrorCard
-                    title="Whoops!"
-                    description="An error occurred."
-                    show="true"
-                />
-                <router-view></router-view>
-                <IdleComponent ref="idleModal" />
-            </main>
-        </b-row>
-
-        <footer class="footer no-print">
-            <NavFooter />
-        </footer>
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
@@ -237,3 +163,77 @@ export default class App extends Vue {
     }
 }
 </script>
+
+<template>
+    <div id="app-root" class="container-fluid-fill d-flex h-100 flex-column">
+        <div v-if="!isProduction" class="devBanner">
+            <div class="text-center bg-warning small">
+                Non-production environment:
+                <b>{{ host }}</b>
+            </div>
+        </div>
+
+        <header>
+            <NavHeader />
+        </header>
+        <b-row class="p-0 m-0">
+            <NavSidebar class="no-print sticky-top vh-100" />
+            <main class="col fill-height">
+                <ErrorCard
+                    title="Whoops!"
+                    description="An error occurred."
+                    show="true"
+                />
+                <router-view></router-view>
+                <IdleComponent ref="idleModal" />
+            </main>
+        </b-row>
+
+        <footer class="footer no-print">
+            <NavFooter />
+        </footer>
+    </div>
+</template>
+
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+
+@media print {
+    .navbar {
+        display: flex !important;
+    }
+
+    .no-print,
+    .no-print * {
+        display: none !important;
+    }
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+#app-root {
+    min-height: 100vh;
+}
+
+.fill-height {
+    margin: 0px;
+    min-height: 100vh;
+}
+
+.devBanner {
+    z-index: $z_top_layer;
+}
+</style>

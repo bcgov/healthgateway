@@ -32,7 +32,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.location = model.location;
         this.reportAvailable = model.reportAvailable;
 
-        this.resultList = new Array();
+        this.resultList = [];
         model.labResults.forEach((result) => {
             this.resultList.push(new LaboratoryResultViewModel(result));
         });

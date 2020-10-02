@@ -1,8 +1,13 @@
-<style lang="scss" scoped>
-.error-template {
-    padding: 40px 15px;
+<script lang="ts">
+import Vue from "vue";
+import PageError from "@/models/pageError";
+import { Component, Prop } from "vue-property-decorator";
+
+@Component
+export default class PageErrorComponent extends Vue {
+    @Prop(PageError) error!: PageError;
 }
-</style>
+</script>
 
 <template>
     <div class="col d-flex justify-content-center">
@@ -14,13 +19,8 @@
     </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import PageError from "@/models/pageError";
-import { Component, Prop } from "vue-property-decorator";
-
-@Component
-export default class PageErrorComponent extends Vue {
-    @Prop(PageError) error!: PageError;
+<style lang="scss" scoped>
+.error-template {
+    padding: 40px 15px;
 }
-</script>
+</style>

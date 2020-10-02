@@ -1,70 +1,177 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import EventBus, { EventMessageName } from "@/eventbus";
+import NoteTimelineEntry from "@/models/noteTimelineEntry";
+import { Component, Emit, Prop, PropSync } from "vue-property-decorator";
+import { Action, Getter, State } from "vuex-class";
+import {
+    IconDefinition,
+    faEdit,
+    faEllipsisV,
+} from "@fortawesome/free-solid-svg-icons";
+import { IUserNoteService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import ErrorTranslator from "@/utility/errorTranslator";
+import container from "@/plugins/inversify.config";
+import UserNote from "@/models/userNote";
+import User from "@/models/user";
+import { DateWrapper } from "@/models/dateWrapper";
+import BannerError from "@/models/bannerError";
 
-$radius: 15px;
+@Component
+export default class NoteTimelineComponent extends Vue {
+    @Prop() isAddMode!: boolean;
+    @Prop() entry!: NoteTimelineEntry;
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+    @Getter("user", { namespace: "user" }) user!: User;
 
-.timelineCard {
-    border-radius: $radius $radius $radius $radius;
-    border-color: $soft_background;
-    border-style: solid;
-    border-width: 2px;
+    private noteService!: IUserNoteService;
+    private text = "";
+    private title = "";
+    private dateString: string = new DateWrapper().toISODate();
+    private detailsVisible = false;
+    private isEditMode = false;
+    private isSaving = false;
+    private eventBus = EventBus;
+
+    private mounted() {
+        this.noteService = container.get<IUserNoteService>(
+            SERVICE_IDENTIFIER.UserNoteService
+        );
+    }
+    private get entryIcon(): IconDefinition {
+        return faEdit;
+    }
+
+    private get isEditing(): boolean {
+        return this.isAddMode || this.isEditMode;
+    }
+
+    private get menuIcon(): IconDefinition {
+        return faEllipsisV;
+    }
+    private toggleDetails(): void {
+        this.detailsVisible = !this.detailsVisible;
+    }
+
+    private onSubmit(evt: Event): void {
+        evt.preventDefault();
+        if (this.isEditMode) {
+            this.updateNote();
+        } else if (this.isAddMode) {
+            this.createNote();
+        }
+    }
+
+    private updateNote() {
+        this.isSaving = true;
+        this.noteService
+            .updateNote({
+                id: this.entry.id,
+                text: this.text,
+                title: this.title,
+                journalDateTime: new DateWrapper(this.dateString).toISODate(),
+                version: this.entry.version as number,
+                hdId: this.user.hdid,
+            })
+            .then((result) => {
+                this.isEditMode = false;
+                this.onNoteUpdated(result);
+            })
+            .catch((err) => {
+                this.addError(
+                    ErrorTranslator.toBannerError("Update Note Error", err)
+                );
+            })
+            .finally(() => {
+                this.isSaving = false;
+            });
+    }
+
+    private createNote() {
+        this.isSaving = true;
+        this.noteService
+            .createNote({
+                text: this.text,
+                title: this.title,
+                journalDateTime: new DateWrapper(this.dateString).toISODate(),
+                hdId: this.user.hdid,
+                version: 0,
+            })
+            .then((result) => {
+                this.onNoteAdded(result);
+            })
+            .catch((err) => {
+                this.addError(
+                    ErrorTranslator.toBannerError("Create Note Error", err)
+                );
+            })
+            .finally(() => {
+                this.isSaving = false;
+            });
+    }
+
+    private editNote(): void {
+        this.text = this.entry.text;
+        this.title = this.entry.title;
+        this.dateString = this.entry.date.toISODate();
+        this.isEditMode = true;
+        this.onEditStarted(this.entry);
+    }
+
+    private deleteNote(): void {
+        this.text = this.entry.id;
+        if (confirm("Are you sure you want to delete this note?")) {
+            this.noteService
+                .deleteNote(this.entry.toModel())
+                .then(() => {
+                    this.onNoteDeleted(this.entry);
+                })
+                .catch((err) => {
+                    this.addError(
+                        ErrorTranslator.toBannerError("Delete Note Error", err)
+                    );
+                });
+        }
+    }
+
+    private onReset(): void {
+        this.onEditClose(this.entry);
+        this.isEditMode = false;
+    }
+
+    private onEditClose(note: NoteTimelineEntry) {
+        if (this.isAddMode) {
+            this.eventBus.$emit(EventMessageName.TimelineEntryAddClose, note);
+        } else {
+            this.eventBus.$emit(EventMessageName.TimelineEntryEditClose, note);
+        }
+    }
+
+    private onEditStarted(note: NoteTimelineEntry) {
+        this.eventBus.$emit(EventMessageName.TimelineEntryEdit, note);
+    }
+
+    private onNoteDeleted(note: NoteTimelineEntry) {
+        this.eventBus.$emit(EventMessageName.TimelineEntryDeleted, note);
+    }
+
+    private onNoteAdded(note: UserNote) {
+        this.eventBus.$emit(
+            EventMessageName.TimelineEntryAdded,
+            new NoteTimelineEntry(note)
+        );
+    }
+
+    private onNoteUpdated(note: UserNote) {
+        this.eventBus.$emit(
+            EventMessageName.TimelineEntryUpdated,
+            new NoteTimelineEntry(note)
+        );
+    }
 }
-
-.entryTitle {
-    background-color: $soft_background;
-    color: $primary;
-    padding: 10px 15px;
-    font-weight: bold;
-    word-wrap: break-word;
-    width: 100%;
-    margin-right: -1px;
-    border-radius: 0px $radius 0px 0px;
-}
-
-.editableEntryTitle {
-    background-color: $soft_background;
-    padding: 9px 0px 9px 15px;
-    width: 100%;
-    margin: 0px;
-    margin-right: -1px;
-    border-radius: 0px $radius 0px 0px;
-}
-
-.entryDetails {
-    word-wrap: break-word;
-    padding-left: 15px;
-}
-
-.icon {
-    background-color: $bcgold;
-    color: white;
-    text-align: center;
-    padding: 10px 15px;
-    border-radius: $radius 0px 0px 0px;
-}
-
-.leftPane {
-    width: 60px;
-    max-width: 60px;
-}
-
-.detailsButton {
-    padding: 0px;
-}
-
-.detailSection {
-    margin-top: 15px;
-}
-
-.editableEntryDetails {
-    padding-left: 30px;
-    padding-right: 20px;
-}
-
-.noteMenu {
-    color: $soft_text;
-}
-</style>
+</script>
 
 <template>
     <b-col class="timelineCard" :class="isEditing ? 'px-0' : ''">
@@ -206,174 +313,70 @@ $radius: 15px;
     </b-col>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import EventBus from "@/eventbus";
-import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import { Component, Emit, Prop, PropSync } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import {
-    IconDefinition,
-    faEdit,
-    faEllipsisV,
-} from "@fortawesome/free-solid-svg-icons";
-import { IUserNoteService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import ErrorTranslator from "@/utility/errorTranslator";
-import container from "@/plugins/inversify.config";
-import UserNote from "@/models/userNote";
-import User from "@/models/user";
-import { DateWrapper } from "@/models/dateWrapper";
-import BannerError from "@/models/bannerError";
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-@Component
-export default class NoteTimelineComponent extends Vue {
-    @Prop() isAddMode!: boolean;
-    @Prop() entry!: NoteTimelineEntry;
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
-    @Getter("user", { namespace: "user" }) user!: User;
+$radius: 15px;
 
-    private noteService!: IUserNoteService;
-    private text: string = "";
-    private title: string = "";
-    private dateString: string = new DateWrapper().toISODate();
-    private detailsVisible = false;
-    private isEditMode: boolean = false;
-    private isSaving: boolean = false;
-    private eventBus = EventBus;
-
-    private mounted() {
-        this.noteService = container.get<IUserNoteService>(
-            SERVICE_IDENTIFIER.UserNoteService
-        );
-    }
-    private get entryIcon(): IconDefinition {
-        return faEdit;
-    }
-
-    private get isEditing(): boolean {
-        return this.isAddMode || this.isEditMode;
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
-    }
-    private toggleDetails(): void {
-        this.detailsVisible = !this.detailsVisible;
-    }
-
-    private onSubmit(evt: Event): void {
-        evt.preventDefault();
-        if (this.isEditMode) {
-            this.updateNote();
-        } else if (this.isAddMode) {
-            this.createNote();
-        }
-    }
-
-    private updateNote() {
-        this.isSaving = true;
-        this.noteService
-            .updateNote({
-                id: this.entry.id,
-                text: this.text,
-                title: this.title,
-                journalDateTime: new DateWrapper(this.dateString).toISODate(),
-                version: this.entry.version as number,
-                hdId: this.user.hdid,
-            })
-            .then((result) => {
-                this.isEditMode = false;
-                this.onNoteUpdated(result);
-            })
-            .catch((err) => {
-                this.addError(
-                    ErrorTranslator.toBannerError("Update Note Error", err)
-                );
-            })
-            .finally(() => {
-                this.isSaving = false;
-            });
-    }
-
-    private createNote() {
-        this.isSaving = true;
-        this.noteService
-            .createNote({
-                text: this.text,
-                title: this.title,
-                journalDateTime: new DateWrapper(this.dateString).toISODate(),
-                hdId: this.user.hdid,
-                version: 0,
-            })
-            .then((result) => {
-                this.onNoteAdded(result);
-            })
-            .catch((err) => {
-                this.addError(
-                    ErrorTranslator.toBannerError("Create Note Error", err)
-                );
-            })
-            .finally(() => {
-                this.isSaving = false;
-            });
-    }
-
-    private editNote(): void {
-        this.text = this.entry.text;
-        this.title = this.entry.title;
-        this.dateString = this.entry.date.toISODate();
-        this.isEditMode = true;
-        this.onEditStarted(this.entry);
-    }
-
-    private deleteNote(): void {
-        this.text = this.entry.id;
-        if (confirm("Are you sure you want to delete this note?")) {
-            this.noteService
-                .deleteNote(this.entry.toModel())
-                .then(() => {
-                    this.onNoteDeleted(this.entry);
-                })
-                .catch((err) => {
-                    this.addError(
-                        ErrorTranslator.toBannerError("Delete Note Error", err)
-                    );
-                });
-        }
-    }
-
-    private onReset(): void {
-        this.onEditClose(this.entry);
-        this.isEditMode = false;
-    }
-
-    public onEditClose(note: NoteTimelineEntry) {
-        if (this.isAddMode) {
-            this.eventBus.$emit("timelineEntryAddClose", note);
-        } else {
-            this.eventBus.$emit("timelineEntryEditClose", note);
-        }
-    }
-
-    public onEditStarted(note: NoteTimelineEntry) {
-        this.eventBus.$emit("timelineEntryEdit", note);
-    }
-
-    public onNoteDeleted(note: NoteTimelineEntry) {
-        this.eventBus.$emit("timelineEntryDeleted", note);
-    }
-
-    public onNoteAdded(note: UserNote) {
-        this.eventBus.$emit("timelineEntryAdded", new NoteTimelineEntry(note));
-    }
-
-    public onNoteUpdated(note: UserNote) {
-        this.eventBus.$emit(
-            "timelineEntryUpdated",
-            new NoteTimelineEntry(note)
-        );
-    }
+.timelineCard {
+    border-radius: $radius $radius $radius $radius;
+    border-color: $soft_background;
+    border-style: solid;
+    border-width: 2px;
 }
-</script>
+
+.entryTitle {
+    background-color: $soft_background;
+    color: $primary;
+    padding: 10px 15px;
+    font-weight: bold;
+    word-wrap: break-word;
+    width: 100%;
+    margin-right: -1px;
+    border-radius: 0px $radius 0px 0px;
+}
+
+.editableEntryTitle {
+    background-color: $soft_background;
+    padding: 9px 0px 9px 15px;
+    width: 100%;
+    margin: 0px;
+    margin-right: -1px;
+    border-radius: 0px $radius 0px 0px;
+}
+
+.entryDetails {
+    word-wrap: break-word;
+    padding-left: 15px;
+}
+
+.icon {
+    background-color: $bcgold;
+    color: white;
+    text-align: center;
+    padding: 10px 15px;
+    border-radius: $radius 0px 0px 0px;
+}
+
+.leftPane {
+    width: 60px;
+    max-width: 60px;
+}
+
+.detailsButton {
+    padding: 0px;
+}
+
+.detailSection {
+    margin-top: 15px;
+}
+
+.editableEntryDetails {
+    padding-left: 30px;
+    padding-right: 20px;
+}
+
+.noteMenu {
+    color: $soft_text;
+}
+</style>

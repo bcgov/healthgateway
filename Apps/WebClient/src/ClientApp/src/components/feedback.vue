@@ -1,36 +1,125 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.feedback {
-    background-color: $aquaBlue;
-    display: inline;
-    font-size: 1.3em;
-    border: 0px;
-    transition: all 0.3s;
-}
+<script lang="ts">
+import Vue from "vue";
+import { Component, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { IUserFeedbackService } from "@/services/interfaces";
+import User from "@/models/user";
+import {
+    IconDefinition,
+    icon,
+    library,
+} from "@fortawesome/fontawesome-svg-core";
+import {
+    faComments,
+    faExclamationCircle,
+    faMinus,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+    faCheckCircle,
+    faTimesCircle as farTimesCircle,
+} from "@fortawesome/free-regular-svg-icons";
+library.add(faComments, faExclamationCircle, faMinus);
 
-.input-container {
-    background-color: $lightGrey;
-    border: 0px;
-    transition: all 0.3s;
-}
+const sidebar = "sidebar";
+const user = "user";
 
-.aqua-button {
-    background-color: $aquaBlue;
-    border: 0px;
-}
+@Component
+export default class FeedbackComponent extends Vue {
+    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
 
-.description-container {
-    height: 70px;
-}
+    @Getter("isOpen", { namespace: sidebar }) isSidebarOpen!: boolean;
+    @Getter("user", { namespace: user }) user!: User;
 
-.submit-button-container {
-    height: 36px;
-    overflow: hidden;
+    private comment = "";
+
+    private visible = false;
+    private hasSubmitted = false;
+    private isSuccess = false;
+    private isLoading = false;
+    private userFeedbackService!: IUserFeedbackService;
+
+    @Watch("isSidebarOpen")
+    private onIsSidebarOpen(newValue: boolean) {
+        // Make sure it closes if the sidebar is closing and reset state
+        if (!newValue) {
+            this.resetFeedback();
+        }
+    }
+
+    private mounted() {
+        this.userFeedbackService = container.get(
+            SERVICE_IDENTIFIER.UserFeedbackService
+        );
+    }
+
+    private get isValid() {
+        return this.comment.length > 1;
+    }
+
+    private get resultTitle(): string {
+        if (this.hasSubmitted) {
+            return this.isSuccess ? "Awesome!" : "Oh no!";
+        }
+
+        return "";
+    }
+
+    private get resultIcon(): IconDefinition {
+        return this.isSuccess ? faCheckCircle : farTimesCircle;
+    }
+
+    private get resultDescription(): string {
+        if (this.hasSubmitted) {
+            return this.isSuccess
+                ? "Your message has been sent successfully!"
+                : "Your Message could not be sent out!";
+        }
+
+        return "";
+    }
+
+    private get hasEmail(): boolean {
+        return this.user.verifiedEmail && this.user.hasEmail;
+    }
+
+    private toggleExpanded() {
+        this.visible = !this.visible;
+        if (!this.isSidebarOpen) {
+            this.toggleSidebar();
+        }
+    }
+
+    private onSubmit(event: Event) {
+        this.isLoading = true;
+
+        this.userFeedbackService
+            .submitFeedback({
+                comment: this.comment,
+            })
+            .then((result) => {
+                this.isSuccess = result;
+            })
+            .catch(() => {
+                this.isSuccess = false;
+            })
+            .finally(() => {
+                this.hasSubmitted = true;
+                this.isLoading = false;
+            });
+
+        event.preventDefault();
+    }
+
+    private resetFeedback() {
+        this.visible = false;
+        this.hasSubmitted = false;
+        this.isSuccess = false;
+        this.comment = "";
+    }
 }
-.minimize-icon {
-    font-size: 0.8em;
-}
-</style>
+</script>
 
 <template>
     <div id="feedback-container" class="d-flex flex-column text-dark">
@@ -198,125 +287,36 @@
     </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IUserFeedbackService } from "@/services/interfaces";
-import User from "@/models/user";
-import {
-    IconDefinition,
-    icon,
-    library,
-} from "@fortawesome/fontawesome-svg-core";
-import {
-    faComments,
-    faExclamationCircle,
-    faMinus,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-    faCheckCircle,
-    faTimesCircle as farTimesCircle,
-} from "@fortawesome/free-regular-svg-icons";
-library.add(faComments, faExclamationCircle, faMinus);
-
-const sidebar: string = "sidebar";
-const user: string = "user";
-
-@Component
-export default class FeedbackComponent extends Vue {
-    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
-
-    @Getter("isOpen", { namespace: sidebar }) isSidebarOpen!: boolean;
-    @Getter("user", { namespace: user }) user!: User;
-
-    private comment: string = "";
-
-    private visible: boolean = false;
-    private hasSubmitted: boolean = false;
-    private isSuccess: boolean = false;
-    private isLoading: boolean = false;
-    private userFeedbackService!: IUserFeedbackService;
-
-    @Watch("isSidebarOpen")
-    private onIsSidebarOpen(newValue: boolean, oldValue: boolean) {
-        // Make sure it closes if the sidebar is closing and reset state
-        if (!newValue) {
-            this.resetFeedback();
-        }
-    }
-
-    private mounted() {
-        this.userFeedbackService = container.get(
-            SERVICE_IDENTIFIER.UserFeedbackService
-        );
-    }
-
-    private get isValid() {
-        return this.comment.length > 1;
-    }
-
-    private get resultTitle(): string {
-        if (this.hasSubmitted) {
-            return this.isSuccess ? "Awesome!" : "Oh no!";
-        }
-
-        return "";
-    }
-
-    private get resultIcon(): IconDefinition {
-        return this.isSuccess ? faCheckCircle : farTimesCircle;
-    }
-
-    private get resultDescription(): string {
-        if (this.hasSubmitted) {
-            return this.isSuccess
-                ? "Your message has been sent successfully!"
-                : "Your Message could not be sent out!";
-        }
-
-        return "";
-    }
-
-    private get hasEmail(): boolean {
-        return this.user.verifiedEmail && this.user.hasEmail;
-    }
-
-    private toggleExpanded() {
-        this.visible = !this.visible;
-        if (!this.isSidebarOpen) {
-            this.toggleSidebar();
-        }
-    }
-
-    private onSubmit(event: Event) {
-        this.isLoading = true;
-
-        this.userFeedbackService
-            .submitFeedback({
-                comment: this.comment,
-            })
-            .then((result) => {
-                this.isSuccess = result;
-            })
-            .catch(() => {
-                this.isSuccess = false;
-            })
-            .finally(() => {
-                this.hasSubmitted = true;
-                this.isLoading = false;
-            });
-
-        event.preventDefault();
-    }
-
-    private resetFeedback() {
-        this.visible = false;
-        this.hasSubmitted = false;
-        this.isSuccess = false;
-        this.comment = "";
-    }
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.feedback {
+    background-color: $aquaBlue;
+    display: inline;
+    font-size: 1.3em;
+    border: 0px;
+    transition: all 0.3s;
 }
-</script>
+
+.input-container {
+    background-color: $lightGrey;
+    border: 0px;
+    transition: all 0.3s;
+}
+
+.aqua-button {
+    background-color: $aquaBlue;
+    border: 0px;
+}
+
+.description-container {
+    height: 70px;
+}
+
+.submit-button-container {
+    height: 36px;
+    overflow: hidden;
+}
+.minimize-icon {
+    font-size: 0.8em;
+}
+</style>

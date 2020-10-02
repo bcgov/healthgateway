@@ -1,10 +1,4 @@
-﻿<template>
-    <div class="vld-parent">
-        <loading :active.sync="isLoading" :is-full-page="true"></loading>
-    </div>
-</template>
-
-<script lang="ts">
+﻿<script lang="ts">
 // Import component
 import Loading from "vue-loading-overlay";
 // Import stylesheet
@@ -21,3 +15,9 @@ export default class LoadingComponent extends Vue {
     @Prop() isLoading!: boolean;
 }
 </script>
+
+<template>
+    <div class="vld-parent">
+        <loading :active.sync="isLoading" :is-full-page="true"></loading>
+    </div>
+</template>

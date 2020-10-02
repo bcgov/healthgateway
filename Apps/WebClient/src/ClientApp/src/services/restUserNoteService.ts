@@ -19,7 +19,7 @@ export class RestUserNoteService implements IUserNoteService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_NOTE_BASE_URI: string = "/v1/api/Note";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     public initialize(
         config: ExternalConfiguration,
@@ -61,7 +61,7 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    NOT_IMPLENTED: string = "Method not implemented.";
+    NOT_IMPLENTED = "Method not implemented.";
 
     public createNote(note: UserNote): Promise<UserNote> {
         this.logger.debug(`createNote: ${JSON.stringify(note)}`);

@@ -1,31 +1,105 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import UserComment from "@/models/userComment";
+import User from "@/models/user";
+import { Getter } from "vuex-class";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import {
+    IconDefinition,
+    faEllipsisV,
+    faLock,
+} from "@fortawesome/free-solid-svg-icons";
+import { ILogger, IUserCommentService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { DateWrapper } from "@/models/dateWrapper";
 
-.comment-body {
-    background-color: $soft_background;
-}
+@Component
+export default class CommentComponent extends Vue {
+    @Prop() comment!: UserComment;
+    @Getter("user", { namespace: "user" }) user!: User;
 
-.editing {
-    background-color: lightyellow;
-}
+    private commentInput = "";
+    private logger!: ILogger;
+    private commentService!: IUserCommentService;
+    private isEditMode = false;
+    private isLoading = false;
 
-.comment-menu {
-    color: $soft_text;
-}
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.commentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
+    }
 
-.comment-text {
-    white-space: pre-line;
-}
+    private formatDate(date: string): string {
+        return new DateWrapper(date, true).format("DDD, t");
+    }
 
-.timestamp {
-    color: $soft_text;
-    font-size: 0.7em;
-}
+    private get menuIcon(): IconDefinition {
+        return faEllipsisV;
+    }
 
-.single-line {
-    height: 38px !important;
+    private onSubmit(): void {
+        this.updateComment();
+    }
+
+    private onCancel(): void {
+        this.isEditMode = false;
+    }
+
+    private editComment(): void {
+        this.commentInput = this.comment.text;
+        this.isEditMode = true;
+    }
+
+    private updateComment(): void {
+        this.isLoading = true;
+        this.commentService
+            .updateComment({
+                id: this.comment.id,
+                text: this.commentInput,
+                userProfileId: this.comment.userProfileId,
+                parentEntryId: this.comment.parentEntryId,
+                createdDateTime: this.comment.createdDateTime,
+                version: this.comment.version,
+            })
+            .then((result) => {
+                this.needsUpdate(this.comment);
+            })
+            .catch((err) => {
+                this.logger.error(JSON.stringify(err));
+            })
+            .finally(() => {
+                this.isEditMode = false;
+                this.isLoading = false;
+            });
+    }
+
+    private deleteComment(): void {
+        if (confirm("Are you sure you want to delete this comment?")) {
+            this.isLoading = true;
+            this.commentService
+                .deleteComment(this.comment)
+                .then((result) => {
+                    this.needsUpdate(this.comment);
+                })
+                .catch((err) => {
+                    this.logger.error(JSON.stringify(err));
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        }
+    }
+
+    @Emit()
+    needsUpdate(comment: UserComment) {
+        return comment;
+    }
 }
-</style>
+</script>
+
 <template>
     <b-col>
         <div v-show="!isLoading">
@@ -115,104 +189,32 @@
         </div>
     </b-col>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import UserComment from "@/models/userComment";
-import User from "@/models/user";
-import { Getter } from "vuex-class";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import {
-    IconDefinition,
-    faEllipsisV,
-    faLock,
-} from "@fortawesome/free-solid-svg-icons";
-import { ILogger, IUserCommentService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { DateWrapper } from "@/models/dateWrapper";
 
-@Component
-export default class CommentComponent extends Vue {
-    @Prop() comment!: UserComment;
-    @Getter("user", { namespace: "user" }) user!: User;
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-    private commentInput: string = "";
-    private logger!: ILogger;
-    private commentService!: IUserCommentService;
-    private isEditMode: boolean = false;
-    private isLoading: boolean = false;
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.commentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
-    }
-
-    private formatDate(date: string): string {
-        return new DateWrapper(date, true).format("DDD, t");
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
-    }
-
-    private onSubmit(): void {
-        this.updateComment();
-    }
-
-    private onCancel(): void {
-        this.isEditMode = false;
-    }
-
-    private editComment(): void {
-        this.commentInput = this.comment.text;
-        this.isEditMode = true;
-    }
-
-    private updateComment(): void {
-        this.isLoading = true;
-        this.commentService
-            .updateComment({
-                id: this.comment.id,
-                text: this.commentInput,
-                userProfileId: this.comment.userProfileId,
-                parentEntryId: this.comment.parentEntryId,
-                createdDateTime: this.comment.createdDateTime,
-                version: this.comment.version,
-            })
-            .then((result) => {
-                this.needsUpdate(this.comment);
-            })
-            .catch((err) => {
-                this.logger.error(JSON.stringify(err));
-            })
-            .finally(() => {
-                this.isEditMode = false;
-                this.isLoading = false;
-            });
-    }
-
-    private deleteComment(): void {
-        if (confirm("Are you sure you want to delete this comment?")) {
-            this.isLoading = true;
-            this.commentService
-                .deleteComment(this.comment)
-                .then((result) => {
-                    this.needsUpdate(this.comment);
-                })
-                .catch((err) => {
-                    this.logger.error(JSON.stringify(err));
-                })
-                .finally(() => {
-                    this.isLoading = false;
-                });
-        }
-    }
-
-    @Emit()
-    needsUpdate(comment: UserComment) {
-        return comment;
-    }
+.comment-body {
+    background-color: $soft_background;
 }
-</script>
+
+.editing {
+    background-color: lightyellow;
+}
+
+.comment-menu {
+    color: $soft_text;
+}
+
+.comment-text {
+    white-space: pre-line;
+}
+
+.timestamp {
+    color: $soft_text;
+    font-size: 0.7em;
+}
+
+.single-line {
+    height: 38px !important;
+}
+</style>
