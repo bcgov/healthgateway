@@ -470,78 +470,6 @@ export default class ProfileView extends Vue {
                     <h1 id="subject">Profile</h1>
                     <hr />
                 </div>
-                <div v-if="isActiveProfile">
-                    <b-row class="mb-3">
-                        <b-col>
-                            <label for="profileNames">Full Name</label>
-                            <div id="profileNames">
-                                {{ fullName }}
-                            </div>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <label for="lastLoginDate">Last Login Date</label>
-                            <div id="lastLoginDate">
-                                {{ lastLoginDateString }}
-                            </div>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <label for="email">Email Address</label>
-                            <b-button
-                                v-if="!isEmailEditable"
-                                id="editEmail"
-                                data-testid="makeEmailEditableBtn"
-                                class="mx-auto"
-                                variant="link"
-                                @click="makeEmailEditable()"
-                            >
-                                Edit
-                            </b-button>
-                            <b-button
-                                v-if="email"
-                                id="removeEmail"
-                                data-testid="removeEmailBtn"
-                                class="text-danger"
-                                variant="link"
-                                @click="
-                                    makeEmailEditable();
-                                    removeEmail();
-                                "
-                            >
-                                Remove
-                            </b-button>
-                            <div class="form-inline">
-                                <b-form-input
-                                    id="email"
-                                    v-model="$v.email.$model"
-                                    data-testid="emailInput"
-                                    type="email"
-                                    class="mb-1"
-                                    :placeholder="
-                                        isEmailEditable
-                                            ? 'Your email address'
-                                            : 'Empty'
-                                    "
-                                    :disabled="!isEmailEditable"
-                                    :state="
-                                        isValid($v.email) ||
-                                        (emailVerified &&
-                                        !isEmailEditable &&
-                                        !!email
-                                            ? true
-                                            : undefined)
-                                    "
-                                />
-                                <div
-                                    v-if="
-                                        !emailVerified &&
-                                        !isEmailEditable &&
-                                        email
-                                    "
-                                    class="ml-3"
                 <div v-if="!isLoading">
                     <div v-if="isActiveProfile">
                         <b-row class="mb-3">
@@ -802,39 +730,6 @@ export default class ProfileView extends Vue {
                             v-if="isSMSEditable"
                             class="mb-3 justify-content-end"
                         >
-                            <font-awesome-icon
-                                icon="exclamation-triangle"
-                                aria-hidden="true"
-                            ></font-awesome-icon>
-                            Removing your phone number will disable future SMS
-                            communications from the Health Gateway
-                    </b-row>
-                    <b-row
-                        v-if="isSMSEditable"
-                        class="mb-3 justify-content-end"
-                    >
-                        <b-col class="text-right">
-                            <b-button
-                                id="cancelBtn"
-                                data-testid="cancelSMSEditBtn"
-                                class="mx-2 actionButton"
-                                @click="cancelSMSEdit()"
-                                >Cancel
-                            </b-button>
-                            <b-button
-                                id="saveBtn"
-                                data-testid="saveSMSEditBtn"
-                                variant="primary"
-                                class="mx-2 actionButton"
-                                :disabled="tempSMS === smsNumber"
-                                @click="saveSMSEdit()"
-                                >Save
-                            </b-button>
-                        </b-col>
-                    </b-row>
-                </div>
-                <div v-else-if="!isLoading">
-                    <b-row class="mb-3">
                             <b-col class="text-right">
                                 <b-button
                                     id="cancelBtn"
@@ -892,7 +787,6 @@ export default class ProfileView extends Vue {
                         </b-row>
                     </div>
                     <b-row v-if="isActiveProfile" class="mb-3">
->>>>>>> 0512642eabacf0f734aad053e43d65a4eff3d008
                         <b-col>
                             <label>Other</label>
                             <div>
@@ -950,78 +844,6 @@ export default class ProfileView extends Vue {
                 <div v-else>
                     <b-row class="mb-3">
                         <b-col>
-<<<<<<< HEAD
-                            <label>Time remaining for deletion: </label>
-                            {{ timeForDeletionString }}
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <b-button
-                                id="recoverAccountCancelBtn"
-                                data-testid="recoverAccountBtn"
-                                class="mx-auto"
-                                variant="warning"
-                                @click="recoverAccount()"
-                                >Recover Account
-                            </b-button>
-                        </b-col>
-                    </b-row>
-                </div>
-                <b-row v-if="isActiveProfile" class="mb-3">
-                    <b-col>
-                        <label>Other</label>
-                        <div>
-                            <b-button
-                                v-if="!showCloseWarning"
-                                id="recoverAccountShowCloseWarningBtn"
-                                data-testid="showCloseWarningBtn"
-                                class="p-0 pt-2"
-                                variant="link"
-                                @click="showCloseWarningBtn()"
-                                >Close My Account
-                            </b-button>
-                            <b-row v-if="showCloseWarning">
-                                <b-col
-                                    class="font-weight-bold text-danger text-center"
-                                >
-                                    <hr />
-                                    <font-awesome-icon
-                                        icon="exclamation-triangle"
-                                        aria-hidden="true"
-                                    ></font-awesome-icon>
-                                    Your account will be marked for removal,
-                                    preventing you from accessing your
-                                    information on the Health Gateway. After a
-                                    set period of time it will be removed
-                                    permanently.
-                                </b-col>
-                            </b-row>
-                            <b-row
-                                v-if="showCloseWarning"
-                                class="mb-3 justify-content-end"
-                            >
-                                <b-col class="text-right">
-                                    <b-button
-                                        id="closeAccountCancelBtn"
-                                        data-testid="closeAccountCancelBtn"
-                                        class="mx-2"
-                                        @click="cancelClose()"
-                                        >Cancel
-                                    </b-button>
-                                    <b-button
-                                        id="closeAccountBtn"
-                                        data-testid="closeAccountBtn"
-                                        class="mx-2"
-                                        variant="danger"
-                                        @click="closeAccount()"
-                                        >Close Account
-                                    </b-button>
-                                </b-col>
-                            </b-row>
-                        </div>
-                    </b-col>
-                </b-row>
                             <content-placeholders>
                                 <content-placeholders-heading />
                                 <content-placeholders-text :lines="1" />
