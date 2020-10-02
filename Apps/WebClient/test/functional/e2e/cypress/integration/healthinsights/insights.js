@@ -1,15 +1,15 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('Health Insights', () => {
-    beforeEach(() => {
+    before(() => {
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak)
+        cy.get('#covid-modal___BV_modal_header_ > .close').click()
+        cy.get('#menuBtnHealthInsights').click()
     })
 
-    it('Test 1', () => {
-    })
-
-    it('Test 2', () => {
+    it('totally has 259 records', () => {
+        cy.get('[data-testid=totalRecordsText]').contains('259 ')
     })
 })

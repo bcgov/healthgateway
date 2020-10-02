@@ -11,9 +11,10 @@
   },
   "env": {
     "bcsc.username": "hthgtwy11",
-    "bcsc.password": "",
+    "bcsc.password": "healthgateway",
     "keycloak.username": "healthgateway",
-    "keycloak.password": "",
+    "keycloak.password": "Passw0rd",
+    "keycloak.accountclosure.username": "AccountClosure",
     "keycloak.protected.username": "protected"
   },
   "projectId": "ofnepc"
