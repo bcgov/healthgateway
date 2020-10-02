@@ -80,22 +80,22 @@ export default class TimelineView extends Vue {
     private filterText = "";
     private filterTypes: string[] = [];
     private timelineEntries: TimelineEntry[] = [];
-    private isMedicationLoading: boolean = false;
-    private isImmunizationLoading: boolean = false;
-    private isLaboratoryLoading: boolean = false;
-    private isEncounterLoading: boolean = false;
-    private isNoteLoading: boolean = false;
-    private idleLogoutWarning: boolean = false;
-    private medicationCount: number = 0;
-    private immunizationCount: number = 0;
-    private encounterCount: number = 0;
-    private laboratoryCount: number = 0;
-    private noteCount: number = 0;
-    private protectiveWordAttempts: number = 0;
-    private isAddingNote: boolean = false;
-    private isEditingEntry: boolean = false;
-    private isPacificTime: boolean = false;
-    private unsavedChangesText: string =
+    private isMedicationLoading = false;
+    private isImmunizationLoading = false;
+    private isLaboratoryLoading = false;
+    private isEncounterLoading = false;
+    private isNoteLoading = false;
+    private idleLogoutWarning = false;
+    private medicationCount = 0;
+    private immunizationCount = 0;
+    private encounterCount = 0;
+    private laboratoryCount = 0;
+    private noteCount = 0;
+    private protectiveWordAttempts = 0;
+    private isAddingNote = false;
+    private isEditingEntry = false;
+    private isPacificTime = false;
+    private unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
 
     private isListView = true;
@@ -614,13 +614,13 @@ export default class TimelineView extends Vue {
                                 ></b-form-input>
                             </div>
                         </b-col>
-                        <b-col class="col-auto pl-0" v-if="!isLoading">
+                        <b-col v-if="!isLoading" class="col-auto pl-0">
                             <Filters
                                 :encounter-count="encounterCount"
                                 :medication-count="medicationCount"
-                                :immunizationCount="immunizationCount"
-                                :laboratoryCount="laboratoryCount"
-                                :noteCount="noteCount"
+                                :immunization-count="immunizationCount"
+                                :laboratory-count="laboratoryCount"
+                                :note-count="noteCount"
                                 @filters-changed="filtersChanged"
                             />
                         </b-col>
