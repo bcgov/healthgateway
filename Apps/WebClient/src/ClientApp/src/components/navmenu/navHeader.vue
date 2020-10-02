@@ -1,8 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Watch, Ref } from "vue-property-decorator";
+import { Component, Watch, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { User as OidcUser } from "oidc-client";
 import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -12,11 +11,6 @@ import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import RatingComponent from "@/components/modal/rating.vue";
 library.add(faSignInAlt);
 library.add(faSignOutAlt);
-
-interface ILanguage {
-    code: string;
-    description: string;
-}
 
 const auth = "auth";
 const user = "user";

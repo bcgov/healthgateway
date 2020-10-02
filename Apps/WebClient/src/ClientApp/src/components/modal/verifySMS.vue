@@ -8,9 +8,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import UserSMSInvite from "@/models/userSMSInvite";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { debug } from "winston";
 
 @Component({
     components: {
@@ -26,7 +25,7 @@ export default class VerifySMSComponent extends Vue {
     config!: WebClientConfiguration;
 
     @Action("getUserSMS", { namespace: "user" })
-    getUserSMS!: (params: { hdid: string }) => Promise<UserSMSInvite>;
+    getUserSMS!: (params: { hdid: string }) => Promise<UserSMSInvite | null>;
 
     @Action("updateSMSResendDateTime", { namespace: "user" })
     updateSMSResendDateTime!: ({
@@ -52,6 +51,19 @@ export default class VerifySMSComponent extends Vue {
     private isValid = false;
     public error = false;
 
+    public showModal(): void {
+        this.isVisible = true;
+    }
+
+    public hideModal(): void {
+        this.isVisible = false;
+    }
+
+    @Watch("smsResendDateTime")
+    private onSMSResendDateTimeChanged() {
+        this.setResendTimeout();
+    }
+
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
@@ -63,19 +75,14 @@ export default class VerifySMSComponent extends Vue {
 
     private getVerification() {
         this.getUserSMS({ hdid: this.user.hdid }).then((result) => {
-            this.tooManyRetries = result && result.tooManyFailedAttempts;
+            this.tooManyRetries = result ? result.tooManyFailedAttempts : false;
             if (this.tooManyRetries) {
                 this.error = false;
             }
-            if (result.expired) {
+            if (result !== null && result.expired) {
                 this.sendUserSMSUpdate();
             }
         });
-    }
-
-    @Watch("smsResendDateTime")
-    private onSMSResendDateTimeChanged() {
-        this.setResendTimeout();
     }
 
     private setResendTimeout(): void {
@@ -85,7 +92,7 @@ export default class VerifySMSComponent extends Vue {
         }
 
         let smsTimeWhenEnabled: DateWrapper = this.smsResendDateTime.add({
-            minutes: this.config.timeouts!.resendSMS,
+            minutes: this.config.timeouts.resendSMS,
         });
 
         let now = new DateWrapper();
@@ -96,14 +103,6 @@ export default class VerifySMSComponent extends Vue {
                 this.allowRetry = true;
             }, millisecondsToExpire);
         }
-    }
-
-    public showModal() {
-        this.isVisible = true;
-    }
-
-    public hideModal() {
-        this.isVisible = false;
     }
 
     @Emit()

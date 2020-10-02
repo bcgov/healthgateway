@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import UserComment from "@/models/userComment";
+import type { UserComment } from "@/models/userComment";
 import User from "@/models/user";
 import { Getter } from "vuex-class";
 import { Component, Emit, Prop } from "vue-property-decorator";

@@ -1,12 +1,10 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
+import { Getter } from "vuex-class";
 import { IconDefinition, faFlask } from "@fortawesome/free-solid-svg-icons";
-import LaboratoryTimelineEntry, {
-    LaboratoryResultViewModel,
-} from "@/models/laboratoryTimelineEntry";
-import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import { LaboratoryReport } from "@/models/laboratory";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { ILaboratoryService } from "@/services/interfaces";

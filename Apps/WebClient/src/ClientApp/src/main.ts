@@ -114,7 +114,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     userRatingService.initialize(httpDelegate);
     Vue.use(IdleVue, {
         eventEmitter: new Vue(),
-        idleTime: config.webClient.timeouts!.idle || 300000,
+        idleTime: config.webClient.timeouts.idle,
         store,
         startAtIdle: false,
     });

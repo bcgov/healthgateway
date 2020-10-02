@@ -4,7 +4,6 @@ import EventBus from "@/eventbus";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
 import CalendarBody from "./body.vue";
-import { DateGroup } from "@/models/timelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({

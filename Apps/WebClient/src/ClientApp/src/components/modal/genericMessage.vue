@@ -1,6 +1,6 @@
 ﻿<script lang="ts">
 import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop } from "vue-property-decorator";
 
 @Component
 export default class MessageModalComponent extends Vue {
@@ -11,11 +11,11 @@ export default class MessageModalComponent extends Vue {
     @Prop({ default: "Message" }) private message!: string;
     private isVisible = false;
 
-    public showModal() {
+    public showModal(): void {
         this.isVisible = true;
     }
 
-    public hideModal() {
+    public hideModal(): void {
         this.isVisible = false;
     }
 

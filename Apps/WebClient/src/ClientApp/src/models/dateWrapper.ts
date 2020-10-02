@@ -233,7 +233,7 @@ export class DateWrapper {
      * @param unit the unit of time (day, month, year ...)
      * @returns a date with the given start.
      */
-    public startOf(unit: DurationUnit) {
+    public startOf(unit: DurationUnit): DateWrapper {
         const temp_date = this.internalDate.startOf(unit);
         return new DateWrapper(temp_date);
     }

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from "vue-property-decorator";
+import { Vue, Component, Prop } from "vue-property-decorator";
 import { Line, mixins } from "vue-chartjs";
 
 @Component({
@@ -7,8 +7,8 @@ import { Line, mixins } from "vue-chartjs";
     mixins: [mixins.reactiveData],
 })
 export default class LineChartComponent extends Vue<Line> {
-    @Prop() chartdata: any;
-    @Prop() options: any;
+    @Prop() chartdata!: Chart.ChartData;
+    @Prop() options!: Chart.ChartOptions;
 
     constructor() {
         super();

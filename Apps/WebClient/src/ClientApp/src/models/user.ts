@@ -12,3 +12,12 @@ export default class User {
     public closedDateTime?: StringISODate;
     public preferences: Dictionary<string> = {};
 }
+
+export interface OidcUserProfile {
+    email_verified: string;
+    family_name: string;
+    given_name: string;
+    hdid: string;
+    idp: string;
+    name: string;
+}

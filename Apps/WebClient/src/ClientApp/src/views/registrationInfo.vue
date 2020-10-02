@@ -2,7 +2,7 @@
 import Vue from "vue";
 import { Getter } from "vuex-class";
 import { Component, Prop } from "vue-property-decorator";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import Image00 from "@/assets/images/registration/000_Logo-Dark.png";
 import Image01 from "@/assets/images/registration/001_BC-Services-Card.png";

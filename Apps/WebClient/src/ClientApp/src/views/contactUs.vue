@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 
 @Component({

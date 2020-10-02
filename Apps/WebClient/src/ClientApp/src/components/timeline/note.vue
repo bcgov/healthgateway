@@ -2,8 +2,8 @@
 import Vue from "vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import { Component, Emit, Prop, PropSync } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
+import { Component, Prop } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 import {
     IconDefinition,
     faEdit,
