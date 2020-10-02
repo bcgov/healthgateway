@@ -494,7 +494,7 @@ export default class ProfileView extends Vue {
                             <b-button
                                 v-if="!isEmailEditable"
                                 id="editEmail"
-                                data-testid="editEmailBtn"
+                                data-testid="makeEmailEditableBtn"
                                 class="mx-auto"
                                 variant="link"
                                 @click="makeEmailEditable()"
@@ -727,12 +727,14 @@ export default class ProfileView extends Vue {
                         <b-col class="text-right">
                             <b-button
                                 id="cancelBtn"
+                                data-testid="cancelSMSEditBtn"
                                 class="mx-2 actionButton"
                                 @click="cancelSMSEdit()"
                                 >Cancel
                             </b-button>
                             <b-button
                                 id="saveBtn"
+                                data-testid="saveSMSEditBtn"
                                 variant="primary"
                                 class="mx-2 actionButton"
                                 :disabled="tempSMS === smsNumber"
@@ -770,7 +772,7 @@ export default class ProfileView extends Vue {
                         <b-col>
                             <b-button
                                 id="recoverAccountCancelBtn"
-                                data-testid="recoverAccountCancelBtn"
+                                data-testid="recoverAccountBtn"
                                 class="mx-auto"
                                 variant="warning"
                                 @click="recoverAccount()"
@@ -786,7 +788,7 @@ export default class ProfileView extends Vue {
                             <b-button
                                 v-if="!showCloseWarning"
                                 id="recoverAccountShowCloseWarningBtn"
-                                data-testid="recoverAccountShowCloseWarningBtn"
+                                data-testid="showCloseWarningBtn"
                                 class="p-0 pt-2"
                                 variant="link"
                                 @click="showCloseWarningBtn()"
