@@ -93,6 +93,7 @@
         "image-webpack-loader": "^7.0.1",
         "inversify": "^5.0.1",
         "luxon": "^1.25.0",
+        "node-libs-browser": "^2.2.1",
         "oidc-client": "^1.10.1",
         "reflect-metadata": "^0.1.13",
         "vue": "^2.6.12",
