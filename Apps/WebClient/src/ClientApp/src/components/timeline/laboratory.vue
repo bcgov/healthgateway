@@ -1,57 +1,95 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import { Component, Prop, Ref } from "vue-property-decorator";
+import { Action, Getter, State } from "vuex-class";
+import { IconDefinition, faFlask } from "@fortawesome/free-solid-svg-icons";
+import LaboratoryTimelineEntry, {
+    LaboratoryResultViewModel,
+} from "@/models/laboratoryTimelineEntry";
+import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import { ILaboratoryService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import User from "@/models/user";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import { DateWrapper } from "@/models/dateWrapper";
+library.add(faFileDownload);
 
-$radius: 15px;
+@Component({
+    components: {
+        MessageModalComponent,
+        CommentSection: CommentSectionComponent,
+    },
+})
+export default class LaboratoryTimelineComponent extends Vue {
+    @Prop() entry!: LaboratoryTimelineEntry;
+    @Prop() index!: number;
+    @Prop() datekey!: string;
+    @Getter("user", { namespace: "user" }) user!: User;
 
-.timelineCard {
-    border-radius: $radius $radius $radius $radius;
-    border-color: $soft_background;
-    border-style: solid;
-    border-width: 2px;
+    @Ref("messageModal")
+    readonly messageModal!: MessageModalComponent;
+
+    private laboratoryService!: ILaboratoryService;
+
+    private hasErrors = false;
+    private detailsVisible = false;
+    private isLoadingDocument = false;
+
+    private mounted() {
+        this.laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
+    }
+
+    private get entryIcon(): IconDefinition {
+        return faFlask;
+    }
+
+    private toggleDetails(): void {
+        this.detailsVisible = !this.detailsVisible;
+        this.hasErrors = false;
+    }
+
+    private formatDate(date: DateWrapper): string {
+        return date.format("LLL dd, yyyy t");
+    }
+
+    private showConfirmationModal(): void {
+        this.messageModal.showModal();
+    }
+
+    private getReport() {
+        this.isLoadingDocument = true;
+        this.laboratoryService
+            .getReportDocument(this.entry.id, this.user.hdid)
+            .then((result) => {
+                const link = document.createElement("a");
+                let dateString = this.entry.displayDate.format(
+                    "YYYY_MM_DD-HH_mm"
+                );
+                let report: LaboratoryReport = result.resourcePayload;
+                link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
+                link.download = `COVID_Result_${dateString}.pdf`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            })
+            .catch(() => {
+                this.hasErrors = true;
+            })
+            .finally(() => {
+                this.isLoadingDocument = false;
+            });
+    }
+
+    private get reportAvailable(): boolean {
+        return this.entry.reportAvailable;
+    }
 }
-
-.entryTitle {
-    background-color: $soft_background;
-    color: $primary;
-    padding: 13px 15px;
-    margin-right: -1px;
-    border-radius: 0px $radius 0px 0px;
-}
-
-.icon {
-    background-color: $primary;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    border-radius: $radius 0px 0px 0px;
-}
-
-.leftPane {
-    width: 60px;
-    max-width: 60px;
-}
-
-.detailsButton {
-    padding: 0px;
-}
-
-.detailSection {
-    margin-top: 15px;
-}
-
-.commentButton {
-    border-radius: $radius;
-}
-
-.newComment {
-    border-radius: $radius;
-}
-
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
-}
-</style>
+</script>
 
 <template>
     <b-col class="timelineCard">
@@ -229,95 +267,57 @@ $radius: 15px;
     </b-col>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import { IconDefinition, faFlask } from "@fortawesome/free-solid-svg-icons";
-import LaboratoryTimelineEntry, {
-    LaboratoryResultViewModel,
-} from "@/models/laboratoryTimelineEntry";
-import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
-import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import { ILaboratoryService } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import User from "@/models/user";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
-import { DateWrapper } from "@/models/dateWrapper";
-library.add(faFileDownload);
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-@Component({
-    components: {
-        MessageModalComponent,
-        CommentSection: CommentSectionComponent,
-    },
-})
-export default class LaboratoryTimelineComponent extends Vue {
-    @Prop() entry!: LaboratoryTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-    @Getter("user", { namespace: "user" }) user!: User;
+$radius: 15px;
 
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
-
-    private laboratoryService!: ILaboratoryService;
-
-    private hasErrors: boolean = false;
-    private detailsVisible: boolean = false;
-    private isLoadingDocument: boolean = false;
-
-    private mounted() {
-        this.laboratoryService = container.get<ILaboratoryService>(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
-    }
-
-    private get entryIcon(): IconDefinition {
-        return faFlask;
-    }
-
-    private toggleDetails(): void {
-        this.detailsVisible = !this.detailsVisible;
-        this.hasErrors = false;
-    }
-
-    private formatDate(date: DateWrapper): string {
-        return date.format("LLL dd, yyyy t");
-    }
-
-    private showConfirmationModal(): void {
-        this.messageModal.showModal();
-    }
-
-    private getReport() {
-        this.isLoadingDocument = true;
-        this.laboratoryService
-            .getReportDocument(this.entry.id, this.user.hdid)
-            .then((result) => {
-                const link = document.createElement("a");
-                let dateString = this.entry.displayDate.format(
-                    "YYYY_MM_DD-HH_mm"
-                );
-                let report: LaboratoryReport = result.resourcePayload;
-                link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${dateString}.pdf`;
-                link.click();
-                URL.revokeObjectURL(link.href);
-            })
-            .catch(() => {
-                this.hasErrors = true;
-            })
-            .finally(() => {
-                this.isLoadingDocument = false;
-            });
-    }
-
-    private get reportAvailable(): boolean {
-        return this.entry.reportAvailable;
-    }
+.timelineCard {
+    border-radius: $radius $radius $radius $radius;
+    border-color: $soft_background;
+    border-style: solid;
+    border-width: 2px;
 }
-</script>
+
+.entryTitle {
+    background-color: $soft_background;
+    color: $primary;
+    padding: 13px 15px;
+    margin-right: -1px;
+    border-radius: 0px $radius 0px 0px;
+}
+
+.icon {
+    background-color: $primary;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: $radius 0px 0px 0px;
+}
+
+.leftPane {
+    width: 60px;
+    max-width: 60px;
+}
+
+.detailsButton {
+    padding: 0px;
+}
+
+.detailSection {
+    margin-top: 15px;
+}
+
+.commentButton {
+    border-radius: $radius;
+}
+
+.newComment {
+    border-radius: $radius;
+}
+
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+    display: none;
+}
+</style>

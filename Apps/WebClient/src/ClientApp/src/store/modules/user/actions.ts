@@ -72,10 +72,10 @@ export const actions: ActionTree<UserState, RootState> = {
 
                     // If registered retrieve the invite as well
                     if (isRegistered) {
-                        var latestEmailPromise = userProfileService.getLatestEmailInvite(
+                        const latestEmailPromise = userProfileService.getLatestEmailInvite(
                             params.hdid
                         );
-                        var latestSMSPromise = userProfileService.getLatestSMSInvite(
+                        const latestSMSPromise = userProfileService.getLatestSMSInvite(
                             params.hdid
                         );
 

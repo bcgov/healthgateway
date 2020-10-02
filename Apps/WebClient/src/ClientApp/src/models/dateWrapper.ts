@@ -102,7 +102,7 @@ export class DateWrapper {
      * @returns a string representation of the datetime with the given format.
      */
     public format(formatString: string): string {
-        let formated = this.internalDate.toFormat(formatString);
+        const formated = this.internalDate.toFormat(formatString);
         return formated;
     }
 
@@ -175,7 +175,7 @@ export class DateWrapper {
      * @returns day of the week (0-6)
      */
     public weekday(): number {
-        let weekday = this.internalDate.weekday;
+        const weekday = this.internalDate.weekday;
         // luxor weekdays are 1-7 where 7 is sunday
         if (weekday === 7) {
             return 0;
@@ -234,7 +234,7 @@ export class DateWrapper {
      * @returns a date with the given start.
      */
     public startOf(unit: DurationUnit) {
-        let temp_date = this.internalDate.startOf(unit);
+        const temp_date = this.internalDate.startOf(unit);
         return new DateWrapper(temp_date);
     }
 
@@ -244,7 +244,7 @@ export class DateWrapper {
      * @returns the calculated date
      */
     public subtract(unit: Duration | number | DurationObject): DateWrapper {
-        let temp_date = this.internalDate.minus(unit);
+        const temp_date = this.internalDate.minus(unit);
         return new DateWrapper(temp_date);
     }
 
@@ -254,7 +254,7 @@ export class DateWrapper {
      * @returns the calculated date
      */
     public add(duration: Duration | number | DurationObject): DateWrapper {
-        let temp_date = this.internalDate.plus(duration);
+        const temp_date = this.internalDate.plus(duration);
         return new DateWrapper(temp_date);
     }
 

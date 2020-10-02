@@ -1,79 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.column-wrapper {
-    border: 1px;
-}
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>
-<template>
-    <div>
-        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
-        <b-row class="my-3 fluid justify-content-md-center">
-            <b-col
-                id="healthInsights"
-                class="col-12 col-md-10 col-lg-9 column-wrapper"
-            >
-                <div id="pageTitle">
-                    <h1 id="subject">Health Insights</h1>
-                    <hr />
-                </div>
-                <div>
-                    <h3>Medication count over time</h3>
-                    <b-row class="py-4">
-                        <b-col cols="auto">
-                            <strong>First month with data: </strong>
-                            {{ getReadableDate(startDate) }}
-                        </b-col>
-                        <b-col cols="auto">
-                            <strong>Last month with data: </strong
-                            >{{ getReadableDate(endDate) }}
-                        </b-col>
-                        <b-col cols="auto">
-                            <strong>Total records: </strong>{{ visibleCount }}
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="!isLoading && visibleCount > 0">
-                        <b-col>
-                            <LineChart
-                                :chartdata="timeChartData"
-                                :options="chartOptions"
-                            />
-                        </b-col>
-                    </b-row>
-                    <b-row
-                        v-if="!isLoading && visibleCount === 0"
-                        class="text-center pt-5"
-                    >
-                        <b-col> No medication records </b-col>
-                    </b-row>
-                    <b-row v-if="isLoading">
-                        <b-col>
-                            <content-placeholders>
-                                <content-placeholders-img />
-                                <content-placeholders-text :lines="1" />
-                            </content-placeholders>
-                        </b-col>
-                    </b-row>
-                </div>
-            </b-col>
-        </b-row>
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :error="protectiveWordAttempts > 1"
-            :is-loading="isLoading"
-            @submit="onProtectiveWordSubmit"
-            @cancel="onProtectiveWordCancel"
-        />
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
@@ -100,7 +24,7 @@ import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { DateWrapper } from "@/models/dateWrapper";
 
-const namespace: string = "user";
+const namespace = "user";
 
 @Component({
     components: {
@@ -128,14 +52,14 @@ export default class HealthInsightsView extends Vue {
     private logger!: ILogger;
 
     private timelineEntries: TimelineEntry[] = [];
-    private isMedicationLoading: boolean = false;
-    private protectiveWordAttempts: number = 0;
+    private isMedicationLoading = false;
+    private protectiveWordAttempts = 0;
 
     private startDate: DateWrapper | null = null;
     private endDate: DateWrapper | null = null;
 
     private timeChartData: any | null = null;
-    private chartOptions: {} = { responsive: true, maintainAspectRatio: false };
+    private chartOptions = { responsive: true, maintainAspectRatio: false };
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
@@ -294,3 +218,80 @@ export default class HealthInsightsView extends Vue {
     }
 }
 </script>
+
+<template>
+    <div>
+        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
+        <b-row class="my-3 fluid">
+            <b-col
+                id="healthInsights"
+                class="col-12 col-md-10 col-lg-9 column-wrapper"
+            >
+                <div id="pageTitle">
+                    <h1 id="subject">Health Insights</h1>
+                    <hr />
+                </div>
+                <div>
+                    <h3>Medication count over time</h3>
+                    <b-row class="py-4">
+                        <b-col cols="auto">
+                            <strong>First month with data: </strong>
+                            {{ getReadableDate(startDate) }}
+                        </b-col>
+                        <b-col cols="auto">
+                            <strong>Last month with data: </strong
+                            >{{ getReadableDate(endDate) }}
+                        </b-col>
+                        <b-col cols="auto">
+                            <strong>Total records: </strong>{{ visibleCount }}
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="!isLoading && visibleCount > 0">
+                        <b-col>
+                            <LineChart
+                                :chartdata="timeChartData"
+                                :options="chartOptions"
+                            />
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="!isLoading && visibleCount === 0"
+                        class="text-center pt-5"
+                    >
+                        <b-col> No medication records </b-col>
+                    </b-row>
+                    <b-row v-if="isLoading">
+                        <b-col>
+                            <content-placeholders>
+                                <content-placeholders-img />
+                                <content-placeholders-text :lines="1" />
+                            </content-placeholders>
+                        </b-col>
+                    </b-row>
+                </div>
+            </b-col>
+        </b-row>
+        <ProtectiveWordComponent
+            ref="protectiveWordModal"
+            :error="protectiveWordAttempts > 1"
+            :is-loading="isLoading"
+            @submit="onProtectiveWordSubmit"
+            @cancel="onProtectiveWordCancel"
+        />
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.column-wrapper {
+    border: 1px;
+}
+
+#pageTitle {
+    color: $primary;
+}
+
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+</style>

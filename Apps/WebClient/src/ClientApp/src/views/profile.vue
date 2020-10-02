@@ -1,393 +1,3 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-
-label {
-    font-weight: bold;
-}
-
-input {
-    width: 320px !important;
-    max-width: 320px !important;
-}
-
-.actionButton {
-    width: 80px;
-}
-</style>
-<template>
-    <div class="container">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <div class="row py-5">
-            <div class="col-lg-12 col-md-12">
-                <div id="pageTitle">
-                    <h1 id="subject">Profile</h1>
-                    <hr />
-                </div>
-                <div v-if="isActiveProfile">
-                    <b-row class="mb-3">
-                        <b-col>
-                            <label for="profileNames">Full Name</label>
-                            <div id="profileNames">
-                                {{ fullName }}
-                            </div>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <label for="lastLoginDate">Last Login Date</label>
-                            <div id="lastLoginDate">
-                                {{ lastLoginDateString }}
-                            </div>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <label for="email">Email Address</label>
-                            <b-button
-                                v-if="!isEmailEditable"
-                                id="editEmail"
-                                class="mx-auto"
-                                variant="link"
-                                @click="makeEmailEditable()"
-                            >
-                                Edit
-                            </b-button>
-                            <b-button
-                                v-if="email"
-                                id="removeEmail"
-                                class="text-danger"
-                                variant="link"
-                                @click="
-                                    makeEmailEditable();
-                                    removeEmail();
-                                "
-                            >
-                                Remove
-                            </b-button>
-                            <div class="form-inline">
-                                <b-form-input
-                                    id="email"
-                                    v-model="$v.email.$model"
-                                    type="email"
-                                    class="mb-1"
-                                    :placeholder="
-                                        isEmailEditable
-                                            ? 'Your email address'
-                                            : 'Empty'
-                                    "
-                                    :disabled="!isEmailEditable"
-                                    :state="
-                                        isValid($v.email) ||
-                                        (emailVerified &&
-                                        !isEmailEditable &&
-                                        !!email
-                                            ? true
-                                            : undefined)
-                                    "
-                                />
-                                <div
-                                    v-if="
-                                        !emailVerified &&
-                                        !isEmailEditable &&
-                                        email
-                                    "
-                                    class="ml-3"
-                                >
-                                    (Not Verified)
-                                </div>
-                                <b-button
-                                    v-if="
-                                        !emailVerified &&
-                                        !isEmailEditable &&
-                                        email
-                                    "
-                                    id="resendEmail"
-                                    variant="warning"
-                                    class="ml-3"
-                                    :disabled="emailVerificationSent"
-                                    @click="sendUserEmailUpdate()"
-                                >
-                                    Resend Verification
-                                </b-button>
-                            </div>
-                            <b-form-invalid-feedback :state="isValid($v.email)">
-                                Valid email is required
-                            </b-form-invalid-feedback>
-                            <b-form-invalid-feedback :state="$v.email.newEmail">
-                                New email must be different from the previous
-                                one
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="isEmailEditable" class="mb-3">
-                        <b-col>
-                            <b-form-input
-                                id="emailConfirmation"
-                                v-model="$v.emailConfirmation.$model"
-                                type="email"
-                                placeholder="Confirm your email address"
-                                :state="isValid($v.emailConfirmation)"
-                            />
-                            <b-form-invalid-feedback
-                                :state="$v.emailConfirmation.sameAsEmail"
-                            >
-                                Emails must match
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="!email && tempEmail">
-                        <b-col
-                            class="font-weight-bold text-primary text-center"
-                        >
-                            <font-awesome-icon
-                                icon="exclamation-triangle"
-                                aria-hidden="true"
-                            ></font-awesome-icon>
-                            Removing your email address will disable future
-                            email communications from the Health Gateway
-                        </b-col>
-                    </b-row>
-
-                    <b-row
-                        v-if="isEmailEditable"
-                        class="mb-3 justify-content-end"
-                    >
-                        <b-col class="text-right">
-                            <b-button
-                                id="cancelBtn"
-                                class="mx-2 actionButton"
-                                @click="cancelEmailEdit()"
-                            >
-                                Cancel
-                            </b-button>
-                            <b-button
-                                id="saveBtn"
-                                variant="primary"
-                                class="mx-2 actionButton"
-                                :disabled="tempEmail === email"
-                                @click="saveEmailEdit($event)"
-                            >
-                                Save
-                            </b-button>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <label for="smsNumber"
-                                >Cell Number (SMS notifications)</label
-                            >
-                            <b-button
-                                v-if="!isSMSEditable"
-                                id="editSMS"
-                                class="mx-auto"
-                                variant="link"
-                                @click="makeSMSEditable()"
-                                >Edit
-                            </b-button>
-                            <b-button
-                                v-if="smsNumber"
-                                id="removeSMS"
-                                class="text-danger"
-                                variant="link"
-                                @click="
-                                    makeSMSEditable();
-                                    removeSMS();
-                                "
-                            >
-                                Remove
-                            </b-button>
-                            <div class="form-inline">
-                                <b-form-input
-                                    id="smsNumber"
-                                    v-model="$v.smsNumber.$model"
-                                    type="text"
-                                    class="mb-1"
-                                    :placeholder="
-                                        isSMSEditable
-                                            ? 'Your phone number'
-                                            : 'Empty'
-                                    "
-                                    :disabled="!isSMSEditable"
-                                    :state="
-                                        isValid($v.smsNumber) ||
-                                        (smsVerified &&
-                                        !isSMSEditable &&
-                                        !!smsNumber
-                                            ? true
-                                            : undefined)
-                                    "
-                                />
-                                <div
-                                    v-if="
-                                        !smsVerified &&
-                                        !isSMSEditable &&
-                                        smsNumber
-                                    "
-                                    class="ml-3"
-                                >
-                                    (Not Verified)
-                                    <b-button
-                                        id="verifySMS"
-                                        variant="warning"
-                                        class="ml-3"
-                                        @click="verifySMS()"
-                                    >
-                                        Verify
-                                    </b-button>
-                                </div>
-                            </div>
-                            <b-form-invalid-feedback
-                                :state="isValid($v.smsNumber)"
-                            >
-                                Valid SMS number is required
-                            </b-form-invalid-feedback>
-                            <b-form-invalid-feedback
-                                :state="$v.smsNumber.newSMSNumber"
-                            >
-                                New SMS number must be different from the
-                                previous one
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="!smsNumber && tempSMS">
-                        <b-col
-                            class="font-weight-bold text-primary text-center"
-                        >
-                            <font-awesome-icon
-                                icon="exclamation-triangle"
-                                aria-hidden="true"
-                            ></font-awesome-icon>
-                            Removing your phone number will disable future SMS
-                            communications from the Health Gateway
-                        </b-col>
-                    </b-row>
-                    <b-row
-                        v-if="isSMSEditable"
-                        class="mb-3 justify-content-end"
-                    >
-                        <b-col class="text-right">
-                            <b-button
-                                id="cancelBtn"
-                                class="mx-2 actionButton"
-                                @click="cancelSMSEdit()"
-                                >Cancel
-                            </b-button>
-                            <b-button
-                                id="saveBtn"
-                                variant="primary"
-                                class="mx-2 actionButton"
-                                :disabled="tempSMS === smsNumber"
-                                @click="saveSMSEdit()"
-                                >Save
-                            </b-button>
-                        </b-col>
-                    </b-row>
-                </div>
-                <div v-else-if="!isLoading">
-                    <b-row class="mb-3">
-                        <b-col>
-                            <font-awesome-icon
-                                icon="exclamation-triangle"
-                                aria-hidden="true"
-                                class="text-danger"
-                            ></font-awesome-icon>
-                            <label for="deletionWarning">
-                                Account marked for removal
-                            </label>
-                            <div id="deletionWarning">
-                                Your account has been deactivated. If you wish
-                                to recover your account click on the "Recover
-                                Account" button before the time expires.
-                            </div>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <label>Time remaining for deletion: </label>
-                            {{ timeForDeletionString }}
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-3">
-                        <b-col>
-                            <b-button
-                                id="recoverBtn"
-                                class="mx-auto"
-                                variant="warning"
-                                @click="recoverAccount()"
-                                >Recover Account
-                            </b-button>
-                        </b-col>
-                    </b-row>
-                </div>
-                <b-row v-if="isActiveProfile" class="mb-3">
-                    <b-col>
-                        <label>Other</label>
-                        <div>
-                            <b-button
-                                v-if="!showCloseWarning"
-                                id="showCloseWarningBtn"
-                                class="p-0 pt-2"
-                                variant="link"
-                                @click="showCloseWarningBtn()"
-                                >Close My Account
-                            </b-button>
-                            <b-row v-if="showCloseWarning">
-                                <b-col
-                                    class="font-weight-bold text-danger text-center"
-                                >
-                                    <hr />
-                                    <font-awesome-icon
-                                        icon="exclamation-triangle"
-                                        aria-hidden="true"
-                                    ></font-awesome-icon>
-                                    Your account will be marked for removal,
-                                    preventing you from accessing your
-                                    information on the Health Gateway. After a
-                                    set period of time it will be removed
-                                    permanently.
-                                </b-col>
-                            </b-row>
-                            <b-row
-                                v-if="showCloseWarning"
-                                class="mb-3 justify-content-end"
-                            >
-                                <b-col class="text-right">
-                                    <b-button
-                                        id="cancelCloseBtn"
-                                        class="mx-2"
-                                        @click="cancelClose()"
-                                        >Cancel
-                                    </b-button>
-                                    <b-button
-                                        id="closeAccountBtn"
-                                        class="mx-2"
-                                        variant="danger"
-                                        @click="closeAccount()"
-                                        >Close Account
-                                    </b-button>
-                                </b-col>
-                            </b-row>
-                        </div>
-                    </b-col>
-                </b-row>
-            </div>
-        </div>
-        <VerifySMSComponent
-            ref="verifySMSModal"
-            :sms-number="smsNumber"
-            @submit="onVerifySMSSubmit"
-        />
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
@@ -428,8 +38,8 @@ import { Duration } from "luxon";
 
 library.add(faExclamationTriangle);
 
-const userNamespace: string = "user";
-const authNamespace: string = "auth";
+const userNamespace = "user";
+const authNamespace = "auth";
 
 @Component({
     components: {
@@ -487,34 +97,34 @@ export default class ProfileView extends Vue {
     @Ref("verifySMSModal")
     readonly verifySMSModal!: VerifySMSComponent;
 
-    private isLoading: boolean = true;
+    private isLoading = true;
 
     private emailVerified = false;
-    private email: string = "";
-    private emailConfirmation: string = "";
-    private isEmailEditable: boolean = false;
+    private email = "";
+    private emailConfirmation = "";
+    private isEmailEditable = false;
     private oidcUser: any = {};
-    private emailVerificationSent: boolean = false;
+    private emailVerificationSent = false;
 
     private smsVerified = false;
-    private smsNumber: string = "";
-    private isSMSEditable: boolean = false;
-    private tempSMS: string = "";
-    private invalidSMSVerificationCode: boolean = false;
+    private smsNumber = "";
+    private isSMSEditable = false;
+    private tempSMS = "";
+    private invalidSMSVerificationCode = false;
 
-    private tempEmail: string = "";
-    private submitStatus: string = "";
+    private tempEmail = "";
+    private submitStatus = "";
     private logger!: ILogger;
     private userProfileService!: IUserProfileService;
     private userProfile!: UserProfile;
 
-    private lastLoginDateString: string = "";
+    private lastLoginDateString = "";
 
     private showCloseWarning = false;
 
-    private timeForDeletion: number = -1;
+    private timeForDeletion = -1;
 
-    private intervalHandler: number = 0;
+    private intervalHandler = 0;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -851,3 +461,409 @@ export default class ProfileView extends Vue {
     }
 }
 </script>
+
+<template>
+    <div class="container">
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <div class="row py-5">
+            <div class="col-lg-12 col-md-12">
+                <div id="pageTitle">
+                    <h1 id="subject">Profile</h1>
+                    <hr />
+                </div>
+                <div v-if="isActiveProfile">
+                    <b-row class="mb-3">
+                        <b-col>
+                            <label for="profileNames">Full Name</label>
+                            <div id="profileNames">
+                                {{ fullName }}
+                            </div>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-3">
+                        <b-col>
+                            <label for="lastLoginDate">Last Login Date</label>
+                            <div id="lastLoginDate">
+                                {{ lastLoginDateString }}
+                            </div>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-3">
+                        <b-col>
+                            <label for="email">Email Address</label>
+                            <b-button
+                                v-if="!isEmailEditable"
+                                id="editEmail"
+                                data-testid="editEmailBtn"
+                                class="mx-auto"
+                                variant="link"
+                                @click="makeEmailEditable()"
+                            >
+                                Edit
+                            </b-button>
+                            <b-button
+                                v-if="email"
+                                id="removeEmail"
+                                data-testid="removeEmailBtn"
+                                class="text-danger"
+                                variant="link"
+                                @click="
+                                    makeEmailEditable();
+                                    removeEmail();
+                                "
+                            >
+                                Remove
+                            </b-button>
+                            <div class="form-inline">
+                                <b-form-input
+                                    id="email"
+                                    v-model="$v.email.$model"
+                                    data-testid="emailInput"
+                                    type="email"
+                                    class="mb-1"
+                                    :placeholder="
+                                        isEmailEditable
+                                            ? 'Your email address'
+                                            : 'Empty'
+                                    "
+                                    :disabled="!isEmailEditable"
+                                    :state="
+                                        isValid($v.email) ||
+                                        (emailVerified &&
+                                        !isEmailEditable &&
+                                        !!email
+                                            ? true
+                                            : undefined)
+                                    "
+                                />
+                                <div
+                                    v-if="
+                                        !emailVerified &&
+                                        !isEmailEditable &&
+                                        email
+                                    "
+                                    class="ml-3"
+                                >
+                                    (Not Verified)
+                                </div>
+                                <b-button
+                                    v-if="
+                                        !emailVerified &&
+                                        !isEmailEditable &&
+                                        email
+                                    "
+                                    id="resendEmail"
+                                    data-testid="resendEmailBtn"
+                                    variant="warning"
+                                    class="ml-3"
+                                    :disabled="emailVerificationSent"
+                                    @click="sendUserEmailUpdate()"
+                                >
+                                    Resend Verification
+                                </b-button>
+                            </div>
+                            <b-form-invalid-feedback :state="isValid($v.email)">
+                                Valid email is required
+                            </b-form-invalid-feedback>
+                            <b-form-invalid-feedback :state="$v.email.newEmail">
+                                New email must be different from the previous
+                                one
+                            </b-form-invalid-feedback>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="isEmailEditable" class="mb-3">
+                        <b-col>
+                            <b-form-input
+                                id="emailConfirmation"
+                                v-model="$v.emailConfirmation.$model"
+                                data-testid="emailConfirmationInput"
+                                type="email"
+                                placeholder="Confirm your email address"
+                                :state="isValid($v.emailConfirmation)"
+                            />
+                            <b-form-invalid-feedback
+                                :state="$v.emailConfirmation.sameAsEmail"
+                            >
+                                Emails must match
+                            </b-form-invalid-feedback>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="!email && tempEmail">
+                        <b-col
+                            class="font-weight-bold text-primary text-center"
+                        >
+                            <font-awesome-icon
+                                icon="exclamation-triangle"
+                                aria-hidden="true"
+                            ></font-awesome-icon>
+                            Removing your email address will disable future
+                            email communications from the Health Gateway
+                        </b-col>
+                    </b-row>
+
+                    <b-row
+                        v-if="isEmailEditable"
+                        class="mb-3 justify-content-end"
+                    >
+                        <b-col class="text-right">
+                            <b-button
+                                id="editEmailCancelBtn"
+                                data-testid="editEmailCancelBtn"
+                                class="mx-2 actionButton"
+                                @click="cancelEmailEdit()"
+                            >
+                                Cancel
+                            </b-button>
+                            <b-button
+                                id="editSMSSaveBtn"
+                                data-testid="editEmailSaveBtn"
+                                variant="primary"
+                                class="mx-2 actionButton"
+                                :disabled="tempEmail === email"
+                                @click="saveEmailEdit($event)"
+                            >
+                                Save
+                            </b-button>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-3">
+                        <b-col>
+                            <label for="smsNumber"
+                                >Cell Number (SMS notifications)</label
+                            >
+                            <b-button
+                                v-if="!isSMSEditable"
+                                id="editSMS"
+                                data-testid="editSMSBtn"
+                                class="mx-auto"
+                                variant="link"
+                                @click="makeSMSEditable()"
+                                >Edit
+                            </b-button>
+                            <b-button
+                                v-if="smsNumber"
+                                id="removeSMS"
+                                data-testid="removeSMSBtn"
+                                class="text-danger"
+                                variant="link"
+                                @click="
+                                    makeSMSEditable();
+                                    removeSMS();
+                                "
+                            >
+                                Remove
+                            </b-button>
+                            <div class="form-inline">
+                                <b-form-input
+                                    id="smsNumber"
+                                    v-model="$v.smsNumber.$model"
+                                    data-testid="smsNumberInput"
+                                    type="text"
+                                    class="mb-1"
+                                    :placeholder="
+                                        isSMSEditable
+                                            ? 'Your phone number'
+                                            : 'Empty'
+                                    "
+                                    :disabled="!isSMSEditable"
+                                    :state="
+                                        isValid($v.smsNumber) ||
+                                        (smsVerified &&
+                                        !isSMSEditable &&
+                                        !!smsNumber
+                                            ? true
+                                            : undefined)
+                                    "
+                                />
+                                <div
+                                    v-if="
+                                        !smsVerified &&
+                                        !isSMSEditable &&
+                                        smsNumber
+                                    "
+                                    class="ml-3"
+                                >
+                                    (Not Verified)
+                                    <b-button
+                                        id="verifySMS"
+                                        data-testid="verifySMSBtn"
+                                        variant="warning"
+                                        class="ml-3"
+                                        @click="verifySMS()"
+                                    >
+                                        Verify
+                                    </b-button>
+                                </div>
+                            </div>
+                            <b-form-invalid-feedback
+                                :state="isValid($v.smsNumber)"
+                            >
+                                Valid SMS number is required
+                            </b-form-invalid-feedback>
+                            <b-form-invalid-feedback
+                                :state="$v.smsNumber.newSMSNumber"
+                            >
+                                New SMS number must be different from the
+                                previous one
+                            </b-form-invalid-feedback>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="!smsNumber && tempSMS">
+                        <b-col
+                            class="font-weight-bold text-primary text-center"
+                        >
+                            <font-awesome-icon
+                                icon="exclamation-triangle"
+                                aria-hidden="true"
+                            ></font-awesome-icon>
+                            Removing your phone number will disable future SMS
+                            communications from the Health Gateway
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="isSMSEditable"
+                        class="mb-3 justify-content-end"
+                    >
+                        <b-col class="text-right">
+                            <b-button
+                                id="cancelBtn"
+                                class="mx-2 actionButton"
+                                @click="cancelSMSEdit()"
+                                >Cancel
+                            </b-button>
+                            <b-button
+                                id="saveBtn"
+                                variant="primary"
+                                class="mx-2 actionButton"
+                                :disabled="tempSMS === smsNumber"
+                                @click="saveSMSEdit()"
+                                >Save
+                            </b-button>
+                        </b-col>
+                    </b-row>
+                </div>
+                <div v-else-if="!isLoading">
+                    <b-row class="mb-3">
+                        <b-col>
+                            <font-awesome-icon
+                                icon="exclamation-triangle"
+                                aria-hidden="true"
+                                class="text-danger"
+                            ></font-awesome-icon>
+                            <label for="deletionWarning">
+                                Account marked for removal
+                            </label>
+                            <div id="deletionWarning">
+                                Your account has been deactivated. If you wish
+                                to recover your account click on the "Recover
+                                Account" button before the time expires.
+                            </div>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-3">
+                        <b-col>
+                            <label>Time remaining for deletion: </label>
+                            {{ timeForDeletionString }}
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-3">
+                        <b-col>
+                            <b-button
+                                id="recoverAccountCancelBtn"
+                                data-testid="recoverAccountCancelBtn"
+                                class="mx-auto"
+                                variant="warning"
+                                @click="recoverAccount()"
+                                >Recover Account
+                            </b-button>
+                        </b-col>
+                    </b-row>
+                </div>
+                <b-row v-if="isActiveProfile" class="mb-3">
+                    <b-col>
+                        <label>Other</label>
+                        <div>
+                            <b-button
+                                v-if="!showCloseWarning"
+                                id="recoverAccountShowCloseWarningBtn"
+                                data-testid="recoverAccountShowCloseWarningBtn"
+                                class="p-0 pt-2"
+                                variant="link"
+                                @click="showCloseWarningBtn()"
+                                >Close My Account
+                            </b-button>
+                            <b-row v-if="showCloseWarning">
+                                <b-col
+                                    class="font-weight-bold text-danger text-center"
+                                >
+                                    <hr />
+                                    <font-awesome-icon
+                                        icon="exclamation-triangle"
+                                        aria-hidden="true"
+                                    ></font-awesome-icon>
+                                    Your account will be marked for removal,
+                                    preventing you from accessing your
+                                    information on the Health Gateway. After a
+                                    set period of time it will be removed
+                                    permanently.
+                                </b-col>
+                            </b-row>
+                            <b-row
+                                v-if="showCloseWarning"
+                                class="mb-3 justify-content-end"
+                            >
+                                <b-col class="text-right">
+                                    <b-button
+                                        id="closeAccountCancelBtn"
+                                        data-testid="closeAccountCancelBtn"
+                                        class="mx-2"
+                                        @click="cancelClose()"
+                                        >Cancel
+                                    </b-button>
+                                    <b-button
+                                        id="closeAccountBtn"
+                                        data-testid="closeAccountBtn"
+                                        class="mx-2"
+                                        variant="danger"
+                                        @click="closeAccount()"
+                                        >Close Account
+                                    </b-button>
+                                </b-col>
+                            </b-row>
+                        </div>
+                    </b-col>
+                </b-row>
+            </div>
+        </div>
+        <VerifySMSComponent
+            ref="verifySMSModal"
+            :sms-number="smsNumber"
+            @submit="onVerifySMSSubmit"
+        />
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+#pageTitle {
+    color: $primary;
+}
+
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+
+label {
+    font-weight: bold;
+}
+
+input {
+    width: 320px !important;
+    max-width: 320px !important;
+}
+
+.actionButton {
+    width: 80px;
+}
+</style>

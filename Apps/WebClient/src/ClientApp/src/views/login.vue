@@ -1,82 +1,3 @@
-<template>
-    <div class="container my-5" align="center">
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row>
-            <b-col>
-                <b-alert
-                    style="max-width: 25rem"
-                    :show="isRetry"
-                    dismissible
-                    variant="danger"
-                >
-                    <h4>Error</h4>
-                    <span
-                        >An unexpected error occured while processing the
-                        request, please try again.</span
-                    >
-                </b-alert>
-                <b-card
-                    v-if="identityProviders && identityProviders.length > 0"
-                    id="loginPicker"
-                    class="shadow-lg bg-white"
-                    style="max-width: 25rem"
-                    align="center"
-                >
-                    <h3 slot="header">Log In</h3>
-                    <p v-if="hasMultipleProviders || isRetry" slot="footer">
-                        Not yet registered?
-                        <b-link to="/registrationInfo">Sign up</b-link>
-                    </p>
-                    <b-card-body v-if="hasMultipleProviders || isRetry">
-                        <div
-                            v-for="provider in identityProviders"
-                            :key="provider.id"
-                        >
-                            <b-row>
-                                <b-col>
-                                    <b-button
-                                        :id="`${provider.id}Btn`"
-                                        block
-                                        :disabled="provider.disabled"
-                                        variant="primary"
-                                        @click="oidcLogin(provider.hint)"
-                                    >
-                                        <b-row>
-                                            <b-col class="col-2">
-                                                <font-awesome-icon
-                                                    :icon="`${provider.icon}`"
-                                                ></font-awesome-icon>
-                                            </b-col>
-                                            <b-col class="text-justify">
-                                                <span>{{ provider.name }}</span>
-                                            </b-col>
-                                        </b-row>
-                                    </b-button>
-                                </b-col>
-                            </b-row>
-                            <b-row
-                                v-if="
-                                    identityProviders.indexOf(provider) <
-                                    identityProviders.length - 1
-                                "
-                                ><b-col>or</b-col>
-                            </b-row>
-                        </div>
-                    </b-card-body>
-                    <b-card-body v-else>
-                        <span
-                            >Redirecting to
-                            <strong>{{ identityProviders[0].name }}</strong
-                            >...</span
-                        >
-                    </b-card-body>
-                </b-card>
-                <div v-else>No login providers configured</div>
-            </b-col>
-        </b-row>
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
@@ -88,7 +9,7 @@ import {
     IdentityProviderConfiguration,
 } from "@/models/configData";
 
-const namespace: string = "auth";
+const namespace = "auth";
 
 @Component({
     components: {
@@ -109,8 +30,8 @@ export default class LoginView extends Vue {
 
     @Prop() isRetry?: boolean;
 
-    private isLoading: boolean = true;
-    private redirectPath: string = "";
+    private isLoading = true;
+    private redirectPath = "";
     private routeHandler!: VueRouter;
 
     private mounted() {
@@ -153,3 +74,83 @@ export default class LoginView extends Vue {
     }
 }
 </script>
+
+<template>
+    <div class="container my-5" align="center">
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <b-row>
+            <b-col>
+                <b-alert
+                    style="max-width: 25rem"
+                    :show="isRetry"
+                    dismissible
+                    variant="danger"
+                >
+                    <h4>Error</h4>
+                    <span
+                        >An unexpected error occured while processing the
+                        request, please try again.</span
+                    >
+                </b-alert>
+                <b-card
+                    v-if="identityProviders && identityProviders.length > 0"
+                    id="loginPicker"
+                    class="shadow-lg bg-white"
+                    style="max-width: 25rem"
+                    align="center"
+                >
+                    <h3 slot="header">Log In</h3>
+                    <p v-if="hasMultipleProviders || isRetry" slot="footer">
+                        Not yet registered?
+                        <b-link to="/registrationInfo">Sign up</b-link>
+                    </p>
+                    <b-card-body v-if="hasMultipleProviders || isRetry">
+                        <div
+                            v-for="provider in identityProviders"
+                            :key="provider.id"
+                        >
+                            <b-row>
+                                <b-col>
+                                    <b-button
+                                        :id="`${provider.id}Btn`"
+                                        :data-testid="`${provider.id}Btn`"
+                                        block
+                                        :disabled="provider.disabled"
+                                        variant="primary"
+                                        @click="oidcLogin(provider.hint)"
+                                    >
+                                        <b-row>
+                                            <b-col class="col-2">
+                                                <font-awesome-icon
+                                                    :icon="`${provider.icon}`"
+                                                ></font-awesome-icon>
+                                            </b-col>
+                                            <b-col class="text-justify">
+                                                <span>{{ provider.name }}</span>
+                                            </b-col>
+                                        </b-row>
+                                    </b-button>
+                                </b-col>
+                            </b-row>
+                            <b-row
+                                v-if="
+                                    identityProviders.indexOf(provider) <
+                                    identityProviders.length - 1
+                                "
+                                ><b-col>or</b-col>
+                            </b-row>
+                        </div>
+                    </b-card-body>
+                    <b-card-body v-else>
+                        <span
+                            >Redirecting to
+                            <strong>{{ identityProviders[0].name }}</strong
+                            >...</span
+                        >
+                    </b-card-body>
+                </b-card>
+                <div v-else>No login providers configured</div>
+            </b-col>
+        </b-row>
+    </div>
+</template>

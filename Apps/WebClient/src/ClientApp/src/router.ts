@@ -66,10 +66,10 @@ enum UserState {
 }
 
 function calculateUserState() {
-    let isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
-    let isValid: boolean = store.getters["auth/isValidIdentityProvider"];
-    let isRegistered: boolean = store.getters["user/userIsRegistered"];
-    let userIsActive: boolean = store.getters["user/userIsActive"];
+    const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
+    const isValid: boolean = store.getters["auth/isValidIdentityProvider"];
+    const isRegistered: boolean = store.getters["user/userIsRegistered"];
+    const userIsActive: boolean = store.getters["user/userIsActive"];
 
     if (!isAuthenticated) {
         return UserState.unauthenticated;
@@ -232,7 +232,7 @@ router.beforeEach(async (to, from, next) => {
         next();
     } else {
         // Make sure that the route accepts the current state
-        let currentUserState = calculateUserState();
+        const currentUserState = calculateUserState();
         logger.debug(`current state: ${currentUserState}`);
         if (to.meta.validStates.includes(currentUserState)) {
             next();

@@ -1,3 +1,45 @@
+<script lang="ts">
+import Vue from "vue";
+import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
+import { Component, Prop } from "vue-property-decorator";
+import { IUserCommentService } from "@/services/interfaces";
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+
+import { IconDefinition, faSyringe } from "@fortawesome/free-solid-svg-icons";
+
+@Component({
+    components: {
+        CommentSection: CommentSectionComponent,
+    },
+})
+export default class ImmunizationTimelineComponent extends Vue {
+    @Prop() entry!: ImmunizationTimelineEntry;
+    @Prop() index!: number;
+    @Prop() datekey!: string;
+
+    private get entryIcon(): IconDefinition {
+        return faSyringe;
+    }
+}
+</script>
+
+<template>
+    <b-col class="timelineCard">
+        <b-row class="entryHeading">
+            <b-col class="icon leftPane">
+                <font-awesome-icon
+                    :icon="entryIcon"
+                    size="2x"
+                ></font-awesome-icon>
+            </b-col>
+            <b-col class="entryTitle">
+                {{ entry.immunization.name }}
+            </b-col>
+        </b-row>
+        <CommentSection :parent-entry="entry"></CommentSection>
+    </b-col>
+</template>
+
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
@@ -45,45 +87,3 @@ $radius: 15px;
     display: none;
 }
 </style>
-
-<template>
-    <b-col class="timelineCard">
-        <b-row class="entryHeading">
-            <b-col class="icon leftPane">
-                <font-awesome-icon
-                    :icon="entryIcon"
-                    size="2x"
-                ></font-awesome-icon>
-            </b-col>
-            <b-col class="entryTitle">
-                {{ entry.immunization.name }}
-            </b-col>
-        </b-row>
-        <CommentSection :parent-entry="entry"></CommentSection>
-    </b-col>
-</template>
-
-<script lang="ts">
-import Vue from "vue";
-import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import { Component, Prop } from "vue-property-decorator";
-import { IUserCommentService } from "@/services/interfaces";
-import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-
-import { IconDefinition, faSyringe } from "@fortawesome/free-solid-svg-icons";
-
-@Component({
-    components: {
-        CommentSection: CommentSectionComponent,
-    },
-})
-export default class ImmunizationTimelineComponent extends Vue {
-    @Prop() entry!: ImmunizationTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-
-    private get entryIcon(): IconDefinition {
-        return faSyringe;
-    }
-}
-</script>
