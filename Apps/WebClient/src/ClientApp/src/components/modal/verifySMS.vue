@@ -10,7 +10,6 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 import UserSMSInvite from "@/models/userSMSInvite";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { debug } from "winston";
 import moment from "moment";
 
 @Component({
@@ -51,8 +50,8 @@ export default class VerifySMSComponent extends Vue {
     private isVisible = false;
     private isLoading = false;
     private isValid = false;
-    private timeoutMinutes: number = 5;
-    private countdownRemaining: number = 5;
+    private timeoutMinutes = 5;
+    private countdownRemaining = 5;
     public error = false;
 
     public showModal(): void {
@@ -222,10 +221,10 @@ export default class VerifySMSComponent extends Vue {
         data-testid="verifySMSModal"
         title="Phone Verification"
         size="sm"
-        @show="getTimeout"
         header-bg-variant="primary"
         header-text-variant="light"
         centered
+        @show="getTimeout"
     >
         <b-row>
             <b-col>
@@ -279,7 +278,7 @@ export default class VerifySMSComponent extends Vue {
                 </form>
             </b-col>
         </b-row>
-        <template v-slot:modal-footer>
+        <template #modal-footer>
             <b-row class="w-100">
                 <b-col v-if="!tooManyRetries && allowRetry">
                     Didn't receive a code?
