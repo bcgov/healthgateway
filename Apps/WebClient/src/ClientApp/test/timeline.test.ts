@@ -4,7 +4,8 @@ import TimelineComponent from "@/views/timeline.vue";
 import VueRouter from "vue-router";
 import VueContentPlaceholders from "vue-content-placeholders";
 import Vuex, { ActionTree } from "vuex";
-import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import type { WebClientConfiguration } from "@/models/configData";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
@@ -77,7 +78,7 @@ let userGetters = {
     },
 };
 
-let laboratoryActions: ActionTree<LaboratoryState, RootState> = {
+const laboratoryActions: ActionTree<LaboratoryState, RootState> = {
     getOrders(): Promise<RequestResult<LaboratoryOrder[]>> {
         return new Promise((resolve) => {
             resolve({
@@ -91,13 +92,13 @@ let laboratoryActions: ActionTree<LaboratoryState, RootState> = {
     },
 };
 
-let laboratoryGetters = {
+const laboratoryGetters = {
     getStoredLaboratoryOrders: () => (): LaboratoryOrder[] => {
         return [];
     },
 };
 
-let medicationActions: ActionTree<MedicationState, RootState> = {
+const medicationActions: ActionTree<MedicationState, RootState> = {
     getMedicationStatements(
         context,
         params: {
@@ -125,13 +126,20 @@ let medicationActions: ActionTree<MedicationState, RootState> = {
     },
 };
 
-let medicationGetters = {};
+const medicationGetters = {};
+
+const a: WebClientConfiguration = {
+    logLevel: "",
+    timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
+    registrationStatus: "closed" as RegistrationStatus,
+    externalURLs: {},
+    modules: { Note: true },
+    hoursForDeletion: 1,
+};
 
 const configGetters = {
     webClient: (): WebClientConfiguration => {
-        return {
-            modules: { Note: true },
-        };
+        return a;
     },
 };
 
@@ -207,7 +215,7 @@ describe("Timeline view", () => {
 
         const wrapper = createWrapper();
         // Verify the number of records
-        var unwatch = wrapper.vm.$watch(
+        const unwatch = wrapper.vm.$watch(
             () => {
                 return wrapper.vm.$data.isLoading;
             },

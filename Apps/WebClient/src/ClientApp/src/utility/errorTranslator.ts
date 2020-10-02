@@ -36,7 +36,7 @@ export default class ErrorTranslator {
     }
 
     public static getDisplayMessage(errorCode: string): string {
-        let sections = errorCode.split("-");
+        const sections = errorCode.split("-");
         if (sections.length === 1) {
             return sections[0];
         } else if (sections.length === 2) {

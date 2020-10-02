@@ -31,7 +31,7 @@ export const actions: ActionTree<AuthState, RootState> = {
                 resolve(true);
                 return;
             }
-            let hasAccess: boolean = true;
+            let hasAccess = true;
             const isAuthenticatedInStore =
                 context.state.authentication.idToken !== undefined;
 

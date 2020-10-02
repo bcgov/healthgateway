@@ -1,17 +1,8 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-#pageTitle {
-    color: $primary;
-}
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>
 <template>
     <div class="px-4">
         <b-row>
             <b-col>
-                <b-row class="my-3 fluid justify-content-md-center">
+                <b-row class="my-3 fluid">
                     <b-col>
                         <div id="pageTitle">
                             <h1 id="subject">Health Gateway Release Notes</h1>
@@ -840,3 +831,13 @@
         </b-row>
     </div>
 </template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+#pageTitle {
+    color: $primary;
+}
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+</style>

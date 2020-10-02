@@ -1,12 +1,6 @@
-<template>
-    <div>
-        <ErrorComponent :error="errorDescription" />
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import PageErrorComponent from "@/components/error.vue";
 import PageError from "@/models/pageError";
 
@@ -23,3 +17,9 @@ export default class UnauthorizedView extends Vue {
     );
 }
 </script>
+
+<template>
+    <div>
+        <ErrorComponent :error="errorDescription" />
+    </div>
+</template>

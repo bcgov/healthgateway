@@ -12,6 +12,7 @@ export class RestConfigService implements IConfigService {
     public initialize(http: IHttpDelegate): void {
         this.http = http;
     }
+
     public getConfiguration(): Promise<ExternalConfiguration> {
         return new Promise((resolve, reject) => {
             this.http

@@ -1,89 +1,6 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.column-wrapper {
-    border: 1px;
-}
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>
-<template>
-    <div>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row class="my-3 fluid justify-content-md-center">
-            <b-col
-                id="healthInsights"
-                class="col-12 col-md-10 col-lg-9 column-wrapper"
-            >
-                <PageTitleComponent
-                    :title="`Health Gateway Medication History Report`"
-                />
-                <div>
-                    <p>
-                        Download a copy of your PharmaNet record of prescription
-                        medication dispenses. This report will generate your
-                        full history in the PharmaNet system.
-                    </p>
-                </div>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <img
-                    class="mx-auto d-block"
-                    src="@/assets/images/reports/reports.png"
-                    width="200"
-                    height="auto"
-                    alt="..."
-                />
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-button
-                    variant="primary"
-                    class="mx-auto mt-3 d-block"
-                    :disabled="!isDataLoaded"
-                    @click="showConfirmationModal"
-                >
-                    Download your report
-                </b-button>
-            </b-col>
-        </b-row>
-        <MessageModalComponent
-            ref="messageModal"
-            title="Sensitive Document Download"
-            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="generateMedicationHistoryPdf"
-        />
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :error="protectiveWordAttempts > 1"
-            :is-loading="isLoading"
-            @submit="onProtectiveWordSubmit"
-            @cancel="onProtectiveWordCancel"
-        />
-        <div class="d-none">
-            <div ref="report">
-                <MedicationHistoryReportComponent
-                    :medication-statement-history="
-                        medicationStatementHistoryPage
-                    "
-                    :name="fullName"
-                />
-            </div>
-        </div>
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import PageTitleComponent from "@/components/pageTitle.vue";
 import { ILogger } from "@/services/interfaces";
@@ -102,6 +19,21 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import { IAuthenticationService } from "@/services/interfaces";
 import html2pdf from "html2pdf.js";
 
+/**
+ * Shallow representation to be used by html2pdf. Does not define the object complety, but sufficiently to avoid using any.
+ * To be expanded as needed.
+ */
+interface PDFDefinition {
+    internal: {
+        getNumberOfPages(): number;
+        pageSize: { getWidth(): number; getHeight(): number };
+    };
+    setPage(page: number): void;
+    setFontSize(size: number): void;
+    setTextColor(color: number): void;
+    text(text: string, width: number, height: number): void;
+}
+
 @Component({
     components: {
         PageTitleComponent,
@@ -118,8 +50,6 @@ export default class ReportsView extends Vue {
     readonly messageModal!: MessageModalComponent;
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
-    @Ref("pdfGenerator")
-    readonly pdfGenerator!: any;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("getMedicationStatements", { namespace: "medication" })
@@ -130,14 +60,14 @@ export default class ReportsView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
 
-    private fullName: string = "";
+    private fullName = "";
     private medicationStatementHistoryPage: MedicationStatementHistory[] = [];
     private medicationStatementHistory: MedicationStatementHistory[] = [];
-    private isLoading: boolean = false;
-    private protectiveWordAttempts: number = 0;
+    private isLoading = false;
+    private protectiveWordAttempts = 0;
     private logger!: ILogger;
-    private isDataLoaded: boolean = false;
-    private fileMaxRecords: number = 1000;
+    private isDataLoaded = false;
+    private fileMaxRecords = 1000;
 
     private get totalFiles(): number {
         return Math.ceil(
@@ -148,7 +78,7 @@ export default class ReportsView extends Vue {
     private showConfirmationModal() {
         this.messageModal.showModal();
     }
-    private async generateMedicationHistoryPdf(fileIndex: number = 0) {
+    private async generateMedicationHistoryPdf(fileIndex = 0) {
         this.logger.debug("generating Medication History PDF...");
         this.isLoading = true;
 
@@ -173,7 +103,7 @@ export default class ReportsView extends Vue {
             .from(this.report)
             .toPdf()
             .get("pdf")
-            .then((pdf: any) => {
+            .then((pdf: PDFDefinition) => {
                 // Add footer with page numbers
                 var totalPages = pdf.internal.getNumberOfPages();
                 for (let i = 1; i <= totalPages; i++) {
@@ -191,7 +121,7 @@ export default class ReportsView extends Vue {
             })
             .save()
             .output("bloburl")
-            .then((pdfBlobUrl: any) => {
+            .then((pdfBlobUrl: RequestInfo) => {
                 fetch(pdfBlobUrl).then((res) => {
                     res.blob().then(() => {
                         if (fileIndex + 1 < this.totalFiles) {
@@ -292,3 +222,87 @@ export default class ReportsView extends Vue {
     }
 }
 </script>
+
+<template>
+    <div>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <b-row class="my-3 fluid">
+            <b-col
+                id="healthInsights"
+                class="col-12 col-md-10 col-lg-9 column-wrapper"
+            >
+                <PageTitleComponent
+                    :title="`Health Gateway Medication History Report`"
+                />
+                <div>
+                    <p>
+                        Download a copy of your PharmaNet record of prescription
+                        medication dispenses. This report will generate your
+                        full history in the PharmaNet system.
+                    </p>
+                </div>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <img
+                    class="mx-auto d-block"
+                    src="@/assets/images/reports/reports.png"
+                    width="200"
+                    height="auto"
+                    alt="..."
+                />
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <b-button
+                    variant="primary"
+                    class="mx-auto mt-3 d-block"
+                    :disabled="!isDataLoaded"
+                    @click="showConfirmationModal"
+                >
+                    Download your report
+                </b-button>
+            </b-col>
+        </b-row>
+        <MessageModalComponent
+            ref="messageModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="generateMedicationHistoryPdf"
+        />
+        <ProtectiveWordComponent
+            ref="protectiveWordModal"
+            :error="protectiveWordAttempts > 1"
+            :is-loading="isLoading"
+            @submit="onProtectiveWordSubmit"
+            @cancel="onProtectiveWordCancel"
+        />
+        <div class="d-none">
+            <div ref="report">
+                <MedicationHistoryReportComponent
+                    :medication-statement-history="
+                        medicationStatementHistoryPage
+                    "
+                    :name="fullName"
+                />
+            </div>
+        </div>
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.column-wrapper {
+    border: 1px;
+}
+
+#pageTitle {
+    color: $primary;
+}
+
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+</style>

@@ -2,7 +2,7 @@ import { GetterTree } from "vuex";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
-import { MedicationState, RootState, UserState } from "@/models/storeState";
+import { MedicationState, RootState } from "@/models/storeState";
 import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 

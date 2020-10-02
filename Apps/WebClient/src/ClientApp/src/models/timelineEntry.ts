@@ -24,9 +24,9 @@ export class DateGroup {
         if (timelineEntries.length === 0) {
             return [];
         }
-        let groups = timelineEntries.reduce<Record<string, TimelineEntry[]>>(
+        const groups = timelineEntries.reduce<Record<string, TimelineEntry[]>>(
             (groups, entry) => {
-                let date = entry.date.fromEpoch();
+                const date = entry.date.fromEpoch();
 
                 // Create a new group if it the date doesnt exist in the map
                 if (!groups[date]) {
@@ -37,7 +37,7 @@ export class DateGroup {
             },
             {}
         );
-        let groupArrays = Object.keys(groups).map<DateGroup>((dateKey) => {
+        const groupArrays = Object.keys(groups).map<DateGroup>((dateKey) => {
             return new DateGroup(
                 dateKey,
                 groups[dateKey][0].date,
@@ -51,8 +51,8 @@ export class DateGroup {
 
     public static sortGroup(
         groupArrays: DateGroup[],
-        ascending: boolean = true
-    ) {
+        ascending = true
+    ): DateGroup[] {
         groupArrays.sort((a, b) =>
             a.date.isAfter(b.date)
                 ? -1 * (ascending ? 1 : -1)

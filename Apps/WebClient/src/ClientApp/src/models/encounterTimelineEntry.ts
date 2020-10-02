@@ -22,9 +22,9 @@ export default class EncounterTimelineEntry extends TimelineEntry {
         }
 
         let text =
-            (this.practitionerName! || "") +
-            (this.specialtyDescription! || "") +
-            (this.clinic?.name || "");
+            this.practitionerName +
+            this.specialtyDescription +
+            this.clinic.name;
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }
@@ -32,16 +32,16 @@ export default class EncounterTimelineEntry extends TimelineEntry {
 
 class ClinicViewModel {
     public id: string;
-    public name?: string;
-    public address?: string;
-    public phoneNumber?: string;
+    public name: string;
+    public address: string;
+    public phoneNumber: string;
 
     constructor(model: Clinic) {
         this.id = model.clinicId || "";
         this.name = model.name;
-        this.phoneNumber = model.phoneNumber;
+        this.phoneNumber = model.phoneNumber || "";
 
-        let addressArray = [
+        const addressArray = [
             model.addressLine1,
             model.addressLine2,
             model.addressLine3,

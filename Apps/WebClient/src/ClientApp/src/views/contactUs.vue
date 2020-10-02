@@ -1,19 +1,21 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import { Component } from "vue-property-decorator";
+import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 
-#pageTitle {
-    color: $primary;
-}
+@Component({
+    components: {
+        HealthlinkComponent: HealthlinkSidebarComponent,
+    },
+})
+export default class ContactUsView extends Vue {}
+</script>
 
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>
 <template>
     <div class="px-4">
         <b-row>
             <b-col>
-                <b-row class="my-3 fluid justify-content-md-center">
+                <b-row class="my-3 fluid">
                     <b-col>
                         <div id="pageTitle">
                             <h1 id="subject">Contact Us</h1>
@@ -92,15 +94,15 @@
         </b-row>
     </div>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
-import HealthlinkSidebarComponent from "@/components/timeline/healthlink.vue";
 
-@Component({
-    components: {
-        HealthlinkComponent: HealthlinkSidebarComponent,
-    },
-})
-export default class ContactUsView extends Vue {}
-</script>
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+#pageTitle {
+    color: $primary;
+}
+
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+</style>

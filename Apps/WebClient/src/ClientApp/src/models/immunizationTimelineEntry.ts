@@ -17,8 +17,7 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         }
 
         let text =
-            (this.immunization.name! || "") +
-            (this.immunization.location! || "");
+            (this.immunization.name || "") + (this.immunization.location || "");
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }

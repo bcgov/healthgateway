@@ -72,10 +72,10 @@ export const actions: ActionTree<UserState, RootState> = {
 
                     // If registered retrieve the invite as well
                     if (isRegistered) {
-                        var latestEmailPromise = userProfileService.getLatestEmailInvite(
+                        const latestEmailPromise = userProfileService.getLatestEmailInvite(
                             params.hdid
                         );
-                        var latestSMSPromise = userProfileService.getLatestSMSInvite(
+                        const latestSMSPromise = userProfileService.getLatestSMSInvite(
                             params.hdid
                         );
 
@@ -130,7 +130,10 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-    getUserSMS(context, params: { hdid: string }): Promise<UserSMSInvite> {
+    getUserSMS(
+        context,
+        params: { hdid: string }
+    ): Promise<UserSMSInvite | null> {
         return new Promise((resolve, reject) => {
             userProfileService
                 .getLatestSMSInvite(params.hdid)

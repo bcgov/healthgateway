@@ -13,72 +13,78 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Test
+namespace HealthGateway.Medication.Controllers.Test
 {
-    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.Models;
     using HealthGateway.Medication.Controllers;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Moq;
     using System.Collections.Generic;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using System.Security.Claims;
-    using System.Security.Principal;
     using System.Threading.Tasks;
     using Xunit;
-    using Microsoft.Extensions.Configuration;
+    using System;
+    using DeepEqual.Syntax;
 
     public class MedicationStatementController_Test
     {
 
-/*** TODO: Needs attention to test ODR 
         [Fact]
-        public async Task ShouldMapError()
+        public async Task GetMedications()
         {
             // Setup
-  
-            string errorMessage = "The error message";
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string userId = "1001";
-
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", "Bearer TestJWT");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-
-            Mock<IIdentity> identityMock = new Mock<IIdentity>();
-            identityMock.Setup(s => s.Name).Returns(userId);
-
-            Mock<ClaimsPrincipal> claimsPrincipalMock = new Mock<ClaimsPrincipal>();
-            claimsPrincipalMock.Setup(s => s.Identity).Returns(identityMock.Object);
-
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipalMock.Object);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+            RequestResult<List<MedicationStatementHistory>> expectedResult = new RequestResult<List<MedicationStatementHistory>>()
+            {
+                ResultStatus = HealthGateway.Common.Constants.ResultType.Success,
+                ResourcePayload = new List<MedicationStatementHistory>()
+                    {                        
+                        new MedicationStatementHistory()
+                        {                            
+                            PrescriptionIdentifier = "identifier",
+                            PrescriptionStatus = 'M',
+                            DispensedDate = DateTime.Parse("09/28/2020"),
+                            DateEntered = DateTime.Parse("09/28/2020"),
+                            Directions = "Directions",
+                            DispensingPharmacy = new Pharmacy()
+                            {
+                                AddressLine1 = "Line 1",
+                                AddressLine2 = "Line 2",
+                                CountryCode = "CA",
+                                City = "City",
+                                PostalCode = "A1A 1A1",
+                                Province = "PR",                               
+                                FaxNumber = "1111111111",
+                                Name = "Name",
+                                PharmacyId = "ID",
+                                PhoneNumber = "2222222222",
+                            },
+                            MedicationSummary = new MedicationSummary()
+                            {
+                                DIN = "02242163",
+                                BrandName = "KADIAN 10MG CAPSULE",
+                                DrugDiscontinuedDate = DateTime.Parse("09/28/2020"),
+                                Form = "Form",
+                                GenericName = "Generic Name",
+                                IsPin = false,
+                                Manufacturer = "Nomos",
+                                MaxDailyDosage = 100,
+                                Quantity = 1,
+                                Strength = "Strong",
+                                StrengthUnit = "ml",                                
+                            },
+                            PharmacyId = "Id",
+                            PractitionerSurname = "Surname",                            
+                        },
+                    },
+            };
 
             Mock<IMedicationStatementService> svcMock = new Mock<IMedicationStatementService>();
             svcMock
                 .Setup(s => s.GetMedicationStatementsHistory(hdid, null))
-                .ReturnsAsync(new RequestResult<List<MedicationStatementHistory>>()
-                {
-                    ResultStatus = HealthGateway.Common.Constants.ResultType.Error,
-                    ResultMessage = errorMessage
-                });
-
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-
-            Mock<IConfigurationSection> configurationSection = new Mock<IConfigurationSection>();
-            configurationSection.Setup(a => a.Value).Returns("ODR");
-            Mock<IConfiguration> configMock = new Mock<IConfiguration>();
-            configMock.Setup(s => s.GetSection(It.IsAny<string>())).Returns(configurationSection.Object);
-
-            MedicationStatementController controller = new MedicationStatementController(configMock.Object, svcMock.Object);
+                .ReturnsAsync(expectedResult);
+            MedicationStatementController controller = new MedicationStatementController(null, svcMock.Object);
 
             // Act
             IActionResult actual = await controller.GetMedicationStatements(hdid);
@@ -90,11 +96,8 @@ namespace HealthGateway.Medication.Test
             Assert.IsType<RequestResult<List<MedicationStatementHistory>>>(jsonResult.Value);
 
             RequestResult<List<MedicationStatementHistory>> requestResult = (RequestResult<List<MedicationStatementHistory>>)jsonResult.Value;
-            Assert.Null(requestResult.ResourcePayload);
-            Assert.Equal(errorMessage, requestResult.ResultMessage);
-            
+            Assert.True(requestResult.IsDeepEqual(expectedResult));
         }
-**/
     }
 }
 

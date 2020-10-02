@@ -1,9 +1,18 @@
-<style lang="scss" scoped>
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
+<script lang="ts">
+import Vue from "vue";
+import { Component } from "vue-property-decorator";
+import { Getter } from "vuex-class";
+import BannerError from "@/models/bannerError";
+
+@Component
+export default class ErrorCardComponent extends Vue {
+    @Getter("isShowing", { namespace: "errorBanner" })
+    isShowing!: boolean;
+
+    @Getter("errors", { namespace: "errorBanner" })
+    errors!: BannerError[];
 }
-</style>
+</script>
 
 <template>
     <b-alert
@@ -41,18 +50,9 @@
     </b-alert>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Getter } from "vuex-class";
-import BannerError from "@/models/bannerError";
-
-@Component
-export default class ErrorCardComponent extends Vue {
-    @Getter("isShowing", { namespace: "errorBanner" })
-    isShowing!: boolean;
-
-    @Getter("errors", { namespace: "errorBanner" })
-    errors!: BannerError[];
+<style lang="scss" scoped>
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+    display: none;
 }
-</script>
+</style>
