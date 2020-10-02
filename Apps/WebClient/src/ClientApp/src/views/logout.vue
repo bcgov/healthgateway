@@ -2,7 +2,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 const namespace = "auth";
 
 @Component
@@ -24,7 +24,7 @@ export default class LogoutView extends Vue {
             if (this.$route.path == "/logout") {
                 this.$router.push({ path: "/" });
             }
-        }, Number(this.config.timeouts!.logoutRedirect));
+        }, Number(this.config.timeouts.logoutRedirect));
     }
 }
 </script>

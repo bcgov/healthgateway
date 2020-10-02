@@ -5,14 +5,18 @@ import {
     IAuthenticationService,
     IHttpDelegate,
 } from "@/services/interfaces";
-import { User as OidcUser, UserManagerSettings } from "oidc-client";
-// These imports should be optimized
-import { UserManager, WebStorageStateStore } from "oidc-client";
+import {
+    User as OidcUser,
+    UserManager,
+    UserManagerSettings,
+    WebStorageStateStore,
+} from "oidc-client";
 
 import { injectable } from "inversify";
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { CookieStorage } from "cookie-storage";
 import { FragmentedStorage } from "@/utility/fragmentStorage";
+import { OidcUserProfile } from "@/models/user";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {
@@ -80,8 +84,8 @@ export class RestAuthenticationService implements IAuthenticationService {
         });
     }
 
-    public getOidcUserProfile(): Promise<OidcUser | null> {
-        return this.http.get<any>(`${this.authorityUri}${this.USER_INFO_PATH}`);
+    public getOidcUserProfile(): Promise<OidcUserProfile> {
+        return this.http.get(`${this.authorityUri}${this.USER_INFO_PATH}`);
     }
 
     public logout(): Promise<void> {
@@ -109,7 +113,7 @@ export class RestAuthenticationService implements IAuthenticationService {
     }
 
     public removeUser(): Promise<void> {
-        return this.oidcUserManager!.removeUser();
+        return this.oidcUserManager.removeUser();
     }
 
     public storeUser(user: OidcUser): Promise<void> {

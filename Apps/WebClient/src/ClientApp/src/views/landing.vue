@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import CommunicationComponent from "@/components/communication.vue";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 
 import Image00 from "@/assets/images/landing/000_Logo-Overlay.png";

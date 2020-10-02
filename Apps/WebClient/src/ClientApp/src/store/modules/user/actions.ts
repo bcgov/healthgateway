@@ -130,7 +130,10 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-    getUserSMS(context, params: { hdid: string }): Promise<UserSMSInvite> {
+    getUserSMS(
+        context,
+        params: { hdid: string }
+    ): Promise<UserSMSInvite | null> {
         return new Promise((resolve, reject) => {
             userProfileService
                 .getLatestSMSInvite(params.hdid)

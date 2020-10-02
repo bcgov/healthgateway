@@ -11,14 +11,14 @@ export default class ProtectiveWordComponent extends Vue {
     private show = false;
     private isVisible = false;
 
-    public showModal() {
+    public showModal(): void {
         this.show = true;
         if (!this.isLoading) {
             this.isVisible = true;
         }
     }
 
-    public hideModal() {
+    public hideModal(): void {
         this.show = false;
         this.isVisible = false;
     }

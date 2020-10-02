@@ -52,8 +52,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
             return false;
         }
 
-        let text =
-            (this.summaryTitle! || "") + (this.summaryDescription! || "");
+        let text = this.summaryTitle + this.summaryDescription;
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }

@@ -1,11 +1,11 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Emit } from "vue-property-decorator";
+import { Component, Emit } from "vue-property-decorator";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { Action, Getter } from "vuex-class";
-import { WebClientConfiguration } from "@/models/configData";
+import { Getter } from "vuex-class";
+import type { WebClientConfiguration } from "@/models/configData";
 
 @Component
 export default class RatingComponent extends Vue {
@@ -18,21 +18,21 @@ export default class RatingComponent extends Vue {
     private isVisible = false;
     private logger!: ILogger;
 
-    public mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    public showModal() {
+    public showModal(): void {
         this.isVisible = true;
         setTimeout(() => {
             if (this.isVisible) {
                 this.handleRating(0, true);
             }
-        }, Number(this.config.timeouts!.logoutRedirect));
+        }, Number(this.config.timeouts.logoutRedirect));
     }
 
-    public hideModal() {
+    public hideModal(): void {
         this.isVisible = false;
+    }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
     private handleRating(value: number, skip = false) {
@@ -57,7 +57,7 @@ export default class RatingComponent extends Vue {
     }
 
     @Emit()
-    public onClose() {
+    private onClose(): void {
         return;
     }
 }

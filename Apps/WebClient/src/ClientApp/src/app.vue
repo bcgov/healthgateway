@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 import Process, { EnvironmentType } from "@/constants/process.ts";
-import { ILogger, IMedicationService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 // Load Bootstrap general plugins
@@ -156,7 +156,7 @@ export default class App extends Vue {
     }
 
     @Watch("isAppIdle")
-    public onIsAppIdleChanged(idle: boolean) {
+    private onIsAppIdleChanged(idle: boolean) {
         if (idle && this.oidcIsAuthenticated) {
             this.idleModal?.show();
         }

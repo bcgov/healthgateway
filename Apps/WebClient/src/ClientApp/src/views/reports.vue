@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import PageTitleComponent from "@/components/pageTitle.vue";
 import { ILogger } from "@/services/interfaces";
@@ -19,6 +19,21 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import { IAuthenticationService } from "@/services/interfaces";
 import html2pdf from "html2pdf.js";
 
+/**
+ * Shallow representation to be used by html2pdf. Does not define the object complety, but sufficiently to avoid using any.
+ * To be expanded as needed.
+ */
+interface PDFDefinition {
+    internal: {
+        getNumberOfPages(): number;
+        pageSize: { getWidth(): number; getHeight(): number };
+    };
+    setPage(page: number): void;
+    setFontSize(size: number): void;
+    setTextColor(color: number): void;
+    text(text: string, width: number, height: number): void;
+}
+
 @Component({
     components: {
         PageTitleComponent,
@@ -35,8 +50,6 @@ export default class ReportsView extends Vue {
     readonly messageModal!: MessageModalComponent;
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
-    @Ref("pdfGenerator")
-    readonly pdfGenerator!: any;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("getMedicationStatements", { namespace: "medication" })
@@ -90,7 +103,7 @@ export default class ReportsView extends Vue {
             .from(this.report)
             .toPdf()
             .get("pdf")
-            .then((pdf: any) => {
+            .then((pdf: PDFDefinition) => {
                 // Add footer with page numbers
                 var totalPages = pdf.internal.getNumberOfPages();
                 for (let i = 1; i <= totalPages; i++) {

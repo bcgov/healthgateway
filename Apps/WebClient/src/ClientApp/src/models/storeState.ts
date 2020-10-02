@@ -3,7 +3,7 @@ import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
-import { LaboratoryOrder, LaboratoryReport } from "@/models//laboratory";
+import { LaboratoryOrder } from "@/models//laboratory";
 import BannerError from "@/models/bannerError";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -23,7 +23,7 @@ export interface AuthState {
     authentication: AuthenticationData;
     isAuthenticated: boolean;
     statusMessage: string;
-    error: any;
+    error: unknown;
     stateType: StateType;
 }
 

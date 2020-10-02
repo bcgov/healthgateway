@@ -17,6 +17,7 @@
 namespace HealthGateway.Medication
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
@@ -33,6 +34,7 @@ namespace HealthGateway.Medication
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;

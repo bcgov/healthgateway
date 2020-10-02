@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import UserComment from "@/models/userComment";
+import type { UserComment } from "@/models/userComment";
 import CommentComponent from "@/components/timeline/comment.vue";
 import AddCommentComponent from "@/components/timeline/addComment.vue";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
@@ -58,15 +58,10 @@ export default class CommentSectionComponent extends Vue {
         });
     }
 
-    private toggleComments(): void {
-        this.showComments = !this.showComments;
-    }
-
     private getComments() {
         this.isLoadingComments = true;
-        const parentEntryId = this.parentEntry.id;
-        let commentPromise = this.commentService
-            .getCommentsForEntry(parentEntryId)
+        this.commentService
+            .getCommentsForEntry(this.parentEntry.id)
             .then((result) => {
                 if (result) {
                     this.comments = result.resourcePayload;
@@ -85,11 +80,11 @@ export default class CommentSectionComponent extends Vue {
             });
     }
 
-    private needsUpdate(comment: UserComment) {
+    private needsUpdate() {
         this.getComments();
     }
 
-    private onAdd(comment: UserComment) {
+    private onAdd() {
         if (!this.showComments) {
             this.showComments = true;
         }
@@ -106,10 +101,9 @@ export default class CommentSectionComponent extends Vue {
                     <b-col>
                         <div v-if="hasComments" class="d-flex flex-row-reverse">
                             <b-btn
-                                v-b-toggle="'entryComments-' + parentEntry.id"
                                 variant="link"
                                 class="px-3 py-2"
-                                @click="toggleComments()"
+                                @click="showComments = !showComments"
                             >
                                 <span>
                                     {{
