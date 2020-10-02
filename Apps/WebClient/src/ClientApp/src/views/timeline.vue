@@ -217,7 +217,7 @@ export default class TimelineView extends Vue {
     }
 
     private onCovidSubmit() {
-        this.eventBus.$emit("filter-selected", "laboratory");
+        this.eventBus.$emit(EventMessageName.SelectedFilter, "laboratory");
     }
 
     private onCovidCancel() {

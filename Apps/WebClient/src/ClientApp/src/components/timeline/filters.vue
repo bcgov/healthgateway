@@ -8,7 +8,7 @@ import { Emit, Watch } from "vue-property-decorator";
 import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import EventBus from "@/eventbus";
+import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 library.add(faSlidersH);
 
@@ -108,9 +108,12 @@ export default class FilterComponent extends Vue {
         this.filters[4].isEnabled = this.config.modules["Note"];
         this.selectedFilters = [];
 
-        this.eventBus.$on("filter-selected", (filterName: string) => {
-            this.onExternalFilterSelection(filterName);
-        });
+        this.eventBus.$on(
+            EventMessageName.SelectedFilter,
+            (filterName: string) => {
+                this.onExternalFilterSelection(filterName);
+            }
+        );
     }
 
     private destroyed() {
