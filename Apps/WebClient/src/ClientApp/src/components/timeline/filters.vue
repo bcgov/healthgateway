@@ -1,5 +1,4 @@
 <script lang="ts">
-import { WebClientConfiguration } from "@/models/configData";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Getter } from "vuex-class";
@@ -10,6 +9,7 @@ import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import EventBus from "@/eventbus";
+import type { WebClientConfiguration } from "@/models/configData";
 library.add(faSlidersH);
 
 interface Filter {

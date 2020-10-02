@@ -2,7 +2,6 @@
 import Vue from "vue";
 import { Component, Prop, Watch, Emit } from "vue-property-decorator";
 import { directive as onClickaway } from "vue-clickaway";
-import { DateGroup } from "@/models/timelineEntry";
 import { DateWrapper } from "@/models/dateWrapper";
 
 class MonthToDisplay {

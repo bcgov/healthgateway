@@ -1,5 +1,5 @@
 export default abstract class PhoneUtil {
-    public static formatPhone(phone: string) {
+    public static formatPhone(phone: string): string {
         phone = phone || "";
         return phone
             .replace(/[^0-9]/g, "")

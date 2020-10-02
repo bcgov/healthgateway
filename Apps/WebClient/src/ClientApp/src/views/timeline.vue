@@ -4,7 +4,7 @@ import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import { NavigationGuardNext, Route } from "vue-router";
 import EventBus, { EventMessageName } from "@/eventbus";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import {
     ILogger,
     IImmunizationService,

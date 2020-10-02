@@ -1,7 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
 import EventBus, { EventMessageName } from "@/eventbus";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";

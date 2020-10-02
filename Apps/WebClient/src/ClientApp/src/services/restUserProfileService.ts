@@ -173,7 +173,7 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
-    public getLatestSMSInvite(hdid: string): Promise<UserSMSInvite> {
+    public getLatestSMSInvite(hdid: string): Promise<UserSMSInvite | null> {
         return new Promise((resolve) => {
             this.http
                 .get<UserSMSInvite>(
@@ -260,10 +260,10 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
-    private handleResult(
-        requestResult: RequestResult<any>,
-        resolve: any,
-        reject: any
+    private handleResult<T>(
+        requestResult: RequestResult<T>,
+        resolve: (value?: T | PromiseLike<T> | undefined) => void,
+        reject: (reason?: unknown) => void
     ) {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);

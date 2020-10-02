@@ -3,7 +3,6 @@ import Vue from "vue";
 import { Component, Emit } from "vue-property-decorator";
 import { Action } from "vuex-class";
 import EventBus, { EventMessageName } from "@/eventbus";
-import User from "@/models/user";
 
 @Component
 export default class IdleComponent extends Vue {

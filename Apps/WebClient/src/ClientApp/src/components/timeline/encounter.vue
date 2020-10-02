@@ -1,13 +1,10 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
+import { Component, Prop } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 import { IconDefinition, faUserMd } from "@fortawesome/free-solid-svg-icons";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import User from "@/models/user";
-import { library } from "@fortawesome/fontawesome-svg-core";
 import PhoneUtil from "@/utility/phoneUtil";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 

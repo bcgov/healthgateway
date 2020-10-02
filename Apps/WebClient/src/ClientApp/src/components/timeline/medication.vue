@@ -1,15 +1,9 @@
 <script lang="ts">
 import Vue from "vue";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-import Pharmacy from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
 import { IconDefinition, faPills } from "@fortawesome/free-solid-svg-icons";
-import MedicationResult from "@/models/medicationResult";
 import PhoneUtil from "@/utility/phoneUtil";
 
 @Component({
@@ -59,9 +53,6 @@ export default class MedicationTimelineComponent extends Vue {
                     <b-col>
                         <div class="d-flex flex-row-reverse">
                             <b-btn
-                                v-b-toggle="
-                                    'entryDetails-' + index + '-' + datekey
-                                "
                                 data-testid="medicationViewDetailsBtn"
                                 variant="link"
                                 class="detailsButton"

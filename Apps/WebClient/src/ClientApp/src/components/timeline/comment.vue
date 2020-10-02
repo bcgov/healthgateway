@@ -1,14 +1,10 @@
 <script lang="ts">
 import Vue from "vue";
-import UserComment from "@/models/userComment";
+import type { UserComment } from "@/models/userComment";
 import User from "@/models/user";
 import { Getter } from "vuex-class";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import {
-    IconDefinition,
-    faEllipsisV,
-    faLock,
-} from "@fortawesome/free-solid-svg-icons";
+import { Component, Emit, Prop } from "vue-property-decorator";
+import { IconDefinition, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -24,6 +20,11 @@ export default class CommentComponent extends Vue {
     private commentService!: IUserCommentService;
     private isEditMode = false;
     private isLoading = false;
+
+    @Emit()
+    private needsUpdate(comment: UserComment) {
+        return comment;
+    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -64,7 +65,7 @@ export default class CommentComponent extends Vue {
                 createdDateTime: this.comment.createdDateTime,
                 version: this.comment.version,
             })
-            .then((result) => {
+            .then(() => {
                 this.needsUpdate(this.comment);
             })
             .catch((err) => {
@@ -81,7 +82,7 @@ export default class CommentComponent extends Vue {
             this.isLoading = true;
             this.commentService
                 .deleteComment(this.comment)
-                .then((result) => {
+                .then(() => {
                     this.needsUpdate(this.comment);
                 })
                 .catch((err) => {
@@ -91,11 +92,6 @@ export default class CommentComponent extends Vue {
                     this.isLoading = false;
                 });
         }
-    }
-
-    @Emit()
-    needsUpdate(comment: UserComment) {
-        return comment;
     }
 }
 </script>

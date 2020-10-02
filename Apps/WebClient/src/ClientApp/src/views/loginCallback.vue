@@ -1,8 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import VueRouter, { Route } from "vue-router";
+import { Action, Getter } from "vuex-class";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";

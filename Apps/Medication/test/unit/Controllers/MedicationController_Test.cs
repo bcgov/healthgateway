@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Test
+namespace HealthGateway.Medication.Controllers.Test
 {
     using System.Linq;
     using HealthGateway.Medication.Controllers;
@@ -23,12 +23,12 @@ namespace HealthGateway.Medication.Test
     using Moq;
     using System.Collections.Generic;
     using Xunit;
-
+    using HealthGateway.Database.Models;
 
     public class MedicationController_Test
     {
         [Fact]
-        public void ShouldGetSingleMedication()
+        public void ShouldNotGetSingleMedication()
         {
             // Setup
             Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
@@ -44,6 +44,44 @@ namespace HealthGateway.Medication.Test
             // Verify
             serviceMock.Verify(s => s.GetMedications(new List<string> { paddedDin }), Times.Once());
             Assert.True(actual.TotalResultCount == 0);
+        }
+
+        [Fact]
+        public void ShouldGetSingleMedication()
+        {
+            // Setup
+            string drugIdentifier = "00000001";
+            Dictionary<string, MedicationResult> expectedResult = new Dictionary<string, MedicationResult>()
+            {
+                {
+                    drugIdentifier,
+                    new MedicationResult()
+                    {
+                        DIN = drugIdentifier,
+                        FederalData = new FederalDrugSource()
+                        {
+                            DrugProduct = new DrugProduct()
+                            {
+                                DrugCode = drugIdentifier,
+                            }
+                        }
+                    }
+                },
+            };
+
+            Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
+            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(expectedResult);
+
+
+            string paddedDin = drugIdentifier.PadLeft(8, '0');
+            MedicationController controller = new MedicationController(serviceMock.Object);
+
+            // Act
+            RequestResult<MedicationResult> actual = controller.GetMedication(drugIdentifier);
+
+            // Verify
+            serviceMock.Verify(s => s.GetMedications(new List<string> { paddedDin }), Times.Once());
+            Assert.True(actual.TotalResultCount == 1);
         }
 
         [Fact]

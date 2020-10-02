@@ -1,6 +1,6 @@
 import { StringISODate } from "@/models/dateWrapper";
 
-export default interface UserComment {
+export interface UserComment {
     // Gets or sets the id.
     id?: string;
 
