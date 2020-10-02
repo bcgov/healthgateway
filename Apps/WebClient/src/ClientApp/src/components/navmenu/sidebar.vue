@@ -299,8 +299,8 @@ export default class SidebarComponent extends Vue {
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
-                            data-testid="addNoteBtn"
                             id="add-a-note-row"
+                            data-testid="addNoteBtn"
                             class="align-items-center border rounded-pill py-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
                             @click="createNote"
