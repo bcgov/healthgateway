@@ -49,6 +49,14 @@ export default class SidebarComponent extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
+    @Getter("isValidIdentityProvider", {
+        namespace: auth,
+    })
+    isValidIdentityProvider!: boolean;
+
+    @Getter("userIsActive", { namespace: "user" })
+    isActiveProfile!: boolean;
+
     private eventBus = EventBus;
 
     private logger!: ILogger;
@@ -229,7 +237,12 @@ export default class SidebarComponent extends Vue {
 </script>
 
 <template>
-    <div v-show="oidcIsAuthenticated && userIsRegistered" class="wrapper">
+    <div
+        v-show="
+            oidcIsAuthenticated && userIsRegistered && isValidIdentityProvider
+        "
+        class="wrapper"
+    >
         <!-- Sidebar -->
         <nav id="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container m-0 p-0">
@@ -268,6 +281,7 @@ export default class SidebarComponent extends Vue {
                     </router-link>
                     <!-- Timeline button -->
                     <router-link
+                        v-show="isActiveProfile"
                         id="menuBtnTimeline"
                         data-testid="menuBtnTimelineLink"
                         to="/timeline"
@@ -301,7 +315,7 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-show="isTimeline">
+                    <div v-show="isTimeline && isActiveProfile">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
@@ -378,6 +392,7 @@ export default class SidebarComponent extends Vue {
                     </div>
                     <!-- Health Insights button -->
                     <router-link
+                        v-show="isActiveProfile"
                         id="menuBtnHealthInsights"
                         data-testid="menuBtnHealthInsightsLink"
                         to="/healthInsights"
@@ -413,8 +428,9 @@ export default class SidebarComponent extends Vue {
                     </router-link>
                     <!-- Reports button -->
                     <router-link
+                        v-show="isActiveProfile"
                         id="menuBtnReports"
-                        data-testid="menuBtnHealthInsightsLink"
+                        data-testid="menuBtnReportsLink"
                         to="/reports"
                         class="my-4"
                     >
