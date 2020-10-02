@@ -108,7 +108,7 @@ export default class FilterComponent extends Vue {
         this.filters[4].isEnabled = this.config.modules["Note"];
         this.selectedFilters = [];
 
-        this.eventBus.$on("filterSelected", (filterName: string) => {
+        this.eventBus.$on("filter-selected", (filterName: string) => {
             this.onExternalFilterSelection(filterName);
         });
     }
