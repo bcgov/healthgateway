@@ -11,7 +11,7 @@ describe('User Profile', () => {
     })
 
     it('Profile - Email Validation - email fields should be identical', () => {
-        cy.get('#editEmail').click()
+        cy.get('[data-testid=editEmailBtn]').click()
         let emailInput = cy.get('[data-testid=emailInput]')
         emailInput.clear()
         emailInput.type(emailAddress)
