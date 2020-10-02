@@ -1,21 +1,27 @@
 <script lang="ts">
 import Vue from "vue";
-export default Vue.extend({});
+import { Component } from "vue-property-decorator";
+import { Getter } from "vuex-class";
+@Component
+export default class FooterComponent extends Vue {
+    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    isValidIdentityProvider!: boolean;
+}
 </script>
 
 <template>
-    <b-navbar toggleable="lg" type="dark">
+    <b-navbar v-show="isValidIdentityProvider" toggleable="lg" type="dark">
         <!-- Navbar content -->
         <b-navbar-nav>
             <b-nav-item class="nav-link" to="/termsOfService"
                 >Terms of Service</b-nav-item
             >
 
-            <b-nav-item class="nav-link" href="/release-notes"
+            <b-nav-item class="nav-link" to="/release-notes"
                 >Release Notes
             </b-nav-item>
 
-            <b-nav-item class="nav-link" href="/contact-us"
+            <b-nav-item class="nav-link" to="/contact-us"
                 >Contact Us</b-nav-item
             >
 
