@@ -5,8 +5,8 @@ import { directive as onClickaway } from "vue-clickaway";
 import { DateWrapper } from "@/models/dateWrapper";
 
 class MonthToDisplay {
-    public title: string = "";
-    public hasData: boolean = false;
+    public title = "";
+    public hasData = false;
 }
 
 @Component({
