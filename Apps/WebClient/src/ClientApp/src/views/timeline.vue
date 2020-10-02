@@ -73,7 +73,7 @@
 <template>
     <div>
         <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
-        <b-row class="my-3 fluid justify-content-md-center">
+        <b-row class="my-3 fluid">
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <b-alert
                     :show="hasNewTermsOfService"
@@ -149,8 +149,15 @@
                                 ></b-form-input>
                             </div>
                         </b-col>
-                        <b-col class="col-auto pl-0">
-                            <Filters @filters-changed="filtersChanged" />
+                        <b-col class="col-auto pl-0" v-if="!isLoading">
+                            <Filters
+                                :encounter-count="encounterCount"
+                                :medication-count="medicationCount"
+                                :immunizationCount="immunizationCount"
+                                :laboratoryCount="laboratoryCount"
+                                :noteCount="noteCount"
+                                @filters-changed="filtersChanged"
+                            />
                         </b-col>
                     </b-row>
                 </div>
@@ -354,6 +361,11 @@ export default class TimelineView extends Vue {
     private isEncounterLoading: boolean = false;
     private isNoteLoading: boolean = false;
     private idleLogoutWarning: boolean = false;
+    private medicationCount: number = 0;
+    private immunizationCount: number = 0;
+    private encounterCount: number = 0;
+    private laboratoryCount: number = 0;
+    private noteCount: number = 0;
     private protectiveWordAttempts: number = 0;
     private isAddingNote: boolean = false;
     private isEditingEntry: boolean = false;
@@ -517,6 +529,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
+                    this.medicationCount = results.resourcePayload.length;
                 } else if (results.resultStatus == ResultType.Protected) {
                     if (!this.covidModal.show) {
                         this.protectiveWordModal.showModal();
@@ -565,6 +578,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
+                    this.immunizationCount = results.resourcePayload.length;
                 } else {
                     this.logger.error(
                         "Error returned from the immunization call: " +
@@ -607,7 +621,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-
+                    this.laboratoryCount = results.resourcePayload.length;
                     if (results.resourcePayload.length > 0) {
                         this.protectiveWordModal.hideModal();
                         this.covidModal.showModal();
@@ -653,6 +667,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
+                    this.encounterCount = results.resourcePayload.length;
                 } else {
                     this.logger.error(
                         "Error returned from the encounter call: " +
@@ -693,6 +708,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
+                    this.noteCount = results.resourcePayload.length;
                 } else {
                     this.logger.error(
                         "Error returned from the note call: " +

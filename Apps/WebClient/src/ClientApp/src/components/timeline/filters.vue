@@ -3,7 +3,7 @@
     z-index: 3;
 }
 .filters-width {
-    width: 175px;
+    width: 225px;
 }
 </style>
 <style lang="scss">
@@ -56,7 +56,9 @@
                             :name="filter.name + '-filter'"
                             :value="filter.value"
                         >
-                            {{ filter.display }}
+                            {{ filter.display }} ({{
+                                kFormatter(filter.numEntries)
+                            }})
                         </b-form-checkbox>
                     </div>
                 </div>
@@ -119,7 +121,9 @@
                             :name="filter.name + '-filter'"
                             :value="filter.value"
                         >
-                            {{ filter.display }}
+                            {{ filter.display }} ({{
+                                kFormatter(filter.numEntries)
+                            }})
                         </b-form-checkbox>
                     </div>
                 </b-col>
@@ -134,7 +138,7 @@ import Component from "vue-class-component";
 import { Getter } from "vuex-class";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { Emit, Watch } from "vue-property-decorator";
+import { Emit, Prop, Watch } from "vue-property-decorator";
 import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -146,6 +150,7 @@ interface Filter {
     value: string;
     display: string;
     isEnabled: boolean;
+    numEntries: number;
 }
 
 @Component
@@ -153,6 +158,12 @@ export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
     @Getter("isOpen", { namespace: "sidebar" }) isSidebarOpen!: boolean;
+
+    @Prop() private medicationCount!: number;
+    @Prop() private immunizationCount!: number;
+    @Prop() private encounterCount!: number;
+    @Prop() private laboratoryCount!: number;
+    @Prop() private noteCount!: number;
 
     private logger!: ILogger;
     private eventBus = EventBus;
@@ -166,12 +177,14 @@ export default class FilterComponent extends Vue {
             value: "Immunization",
             display: "Immunizations",
             isEnabled: false,
+            numEntries: this.immunizationCount,
         },
         {
             name: "medication",
             value: "Medication",
             display: "Medications",
             isEnabled: false,
+            numEntries: this.medicationCount,
         },
 
         {
@@ -179,18 +192,21 @@ export default class FilterComponent extends Vue {
             value: "Laboratory",
             display: "Laboratory",
             isEnabled: false,
+            numEntries: this.laboratoryCount,
         },
         {
             name: "encounter",
             value: "Encounter",
             display: "MSP Visits",
             isEnabled: false,
+            numEntries: this.encounterCount,
         },
         {
             name: "note",
             value: "Note",
             display: "My Notes",
             isEnabled: false,
+            numEntries: this.noteCount,
         },
     ];
 
@@ -276,6 +292,13 @@ export default class FilterComponent extends Vue {
             }
             return groups;
         }, []);
+    }
+
+    private kFormatter(num: number) {
+        return Math.abs(num) > 999
+            ? parseFloat(((Math.round(num / 100) * 100) / 1000).toFixed(1)) +
+                  "K"
+            : num;
     }
 }
 </script>
