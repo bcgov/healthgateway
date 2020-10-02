@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { UserComment } from "@/models/userComment";
+import type { UserComment } from "@/models/userComment";
 import CommentComponent from "@/components/timeline/comment.vue";
 import AddCommentComponent from "@/components/timeline/addComment.vue";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";

@@ -7,7 +7,7 @@ import {
     IUserCommentService,
 } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
-import { UserComment } from "@/models/userComment";
+import type { UserComment } from "@/models/userComment";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";

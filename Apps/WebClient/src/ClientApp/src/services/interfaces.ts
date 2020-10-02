@@ -6,7 +6,7 @@ import {
 import ImmunizationModel from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
-import { UserComment } from "@/models/userComment";
+import type { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
 import { Dictionary } from "vue-router/types/router";
 import MedicationResult from "@/models/medicationResult";

@@ -4,7 +4,8 @@ import TimelineComponent from "@/views/timeline.vue";
 import VueRouter from "vue-router";
 import VueContentPlaceholders from "vue-content-placeholders";
 import Vuex, { ActionTree } from "vuex";
-import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import type { WebClientConfiguration } from "@/models/configData";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
@@ -21,7 +22,6 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { DateWrapper } from "@/models/dateWrapper";
-import { RegistrationStatus } from "@/constants/registrationStatus";
 
 const today = new DateWrapper();
 const yesterday = today.subtract({ day: 1 });
@@ -128,16 +128,18 @@ const medicationActions: ActionTree<MedicationState, RootState> = {
 
 const medicationGetters = {};
 
+const a: WebClientConfiguration = {
+    logLevel: "",
+    timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
+    registrationStatus: "closed" as RegistrationStatus,
+    externalURLs: {},
+    modules: { Note: true },
+    hoursForDeletion: 1,
+};
+
 const configGetters = {
     webClient: (): WebClientConfiguration => {
-        return {
-            logLevel: "",
-            timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
-            registrationStatus: RegistrationStatus.Closed,
-            externalURLs: {},
-            modules: { Note: true },
-            hoursForDeletion: 1,
-        };
+        return a;
     },
 };
 
