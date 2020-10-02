@@ -2,8 +2,8 @@
 import Vue from "vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import { Component, Emit, Prop, PropSync } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
+import { Component, Prop } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 import {
     IconDefinition,
     faEdit,
@@ -185,7 +185,7 @@ export default class NoteTimelineComponent extends Vue {
                         ></font-awesome-icon>
                     </div>
                     <div v-if="!isEditing" class="entryTitle d-flex">
-                        <div class="pt-1 w-100">
+                        <div class="pt-1 w-100" data-testid="noteTitle">
                             {{ entry.title }}
                         </div>
                         <div>
@@ -199,18 +199,21 @@ export default class NoteTimelineComponent extends Vue {
                                     <!-- Using 'button-content' slot -->
                                     <template slot="button-content">
                                         <font-awesome-icon
+                                            data-testid="noteMenuBtn"
                                             class="noteMenu"
                                             :icon="menuIcon"
                                             size="1x"
                                         ></font-awesome-icon>
                                     </template>
                                     <b-dropdown-item
+                                        data-testid="editNoteMenuBtn"
                                         class="menuItem"
                                         @click="editNote()"
                                     >
                                         Edit
                                     </b-dropdown-item>
                                     <b-dropdown-item
+                                        data-testid="deleteNoteMenuBtn"
                                         class="menuItem"
                                         @click="deleteNote()"
                                     >
@@ -225,6 +228,7 @@ export default class NoteTimelineComponent extends Vue {
                             <b-form-input
                                 id="title"
                                 v-model="title"
+                                data-testid="noteTitleInput"
                                 type="text"
                                 placeholder="Title"
                                 maxlength="100"
@@ -234,6 +238,7 @@ export default class NoteTimelineComponent extends Vue {
                             <b-form-input
                                 id="date"
                                 v-model="dateString"
+                                data-testid="noteDateInput"
                                 required
                                 type="date"
                             />
@@ -272,6 +277,7 @@ export default class NoteTimelineComponent extends Vue {
                             <b-form-textarea
                                 id="text"
                                 v-model="text"
+                                data-testid="noteTextInput"
                                 placeholder="Your note here"
                                 rows="3"
                                 max-rows="6"
@@ -283,6 +289,7 @@ export default class NoteTimelineComponent extends Vue {
                         <b-col class="d-flex flex-row-reverse">
                             <div>
                                 <b-btn
+                                    data-testid="saveNoteBtn"
                                     variant="primary"
                                     type="submit"
                                     class="mr-2"

@@ -139,6 +139,6 @@ describe("Auth mutations", () => {
         mutations.setOidcError(state, errorObject);
 
         // assert result
-        expect(state.error).toBe(errorObject.message);
+        expect(state.error).toBe(errorObject);
     });
 });

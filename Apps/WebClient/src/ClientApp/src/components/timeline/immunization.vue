@@ -2,7 +2,6 @@
 import Vue from "vue";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { Component, Prop } from "vue-property-decorator";
-import { IUserCommentService } from "@/services/interfaces";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 
 import { IconDefinition, faSyringe } from "@fortawesome/free-solid-svg-icons";
@@ -32,7 +31,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                     size="2x"
                 ></font-awesome-icon>
             </b-col>
-            <b-col class="entryTitle">
+            <b-col class="entryTitle" data-testid="immunizationTitle">
                 {{ entry.immunization.name }}
             </b-col>
         </b-row>

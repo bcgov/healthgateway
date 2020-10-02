@@ -1,13 +1,10 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
+import { Component, Prop } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 import { IconDefinition, faUserMd } from "@fortawesome/free-solid-svg-icons";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import User from "@/models/user";
-import { library } from "@fortawesome/fontawesome-svg-core";
 import PhoneUtil from "@/utility/phoneUtil";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
@@ -49,7 +46,7 @@ export default class EncounterTimelineEntryComponent extends Vue {
             </b-col>
             <b-col class="entryTitle">
                 <b-row class="justify-content-between">
-                    <b-col cols="auto">
+                    <b-col cols="auto" data-testid="encounterTitle">
                         <strong>{{ entry.practitionerName }}</strong>
                     </b-col>
                 </b-row>
@@ -59,7 +56,7 @@ export default class EncounterTimelineEntryComponent extends Vue {
             <b-col class="leftPane"></b-col>
             <b-col>
                 <b-row>
-                    <b-col cols="auto">
+                    <b-col cols="auto" data-testid="encounterDescription">
                         <strong> Specialty Description: </strong>
                         {{ entry.specialtyDescription }}
                     </b-col>

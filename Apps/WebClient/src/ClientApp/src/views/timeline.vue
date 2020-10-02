@@ -4,7 +4,7 @@ import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import { NavigationGuardNext, Route } from "vue-router";
 import EventBus, { EventMessageName } from "@/eventbus";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import {
     ILogger,
     IImmunizationService,
@@ -607,6 +607,7 @@ export default class TimelineView extends Vue {
                                 ></font-awesome-icon>
                                 <b-form-input
                                     v-model="filterText"
+                                    data-testid="filterTextInput"
                                     type="text"
                                     placeholder=""
                                     maxlength="50"
@@ -645,6 +646,7 @@ export default class TimelineView extends Vue {
                     >
                         <b-col cols="auto" class="pr-0">
                             <b-btn
+                                data-testid="monthViewToggle"
                                 class="month-view-btn btn-outline-primary px-2 m-0"
                                 :class="{ active: false }"
                                 @click.stop="toggleMonthView"
@@ -654,6 +656,7 @@ export default class TimelineView extends Vue {
                         </b-col>
                         <b-col cols="auto" class="pl-0">
                             <b-btn
+                                data-testid="listViewToggle"
                                 class="list-view-btn btn-outline-primary px-2 m-0"
                                 :class="{ active: true }"
                             >
@@ -676,6 +679,7 @@ export default class TimelineView extends Vue {
                     >
                         <b-col cols="auto" class="pr-0">
                             <b-btn
+                                data-testid="monthViewToggle"
                                 class="month-view-btn btn-outline-primary px-2 m-0"
                                 :class="{ active: true }"
                             >
@@ -684,6 +688,7 @@ export default class TimelineView extends Vue {
                         </b-col>
                         <b-col cols="auto" class="pl-0">
                             <b-btn
+                                data-testid="listViewToggle"
                                 class="list-view-btn btn-outline-primary px-2 m-0"
                                 :class="{ active: false }"
                                 @click.stop="toggleListView"

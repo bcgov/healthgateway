@@ -1,5 +1,4 @@
 <script lang="ts">
-import { WebClientConfiguration } from "@/models/configData";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Getter } from "vuex-class";
@@ -10,6 +9,7 @@ import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import EventBus from "@/eventbus";
+import type { WebClientConfiguration } from "@/models/configData";
 library.add(faSlidersH);
 
 interface Filter {
@@ -173,6 +173,7 @@ export default class FilterComponent extends Vue {
     <div class="filters-wrapper">
         <div class="filters-width d-none d-sm-block">
             <b-dropdown
+                data-testid="filterDropdown"
                 text="Filter"
                 class="w-100"
                 toggle-class="w-100"
@@ -198,6 +199,7 @@ export default class FilterComponent extends Vue {
                             v-show="filter.isEnabled"
                             :id="filter.name + '-filter'"
                             v-model="selectedFilters"
+                            :data-testid="`${filter.name}-filter`"
                             :name="filter.name + '-filter'"
                             :value="filter.value"
                         >
@@ -263,6 +265,7 @@ export default class FilterComponent extends Vue {
                             v-show="filter.isEnabled"
                             :id="filter.name + '-filter'"
                             v-model="selectedFilters"
+                            :data-testid="`${filter.name}-filter`"
                             :name="filter.name + '-filter'"
                             :value="filter.value"
                         >

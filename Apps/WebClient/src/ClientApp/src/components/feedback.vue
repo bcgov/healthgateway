@@ -6,11 +6,7 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IUserFeedbackService } from "@/services/interfaces";
 import User from "@/models/user";
-import {
-    IconDefinition,
-    icon,
-    library,
-} from "@fortawesome/fontawesome-svg-core";
+import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import {
     faComments,
     faExclamationCircle,

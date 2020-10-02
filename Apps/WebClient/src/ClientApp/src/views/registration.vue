@@ -10,22 +10,17 @@ import {
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import User from "@/models/user";
-import {
-    ValidationRule,
-    email,
-    helpers,
-    required,
-    requiredIf,
-    sameAs,
-} from "vuelidate/lib/validators";
+import { Validation } from "vuelidate/vuelidate";
+import { email, helpers, requiredIf, sameAs } from "vuelidate/lib/validators";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import BetaRequest from "@/models/betaRequest";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import type { OidcUserProfile } from "@/models/user";
+
 library.add(faCheck);
 
 @Component({
@@ -54,7 +49,7 @@ export default class RegistrationView extends Vue {
     private isEmailChecked = true;
     private isSMSNumberChecked = true;
 
-    private oidcUser: any = {};
+    private oidcUser!: OidcUserProfile;
     private userProfileService!: IUserProfileService;
     private submitStatus = "";
     private loadingUserData = true;
@@ -104,7 +99,7 @@ export default class RegistrationView extends Vue {
                 if (oidcUser) {
                     this.oidcUser = oidcUser;
 
-                    this.betaRequestService
+                    return this.betaRequestService
                         .getRequest(this.oidcUser.hdid)
                         .then((betaRequest) => {
                             this.logger.debug(
@@ -139,7 +134,7 @@ export default class RegistrationView extends Vue {
         this.loadTermsOfService();
     }
 
-    validations() {
+    private validations() {
         const sms = helpers.regex("sms", /^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/);
         return {
             smsNumber: {
@@ -211,7 +206,7 @@ export default class RegistrationView extends Vue {
             });
     }
 
-    private isValid(param: any): boolean | undefined {
+    private isValid(param: Validation): boolean | undefined {
         return param.$dirty ? !param.$invalid : undefined;
     }
 

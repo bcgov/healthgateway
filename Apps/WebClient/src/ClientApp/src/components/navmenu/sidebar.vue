@@ -6,7 +6,7 @@ import { ILogger, IAuthenticationService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import EventBus, { EventMessageName } from "@/eventbus";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
@@ -254,6 +254,7 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                             <b-col
                                 v-if="isOpen"
+                                data-testid="sidebarUserName"
                                 cols="7"
                                 class="button-title d-none"
                                 >{{ name }}</b-col
@@ -298,6 +299,7 @@ export default class SidebarComponent extends Vue {
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
+                            data-testid="addNoteBtn"
                             id="add-a-note-row"
                             class="align-items-center border rounded-pill py-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
@@ -444,6 +446,7 @@ export default class SidebarComponent extends Vue {
                             :class="{ 'ml-auto col-4': isOpen }"
                         >
                             <font-awesome-icon
+                                data-testid="sidebarToggle"
                                 class="arrow-icon p-2"
                                 icon="angle-double-left"
                                 aria-hidden="true"

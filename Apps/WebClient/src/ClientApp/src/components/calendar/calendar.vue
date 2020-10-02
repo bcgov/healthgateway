@@ -6,12 +6,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import CalendarHeader from "./header.vue";
 import CalendarBody from "./body.vue";
-import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
-import {
-    CalendarEntry,
-    CalendarWeek,
-    CalendarMonth,
-} from "@/components/calendar/models";
+import { DateGroup } from "@/models/timelineEntry";
+
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 

@@ -1,15 +1,9 @@
 <script lang="ts">
 import Vue from "vue";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-import Pharmacy from "@/models/pharmacy";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
 import { IconDefinition, faPills } from "@fortawesome/free-solid-svg-icons";
-import MedicationResult from "@/models/medicationResult";
 import PhoneUtil from "@/utility/phoneUtil";
 
 @Component({
@@ -43,7 +37,7 @@ export default class MedicationTimelineComponent extends Vue {
                     size="2x"
                 ></font-awesome-icon>
             </b-col>
-            <b-col class="entryTitle">
+            <b-col class="entryTitle" data-testid="medicationTitle">
                 {{ entry.medication.brandName }}
             </b-col>
         </b-row>
@@ -59,9 +53,7 @@ export default class MedicationTimelineComponent extends Vue {
                     <b-col>
                         <div class="d-flex flex-row-reverse">
                             <b-btn
-                                v-b-toggle="
-                                    'entryDetails-' + index + '-' + datekey
-                                "
+                                data-testid="medicationViewDetailsBtn"
                                 variant="link"
                                 class="detailsButton"
                                 @click="detailsVisible = !detailsVisible"
@@ -88,7 +80,7 @@ export default class MedicationTimelineComponent extends Vue {
                         >
                             <div>
                                 <div class="detailSection">
-                                    <div>
+                                    <div data-testid="medicationPractitioner">
                                         <strong>Practitioner:</strong>
                                         {{ entry.practitionerSurname }}
                                     </div>

@@ -1,6 +1,5 @@
 <script lang="ts">
 import Vue from "vue";
-import PageError from "@/models/pageError";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component
@@ -10,15 +9,11 @@ export default class HtmlTextAreaComponent extends Vue {
     private mounted() {
         this.$el.innerHTML = this.input;
     }
-
-    private updateHTML(e: any) {
-        this.$emit("input", e.target.innerHTML);
-    }
 }
 </script>
 
 <template>
-    <div class="textArea p-4" @input="updateHTML"></div>
+    <div class="textArea p-4"></div>
 </template>
 
 <style lang="scss" scoped>

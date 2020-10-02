@@ -1,14 +1,10 @@
 <script lang="ts">
 import Vue from "vue";
-import UserComment from "@/models/userComment";
+import type { UserComment } from "@/models/userComment";
 import User from "@/models/user";
 import { Getter } from "vuex-class";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import {
-    IconDefinition,
-    faEllipsisV,
-    faLock,
-} from "@fortawesome/free-solid-svg-icons";
+import { Component, Emit, Prop } from "vue-property-decorator";
+import { IconDefinition, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -24,6 +20,11 @@ export default class CommentComponent extends Vue {
     private commentService!: IUserCommentService;
     private isEditMode = false;
     private isLoading = false;
+
+    @Emit()
+    private needsUpdate(comment: UserComment) {
+        return comment;
+    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -64,7 +65,7 @@ export default class CommentComponent extends Vue {
                 createdDateTime: this.comment.createdDateTime,
                 version: this.comment.version,
             })
-            .then((result) => {
+            .then(() => {
                 this.needsUpdate(this.comment);
             })
             .catch((err) => {
@@ -81,7 +82,7 @@ export default class CommentComponent extends Vue {
             this.isLoading = true;
             this.commentService
                 .deleteComment(this.comment)
-                .then((result) => {
+                .then(() => {
                     this.needsUpdate(this.comment);
                 })
                 .catch((err) => {
@@ -91,11 +92,6 @@ export default class CommentComponent extends Vue {
                     this.isLoading = false;
                 });
         }
-    }
-
-    @Emit()
-    needsUpdate(comment: UserComment) {
-        return comment;
     }
 }
 </script>
@@ -108,7 +104,7 @@ export default class CommentComponent extends Vue {
                 class="comment-body py-2 mr-0 ml-3 my-1"
                 align-v="center"
             >
-                <b-col class="comment-text">
+                <b-col data-testid="commentText" class="comment-text">
                     {{ comment.text }}
                     <p class="m-0 timestamp">
                         {{ formatDate(comment.createdDateTime) }}
@@ -123,6 +119,7 @@ export default class CommentComponent extends Vue {
                     >
                         <template slot="button-content">
                             <font-awesome-icon
+                                data-testid="commentMenuBtn"
                                 class="comment-menu"
                                 :icon="menuIcon"
                                 size="1x"
@@ -130,12 +127,14 @@ export default class CommentComponent extends Vue {
                         </template>
                         <b-dropdown-item
                             class="menuItem"
+                            data-testid="commentMenuEditBtn"
                             @click="editComment()"
                         >
                             Edit
                         </b-dropdown-item>
                         <b-dropdown-item
                             class="menuItem"
+                            data-testid="commentMenuDeleteBtn"
                             @click="deleteComment()"
                         >
                             Delete
@@ -149,6 +148,7 @@ export default class CommentComponent extends Vue {
                         <b-form-textarea
                             id="comment-input"
                             v-model="commentInput"
+                            data-testid="editCommentInput"
                             :class="
                                 commentInput.length <= 30 ? 'single-line' : ''
                             "
@@ -163,6 +163,7 @@ export default class CommentComponent extends Vue {
                     class="px-2 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
                 >
                     <b-button
+                        data-testid="saveCommentBtn"
                         class="mr-2"
                         variant="primary"
                         :disabled="commentInput === ''"
