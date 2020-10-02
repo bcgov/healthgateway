@@ -154,6 +154,7 @@ export default class FilterComponent extends Vue {
     <div class="filters-wrapper">
         <div class="filters-width d-none d-sm-block">
             <b-dropdown
+                data-testid="filterDropdown"
                 text="Filter"
                 class="w-100"
                 toggle-class="w-100"
@@ -179,6 +180,7 @@ export default class FilterComponent extends Vue {
                             v-show="filter.isEnabled"
                             :id="filter.name + '-filter'"
                             v-model="selectedFilters"
+                            :data-testid="`${filter.name}-filter`"
                             :name="filter.name + '-filter'"
                             :value="filter.value"
                         >
@@ -242,6 +244,7 @@ export default class FilterComponent extends Vue {
                             v-show="filter.isEnabled"
                             :id="filter.name + '-filter'"
                             v-model="selectedFilters"
+                            :data-testid="`${filter.name}-filter`"
                             :name="filter.name + '-filter'"
                             :value="filter.value"
                         >
