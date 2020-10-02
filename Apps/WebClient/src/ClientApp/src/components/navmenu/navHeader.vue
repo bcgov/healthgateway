@@ -142,7 +142,7 @@ export default class HeaderComponent extends Vue {
 
         <!-- Navbar links -->
         <b-navbar-nav class="ml-auto">
-            <b-btn
+            <div
                 v-if="oidcIsAuthenticated"
                 id="menuBtnLogout"
                 variant="link"
@@ -150,10 +150,11 @@ export default class HeaderComponent extends Vue {
                 @click="handleLogoutClick()"
             >
                 <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
-                Logout
-            </b-btn>
+                <span class="pl-1">Logout</span>
+            </div>
             <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
-                <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login
+                <font-awesome-icon icon="sign-in-alt"></font-awesome-icon>
+                <span class="pl-1">Login</span>
             </router-link>
         </b-navbar-nav>
         <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
@@ -178,6 +179,9 @@ nav {
             width: 1.5em;
             height: 1.5em;
         }
+    }
+    .nav-link {
+        cursor: pointer;
     }
 }
 </style>
