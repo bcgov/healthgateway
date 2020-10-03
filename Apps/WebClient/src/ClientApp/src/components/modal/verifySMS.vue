@@ -10,11 +10,12 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 import UserSMSInvite from "@/models/userSMSInvite";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import moment from "moment";
+import VueCountdown from "@chenfengyuan/vue-countdown";
 
 @Component({
     components: {
         LoadingComponent,
+        countdown: VueCountdown,
     },
 })
 export default class VerifySMSComponent extends Vue {
@@ -50,8 +51,6 @@ export default class VerifySMSComponent extends Vue {
     private isVisible = false;
     private isLoading = false;
     private isValid = false;
-    private timeoutMinutes = 5;
-    private countdownRemaining = 5;
     public error = false;
 
     public showModal(): void {
@@ -86,28 +85,6 @@ export default class VerifySMSComponent extends Vue {
                 this.sendUserSMSUpdate();
             }
         });
-    }
-
-    private getTimeout() {
-        if (this.smsVerificationSent) {
-            let timeUntilResend = moment(
-                this.smsResendDateTime!.toJSDate()
-            ).add(5, "minutes");
-            /* Add 1 for readaiblity sake (starts at 5 minutes and ends at 1 minute remaining, rather than 4 to 0) */
-            this.timeoutMinutes =
-                timeUntilResend.diff(moment.utc(), "minutes") + 1;
-            this.countdownRemaining = this.timeoutMinutes;
-            this.runTimer();
-        }
-    }
-
-    private runTimer() {
-        if (this.countdownRemaining > 1) {
-            setTimeout(() => {
-                this.countdownRemaining -= 1;
-                this.runTimer();
-            }, 60000);
-        }
     }
 
     private setResendTimeout(): void {
@@ -183,7 +160,6 @@ export default class VerifySMSComponent extends Vue {
             hdid: this.user.hdid,
             dateTime: new DateWrapper(),
         });
-        this.getTimeout();
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
             .then(() => {
@@ -195,6 +171,15 @@ export default class VerifySMSComponent extends Vue {
             .catch((err) => {
                 this.logger.error(`updateSMSNumber with error: ${err}`);
             });
+    }
+
+    private getTimeout(): number {
+        let resendTime = new Date();
+        resendTime.setTime(
+            this.smsResendDateTime!.toJSDate().getTime() +
+                this.config.timeouts!.resendSMS * 60 * 1000
+        );
+        return resendTime.getTime() - new Date().getTime();
     }
 
     private onVerificationChange(): void {
@@ -293,9 +278,12 @@ export default class VerifySMSComponent extends Vue {
                     </b-button>
                 </b-col>
                 <b-col v-if="!allowRetry">
-                    Your code has been sent. You can resend after
-                    {{ countdownRemaining }}
-                    {{ countdownRemaining > 1 ? "minutes" : "minute" }}.
+                    <countdown :time="getTimeout()">
+                        <template slot-scope="props"
+                            >You can resend your verification code in
+                            {{ props.minutes }}m {{ props.seconds }}s</template
+                        >
+                    </countdown>
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <b-button
