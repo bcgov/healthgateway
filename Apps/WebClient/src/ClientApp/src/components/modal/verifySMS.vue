@@ -174,6 +174,12 @@ export default class VerifySMSComponent extends Vue {
     }
 
     private getTimeout(): number {
+        if (!this.smsResendDateTime) {
+            this.updateSMSResendDateTime({
+                hdid: this.user.hdid,
+                dateTime: new DateWrapper(),
+            });
+        }
         let resendTime = new Date();
         resendTime.setTime(
             this.smsResendDateTime!.toJSDate().getTime() +
@@ -281,7 +287,8 @@ export default class VerifySMSComponent extends Vue {
                     <countdown :time="getTimeout()">
                         <template slot-scope="props"
                             >You can resend your verification code in
-                            {{ props.minutes }}m {{ props.seconds }}s</template
+                            {{ props.minutes > 0 ? props.minutes + "m" : "" }}
+                            {{ props.seconds }}s</template
                         >
                     </countdown>
                 </b-col>
