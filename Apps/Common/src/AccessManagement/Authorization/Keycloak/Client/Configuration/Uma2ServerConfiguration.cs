@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
+namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration
 {
     using System;
     using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
     /// <summary>
     /// Class that represents the user model in the UMA2 Configuration as fetched from the well-known endpoint.
     /// </summary>
-    public class UMA2Configuration
+    public class Uma2ServerConfiguration
     {
         /// <summary>
         /// Gets or sets the user issuer.

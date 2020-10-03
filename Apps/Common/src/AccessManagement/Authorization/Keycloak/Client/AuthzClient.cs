@@ -49,7 +49,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
         /// <summary>
         /// The  keycloak configuration.
         /// </summary>
-        private readonly KeycloakConfiguration keycloakConfig;
+        private readonly KeycloakConfiguration keycloakConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthzClient"/> class.
@@ -65,6 +65,8 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
             this.logger = logger;
             this.httpClientService = httpClientService!;
             this.configuration = configuration;
+            this.keycloakConfiguration = new KeycloakConfiguration();
+            // @TODO: now bind it.
         }
     }
 }

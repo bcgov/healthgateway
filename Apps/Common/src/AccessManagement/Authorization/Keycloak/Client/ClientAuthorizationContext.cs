@@ -15,13 +15,22 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
 {
-
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-
-     /// <summary>
-    /// Class that represents the OpenId Configuration model for the Keycloak Configuration.
-    /// </summary>
-    public class KeycloakConfiguration : JwtBearerOptions
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak;
+    public class ClientAuthorizationContext : AuthorizationContext
     {
+
+        public AuthzClient Client { get; set; }
+
+        public ClientAuthorizationContext(AccessToken authzToken, PolicyEnforcerConfig.PathConfig current, AuthzClient client)
+        {
+            base(authzToken, current);
+            this.Client = client;
+        }
+
+        public ClientAuthorizationContext(AuthzClient client)
+        {
+            this.Client = client;
+        }
+
     }
 }

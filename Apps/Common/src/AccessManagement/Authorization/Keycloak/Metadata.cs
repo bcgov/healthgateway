@@ -13,15 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
+namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak
 {
-
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-
-     /// <summary>
-    /// Class that represents the OpenId Configuration model for the Keycloak Configuration.
-    /// </summary>
-    public class KeycloakConfiguration : JwtBearerOptions
+    public class Metadata
     {
+        public bool IncludeResourceName { get; set; }
+        public int Limit { get; set; }
+        public string? ResponseMode { get; set; }
     }
 }
