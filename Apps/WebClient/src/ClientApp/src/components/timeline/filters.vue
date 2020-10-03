@@ -200,31 +200,21 @@ export default class FilterComponent extends Vue {
                     </b-col>
                 </b-row>
                 <div class="px-4">
-                    <b-row>
-                        <b-col align-self="start">
-                            <div
-                                v-for="(filter, index) in filters"
-                                :key="index"
+                    <b-row v-for="(filter, index) in filters" :key="index">
+                        <b-col cols="8" align-self="start">
+                            <b-form-checkbox
+                                v-show="filter.isEnabled"
+                                :id="filter.name + '-filter'"
+                                v-model="selectedFilters"
+                                :data-testid="`${filter.name}-filter`"
+                                :name="filter.name + '-filter'"
+                                :value="filter.value"
                             >
-                                <b-form-checkbox
-                                    v-show="filter.isEnabled"
-                                    :id="filter.name + '-filter'"
-                                    v-model="selectedFilters"
-                                    :data-testid="`${filter.name}-filter`"
-                                    :name="filter.name + '-filter'"
-                                    :value="filter.value"
-                                >
-                                    {{ filter.display }}
-                                </b-form-checkbox>
-                            </div>
+                                {{ filter.display }}
+                            </b-form-checkbox>
                         </b-col>
-                        <b-col align-self="end">
-                            <div
-                                v-for="(filter, index) in filters"
-                                :key="index"
-                            >
-                                ({{ formatFilterCount(filter.numEntries) }})
-                            </div>
+                        <b-col cols="4" align-self="end" class="text-right">
+                            ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
                     </b-row>
                 </div>
@@ -279,31 +269,21 @@ export default class FilterComponent extends Vue {
             <b-row class="justify-content-center py-2">
                 <b-col class="col-10">
                     <h5>Type</h5>
-                    <b-row>
-                        <b-col align-self="start">
-                            <div
-                                v-for="(filter, index) in filters"
-                                :key="index"
+                    <b-row v-for="(filter, index) in filters" :key="index">
+                        <b-col cols="8" align-self="start">
+                            <b-form-checkbox
+                                v-show="filter.isEnabled"
+                                :id="filter.name + '-filter'"
+                                v-model="selectedFilters"
+                                :data-testid="`${filter.name}-filter`"
+                                :name="filter.name + '-filter'"
+                                :value="filter.value"
                             >
-                                <b-form-checkbox
-                                    v-show="filter.isEnabled"
-                                    :id="filter.name + '-filter'"
-                                    v-model="selectedFilters"
-                                    :data-testid="`${filter.name}-filter`"
-                                    :name="filter.name + '-filter'"
-                                    :value="filter.value"
-                                >
-                                    {{ filter.display }}
-                                </b-form-checkbox>
-                            </div>
+                                {{ filter.display }}
+                            </b-form-checkbox>
                         </b-col>
-                        <b-col align-self="end">
-                            <div
-                                v-for="(filter, index) in filters"
-                                :key="index"
-                            >
-                                ({{ formatFilterCount(filter.numEntries) }})
-                            </div>
+                        <b-col cols="4" align-self="end" class="text-right">
+                            ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
                     </b-row>
                 </b-col>
