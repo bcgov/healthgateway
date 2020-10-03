@@ -15,10 +15,15 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Resource
 {
-    using HealthGateway.Common.Services;
-    using Microsoft.Extensions.Configuration;
+    using System;
+    using System.Net.Http;
+    using System.Text.Json;
+
+    using System.Threading.Tasks;
+
     using Microsoft.Extensions.Logging;
 
+    using HealthGateway.Common.Services;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Representation;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
@@ -26,11 +31,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     /// <summary>
     /// An entry point for obtaining permissions from the server.
     /// </summary>
-    public class AuthorizationResource : Resource
+    public class AuthorizationResource
     {
         private readonly ILogger logger;
 
-                /// <summary>
+        private readonly KeycloakConfiguration keycloakConfiguration;
+
+        private readonly Uma2ServerConfiguration uma2ServerConfiguration;
+
+        private readonly IHttpClientService httpClientService;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationResource"/> class.
         /// </summary>
         /// <param name="logger">injected logger service.</param>
@@ -39,47 +50,49 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         /// <param name="uma2ServerConfiguration">uma2 server-side configuration settings.</param>
         public AuthorizationResource(ILogger<AuthorizationResource> logger, KeycloakConfiguration keycloakConfiguration,
             Uma2ServerConfiguration uma2ServerConfiguration,
-            HttpClientService httpClientService) : base(keycloakConfiguration, uma2ServerConfiguration, httpClientService)
+            IHttpClientService httpClientService)
         {
             this.logger = logger;
+            this.keycloakConfiguration = keycloakConfiguration;
+            this.uma2ServerConfiguration = uma2ServerConfiguration;
+            this.httpClientService = httpClientService;
         }
 
-        /// Query the server for all permissions.
-        /// <returns> A <cref="AuthorizationResponse"/> with a RPT holding all granted permissions.</returns>
-        public AuthorizationResponse authorize()
+        /// <summary>Query the server for permissions given an <cref name="AuthorizationRequest"/>.</summary>
+        /// <param name="request"> an <cref name="AuthorizationRequest"/></param>
+        /// <returns>An <cref name="AuthorizationRequest"/>with a RPT holding all granted permissions.</returns>
+        public async Task<AuthorizationResponse> authorize(AuthorizationRequest request)
         {
-            return authorize(new AuthorizationRequest());
-        }
-        /**
-      * Query the server for permissions given an {@link AuthorizationRequest}.
-      *
-      * @param request an {@link AuthorizationRequest} (not {@code null})
-      * @return an {@link AuthorizationResponse} with a RPT holding all granted permissions
-      * @throws AuthorizationDeniedException in case the request was denied by the server
-      */
-        public AuthorizationResponse authorize(AuthorizationRequest? request)
-        {
-            if (request == null)
+            if (request.Audience == null)
             {
-                // throw new IllegalArgumentException("Authorization request must not be null");
+                request.Audience = keycloakConfiguration.Audience;
             }
 
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Add("Authorization", @"Bearer " + request.Token);
-            client.BaseAddress = this.uma2ServerConfiguration.TokenEndpoint;
+            //client.DefaultRequestHeaders.Add("Authorization", @"Bearer " + request.Token);
+            client.BaseAddress = new Uri(this.uma2ServerConfiguration.TokenEndpoint);
+            string requestUri = this.uma2ServerConfiguration.TokenEndpoint;
 
             if (request.Audience == string.Empty)
             {
-                request.Audience = this.configuration.Audience;
+                request.Audience = this.keycloakConfiguration.Audience;
             }
-            // POST the call to the resource.
+            string jsonOutput = JsonSerializer.Serialize<AuthorizationRequest>(request);
+
+            using (HttpContent content = new StringContent(jsonOutput))
+            {
+                HttpResponseMessage response = await client.PostAsync(new Uri(requestUri), content).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                {
+                    this.logger.LogError($"AuthorizationResource.authorize() returned with StatusCode := {response.StatusCode}.");
+                }
+
+                string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                AuthorizationResponse authorizationResponse = JsonSerializer.Deserialize<AuthorizationResponse>(result);
+                return authorizationResponse;
+            }
         }
-
-    //HttpMethod<AuthorizationResponse> method = http.< AuthorizationResponse > post(serverConfiguration.getTokenEndpoint());
-
-               // if (token != null) {
-            //method = method.authorizationBearer(token.call());
-       // }
+    }
 }

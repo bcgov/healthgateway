@@ -125,7 +125,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <summary>
-        /// Retuns an HttpClient for the AuthService to be invoked.
+        /// Returns an HttpClient for the AuthService to be invoked.
         /// </summary>
         /// <param name="baseUri">The uri of the service endpoint.</param>
         /// <param name="base64BearerToken">The JSON Web Token.</param>
