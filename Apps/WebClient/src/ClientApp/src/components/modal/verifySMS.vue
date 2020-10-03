@@ -286,7 +286,7 @@ export default class VerifySMSComponent extends Vue {
                 <b-col v-if="!allowRetry">
                     <countdown :time="getTimeout()">
                         <template slot-scope="props"
-                            >You can resend your verification code in
+                            >Your code has been sent. You can resend after
                             {{ props.minutes > 0 ? props.minutes + "m" : "" }}
                             {{ props.seconds }}s</template
                         >
