@@ -15,7 +15,7 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
@@ -464,6 +464,9 @@ export default class TimelineView extends Vue {
         if (entry) {
             this.timelineEntries.push(entry);
             this.sortEntries();
+            if (entry.type === EntryType.Note) {
+                this.noteCount += 1;
+            }
         }
     }
 
@@ -495,6 +498,9 @@ export default class TimelineView extends Vue {
         const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
         this.timelineEntries.splice(index, 1);
         this.sortEntries();
+        if (entry.type === EntryType.Note) {
+            this.noteCount -= 1;
+        }
     }
 
     private onProtectiveWordSubmit(value: string) {

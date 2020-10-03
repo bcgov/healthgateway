@@ -96,6 +96,11 @@ export default class FilterComponent extends Vue {
         this.filtersChanged();
     }
 
+    @Watch("noteCount")
+    private noteCountUpdate(newCount: any) {
+        this.filters[4].numEntries = newCount;
+    }
+
     @Emit()
     private filtersChanged() {
         if (this.selectedFilters.length > 0) {
@@ -160,11 +165,12 @@ export default class FilterComponent extends Vue {
         }, []);
     }
 
-    private kFormatter(num: number) {
+    private formatFilterCount(num: number): string {
         return Math.abs(num) > 999
-            ? parseFloat(((Math.round(num / 100) * 100) / 1000).toFixed(1)) +
-                  "K"
-            : num;
+            ? parseFloat(
+                  ((Math.round(num / 100) * 100) / 1000).toFixed(1)
+              ).toString() + "K"
+            : num.toString();
     }
 }
 </script>
@@ -204,7 +210,7 @@ export default class FilterComponent extends Vue {
                             :value="filter.value"
                         >
                             {{ filter.display }} ({{
-                                kFormatter(filter.numEntries)
+                                formatFilterCount(filter.numEntries)
                             }})
                         </b-form-checkbox>
                     </div>
@@ -270,7 +276,7 @@ export default class FilterComponent extends Vue {
                             :value="filter.value"
                         >
                             {{ filter.display }} ({{
-                                kFormatter(filter.numEntries)
+                                formatFilterCount(filter.numEntries)
                             }})
                         </b-form-checkbox>
                     </div>
