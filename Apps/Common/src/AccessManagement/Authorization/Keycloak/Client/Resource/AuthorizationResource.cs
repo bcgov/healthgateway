@@ -71,9 +71,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
             client.DefaultRequestHeaders.Accept.Clear();
-            //client.DefaultRequestHeaders.Add("Authorization", @"Bearer " + request.Token);
-            client.BaseAddress = new Uri(this.uma2ServerConfiguration.TokenEndpoint);
             string requestUri = this.uma2ServerConfiguration.TokenEndpoint;
+
+            client.BaseAddress = new Uri(requestUri);
 
             if (request.Audience == string.Empty)
             {

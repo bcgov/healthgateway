@@ -15,13 +15,20 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Resource
 {
+    using System;
     using System.Collections.Generic;
-    using Microsoft.Extensions.Configuration;
+    using System.Net.Http;
+    using System.Text.Json;
+
+    using System.Threading.Tasks;
+
     using Microsoft.Extensions.Logging;
 
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Representation;
-    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Util;
+
     using HealthGateway.Common.Services;
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
@@ -32,8 +39,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
 
         private readonly KeycloakConfiguration keycloakConfiguration;
 
-       /// <summary>The injected HttpClientService.</summary>
+        private readonly Uma2ServerConfiguration uma2ServerConfiguration;
+
+
+        /// <summary>The injected HttpClientService.</summary>
         private readonly IHttpClientService httpClientService;
+
+        private readonly TokenCallable pat;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationResource"/> class.
@@ -41,21 +53,51 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
         /// <param name="keycloakConfiguration">The keyCloak configuration.</param>
+        /// <param name="uma2ServerConfiguration">The UMA configuration.</param>
+        /// <param name="pat">A <cref name="TokenCallable"/> pat.</param>
         public PermissionResource(ILogger<PermissionResource> logger,
             KeycloakConfiguration keycloakConfiguration,
-            IHttpClientService httpClientService)
+            Uma2ServerConfiguration uma2ServerConfiguration,
+            IHttpClientService httpClientService,
+            TokenCallable pat)
         {
             this.logger = logger;
             this.keycloakConfiguration = keycloakConfiguration;
+            this.uma2ServerConfiguration = uma2ServerConfiguration;
             this.httpClientService = httpClientService;
+            this.pat = pat;
         }
 
         /// <summary>Creates a new permission ticket for a single resource and scope(s).</summary>
         /// <param name="request"> the <cref name="PermissionRequest"/> representing the resource and scope(s).</param>
         /// <returns>Permission response holding a permission ticket with the requested permissions.</returns>
-        public PermissionResponse createPermissionTicket(PermissionRequest request)
+        public async Task<PermissionResponse>  createPermissionTicket(PermissionRequest request)
         {
 
+            HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            // We need to get a Bearer Token to make this call. Use the CallablePat
+            pat.
+            //client.DefaultRequestHeaders.Add("Authorization", @"Bearer " + request.Token);
+            string requestUri = this.uma2ServerConfiguration.PermissionEndpoint;
+            client.BaseAddress = new Uri(requestUri);
+
+            string jsonOutput = JsonSerializer.Serialize<PermissionRequest>(request);
+
+            using (HttpContent content = new StringContent(jsonOutput))
+            {
+                HttpResponseMessage response = await client.PostAsync(new Uri(requestUri), content).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                {
+                    this.logger.LogError($"AuthorizationResource.authorize() returned with StatusCode := {response.StatusCode}.");
+                }
+
+                string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                PermissionResponse permissionResponse = JsonSerializer.Deserialize<PermissionResponse>(result);
+                return permissionResponse;
+            }
         }
 
         /// <summary>Creates new permission ticket(s) for a set of resources and scope(s).</summary>

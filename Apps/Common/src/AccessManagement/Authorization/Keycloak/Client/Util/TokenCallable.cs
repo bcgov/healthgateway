@@ -29,7 +29,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
     /// </summary>
     public class TokenCallable
     {
-
         private string? username = null;
         private string? password = null;
 
@@ -64,6 +63,11 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
             this.httpClientService = httpClientService;
             this.keycloakConfiguration = keycloakConfiguration;
             this.uma2ServerConfiguration = uma2ServerConfiguration;
+        }
+
+        public async Task<AccessToken> call() 
+        {
+
         }
     }
 }
