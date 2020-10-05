@@ -11,7 +11,7 @@ describe('Health Insights', () => {
         cy.get('#menuBtnHealthInsights').click()
     })
 
-    it('totally has 259 records', () => {
-        cy.get('[data-testid=totalRecordsText]').contains('259 ')
+    it('Total records count (for medication) should not have 0 records.', () => {
+        cy.get('[data-testid=totalRecordsText]').should('not.contain', '0 ')
     })
 })
