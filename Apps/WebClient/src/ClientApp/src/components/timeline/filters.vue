@@ -239,7 +239,7 @@ export default class FilterComponent extends Vue {
             :hide-footer="true"
             no-fade
         >
-            <template v-slot:modal-header="{ close }">
+            <template #modal-header="{ close }">
                 <b-row class="w-100 text-center p-0 m-0">
                     <b-col class="col-3">
                         <!-- Emulate built in modal header close button action -->

@@ -67,7 +67,10 @@ export default class CalendarTimelineComponent extends Vue {
             </b-row>
             <b-row>
                 <b-col>
-                    <p class="text-center pt-2 noTimelineEntriesText">
+                    <p
+                        class="text-center pt-2 noTimelineEntriesText"
+                        data-testid="noTimelineEntriesText"
+                    >
                         No Timeline Entries
                     </p>
                 </b-col>
