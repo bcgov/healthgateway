@@ -7,7 +7,7 @@ describe('Validate Star Rating', () => {
     it('Cliking the 5 star button should logout', () => {
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
         cy.get('[data-testid=logoutBtn]').click()
-        cy.get('.b-rating-star-empty:last').click()
+        cy.get('[data-testid=formRating] > .b-rating-star-empty:last').click()
         cy.url().should('include', '/logout')
     })
 
