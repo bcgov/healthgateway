@@ -14,7 +14,9 @@
     "bcsc.password": "",
     "keycloak.username": "healthgateway",
     "keycloak.password": "",
-    "keycloak.protected.username": "protected"
+    "keycloak.protected.username": "protected",
+    "idir.username": "hgateway",
+    "idir.password": ""
   },
   "projectId": "ofnepc"
 }

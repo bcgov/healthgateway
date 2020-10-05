@@ -30,6 +30,17 @@ describe('Authentication', () => {
             .should('have.text', 'Login')
     })
 
+    it('IDIR Blocked', () => {
+        cy.visit('/login')
+        cy.log(`Authenticating as IDIR user Cypress.env('idir.username')`) 
+        cy.get('[data-testid=IDIRBtn]').should('be.visible').should('be.enabled').click()
+        cy.get('#user').type(Cypress.env('idir.username'))
+        cy.get('#password').type(Cypress.env('idir.password'))
+        cy.get('input[name="btnSubmit"').click()
+        cy.contains('h1', '403')
+        cy.contains('h2', 'IDIR Login')
+    })
+
     // it('Idle Timeout', () => {
     // // Work in Progress, clock not working correctly.
     //     cy.server()
