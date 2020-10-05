@@ -14,4 +14,4 @@ describe('Registration', () => {
     it('Test2', () => {
 
     })
-}) 
+})
