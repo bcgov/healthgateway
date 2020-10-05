@@ -65,9 +65,6 @@ export default class EncounterTimelineEntryComponent extends Vue {
                     <b-col>
                         <div class="d-flex flex-row-reverse">
                             <b-btn
-                                v-b-toggle="
-                                    'entryDetails-' + index + '-' + datekey
-                                "
                                 variant="link"
                                 class="detailsButton"
                                 @click="toggleDetails()"
