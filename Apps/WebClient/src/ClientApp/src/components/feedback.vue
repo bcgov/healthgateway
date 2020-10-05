@@ -118,8 +118,13 @@ export default class FeedbackComponent extends Vue {
 </script>
 
 <template>
-    <div id="feedback-container" class="d-flex flex-column text-dark">
+    <div
+        id="feedback-container"
+        class="d-flex flex-column text-dark"
+        data-testid="feedbackContainer"
+    >
         <b-button
+            data-testid="expandFeedbackBtn"
             class="justify-content-center feedback py-0 rounded-0"
             :class="{
                 'bg-danger': hasSubmitted && !isSuccess,
@@ -187,6 +192,7 @@ export default class FeedbackComponent extends Vue {
                             <b-form-textarea
                                 id="comment"
                                 v-model="comment"
+                                data-testid="feedbackCommentInput"
                                 size="sm"
                                 placeholder="Describe your suggestion or idea..."
                                 rows="5"
@@ -201,6 +207,7 @@ export default class FeedbackComponent extends Vue {
                         <b-col class="d-flex justify-content-center">
                             <b-button
                                 v-if="!isSuccess && !isLoading"
+                                data-testid="sendFeedbackMessageBtn"
                                 size="md"
                                 class="aqua-button px-5"
                                 type="submit"
@@ -244,6 +251,7 @@ export default class FeedbackComponent extends Vue {
                 <b-row v-if="isSuccess && !hasEmail" class="mb-4">
                     <b-col class="p-0 ml-auto mr-2" cols="auto">
                         <b-button
+                            data-testid="noNeedBtn"
                             variant="link"
                             size="sm"
                             @click="resetFeedback"
@@ -256,7 +264,14 @@ export default class FeedbackComponent extends Vue {
                             data-testid="menuBtnProfileLink"
                             to="/profile"
                         >
+<<<<<<< HEAD
                             <b-button size="sm" class="aqua-button"
+=======
+                            <b-button
+                                data-testid="updateMyEmailButton"
+                                size="sm"
+                                class="aqua-button"
+>>>>>>> 4fa01c098745daa4d0881df9080827d6cc35148a
                                 >Update my email
                             </b-button>
                         </router-link>
@@ -266,6 +281,7 @@ export default class FeedbackComponent extends Vue {
                     <b-col>
                         <b-button
                             v-if="isSuccess && hasEmail"
+                            data-testid="hasEmailResetFeedbackBtn"
                             size="md"
                             class="aqua-button px-5 bg-success mb-4"
                             :disabled="isLoading"
@@ -274,6 +290,7 @@ export default class FeedbackComponent extends Vue {
                         >
                         <b-button
                             v-if="!isSuccess"
+                            data-testid="tryAgainBtn"
                             size="md"
                             class="aqua-button px-5 bg-danger mb-4"
                             :disabled="isLoading"
