@@ -11,6 +11,7 @@ import UserSMSInvite from "@/models/userSMSInvite";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import VueCountdown from "@chenfengyuan/vue-countdown";
+import { Duration } from "luxon";
 
 @Component({
     components: {
@@ -180,12 +181,11 @@ export default class VerifySMSComponent extends Vue {
                 dateTime: new DateWrapper(),
             });
         }
-        let resendTime = new Date();
-        resendTime.setTime(
-            this.smsResendDateTime!.toJSDate().getTime() +
-                this.config.timeouts!.resendSMS * 60 * 1000
+        let resendTime = new DateWrapper();
+        resendTime = resendTime.add(
+            this.config.timeouts!.resendSMS * 60 * 1000
         );
-        return resendTime.getTime() - new Date().getTime();
+        return resendTime.diff(new DateWrapper());
     }
 
     private onVerificationChange(): void {
