@@ -15,7 +15,9 @@
     "keycloak.username": "healthgateway",
     "keycloak.password": "",
     "keycloak.accountclosure.username": "AccountClosure",
-    "keycloak.protected.username": "protected"
+    "keycloak.protected.username": "protected",
+    "idir.username": "hgateway",
+    "idir.password": ""
   },
   "projectId": "ofnepc"
 }
