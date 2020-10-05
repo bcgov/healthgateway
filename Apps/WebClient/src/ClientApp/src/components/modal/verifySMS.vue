@@ -181,8 +181,8 @@ export default class VerifySMSComponent extends Vue {
                 dateTime: new DateWrapper(),
             });
         }
-        let resendTime = new DateWrapper();
-        resendTime = resendTime.add(
+        let resendTime = this.smsResendDateTime;
+        resendTime = resendTime!.add(
             this.config.timeouts!.resendSMS * 60 * 1000
         );
         return resendTime.diff(new DateWrapper());
