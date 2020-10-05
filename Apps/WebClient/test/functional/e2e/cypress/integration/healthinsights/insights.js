@@ -3,19 +3,8 @@ const { AuthMethod } = require("../../support/constants")
 describe('Health Insights', () => {
     before(() => {
         cy.server()
-        cy.fixture('AllDisabledConfig').then((config)  => {
-            config.modules = {
-                "Comment": false,
-                "CovidLabResults": false,
-                "Encounter": true,
-                "Immunization": true,
-                "Laboratory": false,
-                "Medication": true,
-                "MedicationHistory": true,
-                "Note": false
-            }
-            cy.route('GET', '/v1/api/configuration/', config)
-        })
+        cy.fixture('insightsConfig').as('config')
+        cy.route('GET', '/v1/api/configuration/', '@config')
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak)
