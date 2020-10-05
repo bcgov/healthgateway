@@ -4,11 +4,11 @@ import Component from "vue-class-component";
 import { Getter } from "vuex-class";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { Emit, Watch } from "vue-property-decorator";
+import { Emit, Prop, Watch } from "vue-property-decorator";
 import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import EventBus from "@/eventbus";
+import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 library.add(faSlidersH);
 
@@ -17,6 +17,7 @@ interface Filter {
     value: string;
     display: string;
     isEnabled: boolean;
+    numEntries: number;
 }
 
 @Component
@@ -24,6 +25,12 @@ export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
     @Getter("isOpen", { namespace: "sidebar" }) isSidebarOpen!: boolean;
+
+    @Prop() private medicationCount!: number;
+    @Prop() private immunizationCount!: number;
+    @Prop() private encounterCount!: number;
+    @Prop() private laboratoryCount!: number;
+    @Prop() private noteCount!: number;
 
     private logger!: ILogger;
     private eventBus = EventBus;
@@ -37,12 +44,14 @@ export default class FilterComponent extends Vue {
             value: "Immunization",
             display: "Immunizations",
             isEnabled: false,
+            numEntries: this.immunizationCount,
         },
         {
             name: "medication",
             value: "Medication",
             display: "Medications",
             isEnabled: false,
+            numEntries: this.medicationCount,
         },
 
         {
@@ -50,18 +59,21 @@ export default class FilterComponent extends Vue {
             value: "Laboratory",
             display: "Laboratory",
             isEnabled: false,
+            numEntries: this.laboratoryCount,
         },
         {
             name: "encounter",
             value: "Encounter",
             display: "MSP Visits",
             isEnabled: false,
+            numEntries: this.encounterCount,
         },
         {
             name: "note",
             value: "Note",
             display: "My Notes",
             isEnabled: false,
+            numEntries: this.noteCount,
         },
     ];
 
@@ -82,6 +94,11 @@ export default class FilterComponent extends Vue {
     @Watch("selectedFilters")
     private onFilterUpdate() {
         this.filtersChanged();
+    }
+
+    @Watch("noteCount")
+    private noteCountUpdate(newCount: any) {
+        this.filters[4].numEntries = newCount;
     }
 
     @Emit()
@@ -108,9 +125,12 @@ export default class FilterComponent extends Vue {
         this.filters[4].isEnabled = this.config.modules["Note"];
         this.selectedFilters = [];
 
-        this.eventBus.$on("filterSelected", (filterName: string) => {
-            this.onExternalFilterSelection(filterName);
-        });
+        this.eventBus.$on(
+            EventMessageName.SelectedFilter,
+            (filterName: string) => {
+                this.onExternalFilterSelection(filterName);
+            }
+        );
     }
 
     private destroyed() {
@@ -147,6 +167,14 @@ export default class FilterComponent extends Vue {
             return groups;
         }, []);
     }
+
+    private formatFilterCount(num: number): string {
+        return Math.abs(num) > 999
+            ? parseFloat(
+                  ((Math.round(num / 100) * 100) / 1000).toFixed(1)
+              ).toString() + "K"
+            : num.toString();
+    }
 }
 </script>
 
@@ -175,18 +203,23 @@ export default class FilterComponent extends Vue {
                     </b-col>
                 </b-row>
                 <div class="px-4">
-                    <div v-for="(filter, index) in filters" :key="index">
-                        <b-form-checkbox
-                            v-show="filter.isEnabled"
-                            :id="filter.name + '-filter'"
-                            v-model="selectedFilters"
-                            :data-testid="`${filter.name}-filter`"
-                            :name="filter.name + '-filter'"
-                            :value="filter.value"
-                        >
-                            {{ filter.display }}
-                        </b-form-checkbox>
-                    </div>
+                    <b-row v-for="(filter, index) in filters" :key="index">
+                        <b-col cols="8" align-self="start">
+                            <b-form-checkbox
+                                v-show="filter.isEnabled"
+                                :id="filter.name + '-filter'"
+                                v-model="selectedFilters"
+                                :data-testid="`${filter.name}-filter`"
+                                :name="filter.name + '-filter'"
+                                :value="filter.value"
+                            >
+                                {{ filter.display }}
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col cols="4" align-self="end" class="text-right">
+                            ({{ formatFilterCount(filter.numEntries) }})
+                        </b-col>
+                    </b-row>
                 </div>
             </b-dropdown>
         </div>
@@ -206,7 +239,7 @@ export default class FilterComponent extends Vue {
             :hide-footer="true"
             no-fade
         >
-            <template #modal-header="{ close }">
+            <template v-slot:modal-header="{ close }">
                 <b-row class="w-100 text-center p-0 m-0">
                     <b-col class="col-3">
                         <!-- Emulate built in modal header close button action -->
@@ -239,18 +272,23 @@ export default class FilterComponent extends Vue {
             <b-row class="justify-content-center py-2">
                 <b-col class="col-10">
                     <h5>Type</h5>
-                    <div v-for="(filter, index) in filters" :key="index">
-                        <b-form-checkbox
-                            v-show="filter.isEnabled"
-                            :id="filter.name + '-filter'"
-                            v-model="selectedFilters"
-                            :data-testid="`${filter.name}-filter`"
-                            :name="filter.name + '-filter'"
-                            :value="filter.value"
-                        >
-                            {{ filter.display }}
-                        </b-form-checkbox>
-                    </div>
+                    <b-row v-for="(filter, index) in filters" :key="index">
+                        <b-col cols="8" align-self="start">
+                            <b-form-checkbox
+                                v-show="filter.isEnabled"
+                                :id="filter.name + '-filter'"
+                                v-model="selectedFilters"
+                                :data-testid="`${filter.name}-filter`"
+                                :name="filter.name + '-filter'"
+                                :value="filter.value"
+                            >
+                                {{ filter.display }}
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col cols="4" align-self="end" class="text-right">
+                            ({{ formatFilterCount(filter.numEntries) }})
+                        </b-col>
+                    </b-row>
                 </b-col>
             </b-row>
         </b-modal>
@@ -262,7 +300,7 @@ export default class FilterComponent extends Vue {
     z-index: 3;
 }
 .filters-width {
-    width: 175px;
+    width: 225px;
 }
 </style>
 <style lang="scss">

@@ -733,12 +733,14 @@ export default class ProfileView extends Vue {
                             <b-col class="text-right">
                                 <b-button
                                     id="cancelBtn"
+                                    data-testid="cancelSMSEditBtn"
                                     class="mx-2 actionButton"
                                     @click="cancelSMSEdit()"
                                     >Cancel
                                 </b-button>
                                 <b-button
                                     id="saveBtn"
+                                    data-testid="saveSMSEditBtn"
                                     variant="primary"
                                     class="mx-2 actionButton"
                                     :disabled="tempSMS === smsNumber"
@@ -756,7 +758,7 @@ export default class ProfileView extends Vue {
                                     aria-hidden="true"
                                     class="text-danger"
                                 ></font-awesome-icon>
-                                <label for="deletionWarning">
+                                <label for="deletionWarning" class="ml-1">
                                     Account marked for removal
                                 </label>
                                 <div id="deletionWarning">

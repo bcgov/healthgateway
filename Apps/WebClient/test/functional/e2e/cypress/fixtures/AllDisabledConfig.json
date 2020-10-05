@@ -1,22 +1,14 @@
 {
-  "openIdConnect": {
-    "authority": "https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f",
-    "clientId": "healthgateway",
-    "audience": "healthgateway",
-    "responseType": "code",
-    "scope": "openid profile web-origins",
-    "callbacks": {
-      "Logon": "https://dev.healthgateway.gov.bc.ca/loginCallback",
-      "Logout": "https://dev.healthgateway.gov.bc.ca/logout"
-    }
-  },
-  "identityProviders": [
-    {
-      "id": "BCSC",
-      "name": "BC Services Card",
-      "icon": "address-card",
-      "hint": "bcsc",
-      "disabled": false
+    "openIdConnect": {
+      "authority": "https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f",
+      "clientId": "healthgateway",
+      "audience": "healthgateway",
+      "responseType": "code",
+      "scope": "openid profile web-origins",
+      "callbacks": {
+        "Logon": "https://dev.healthgateway.gov.bc.ca/loginCallback",
+        "Logout": "https://dev.healthgateway.gov.bc.ca/logout"
+      }
     },
     {
       "id": "IDIR",

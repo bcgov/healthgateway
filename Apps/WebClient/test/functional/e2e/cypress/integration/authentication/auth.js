@@ -4,6 +4,7 @@ describe('Authentication', () => {
     beforeEach(() => {
     })
 
+
     it('BCSC Login', () => {
         cy.login(Cypress.env('bcsc.username'), Cypress.env('bcsc.password'), AuthMethod.BCSC)
         cy.get('#menuBtnLogout')
@@ -27,6 +28,17 @@ describe('Authentication', () => {
         cy.get('#menuBtnLogin')
             .should('be.visible')
             .should('have.attr', 'href', '/login')
+    })
+
+    it('IDIR Blocked', () => {
+        cy.visit('/login')
+        cy.log(`Authenticating as IDIR user Cypress.env('idir.username')`) 
+        cy.get('[data-testid=IDIRBtn]').should('be.visible').should('be.enabled').click()
+        cy.get('#user').type(Cypress.env('idir.username'))
+        cy.get('#password').type(Cypress.env('idir.password'))
+        cy.get('input[name="btnSubmit"').click()
+        cy.contains('h1', '403')
+        cy.contains('h2', 'IDIR Login')
     })
 
     // it('Idle Timeout', () => {
