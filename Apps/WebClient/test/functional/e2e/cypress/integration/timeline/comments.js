@@ -2,30 +2,47 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Comments', () => {
     beforeEach(() => {
+        cy.server();
+        cy.fixture('commentEnabledConfig').as('config');
+        cy.route('GET', '/v1/api/configuration/', '@config');
         cy.login(Cypress.env('keycloak.username'), 
-                 Cypress.env('keycloak.password'), 
-                 AuthMethod.KeyCloak)
+                Cypress.env('keycloak.password'), 
+                AuthMethod.KeyCloak);
+        cy.checkTimelineHasLoaded();
     })
 
     it('Validate Add, Edit and Delete', () => {
         cy.get('[data-testid=addCommentTextArea]')
+            .first()
             .type('test comment goes here!');
-        cy.get('[data-testid=postCommentBtn]').click();
+        cy.get('[data-testid=postCommentBtn]')
+            .first()
+            .click();
         cy.get('[data-testid=commentText]')
-            .should('have.text', 'test comment goes here!');
-        cy.get('[data-testid=commentMenuBtn]').click();
-        cy.get('[data-testid=commentMenuEditBtn]').click();
+            .contains('test comment goes here!');
+        cy.get('[data-testid=commentMenuBtn]')
+            .first()
+            .click();
+        cy.get('[data-testid=commentMenuEditBtn]')
+            .first({ force: true })
+            .click();
         cy.get('[data-testid=editCommentInput]')
             .type('edited comment');
-        cy.get('[data-testid=saveCommentBtn]').click();
+        cy.get('[data-testid=saveCommentBtn]')
+            .click();
         cy.get('[data-testid=commentText]')
-            .should('have.text', 'edited comment');
-        cy.get('[data-testid=commentMenuBtn]').click();
+            .contains('edited comment');
+        cy.get('[data-testid=commentMenuBtn]')
+            .first()
+            .click();
         cy.on('window:confirm', (str) => {
             expect(str).to.eq('Are you sure you want to delete this comment?');
         });
-        cy.get('[data-testid=commentMenuDeleteBtn]').click();
+        cy.get('[data-testid=commentMenuDeleteBtn]')
+            .first()
+            .click();
         cy.get('[data-testid=commentText]')
+            .first()
             .should('not.have.text', 'edited comment');
     })
 

@@ -51,7 +51,7 @@
       "Encounter": false,
       "Immunization": false,
       "Laboratory": false,
-      "Medication": false,
+      "Medication": true,
       "MedicationHistory": false,
       "Note": false
     },

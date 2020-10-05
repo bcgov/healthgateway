@@ -48,7 +48,7 @@
     "modules": {
       "Comment": false,
       "CovidLabResults": false,
-      "Encounter": false,
+      "Encounter": true,
       "Immunization": false,
       "Laboratory": false,
       "Medication": false,

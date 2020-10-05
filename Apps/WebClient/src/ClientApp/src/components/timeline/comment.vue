@@ -112,6 +112,7 @@ export default class CommentComponent extends Vue {
                 </b-col>
                 <div class="d-flex flex-row-reverse">
                     <b-dropdown
+                        data-testid="commentMenuBtn"
                         dropright
                         text=""
                         :no-caret="true"
@@ -119,7 +120,6 @@ export default class CommentComponent extends Vue {
                     >
                         <template slot="button-content">
                             <font-awesome-icon
-                                data-testid="commentMenuBtn"
                                 class="comment-menu"
                                 :icon="menuIcon"
                                 size="1x"

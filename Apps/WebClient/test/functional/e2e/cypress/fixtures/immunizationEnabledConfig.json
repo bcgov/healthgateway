@@ -49,7 +49,7 @@
       "Comment": false,
       "CovidLabResults": false,
       "Encounter": false,
-      "Immunization": false,
+      "Immunization": true,
       "Laboratory": false,
       "Medication": false,
       "MedicationHistory": false,

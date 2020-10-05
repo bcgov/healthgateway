@@ -53,7 +53,7 @@
       "Laboratory": false,
       "Medication": false,
       "MedicationHistory": false,
-      "Note": false
+      "Note": true
     },
     "hoursForDeletion": 720
   },
