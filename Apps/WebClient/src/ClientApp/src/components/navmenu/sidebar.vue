@@ -49,6 +49,14 @@ export default class SidebarComponent extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
+    @Getter("isValidIdentityProvider", {
+        namespace: auth,
+    })
+    isValidIdentityProvider!: boolean;
+
+    @Getter("userIsActive", { namespace: "user" })
+    isActiveProfile!: boolean;
+
     private eventBus = EventBus;
 
     private logger!: ILogger;
@@ -229,13 +237,23 @@ export default class SidebarComponent extends Vue {
 </script>
 
 <template>
-    <div v-show="oidcIsAuthenticated && userIsRegistered" class="wrapper">
+    <div
+        v-show="
+            oidcIsAuthenticated && userIsRegistered && isValidIdentityProvider
+        "
+        class="wrapper"
+    >
         <!-- Sidebar -->
         <nav id="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container m-0 p-0">
                 <b-col class="m-0 p-0">
                     <!-- Profile Button -->
-                    <router-link id="menuBtnProfile" to="/profile" class="my-4">
+                    <router-link
+                        id="menuBtnProfile"
+                        data-testid="menuBtnProfileLink"
+                        to="/profile"
+                        class="my-4"
+                    >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
                             :class="{ selected: isProfile }"
@@ -263,7 +281,9 @@ export default class SidebarComponent extends Vue {
                     </router-link>
                     <!-- Timeline button -->
                     <router-link
+                        v-show="isActiveProfile"
                         id="menuBtnTimeline"
+                        data-testid="menuBtnTimelineLink"
                         to="/timeline"
                         class="my-4"
                     >
@@ -295,12 +315,12 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                     </router-link>
-                    <div v-show="isTimeline">
+                    <div v-show="isTimeline && isActiveProfile">
                         <!-- Note button -->
                         <b-row
                             v-show="isNoteEnabled"
-                            data-testid="addNoteBtn"
                             id="add-a-note-row"
+                            data-testid="addNoteBtn"
                             class="align-items-center border rounded-pill py-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
                             @click="createNote"
@@ -349,6 +369,7 @@ export default class SidebarComponent extends Vue {
                         </b-popover>
                         <!-- Print Button -->
                         <b-row
+                            data-testid="printViewBtn"
                             class="align-items-center border rounded-pill py-2 button-container my-4"
                             :class="{ 'sub-menu': isOpen }"
                             @click="printView"
@@ -371,7 +392,9 @@ export default class SidebarComponent extends Vue {
                     </div>
                     <!-- Health Insights button -->
                     <router-link
+                        v-show="isActiveProfile"
                         id="menuBtnHealthInsights"
+                        data-testid="menuBtnHealthInsightsLink"
                         to="/healthInsights"
                         class="my-4"
                     >
@@ -404,7 +427,13 @@ export default class SidebarComponent extends Vue {
                         </b-row>
                     </router-link>
                     <!-- Reports button -->
-                    <router-link id="menuBtnReports" to="/reports" class="my-4">
+                    <router-link
+                        v-show="isActiveProfile"
+                        id="menuBtnReports"
+                        data-testid="menuBtnReportsLink"
+                        to="/reports"
+                        class="my-4"
+                    >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
                             :class="{ selected: isReports }"

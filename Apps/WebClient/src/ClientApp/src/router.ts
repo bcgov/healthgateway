@@ -247,7 +247,7 @@ router.beforeEach(async (to, from, next) => {
             } else if (currentUserState === UserState.invalidLogin) {
                 next({ path: "/idirLoggedIn" });
             } else if (currentUserState === UserState.unauthenticated) {
-                next({ path: "/login" });
+                next({ path: "/login", query: { redirect: to.path } });
             } else {
                 next({ path: "/unauthorized" });
             }

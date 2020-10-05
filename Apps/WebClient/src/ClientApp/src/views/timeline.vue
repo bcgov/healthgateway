@@ -15,7 +15,7 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
@@ -86,6 +86,11 @@ export default class TimelineView extends Vue {
     private isEncounterLoading = false;
     private isNoteLoading = false;
     private idleLogoutWarning = false;
+    private medicationCount = 0;
+    private immunizationCount = 0;
+    private encounterCount = 0;
+    private laboratoryCount = 0;
+    private noteCount = 0;
     private protectiveWordAttempts = 0;
     private isAddingNote = false;
     private isEditingEntry = false;
@@ -217,7 +222,7 @@ export default class TimelineView extends Vue {
     }
 
     private onCovidSubmit() {
-        this.eventBus.$emit("filter-selected", "laboratory");
+        this.eventBus.$emit(EventMessageName.SelectedFilter, "laboratory");
     }
 
     private onCovidCancel() {
@@ -252,6 +257,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
+                    this.medicationCount = results.resourcePayload.length;
                 } else if (results.resultStatus == ResultType.Protected) {
                     if (!this.covidModal.show) {
                         this.protectiveWordModal.showModal();
@@ -300,6 +306,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
+                    this.immunizationCount = results.resourcePayload.length;
                 } else {
                     this.logger.error(
                         "Error returned from the immunization call: " +
@@ -339,7 +346,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-
+                    this.laboratoryCount = results.resourcePayload.length;
                     if (results.resourcePayload.length > 0) {
                         this.protectiveWordModal.hideModal();
                         this.covidModal.showModal();
@@ -385,6 +392,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
+                    this.encounterCount = results.resourcePayload.length;
                 } else {
                     this.logger.error(
                         "Error returned from the encounter call: " +
@@ -425,6 +433,7 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
+                    this.noteCount = results.resourcePayload.length;
                 } else {
                     this.logger.error(
                         "Error returned from the note call: " +
@@ -455,6 +464,9 @@ export default class TimelineView extends Vue {
         if (entry) {
             this.timelineEntries.push(entry);
             this.sortEntries();
+            if (entry.type === EntryType.Note) {
+                this.noteCount += 1;
+            }
         }
     }
 
@@ -486,6 +498,9 @@ export default class TimelineView extends Vue {
         const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
         this.timelineEntries.splice(index, 1);
         this.sortEntries();
+        if (entry.type === EntryType.Note) {
+            this.noteCount -= 1;
+        }
     }
 
     private onProtectiveWordSubmit(value: string) {
@@ -606,8 +621,15 @@ export default class TimelineView extends Vue {
                                 ></b-form-input>
                             </div>
                         </b-col>
-                        <b-col class="col-auto pl-0">
-                            <Filters @filters-changed="filtersChanged" />
+                        <b-col v-if="!isLoading" class="col-auto pl-0">
+                            <Filters
+                                :encounter-count="encounterCount"
+                                :medication-count="medicationCount"
+                                :immunization-count="immunizationCount"
+                                :laboratory-count="laboratoryCount"
+                                :note-count="noteCount"
+                                @filters-changed="filtersChanged"
+                            />
                         </b-col>
                     </b-row>
                 </div>
