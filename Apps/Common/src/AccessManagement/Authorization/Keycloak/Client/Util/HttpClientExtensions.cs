@@ -27,13 +27,20 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
 
 
+/// <summary>Extensions for HttpClient to handle OAuth 2.0 UMA.</summary>
     public static class HttpClientExtensions
     {
+        /// <summary>Sets the Bearer Token Head for UMA calls</summary>
+        /// <param name="httpClient">The target of this extension method.</param>
+        /// <param name="base64BearerToken">The OAuth 2 Access Token base 64 encoded</param>
         public static void BearerTokenAuthorization(this HttpClient httpClient, string base64BearerToken)
         {
             httpClient.DefaultRequestHeaders.Add("Authorization", @"Bearer " + base64BearerToken);
         }
 
+        /// <summary>Sets the UMA multipart form parameters from teh AuthorizationRequest provided.</summary>
+        /// <param name="httpClient">The target of this extension method.</param>
+        /// <param name="request">An <cref name="AuthorizationRequest"/> request.</param>
         public static void Uma(this HttpClient httpClient, AuthorizationRequest request)
         {
             string? ticket = request.Ticket;
