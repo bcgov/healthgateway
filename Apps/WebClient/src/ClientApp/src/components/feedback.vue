@@ -264,14 +264,10 @@ export default class FeedbackComponent extends Vue {
                             data-testid="menuBtnProfileLink"
                             to="/profile"
                         >
-<<<<<<< HEAD
-                            <b-button size="sm" class="aqua-button"
-=======
                             <b-button
                                 data-testid="updateMyEmailButton"
                                 size="sm"
                                 class="aqua-button"
->>>>>>> 4fa01c098745daa4d0881df9080827d6cc35148a
                                 >Update my email
                             </b-button>
                         </router-link>
