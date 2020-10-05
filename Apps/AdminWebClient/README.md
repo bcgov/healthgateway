@@ -17,9 +17,8 @@ Add the following text:
     "ClientSecret": "[Ask team for Client Secret]"
   },
   "ContentSecurityPolicy": {
-    "connect-src": "https://spt.apps.gov.bc.ca/com.snowplowanalytics.snowplow/tp2 https://sso-dev.pathfinder.gov.bc.ca/ http://localhost:* ws://localhost:* http://[YOUR IP]:* ws://[YOUR IP]:*",
-    "frame-src": "https://sso-dev.pathfinder.gov.bc.ca/",
-    "script-src": "https://www2.gov.bc.ca/StaticWebResources/static/sp/sp-2-14-0.js 'sha256-q+lOQm0t+vqQq4IdjwI4OwRI9fKfomdxduL1IJYjkA4='"
+        "connect-src": "https://spt.apps.gov.bc.ca/com.snowplowanalytics.snowplow/tp2 https://dev.oidc.gov.bc.ca/ http://localhost:*/  http:/[YOUR IP]:*/ ws://[YOUR IP]:*/",
+        "frame-src": "https://dev.oidc.gov.bc.ca/"
   }
 }
 ```
