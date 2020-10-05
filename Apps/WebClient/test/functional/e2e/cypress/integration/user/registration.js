@@ -6,7 +6,11 @@ describe('Registration', () => {
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak)
     })
+    
+    it('Test1', () => {
 
+    })
+    
     it('Test2', () => {
 
     })
