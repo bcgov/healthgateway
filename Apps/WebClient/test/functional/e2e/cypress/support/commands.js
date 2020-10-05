@@ -39,7 +39,7 @@ Cypress.Commands.add("login", (username, password, authMethod = AuthMethod.BCSC)
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => 
 {
-    cy.get('.spinner').should('not.exist');
+    cy.get('[data-testid=timelineLoading]').should('not.exist');
 });
 
 Cypress.Commands.add("closeCovidModal", () => 
