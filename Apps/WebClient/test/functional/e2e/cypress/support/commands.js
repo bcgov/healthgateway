@@ -34,7 +34,6 @@ Cypress.Commands.add("login", (username, password, authMethod = AuthMethod.BCSC)
         cy.get('#password').type(password)
         cy.get('#kc-login').click()
     }
-    cy.get('#subject').should('have.text', 'Health Care Timeline')
 });
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => 
