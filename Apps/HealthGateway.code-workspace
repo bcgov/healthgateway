@@ -1,12 +1,12 @@
 {
   "folders": [
     {
-      "name": "Admin_ClientApp",
-      "path": "AdminWebClient/src/ClientApp"
-    },
-    {
       "name": "ClientApp",
       "path": "WebClient/src/ClientApp"
+    },
+    {
+      "name": "Admin_ClientApp",
+      "path": "AdminWebClient/src/ClientApp"
     },
     {
       "name": "AdminWebClient",
