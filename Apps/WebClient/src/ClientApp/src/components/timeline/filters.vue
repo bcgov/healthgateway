@@ -31,14 +31,16 @@ export default class FilterComponent extends Vue {
     @Prop() private encounterCount!: number;
     @Prop() private laboratoryCount!: number;
     @Prop() private noteCount!: number;
-    @Prop() private isListView!: boolean;
+
+    @Watch("isListView")
+    @Prop()
+    private isListView!: boolean;
 
     private logger!: ILogger;
     private eventBus = EventBus;
     private isVisible = false;
     private selectedFilters: string[] = [];
     private windowWidth = 0;
-    private showSlider = true;
     private steps = [25, 50, 100, 500];
     private stepIndex = 0;
 
@@ -88,11 +90,6 @@ export default class FilterComponent extends Vue {
     @Watch("isMobileView")
     private onIsMobileView() {
         this.isVisible = false;
-    }
-
-    @Watch("isListView")
-    private onIsListView() {
-        !this.isListView ? (this.showSlider = false) : (this.showSlider = true);
     }
 
     @Watch("isSidebarOpen")
@@ -234,7 +231,7 @@ export default class FilterComponent extends Vue {
                             ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
                     </b-row>
-                    <b-row v-if="showSlider" class="mt-2">
+                    <b-row v-if="isListView" class="mt-2">
                         <b-col>
                             <label for="entries-per-page"
                                 >Items per page: {{ steps[stepIndex] }}</label
@@ -320,7 +317,7 @@ export default class FilterComponent extends Vue {
                     </b-row>
                 </b-col>
             </b-row>
-            <b-row v-if="showSlider" class="justify-content-center mt-2 mx-3">
+            <b-row v-if="isListView" class="justify-content-center mt-2 mx-3">
                 <b-col>
                     <label for="entries-per-page"
                         >Items per page: {{ steps[stepIndex] }}</label
