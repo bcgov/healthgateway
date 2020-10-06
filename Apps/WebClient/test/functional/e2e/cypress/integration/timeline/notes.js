@@ -3,8 +3,10 @@ const { AuthMethod } = require("../../support/constants")
 describe('Notes', () => {
     beforeEach(() => {
         cy.server();
-        cy.fixture('noteEnabledConfig').as('config');
-        cy.route('GET', '/v1/api/configuration/', '@config');
+        cy.fixture('AllDisabledConfig').then(config => {
+            config.webClient.modules.Note = true;
+            cy.route('GET', '/v1/api/configuration/', config);            
+        });
         cy.login(Cypress.env('keycloak.username'), 
                 Cypress.env('keycloak.password'), 
                 AuthMethod.KeyCloak);

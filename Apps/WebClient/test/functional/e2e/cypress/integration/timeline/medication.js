@@ -3,8 +3,12 @@ const { AuthMethod } = require("../../support/constants")
 describe('Medication', () => {
     beforeEach(() => {
         cy.server();
-        cy.fixture('medicationEnabledConfig').as('config');
-        cy.route('GET', '/v1/api/configuration/', '@config');
+        cy.fixture('AllDisabledConfig').then(config => {
+            cy.log(config);
+            config.webClient.modules.Medication = true;
+            cy.log(config);
+            cy.route('GET', '/v1/api/configuration/', config);            
+        });
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak);
