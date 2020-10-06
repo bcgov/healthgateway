@@ -23,6 +23,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
+
+
     /// <summary>
     /// This is class serves as an entry point for clients looking for access to Keycloak Authorization Services.
     /// When creating a new instances make sure you have a Keycloak Server running at the location specified in the client
@@ -32,9 +35,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
     /// </summary>
     public class AuthzService
     {
-        ///<summary>The Keycloak Configuration Section Name</summary>
-        public static string KeycloakConfigurationSectionName = "Keycloak";
-
         /// <summary>
         /// The injected logger delegate.
         /// </summary>
@@ -46,31 +46,24 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
         private readonly IHttpClientService httpClientService;
 
         /// <summary>
-        /// The injected configuration delegate.
-        /// </summary>
-        private readonly IConfiguration configuration;
-
-        /// <summary>
         /// The  keycloak configuration.
         /// </summary>
-        private readonly KeycloakConfiguration keycloakConfiguration;
+        private readonly IKeycloakConfiguration keycloakConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthzService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
-        /// <param name="configuration">Injected configuration.</param>
+        /// <param name="keycloakConfiguration">Injected keycloak Configuration.</param>
         public AuthzService(
             ILogger<AuthzService> logger,
             IHttpClientService httpClientService,
-            IConfiguration configuration)
+            IKeycloakConfiguration keycloakConfiguration)
         {
             this.logger = logger;
             this.httpClientService = httpClientService!;
-            this.configuration = configuration;
-            this.keycloakConfiguration = new KeycloakConfiguration();
-            // @TODO: now bind it.
+            this.keycloakConfiguration = keycloakConfiguration;
         }
     }
 }
