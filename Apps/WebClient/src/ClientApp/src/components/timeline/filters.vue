@@ -91,8 +91,8 @@ export default class FilterComponent extends Vue {
     }
 
     @Watch("isListView")
-    private onIsListView(isList: boolean) {
-        isList ? (this.showSlider = false) : (this.showSlider = true);
+    private onIsListView() {
+        !this.isListView ? (this.showSlider = false) : (this.showSlider = true);
     }
 
     @Watch("isSidebarOpen")
@@ -240,12 +240,12 @@ export default class FilterComponent extends Vue {
                                 >Items per page: {{ steps[stepIndex] }}</label
                             >
                             <b-form-input
-                                @change="sliderChanged()"
                                 id="entries-per-page"
                                 v-model="stepIndex"
                                 type="range"
                                 min="0"
                                 max="3"
+                                @change="sliderChanged()"
                             ></b-form-input>
                         </b-col>
                     </b-row>
@@ -326,12 +326,12 @@ export default class FilterComponent extends Vue {
                         >Items per page: {{ steps[stepIndex] }}</label
                     >
                     <b-form-input
-                        @change="sliderChanged()"
                         id="entries-per-page"
                         v-model="stepIndex"
                         type="range"
                         min="0"
                         max="3"
+                        @change="sliderChanged()"
                     ></b-form-input>
                 </b-col>
             </b-row>
