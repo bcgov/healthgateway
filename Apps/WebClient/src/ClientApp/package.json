@@ -10,7 +10,7 @@
         "vue-help": "vue-cli-service help"
     },
     "devDependencies": {
-        "@types/chart.js": "^2.9.24",
+        "@types/chart.js": "^2.9.25",
         "@types/jest": "^26.0.14",
         "@types/luxon": "^1.25.0",
         "@types/vuelidate": "^0.7.13",
