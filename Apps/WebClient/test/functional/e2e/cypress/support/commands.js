@@ -48,6 +48,8 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
+    cy.get('#subject')
+        .should('have.text', 'Health Care Timeline')
     cy.get("[data-testid=timelineLoading]").should("not.exist");
 });
 
