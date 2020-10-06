@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('Notes', () => {
-    beforeEach(() => {
+    before(() => {
         cy.server();
         cy.fixture('AllDisabledConfig').then(config => {
             config.webClient.modules.Note = true;
@@ -13,7 +13,7 @@ describe('Notes', () => {
         cy.checkTimelineHasLoaded();
     })
 
-    it('Validate Add, Edit and Delete', () => {
+    it('Validate Add', () => {
         cy.get('[data-testid=addNoteBtn]')
             .click();
         cy.get('[data-testid=noteTitleInput]')
@@ -30,6 +30,9 @@ describe('Notes', () => {
         cy.get('[data-testid=dateGroup]')
             .first()
             .should('have.text', ' Jan 1, 2050 ');
+    });
+
+    it('Validate Edit', () => {
         cy.get('[data-testid=noteMenuBtn]')
             .first()
             .click();
@@ -44,6 +47,9 @@ describe('Notes', () => {
         cy.get('[data-testid=noteTitle]')
             .first()
             .should('have.text', ' Test Edit ');
+    });
+
+    it('Validate Delete', () => {
         cy.get('[data-testid=noteMenuBtn]')
             .click();
         cy.on('window:confirm', (str) => {

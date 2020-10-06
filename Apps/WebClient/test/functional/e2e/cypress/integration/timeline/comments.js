@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('Comments', () => {
-    beforeEach(() => {
+    before(() => {
         cy.server();
         cy.fixture('AllDisabledConfig').then(config => {
             config.webClient.modules.Comment = true;
@@ -12,9 +12,9 @@ describe('Comments', () => {
                 Cypress.env('keycloak.password'), 
                 AuthMethod.KeyCloak);
         cy.checkTimelineHasLoaded();
-    })
+    });
 
-    it('Validate Add, Edit and Delete', () => {
+    it('Validate Add', () => {
         cy.get('[data-testid=addCommentTextArea]')
             .first()
             .type('test comment goes here!');
@@ -23,6 +23,9 @@ describe('Comments', () => {
             .click();
         cy.get('[data-testid=commentText]')
             .contains('test comment goes here!');
+    });
+
+    it('Validate Edit', () => {
         cy.get('[data-testid=commentMenuBtn]')
             .first()
             .click();
@@ -35,6 +38,9 @@ describe('Comments', () => {
             .click();
         cy.get('[data-testid=commentText]')
             .contains('edited comment');
+    });
+
+    it('Validate Delete', () => {
         cy.get('[data-testid=commentMenuBtn]')
             .first()
             .click();
