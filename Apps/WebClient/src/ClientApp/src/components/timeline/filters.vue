@@ -31,12 +31,16 @@ export default class FilterComponent extends Vue {
     @Prop() private encounterCount!: number;
     @Prop() private laboratoryCount!: number;
     @Prop() private noteCount!: number;
+    @Prop() private isListView!: boolean;
 
     private logger!: ILogger;
     private eventBus = EventBus;
     private isVisible = false;
     private selectedFilters: string[] = [];
     private windowWidth = 0;
+    private showSlider = true;
+    private steps = [25, 50, 100, 500];
+    private stepIndex = 0;
 
     private filters: Filter[] = [
         {
@@ -86,6 +90,11 @@ export default class FilterComponent extends Vue {
         this.isVisible = false;
     }
 
+    @Watch("isListView")
+    private onIsListView(isList: boolean) {
+        isList ? (this.showSlider = false) : (this.showSlider = true);
+    }
+
     @Watch("isSidebarOpen")
     private onIsSidebarOpen() {
         this.isVisible = false;
@@ -97,7 +106,7 @@ export default class FilterComponent extends Vue {
     }
 
     @Watch("noteCount")
-    private noteCountUpdate(newCount: any) {
+    private noteCountUpdate(newCount: number) {
         this.filters[4].numEntries = newCount;
     }
 
@@ -108,6 +117,11 @@ export default class FilterComponent extends Vue {
         } else {
             return this.getAllFilters();
         }
+    }
+
+    @Emit()
+    private sliderChanged(): number {
+        return this.steps[this.stepIndex];
     }
 
     private created() {
@@ -220,6 +234,21 @@ export default class FilterComponent extends Vue {
                             ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
                     </b-row>
+                    <b-row v-if="showSlider" class="mt-2">
+                        <b-col>
+                            <label for="entries-per-page"
+                                >Items per page: {{ steps[stepIndex] }}</label
+                            >
+                            <b-form-input
+                                @change="sliderChanged()"
+                                id="entries-per-page"
+                                v-model="stepIndex"
+                                type="range"
+                                min="0"
+                                max="3"
+                            ></b-form-input>
+                        </b-col>
+                    </b-row>
                 </div>
             </b-dropdown>
         </div>
@@ -239,7 +268,7 @@ export default class FilterComponent extends Vue {
             :hide-footer="true"
             no-fade
         >
-            <template v-slot:modal-header="{ close }">
+            <template #modal-header="{ close }">
                 <b-row class="w-100 text-center p-0 m-0">
                     <b-col class="col-3">
                         <!-- Emulate built in modal header close button action -->
@@ -289,6 +318,21 @@ export default class FilterComponent extends Vue {
                             ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
                     </b-row>
+                </b-col>
+            </b-row>
+            <b-row v-if="showSlider" class="justify-content-center mt-2 mx-3">
+                <b-col>
+                    <label for="entries-per-page"
+                        >Items per page: {{ steps[stepIndex] }}</label
+                    >
+                    <b-form-input
+                        @change="sliderChanged()"
+                        id="entries-per-page"
+                        v-model="stepIndex"
+                        type="range"
+                        min="0"
+                        max="3"
+                    ></b-form-input>
                 </b-col>
             </b-row>
         </b-modal>

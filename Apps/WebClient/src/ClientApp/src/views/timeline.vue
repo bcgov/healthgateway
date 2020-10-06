@@ -95,6 +95,7 @@ export default class TimelineView extends Vue {
     private isAddingNote = false;
     private isEditingEntry = false;
     private isPacificTime = false;
+    private entriesPerPage = 25;
     private unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
 
@@ -538,6 +539,10 @@ export default class TimelineView extends Vue {
     private filtersChanged(newFilters: string[]) {
         this.filterTypes = newFilters;
     }
+
+    private sliderChanged(newValue: number) {
+        this.entriesPerPage = newValue;
+    }
 }
 </script>
 
@@ -628,7 +633,9 @@ export default class TimelineView extends Vue {
                                 :immunization-count="immunizationCount"
                                 :laboratory-count="laboratoryCount"
                                 :note-count="noteCount"
+                                :is-list-view="isListView"
                                 @filters-changed="filtersChanged"
+                                @slider-changed="sliderChanged"
                             />
                         </b-col>
                     </b-row>
