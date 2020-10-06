@@ -26,10 +26,10 @@ describe('Authentication', () => {
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
         cy.get('[data-testid=logoutBtn]')
             .click();
-        cy.get('#skipButton')
+        cy.get('[data-testid=ratingModalSkipBtn]')
             .click();
         cy.contains('h3', 'You signed out of your account');
-        cy.get('#menuBtnLogin')
+        cy.get('[data-testid=loginBtn]')
             .should('be.visible')
             .should('not.be.disabled')
             .should('have.attr', 'href', '/login');
