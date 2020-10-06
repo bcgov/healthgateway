@@ -1,37 +1,10 @@
-<template>
-    <v-container>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <BannerFeedbackComponent
-            :show-feedback.sync="showFeedback"
-            :feedback="bannerFeedback"
-            class="mt-5"
-        ></BannerFeedbackComponent>
-        <v-row>
-            <v-col no-gutters>
-                <CommunicationTable
-                    @is-finished-loading="isFinishedLoading"
-                    @should-show-feedback="shouldShowFeedback"
-                    @banner-feedback-info="bannerFeedbackInfo"
-                />
-            </v-col>
-        </v-row>
-    </v-container>
-</template>
-
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import { Component, Vue } from "vue-property-decorator";
 import LoadingComponent from "@/components/core/Loading.vue";
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import BannerFeedback from "@/models/bannerFeedback";
 import CommunicationTable from "../components/core/CommunicationTable.vue";
-import Communication from "@/models/adminCommunication";
 import { ResultType } from "@/constants/resulttype";
-import { ICommunicationService } from "@/services/interfaces";
-import { faWater } from "@fortawesome/free-solid-svg-icons";
-import { required } from "vee-validate/dist/rules";
-import moment from "moment";
 
 @Component({
     components: {
@@ -41,8 +14,8 @@ import moment from "moment";
     }
 })
 export default class CommunicationView extends Vue {
-    private isLoading: boolean = false;
-    private showFeedback: boolean = false;
+    private isLoading = false;
+    private showFeedback = false;
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
@@ -62,3 +35,23 @@ export default class CommunicationView extends Vue {
     }
 }
 </script>
+
+<template>
+    <v-container>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <BannerFeedbackComponent
+            :show-feedback.sync="showFeedback"
+            :feedback="bannerFeedback"
+            class="mt-5"
+        ></BannerFeedbackComponent>
+        <v-row>
+            <v-col no-gutters>
+                <CommunicationTable
+                    @is-finished-loading="isFinishedLoading"
+                    @should-show-feedback="shouldShowFeedback"
+                    @banner-feedback-info="bannerFeedbackInfo"
+                />
+            </v-col>
+        </v-row>
+    </v-container>
+</template>

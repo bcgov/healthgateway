@@ -439,9 +439,11 @@ namespace HealthGateway.Common.AspNetConfiguration
             string connectSrc = cspSection.GetValue<string>("connect-src", string.Empty);
             string frameSrc = cspSection.GetValue<string>("frame-src", string.Empty);
             string scriptSrc = cspSection.GetValue<string>("script-src", string.Empty);
+            string styleSrc = cspSection.GetValue<string>("style-src", string.Empty);
+            string fontSrc = cspSection.GetValue<string>("font-src", string.Empty);
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'self'; script-src 'self' 'unsafe-eval' {scriptSrc}; connect-src 'self' {connectSrc} file: data: blob: filesystem:; img-src 'self' data:; style-src 'self' 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
+                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'self'; script-src 'self' 'unsafe-eval' {scriptSrc}; connect-src 'self' {connectSrc} file: data: blob: filesystem:; img-src 'self' data:; style-src 'self' {styleSrc} 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self' {fontSrc}; frame-src 'self' {frameSrc}");
                 await next().ConfigureAwait(true);
             });
         }
