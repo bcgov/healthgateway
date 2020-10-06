@@ -5,30 +5,30 @@ describe('Filters', () => {
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak)
-    })
-
-    it('Validate No Records on timeline vue', () => {
-        cy.get('[data-testid=filterTextInput]').type('xxxx');
-        cy.get('[data-testid=noTimelineEntriesText]').should('be.visible');
-    })
-
-    it('Validate No Records on calendar vue', () => {
-        cy.get('[data-testid=monthViewToggle]').click()
-        cy.get('[data-testid=filterTextInput]').type('xxxx');
-        cy.get('[data-testid=noTimelineEntriesText]').should('be.visible');
         cy.closeCovidModal();
     })
 
-    it('Validate No Records', () => {
+    it('No Records on Linear Timeline', () => {
         cy.get('[data-testid=filterTextInput]')
             .type('xxxx');
         cy.get('[data-testid=noTimelineEntriesText]')
             .should('be.visible');
-        cy.get('[data-testid=filterTextInput]')
-            .clear();
     })
 
-    it('Validate Filter Checkboxes are Visible', () => {
+    it('No Records on Calendar Timeline', () => {
+        cy.get('[data-testid=monthViewToggle]')
+            .first()
+            .click();
+        cy.get('[data-testid=noTimelineEntriesText]')
+            .should('be.visible');
+        cy.get('[data-testid=filterTextInput]')
+            .clear();
+        cy.get('[data-testid=listViewToggle]')
+            .last()
+            .click()
+    })
+
+    it('Filter Checkboxes are Visible', () => {
         cy.get('[data-testid="filterDropdown"]')
             .click();
         cy.get('[data-testid=note-filter]')
@@ -44,7 +44,7 @@ describe('Filters', () => {
     });
 
 
-    it('Validate Filter Immunization', () => {
+    it('Filter Immunization', () => {
         cy.get('[data-testid=immunization-filter]')
             .click({ force: true });
         cy.get('[data-testid=immunizationTitle]')
@@ -62,7 +62,7 @@ describe('Filters', () => {
             .click();
     });
 
-    it('Validate Filter Medication', () => {
+    it('Filter Medication', () => {
         cy.get('[data-testid=medication-filter]')
             .click({ force: true });
         cy.get('[data-testid=immunizationTitle]')
@@ -80,7 +80,7 @@ describe('Filters', () => {
             .click();
     });
 
-    it('Validate Filter Encounter', () => {
+    it('Filter Encounter', () => {
         cy.get('[data-testid=encounter-filter]')
             .click({ force: true });
         cy.get('[data-testid=encounterTitle]')
@@ -98,7 +98,7 @@ describe('Filters', () => {
             .click();
     });
 
-    it('Validate Filter Laboratory', () => {
+    it('Filter Laboratory', () => {
         cy.get('[data-testid=laboratory-filter]')
             .click({ force: true });
         cy.get('[data-testid=encounterTitle]')

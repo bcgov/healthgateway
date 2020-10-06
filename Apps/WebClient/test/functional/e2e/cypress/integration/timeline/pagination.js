@@ -2,7 +2,7 @@ require('cypress-xpath')
 const { AuthMethod } = require("../../support/constants")
 
 describe('Pagination', () => {
-    beforeEach(() => {
+    before(() => {
         cy.server();
         cy.fixture('AllDisabledConfig').then(config => {
             config.webClient.modules.Medication = true;
@@ -23,7 +23,7 @@ describe('Pagination', () => {
             });
     })
 
-    it('Validate Pages', () => {
+    it('Go to Next Page', () => {
         cy.get('[data-testid=dateGroup]')
             .first()
             .then((firstPageDateElement) => {
@@ -33,20 +33,28 @@ describe('Pagination', () => {
 
                 cy.get('[data-testid=dateGroup]')
                     .first()
-                    .then(nextPageDateElement => {
+                    .then(secondPageDateElement => {
                         const firstDate = new Date(firstPageDateElement.text());
-                        const nextPageDate = new Date(nextPageDateElement.text());
-                        expect(firstDate).to.be.greaterThan(nextPageDate);
+                        const secondDate = new Date(secondPageDateElement.text());
+                        expect(firstDate).to.be.greaterThan(secondDate);
                     })
+            });
+    })
 
+    it('Go to Previous Page', () => {
+        cy.get('[data-testid=dateGroup]')
+            .first()
+            .then((secondPageDateElement) => {
                 cy.get('[data-testid=pagination]')
                     .contains("Prev")
                     .click();
 
                 cy.get('[data-testid=dateGroup]')
                     .first()
-                    .then(previousPageDateElement => {
-                        expect(firstPageDateElement.text()).to.be.equal(previousPageDateElement.text());
+                    .then(firstPageDateElement => {
+                        const firstDate = new Date(firstPageDateElement.text());
+                        const secondDate = new Date(secondPageDateElement.text());
+                        expect(firstDate).to.be.greaterThan(secondDate);
                     })
             });
     })
