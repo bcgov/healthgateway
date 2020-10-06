@@ -44,6 +44,9 @@ Cypress.Commands.add(
             cy.get("#password").type(password);
             cy.get("#kc-login").click();
         }
+
+        cy.get('#subject')
+            .should('have.text', 'Health Care Timeline');
     }
 );
 
