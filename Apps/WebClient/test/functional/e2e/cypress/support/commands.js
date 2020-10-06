@@ -44,17 +44,12 @@ Cypress.Commands.add(
             cy.get("#password").type(password);
             cy.get("#kc-login").click();
         }
-
-        cy.get('#subject')
-            .should('have.text', 'Health Care Timeline');
     }
 );
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
-    cy.url().should(
-        "contains",
-        "/timeline"
-    );
+    cy.get('#subject')
+        .should('have.text', 'Health Care Timeline')
     cy.get("[data-testid=timelineLoading]").should("not.exist");
 });
 
