@@ -25,3 +25,4 @@ declare module "vue-fullcalendar";
 declare module "vue-content-placeholders";
 declare module "vue-clickaway";
 declare module "html2pdf.js";
+declare module "@chenfengyuan/vue-countdown";

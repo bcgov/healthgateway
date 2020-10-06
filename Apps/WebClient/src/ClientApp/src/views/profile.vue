@@ -462,10 +462,10 @@ export default class ProfileView extends Vue {
 </script>
 
 <template>
-    <div class="container">
+    <div>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <div class="row py-5">
-            <div class="col-lg-12 col-md-12">
+        <div class="row py-5 my-3 fluid">
+            <div class="col-12 col-lg-9 column-wrapper">
                 <div id="pageTitle">
                     <h1 id="subject">Profile</h1>
                     <hr />

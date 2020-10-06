@@ -546,8 +546,6 @@ namespace HealthGateway.Medication.Delegates.Test
         public void ValidateGetProtectiveWordHttpError()
         {
             string PHN = "9735361219";
-            string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string IP = "10.0.0.1";
             ODRHistoryQuery query = new ODRHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
@@ -608,8 +606,6 @@ namespace HealthGateway.Medication.Delegates.Test
         public void ValidateGetProtectiveWordParseError()
         {
             string PHN = "9735361219";
-            string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string IP = "10.0.0.1";
             ODRHistoryQuery query = new ODRHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
@@ -670,8 +666,6 @@ namespace HealthGateway.Medication.Delegates.Test
         public void ValidateGetProtectiveWordParseException()
         {
             string PHN = "9735361219";
-            string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string IP = "10.0.0.1";
             ODRHistoryQuery query = new ODRHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),

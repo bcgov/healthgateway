@@ -12,7 +12,7 @@ export const state: ConfigState = {
     stateType: StateType.NONE
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const config: Module<ConfigState, RootState> = {
     namespaced,

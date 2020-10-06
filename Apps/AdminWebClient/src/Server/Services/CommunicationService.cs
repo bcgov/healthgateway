@@ -54,6 +54,7 @@ namespace HealthGateway.Admin.Services
                 {
                     throw new ArgumentException("One of: Email Subject, Email Content is invalid.");
                 }
+
                 communication.EffectiveDateTime = DateTime.Now;
                 communication.ExpiryDateTime = DateTime.Now;
             }

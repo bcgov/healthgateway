@@ -1,47 +1,6 @@
-<template>
-    <v-container>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <BannerFeedbackComponent
-            :show-feedback.sync="showFeedback"
-            :feedback="bannerFeedback"
-            class="mt-5"
-        ></BannerFeedbackComponent>
-        <v-row justify="center">
-            <v-col md="9">
-                <v-row>
-                    <v-col no-gutters>
-                        <v-data-table
-                            v-model="selectedRequests"
-                            :headers="tableHeaders"
-                            :items="requestList"
-                            :items-per-page="5"
-                            show-select
-                        >
-                            <template
-                                v-slot:item.registrationDatetime="{ item }"
-                            >
-                                <span>{{
-                                    formatDate(item.registrationDatetime)
-                                }}</span>
-                            </template>
-                        </v-data-table>
-                    </v-col>
-                </v-row>
-                <v-row justify="end" no-gutters>
-                    <v-btn
-                        :disabled="selectedRequests.length === 0"
-                        @click="sendInvites()"
-                        >Send invites</v-btn
-                    >
-                </v-row>
-            </v-col>
-        </v-row>
-    </v-container>
-</template>
-
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Vuetify, { VLayout } from "vuetify/lib";
+import Vuetify from "vuetify/lib";
 import { IBetaRequestService } from "@/services/interfaces";
 import UserBetaRequest from "@/models/userBetaRequest";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -58,8 +17,8 @@ import { ResultType } from "@/constants/resulttype";
     }
 })
 export default class BetaQueueView extends Vue {
-    private isLoading: boolean = true;
-    private showFeedback: boolean = false;
+    private isLoading = true;
+    private showFeedback = false;
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
@@ -80,7 +39,7 @@ export default class BetaQueueView extends Vue {
 
     private betaRequestService!: IBetaRequestService;
 
-    mounted() {
+    private mounted() {
         this.betaRequestService = container.get(
             SERVICE_IDENTIFIER.BetaRequestService
         );
@@ -143,3 +102,42 @@ export default class BetaQueueView extends Vue {
     }
 }
 </script>
+
+<template>
+    <v-container>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <BannerFeedbackComponent
+            :show-feedback.sync="showFeedback"
+            :feedback="bannerFeedback"
+            class="mt-5"
+        ></BannerFeedbackComponent>
+        <v-row justify="center">
+            <v-col md="9">
+                <v-row>
+                    <v-col no-gutters>
+                        <v-data-table
+                            v-model="selectedRequests"
+                            :headers="tableHeaders"
+                            :items="requestList"
+                            :items-per-page="5"
+                            show-select
+                        >
+                            <template #item.registrationDatetime="{ item }">
+                                <span>{{
+                                    formatDate(item.registrationDatetime)
+                                }}</span>
+                            </template>
+                        </v-data-table>
+                    </v-col>
+                </v-row>
+                <v-row justify="end" no-gutters>
+                    <v-btn
+                        :disabled="selectedRequests.length === 0"
+                        @click="sendInvites()"
+                        >Send invites</v-btn
+                    >
+                </v-row>
+            </v-col>
+        </v-row>
+    </v-container>
+</template>

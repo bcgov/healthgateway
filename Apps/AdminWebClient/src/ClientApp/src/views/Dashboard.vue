@@ -1,17 +1,60 @@
-<style scoped>
-.v-btn {
-    background-size: 100%;
-    width: 386px;
-    height: 96px;
-    display: block;
-    margin: 10px auto 50px;
-    border: none;
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import { IDashboardService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+@Component
+export default class Dashboard extends Vue {
+    private registeredUserCount = 0;
+    private unregisteredInvitedUserCount = 0;
+    private loggedInUsersCount = 0;
+    private waitlistedUserCount = 0;
+    private usersWithNotesCount = 0;
+    private dashboardService!: IDashboardService;
+
+    private mounted() {
+        this.dashboardService = container.get(
+            SERVICE_IDENTIFIER.DashboardService
+        );
+        this.getRegisteredUserCount();
+        this.getLoggedInUsersCount();
+        this.getUnregisteredInvitedUserCount();
+        this.getWaitlistedUserCount();
+        this.getUsersWithNotesCount();
+    }
+
+    private getRegisteredUserCount() {
+        this.dashboardService.getRegisteredUsersCount().then(count => {
+            this.registeredUserCount = count;
+        });
+    }
+
+    private getLoggedInUsersCount() {
+        this.dashboardService.getLoggedInUsersCount().then(count => {
+            this.loggedInUsersCount = count;
+        });
+    }
+
+    private getWaitlistedUserCount() {
+        this.dashboardService.getWaitlistedUsersCount().then(count => {
+            this.waitlistedUserCount = count;
+        });
+    }
+
+    private getUnregisteredInvitedUserCount() {
+        this.dashboardService.getUnregisteredInvitedUsersCount().then(count => {
+            this.unregisteredInvitedUserCount = count;
+        });
+    }
+
+    private getUsersWithNotesCount() {
+        this.dashboardService.getUsersWithNotesCount().then(count => {
+            this.usersWithNotesCount = count;
+        });
+    }
 }
-.v-card {
-    height: 100px;
-    padding: 15px;
-}
-</style>
+</script>
+
 <template>
     <v-layout>
         <v-row class="px-2">
@@ -58,59 +101,18 @@
         </v-row>
     </v-layout>
 </template>
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { IDashboardService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-@Component
-export default class Dashboard extends Vue {
-    private registeredUserCount: number = 0;
-    private unregisteredInvitedUserCount: number = 0;
-    private loggedInUsersCount: number = 0;
-    private waitlistedUserCount: number = 0;
-    private usersWithNotesCount: number = 0;
-    private dashboardService!: IDashboardService;
 
-    mounted() {
-        this.dashboardService = container.get(
-            SERVICE_IDENTIFIER.DashboardService
-        );
-        this.getRegisteredUserCount();
-        this.getLoggedInUsersCount();
-        this.getUnregisteredInvitedUserCount();
-        this.getWaitlistedUserCount();
-        this.getUsersWithNotesCount();
-    }
-
-    private getRegisteredUserCount() {
-        this.dashboardService.getRegisteredUsersCount().then(count => {
-            this.registeredUserCount = count;
-        });
-    }
-
-    private getLoggedInUsersCount() {
-        this.dashboardService.getLoggedInUsersCount().then(count => {
-            this.loggedInUsersCount = count;
-        });
-    }
-
-    private getWaitlistedUserCount() {
-        this.dashboardService.getWaitlistedUsersCount().then(count => {
-            this.waitlistedUserCount = count;
-        });
-    }
-
-    private getUnregisteredInvitedUserCount() {
-        this.dashboardService.getUnregisteredInvitedUsersCount().then(count => {
-            this.unregisteredInvitedUserCount = count;
-        });
-    }
-
-    private getUsersWithNotesCount() {
-        this.dashboardService.getUsersWithNotesCount().then(count => {
-            this.usersWithNotesCount = count;
-        });
-    }
+<style scoped>
+.v-btn {
+    background-size: 100%;
+    width: 386px;
+    height: 96px;
+    display: block;
+    margin: 10px auto 50px;
+    border: none;
 }
-</script>
+.v-card {
+    height: 100px;
+    padding: 15px;
+}
+</style>
