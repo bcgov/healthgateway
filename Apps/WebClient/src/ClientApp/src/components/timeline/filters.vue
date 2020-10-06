@@ -227,7 +227,12 @@ export default class FilterComponent extends Vue {
                                 {{ filter.display }}
                             </b-form-checkbox>
                         </b-col>
-                        <b-col cols="4" align-self="end" class="text-right">
+                        <b-col
+                            cols="4"
+                            align-self="end"
+                            class="text-right"
+                            :data-testid="`${filter.name}Count`"
+                        >
                             ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
                     </b-row>
