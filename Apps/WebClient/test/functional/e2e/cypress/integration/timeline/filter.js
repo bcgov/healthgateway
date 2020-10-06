@@ -5,27 +5,27 @@ describe('Filters', () => {
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak)
-    })
-
-    it('Validate No Records on timeline vue', () => {
-        cy.get('[data-testid=filterTextInput]').type('xxxx');
-        cy.get('[data-testid=noTimelineEntriesText]').should('be.visible');
-    })
-
-    it('Validate No Records on calendar vue', () => {
-        cy.get('[data-testid=monthViewToggle]').click()
-        cy.get('[data-testid=filterTextInput]').type('xxxx');
-        cy.get('[data-testid=noTimelineEntriesText]').should('be.visible');
         cy.closeCovidModal();
     })
 
-    it('Validate No Records', () => {
+    it('Validate No Records on Linear Timeline', () => {
         cy.get('[data-testid=filterTextInput]')
             .type('xxxx');
         cy.get('[data-testid=noTimelineEntriesText]')
             .should('be.visible');
+    })
+
+    it('Validate No Records on Calendar Timeline', () => {
+        cy.get('[data-testid=monthViewToggle]')
+            .first()
+            .click();
+        cy.get('[data-testid=noTimelineEntriesText]')
+            .should('be.visible');
         cy.get('[data-testid=filterTextInput]')
             .clear();
+        cy.get('[data-testid=listViewToggle]')
+            .last()
+            .click()
     })
 
     it('Validate Filter Checkboxes are Visible', () => {

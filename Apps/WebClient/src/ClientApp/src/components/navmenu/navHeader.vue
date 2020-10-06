@@ -145,7 +145,7 @@ export default class HeaderComponent extends Vue {
             <div
                 v-if="oidcIsAuthenticated"
                 id="menuBtnLogout"
-                data-testid="logoutBtn"
+                data-testid="headerLogoutBtn"
                 variant="link"
                 class="nav-link"
                 @click="handleLogoutClick()"
@@ -153,7 +153,13 @@ export default class HeaderComponent extends Vue {
                 <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
                 <span class="pl-1">Logout</span>
             </div>
-            <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
+            <router-link
+                v-else
+                id="menuBtnLogin"
+                data-testid="headerLoginBtn"
+                class="nav-link"
+                to="/login"
+            >
                 <font-awesome-icon icon="sign-in-alt"></font-awesome-icon>
                 <span class="pl-1">Login</span>
             </router-link>

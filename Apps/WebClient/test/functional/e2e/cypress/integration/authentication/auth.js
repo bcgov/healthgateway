@@ -2,46 +2,54 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Authentication', () => {
     beforeEach(() => {
+        cy.server();
+        cy.fixture('AllDisabledConfig').as('config');
+        cy.route('GET', '/v1/api/configuration/', '@config');
     })
 
 
     it('BCSC Login', () => {
         cy.login(Cypress.env('bcsc.username'), Cypress.env('bcsc.password'), AuthMethod.BCSC)
-        cy.get('#menuBtnLogout')
+        cy.get('[data-testid=logoutBtn]')
             .should('be.visible')
-            .should('be.enabled');
+            .should('not.be.disabled');
     })
 
     it('KeyCloak Login', () => {
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
-        cy.get('#menuBtnLogout')
+        cy.get('[data-testid=logoutBtn]')
             .should('be.visible')
-            .should('be.enabled');
+            .should('not.be.disabled');
     })
 
     it('Logout', () => {
-        cy.server()
-        cy.fixture('AllDisabledConfig').as('config')
-        cy.route('GET', '/v1/api/configuration/', '@config')
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
-        cy.get('#menuBtnLogout').click()
-        cy.get('#skipButton').click()
-        cy.contains('h3', 'You signed out of your account')
+        cy.get('[data-testid=logoutBtn]')
+            .click();
+        cy.get('#skipButton')
+            .click();
+        cy.contains('h3', 'You signed out of your account');
         cy.get('#menuBtnLogin')
             .should('be.visible')
-            .should('be.enabled')
+            .should('not.be.disabled')
             .should('have.attr', 'href', '/login');
     })
 
     it('IDIR Blocked', () => {
-        cy.visit('/login')
-        cy.log(`Authenticating as IDIR user ${Cypress.env('idir.username')}`) 
-        cy.get('[data-testid=IDIRBtn]').should('be.visible').should('be.enabled').click()
-        cy.get('#user').type(Cypress.env('idir.username'))
-        cy.get('#password').type(Cypress.env('idir.password'))
-        cy.get('input[name="btnSubmit"').click()
-        cy.contains('h1', '403')
-        cy.contains('h2', 'IDIR Login')
+        cy.visit('/login');
+        cy.log(`Authenticating as IDIR user ${Cypress.env('idir.username')}`);
+        cy.get('[data-testid=IDIRBtn]')
+            .should('be.visible')
+            .should('not.be.disabled')
+            .click();
+        cy.get('#user')
+            .type(Cypress.env('idir.username'));
+        cy.get('#password')
+            .type(Cypress.env('idir.password'));
+        cy.get('input[name="btnSubmit"')
+            .click();
+        cy.contains('h1', '403');
+        cy.contains('h2', 'IDIR Login');
     })
 
     // it('Idle Timeout', () => {
