@@ -8,14 +8,14 @@ describe('Filters', () => {
         cy.closeCovidModal();
     })
 
-    it('Validate No Records on Linear Timeline', () => {
+    it('No Records on Linear Timeline', () => {
         cy.get('[data-testid=filterTextInput]')
             .type('xxxx');
         cy.get('[data-testid=noTimelineEntriesText]')
             .should('be.visible');
     })
 
-    it('Validate No Records on Calendar Timeline', () => {
+    it('No Records on Calendar Timeline', () => {
         cy.get('[data-testid=monthViewToggle]')
             .first()
             .click();
@@ -28,7 +28,7 @@ describe('Filters', () => {
             .click()
     })
 
-    it('Validate Filter Checkboxes are Visible', () => {
+    it('Filter Checkboxes are Visible', () => {
         cy.get('[data-testid="filterDropdown"]')
             .click();
         cy.get('[data-testid=note-filter]')
@@ -44,7 +44,7 @@ describe('Filters', () => {
     });
 
 
-    it('Validate Filter Immunization', () => {
+    it('Filter Immunization', () => {
         cy.get('[data-testid=immunization-filter]')
             .click({ force: true });
         cy.get('[data-testid=immunizationTitle]')
@@ -62,7 +62,7 @@ describe('Filters', () => {
             .click();
     });
 
-    it('Validate Filter Medication', () => {
+    it('Filter Medication', () => {
         cy.get('[data-testid=medication-filter]')
             .click({ force: true });
         cy.get('[data-testid=immunizationTitle]')
@@ -80,7 +80,7 @@ describe('Filters', () => {
             .click();
     });
 
-    it('Validate Filter Encounter', () => {
+    it('Filter Encounter', () => {
         cy.get('[data-testid=encounter-filter]')
             .click({ force: true });
         cy.get('[data-testid=encounterTitle]')
@@ -98,7 +98,7 @@ describe('Filters', () => {
             .click();
     });
 
-    it('Validate Filter Laboratory', () => {
+    it('Filter Laboratory', () => {
         cy.get('[data-testid=laboratory-filter]')
             .click({ force: true });
         cy.get('[data-testid=encounterTitle]')
