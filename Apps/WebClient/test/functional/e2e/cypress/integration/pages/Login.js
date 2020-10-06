@@ -18,6 +18,6 @@ describe("Login Page", () => {
         cy.get('[data-testid="loginBtn"]')
             .should("be.visible")
             .should("have.attr", "href", "/login")
-            .should("have.text", " Login ");
+            .should("have.text", "Login");
     });
 });
