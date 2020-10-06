@@ -35,4 +35,14 @@ Cypress.Commands.add("login", (username, password, authMethod = AuthMethod.BCSC)
         cy.get('#kc-login').click()
     }
     cy.get('#subject').should('have.text', 'Health Care Timeline')
-})
+});
+
+Cypress.Commands.add("checkTimelineHasLoaded", () => 
+{
+    cy.get('[data-testid=timelineLoading]').should('not.exist');
+});
+
+Cypress.Commands.add("closeCovidModal", () => 
+{
+    cy.get('[data-testid=covidModal] .close').click()
+});
