@@ -244,7 +244,7 @@ export default class SidebarComponent extends Vue {
         class="wrapper"
     >
         <!-- Sidebar -->
-        <nav id="sidebar" :class="{ collapsed: !isOpen }">
+        <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container m-0 p-0">
                 <b-col class="m-0 p-0">
                     <!-- Profile Button -->
