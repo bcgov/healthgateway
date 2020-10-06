@@ -18,12 +18,12 @@
                                 'items-per-page-options': [25, 50, 100, -1]
                             }"
                         >
-                            <template v-slot:item.createdDateTime="{ item }">
+                            <template #item.createdDateTime="{ item }">
                                 <span>{{
                                     formatDate(item.createdDateTime)
                                 }}</span>
                             </template>
-                            <template v-slot:item.isReviewed="{ item }">
+                            <template #item.isReviewed="{ item }">
                                 <td>
                                     <v-btn
                                         class="mx-2"
@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Vuetify, { VLayout } from "vuetify/lib";
+import Vuetify from "vuetify/lib";
 import { IUserFeedbackService } from "@/services/interfaces";
 import UserFeedback from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -73,8 +73,8 @@ import { ResultType } from "@/constants/resulttype";
     }
 })
 export default class FeedbackView extends Vue {
-    private isLoading: boolean = true;
-    private showFeedback: boolean = false;
+    private isLoading = true;
+    private showFeedback = false;
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
@@ -108,7 +108,7 @@ export default class FeedbackView extends Vue {
 
     private userFeedbackService!: IUserFeedbackService;
 
-    mounted() {
+    private mounted() {
         this.userFeedbackService = container.get(
             SERVICE_IDENTIFIER.UserFeedbackService
         );

@@ -1,9 +1,3 @@
-<template>
-    <v-snackbar v-model="showSnackbar" :color="vuetifyType" top multi-line>
-        <span>{{ feedback.message }}</span>
-    </v-snackbar>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Prop, Component, Watch } from "vue-property-decorator";
@@ -15,7 +9,7 @@ export default class BannerFeedbackComponent extends Vue {
     @Prop() showFeedback!: boolean;
     @Prop() feedback!: BannerFeedback;
 
-    private showBanner: boolean = false;
+    private showBanner = false;
 
     private get showSnackbar(): boolean {
         return this.showFeedback;
@@ -40,3 +34,9 @@ export default class BannerFeedbackComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <v-snackbar v-model="showSnackbar" :color="vuetifyType" top multi-line>
+        <span>{{ feedback.message }}</span>
+    </v-snackbar>
+</template>

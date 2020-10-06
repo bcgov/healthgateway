@@ -55,10 +55,7 @@ export class RestCommunicationService implements ICommunicationService {
     public update(communication: Communication): Promise<void> {
         return new Promise((resolve, reject) => {
             this.http
-                .put<RequestResult<Communication>>(
-                    `${this.BASE_URI}/`,
-                    communication
-                )
+                .put<RequestResult<void>>(`${this.BASE_URI}/`, communication)
                 .then(result => {
                     return this.handleResult(result, resolve, reject);
                 })
@@ -72,10 +69,7 @@ export class RestCommunicationService implements ICommunicationService {
     public delete(communication: Communication): Promise<void> {
         return new Promise((resolve, reject) => {
             this.http
-                .delete<RequestResult<Communication>>(
-                    `${this.BASE_URI}/`,
-                    communication
-                )
+                .delete<RequestResult<void>>(`${this.BASE_URI}/`, communication)
                 .then(result => {
                     return this.handleResult(result, resolve, reject);
                 })
@@ -86,10 +80,10 @@ export class RestCommunicationService implements ICommunicationService {
         });
     }
 
-    private handleResult(
-        requestResult: RequestResult<any>,
-        resolve: any,
-        reject: any
+    private handleResult<T>(
+        requestResult: RequestResult<T>,
+        resolve: (value?: T | PromiseLike<T> | undefined) => void,
+        reject: (reason?: unknown) => void
     ) {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);

@@ -35,7 +35,7 @@ Vue.use(TiptapVuetifyPlugin, {
     iconsGroup: "md"
 });
 Vue.filter("date", dateFilter);
-Vue.component("font-awesome-icon", FontAwesomeIcon);
+Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
 const httpDelegate: IHttpDelegate = container.get(
     DELEGATE_IDENTIFIER.HttpDelegate
