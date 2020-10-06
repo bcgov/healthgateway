@@ -15,10 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak
 {
+    /// <summary>Metadata, a component of <cref name="AuthorizationRequest"/>.</summary>
     public class Metadata
     {
+        /// <summary>Gets or sets whether to include Resource Name.</summary>
         public bool IncludeResourceName { get; set; }
+
+        /// <summary>Gets or sets the limit.</summary>
         public int Limit { get; set; }
+
+        /// <summary>Gets or sets the response mode.</summary>
         public string? ResponseMode { get; set; }
     }
 }

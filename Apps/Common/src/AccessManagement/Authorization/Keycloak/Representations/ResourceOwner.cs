@@ -23,6 +23,10 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Represent
     /// </summary>
     public class ResourceOwner
     {
+        /// <summary>Gets or sets the resource owner identifier.</summary>
+        string? Id { get; set; } 
 
+        /// <summary>Gets or sets the resource owner name.</summary>
+        string? Name { get; set; }
     }
 }

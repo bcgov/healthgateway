@@ -19,17 +19,37 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Represent
     using System.Text;
     using System.Text.Json.Serialization;
 
+    /// <summary>UMA 2.0 Permission Ticket</summary>
     public class PermissionTicket
     {
-        public string Id { get; set; }
-        public string Owner { get; set; }
-        public string Resource { get; set; }
-        public string Scope { get; set; }
+        /// <summary>Gets or sets the permssion ticket ID.</summary>
+        public string? Id { get; set; }
+
+        /// <summary>Gets or sets the permssion ticket onwer.</summary>
+        public string? Owner { get; set; }
+
+        /// <summary>Gets or sets the permssion ticket resource.</summary>
+        public string? Resource { get; set; }
+
+        /// <summary>Gets or sets the permssion ticket scope.</summary>
+        public string? Scope { get; set; }
+
+        /// <summary>Gets or sets whether the permssion ticket granted.</summary>
         public bool Granted { get; set; }
-        public string ScopeName { get; set; }
-        public string ResourceName { get; set; }
-        public string Requester { get; set; }
-        public string OwnerName { get; set; }
-        public string RequesterName { get; set; }
+
+        /// <summary>Gets or sets the permssion ticket scope name.</summary>
+        public string? ScopeName { get; set; }
+
+        /// <summary>Gets or sets the permssion ticket resource name.</summary>
+        public string? ResourceName { get; set; }
+
+        /// <summary>Gets or sets the permssion ticket requester.</summary>
+        public string? Requester { get; set; }
+
+        /// <summary>Gets or sets the permssion ticket owner's name.</summary>
+        public string? OwnerName { get; set; }
+
+        /// <summary>Gets or sets the permssion ticket requester's name.</summary>
+        public string? RequesterName { get; set; }
     }
 }

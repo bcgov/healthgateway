@@ -24,11 +24,23 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Represent
     /// For more details, see "https://docs.kantarainitiative.org/uma/draft-oauth-resource-reg.html#rfc.section.2.1".</summary>.
     public class Scope
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string iconUri { get; set; }
-        public List<Policy> policies { get; set; }
-        public List<Resource> resources { get; set; }
-        public string displayName { get; set; }
+        /// <summary>Gets or sets the scope ID.</summary>
+
+        public string? id { get; set; }
+
+        /// <summary>Gets or sets the scope name.</summary>
+        public string? name { get; set; }
+
+        /// <summary>Gets or sets the scope icon URI.</summary>
+        public string? iconUri { get; set; }
+
+        /// <summary>Gets or sets the scope policies.</summary>
+        public List<Policy>? policies { get; set; }
+
+        /// <summary>Gets or sets the scope resources.</summary>
+        public List<Resource>? resources { get; set; }
+
+        /// <summary>Gets or sets the scope displayName.</summary>
+        public string? displayName { get; set; }
     }
 }

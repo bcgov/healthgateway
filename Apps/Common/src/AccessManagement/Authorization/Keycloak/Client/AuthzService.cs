@@ -20,7 +20,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
     using System.Threading.Tasks;
 
     using HealthGateway.Common.Services;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;

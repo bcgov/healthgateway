@@ -19,7 +19,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Represent
     /// <summary> A class representing a UMA 2.0 Policy.</summary>
     public class Policy : AbstractPolicy
     {
-        /// <summary> the policy configuration.</summary>
+        /// <summary>Gets or set the policy configuration.</summary>
         public Dictionary<string, string> Config { get; set; } = new Dictionary<string,string>();
     }
 }
