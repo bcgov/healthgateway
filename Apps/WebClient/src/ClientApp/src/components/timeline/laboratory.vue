@@ -100,7 +100,7 @@ export default class LaboratoryTimelineComponent extends Vue {
             </b-col>
             <b-col class="entryTitle">
                 <b-row class="justify-content-between">
-                    <b-col cols="auto">
+                    <b-col cols="auto" data-testid="laboratoryTitle">
                         <strong>{{ entry.summaryTitle }}</strong>
                     </b-col>
                     <b-col cols="auto" class="text-muted">

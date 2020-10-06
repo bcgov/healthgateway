@@ -2,9 +2,13 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Menu System', () => {
     beforeEach(() => {
+        cy.server();
+        cy.fixture('AllDisabledConfig').as('config');
+        cy.route('GET', '/v1/api/configuration/', '@config');
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
-                 AuthMethod.KeyCloak)
+                 AuthMethod.KeyCloak);
+        cy.checkTimelineHasLoaded();
     })
 
     it('Validate Toggle Sidebar', () => {

@@ -2,9 +2,15 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Medication', () => {
     beforeEach(() => {
+        cy.server();
+        cy.fixture('AllDisabledConfig').then(config => {
+            config.webClient.modules.Medication = true;
+            cy.route('GET', '/v1/api/configuration/', config);            
+        });
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
-                 AuthMethod.KeyCloak)
+                 AuthMethod.KeyCloak);
+        cy.checkTimelineHasLoaded();
     })
 
     it('Validate Protective Word', () => {
@@ -12,12 +18,14 @@ describe('Medication', () => {
     })
 
     it('Validate Card Details', () => {
-        cy.get('[data-testid=filterDropdown]').click();
-        cy.get('[data-testid=medication-filter]').click();
-        cy.get('[data-testid=dateGroup]').should('have.text', 'Dec 30, 2019');
-        cy.get('[data-testid=medicationTitle]').should('have.text', 'Methadone (Maintenance) 1mg/Ml');
-        cy.get('[data-testid=medicationViewDetailsBtn]').click();
-        cy.get('[data-testid=medicationPractitioner]').should('have.text', 'Practitioner: PZVVPS');
-        
+        cy.get('[data-testid=medicationTitle]')
+            .should('be.visible');
+        cy.get('[data-testid=medicationPractitioner]')
+            .should('not.be.visible');
+        cy.get('[data-testid=medicationViewDetailsBtn]')
+            .first()
+            .click();
+        cy.get('[data-testid=medicationPractitioner]')
+            .should('be.visible');
     })
 })

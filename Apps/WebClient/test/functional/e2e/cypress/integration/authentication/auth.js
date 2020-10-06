@@ -7,14 +7,16 @@ describe('Authentication', () => {
 
     it('BCSC Login', () => {
         cy.login(Cypress.env('bcsc.username'), Cypress.env('bcsc.password'), AuthMethod.BCSC)
-        cy.get('#menuBtnLogout').should('be.visible')
-            .should('have.text', 'Logout')
+        cy.get('#menuBtnLogout')
+            .should('be.visible')
+            .should('be.enabled');
     })
 
     it('KeyCloak Login', () => {
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
-        cy.get('#menuBtnLogout').should('be.visible')
-            .should('have.text', 'Logout')
+        cy.get('#menuBtnLogout')
+            .should('be.visible')
+            .should('be.enabled');
     })
 
     it('Logout', () => {
@@ -25,14 +27,15 @@ describe('Authentication', () => {
         cy.get('#menuBtnLogout').click()
         cy.get('#skipButton').click()
         cy.contains('h3', 'You signed out of your account')
-        cy.get('#menuBtnLogin').should('be.visible')
-            .should('have.attr', 'href', '/login')
-            .should('have.text', 'Login')
+        cy.get('#menuBtnLogin')
+            .should('be.visible')
+            .should('be.enabled')
+            .should('have.attr', 'href', '/login');
     })
 
     it('IDIR Blocked', () => {
         cy.visit('/login')
-        cy.log(`Authenticating as IDIR user Cypress.env('idir.username')`) 
+        cy.log(`Authenticating as IDIR user ${Cypress.env('idir.username')}`) 
         cy.get('[data-testid=IDIRBtn]').should('be.visible').should('be.enabled').click()
         cy.get('#user').type(Cypress.env('idir.username'))
         cy.get('#password').type(Cypress.env('idir.password'))
