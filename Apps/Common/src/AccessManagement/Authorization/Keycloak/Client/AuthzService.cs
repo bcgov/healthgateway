@@ -28,9 +28,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
     /// When creating a new instances make sure you have a Keycloak Server running at the location specified in the client
     /// configuration. The client tries to obtain server configuration by invoking the UMA Discovery Endpoint, usually available
     /// from the server at http(s)://{server}:{port}/auth/realms/{realm}/.well-known/uma-configuration.
+    /// In the org.keycloak Java libs, this class is called 'AuthZClient'.
     /// </summary>
-    public class AuthzClient
+    public class AuthzService
     {
+        ///<summary>The Keycloak Configuration Section Name</summary>
+        public static string KeycloakConfigurationSectionName = "Keycloak";
+
         /// <summary>
         /// The injected logger delegate.
         /// </summary>
@@ -52,13 +56,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
         private readonly KeycloakConfiguration keycloakConfiguration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthzClient"/> class.
+        /// Initializes a new instance of the <see cref="AuthzService"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
         /// <param name="configuration">Injected configuration.</param>
-        public AuthzClient(
-            ILogger<AuthzClient> logger,
+        public AuthzService(
+            ILogger<AuthzService> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {

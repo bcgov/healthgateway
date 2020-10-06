@@ -13,10 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Representation
+namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation
 {
-    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
-
     /// <summary>
     /// An authorization response in form of an OAuth2 access token.
     /// </summary>

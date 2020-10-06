@@ -17,11 +17,34 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
 {
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authentication;
 
-     /// <summary>
+    using Microsoft.Extensions.Configuration;
+
+    /// <summary>
     /// Class that represents the OpenId Configuration model for the Keycloak Configuration.
     /// </summary>
-    public class KeycloakConfiguration : JwtBearerOptions
+    public class KeycloakConfiguration : IKeycloakConfiguration
     {
+        private readonly IConfiguration configuration;
+
+        private static string ConfigurationSectionKey = "Keycloak";
+
+        ///<inherited/>
+        public string Audience { get; set; } = string.Empty;
+
+        ///<inherited/>
+        public string AuthServerUrl { get; set; } = string.Empty;
+
+        ///<inherited/>
+        public string Realm { get; set; } = string.Empty;
+
+        /// <summary>Creates a new KeycloakConfiguration instance.</summary>
+        /// <param name="configuration">The injected <cref name="IConfiguration"/> configuration object.</param>
+        public KeycloakConfiguration(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+            this.configuration.Bind(ConfigurationSectionKey, this);
+        }
     }
 }

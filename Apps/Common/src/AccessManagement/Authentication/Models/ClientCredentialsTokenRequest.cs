@@ -47,13 +47,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Models
         public string ClientSecret { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the resource owner username for OAuth 2 Rsource Owner Password Grant.
+        /// Gets or sets the resource owner username for OAuth 2 Resource Owner Password Grant.
         /// </summary>
         [JsonPropertyName("username")]
         public string Username { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the resource owner password for OAuth 2 Rsource Owner Password Grant.
+        /// Gets or sets the resource owner password for OAuth 2 Resource Owner Password Grant.
         /// </summary>
         [JsonPropertyName("password")]
         public string Password { get; set; } = string.Empty;

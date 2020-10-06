@@ -37,7 +37,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     {
         private readonly ILogger logger;
 
-        private readonly KeycloakConfiguration keycloakConfiguration;
+        private readonly IKeycloakConfiguration keycloakConfiguration;
 
         private readonly Uma2ServerConfiguration uma2ServerConfiguration;
 
