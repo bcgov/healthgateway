@@ -58,36 +58,40 @@ export default class TermsOfServiceView extends Vue {
 </script>
 
 <template>
-    <b-container class="py-5">
+    <div>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row>
-            <b-col>
-                <b-alert :show="hasErrors" dismissible variant="danger">
-                    <h4>Error</h4>
-                    <p>
-                        An unexpected error occured while processing the
-                        request:
-                    </p>
-                    <span>{{ errorMessage }}</span>
-                </b-alert>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <div id="pageTitle">
-                    <h1 id="Subject">Terms of Service</h1>
-                    <hr />
+        <b-row class="my-3 fluid">
+            <b-col class="col-12 col-lg-9 column-wrapper">
+                <b-row>
+                    <b-col>
+                        <b-alert :show="hasErrors" dismissible variant="danger">
+                            <h4>Error</h4>
+                            <p>
+                                An unexpected error occured while processing the
+                                request:
+                            </p>
+                            <span>{{ errorMessage }}</span>
+                        </b-alert>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <div id="pageTitle">
+                            <h1 id="Subject">Terms of Service</h1>
+                            <hr />
+                        </div>
+                    </b-col>
+                </b-row>
+                <div v-if="!isLoading">
+                    <b-row class="mb-3">
+                        <b-col>
+                            <HtmlTextAreaComponent :input="termsOfService" />
+                        </b-col>
+                    </b-row>
                 </div>
             </b-col>
         </b-row>
-        <div v-if="!isLoading">
-            <b-row class="mb-3">
-                <b-col>
-                    <HtmlTextAreaComponent :input="termsOfService" />
-                </b-col>
-            </b-row>
-        </div>
-    </b-container>
+    </div>
 </template>
 
 <style lang="scss" scoped>
