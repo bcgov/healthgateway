@@ -10,10 +10,13 @@ import { ILogger, IUserProfileService } from "@/services/interfaces";
 import UserSMSInvite from "@/models/userSMSInvite";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import VueCountdown from "@chenfengyuan/vue-countdown";
+import { Duration } from "luxon";
 
 @Component({
     components: {
         LoadingComponent,
+        countdown: VueCountdown,
     },
 })
 export default class VerifySMSComponent extends Vue {
@@ -171,6 +174,20 @@ export default class VerifySMSComponent extends Vue {
             });
     }
 
+    private getTimeout(): number {
+        if (!this.smsResendDateTime) {
+            this.updateSMSResendDateTime({
+                hdid: this.user.hdid,
+                dateTime: new DateWrapper(),
+            });
+        }
+        let resendTime = this.smsResendDateTime;
+        resendTime = resendTime!.add(
+            this.config.timeouts!.resendSMS * 60 * 1000
+        );
+        return resendTime.diff(new DateWrapper());
+    }
+
     private onVerificationChange(): void {
         if (this.smsVerificationCode.length >= 6) {
             this.verifySMS();
@@ -198,6 +215,7 @@ export default class VerifySMSComponent extends Vue {
         header-bg-variant="primary"
         header-text-variant="light"
         centered
+        @show="getTimeout"
     >
         <b-row>
             <b-col>
@@ -266,9 +284,13 @@ export default class VerifySMSComponent extends Vue {
                     </b-button>
                 </b-col>
                 <b-col v-if="!allowRetry">
-                    Your code has been sent. You can resend after
-                    {{ config.timeouts.resendSMS }}
-                    {{ config.timeouts.resendSMS > 1 ? "minutes" : "minute" }}.
+                    <countdown :time="getTimeout()">
+                        <template slot-scope="props"
+                            >Your code has been sent. You can resend after
+                            {{ props.minutes > 0 ? props.minutes + "m" : "" }}
+                            {{ props.seconds }}s</template
+                        >
+                    </countdown>
                 </b-col>
                 <b-col v-if="tooManyRetries">
                     <b-button
