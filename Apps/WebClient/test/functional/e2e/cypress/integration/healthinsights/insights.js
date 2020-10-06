@@ -10,10 +10,11 @@ describe('Health Insights', () => {
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak)
-        cy.get('#menuBtnHealthInsights').click()
+        cy.checkTimelineHasLoaded();
     })
 
     it('Validate medication records count.', () => {
+        cy.get('[data-testid=menuBtnHealthInsightsLink]').click()
         cy.get('[data-testid=totalRecordsText]').should('not.contain', '0 ')
     })
 })
