@@ -27,7 +27,7 @@ describe('Authentication', () => {
         cy.get('#menuBtnLogout').click()
         cy.get('#skipButton').click()
         cy.contains('h3', 'You signed out of your account')
-        cy.get('#menuBtnLogin')
+        cy.get('[data-testid="loginBtn"]')
             .should('be.visible')
             .should('be.enabled')
             .should('have.attr', 'href', '/login');
@@ -42,6 +42,8 @@ describe('Authentication', () => {
         cy.get('input[name="btnSubmit"').click()
         cy.contains('h1', '403')
         cy.contains('h2', 'IDIR Login')
+        cy.contains('footer').should('not.exist')
+        cy.get('[data-testid="sidebar"]').should('not.exist')
     })
 
     // it('Idle Timeout', () => {
