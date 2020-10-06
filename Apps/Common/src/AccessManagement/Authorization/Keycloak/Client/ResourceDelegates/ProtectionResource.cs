@@ -26,8 +26,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Representation;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Util;
-
-    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
     using HealthGateway.Common.Services;
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
@@ -40,10 +38,10 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         private readonly IHttpClientService httpClientService;
 
         /// <summary>The keycloak configuration settings read from the injected app settings.</summary>
-        private readonly KeycloakConfiguration keycloakConfiguration;
+        private readonly IKeycloakConfiguration keycloakConfiguration;
 
         /// <summary>The keycloak UMA server configuration.</summary>
-        private readonly Uma2ServerConfiguration uma2ServerConfiguration;
+        private readonly IServerConfigurationDelegate serverConfigurationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationResource"/> class.
@@ -51,15 +49,15 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
         /// <param name="keycloakConfiguration">The keycloak configuration.</param>
-        /// <param name="uma2ServerConfiguration">uma2 server-side configuration settings.</param>
+        /// <param name="serverConfigurationDelegate">The injected server-side configuration settings.</param>
         public ProtectionResource(ILogger<ProtectionResource> logger,
-            KeycloakConfiguration keycloakConfiguration,
-            Uma2ServerConfiguration uma2ServerConfiguration,
-            HttpClientService httpClientService)
+            IKeycloakConfiguration keycloakConfiguration,
+            IServerConfigurationDelegate serverConfigurationDelegate,
+            IHttpClientService httpClientService)
         {
             this.logger = logger;
             this.keycloakConfiguration = keycloakConfiguration;
-            this.uma2ServerConfiguration = uma2ServerConfiguration;
+            this.serverConfigurationDelegate = serverConfigurationDelegate;
             this.httpClientService = httpClientService;
         }
 
@@ -75,7 +73,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.IntrospectionEndpoint;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.IntrospectionEndpoint;
             client.BaseAddress = new Uri(requestUrl);
 
             MultipartFormDataContent multiForm = new MultipartFormDataContent();

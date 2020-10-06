@@ -33,13 +33,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     /// <summary>
     /// An entry point for obtaining permissions from the server.
     /// </summary>
-    public class AuthorizationResource
+    public class AuthorizationResource : IAuthorizationResource
     {
         private readonly ILogger logger;
 
         private readonly IKeycloakConfiguration keycloakConfiguration;
 
-        private readonly Uma2ServerConfiguration uma2ServerConfiguration;
+        private readonly IServerConfigurationDelegate serverConfigurationDelegate;
 
         private readonly IHttpClientService httpClientService;
 
@@ -49,22 +49,18 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         /// <param name="logger">injected logger service.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
         /// <param name="keycloakConfiguration">The keycloak settings configuration.</param>
-        /// <param name="uma2ServerConfiguration">uma2 server-side configuration settings.</param>
-        public AuthorizationResource(ILogger<AuthorizationResource> logger, KeycloakConfiguration keycloakConfiguration,
-            Uma2ServerConfiguration uma2ServerConfiguration,
+        /// <param name="serverConfigurationDelegate">uma2 server-side configuration settings delegate.</param>
+        public AuthorizationResource(ILogger<AuthorizationResource> logger, IKeycloakConfiguration keycloakConfiguration,
+            IServerConfigurationDelegate serverConfigurationDelegate,
             IHttpClientService httpClientService)
         {
             this.logger = logger;
             this.keycloakConfiguration = keycloakConfiguration;
-            this.uma2ServerConfiguration = uma2ServerConfiguration;
+            this.serverConfigurationDelegate = serverConfigurationDelegate;
             this.httpClientService = httpClientService;
         }
 
-        /// <summary>Query the server for permissions given an <cref name="AuthorizationRequest"/>.</summary>
-        /// <param name="request"> an <cref name="AuthorizationRequest"/></param>
-        /// <param name="accessToken">A Base64 encoded OAuth 2.0 accessToken from an authentication event.</param>
-        /// <returns>An <cref name="AuthorizationRequest"/>with a RPT holding all granted permissions.</returns>
-
+        /// <inherited/>
         public async Task<AuthorizationResponse> authorize(AuthorizationRequest request, string accessToken)
         {
             if (request.Audience == null)
@@ -75,7 +71,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
             client.DefaultRequestHeaders.Accept.Clear();
-            string requestUri = this.uma2ServerConfiguration.TokenEndpoint;
+            string requestUri = this.serverConfigurationDelegate.ServerConfiguration.TokenEndpoint;
 
             client.BaseAddress = new Uri(requestUri);
 
@@ -89,7 +85,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             HttpResponseMessage response = await client.PostUmaAsync(new Uri(requestUri), request).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
-                this.logger.LogError($"AuthorizationResource.authorize() returned with StatusCode := {response.StatusCode}.");
+                this.logger.LogError($"authorize() returned with StatusCode := {response.StatusCode}.");
             }
 
             string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);

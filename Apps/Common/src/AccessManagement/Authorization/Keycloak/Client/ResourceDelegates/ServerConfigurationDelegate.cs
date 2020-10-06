@@ -28,15 +28,32 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
 
     using HealthGateway.Common.Services;
     ///
-    /// <summary>Gets the uma2 server configuration settings from the well-known-endppoint.</summary>
+    /// <summary>Gets the uma2 server configuration settings from the well-known-endpoint.</summary>
     ///
-    public class ServerConfigurationDelegate
+    public class ServerConfigurationDelegate : IServerConfigurationDelegate
     {
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
 
         private readonly IKeycloakConfiguration keycloakConfiguration;
 
+        private ServerConfiguration? _serverConfiguration = null;
+
+        /// <inherited/>
+        public ServerConfiguration ServerConfiguration {
+            get {
+                if (_serverConfiguration == null)
+                {
+                    _serverConfiguration =  this.getServerConfiguration().Result;
+                } 
+                return _serverConfiguration;
+            }
+        }
+
+        /// <summary>Creates an instance of a <cref name="ServerConfigurationDelegate"/>.</summary>
+        /// <param name="logger">The injected logger.</param>
+        /// <param name="httpClientService">The injected httpClientService.</param>
+        /// <param name="keycloakConfiguration">The injected keycloak configuration.</param>
         public ServerConfigurationDelegate(ILogger<ServerConfigurationDelegate> logger,
             IHttpClientService httpClientService,
             IKeycloakConfiguration keycloakConfiguration)
@@ -47,8 +64,8 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         }
 
         /// <summary>Gets the UMA 2.0 Server Configuration from teh well-known Keycloak server end point.</summary>
-        /// <returns>An instance of a <cref name="Uma2ServerConfiguration"/>.</returns>
-        public async Task<Uma2ServerConfiguration> getServerConfiguration()
+        /// <returns>An instance of a <cref name="ServerConfiguration"/>.</returns>
+        private async Task<ServerConfiguration> getServerConfiguration()
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
@@ -63,7 +80,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
 
             string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            Uma2ServerConfiguration configurationResponse = JsonSerializer.Deserialize<Uma2ServerConfiguration>(result);
+            ServerConfiguration configurationResponse = JsonSerializer.Deserialize<ServerConfiguration>(result);
             return configurationResponse;
         }
     }

@@ -33,33 +33,29 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     ///
     /// <summary>An entry point for managing user-managed permissions for a particular resource.</summary>
     ///
-    public class PolicyResource
+    public class PolicyResource : IPolicyResource
     {
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
 
-        private readonly Uma2ServerConfiguration uma2ServerConfiguration;
+        private readonly IServerConfigurationDelegate serverConfigurationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationResource"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
-        /// <param name="uma2ServerConfiguration">The Uma2ServerConfiguration configuration.</param>
+        /// <param name="serverConfigurationDelegate">The UMA serverConfiguration delegate.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
         public PolicyResource(ILogger<PermissionResource> logger,
-            Uma2ServerConfiguration uma2ServerConfiguration,
+            ServerConfigurationDelegate serverConfigurationDelegate,
             HttpClientService httpClientService)
         {
             this.logger = logger;
-            this.uma2ServerConfiguration = uma2ServerConfiguration;
+            this.serverConfigurationDelegate = serverConfigurationDelegate;
             this.httpClientService = httpClientService;
         }
 
-        /// <summary>Creates a user-managed permission.</summary>
-        /// <param name="resourceId">The resource identifier of the user managed access permission.</param>
-        /// <param name="permission">The uma Permission to update.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>The created UmaPermission</returns>
+        /// <inherited/>
         public async Task<UmaPermission> create(string resourceId, UmaPermission permission, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -67,7 +63,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PolicyEndpoint + "/" + resourceId;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PolicyEndpoint + "/" + resourceId;
             client.BaseAddress = new Uri(requestUrl);
 
             string jsonOutput = JsonSerializer.Serialize<UmaPermission>(permission);
@@ -86,10 +82,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
         }
 
-        /// <summary>Updates an existing user-managed permission.</summary>
-        /// <param name="permission">The uma Permission to update.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>True if the delete was successful.</returns>
+        /// <inherited/>
         public async Task<bool> update(UmaPermission permission, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -97,7 +90,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/" + permission.Id;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/" + permission.Id;
             client.BaseAddress = new Uri(requestUrl);
 
             string jsonOutput = JsonSerializer.Serialize<UmaPermission>(permission);
@@ -115,10 +108,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
         }
 
-        /// <summary>Deletes an existing user-managed permission.</summary>
-        /// <param name="permissionId">The uma Permission identifier.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>True if the delete was successful.</returns>
+        /// <inherited/>
         public async Task<bool> delete(string permissionId, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -126,7 +116,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/" + permissionId;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/" + permissionId;
             client.BaseAddress = new Uri(requestUrl);
 
             HttpResponseMessage response = await client.DeleteAsync(new Uri(requestUrl)).ConfigureAwait(true);
@@ -139,14 +129,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             return true;
         }
 
-        /// <summary>Queries the server for permission matching the given parameters.</summary>
-        /// <param name="resourceId">The resource identifier in context.</param>
-        /// <param name="name">The name of the permission</param>
-        /// <param name="scope">scope the scope associated with the permission.</param>
-        /// <param name="firstResult">firstResult the position of the first resource to retrieve.</param>
-        /// <param name="maxResult">maxResult the maximum number of resources to retrieve.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>A list of UmaPermissions, if found.</returns>
+        /// <inherited/>
         public async Task<List<UmaPermission>> find(string resourceId,
                 string name,
                 string scope,
@@ -159,7 +142,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/ticket";
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/ticket";
             client.BaseAddress = new Uri(requestUrl);
 
             requestUrl = QueryHelpers.AddQueryString(requestUrl, "name", name);
@@ -179,10 +162,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             return umaPermissions;
         }
 
-        /// <summary>Queries the server for a permission with the given ID.</summary>
-        /// <param name="id">The uma permission identifier to find.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>An UmaPermission, if found.</returns>
+        /// <inherited/>
         public async Task<UmaPermission> findById(string id, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -190,7 +170,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/" + id;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/" + id;
             client.BaseAddress = new Uri(requestUrl);
 
             HttpResponseMessage response = await client.GetAsync(new Uri(requestUrl)).ConfigureAwait(false);

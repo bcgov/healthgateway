@@ -20,9 +20,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Co
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Class that represents the user model in the UMA2 Configuration as fetched from the well-known endpoint.
+    /// Class that represents the user model in the UMA 2 Configuration as fetched from the well-known endpoint.
     /// </summary>
-    public class Uma2ServerConfiguration
+    public class ServerConfiguration
     {
         /// <summary>
         /// Gets or sets the user issuer.

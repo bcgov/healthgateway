@@ -32,13 +32,11 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
     ///
-    public class PermissionResource
+    public class PermissionResource : IPermissionResource
     {
         private readonly ILogger logger;
 
-        private readonly KeycloakConfiguration keycloakConfiguration;
-
-        private readonly Uma2ServerConfiguration uma2ServerConfiguration;
+        private readonly IServerConfigurationDelegate serverConfigurationDelegate;
 
 
         /// <summary>The injected HttpClientService.</summary>
@@ -49,23 +47,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
-        /// <param name="keycloakConfiguration">The keyCloak configuration.</param>
-        /// <param name="uma2ServerConfiguration">The UMA configuration.</param>
+        /// <param name="serverConfigurationDelegate">The keycloak UMA configuration delegate.</param>
         public PermissionResource(ILogger<PermissionResource> logger,
-            KeycloakConfiguration keycloakConfiguration,
-            Uma2ServerConfiguration uma2ServerConfiguration,
+            IServerConfigurationDelegate serverConfigurationDelegate,
             IHttpClientService httpClientService)
         {
             this.logger = logger;
-            this.keycloakConfiguration = keycloakConfiguration;
-            this.uma2ServerConfiguration = uma2ServerConfiguration;
+            this.serverConfigurationDelegate = serverConfigurationDelegate;
             this.httpClientService = httpClientService;
         }
 
-        /// <summary>Creates a new permission ticket for a single resource and scope(s).</summary>
-        /// <param name="request"> the <cref name="PermissionRequest"/> representing the resource and scope(s).</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>Permission response holding a permission ticket with the requested permissions.</returns>
+        /// <inherited/>
         public async Task<PermissionResponse> create(PermissionRequest request, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -73,7 +65,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint;
             client.BaseAddress = new Uri(requestUrl);
 
             string jsonOutput = JsonSerializer.Serialize<PermissionRequest>(request);
@@ -92,10 +84,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
         }
 
-        /// <summary>Creates new permission ticket(s) for a set of resources and scope(s).</summary>
-        /// <param name="requests"> a List of <cref name="PermissionRequest"/> representing the resource and scope(s).</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>Permission response holding a permission ticket with the requested permissions.</returns>
+        /// <inherited/>
         public async Task<PermissionResponse> create(List<PermissionRequest> requests, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -103,7 +92,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint;
             client.BaseAddress = new Uri(requestUrl);
 
             string jsonOutput = JsonSerializer.Serialize<List<PermissionRequest>>(requests);
@@ -122,10 +111,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
         }
 
-        /// <summary>Creates a new uma permission for a single resource and scope(s).</summary>
-        /// <param name="ticket">The <cref name="PermissionTicketRepresentation"/> representing the resource and scope(s).</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>A permission response holding the permission ticket representation</returns>
+        /// <inherited/>
         public async Task<PermissionTicket> create(PermissionTicket ticket, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -133,7 +119,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint;
             client.BaseAddress = new Uri(requestUrl);
 
             string jsonOutput = JsonSerializer.Serialize<PermissionTicket>(ticket);
@@ -152,10 +138,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
         }
 
-        /// <summary>Query the server for any permission ticket associated with the given scopeId.</summary>
-        /// <param name="scopeId">The scopeId the scope id</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>A list of permission tickets associated with the given scopeId</returns>
+        /// <inherited/>
         public async Task<List<PermissionTicket>> findByScope(string scopeId, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -163,7 +146,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/ticket";
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/ticket";
             client.BaseAddress = new Uri(requestUrl);
 
             UriBuilder builder = new UriBuilder(requestUrl);
@@ -181,10 +164,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
 
         }
 
-        /// <summary>Query the server for any permission ticket associated with the given scopeId.</summary>
-        /// <param name="resourceId">The resourceId.</param>
-        /// <param name="token">A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>A list of permission tickets associated with the given scopeId</returns>
+        /// <inherited/>
         public async Task<List<PermissionTicket>> findByResourceId(string resourceId, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -192,7 +172,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/ticket";
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/ticket";
             client.BaseAddress = new Uri(requestUrl);
 
             UriBuilder builder = new UriBuilder(requestUrl);
@@ -209,17 +189,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             return permissionTickets;
         }
 
-        /// <summary>Query the server for any permission ticket with the matching arguments.</summary>
-        /// <param name="resourceId">The resource id or name.</param>
-        /// <param name="scopeId">The scope id or name.</param>
-        /// <param name="owner">The owner id or name.</param>
-        /// <param name="requester">The requester id or name.</param>
-        /// <param name="granted">If true, only permission tickets marked as granted are returned.</param>
-        /// <param name="returnNames">If the response should include names for resource, scope and owner.</param>
-        /// <param name="firstResult">The position of the first resource to retrieve.</param>
-        /// <param name="maxResult">The maximum number of resources to retrieve.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>A list of permission tickets with the matching arguments.</returns>
+        /// <inherited/>
         public async Task<List<PermissionTicket>> find(
             string resourceId,
             string scopeId,
@@ -236,7 +206,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/ticket";
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/ticket";
             client.BaseAddress = new Uri(requestUrl);
 
             UriBuilder builder = new UriBuilder(requestUrl);
@@ -260,9 +230,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             return permissionTickets;
         }
 
-        /// <summary>Updates a permission ticket.</summary>
-        /// <param name="ticket">The permission ticket</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
+        /// <inherited/>
         public async Task<bool> update(PermissionTicket ticket, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -270,7 +238,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/ticket";
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/ticket";
             client.BaseAddress = new Uri(requestUrl);
 
             string jsonOutput = JsonSerializer.Serialize<PermissionTicket>(ticket);
@@ -288,10 +256,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
         }
 
-        /// <summary>Delete a permission ticket.</summary>
-        /// <param name="ticketId">The id of the permission ticket to delete.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>True if the delete succeeded.</returns>
+        /// <inherited/>
         public async Task<bool> delete(string ticketId, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -299,7 +264,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             client.DefaultRequestHeaders.Accept.Clear();
 
             client.BearerTokenAuthorization(token);
-            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/ticket/" + ticketId;
+            string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.PermissionEndpoint + "/ticket/" + ticketId;
             client.BaseAddress = new Uri(requestUrl);
 
             HttpResponseMessage response = await client.DeleteAsync(new Uri(requestUrl)).ConfigureAwait(true);

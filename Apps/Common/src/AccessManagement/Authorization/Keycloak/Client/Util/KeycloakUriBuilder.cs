@@ -16,11 +16,8 @@
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Util
 {
     using System;
-    using System.Net.Http;
-    using System.Text;
 
-
-    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client;
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
 
 /// <summary>Helper class to build a URL from the well-known URL constant templates for Keycloak.</summary>
     public static class KeycloakUriBuilder
