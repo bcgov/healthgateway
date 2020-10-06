@@ -4,7 +4,18 @@ describe('Filters', () => {
     before(() => {
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
-                 AuthMethod.KeyCloak);
+                 AuthMethod.KeyCloak)
+    })
+
+    it('Validate No Records on timeline vue', () => {
+        cy.get('[data-testid=filterTextInput]').type('xxxx');
+        cy.get('[data-testid=noTimelineEntriesText]').should('be.visible');
+    })
+
+    it('Validate No Records on calendar vue', () => {
+        cy.get('[data-testid=monthViewToggle]').click()
+        cy.get('[data-testid=filterTextInput]').type('xxxx');
+        cy.get('[data-testid=noTimelineEntriesText]').should('be.visible');
         cy.closeCovidModal();
     })
 

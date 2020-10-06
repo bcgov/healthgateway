@@ -89,6 +89,7 @@ export default class RatingComponent extends Vue {
                 <b-col>
                     <b-form-rating
                         v-model="ratingValue"
+                        data-testid="formRating"
                         variant="warning"
                         class="mb-2"
                         no-border
