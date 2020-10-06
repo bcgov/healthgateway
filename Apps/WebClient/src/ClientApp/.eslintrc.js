@@ -13,6 +13,7 @@ module.exports = {
     ],
     rules: {
         "no-console": "off",
+        "vue/no-v-html": "off",
         "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
         "linebreak-style": ["error", "unix"],
     },
