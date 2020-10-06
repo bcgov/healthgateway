@@ -32,7 +32,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
     ///
-    public class ProtectedResource
+    public class ProtectedResource : IProtectedResource
     {
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
@@ -54,12 +54,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             this.httpClientService = httpClientService;
         }
 
-        /// <summary>
-        /// Creates a new Resource on the authorization server. See <see cref="Resource"/> class.
-        /// </summary>
-        /// <param name="resource">The Resource data.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>The Resource created.</returns>
+        /// <inherited/>
         public async Task<Resource> create(Resource resource, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -86,12 +81,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
         }
 
-        /// <summary>
-        /// Updates an existing Resource on the authorization server. See <see cref="Resource"/> class.
-        /// </summary>
-        /// <param name="resource">The Resource to be updated.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>True when updated.</returns>
+        /// <inherited/>
         public async Task<bool> update(Resource resource, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -117,10 +107,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             }
         }
 
-        /// <summary>Deletes an existing user-managed Resource from the server.</summary>
-        /// <param name="resourceId">The Resource identifier.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>True if the delete was successful.</returns>
+        /// <inherited/>
         public async Task<bool> delete(string resourceId, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -141,12 +128,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             return true;
         }
 
-        /// <summary>
-        /// Query the server for a resource given its id.
-        /// </summary>
-        /// <param name="resourceId">The Resource  ID to be found.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>The Resource found.</returns>
+        /// <inherited/>
         public async Task<Resource> findById(string resourceId, string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -252,33 +234,19 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             return resourceResponse;
         }
 
-        /// <summary>
-        /// Query the server for a Resource with a given Uri.
-        /// This method queries the server for resources whose
-        /// </summary>
-        /// <param name="uri">The string url to be found.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>Returns a list of Resources that best matches the given Uri.</returns>
+        /// <inherited/>
         public async Task<List<Resource>> findByUri(string uri, string token)
         {
             return await this.find(null, null, uri, null, null, null, false, false, true, null, null, token);
         }
 
-        /// <summary>
-        /// Query the server for a Resource with a given Uri.
-        /// This method queries the server for resources whose
-        /// </summary>
-        /// <param name="uri">The string url to be found.</param>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns>Returns a list of Resources that best matches the given Uri.</returns>
+        /// <inherited/>
         public async Task<List<Resource>> findByMatchingUri(string uri, string token)
         {
             return await this.find(null, null, uri, null, null, null, true, false, true, null, null, token);
         }
 
-        /// <summary>Query the server for all resources.</summary>
-        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
-        /// <returns> @return an array of strings with the resource ids</returns>
+        /// <inherited/>
         public async Task<string[]> findAll(string token)
         {
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();

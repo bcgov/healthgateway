@@ -30,7 +30,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     ///
     /// <summary>An entry point for managing permission tickets using the Protection API.</summary>
     ///
-    public class ProtectionResource
+    public class ProtectionResource : IProtectionResource
     {
         private readonly ILogger logger;
 
@@ -61,10 +61,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             this.httpClientService = httpClientService;
         }
 
-        /// <summary>Introspects the given <code>rpt</code> using the token introspection endpoint.</summary>
-        /// <param name="rpt">the Requesting Party Token to Introspect.</param>
-        /// <param name="token">The bearer token to use for authorization.</param>
-        /// <returns>A TokenIntrospectionResponse.</returns>
+        /// <inherited/>
         public async Task<TokenIntrospectionResponse> introspectRequestingPartyToken(string rpt, string token)
         {
 
