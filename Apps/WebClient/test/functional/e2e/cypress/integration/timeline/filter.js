@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('Filters', () => {
-    beforeEach(() => {
+    before(() => {
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak);
@@ -13,6 +13,8 @@ describe('Filters', () => {
             .type('xxxx');
         cy.get('[data-testid=noTimelineEntriesText]')
             .should('be.visible');
+        cy.get('[data-testid=filterTextInput]')
+            .clear();
     })
 
     it('Validate Filter Checkboxes are Visible', () => {
@@ -28,8 +30,10 @@ describe('Filters', () => {
             .should('be.visible');
         cy.get('[data-testid=encounter-filter]')
             .should('be.visible');
-        
-        // Filter Imms
+    });
+
+
+    it('Validate Filter Immunization', () => {
         cy.get('[data-testid=immunization-filter]')
             .click({ force: true });
         cy.get('[data-testid=immunizationTitle]')
@@ -42,12 +46,12 @@ describe('Filters', () => {
             .should('not.be.visible');
         cy.get('[data-testid=medicationTitle]')
             .should('not.be.visible');
-
         cy.get('[data-testid="filterDropdown"]')
             .contains('Clear')
             .click();
+    });
 
-        // Filter Meds
+    it('Validate Filter Medication', () => {
         cy.get('[data-testid=medication-filter]')
             .click({ force: true });
         cy.get('[data-testid=immunizationTitle]')
@@ -60,12 +64,12 @@ describe('Filters', () => {
             .should('not.be.visible');
         cy.get('[data-testid=medicationTitle]')
             .should('be.visible');
-
         cy.get('[data-testid="filterDropdown"]')
             .contains('Clear')
             .click();
+    });
 
-        // Filter Encounter
+    it('Validate Filter Encounter', () => {
         cy.get('[data-testid=encounter-filter]')
             .click({ force: true });
         cy.get('[data-testid=encounterTitle]')
@@ -78,12 +82,12 @@ describe('Filters', () => {
             .should('not.be.visible');
         cy.get('[data-testid=medicationTitle]')
             .should('not.be.visible');
-
         cy.get('[data-testid="filterDropdown"]')
             .contains('Clear')
             .click();
+    });
 
-        // Filter Labs
+    it('Validate Filter Laboratory', () => {
         cy.get('[data-testid=laboratory-filter]')
             .click({ force: true });
         cy.get('[data-testid=encounterTitle]')
@@ -96,6 +100,8 @@ describe('Filters', () => {
             .should('be.visible');
         cy.get('[data-testid=medicationTitle]')
             .should('not.be.visible');
-    })
-
+        cy.get('[data-testid="filterDropdown"]')
+            .contains('Clear')
+            .click();
+    });
 })

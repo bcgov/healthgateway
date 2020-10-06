@@ -4,9 +4,7 @@ describe('Medication', () => {
     beforeEach(() => {
         cy.server();
         cy.fixture('AllDisabledConfig').then(config => {
-            cy.log(config);
             config.webClient.modules.Medication = true;
-            cy.log(config);
             cy.route('GET', '/v1/api/configuration/', config);            
         });
         cy.login(Cypress.env('keycloak.username'), 
