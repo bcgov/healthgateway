@@ -68,7 +68,7 @@ export default class TimelineLoadingComponent extends Vue {
 
 <template>
     <div class="backdrop">
-        <div class="spinner">
+        <div class="spinner" data-testid="timelineLoading">
             <div id="first" class="double-bounce">
                 <font-awesome-icon
                     :icon="medIcon"

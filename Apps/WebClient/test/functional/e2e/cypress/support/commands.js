@@ -34,4 +34,14 @@ Cypress.Commands.add("login", (username, password, authMethod = AuthMethod.BCSC)
         cy.get('#password').type(password)
         cy.get('#kc-login').click()
     }
-})
+});
+
+Cypress.Commands.add("checkTimelineHasLoaded", () => 
+{
+    cy.get('[data-testid=timelineLoading]').should('not.exist');
+});
+
+Cypress.Commands.add("closeCovidModal", () => 
+{
+    cy.get('[data-testid=covidModal] .close').click()
+});
