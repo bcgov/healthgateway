@@ -18,11 +18,11 @@ export default class LinearTimelineComponent extends Vue {
 
     @Prop() private filterText!: string;
     @Prop() private filterTypes!: string[];
+    @Prop() private entriesPerPage!: number;
 
     private filteredTimelineEntries: TimelineEntry[] = [];
     private visibleTimelineEntries: TimelineEntry[] = [];
 
-    private windowWidth = 0;
     private currentPage = 1;
     private hasErrors = false;
 
@@ -80,46 +80,17 @@ export default class LinearTimelineComponent extends Vue {
                 this.setPageFromDate(firstEntryDate);
             }
         );
-
-        window.addEventListener("resize", this.handleResize);
-        this.handleResize();
-    }
-
-    private destroyed() {
-        window.removeEventListener("handleResize", this.handleResize);
-    }
-
-    private handleResize() {
-        this.windowWidth = window.innerWidth;
     }
 
     private linkGen(pageNum: number) {
         return `?page=${pageNum}`;
     }
 
-    private get numberOfEntriesPerPage(): number {
-        if (this.windowWidth < 576) {
-            // xs
-            return 7;
-        } else if (this.windowWidth < 768) {
-            // s
-            return 9;
-        } else if (this.windowWidth < 992) {
-            // m
-            return 11;
-        } else if (this.windowWidth < 1200) {
-            // l
-            return 13;
-        } // else, xl
-        return 15;
-    }
-
     private get numberOfPages(): number {
         let result = 1;
-        if (this.filteredTimelineEntries.length > this.numberOfEntriesPerPage) {
+        if (this.filteredTimelineEntries.length > this.entriesPerPage) {
             result = Math.ceil(
-                this.filteredTimelineEntries.length /
-                    this.numberOfEntriesPerPage
+                this.filteredTimelineEntries.length / this.entriesPerPage
             );
         }
         return result;
@@ -130,7 +101,7 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     @Watch("currentPage")
-    @Watch("numberOfEntriesPerPage")
+    @Watch("entriesPerPage")
     @Watch("filteredTimelineEntries")
     private calculateVisibleEntries() {
         // Handle the current page being beyond the max number of pages
@@ -138,15 +109,20 @@ export default class LinearTimelineComponent extends Vue {
             this.currentPage = this.numberOfPages;
         }
         // Get the section of the array that contains the paginated section
-        let lowerIndex = (this.currentPage - 1) * this.numberOfEntriesPerPage;
+        let lowerIndex = (this.currentPage - 1) * this.entriesPerPage;
         let upperIndex = Math.min(
-            this.currentPage * this.numberOfEntriesPerPage,
+            this.currentPage * this.entriesPerPage,
             this.filteredTimelineEntries.length
         );
         this.visibleTimelineEntries = this.filteredTimelineEntries.slice(
             lowerIndex,
             upperIndex
         );
+    }
+
+    @Watch("entriesPerPage")
+    private onEntriesPerPageChange() {
+        this.currentPage = 1;
     }
 
     private getVisibleCount(): number {
@@ -157,7 +133,7 @@ export default class LinearTimelineComponent extends Vue {
         let index = this.filteredTimelineEntries.findIndex(
             (entry) => entry.date === eventDate
         );
-        this.currentPage = Math.floor(index / this.numberOfEntriesPerPage) + 1;
+        this.currentPage = Math.floor(index / this.entriesPerPage) + 1;
     }
 
     private get timelineIsEmpty(): boolean {

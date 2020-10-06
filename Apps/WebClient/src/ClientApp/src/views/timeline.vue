@@ -650,6 +650,7 @@ export default class TimelineView extends Vue {
                     :timeline-entries="timelineEntries"
                     :is-visible="isListView"
                     :total-entries="getTotalCount()"
+                    :entries-per-page="entriesPerPage"
                     :filter-text="filterText"
                     :filter-types="filterTypes"
                 >
