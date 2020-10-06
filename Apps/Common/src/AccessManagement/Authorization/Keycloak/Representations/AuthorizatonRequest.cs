@@ -54,18 +54,39 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Represent
         /// </summary>
         public PermissionTicketToken? Permissions { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Metadata.
+        /// </summary>       
         public Metadata? Metadata { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Audience.
+        /// </summary>  
         public string? Audience { get; set; }
 
+        /// <summary>
+        /// Gets or sets the SubjectToken.
+        /// </summary>
         public string? SubjectToken { get; set; }
 
+        /// <summary>
+        /// Gets or sets the SubmitRequest.
+        /// </summary>      
         public bool SubmitRequest { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets the dictionary of a list of claims.
+        /// </summary>  
         public Dictionary<string, List<string>>? Claims { get; set; }
 
+        /// <summary>
+        /// Gets or sets the AccessToken.
+        /// </summary>          
         public AccessToken? Rpt { get; set; }
 
+        /// <summary>
+        /// Gets or sets the relying party token, RptToken.
+        /// </summary>
         public string? RptToken { get; set; }
     }
 }

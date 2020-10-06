@@ -15,14 +15,20 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Resource
 {
+    using System;
     using System.Collections.Generic;
-    using Microsoft.Extensions.Configuration;
+    using System.Net.Http;
+    using System.Text.Json;
+
+    using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Logging;
 
-    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
-    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Representation;
-    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Util;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Util;
+
     using HealthGateway.Common.Services;
     ///
     /// <summary>An entry point for managing user-managed permissions for a particular resource.</summary>
@@ -32,27 +38,170 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
 
-        private readonly KeycloakConfiguration keycloakConfiguration;
-
-        private readonly TokenCallable pat;
+        private readonly Uma2ServerConfiguration uma2ServerConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationResource"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
+        /// <param name="uma2ServerConfiguration">The Uma2ServerConfiguration configuration.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
-        /// <param name="keycloakConfiguration">The KeycloakConfiguration configuration.</param>
-        /// <param name="pat">A TokenCallable pat.</param>
-
         public PolicyResource(ILogger<PermissionResource> logger,
-            KeycloakConfiguration keycloakConfiguration,
-            HttpClientService httpClientService,
-            TokenCallable pat)
+            Uma2ServerConfiguration uma2ServerConfiguration,
+            HttpClientService httpClientService)
         {
             this.logger = logger;
-            this.keycloakConfiguration = keycloakConfiguration;
+            this.uma2ServerConfiguration = uma2ServerConfiguration;
             this.httpClientService = httpClientService;
-            this.pat = pat;
+        }
+
+        /// <summary>Creates a user-managed permission.</summary>
+        /// <param name="resourceId">The resource identifier of the user managed access permission.</param>
+        /// <param name="permission">The uma Permission to update.</param>
+        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
+        /// <returns>The created UmaPermission</returns>
+        public async Task<UmaPermission> create(string resourceId, UmaPermission permission, string token)
+        {
+            HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.BearerTokenAuthorization(token);
+            string requestUrl = this.uma2ServerConfiguration.PolicyEndpoint + "/" + resourceId;
+            client.BaseAddress = new Uri(requestUrl);
+
+            string jsonOutput = JsonSerializer.Serialize<UmaPermission>(permission);
+
+            using (HttpContent content = new StringContent(jsonOutput))
+            {
+                HttpResponseMessage response = await client.PostAsync(new Uri(requestUrl), content).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                {
+                    this.logger.LogError($"create() returned with StatusCode := {response.StatusCode}.");
+                }
+
+                string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                UmaPermission umaPermissionResponse = JsonSerializer.Deserialize<UmaPermission>(result);
+                return umaPermissionResponse;
+            }
+        }
+
+        /// <summary>Updates an existing user-managed permission.</summary>
+        /// <param name="permission">The uma Permission to update.</param>
+        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
+        /// <returns>True if the delete was successful.</returns>
+        public async Task<bool> update(UmaPermission permission, string token)
+        {
+            HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.BearerTokenAuthorization(token);
+            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/" + permission.Id;
+            client.BaseAddress = new Uri(requestUrl);
+
+            string jsonOutput = JsonSerializer.Serialize<UmaPermission>(permission);
+
+            using (HttpContent content = new StringContent(jsonOutput))
+            {
+                HttpResponseMessage response = await client.PutAsync(new Uri(requestUrl), content).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                {
+                    string msg = $"update() returned with StatusCode := {response.StatusCode}.";
+                    this.logger.LogError(msg);
+                    throw new HttpRequestException(msg);
+                }
+                return true;
+            }
+        }
+
+        /// <summary>Deletes an existing user-managed permission.</summary>
+        /// <param name="permissionId">The uma Permission identifier.</param>
+        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
+        /// <returns>True if the delete was successful.</returns>
+        public async Task<bool> delete(string permissionId, string token)
+        {
+            HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.BearerTokenAuthorization(token);
+            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/" + permissionId;
+            client.BaseAddress = new Uri(requestUrl);
+
+            HttpResponseMessage response = await client.DeleteAsync(new Uri(requestUrl)).ConfigureAwait(true);
+            if (!response.IsSuccessStatusCode)
+            {
+                string msg = $"delete() returned with StatusCode := {response.StatusCode}.";
+                this.logger.LogError(msg);
+                throw new HttpRequestException(msg);
+            }
+            return true;
+        }
+
+        /// <summary>Queries the server for permission matching the given parameters.</summary>
+        /// <param name="resourceId">The resource identifier in context.</param>
+        /// <param name="name">The name of the permission</param>
+        /// <param name="scope">scope the scope associated with the permission.</param>
+        /// <param name="firstResult">firstResult the position of the first resource to retrieve.</param>
+        /// <param name="maxResult">maxResult the maximum number of resources to retrieve.</param>
+        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
+        /// <returns>A list of UmaPermissions, if found.</returns>
+        public async Task<List<UmaPermission>> find(string resourceId,
+                string name,
+                string scope,
+                int firstResult,
+                int maxResult,
+                string token)
+        {
+            HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.BearerTokenAuthorization(token);
+            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/ticket";
+            client.BaseAddress = new Uri(requestUrl);
+
+            requestUrl = QueryHelpers.AddQueryString(requestUrl, "name", name);
+            requestUrl = QueryHelpers.AddQueryString(requestUrl, "resource", resourceId);
+            requestUrl = QueryHelpers.AddQueryString(requestUrl, "scope", scope);
+            requestUrl = QueryHelpers.AddQueryString(requestUrl, "first", firstResult.ToString());
+            requestUrl = QueryHelpers.AddQueryString(requestUrl, "max", maxResult.ToString());
+
+            HttpResponseMessage response = await client.GetAsync(new Uri(requestUrl)).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                this.logger.LogError($"find() returned with StatusCode := {response.StatusCode}.");
+            }
+
+            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            List<UmaPermission> umaPermissions = JsonSerializer.Deserialize<List<UmaPermission>>(result);
+            return umaPermissions;
+        }
+
+        /// <summary>Queries the server for a permission with the given ID.</summary>
+        /// <param name="id">The uma permission identifier to find.</param>
+        /// <param name="token"> A valid base64 access_token from authenticing the caller.</param>
+        /// <returns>An UmaPermission, if found.</returns>
+        public async Task<UmaPermission> findById(string id, string token)
+        {
+            HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.BearerTokenAuthorization(token);
+            string requestUrl = this.uma2ServerConfiguration.PermissionEndpoint + "/" + id;
+            client.BaseAddress = new Uri(requestUrl);
+
+            HttpResponseMessage response = await client.GetAsync(new Uri(requestUrl)).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                this.logger.LogError($"findById() returned with StatusCode := {response.StatusCode}.");
+            }
+
+            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            UmaPermission umaPermission = JsonSerializer.Deserialize<UmaPermission>(result);
+            return umaPermission;
         }
     }
 }

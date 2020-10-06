@@ -18,6 +18,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Text.Json;
 
@@ -35,13 +36,14 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
         /// <param name="base64BearerToken">The OAuth 2 Access Token base 64 encoded</param>
         public static void BearerTokenAuthorization(this HttpClient httpClient, string base64BearerToken)
         {
-            httpClient.DefaultRequestHeaders.Add("Authorization", @"Bearer " + base64BearerToken);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", base64BearerToken);
         }
 
-        /// <summary>Sets the UMA multipart form parameters from teh AuthorizationRequest provided.</summary>
+        /// <summary>Sets the UMA multipart form parameters from the AuthorizationRequest provided and posts the request.</summary>
         /// <param name="httpClient">The target of this extension method.</param>
+        /// <param name="uri">The <cref name="Uri"/> endpoint to post to.</param>
         /// <param name="request">An <cref name="AuthorizationRequest"/> request.</param>
-        public static void Uma(this HttpClient httpClient, AuthorizationRequest request)
+        public static Task<HttpResponseMessage> PostUmaAsync(this HttpClient httpClient, Uri uri, AuthorizationRequest request)
         {
             string? ticket = request.Ticket;
             PermissionTicketToken? permissionTicketToken = request.Permissions;
@@ -105,6 +107,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
                     multiForm.Add(new StringContent(metadata.Limit.ToString()), "response_permissions_limit");
                 }
             }
+            return httpClient.PostAsync(uri, multiForm);
         }
     }
 }

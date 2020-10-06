@@ -24,9 +24,11 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
     using Microsoft.Extensions.Logging;
 
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Representation;
-    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Util;
+
 
     /// <summary>
     /// An entry point for obtaining permissions from the server.
@@ -60,8 +62,10 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
 
         /// <summary>Query the server for permissions given an <cref name="AuthorizationRequest"/>.</summary>
         /// <param name="request"> an <cref name="AuthorizationRequest"/></param>
+        /// <param name="accessToken">A Base64 encoded OAuth 2.0 accessToken from an authentication event.</param>
         /// <returns>An <cref name="AuthorizationRequest"/>with a RPT holding all granted permissions.</returns>
-        public async Task<AuthorizationResponse> authorize(AuthorizationRequest request)
+
+        public async Task<AuthorizationResponse> authorize(AuthorizationRequest request, string accessToken)
         {
             if (request.Audience == null)
             {
@@ -75,24 +79,22 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
 
             client.BaseAddress = new Uri(requestUri);
 
+            client.BearerTokenAuthorization(accessToken);
+
             if (request.Audience == string.Empty)
             {
                 request.Audience = this.keycloakConfiguration.Audience;
             }
-            string jsonOutput = JsonSerializer.Serialize<AuthorizationRequest>(request);
 
-            using (HttpContent content = new StringContent(jsonOutput))
+            HttpResponseMessage response = await client.PostUmaAsync(new Uri(requestUri), request).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
             {
-                HttpResponseMessage response = await client.PostAsync(new Uri(requestUri), content).ConfigureAwait(false);
-                if (!response.IsSuccessStatusCode)
-                {
-                    this.logger.LogError($"AuthorizationResource.authorize() returned with StatusCode := {response.StatusCode}.");
-                }
-
-                string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                AuthorizationResponse authorizationResponse = JsonSerializer.Deserialize<AuthorizationResponse>(result);
-                return authorizationResponse;
+                this.logger.LogError($"AuthorizationResource.authorize() returned with StatusCode := {response.StatusCode}.");
             }
+
+            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            AuthorizationResponse authorizationResponse = JsonSerializer.Deserialize<AuthorizationResponse>(result);
+            return authorizationResponse;          
         }
     }
 }

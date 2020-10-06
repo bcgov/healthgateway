@@ -15,12 +15,18 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Resource
 {
-    using System.Collections.Generic;
-    using Microsoft.Extensions.Configuration;
+    using System;
+    using System.Net.Http;
+    using System.Text.Json;
+
+    using System.Threading.Tasks;
+
     using Microsoft.Extensions.Logging;
 
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Representation;
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Util;
+
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
     using HealthGateway.Common.Services;
     ///
@@ -46,7 +52,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         /// <param name="httpClientService">injected HTTP client service.</param>
         /// <param name="keycloakConfiguration">The keycloak configuration.</param>
         /// <param name="uma2ServerConfiguration">uma2 server-side configuration settings.</param>
-        public ProtectionResource(ILogger<PermissionResource> logger,
+        public ProtectionResource(ILogger<ProtectionResource> logger,
             KeycloakConfiguration keycloakConfiguration,
             Uma2ServerConfiguration uma2ServerConfiguration,
             HttpClientService httpClientService)
@@ -55,6 +61,38 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             this.keycloakConfiguration = keycloakConfiguration;
             this.uma2ServerConfiguration = uma2ServerConfiguration;
             this.httpClientService = httpClientService;
+        }
+
+        /// <summary>Introspects the given <code>rpt</code> using the token introspection endpoint.</summary>
+        /// <param name="rpt">the Requesting Party Token to Introspect.</param>
+        /// <param name="token">The bearer token to use for authorization.</param>
+        /// <returns>A TokenIntrospectionResponse.</returns>
+        public async Task<TokenIntrospectionResponse> introspectRequestingPartyToken(string rpt, string token)
+        {
+
+            HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+
+            client.BearerTokenAuthorization(token);
+            string requestUrl = this.uma2ServerConfiguration.IntrospectionEndpoint;
+            client.BaseAddress = new Uri(requestUrl);
+
+            MultipartFormDataContent multiForm = new MultipartFormDataContent();
+
+            multiForm.Add(new StringContent(OAuth2Constants.UMA_GRANT_TYPE), OAuth2Constants.GRANT_TYPE);
+            multiForm.Add(new StringContent("requesting_party_token"), "token_type_hint");
+            multiForm.Add(new StringContent(rpt), "token");
+
+            HttpResponseMessage response = await client.PostAsync(new Uri(requestUrl), multiForm).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                this.logger.LogError($"introspectRequestingPartyToken() returned with StatusCode := {response.StatusCode}.");
+            }
+
+            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            TokenIntrospectionResponse introspectionResponse = JsonSerializer.Deserialize<TokenIntrospectionResponse>(result);
+            return introspectionResponse;
         }
     }
 }
