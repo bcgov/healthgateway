@@ -29,7 +29,7 @@
                             show-select
                             :search="filterText"
                         >
-                            <template v-slot:item.sentDateTime="{ item }">
+                            <template #:item.sentDateTime="{ item }">
                                 <span>{{ formatDate(item.sentDateTime) }}</span>
                             </template>
                         </v-data-table>
@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Vuetify, { VLayout } from "vuetify/lib";
+import Vuetify from "vuetify/lib";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import LoadingComponent from "@/components/core/Loading.vue";
@@ -66,9 +66,9 @@ import { IEmailAdminService } from "@/services/interfaces";
     }
 })
 export default class ResendEmailView extends Vue {
-    private filterText: string = "";
-    private isLoading: boolean = true;
-    private showFeedback: boolean = false;
+    private filterText = "";
+    private isLoading = true;
+    private showFeedback = false;
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
@@ -98,7 +98,7 @@ export default class ResendEmailView extends Vue {
 
     private emailService!: IEmailAdminService;
 
-    mounted() {
+    private mounted() {
         this.emailService = container.get(SERVICE_IDENTIFIER.EmailAdminService);
         this.loadEmails();
     }

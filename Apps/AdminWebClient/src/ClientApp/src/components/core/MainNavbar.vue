@@ -1,8 +1,73 @@
-<style lang="scss" scoped>
-.v-list-item {
-    border-radius: 4px;
+<script lang="ts">
+import { Action, Getter } from "vuex-class";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+
+@Component
+export default class MainNavbar extends Vue {
+    @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
+        isDrawerOpen
+    }: any) => void;
+    @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
+    @Getter("isAuthorized", { namespace: "auth" })
+    private isAuthorized!: boolean;
+
+    private isOpen = true;
+    private drawer = false;
+
+    private color = "success";
+
+    private logo = "favicon.ico";
+    private image = "./assets/images/background.jpg";
+
+    private items = [
+        {
+            title: "Dashboard",
+            icon: "view_quilt",
+            to: "/"
+        },
+        {
+            title: "JobScheduler",
+            icon: "schedule",
+            to: "/job-scheduler"
+        },
+        {
+            title: "Beta Invites",
+            icon: "account_box",
+            to: "/beta-invites"
+        },
+        {
+            title: "Resend Emails",
+            icon: "email",
+            to: "/admin-email"
+        },
+        {
+            title: "Communications",
+            icon: "email",
+            to: "/communication"
+        },
+        { title: "Feedback Review", icon: "comment", to: "/user-feedback" },
+        {
+            title: "System Analytics",
+            icon: "fa-download",
+            to: "/stats"
+        }
+    ];
+
+    private mounted() {
+        this.isOpen = this.isDrawerOpen;
+    }
+
+    @Watch("isOpen")
+    private onDrawerChange(state: boolean) {
+        this.setDrawerState({ isDrawerOpen: state });
+    }
+
+    @Watch("isDrawerOpen")
+    private onStateDrawerChange(state: boolean) {
+        this.isOpen = state;
+    }
 }
-</style>
+</script>
 
 <template>
     <v-navigation-drawer
@@ -55,73 +120,8 @@
     </v-navigation-drawer>
 </template>
 
-<script lang="ts">
-import { Action, Getter } from "vuex-class";
-import { Component, Vue, Prop, Watch } from "vue-property-decorator";
-
-@Component
-export default class MainNavbar extends Vue {
-    @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
-        isDrawerOpen
-    }: any) => void;
-    @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
-    @Getter("isAuthorized", { namespace: "auth" })
-    private isAuthorized!: boolean;
-
-    private isOpen: boolean = true;
-    private drawer: boolean = false;
-
-    private color: string = "success";
-
-    private logo: string = "favicon.ico";
-    private image: string = "./assets/images/background.jpg";
-
-    private items = [
-        {
-            title: "Dashboard",
-            icon: "view_quilt",
-            to: "/"
-        },
-        {
-            title: "JobScheduler",
-            icon: "schedule",
-            to: "/job-scheduler"
-        },
-        {
-            title: "Beta Invites",
-            icon: "account_box",
-            to: "/beta-invites"
-        },
-        {
-            title: "Resend Emails",
-            icon: "email",
-            to: "/admin-email"
-        },
-        {
-            title: "Communications",
-            icon: "email",
-            to: "/communication"
-        },
-        { title: "Feedback Review", icon: "comment", to: "/user-feedback" },
-        {
-            title: "System Analytics",
-            icon: "fa-download",
-            to: "/stats"
-        }
-    ];
-
-    mounted() {
-        this.isOpen = this.isDrawerOpen;
-    }
-
-    @Watch("isOpen")
-    public onDrawerChange(state: boolean) {
-        this.setDrawerState({ isDrawerOpen: state });
-    }
-
-    @Watch("isDrawerOpen")
-    public onStateDrawerChange(state: boolean) {
-        this.isOpen = state;
-    }
+<style lang="scss" scoped>
+.v-list-item {
+    border-radius: 4px;
 }
-</script>
+</style>

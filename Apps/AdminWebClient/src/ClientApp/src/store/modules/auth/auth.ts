@@ -11,7 +11,7 @@ export const state: AuthState = {
     stateType: StateType.NONE
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const auth: Module<AuthState, RootState> = {
     namespaced,

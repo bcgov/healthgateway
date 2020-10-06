@@ -61,22 +61,22 @@ export interface IHttpDelegate {
     get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     post<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
     put<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
     patch<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
     delete<T>(
         url: string,
-        payload?: Object,
+        payload?: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
 }
