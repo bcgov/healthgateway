@@ -44,5 +44,5 @@ Cypress.Commands.add("checkTimelineHasLoaded", () =>
 
 Cypress.Commands.add("closeCovidModal", () => 
 {
-    cy.get('#covid-modal___BV_modal_header_ > .close').click()
+    cy.get('[data-testid=covidModal] .close').click()
 });
