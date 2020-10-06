@@ -2,7 +2,15 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Validate Star Rating', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
+        cy.server()
+        cy.fixture('AllDisabledConfig').then(config => {
+            config.webClient.modules.Medication = true;
+            cy.route('GET', '/v1/api/configuration/', config);            
+        });
+        cy.login(Cypress.env('keycloak.username'), 
+                 Cypress.env('keycloak.password'), 
+                 AuthMethod.KeyCloak)
+        cy.checkTimelineHasLoaded();
     })
 
     it('Cliking the 5 star button should logout', () => {

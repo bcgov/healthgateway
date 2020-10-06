@@ -2,6 +2,11 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('User Feedback', () => {
     beforeEach(() => {
+        cy.server()
+        cy.fixture('AllDisabledConfig').then(config => {
+            config.webClient.modules.Medication = true;
+            cy.route('GET', '/v1/api/configuration/', config);            
+        });
     })
 
     it('Send feedback', () => {

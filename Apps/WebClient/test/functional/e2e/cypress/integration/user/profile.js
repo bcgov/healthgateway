@@ -2,17 +2,20 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('User Profile', () => {
     const emailAddress = "healthgateway@mailinator" + Math.random().toString().substr(2, 5) + ".com"
-    before(() => {        
+    before(() => {
         cy.server()
-        cy.fixture('AllDisabledConfig').as('config')
-        cy.route('GET', '/v1/api/configuration/', '@config')
+        cy.fixture('AllDisabledConfig').then(config => {
+            config.webClient.modules.Medication = true;
+            cy.route('GET', '/v1/api/configuration/', config);      
+        });
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak)
+        cy.checkTimelineHasLoaded();
     })
 
     it('Validate email fields', () => {
-        cy.get('#menuBtnProfile').click()
+        cy.get('[data-testid=menuBtnProfileLink]').click()
         cy.get('[data-testid=editEmailBtn]').click()
         let emailInput = cy.get('[data-testid=emailInput]')
         emailInput.clear()
