@@ -44,7 +44,7 @@
         "event-source-polyfill": "^1.0.20",
         "file-loader": "^6.1.0",
         "isomorphic-fetch": "^3.0.0",
-        "jest": "^26.4.2",
+        "jest": "^26.5.0",
         "jest-sonar-reporter": "^2.0.0",
         "jest-transform-stub": "^2.0.0",
         "jquery": "^3.5.1",
