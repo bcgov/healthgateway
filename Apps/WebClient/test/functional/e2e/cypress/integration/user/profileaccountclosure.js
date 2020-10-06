@@ -1,13 +1,13 @@
 const { AuthMethod } = require("../../support/constants")
 
-describe('User Profile - Account Closure', () => {
+describe('Account Closure Profile', () => {
     before(() => {
         cy.login(Cypress.env('keycloak.accountclosure.username'), 
                  Cypress.env('keycloak.password'), 
                  AuthMethod.KeyCloak)
     })
 
-    it('Profile page url should contain registration', () => {
+    it('Validate registration', () => {
         cy.url().should('include', '/registration')
     })
 })

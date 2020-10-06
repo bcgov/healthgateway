@@ -11,7 +11,7 @@ describe('User Profile', () => {
                  AuthMethod.KeyCloak)
     })
 
-    it('Profile - Email Validation - email fields should be identical', () => {
+    it('Validate email fields', () => {
         cy.get('#menuBtnProfile').click()
         cy.get('[data-testid=editEmailBtn]').click()
         let emailInput = cy.get('[data-testid=emailInput]')
@@ -23,7 +23,7 @@ describe('User Profile', () => {
         cy.contains('.invalid-feedback', ' Emails must match ')
     })
 
-    it('Profile - Email Validation - Can edit and save email address', () => {
+    it('Edit and Save email address', () => {
         let emailConfirmationInput = cy.get('[data-testid=emailConfirmationInput]')
         emailConfirmationInput.clear()
         emailConfirmationInput.type(emailAddress)
