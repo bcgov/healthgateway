@@ -26,6 +26,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
 
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak;
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation;
+    using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation.Tokens;
 
 
 /// <summary>Extensions for HttpClient to handle OAuth 2.0 UMA.</summary>
@@ -52,17 +53,16 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
                 throw new Exception("You must either provide a permission ticket or the permissions you want to request.");
             }
 
-            MultipartFormDataContent multiForm = new MultipartFormDataContent();
-
-            multiForm.Add(new StringContent(OAuth2Constants.UMA_GRANT_TYPE), OAuth2Constants.GRANT_TYPE);
-            multiForm.Add(new StringContent(ticket), "ticket");
-            multiForm.Add(new StringContent(request.ClaimToken), "claim_token");
-            multiForm.Add(new StringContent(request.ClaimTokenFormat), "claim_token_format");
-            multiForm.Add(new StringContent(request.Pct), "pct");
-            multiForm.Add(new StringContent(request.RptToken), "rpt");
-            multiForm.Add(new StringContent(request.Scope), "scope");
-            multiForm.Add(new StringContent(request.Audience), "audience");
-            multiForm.Add(new StringContent(request.SubjectToken), "subject_token");
+            Dictionary<string, string> paramDict = new Dictionary<string, string>();
+            paramDict.Add(OAuth2Constants.UMA_GRANT_TYPE, OAuth2Constants.GRANT_TYPE);
+            paramDict.Add("ticket", ticket!);
+            paramDict.Add("claim_token", request.ClaimToken!);
+            paramDict.Add("claim_token_format", request.ClaimTokenFormat!);
+            paramDict.Add("pct", request.Pct!);
+            paramDict.Add("rpt", request.RptToken!);
+            paramDict.Add("scope", request.Scope!);
+            paramDict.Add("audience", request.Audience!);
+            paramDict.Add("subject_token", request.SubjectToken!);
 
             if (permissionTicketToken!.Permissions != null)
             {
@@ -89,7 +89,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
                             value.Append(scope);
                         }
                     }
-                    multiForm.Add(new StringContent(value.ToString()), "permission");
+                    paramDict.Add(value.ToString(), "permission");
                 }
             }
 
@@ -99,15 +99,18 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
             {
                 if (metadata.IncludeResourceName)
                 {
-                    multiForm.Add(new StringContent(metadata.IncludeResourceName.ToString()), "response_include_resource_name");
+                    paramDict.Add(metadata.IncludeResourceName.ToString(), "response_include_resource_name");
                 }
 
                 if (metadata.Limit > 0)
                 {
-                    multiForm.Add(new StringContent(metadata.Limit.ToString()), "response_permissions_limit");
+                    paramDict.Add(metadata.Limit.ToString(), "response_permissions_limit");
                 }
             }
-            return httpClient.PostAsync(uri, multiForm);
+
+            HttpContent content = new FormUrlEncodedContent(paramDict);
+            content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
+            return httpClient.PostAsync(uri, content);
         }
     }
 }

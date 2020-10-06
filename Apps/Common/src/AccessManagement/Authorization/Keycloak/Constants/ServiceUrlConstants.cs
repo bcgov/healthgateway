@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak
 {
+    /// <summary>Keycloak Service URL Constant template Url paths... well known Urls.</summary>
     public static class ServiceUrlConstants
     {
-
         public static string AUTH_PATH = "/realms/{realm-name}/protocol/openid-connect/auth";
         public static string TOKEN_PATH = "/realms/{realm-name}/protocol/openid-connect/token";
         public static string TOKEN_SERVICE_LOGOUT_PATH = "/realms/{realm-name}/protocol/openid-connect/logout";

@@ -19,16 +19,16 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
 
     using HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Configuration;
 
-/// <summary>Helper class to build a URL from the well-known URL constant templates for Keycloak.</summary>
+    /// <summary>Helper class to build a URL from the well-known URL constant templates for Keycloak.</summary>
     public static class KeycloakUriBuilder
     {
         private const string REALM_NAME = "{realm-name}";
-        public static string build(IKeycloakConfiguration configuration, string template)
+        private static string build(IKeycloakConfiguration configuration, string template)
         {
             string realm = configuration.Realm;
             string url = new string(configuration.AuthServerUrl);
             int idx = url.LastIndexOf("/");
-            if (idx.Equals(url.Length-1))
+            if (idx.Equals(url.Length - 1))
             {
                 url = url.Substring(0, idx);
             }
@@ -38,6 +38,10 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Ut
             return url;
         }
 
+        /// <summary>Build up the keycloak server url from the template provided and using the configuration settings.</summary>
+        /// <param name="configuration">The <cref name="IKeycloakConfiguration"/>.</param>
+        /// <param name="template">The template of which '{realm-name}' will be substituted for the configured realm name.</param>
+        /// <returns>a Uri for he given template url</returns>
         public static Uri buildUri(IKeycloakConfiguration configuration, string template)
         {
             return new Uri(build(configuration, template));

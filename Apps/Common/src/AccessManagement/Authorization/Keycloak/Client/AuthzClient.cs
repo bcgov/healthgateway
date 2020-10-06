@@ -32,7 +32,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
     /// from the server at http(s)://{server}:{port}/auth/realms/{realm}/.well-known/uma-configuration.
     /// In the org.keycloak Java libs, this class is called 'AuthZClient'.
     /// </summary>
-    public class AuthzService
+    public class AuthzClient
     {
         /// <summary>
         /// The injected logger delegate.
@@ -50,13 +50,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client
         private readonly IKeycloakConfiguration keycloakConfiguration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthzService"/> class.
+        /// Initializes a new instance of the <see cref="AuthzClient"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="httpClientService">injected HTTP client service.</param>
         /// <param name="keycloakConfiguration">Injected keycloak Configuration.</param>
-        public AuthzService(
-            ILogger<AuthzService> logger,
+        public AuthzClient(
+            ILogger<AuthzClient> logger,
             IHttpClientService httpClientService,
             IKeycloakConfiguration keycloakConfiguration)
         {

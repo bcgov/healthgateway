@@ -16,9 +16,9 @@
 namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Resource
 {
     using System;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Text.Json;
-
     using System.Threading.Tasks;
 
     using Microsoft.Extensions.Logging;
@@ -64,7 +64,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
         /// <inherited/>
         public async Task<TokenIntrospectionResponse> introspectRequestingPartyToken(string rpt, string token)
         {
-
             HttpClient client = this.httpClientService.CreateDefaultHttpClient();
 
             client.DefaultRequestHeaders.Accept.Clear();
@@ -73,13 +72,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Client.Re
             string requestUrl = this.serverConfigurationDelegate.ServerConfiguration.IntrospectionEndpoint;
             client.BaseAddress = new Uri(requestUrl);
 
-            MultipartFormDataContent multiForm = new MultipartFormDataContent();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("requesting_party_token", "token_type_hint");
+            dict.Add("token", rpt);
+            HttpContent content = new FormUrlEncodedContent(dict);
+            content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
 
-            multiForm.Add(new StringContent(OAuth2Constants.UMA_GRANT_TYPE), OAuth2Constants.GRANT_TYPE);
-            multiForm.Add(new StringContent("requesting_party_token"), "token_type_hint");
-            multiForm.Add(new StringContent(rpt), "token");
-
-            HttpResponseMessage response = await client.PostAsync(new Uri(requestUrl), multiForm).ConfigureAwait(false);
+            HttpResponseMessage response = await client.PostAsync(new Uri(requestUrl), content).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 this.logger.LogError($"introspectRequestingPartyToken() returned with StatusCode := {response.StatusCode}.");
