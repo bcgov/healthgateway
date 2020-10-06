@@ -28,4 +28,3 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Represent
         public List<Permission>? Permissions { get; } 
     }
 }
-å
