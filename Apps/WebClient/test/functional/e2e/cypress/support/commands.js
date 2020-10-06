@@ -48,6 +48,10 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
+    cy.url().should(
+        "contains",
+        "/timeline"
+    );
     cy.get("[data-testid=timelineLoading]").should("not.exist");
 });
 
