@@ -13,7 +13,7 @@ describe('Health Insights', () => {
         cy.get('#menuBtnHealthInsights').click()
     })
 
-    it('Total records count (for medication) should not have 0 records.', () => {
+    it('Validate medication records count.', () => {
         cy.get('[data-testid=totalRecordsText]').should('not.contain', '0 ')
     })
 })
