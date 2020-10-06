@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation
+namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Representation.Tokens
 {
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;

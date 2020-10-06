@@ -23,15 +23,19 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Represent
     /// </summary>
     public class PermissionRequest
     {
+        /// <summary>Gets or sets the resource id.</summary>
         [JsonPropertyName("resource_id")]
-        public string ResourceId { get; set; }
+        public string? ResourceId { get; set; }
 
+        /// <summary>Gets or sets the resource scopes.</summary>
         [JsonPropertyName("resource_scopes")]
-        public List<string> Scopes { get; set; }
+        public List<string>? Scopes { get; set; }
 
+        /// <summary>Gets or sets the resource_server_id.</summary>
         [JsonPropertyName("resource_server_id")]
-        public string ResourceServerId { get; set; }
+        public string? ResourceServerId { get; set; }
 
-        public Dictionary<string, List<string>> Claims { get; set; }
+        /// <summary>Gets or sets the claims.</summary>
+        public Dictionary<string, List<string>>? Claims { get; set; }
     }
 }
