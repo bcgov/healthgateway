@@ -115,6 +115,13 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
                 });
+
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(180);
+            });
         }
 
         /// <summary>
@@ -427,6 +434,9 @@ namespace HealthGateway.Common.AspNetConfiguration
                 context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
                 await next().ConfigureAwait(true);
             });
+
+            // Enable Cache control and set defaults
+            this.UseResponseCaching(app);
         }
 
         /// <summary>
@@ -470,6 +480,29 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.UseEndpoints(routes =>
             {
                 routes.MapControllers();
+            });
+        }
+
+        /// <summary>
+        /// Enables response caching and sets default no cache.
+        /// </summary>
+        /// <param name="app">The application build provider.</param>
+        private void UseResponseCaching(IApplicationBuilder app)
+        {
+            this.Logger.LogDebug("Setting up Response Cache");
+            app.UseResponseCaching();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                    {
+                        NoCache = true,
+                        NoStore = true,
+                    };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Pragma] =
+                    new string[] { "no-cache" };
+                await next().ConfigureAwait(true);
             });
         }
 

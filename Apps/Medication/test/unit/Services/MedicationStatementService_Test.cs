@@ -604,7 +604,6 @@ namespace HealthGateway.Medication.Services.Test
         {
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string phn = "0009735353315";
             string userId = "1001";
             string ipAddress = "10.0.0.1";
 
