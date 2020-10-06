@@ -40,3 +40,4 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Keycloak.Represent
 
         public Dictionary<string, List<string>> Attributes { get; set; }
     }
+}
