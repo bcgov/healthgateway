@@ -87,6 +87,10 @@ export default class FilterComponent extends Vue {
         return this.windowWidth < 576;
     }
 
+    private get enabledFilters(): Filter[] {
+        return this.filters.filter((filter) => filter.isEnabled);
+    }
+
     @Watch("isMobileView")
     private onIsMobileView() {
         this.isVisible = false;
@@ -214,10 +218,12 @@ export default class FilterComponent extends Vue {
                     </b-col>
                 </b-row>
                 <div class="px-4">
-                    <b-row v-for="(filter, index) in filters" :key="index">
+                    <b-row
+                        v-for="(filter, index) in enabledFilters"
+                        :key="index"
+                    >
                         <b-col cols="8" align-self="start">
                             <b-form-checkbox
-                                v-show="filter.isEnabled"
                                 :id="filter.name + '-filter'"
                                 v-model="selectedFilters"
                                 :data-testid="`${filter.name}-filter`"
@@ -228,7 +234,6 @@ export default class FilterComponent extends Vue {
                             </b-form-checkbox>
                         </b-col>
                         <b-col
-                            v-show="filter.isEnabled"
                             cols="4"
                             align-self="end"
                             class="text-right"
