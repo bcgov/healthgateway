@@ -15,7 +15,7 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >October 7, 2020 - v1.2.7.3 - Unsupported
+                                    >October 7, 2020 - v1.2.8 - Unsupported
                                     Browsers, Filter Counts and Pagination, New
                                     Functional Test Tooling, Security
                                     Enhancements
