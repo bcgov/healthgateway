@@ -5,7 +5,7 @@
     "spt.apps.gov.bc.ca"
   ],
   "retries": {
-    "runMode": 2,
+    "runMode": 1,
     "openMode": 0
   },
   "reporter": "mocha-junit-reporter",
