@@ -228,6 +228,7 @@ export default class FilterComponent extends Vue {
                             </b-form-checkbox>
                         </b-col>
                         <b-col
+                            v-show="filter.isEnabled"
                             cols="4"
                             align-self="end"
                             class="text-right"
@@ -316,7 +317,12 @@ export default class FilterComponent extends Vue {
                                 {{ filter.display }}
                             </b-form-checkbox>
                         </b-col>
-                        <b-col cols="4" align-self="end" class="text-right">
+                        <b-col
+                            v-show="filter.isEnabled"
+                            cols="4"
+                            align-self="end"
+                            class="text-right"
+                        >
                             ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
                     </b-row>
