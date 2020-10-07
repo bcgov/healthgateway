@@ -260,6 +260,8 @@ export default class FilterComponent extends Vue {
                 </div>
             </b-dropdown>
         </div>
+
+        <!-- Mobile view specific modal-->
         <b-button
             class="d-d-sm-inline d-sm-none"
             variant="outline-primary"
@@ -309,10 +311,12 @@ export default class FilterComponent extends Vue {
             <b-row class="justify-content-center py-2">
                 <b-col class="col-10">
                     <h5>Type</h5>
-                    <b-row v-for="(filter, index) in filters" :key="index">
+                    <b-row
+                        v-for="(filter, index) in enabledFilters"
+                        :key="index"
+                    >
                         <b-col cols="8" align-self="start">
                             <b-form-checkbox
-                                v-show="filter.isEnabled"
                                 :id="filter.name + '-filter'"
                                 v-model="selectedFilters"
                                 :data-testid="`${filter.name}-filter`"
@@ -322,12 +326,7 @@ export default class FilterComponent extends Vue {
                                 {{ filter.display }}
                             </b-form-checkbox>
                         </b-col>
-                        <b-col
-                            v-show="filter.isEnabled"
-                            cols="4"
-                            align-self="end"
-                            class="text-right"
-                        >
+                        <b-col cols="4" align-self="end" class="text-right">
                             ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
                     </b-row>
