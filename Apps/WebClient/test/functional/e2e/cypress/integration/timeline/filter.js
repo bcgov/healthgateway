@@ -8,6 +8,26 @@ describe('Filters', () => {
         cy.closeCovidModal();
     })
 
+    it('Validate Filter Counts',() => {
+        const countRegex = /^.*?\((\d+)K?\).*$/
+        cy.get('[data-testid=filterDropdown]').click()
+        cy.get('[data-testid=immunizationCount]')
+            .should('be.visible')
+            .contains(countRegex)
+        cy.get('[data-testid=medicationCount]')
+            .should('be.visible')
+            .contains(countRegex)
+        cy.get('[data-testid=laboratoryCount]')
+            .should('be.visible')
+            .contains(countRegex)
+        cy.get('[data-testid=encounterCount]')
+            .should('be.visible')
+            .contains(countRegex)
+        cy.get('[data-testid=noteCount]')
+            .should('be.visible')
+            .contains(countRegex)
+    })
+
     it('No Records on Linear Timeline', () => {
         cy.get('[data-testid=filterTextInput]')
             .type('xxxx');
