@@ -287,8 +287,12 @@ export default class VerifySMSComponent extends Vue {
                     <countdown :time="getTimeout()">
                         <template slot-scope="props"
                             >Your code has been sent. You can resend after
-                            {{ props.minutes > 0 ? props.minutes + "m" : "" }}
-                            {{ props.seconds }}s</template
+                            <span data-testid="countdownText"
+                                >{{
+                                    props.minutes > 0 ? props.minutes + "m" : ""
+                                }}
+                                {{ props.seconds }}s</span
+                            ></template
                         >
                     </countdown>
                 </b-col>

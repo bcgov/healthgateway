@@ -32,4 +32,18 @@ describe('User Profile', () => {
         emailConfirmationInput.type(emailAddress)
         cy.get('[data-testid=editEmailSaveBtn]').click()
     })
+
+    it('Verify Phone Countdown timer', () => {
+        cy.get('[data-testid=menuBtnProfileLink]').click()
+        cy.get('[data-testid=editSMSBtn]').click()
+        let cellPhoneInput = cy.get('[data-testid=smsNumberInput]')
+        cellPhoneInput.clear()
+        const minm = 10000;
+        const phonePostfix = Math.floor(Math 
+            .random() * (99999 - minm + 1)) + minm; // auto-generate 5 digits number
+        cellPhoneInput.type("60465" + phonePostfix)
+        cy.get('[data-testid=saveSMSEditBtn]').click()
+        cy.get('[data-testid="countdownText"]')
+            .contains(/\d{1,2}s$/) // has 1 or 2 digits before the last 's' character
+    })
 })
