@@ -32,4 +32,15 @@ describe('User Profile', () => {
         emailConfirmationInput.type(emailAddress)
         cy.get('[data-testid=editEmailSaveBtn]').click()
     })
+
+    it('Verify Phone Countdown timer', () => {
+        cy.get('[data-testid=menuBtnProfileLink]').click()
+        cy.get('[data-testid=editSMSBtn]').click()
+        let cellPhoneInput = cy.get('[data-testid=smsNumberInput]')
+        cellPhoneInput.clear()
+        cellPhoneInput.type("6046543210")
+        cy.get('[data-testid=saveSMSEditBtn]').click()
+        cy.get('[data-testid="countdownText"]')
+            .contains(/\d{1,2}s$/) // has 1 or 2 digits before the last 's' character
+    })
 })
