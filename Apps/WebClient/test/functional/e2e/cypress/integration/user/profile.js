@@ -38,8 +38,9 @@ describe('User Profile', () => {
         cy.get('[data-testid=editSMSBtn]').click()
         let cellPhoneInput = cy.get('[data-testid=smsNumberInput]')
         cellPhoneInput.clear()
+        const minm = 10000;
         const phonePostfix = Math.floor(Math 
-            .random() * (99999 - 10000 + 1)) + minm; // auto-generate 5 digits number
+            .random() * (99999 - minm + 1)) + minm; // auto-generate 5 digits number
         cellPhoneInput.type("60465" + phonePostfix)
         cy.get('[data-testid=saveSMSEditBtn]').click()
         cy.get('[data-testid="countdownText"]')
