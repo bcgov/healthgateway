@@ -38,7 +38,9 @@ describe('User Profile', () => {
         cy.get('[data-testid=editSMSBtn]').click()
         let cellPhoneInput = cy.get('[data-testid=smsNumberInput]')
         cellPhoneInput.clear()
-        cellPhoneInput.type("6046543210")
+        const phonePostfix = Math.floor(Math 
+            .random() * (99999 - 10000 + 1)) + minm; // auto-generate 5 digits number
+        cellPhoneInput.type("60465" + phonePostfix)
         cy.get('[data-testid=saveSMSEditBtn]').click()
         cy.get('[data-testid="countdownText"]')
             .contains(/\d{1,2}s$/) // has 1 or 2 digits before the last 's' character
