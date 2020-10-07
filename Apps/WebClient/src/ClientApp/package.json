@@ -4,9 +4,9 @@
     "version": "0.2.0",
     "scripts": {
         "serve": "vue-cli-service serve",
-        "build": "vue-cli-service build",
+        "build": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 0 --no-fix && vue-cli-service build",
         "test": "vue-cli-service test:unit",
-        "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\"",
+        "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 0",
         "vue-help": "vue-cli-service help"
     },
     "devDependencies": {
