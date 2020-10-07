@@ -339,6 +339,7 @@ export default class FilterComponent extends Vue {
                         type="range"
                         min="0"
                         max="3"
+                        data-testid="entriesPerPageSlider"
                         @change="sliderChanged()"
                     ></b-form-input>
                 </b-col>

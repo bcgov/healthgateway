@@ -15,6 +15,47 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
+                                    >October 7, 2020 - v1.2.8 - Unsupported
+                                    Browsers, Filter Counts and Pagination, New
+                                    Functional Test Tooling, Security
+                                    Enhancements
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added a message for users trying to
+                                        use unsupported browsers recommending
+                                        use of modern web browsers.
+                                    </li>
+                                    <li>
+                                        We added counts to filter types and an
+                                        ability to change the number of records
+                                        per page.
+                                    </li>
+                                    <li>
+                                        We adopted a new functional testing tool
+                                        which improves our automated testing of
+                                        all Health Gateway features.
+                                    </li>
+                                    <li>
+                                        We remediated low severity security
+                                        issues as identified in a recent
+                                        vulnerability scan of our admin
+                                        application.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
                                     >September 28, 2020 - v1.2.7.3 - Bug Fix for
                                     Record Details
                                 </strong>

@@ -22,7 +22,7 @@ let passwd = __ENV.HG_PASSWORD;
 let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
 
 let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
-let TokenEndpointUrl = "https://sso-" + environment + ".pathfinder.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
+let TokenEndpointUrl = "https://" + environment + ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
 export let MedicationServiceUrl = baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
 export let LaboratoryServiceUrl = baseUrl + "/api/laboratoryservice/v1/api/Laboratory";
 export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";

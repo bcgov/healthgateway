@@ -174,7 +174,7 @@ export default class LinearTimelineComponent extends Vue {
                 {{ totalEntries }} records
             </b-col>
         </b-row>
-        <div id="timeData">
+        <div id="timeData" data-testid="linearTimelineData">
             <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
                 <b-col cols="auto">
                     <div
@@ -196,6 +196,7 @@ export default class LinearTimelineComponent extends Vue {
                     :datekey="dateGroup.key"
                     :entry="entry"
                     :index="index"
+                    data-testid="timelineCard"
                 />
             </b-row>
         </div>
