@@ -146,6 +146,11 @@ const routes = [
         meta: { validStates: [UserState.registered] },
     },
     {
+        path: "/dependents",
+        component: DependentsView,
+        meta: { validStates: [UserState.registered] },
+    },
+    {
         path: "/termsOfService",
         component: TermsOfServiceView,
         meta: {
