@@ -27,10 +27,10 @@ export let options = {
     { duration: '5m', target: 100 },
     { duration: '2m', target: 200 }, // normal load
     { duration: '5m', target: 200 },
-    { duration: '2m', target: 300 }, // around the breaking point
-    { duration: '5m', target: 300 },
-    { duration: '2m', target: 600 }, // beyond the breaking point
-    { duration: '5m', target: 600 },
+    { duration: '2m', target: 400 }, // around the breaking point
+    { duration: '4m', target: 400 },
+    { duration: '2m', target: 500 }, // beyond the breaking point
+    { duration: '5m', target: 550 },
     { duration: '5m', target: 0 }, // scale down. Recovery stage.
   ],
 };
@@ -39,7 +39,7 @@ export default function () {
 
   let user = common.users[__VU % common.users.length];
 
-  if ((__ITER == 0) && (user.hdid == null)) {
+  if (((__ITER == 0) & user.hdid == null) || (user.hdid == null)) {
     let loginRes = common.authenticateUser(user);
     check(loginRes, {
       'Authenticated successfully': loginRes == 200

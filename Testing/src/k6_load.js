@@ -50,7 +50,7 @@ export default function () {
 
   let user = common.users[__VU % common.users.length];
 
-  if ((__ITER == 0) && (user.hdid == null)) {
+  if (((__ITER == 0) & user.hdid == null) || (user.hdid == null)) {
     let loginRes = common.authenticateUser(user);
     check(loginRes, {
       'Authenticated successfully': loginRes == 200

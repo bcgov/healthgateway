@@ -15,18 +15,14 @@
 //-------------------------------------------------------------------------
 import http from 'k6/http';
 import { b64decode } from 'k6/encoding';
-import { check } from 'k6';
+import { check, sleep } from 'k6';
 
 let passwd = __ENV.HG_PASSWORD;
 
 let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
 
 let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
-<<<<<<< HEAD
-let TokenEndpointUrl = "https://sso-" + environment + ".pathfinder.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
-=======
 let TokenEndpointUrl = "https://" + environment + ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
->>>>>>> dev
 export let MedicationServiceUrl = baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
 export let LaboratoryServiceUrl = baseUrl + "/api/laboratoryservice/v1/api/Laboratory";
 export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
@@ -84,7 +80,7 @@ export function authenticateUser(user) {
         grant_type: "password",
         client_id: "healthgateway",
         audience: "healthgateway",
-        scope: "openid patient/Laboratory.read",
+        scope: "openid patient/Laboratory.read patient/MedicationStatement.read patient/Immunization.read",
         username: user.username,
         password: user.password,
     };
@@ -99,7 +95,8 @@ export function authenticateUser(user) {
         user.hdid = parseHdid(user.token);
     }
     else {
-        console.log("Authentication Error ResponseCode = " + res.status);
+        console.log("Authentication Error for user= " + user.username + ". ResponseCode[" + res.status + "] " + res.error);
+        user.token = null;
     }
 
     return res.status;
@@ -114,6 +111,12 @@ export function refreshTokenIfNeeded(user) {
 }
 
 export function refreshUser(user) {
+
+    if (user.token == null)
+    {
+        // means our previous refresh failed.
+        return authenticateUser(user);
+    }
 
     let refresh_form_data = {
         grant_type: "refresh_token",
@@ -132,7 +135,10 @@ export function refreshUser(user) {
         user.expires = getExpiresTime(seconds);
     }
     else {
-        console.log("Authentication Refresh Token Error ResponseCode = " + res.status);
+        console.log("Token Refresh Error for user= " + user.username + ". ResponseCode[" + res.status + "] " + res.error);
+        user.token = null; // clear out the expiring token, forcing to re-authenticate.
+        sleep(1);
+        return authenticateUser(user);
     }
     return res.status;
 }

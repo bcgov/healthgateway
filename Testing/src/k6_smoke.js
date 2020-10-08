@@ -30,7 +30,7 @@ export default function () {
 
   let user = common.users[common.getRandomInteger(0, common.users.length - 1)];
 
-  if ((__ITER == 0) && (user.hdid == null)) {
+  if (((__ITER == 0) & user.hdid == null) || (user.hdid == null)) {
     let loginRes = common.authenticateUser(user);
     check(loginRes, {
       'Authenticated successfully': loginRes == 200
