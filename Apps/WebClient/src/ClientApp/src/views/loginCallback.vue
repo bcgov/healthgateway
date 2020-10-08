@@ -43,7 +43,10 @@ export default class LoginCallbackView extends Vue {
                     this.checkRegistration({ hdid: this.user.hdid }).then(
                         () => {
                             this.$router.push({ path: redirectPath });
-                            if (!this.isSidebarOpen) {
+                            if (
+                                !this.isSidebarOpen &&
+                                window.innerWidth > 767
+                            ) {
                                 this.toggleSidebar();
                             }
                         }
