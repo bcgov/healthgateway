@@ -173,7 +173,7 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
-    public getLatestSMSInvite(hdid: string): Promise<UserSMSInvite> {
+    public getLatestSMSInvite(hdid: string): Promise<UserSMSInvite | null> {
         return new Promise((resolve) => {
             this.http
                 .get<UserSMSInvite>(
@@ -212,7 +212,7 @@ export class RestUserProfileService implements IUserProfileService {
 
     public updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean> {
         return new Promise((resolve) => {
-            let headers: Dictionary<string> = {};
+            const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
 
             this.http
@@ -236,7 +236,7 @@ export class RestUserProfileService implements IUserProfileService {
         preference: string,
         value: string
     ): Promise<boolean> {
-        let headers: Dictionary<string> = {};
+        const headers: Dictionary<string> = {};
         headers["Content-Type"] = "application/json; charset=utf-8";
         return new Promise((resolve, reject) => {
             this.http
@@ -260,10 +260,10 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
-    private handleResult(
-        requestResult: RequestResult<any>,
-        resolve: any,
-        reject: any
+    private handleResult<T>(
+        requestResult: RequestResult<T>,
+        resolve: (value?: T | PromiseLike<T> | undefined) => void,
+        reject: (reason?: unknown) => void
     ) {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);

@@ -17,11 +17,9 @@ import { ServiceName } from "@/models/errorInterfaces";
 export class RestLaboratoryService implements ILaboratoryService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly LABORATORY_BASE_URI: string = "v1/api/Laboratory";
-    private baseUri: string = "";
+    private baseUri = "";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
-
-    constructor() {}
+    private isEnabled = false;
 
     public initialize(
         config: ExternalConfiguration,

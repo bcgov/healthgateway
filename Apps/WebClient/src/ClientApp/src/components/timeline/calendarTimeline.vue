@@ -1,39 +1,3 @@
-<style lang="scss"></style>
-<template>
-    <div class="timeline-calendar">
-        <CalendarComponent
-            :date-groups="dateGroups"
-            :filter-text="filterText"
-            :filter-types="filterTypes"
-            :is-visible="isVisible && !timelineIsEmpty"
-        >
-            <div slot="month-list-toggle">
-                <slot name="month-list-toggle"></slot>
-            </div>
-        </CalendarComponent>
-        <div v-if="timelineIsEmpty" class="text-center pt-2">
-            <b-row>
-                <b-col>
-                    <img
-                        class="mx-auto d-block"
-                        src="@/assets/images/timeline/empty-state.png"
-                        width="200"
-                        height="auto"
-                        alt="..."
-                    />
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <p class="text-center pt-2 noTimelineEntriesText">
-                        No Timeline Entries
-                    </p>
-                </b-col>
-            </b-row>
-        </div>
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
@@ -76,3 +40,41 @@ export default class CalendarTimelineComponent extends Vue {
     }
 }
 </script>
+
+<template>
+    <div class="timeline-calendar">
+        <CalendarComponent
+            :date-groups="dateGroups"
+            :filter-text="filterText"
+            :filter-types="filterTypes"
+            :is-visible="isVisible && !timelineIsEmpty"
+        >
+            <div slot="month-list-toggle">
+                <slot name="month-list-toggle"></slot>
+            </div>
+        </CalendarComponent>
+        <div v-if="timelineIsEmpty" class="text-center pt-2">
+            <b-row>
+                <b-col>
+                    <img
+                        class="mx-auto d-block"
+                        src="@/assets/images/timeline/empty-state.png"
+                        width="200"
+                        height="auto"
+                        alt="..."
+                    />
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <p
+                        class="text-center pt-2 noTimelineEntriesText"
+                        data-testid="noTimelineEntriesText"
+                    >
+                        No Timeline Entries
+                    </p>
+                </b-col>
+            </b-row>
+        </div>
+    </div>
+</template>

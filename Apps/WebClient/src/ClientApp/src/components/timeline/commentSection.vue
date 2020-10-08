@@ -1,15 +1,98 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
-}
+<script lang="ts">
+import Vue from "vue";
+import type { UserComment } from "@/models/userComment";
+import CommentComponent from "@/components/timeline/comment.vue";
+import AddCommentComponent from "@/components/timeline/addComment.vue";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import { Component, Prop } from "vue-property-decorator";
+import { ILogger, IUserCommentService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { DateWrapper } from "@/models/dateWrapper";
 
-.commentSection {
-    padding-left: 0px;
-    padding-right: 0px;
+@Component({
+    components: {
+        Comment: CommentComponent,
+        AddComment: AddCommentComponent,
+    },
+})
+export default class CommentSectionComponent extends Vue {
+    @Prop() parentEntry!: MedicationTimelineEntry;
+
+    private logger!: ILogger;
+    private commentService!: IUserCommentService;
+    private showComments = false;
+    private showInput = false;
+    private isLoadingComments = false;
+    private comments: UserComment[] = [];
+    private newComment: UserComment = {
+        id: "",
+        text: "",
+        parentEntryId: this.parentEntry.id,
+        userProfileId: "",
+        createdDateTime: new DateWrapper().toISODate(),
+        version: 0,
+    };
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.commentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
+        this.getComments();
+    }
+
+    private get hasComments(): boolean {
+        return this.comments.length > 0;
+    }
+
+    private sortComments() {
+        this.comments.sort((a, b) => {
+            if (a.createdDateTime > b.createdDateTime) {
+                return -1;
+            } else if (a.createdDateTime < b.createdDateTime) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
+
+    private getComments() {
+        this.isLoadingComments = true;
+        this.commentService
+            .getCommentsForEntry(this.parentEntry.id)
+            .then((result) => {
+                if (result) {
+                    this.comments = result.resourcePayload;
+                    this.sortComments();
+                }
+            })
+            .catch((err) => {
+                this.logger.error(
+                    `Error loading comments for entry  ${
+                        this.parentEntry.id
+                    }: ${JSON.stringify(err)}`
+                );
+            })
+            .finally(() => {
+                this.isLoadingComments = false;
+            });
+    }
+
+    private needsUpdate() {
+        this.getComments();
+    }
+
+    private onAdd() {
+        if (!this.showComments) {
+            this.showComments = true;
+        }
+        this.getComments();
+    }
 }
-</style>
+</script>
+
 <template>
     <b-row>
         <b-col class="commentSection">
@@ -18,10 +101,9 @@
                     <b-col>
                         <div v-if="hasComments" class="d-flex flex-row-reverse">
                             <b-btn
-                                v-b-toggle="'entryComments-' + parentEntry.id"
                                 variant="link"
                                 class="px-3 py-2"
-                                @click="toggleComments()"
+                                @click="showComments = !showComments"
                             >
                                 <span>
                                     {{
@@ -44,7 +126,10 @@
                 </b-row>
                 <b-row>
                     <b-col>
-                        <b-collapse :id="'entryComments-' + parentEntry.id">
+                        <b-collapse
+                            :id="'entryComments-' + parentEntry.id"
+                            v-model="showComments"
+                        >
                             <div v-if="!isLoadingComments">
                                 <div
                                     v-for="comment in comments"
@@ -69,107 +154,16 @@
         </b-col>
     </b-row>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import UserComment from "@/models/userComment";
-import CommentComponent from "@/components/timeline/comment.vue";
-import AddCommentComponent from "@/components/timeline/addComment.vue";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import { Component, Prop } from "vue-property-decorator";
-import { ILogger, IUserCommentService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { DateWrapper } from "@/models/dateWrapper";
 
-@Component({
-    components: {
-        Comment: CommentComponent,
-        AddComment: AddCommentComponent,
-    },
-})
-export default class CommentSectionComponent extends Vue {
-    @Prop() parentEntry!: MedicationTimelineEntry;
-
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private commentService!: IUserCommentService;
-    private showComments: boolean = false;
-    private showInput: boolean = false;
-    private isLoadingComments: boolean = false;
-    private comments: UserComment[] = [];
-    private hasErrors: boolean = false;
-    private newComment: UserComment = {
-        id: "",
-        text: "",
-        parentEntryId: this.parentEntry.id,
-        userProfileId: "",
-        createdDateTime: new DateWrapper().toISODate(),
-        version: 0,
-    };
-
-    private mounted() {
-        this.commentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
-        this.getComments();
-    }
-
-    private get hasComments(): boolean {
-        return this.comments.length > 0;
-    }
-
-    private sortComments() {
-        this.comments.sort((a, b) => {
-            if (a.createdDateTime > b.createdDateTime) {
-                return -1;
-            } else if (a.createdDateTime < b.createdDateTime) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-    }
-
-    private toggleComments(): void {
-        this.showComments = !this.showComments;
-    }
-
-    private getComments() {
-        this.isLoadingComments = true;
-        const parentEntryId = this.parentEntry.id;
-        let commentPromise = this.commentService
-            .getCommentsForEntry(parentEntryId)
-            .then((result) => {
-                if (result) {
-                    this.comments = result.resourcePayload;
-                    this.sortComments();
-                }
-            })
-            .catch((err) => {
-                this.logger.error(
-                    `Error loading comments for entry  ${
-                        this.parentEntry.id
-                    }: ${JSON.stringify(err)}`
-                );
-                this.hasErrors = true;
-            })
-            .finally(() => {
-                this.isLoadingComments = false;
-            });
-    }
-
-    private needsUpdate(comment: UserComment) {
-        this.getComments();
-    }
-
-    private onAdd(comment: UserComment) {
-        if (!this.showComments) {
-            this.showComments = true;
-            this.$root.$emit(
-                "bv::toggle::collapse",
-                "entryComments-" + this.parentEntry.id
-            );
-        }
-        this.getComments();
-    }
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+    display: none;
 }
-</script>
+
+.commentSection {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+</style>

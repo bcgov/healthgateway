@@ -1,3 +1,504 @@
+<script lang="ts">
+import Vue from "vue";
+import { Component, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import { ILogger, IAuthenticationService } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import EventBus, { EventMessageName } from "@/eventbus";
+import type { WebClientConfiguration } from "@/models/configData";
+import FeedbackComponent from "@/components/feedback.vue";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faStream } from "@fortawesome/free-solid-svg-icons";
+import User from "@/models/user";
+library.add(faStream);
+
+const auth = "auth";
+const user = "user";
+const sidebar = "sidebar";
+
+@Component({
+    components: {
+        FeedbackComponent,
+    },
+})
+export default class SidebarComponent extends Vue {
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        hdid: string;
+        name: string;
+        value: string;
+    }) => void;
+
+    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
+
+    @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+
+    @Getter("oidcIsAuthenticated", {
+        namespace: auth,
+    })
+    oidcIsAuthenticated!: boolean;
+
+    @Getter("userIsRegistered", {
+        namespace: user,
+    })
+    userIsRegistered!: boolean;
+
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("isValidIdentityProvider", {
+        namespace: auth,
+    })
+    isValidIdentityProvider!: boolean;
+
+    @Getter("userIsActive", { namespace: "user" })
+    isActiveProfile!: boolean;
+
+    private eventBus = EventBus;
+
+    private logger!: ILogger;
+    private authenticationService!: IAuthenticationService;
+    private name = "";
+    private windowWidth = 0;
+
+    private isTutorialEnabled = false;
+
+    @Watch("oidcIsAuthenticated")
+    private onPropertyChanged() {
+        // If there is no name in the scope, retrieve it from the service.
+        if (this.oidcIsAuthenticated && !this.name) {
+            this.loadName();
+        }
+    }
+
+    @Watch("$route")
+    private onRouteChanged() {
+        this.clearOverlay();
+    }
+
+    @Watch("isOpen")
+    private onIsOpen() {
+        this.isTutorialEnabled = false;
+    }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.authenticationService = container.get(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        if (this.oidcIsAuthenticated) {
+            this.loadName();
+        }
+
+        // Setup the transition listener to avoid text wrapping
+        var transition = document.querySelector("#sidebar");
+        transition?.addEventListener("transitionend", (event: Event) => {
+            let transitionEvent = event as TransitionEvent;
+            if (
+                transition !== transitionEvent.target ||
+                transitionEvent.propertyName !== "max-width"
+            ) {
+                return;
+            } else {
+                this.isTutorialEnabled = false;
+            }
+
+            this.isTutorialEnabled = true;
+
+            document.querySelectorAll(".button-title").forEach((button) => {
+                if (transition?.classList.contains("collapsed")) {
+                    button?.classList.add("d-none");
+                } else {
+                    button?.classList.remove("d-none");
+                }
+            });
+        });
+
+        this.$nextTick(() => {
+            window.addEventListener("resize", this.onResize);
+        });
+        this.windowWidth = window.innerWidth;
+    }
+
+    private beforeDestroy() {
+        window.removeEventListener("resize", this.onResize);
+    }
+
+    private toggleOpen() {
+        this.toggleSidebar();
+    }
+
+    private loadName(): void {
+        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
+            if (oidcUser) {
+                this.name = this.getFullname(
+                    oidcUser.given_name,
+                    oidcUser.family_name
+                );
+            }
+            this.isTutorialEnabled = true;
+        });
+    }
+
+    private getFullname(firstName: string, lastName: string): string {
+        return firstName + " " + lastName;
+    }
+
+    private clearOverlay() {
+        if (this.isOverlayVisible) {
+            this.toggleSidebar();
+        }
+    }
+
+    private createNote() {
+        this.clearOverlay();
+        this.eventBus.$emit(EventMessageName.TimelineCreateNote);
+    }
+
+    private dismissTutorial() {
+        this.logger.debug("Dismissing tutorial...");
+        this.updateUserPreference({
+            hdid: this.user.hdid,
+            name: "tutorialPopover",
+            value: "false",
+        });
+    }
+
+    private printView() {
+        this.clearOverlay();
+        this.eventBus.$emit(EventMessageName.TimelinePrintView);
+    }
+
+    private onResize() {
+        this.windowWidth = window.innerWidth;
+    }
+
+    private get showTutorialPopover(): boolean {
+        if (this.isMobileWidth) {
+            return (
+                this.isTutorialEnabled &&
+                this.user.preferences["tutorialPopover"] === "true" &&
+                this.isOpen
+            );
+        } else {
+            return (
+                this.isTutorialEnabled &&
+                this.user.preferences["tutorialPopover"] === "true"
+            );
+        }
+    }
+
+    private set showTutorialPopover(value: boolean) {
+        this.isTutorialEnabled = value;
+    }
+
+    private get isOverlayVisible() {
+        return this.isOpen && this.isMobileWidth;
+    }
+
+    private get isMobileWidth(): boolean {
+        return this.windowWidth < 768;
+    }
+
+    private get isTimeline(): boolean {
+        let isTimeLine = this.$route.path == "/timeline";
+        if (isTimeLine && !this.isTutorialEnabled)
+            this.isTutorialEnabled = true;
+        return isTimeLine;
+    }
+
+    private get isProfile(): boolean {
+        return this.$route.path == "/profile";
+    }
+
+    private get isTermsOfService(): boolean {
+        return this.$route.path == "/profile/termsOfService";
+    }
+
+    private get isUnderProfile(): boolean {
+        return this.$route.path.startsWith("/profile");
+    }
+
+    private get isHealthInsights(): boolean {
+        return this.$route.path == "/healthInsights";
+    }
+
+    private get isReports(): boolean {
+        return this.$route.path == "/reports";
+    }
+
+    private get isNoteEnabled(): boolean {
+        return this.config.modules["Note"];
+    }
+}
+</script>
+
+<template>
+    <div
+        v-show="
+            oidcIsAuthenticated && userIsRegistered && isValidIdentityProvider
+        "
+        class="wrapper"
+    >
+        <!-- Sidebar -->
+        <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
+            <b-row class="row-container m-0 p-0">
+                <b-col class="m-0 p-0">
+                    <!-- Profile Button -->
+                    <router-link
+                        id="menuBtnProfile"
+                        data-testid="menuBtnProfileLink"
+                        to="/profile"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isProfile }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                class="button-spacer"
+                                cols="1"
+                            ></b-col>
+                            <b-col title="Profile" :class="{ 'col-3': isOpen }">
+                                <font-awesome-icon
+                                    icon="user-circle"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                data-testid="sidebarUserName"
+                                cols="7"
+                                class="button-title d-none"
+                                >{{ name }}</b-col
+                            >
+                        </b-row>
+                    </router-link>
+                    <!-- Timeline button -->
+                    <router-link
+                        v-show="isActiveProfile"
+                        id="menuBtnTimeline"
+                        data-testid="menuBtnTimelineLink"
+                        to="/timeline"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isTimeline }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col
+                                title="Timeline"
+                                :class="{ 'col-3': isOpen }"
+                            >
+                                <font-awesome-icon
+                                    icon="stream"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="7"
+                                class="button-title d-none"
+                            >
+                                <span>Timeline</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
+                    <div v-show="isTimeline && isActiveProfile">
+                        <!-- Note button -->
+                        <b-row
+                            v-show="isNoteEnabled"
+                            id="add-a-note-row"
+                            data-testid="addNoteBtn"
+                            class="align-items-center border rounded-pill py-2 button-container my-4"
+                            :class="{ 'sub-menu': isOpen }"
+                            @click="createNote"
+                        >
+                            <b-col
+                                id="add-a-note-btn"
+                                title="Add a Note"
+                                :class="{ 'col-4': isOpen }"
+                            >
+                                <font-awesome-icon
+                                    icon="edit"
+                                    class="button-icon sub-menu m-auto"
+                                    size="2x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="8"
+                                class="button-title sub-menu d-none"
+                            >
+                                <span>Add a Note</span>
+                            </b-col>
+                        </b-row>
+                        <b-popover
+                            ref="popover"
+                            triggers="manual"
+                            :show.sync="showTutorialPopover"
+                            target="add-a-note-row"
+                            class="popover"
+                            fallback-placement="clockwise"
+                            placement="right"
+                            variant="dark"
+                            boundary="viewport"
+                        >
+                            <div>
+                                <b-button
+                                    class="pop-over-close"
+                                    @click="dismissTutorial"
+                                    >x</b-button
+                                >
+                            </div>
+                            <div class="popover-content">
+                                Add Notes to track your important health events
+                                e.g. Broke ankle in Cuba
+                            </div>
+                        </b-popover>
+                        <!-- Print Button -->
+                        <b-row
+                            data-testid="printViewBtn"
+                            class="align-items-center border rounded-pill py-2 button-container my-4"
+                            :class="{ 'sub-menu': isOpen }"
+                            @click="printView"
+                        >
+                            <b-col title="Print" :class="{ 'col-4': isOpen }">
+                                <font-awesome-icon
+                                    icon="print"
+                                    class="button-icon sub-menu m-auto"
+                                    size="2x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="8"
+                                class="button-title sub-menu d-none"
+                            >
+                                <span>Print</span>
+                            </b-col>
+                        </b-row>
+                    </div>
+                    <!-- Health Insights button -->
+                    <router-link
+                        v-show="isActiveProfile"
+                        id="menuBtnHealthInsights"
+                        data-testid="menuBtnHealthInsightsLink"
+                        to="/healthInsights"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isHealthInsights }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col
+                                title="Health Insights"
+                                :class="{ 'col-3': isOpen }"
+                            >
+                                <font-awesome-icon
+                                    icon="chart-line"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="7"
+                                class="button-title d-none"
+                            >
+                                <span>Health Insights</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
+                    <!-- Reports button -->
+                    <router-link
+                        v-show="isActiveProfile"
+                        id="menuBtnReports"
+                        data-testid="menuBtnReportsLink"
+                        to="/reports"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isReports }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
+                                <font-awesome-icon
+                                    icon="clipboard-list"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="7"
+                                class="button-title d-none"
+                            >
+                                <span>Reports</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
+                    <br />
+                </b-col>
+            </b-row>
+
+            <b-row class="sidebar-footer m-0 p-0">
+                <b-col class="m-0 p-0">
+                    <!-- Collapse Button -->
+                    <b-row
+                        class="align-items-center my-4 d-none d-sm-block"
+                        :class="[isOpen ? 'mx-4' : 'button-container']"
+                    >
+                        <b-col
+                            :title="`${isOpen ? 'Collapse' : 'Expand'} Menu`"
+                            :class="{ 'ml-auto col-4': isOpen }"
+                        >
+                            <font-awesome-icon
+                                data-testid="sidebarToggle"
+                                class="arrow-icon p-2"
+                                icon="angle-double-left"
+                                aria-hidden="true"
+                                size="3x"
+                                @click="toggleOpen"
+                            />
+                        </b-col>
+                    </b-row>
+                    <!-- Feedback section -->
+                    <FeedbackComponent />
+                </b-col>
+            </b-row>
+        </nav>
+
+        <!-- Dark Overlay element -->
+        <div
+            v-show="isOverlayVisible"
+            class="overlay"
+            @click="toggleOpen"
+        ></div>
+    </div>
+</template>
+
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
@@ -206,476 +707,3 @@
     }
 }
 </style>
-
-<template>
-    <div v-show="oidcIsAuthenticated && userIsRegistered" class="wrapper">
-        <!-- Sidebar -->
-        <nav id="sidebar" :class="{ collapsed: !isOpen }">
-            <b-row class="row-container m-0 p-0">
-                <b-col class="m-0 p-0">
-                    <!-- Profile Button -->
-                    <router-link id="menuBtnProfile" to="/profile" class="my-4">
-                        <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isProfile }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                class="button-spacer"
-                                cols="1"
-                            ></b-col>
-                            <b-col title="Profile" :class="{ 'col-3': isOpen }">
-                                <font-awesome-icon
-                                    icon="user-circle"
-                                    class="button-icon"
-                                    size="3x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-if="isOpen"
-                                cols="7"
-                                class="button-title d-none"
-                                >{{ name }}</b-col
-                            >
-                        </b-row>
-                    </router-link>
-                    <!-- Timeline button -->
-                    <router-link
-                        id="menuBtnTimeline"
-                        to="/timeline"
-                        class="my-4"
-                    >
-                        <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isTimeline }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                cols="1"
-                                class="button-spacer"
-                            ></b-col>
-                            <b-col
-                                title="Timeline"
-                                :class="{ 'col-3': isOpen }"
-                            >
-                                <font-awesome-icon
-                                    icon="stream"
-                                    class="button-icon"
-                                    size="3x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-if="isOpen"
-                                cols="7"
-                                class="button-title d-none"
-                            >
-                                <span>Timeline</span>
-                            </b-col>
-                        </b-row>
-                    </router-link>
-                    <div v-show="isTimeline">
-                        <!-- Note button -->
-                        <b-row
-                            v-show="isNoteEnabled"
-                            id="add-a-note-row"
-                            class="align-items-center border rounded-pill py-2 button-container my-4"
-                            :class="{ 'sub-menu': isOpen }"
-                            @click="createNote"
-                        >
-                            <b-col
-                                id="add-a-note-btn"
-                                title="Add a Note"
-                                :class="{ 'col-4': isOpen }"
-                            >
-                                <font-awesome-icon
-                                    icon="edit"
-                                    class="button-icon sub-menu m-auto"
-                                    size="2x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-if="isOpen"
-                                cols="8"
-                                class="button-title sub-menu d-none"
-                            >
-                                <span>Add a Note</span>
-                            </b-col>
-                        </b-row>
-                        <b-popover
-                            ref="popover"
-                            triggers="manual"
-                            :show.sync="showTutorialPopover"
-                            target="add-a-note-row"
-                            class="popover"
-                            fallback-placement="clockwise"
-                            placement="right"
-                            variant="dark"
-                            boundary="viewport"
-                        >
-                            <div>
-                                <b-button
-                                    class="pop-over-close"
-                                    @click="dismissTutorial"
-                                    >x</b-button
-                                >
-                            </div>
-                            <div class="popover-content">
-                                Add Notes to track your important health events
-                                e.g. Broke ankle in Cuba
-                            </div>
-                        </b-popover>
-                        <!-- Print Button -->
-                        <b-row
-                            class="align-items-center border rounded-pill py-2 button-container my-4"
-                            :class="{ 'sub-menu': isOpen }"
-                            @click="printView"
-                        >
-                            <b-col title="Print" :class="{ 'col-4': isOpen }">
-                                <font-awesome-icon
-                                    icon="print"
-                                    class="button-icon sub-menu m-auto"
-                                    size="2x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-if="isOpen"
-                                cols="8"
-                                class="button-title sub-menu d-none"
-                            >
-                                <span>Print</span>
-                            </b-col>
-                        </b-row>
-                    </div>
-                    <!-- Health Insights button -->
-                    <router-link
-                        id="menuBtnHealthInsights"
-                        to="/healthInsights"
-                        class="my-4"
-                    >
-                        <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isHealthInsights }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                cols="1"
-                                class="button-spacer"
-                            ></b-col>
-                            <b-col
-                                title="Health Insights"
-                                :class="{ 'col-3': isOpen }"
-                            >
-                                <font-awesome-icon
-                                    icon="chart-line"
-                                    class="button-icon"
-                                    size="3x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-if="isOpen"
-                                cols="7"
-                                class="button-title d-none"
-                            >
-                                <span>Health Insights</span>
-                            </b-col>
-                        </b-row>
-                    </router-link>
-                    <!-- Reports button -->
-                    <router-link id="menuBtnReports" to="/reports" class="my-4">
-                        <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isReports }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                cols="1"
-                                class="button-spacer"
-                            ></b-col>
-                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
-                                <font-awesome-icon
-                                    icon="clipboard-list"
-                                    class="button-icon"
-                                    size="3x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-if="isOpen"
-                                cols="7"
-                                class="button-title d-none"
-                            >
-                                <span>Reports</span>
-                            </b-col>
-                        </b-row>
-                    </router-link>
-                    <br />
-                </b-col>
-            </b-row>
-
-            <b-row class="sidebar-footer m-0 p-0">
-                <b-col class="m-0 p-0">
-                    <!-- Collapse Button -->
-                    <b-row
-                        class="align-items-center my-4 d-none d-sm-block"
-                        :class="[isOpen ? 'mx-4' : 'button-container']"
-                    >
-                        <b-col
-                            :title="`${isOpen ? 'Collapse' : 'Expand'} Menu`"
-                            :class="{ 'ml-auto col-4': isOpen }"
-                        >
-                            <font-awesome-icon
-                                class="arrow-icon p-2"
-                                icon="angle-double-left"
-                                aria-hidden="true"
-                                size="3x"
-                                @click="toggleOpen"
-                            />
-                        </b-col>
-                    </b-row>
-                    <!-- Feedback section -->
-                    <FeedbackComponent />
-                </b-col>
-            </b-row>
-        </nav>
-
-        <!-- Dark Overlay element -->
-        <div
-            v-show="isOverlayVisible"
-            class="overlay"
-            @click="toggleOpen"
-        ></div>
-    </div>
-</template>
-
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
-import { ILogger, IAuthenticationService } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import VueRouter, { Route } from "vue-router";
-import EventBus from "@/eventbus";
-import { WebClientConfiguration } from "@/models/configData";
-import FeedbackComponent from "@/components/feedback.vue";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faStream } from "@fortawesome/free-solid-svg-icons";
-import User from "@/models/user";
-library.add(faStream);
-
-const auth: string = "auth";
-const user: string = "user";
-const sidebar: string = "sidebar";
-
-@Component({
-    components: {
-        FeedbackComponent,
-    },
-})
-export default class SidebarComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: {
-        hdid: string;
-        name: string;
-        value: string;
-    }) => void;
-
-    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
-
-    @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
-
-    @Getter("oidcIsAuthenticated", {
-        namespace: auth,
-    })
-    oidcIsAuthenticated!: boolean;
-
-    @Getter("userIsRegistered", {
-        namespace: user,
-    })
-    userIsRegistered!: boolean;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("user", { namespace: "user" }) user!: User;
-
-    private eventBus = EventBus;
-
-    private authenticationService!: IAuthenticationService;
-    private name: string = "";
-    private windowWidth: number = 0;
-
-    private isTutorialEnabled: boolean = false;
-
-    @Watch("oidcIsAuthenticated")
-    private onPropertyChanged() {
-        // If there is no name in the scope, retrieve it from the service.
-        if (this.oidcIsAuthenticated && !this.name) {
-            this.loadName();
-        }
-    }
-
-    @Watch("$route")
-    private onRouteChanged() {
-        this.clearOverlay();
-    }
-
-    @Watch("isOpen")
-    private onIsOpen(newValue: boolean, oldValue: boolean) {
-        this.isTutorialEnabled = false;
-    }
-
-    private mounted() {
-        this.authenticationService = container.get(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-        if (this.oidcIsAuthenticated) {
-            this.loadName();
-        }
-
-        var self = this;
-
-        // Setup the transition listener to avoid text wrapping
-        var transition = document.querySelector("#sidebar");
-        transition?.addEventListener("transitionend", function (event: Event) {
-            let transitionEvent = event as TransitionEvent;
-            if (
-                transition !== transitionEvent.target ||
-                transitionEvent.propertyName !== "max-width"
-            ) {
-                return;
-            } else {
-                self.isTutorialEnabled = false;
-            }
-
-            self.isTutorialEnabled = true;
-
-            var buttonText = document
-                .querySelectorAll(".button-title")
-                .forEach((button) => {
-                    if (transition?.classList.contains("collapsed")) {
-                        button?.classList.add("d-none");
-                    } else {
-                        button?.classList.remove("d-none");
-                    }
-                });
-        });
-
-        this.$nextTick(() => {
-            window.addEventListener("resize", this.onResize);
-        });
-        this.windowWidth = window.innerWidth;
-    }
-
-    private beforeDestroy() {
-        window.removeEventListener("resize", this.onResize);
-    }
-
-    private toggleOpen() {
-        this.toggleSidebar();
-    }
-
-    private loadName(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
-            if (oidcUser) {
-                this.name = this.getFullname(
-                    oidcUser.given_name,
-                    oidcUser.family_name
-                );
-            }
-            this.isTutorialEnabled = true;
-        });
-    }
-
-    private getFullname(firstName: string, lastName: string): string {
-        return firstName + " " + lastName;
-    }
-
-    private clearOverlay() {
-        if (this.isOverlayVisible) {
-            this.toggleSidebar();
-        }
-    }
-
-    private createNote() {
-        this.clearOverlay();
-        this.eventBus.$emit("timelineCreateNote");
-    }
-
-    private dismissTutorial() {
-        this.logger.debug("Dismissing tutorial...");
-        this.updateUserPreference({
-            hdid: this.user.hdid,
-            name: "tutorialPopover",
-            value: "false",
-        });
-    }
-
-    private printView() {
-        this.clearOverlay();
-        this.eventBus.$emit("timelinePrintView");
-    }
-
-    private onResize() {
-        this.windowWidth = window.innerWidth;
-    }
-
-    private get showTutorialPopover(): boolean {
-        if (this.isMobileWidth) {
-            return (
-                this.isTutorialEnabled &&
-                this.user.preferences["tutorialPopover"] === "true" &&
-                this.isOpen
-            );
-        } else {
-            return (
-                this.isTutorialEnabled &&
-                this.user.preferences["tutorialPopover"] === "true"
-            );
-        }
-    }
-
-    private set showTutorialPopover(value: boolean) {
-        this.isTutorialEnabled = value;
-    }
-
-    private get isOverlayVisible() {
-        return this.isOpen && this.isMobileWidth;
-    }
-
-    private get isMobileWidth(): boolean {
-        return this.windowWidth < 768;
-    }
-
-    private get isTimeline(): boolean {
-        let isTimeLine = this.$route.path == "/timeline";
-        if (isTimeLine && !this.isTutorialEnabled)
-            this.isTutorialEnabled = true;
-        return isTimeLine;
-    }
-
-    private get isProfile(): boolean {
-        return this.$route.path == "/profile";
-    }
-
-    private get isTermsOfService(): boolean {
-        return this.$route.path == "/profile/termsOfService";
-    }
-
-    private get isUnderProfile(): boolean {
-        return this.$route.path.startsWith("/profile");
-    }
-
-    private get isHealthInsights(): boolean {
-        return this.$route.path == "/healthInsights";
-    }
-
-    private get isReports(): boolean {
-        return this.$route.path == "/reports";
-    }
-
-    private get isNoteEnabled(): boolean {
-        return this.config.modules["Note"];
-    }
-}
-</script>

@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialog" persistent max-width="1000px">
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on"
                 >New Email Communication</v-btn
             >
@@ -20,7 +20,6 @@
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
-                                :disabled="!isDraft"
                             ></v-text-field>
                         </v-col>
                         <v-col>
@@ -28,7 +27,6 @@
                                 v-model="editedItem.scheduledDateTime"
                                 requried
                                 label="Scheduled For"
-                                :disabled="!isDraft"
                             ></v-datetime-picker>
                         </v-col>
                         <v-col>
@@ -41,7 +39,6 @@
                                 :rules="[v => !!v || 'Priority is required']"
                                 validate-on-blur
                                 required
-                                :disabled="!isDraft"
                             ></v-select>
                         </v-col>
                     </v-row>
@@ -71,7 +68,6 @@
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the email content here..."
                                 :extensions="extensions"
-                                :disabled="!isDraft"
                             />
                         </v-col>
                     </v-row>
@@ -103,7 +99,6 @@ import container from "@/plugins/inversify.config";
 import Communication, {
     CommunicationStatus
 } from "@/models/adminCommunication";
-import { ResultType } from "@/constants/resulttype";
 import moment from "moment";
 import {
     TiptapVuetify,
@@ -129,7 +124,10 @@ import {
     }
 })
 export default class EmailModal extends Vue {
-    private dialog: boolean = false;
+    @Prop() editedItem!: Communication;
+    @Prop() isNew!: number;
+
+    private dialog = false;
     private priorityItems = [
         { text: "Urgent", number: 1000 },
         { text: "High", number: 100 },
@@ -160,9 +158,6 @@ export default class EmailModal extends Vue {
         Paragraph,
         HardBreak
     ];
-
-    @Prop() editedItem!: Communication;
-    @Prop() isNew!: number;
 
     @Watch("editedItem")
     private onPropChange() {

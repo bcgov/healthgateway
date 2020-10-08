@@ -15,6 +15,10 @@ Add the following text:
 {
   "OpenIdConnect": {
     "ClientSecret": "[Ask team for Client Secret]"
+  },
+  "ContentSecurityPolicy": {
+        "connect-src": "https://spt.apps.gov.bc.ca/com.snowplowanalytics.snowplow/tp2 https://dev.oidc.gov.bc.ca/ http://localhost:*/  http:/[YOUR IP]:*/ ws://[YOUR IP]:*/",
+        "frame-src": "https://dev.oidc.gov.bc.ca/"
   }
 }
 ```

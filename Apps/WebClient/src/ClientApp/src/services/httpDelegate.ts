@@ -41,7 +41,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `GET error: ${err.toString()}`;
+                    const errorMessage = `GET error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
@@ -49,7 +49,7 @@ export default class HttpDelegate implements IHttpDelegate {
     }
     public post<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
@@ -61,7 +61,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `POST error: ${err.toString()}`;
+                    const errorMessage = `POST error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
@@ -70,7 +70,7 @@ export default class HttpDelegate implements IHttpDelegate {
 
     public put<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
@@ -83,7 +83,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `PUT error: ${err.toString()}`;
+                    const errorMessage = `PUT error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
@@ -92,7 +92,7 @@ export default class HttpDelegate implements IHttpDelegate {
 
     public patch<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
@@ -105,7 +105,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `PATCH error: ${err.toString()}`;
+                    const errorMessage = `PATCH error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
@@ -113,7 +113,7 @@ export default class HttpDelegate implements IHttpDelegate {
     }
     public delete<T>(
         url: string,
-        payload: Object | undefined = undefined,
+        payload: unknown | undefined = undefined,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
@@ -127,7 +127,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `DELETE error: ${err.toString()}`;
+                    const errorMessage = `DELETE error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });

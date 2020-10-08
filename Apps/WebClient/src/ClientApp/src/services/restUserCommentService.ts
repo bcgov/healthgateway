@@ -7,7 +7,7 @@ import {
     IUserCommentService,
 } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
-import UserComment from "@/models/userComment";
+import type { UserComment } from "@/models/userComment";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
@@ -18,7 +18,7 @@ export class RestUserCommentService implements IUserCommentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_COMMENT_BASE_URI: string = "/v1/api/Comment";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     public initialize(
         config: ExternalConfiguration,
@@ -115,7 +115,7 @@ export class RestUserCommentService implements IUserCommentService {
     public deleteComment(comment: UserComment): Promise<void> {
         return new Promise((resolve, reject) => {
             this.http
-                .delete<RequestResult<UserComment>>(
+                .delete<RequestResult<void>>(
                     `${this.USER_COMMENT_BASE_URI}/`,
                     comment
                 )
@@ -134,10 +134,10 @@ export class RestUserCommentService implements IUserCommentService {
         });
     }
 
-    private handleResult(
-        requestResult: RequestResult<any>,
-        resolve: any,
-        reject: any
+    private handleResult<T>(
+        requestResult: RequestResult<T>,
+        resolve: (value?: T | PromiseLike<T> | undefined) => void,
+        reject: (reason?: unknown) => void
     ) {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);

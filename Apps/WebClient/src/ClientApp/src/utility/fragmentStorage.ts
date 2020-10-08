@@ -27,13 +27,13 @@ export class FragmentedStorage implements Storage {
         if (data.length < this.maxSize) {
             this.internalStorage.setItem(key, data);
         } else {
-            let fragmented = this.chunkString(
+            const fragmented = this.chunkString(
                 data,
                 this.maxSize
             ) as RegExpMatchArray;
-            let fragmentKeys: string[] = [];
+            const fragmentKeys: string[] = [];
             for (let i = 0; i < fragmented.length; i++) {
-                let fragmentKey = key + this.keySeparator + (i + 1);
+                const fragmentKey = key + this.keySeparator + (i + 1);
                 fragmentKeys.push(fragmentKey);
                 this.internalStorage.setItem(fragmentKey, fragmented[i]);
             }
@@ -50,10 +50,10 @@ export class FragmentedStorage implements Storage {
         let storedItem = this.internalStorage.getItem(key);
         if (this.isFragment(storedItem)) {
             storedItem = storedItem as string;
-            let fragmentSection = this.getFragmentSection(storedItem);
+            const fragmentSection = this.getFragmentSection(storedItem);
 
-            let fragmentNames = this.getFragmentNames(fragmentSection);
-            let item = this.assembleFragments(fragmentNames);
+            const fragmentNames = this.getFragmentNames(fragmentSection);
+            const item = this.assembleFragments(fragmentNames);
             return item;
         }
 
@@ -64,11 +64,11 @@ export class FragmentedStorage implements Storage {
         let storedItem = this.internalStorage.getItem(key);
         if (this.isFragment(storedItem)) {
             storedItem = storedItem as string;
-            let fragmentSection = this.getFragmentSection(storedItem);
-            let fragmentNames = this.getFragmentNames(fragmentSection);
+            const fragmentSection = this.getFragmentSection(storedItem);
+            const fragmentNames = this.getFragmentNames(fragmentSection);
 
             for (let i = 0; i < fragmentNames.length; i++) {
-                let fragment = fragmentNames[i];
+                const fragment = fragmentNames[i];
                 this.internalStorage.removeItem(fragment);
             }
         }
@@ -83,7 +83,7 @@ export class FragmentedStorage implements Storage {
     }
 
     private getFragmentSection(fragment: string): string {
-        let fragmentSection = fragment.substr(
+        const fragmentSection = fragment.substr(
             this.fragmentIndicator.length,
             fragment?.length
         );
@@ -92,10 +92,10 @@ export class FragmentedStorage implements Storage {
 
     private getFragmentNames(fragmentSection: string): string[] {
         return fragmentSection.split(this.fragmentSeparator).sort((a, b) => {
-            let aIndex = a.lastIndexOf(this.keySeparator);
-            let bIndex = b.lastIndexOf(this.keySeparator);
-            let aNum = Number(a.substr(aIndex + 1, a.length));
-            let bNum = Number(b.substr(bIndex + 1, b.length));
+            const aIndex = a.lastIndexOf(this.keySeparator);
+            const bIndex = b.lastIndexOf(this.keySeparator);
+            const aNum = Number(a.substr(aIndex + 1, a.length));
+            const bNum = Number(b.substr(bIndex + 1, b.length));
             return aNum > bNum ? 1 : aNum < bNum ? -1 : 0;
         });
     }

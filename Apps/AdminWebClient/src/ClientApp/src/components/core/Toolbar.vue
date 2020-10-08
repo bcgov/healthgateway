@@ -73,8 +73,8 @@ export default class ToolbarComponent extends Vue {
     @Getter("isAuthenticated", { namespace: "auth" })
     private isLoggedIn!: boolean;
 
-    private title: string = "";
-    private responsive: boolean = false;
+    private title = "";
+    private responsive = false;
 
     mounted() {
         this.onResponsiveInverted();

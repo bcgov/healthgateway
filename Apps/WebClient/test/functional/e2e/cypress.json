@@ -4,6 +4,10 @@
   "blockHosts": [
     "spt.apps.gov.bc.ca"
   ],
+  "retries": {
+    "runMode": 1,
+    "openMode": 0
+  },
   "reporter": "mocha-junit-reporter",
   "reporterOptions": {
     "mochaFile": "reports/junit/test-results.[hash].xml",
@@ -14,7 +18,12 @@
     "bcsc.password": "",
     "keycloak.username": "healthgateway",
     "keycloak.password": "",
-    "keycloak.protected.username": "protected"
+    "keycloak.accountclosure.username": "AccountClosure",
+    "keycloak.unregistered.username": "unregistered",
+    "keycloak.unregistered.password": "",
+    "keycloak.protected.username": "protected",
+    "idir.username": "hgateway",
+    "idir.password": ""
   },
   "projectId": "ofnepc"
 }

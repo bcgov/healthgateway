@@ -1,22 +1,137 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-#pageTitle {
-    color: $primary;
-}
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>
 <template>
     <div class="px-4">
         <b-row>
             <b-col>
-                <b-row class="my-3 fluid justify-content-md-center">
+                <b-row class="my-3 fluid">
                     <b-col>
                         <div id="pageTitle">
                             <h1 id="subject">Health Gateway Release Notes</h1>
                             <hr />
                         </div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >October 7, 2020 - v1.2.8 - Unsupported
+                                    Browsers, Filter Counts and Pagination, New
+                                    Functional Test Tooling, Security
+                                    Enhancements
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added a message for users trying to
+                                        use unsupported browsers recommending
+                                        use of modern web browsers.
+                                    </li>
+                                    <li>
+                                        We added counts to filter types and an
+                                        ability to change the number of records
+                                        per page.
+                                    </li>
+                                    <li>
+                                        We adopted a new functional testing tool
+                                        which improves our automated testing of
+                                        all Health Gateway features.
+                                    </li>
+                                    <li>
+                                        We remediated low severity security
+                                        issues as identified in a recent
+                                        vulnerability scan of our admin
+                                        application.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >September 28, 2020 - v1.2.7.3 - Bug Fix for
+                                    Record Details
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We fixed a bug which was causing record
+                                        details to collapse when trying to
+                                        expand.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >September 25, 2020 - v1.2.7.2 - Medication
+                                    History Report Bug Fix
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We fixed a bug causing reports with
+                                        large numbers of medication records to
+                                        generate blank pdf reports.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >September 23, 2020 - v1.2.7 - Advance
+                                    Filter, Footer Menu, Medication History
+                                    Report
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added a filter menu which expands and
+                                        collapses, to free up space for content.
+                                    </li>
+                                    <li>
+                                        The links in the footer menu were
+                                        updated, making it easier to find more
+                                        information about the Health Gateway,
+                                        such as release notes, contact
+                                        information, terms of service and more.
+                                    </li>
+                                    <li>
+                                        We implemented the first iteration of
+                                        our Reports section which will allow
+                                        users to save pdf reports of their
+                                        health records, starting with medication
+                                        history.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -757,3 +872,13 @@
         </b-row>
     </div>
 </template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+#pageTitle {
+    color: $primary;
+}
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+</style>

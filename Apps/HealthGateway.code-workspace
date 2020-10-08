@@ -5,6 +5,10 @@
       "path": "WebClient/src/ClientApp"
     },
     {
+      "name": "Admin_ClientApp",
+      "path": "AdminWebClient/src/ClientApp"
+    },
+    {
       "name": "AdminWebClient",
       "path": "AdminWebClient"
     },
@@ -54,7 +58,7 @@
     },
     {
       "path": "Encounter"
-    }
+    },    
   ],
   "settings": {
     "eslint.workingDirectories": [

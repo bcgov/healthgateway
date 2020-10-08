@@ -38,9 +38,9 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         }
 
         let text =
-            (this.practitionerSurname! || "") +
-            (this.medication.brandName! || "") +
-            (this.medication.genericName! || "");
+            (this.practitionerSurname || "") +
+            (this.medication.brandName || "") +
+            (this.medication.genericName || "");
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }

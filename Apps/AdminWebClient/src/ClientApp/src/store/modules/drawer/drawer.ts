@@ -8,7 +8,7 @@ export const state: DrawerState = {
     isOpen: true
 };
 
-const namespaced: boolean = true;
+const namespaced = true;
 
 export const drawer: Module<DrawerState, RootState> = {
     namespaced,

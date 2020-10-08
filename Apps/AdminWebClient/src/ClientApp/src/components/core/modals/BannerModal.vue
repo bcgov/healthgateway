@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialog" persistent max-width="1000px">
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on"
                 >New Banner Communication</v-btn
             >
@@ -28,7 +28,6 @@
                                     v-model="editedItem.effectiveDateTime"
                                     requried
                                     label="Effective On"
-                                    :disabled="!isDraft"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
                                     errors[0]
@@ -51,7 +50,6 @@
                                     v-model="editedItem.expiryDateTime"
                                     required
                                     label="Expires On"
-                                    :disabled="!isDraft"
                                 ></v-datetime-picker>
                                 <span class="error-message">{{
                                     errors[0]
@@ -68,7 +66,6 @@
                                 :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
-                                :disabled="!isDraft"
                             ></v-text-field>
                         </v-col>
                         <v-col>
@@ -94,7 +91,6 @@
                                 :toolbar-attributes="{ color: 'gray' }"
                                 placeholder="Write the banner content here..."
                                 :extensions="extensions"
-                                :disabled="!isDraft"
                             />
                         </v-col>
                     </v-row>
@@ -116,9 +112,7 @@ import container from "@/plugins/inversify.config";
 import Communication, {
     CommunicationStatus
 } from "@/models/adminCommunication";
-import { ResultType } from "@/constants/resulttype";
-import { ValidationProvider, extend, validate } from "vee-validate";
-import { required, email } from "vee-validate/dist/rules";
+import { ValidationProvider, extend } from "vee-validate";
 import moment from "moment";
 import {
     TiptapVuetify,
@@ -154,7 +148,7 @@ extend("dateValid", {
     }
 })
 export default class BannerModal extends Vue {
-    private dialog: boolean = false;
+    private dialog = false;
     private extensions: any = [
         History,
         Blockquote,

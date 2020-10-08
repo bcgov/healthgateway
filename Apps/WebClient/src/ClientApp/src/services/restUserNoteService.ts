@@ -19,7 +19,7 @@ export class RestUserNoteService implements IUserNoteService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_NOTE_BASE_URI: string = "/v1/api/Note";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     public initialize(
         config: ExternalConfiguration,
@@ -61,7 +61,7 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    NOT_IMPLENTED: string = "Method not implemented.";
+    NOT_IMPLENTED = "Method not implemented.";
 
     public createNote(note: UserNote): Promise<UserNote> {
         this.logger.debug(`createNote: ${JSON.stringify(note)}`);
@@ -120,7 +120,7 @@ export class RestUserNoteService implements IUserNoteService {
             headers["Content-Type"] = "application/json; charset=utf-8";
 
             this.http
-                .delete<RequestResult<UserNote>>(
+                .delete<RequestResult<void>>(
                     `${this.USER_NOTE_BASE_URI}/`,
                     JSON.stringify(note),
                     headers
@@ -140,10 +140,10 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    private handleResult(
-        requestResult: RequestResult<any>,
-        resolve: any,
-        reject: any
+    private handleResult<T>(
+        requestResult: RequestResult<T>,
+        resolve: (value?: T | PromiseLike<T> | undefined) => void,
+        reject: (reason?: unknown) => void
     ) {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);

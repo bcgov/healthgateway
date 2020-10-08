@@ -38,8 +38,8 @@ import container from "@/plugins/inversify.config";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 
-Vue.component("font-awesome-icon", FontAwesomeIcon);
-Vue.component("b-popover", BPopover);
+Vue.component("FontAwesomeIcon", FontAwesomeIcon);
+Vue.component("BPopover", BPopover);
 
 Vue.use(VueRouter);
 Vue.use(Vuelidate);
@@ -114,7 +114,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     userRatingService.initialize(httpDelegate);
     Vue.use(IdleVue, {
         eventEmitter: new Vue(),
-        idleTime: config.webClient.timeouts!.idle || 300000,
+        idleTime: config.webClient.timeouts.idle,
         store,
         startAtIdle: false,
     });
@@ -122,8 +122,10 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
         initializeVue();
     } else {
         store.dispatch("auth/getOidcUser").then(() => {
+            const isValid: boolean =
+                store.getters["auth/isValidIdentityProvider"];
             const user: User = store.getters["user/user"];
-            if (user.hdid) {
+            if (user.hdid && isValid) {
                 store
                     .dispatch("user/checkRegistration", { hdid: user.hdid })
                     .then(() => {
