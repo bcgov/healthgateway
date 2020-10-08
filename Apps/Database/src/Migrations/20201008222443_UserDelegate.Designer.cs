@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20201008192612_Dependent")]
-    partial class Dependent
+    [Migration("20201008222443_UserDelegate")]
+    partial class UserDelegate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -825,43 +825,6 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Company");
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.Dependent", b =>
-                {
-                    b.Property<string>("ParentHdId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("DependentHdId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
-
-                    b.HasKey("ParentHdId", "DependentHdId");
-
-                    b.ToTable("Dependent");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
@@ -2991,6 +2954,43 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("TherapeuticClass");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.UserDelegate", b =>
+                {
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("DelegateId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("OwnerId", "DelegateId");
+
+                    b.ToTable("UserDelegate");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>

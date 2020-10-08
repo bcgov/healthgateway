@@ -3,17 +3,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HealthGateway.Database.Migrations
 {
-    public partial class Dependent : Migration
+    public partial class UserDelegate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Dependent",
+                name: "UserDelegate",
                 schema: "gateway",
                 columns: table => new
                 {
-                    ParentHdId = table.Column<string>(maxLength: 52, nullable: false),
-                    DependentHdId = table.Column<string>(maxLength: 52, nullable: false),
+                    OwnerId = table.Column<string>(maxLength: 52, nullable: false),
+                    DelegateId = table.Column<string>(maxLength: 52, nullable: false),
                     CreatedBy = table.Column<string>(maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(maxLength: 60, nullable: false),
@@ -22,14 +22,14 @@ namespace HealthGateway.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dependent", x => new { x.ParentHdId, x.DependentHdId });
+                    table.PrimaryKey("PK_UserDelegate", x => new { x.OwnerId, x.DelegateId });
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Dependent",
+                name: "UserDelegate",
                 schema: "gateway");
         }
     }

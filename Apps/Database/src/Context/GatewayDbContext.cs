@@ -73,7 +73,7 @@ namespace HealthGateway.Database.Context
         public DbSet<Communication> Communication { get; set; } = null!;
         public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
         public DbSet<Rating> Rating { get; set; } = null!;
-        public DbSet<Dependent> Dependent { get; set; } = null!;
+        public DbSet<UserDelegate> UserDelegate { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -262,8 +262,8 @@ namespace HealthGateway.Database.Context
                     v => EnumUtility.ToEnumString<LegalAgreementType>(v, true),
                     v => EnumUtility.ToEnum<LegalAgreementType>(v, true)));
 
-            modelBuilder.Entity<Dependent>()
-                .HasKey(dependent => new { dependent.ParentHdId, dependent.DependentHdId });
+            modelBuilder.Entity<UserDelegate>()
+                .HasKey(userDelegate => new { userDelegate.OwnerId, userDelegate.DelegateId });
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

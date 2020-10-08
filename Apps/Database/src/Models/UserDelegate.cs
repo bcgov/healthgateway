@@ -15,25 +15,24 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
-    using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// The dependent model.
+    /// The user delegate model.
     /// </summary>
-    public class Dependent : AuditableEntity
+    public class UserDelegate : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the parent hdid.
+        /// Gets or sets the owner of the hdid.
         /// </summary>
         [MaxLength(52)]
-        public string ParentHdId { get; set; } = null!;
+        public string OwnerId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the dependent hdid.
+        /// Gets or sets the hdid which has delegated access to the owner Id.
         /// </summary>
         [MaxLength(52)]
-        public string DependentHdId { get; set; } = null!;
+        public string DelegateId { get; set; } = null!;
     }
 }
