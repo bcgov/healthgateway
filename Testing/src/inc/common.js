@@ -74,7 +74,17 @@ export function getExpiresTime(seconds) {
     return (Date.now() + seconds * 1000);
 }
 
-export function authenticateUser(user) {
+export function authorizeUser(user) {
+    if (((__ITER == 0) && (user.hdid == null)) || (user.hdid == null)) {
+        let loginRes = authenticateUser(user);
+        check(loginRes, {
+            'Authenticated successfully': loginRes === 200
+        });
+    }
+    refreshTokenIfNeeded(user);
+}
+
+function authenticateUser(user) {
 
     let auth_form_data = {
         grant_type: "password",
@@ -103,9 +113,9 @@ export function authenticateUser(user) {
     return res.status;
 }
 
-export function refreshTokenIfNeeded(user) {
+ function refreshTokenIfNeeded(user) {
 
-    if ((user.refresh != null) && (user.expires  < (Date.now() + 15000))) // refresh 15 seconds before expiry
+    if ((user.refresh != null) && (user.expires < (Date.now() + 45000))) // refresh 45 seconds before expiry
     {
         refreshUser(user);
     }
@@ -113,8 +123,7 @@ export function refreshTokenIfNeeded(user) {
 
 export function refreshUser(user) {
 
-    if (user.token == null)
-    {
+    if (user.token == null) {
         // means our previous refresh failed.
         return authenticateUser(user);
     }
@@ -151,4 +160,172 @@ export function getRandomInteger(min, max) {
 
 export function getRandom(min, max) {
     return Math.random() * (max - min) + min;
+}
+
+export function params(user) {
+    var params = {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + user.token,
+        },
+    };
+    return params;
+}
+
+export function timelineRequests(user) {
+    let timelineRequest = {
+        'comment': {
+            method: 'GET',
+            url: common.CommentUrl + "/" + user.hdid,
+            params: params(user)
+        },
+        'note': {
+            method: 'GET',
+            url: common.NoteUrl + "/" + user.hdid,
+            params: params(user)
+        },
+        'meds': {
+            method: 'GET',
+            url: common.MedicationServiceUrl + "/" + user.hdid,
+            params: params(user)
+        },
+
+        'labs': {
+            method: 'GET',
+            url: common.LaboratoryServiceUrl + "?hdid=" + user.hdid,
+            params: params(user)
+        }
+    };
+    return timelineRequest;
+}
+
+export function webClientRequests(user) {
+    let webClientRequests = {
+        'patient': {
+            method: 'GET',
+            url: common.PatientServiceUrl + "/" + user.hdid,
+            params: params(user)
+        },
+        'beta': {
+            method: 'GET',
+            url: common.BetaRequestUrl + "/" + user.hdid,
+            params: params(user)
+        },
+        'communication': {
+            method: 'GET',
+            url: common.CommunicationUrl + "/" + user.hdid,
+            params: params(user)
+        },
+        'conf': {
+            method: 'GET',
+            url: common.ConfigurationUrl + "/" + user.hdid,
+            params: params(user)
+        },
+        'profile': {
+            method: 'GET',
+            url: common.UserProfileUrl + "/" + user.hdid,
+            params: params(user)
+        }
+    };
+    return webClientRequests;
+}
+
+export function checkResponses(responses, errorRate) {
+
+    if (responses['beta']) {
+        check(responses['beta'], {
+            "Beta HttpStatusCode is 200": (r) => r.status === 200,
+            "Beta HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "Beta HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "Beta HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "Beta HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "Beta HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
+
+    if (responses['comment']) {
+        check(responses['comment'], {
+            "Beta HttpStatusCode is 200": (r) => r.status === 200,
+            "Beta HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "Beta HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "Beta HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "Beta HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "Beta HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
+
+    if (responses['communication']) {
+        check(responses['communication'], {
+            "Communication HttpStatusCode is 200": (r) => r.status === 200,
+            "Communication HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "Communication HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "Communication HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "Communication HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "Communication HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
+
+    if (responses['conf']) {
+        check(responses['conf'], {
+            "Configuration HttpStatusCode is 200": (r) => r.status === 200,
+            "Configuration HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "Configuration HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "Configuration HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "Configuration HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "Configuration HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
+
+    if (responses['labs']) {
+        check(responses['labs'], {
+            "LaboratoryService HttpStatusCode is 200": (r) => r.status === 200,
+            "LaboratoryService HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "LaboratoryService HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "LaboratoryService HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "LaboratoryService HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "LaboratoryService HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
+
+    if (responses['meds']) {
+        check(responses['meds'], {
+            "MedicationService HttpStatusCode is 200": (r) => r.status === 200,
+            "MedicationService HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "MedicationService HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "MedicationService HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "MedicationService HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "MedicationService HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
+    if (responses['note']) {
+        check(responses['note'], {
+            "Note HttpStatusCode is 200": (r) => r.status === 200,
+            "Note HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "Note HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "Note HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "Note HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "Note HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
+
+    if (responses['patient']) {
+        check(responses['patient'], {
+            "PatientService HttpStatusCode is 200": (r) => r.status === 200,
+            "PatientService HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "PatientService HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "PatientService HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "PatientService HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "PatientService HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
+    if (responses['profile']) {
+        check(responses['profile'], {
+            "UserProfile HttpStatusCode is 200": (r) => r.status === 200,
+            "UserProfile HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "UserProfile HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "UserProfile HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 400) && (r.status <= 499)),
+            "UserProfile HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "UserProfile HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+    }
 }

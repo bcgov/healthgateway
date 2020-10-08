@@ -34,72 +34,14 @@ export default function () {
 
   let user = common.users[__VU % common.users.length];
 
-  if (((__ITER == 0) & user.hdid == null) || (user.hdid == null)) {
-    let loginRes = common.authenticateUser(user);
-    check(loginRes, {
-      'Authenticated successfully': loginRes == 200
-    }) || errorRate.add(1);
-  }
+  common.authorizeUser(user);
 
-  common.refreshTokenIfNeeded(user);
+  let webClientBatchResponses = http.batch(common.webClientRequests(user));
+  let timelineBatchResponses = http.batch(common.timelineRequests(user));
 
-  let params = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + user.token,
-    },
-  };
+  common.checkResponses(webClientBatchResponses, errorRate);
+  common.checkResponses(timelineBatchResponses, errorRate);
 
-  let requests = {
-    'comment': {
-      method: 'GET',
-      url: common.CommentUrl + "/" + user.hdid,
-      params: params
-    },
-    'note': {
-      method: 'GET',
-      url: common.NoteUrl + "/" + user.hdid,
-      params: params
-    },
-    'patient': {
-      method: 'GET',
-      url: common.PatientServiceUrl + "/" + user.hdid,
-      params: params
-    },
-    'meds': {
-      method: 'GET',
-      url: common.MedicationServiceUrl + "/" + user.hdid,
-      params: params
-    },
-    'labs': {
-      method: 'GET',
-      url: common.LaboratoryServiceUrl + "?hdid=" + user.hdid,
-      params: params
-    }
-  };
-
-  let responses = http.batch(requests);
-
-  check(responses['note'], {
-    "Note Response Code is 200": (r) => r.status == 200,
-  }) || errorRate.add(1);
-
-  check(responses['comment'], {
-    "Comment Response Code is 200": (r) => r.status == 200,
-  }) || errorRate.add(1);
-
-  check(responses['patient'], {
-    "PatientService Response Code is 200": (r) => r.status == 200
-  }) || errorRate.add(1);
-
-  check(responses['meds'], {
-    "MedicationService Response Code is 200": (r) => r.status == 200
-  }) || errorRate.add(1);
-
-  check(responses['labs'], {
-    "LaboratoryService Response Code is 200": (r) => r.status == 200
-  }) || errorRate.add(1);
-
-  sleep(1);
+  sleep(common.getRandom(1.0, 3.0));
 }
 
