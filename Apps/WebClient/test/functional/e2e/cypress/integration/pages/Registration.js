@@ -17,6 +17,6 @@ describe("Registration Page", () => {
 
     it("No sidebar or footer", () => {
         cy.contains("footer").should("not.exist");
-        cy.get('[data-testid="sidebar"]').should("not.exist");
+        cy.get('[data-testid="sidebar"]').should('not.be.visible');
     });
 });
