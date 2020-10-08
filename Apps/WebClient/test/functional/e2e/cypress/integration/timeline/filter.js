@@ -97,7 +97,7 @@ describe("Filters", () => {
             .its("length")
             .should("eq", 25);
 
-        cy.get("[data-testid=entriesPerPageSlider]")
+        cy.get("#entries-per-page")
             .as("range")
             .invoke("val", 1)
             .trigger("change");
@@ -106,7 +106,7 @@ describe("Filters", () => {
             .its("length")
             .should("eq", 50);
 
-        cy.get("[data-testid=entriesPerPageSlider]")
+        cy.get("#entries-per-page")
             .as("range")
             .invoke("val", 2)
             .trigger("change");
@@ -115,7 +115,7 @@ describe("Filters", () => {
             .its("length")
             .should("eq", 100);
 
-        cy.get("[data-testid=entriesPerPageSlider]")
+        cy.get("#entries-per-page")
             .as("range")
             .invoke("val", 0)
             .trigger("change");
