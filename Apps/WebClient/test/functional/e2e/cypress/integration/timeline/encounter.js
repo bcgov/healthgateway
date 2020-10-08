@@ -18,5 +18,14 @@ describe('MSP Visits', () => {
             .should('be.visible');
         cy.get('[data-testid=encounterDescription]')
             .should('be.visible');
+        cy.get('[data-testid=detailsButton').click()
+        cy.get('[data-testid=clinicLabel')
+            .should('be.visible');
+        cy.get('[data-testid=clinicName')
+            .should('be.visible');
+        cy.get('[data-testid=clinicAddress')
+            .should('be.visible');
+        cy.get('[data-testid=clinicPhone')
+            .should('be.visible');
     })
 })
