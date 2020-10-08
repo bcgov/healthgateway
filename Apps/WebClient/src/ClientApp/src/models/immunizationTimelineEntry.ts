@@ -1,12 +1,13 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import ImmunizationData, { ImmunizationAgent } from "@/models/immunizationData";
+import ImmunizationModel from "@/models/immunizationModel";
+import { DateWrapper } from "@/models/dateWrapper";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
     public immunization: ImmunizationViewModel;
 
-    public constructor(model: ImmunizationData) {
-        super(model.id, EntryType.Immunization, model.occurrenceDateTime);
+    public constructor(model: ImmunizationModel) {
+        super(model.id, EntryType.Immunization, model.dateOfImmunization);
         this.immunization = new ImmunizationViewModel(model);
     }
 
@@ -16,27 +17,24 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         }
 
         let text =
-            (this.immunization.name! || "") +
-            (this.immunization.agents.toString() || "");
+            (this.immunization.name || "") + (this.immunization.location || "");
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }
 }
 
 class ImmunizationViewModel {
+    public id: string;
+    public isSelfReported: boolean;
+    public location: string;
     public name: string;
-    public status?: string;
-    public agents: string;
-    public occurrenceDateTime: Date;
+    public dateOfImmunization: DateWrapper;
 
-    constructor(model: ImmunizationData) {
+    constructor(model: ImmunizationModel) {
+        this.id = model.id;
+        this.isSelfReported = model.isSelfReported;
+        this.location = model.location;
         this.name = model.name;
-        this.status = model.status;
-        this.occurrenceDateTime = model.occurrenceDateTime;
-        this.agents = model.immunizationAgents
-            .map(function (agent) {
-                return agent.name;
-            })
-            .join(",");
+        this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
     }
 }

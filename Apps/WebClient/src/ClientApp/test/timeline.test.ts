@@ -4,7 +4,8 @@ import TimelineComponent from "@/views/timeline.vue";
 import VueRouter from "vue-router";
 import VueContentPlaceholders from "vue-content-placeholders";
 import Vuex, { ActionTree } from "vuex";
-import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import type { WebClientConfiguration } from "@/models/configData";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { user as userModule } from "@/store/modules/user/user";
 import User from "@/models/user";
@@ -20,43 +21,45 @@ import Router from "vue-router";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import { DateWrapper } from "@/models/dateWrapper";
 
-const today = new Date();
-const yesterday = new Date(today);
+const today = new DateWrapper();
+const yesterday = today.subtract({ day: 1 });
 
 const userWithResults = new User();
 userWithResults.hdid = "hdid_with_results";
-
-yesterday.setDate(today.getDate() - 1);
 const medicationStatements: MedicationStatementHistory[] = [
     {
-        medicationSumary: {
+        medicationSummary: {
             din: "1233",
             brandName: "brand_name_A",
             genericName: "generic_name_A",
+            isPin: false,
         },
         prescriptionIdentifier: "abcmed1",
-        dispensedDate: today,
+        dispensedDate: today.format("YYYY-MM-DDTHH:mm:ss"),
         dispensingPharmacy: {},
     },
     {
-        medicationSumary: {
+        medicationSummary: {
             din: "1234",
             brandName: "brand_name_B",
             genericName: "generic_name_B",
+            isPin: false,
         },
         prescriptionIdentifier: "abcmed2",
-        dispensedDate: today,
+        dispensedDate: today.format("YYYY-MM-DDTHH:mm:ss"),
         dispensingPharmacy: {},
     },
     {
-        medicationSumary: {
+        medicationSummary: {
             din: "1235",
             brandName: "brand_name_C",
             genericName: "generic_name_C",
+            isPin: true,
         },
         prescriptionIdentifier: "abcmed3",
-        dispensedDate: yesterday,
+        dispensedDate: yesterday.format("YYYY-MM-DDTHH:mm:ss"),
         dispensingPharmacy: {},
     },
 ];
@@ -75,7 +78,7 @@ let userGetters = {
     },
 };
 
-let laboratoryActions: ActionTree<LaboratoryState, RootState> = {
+const laboratoryActions: ActionTree<LaboratoryState, RootState> = {
     getOrders(): Promise<RequestResult<LaboratoryOrder[]>> {
         return new Promise((resolve) => {
             resolve({
@@ -89,13 +92,13 @@ let laboratoryActions: ActionTree<LaboratoryState, RootState> = {
     },
 };
 
-let laboratoryGetters = {
+const laboratoryGetters = {
     getStoredLaboratoryOrders: () => (): LaboratoryOrder[] => {
         return [];
     },
 };
 
-let medicationActions: ActionTree<MedicationState, RootState> = {
+const medicationActions: ActionTree<MedicationState, RootState> = {
     getMedicationStatements(
         context,
         params: {
@@ -123,13 +126,20 @@ let medicationActions: ActionTree<MedicationState, RootState> = {
     },
 };
 
-let medicationGetters = {};
+const medicationGetters = {};
+
+const a: WebClientConfiguration = {
+    logLevel: "",
+    timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
+    registrationStatus: "closed" as RegistrationStatus,
+    externalURLs: {},
+    modules: { Note: true },
+    hoursForDeletion: 1,
+};
 
 const configGetters = {
     webClient: (): WebClientConfiguration => {
-        return {
-            modules: { Note: true },
-        };
+        return a;
     },
 };
 
@@ -205,7 +215,7 @@ describe("Timeline view", () => {
 
         const wrapper = createWrapper();
         // Verify the number of records
-        var unwatch = wrapper.vm.$watch(
+        const unwatch = wrapper.vm.$watch(
             () => {
                 return wrapper.vm.$data.isLoading;
             },
@@ -213,58 +223,6 @@ describe("Timeline view", () => {
                 expect(wrapper.findAll(".entryCard").length).toEqual(3);
                 expect(wrapper.findAll(".entryCard").length).toEqual(3);
                 expect(wrapper.findAll(".date").length).toEqual(2);
-                unwatch();
-            }
-        );
-    });
-
-    test("sort button toggles", () => {
-        userGetters = {
-            user: (): User => {
-                const user = new User();
-                user.hdid = "hdid_with_results";
-                return user;
-            },
-        };
-
-        const wrapper = createWrapper();
-        var unwatch = wrapper.vm.$watch(
-            () => {
-                return wrapper.vm.$data.isLoading;
-            },
-            () => {
-                expect(
-                    wrapper
-                        .find(".sortContainer button [name='descending']")
-                        .isVisible()
-                ).toBe(true);
-                expect(
-                    wrapper
-                        .find(".sortContainer button [name='ascending']")
-                        .isVisible()
-                ).toBe(false);
-                let dates = wrapper.findAll(".date");
-                let topDate = new Date(dates.at(0).text());
-                let bottomDate = new Date(dates.at(1).text());
-                expect(topDate > bottomDate).toBe(true);
-
-                wrapper.find(".sortContainer button").trigger("click");
-                wrapper.vm.$nextTick(() => {
-                    expect(
-                        wrapper
-                            .find(".sortContainer button [name='descending']")
-                            .isVisible()
-                    ).toBe(false);
-                    expect(
-                        wrapper
-                            .find(".sortContainer button [name='ascending']")
-                            .isVisible()
-                    ).toBe(true);
-                    dates = wrapper.findAll(".date");
-                    topDate = new Date(dates.at(0).text());
-                    bottomDate = new Date(dates.at(1).text());
-                    expect(topDate > bottomDate).toBe(false);
-                });
                 unwatch();
             }
         );

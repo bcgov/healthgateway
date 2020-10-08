@@ -10,16 +10,16 @@ import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
-import moment from "moment";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
+import { Dictionary } from "vue-router/types/router";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly USER_NOTE_BASE_URI: string = "/v1/api/Note";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     public initialize(
         config: ExternalConfiguration,
@@ -61,7 +61,7 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    NOT_IMPLENTED: string = "Method not implemented.";
+    NOT_IMPLENTED = "Method not implemented.";
 
     public createNote(note: UserNote): Promise<UserNote> {
         this.logger.debug(`createNote: ${JSON.stringify(note)}`);
@@ -73,12 +73,10 @@ export class RestUserNoteService implements IUserNoteService {
             }
 
             this.http
-                .post<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, {
-                    ...note,
-                    journalDateTime: moment(note.journalDateTime)
-                        .toISOString()
-                        .slice(0, 10),
-                })
+                .post<RequestResult<UserNote>>(
+                    `${this.USER_NOTE_BASE_URI}/`,
+                    note
+                )
                 .then((result) => {
                     return this.handleResult(result, resolve, reject);
                 })
@@ -97,12 +95,10 @@ export class RestUserNoteService implements IUserNoteService {
     public updateNote(note: UserNote): Promise<UserNote> {
         return new Promise((resolve, reject) => {
             this.http
-                .put<RequestResult<UserNote>>(`${this.USER_NOTE_BASE_URI}/`, {
-                    ...note,
-                    journalDateTime: moment(note.journalDateTime)
-                        .toISOString()
-                        .slice(0, 10),
-                })
+                .put<RequestResult<UserNote>>(
+                    `${this.USER_NOTE_BASE_URI}/`,
+                    note
+                )
                 .then((result) => {
                     return this.handleResult(result, resolve, reject);
                 })
@@ -120,10 +116,14 @@ export class RestUserNoteService implements IUserNoteService {
 
     public deleteNote(note: UserNote): Promise<void> {
         return new Promise((resolve, reject) => {
+            const headers: Dictionary<string> = {};
+            headers["Content-Type"] = "application/json; charset=utf-8";
+
             this.http
-                .delete<RequestResult<UserNote>>(
+                .delete<RequestResult<void>>(
                     `${this.USER_NOTE_BASE_URI}/`,
-                    note
+                    JSON.stringify(note),
+                    headers
                 )
                 .then((result) => {
                     return this.handleResult(result, resolve, reject);
@@ -140,15 +140,14 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    private handleResult(
-        requestResult: RequestResult<any>,
-        resolve: any,
-        reject: any
+    private handleResult<T>(
+        requestResult: RequestResult<T>,
+        resolve: (value?: T | PromiseLike<T> | undefined) => void,
+        reject: (reason?: unknown) => void
     ) {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);
         } else {
-            console.log(requestResult);
             reject(requestResult.resultError);
         }
     }

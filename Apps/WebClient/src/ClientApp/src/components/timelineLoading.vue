@@ -1,4 +1,113 @@
-﻿<style lang="scss" scoped>
+﻿<script lang="ts">
+import Vue from "vue";
+import { Component } from "vue-property-decorator";
+import {
+    IconDefinition,
+    faPills,
+    faEdit,
+    faFlask,
+    faSyringe,
+} from "@fortawesome/free-solid-svg-icons";
+
+@Component
+export default class TimelineLoadingComponent extends Vue {
+    private step = 0;
+    private intervalId = 0;
+    private get ellipsis(): string {
+        return ".".padEnd(this.step + 1, ".");
+    }
+    private get medIcon(): IconDefinition {
+        return faPills;
+    }
+
+    private get labIcon(): IconDefinition {
+        return faFlask;
+    }
+
+    private get immIcon(): IconDefinition {
+        return faSyringe;
+    }
+
+    private get noteIcon(): IconDefinition {
+        return faEdit;
+    }
+
+    private mounted() {
+        this.resetTimeout();
+    }
+
+    private destroyed() {
+        window.clearInterval(this.intervalId);
+    }
+
+    private resetTimeout() {
+        this.intervalId = window.setInterval(() => {
+            this.step++;
+            if (this.step >= 4) {
+                this.step = 0;
+                this.resetAnimation("first");
+                this.resetAnimation("second");
+                this.resetAnimation("third");
+                this.resetAnimation("fourth");
+            }
+        }, 2000);
+    }
+
+    private resetAnimation(elementId: string): boolean {
+        var el: HTMLElement | null = document.getElementById(elementId);
+        if (el == null) {
+            return false;
+        }
+        el.style.animation = "none";
+        el.offsetHeight; /* trigger reflow */
+        el.style.animation = "";
+        return true;
+    }
+}
+</script>
+
+<template>
+    <div class="backdrop">
+        <div class="spinner" data-testid="timelineLoading">
+            <div id="first" class="double-bounce">
+                <font-awesome-icon
+                    :icon="medIcon"
+                    class="icon1"
+                    size="2x"
+                ></font-awesome-icon>
+            </div>
+            <div id="second" class="double-bounce">
+                <font-awesome-icon
+                    :icon="labIcon"
+                    class="icon2"
+                    size="2x"
+                ></font-awesome-icon>
+            </div>
+            <div id="third" class="double-bounce">
+                <font-awesome-icon
+                    :icon="immIcon"
+                    class="icon2"
+                    size="2x"
+                ></font-awesome-icon>
+            </div>
+            <div id="fourth" class="double-bounce">
+                <font-awesome-icon
+                    :icon="noteIcon"
+                    class="icon2"
+                    size="2x"
+                ></font-awesome-icon>
+            </div>
+        </div>
+        <div class="text">
+            <h5 class="d-none d-sm-inline">
+                Gathering your health records
+                {{ ellipsis }}
+            </h5>
+        </div>
+    </div>
+</template>
+
+<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 .backdrop {
     position: fixed;
@@ -83,111 +192,3 @@
     }
 }
 </style>
-<template>
-    <div class="backdrop">
-        <div class="spinner">
-            <div id="first" class="double-bounce">
-                <font-awesome-icon
-                    :icon="medIcon"
-                    class="icon1"
-                    size="2x"
-                ></font-awesome-icon>
-            </div>
-            <div id="second" class="double-bounce">
-                <font-awesome-icon
-                    :icon="labIcon"
-                    class="icon2"
-                    size="2x"
-                ></font-awesome-icon>
-            </div>
-            <div id="third" class="double-bounce">
-                <font-awesome-icon
-                    :icon="immIcon"
-                    class="icon2"
-                    size="2x"
-                ></font-awesome-icon>
-            </div>
-            <div id="fourth" class="double-bounce">
-                <font-awesome-icon
-                    :icon="noteIcon"
-                    class="icon2"
-                    size="2x"
-                ></font-awesome-icon>
-            </div>
-        </div>
-        <div class="text">
-            <h5 class="d-none d-sm-inline">
-                Gathering your health records
-                {{ ellipsis }}
-            </h5>
-        </div>
-    </div>
-</template>
-
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import {
-    IconDefinition,
-    faPills,
-    faEdit,
-    faFlask,
-    faSyringe,
-} from "@fortawesome/free-solid-svg-icons";
-
-@Component
-export default class TimelineLoadingComponent extends Vue {
-    private step: number = 0;
-    private intervalId: number = 0;
-    private get ellipsis(): string {
-        return ".".padEnd(this.step + 1, ".");
-    }
-    private get medIcon(): IconDefinition {
-        return faPills;
-    }
-
-    private get labIcon(): IconDefinition {
-        return faFlask;
-    }
-
-    private get immIcon(): IconDefinition {
-        return faSyringe;
-    }
-
-    private get noteIcon(): IconDefinition {
-        return faEdit;
-    }
-
-    private mounted() {
-        this.resetTimeout();
-    }
-
-    private destroyed() {
-        window.clearInterval(this.intervalId);
-    }
-
-    private resetTimeout() {
-        this.intervalId = window.setInterval(() => {
-            this.step++;
-            if (this.step >= 4) {
-                this.step = 0;
-                this.resetAnimation("first");
-                this.resetAnimation("second");
-                this.resetAnimation("third");
-                this.resetAnimation("fourth");
-            }
-        }, 2000);
-    }
-
-    private resetAnimation(elementId: string): boolean {
-        var el: HTMLElement | null = document.getElementById(elementId);
-        if (el == null) {
-            return false;
-        }
-        el.style.animation = "none";
-        el.offsetHeight; /* trigger reflow */
-        el.style.animation = "";
-        return true;
-    }
-}
-</script>

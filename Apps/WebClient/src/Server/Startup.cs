@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient
 {
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
@@ -40,6 +41,7 @@ namespace HealthGateway.WebClient
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
@@ -168,7 +170,7 @@ namespace HealthGateway.WebClient
                         new SpaOptions { SourcePath = "ClientApp" },
                         npmScript: "serve",
                         port: 8585,
-                        regex: "Compiled successfully",
+                        regex: "Compiled ",
                         forceKill: true);
                 }
             });

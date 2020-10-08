@@ -79,7 +79,7 @@ namespace HealthGateway.WebClient.Controllers
         public async Task<IActionResult> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest)
         {
             // Validate that the query parameter matches the post body
-            if (!hdid.Equals(createUserRequest.Profile.HdId, StringComparison.CurrentCultureIgnoreCase))
+            if (!hdid.Equals(createUserRequest.Profile.HdId, StringComparison.OrdinalIgnoreCase))
             {
                 return new BadRequestResult();
             }
@@ -184,6 +184,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("termsofservice")]
         [AllowAnonymous]
+        [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 3600)]
         public IActionResult GetLastTermsOfService()
         {
             RequestResult<TermsOfServiceModel> result = this.userProfileService.GetActiveTermsOfService();

@@ -1,0 +1,29 @@
+{
+  "baseUrl": "https://dev.healthgateway.gov.bc.ca",
+  "defaultCommandTimeout": 30000,
+  "blockHosts": [
+    "spt.apps.gov.bc.ca"
+  ],
+  "retries": {
+    "runMode": 1,
+    "openMode": 0
+  },
+  "reporter": "mocha-junit-reporter",
+  "reporterOptions": {
+    "mochaFile": "reports/junit/test-results.[hash].xml",
+    "testsuitesTitle": false
+  },
+  "env": {
+    "bcsc.username": "hthgtwy11",
+    "bcsc.password": "",
+    "keycloak.username": "healthgateway",
+    "keycloak.password": "",
+    "keycloak.accountclosure.username": "AccountClosure",
+    "keycloak.unregistered.username": "unregistered",
+    "keycloak.unregistered.password": "",
+    "keycloak.protected.username": "protected",
+    "idir.username": "hgateway",
+    "idir.password": ""
+  },
+  "projectId": "ofnepc"
+}

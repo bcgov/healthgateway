@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,12 +37,12 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user is satisfied or not.
         /// </summary>
-        public bool IsSatisfied { get; set; } = false;
+        public bool IsSatisfied { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the feedback is reviewed or not.
         /// </summary>
-        public bool IsReviewed { get; set; } = false;
+        public bool IsReviewed { get; set; }
 
         /// <summary>
         /// Gets or sets the date when the feedback was created.
@@ -52,7 +52,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the version of the resource.
         /// </summary>
-        public uint Version { get; set; } = 0;
+        public uint Version { get; set; }
 
         /// <summary>
         /// Gets or sets the email if known for this feedback.

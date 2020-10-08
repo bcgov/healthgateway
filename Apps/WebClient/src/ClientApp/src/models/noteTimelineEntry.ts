@@ -9,17 +9,17 @@ export default class NoteTimelineEntry extends TimelineEntry {
     public hdid: string;
     public version?: number;
 
-    public constructor(model?: UserNote) {
+    public constructor(model: UserNote) {
         super(
-            model?.id ?? "",
+            model.id ?? "TEMP_ID",
             EntryType.Note,
-            model?.journalDateTime ?? new Date()
+            model.journalDateTime ?? ""
         );
-        this.text = model?.text || "";
-        this.title = model?.title || "No Title";
+        this.text = model.text || "";
+        this.title = model.title || "No Title";
         this.textSummary = this.text.substring(0, 100);
-        this.hdid = model?.hdId || "";
-        this.version = model?.version;
+        this.hdid = model.hdId || "";
+        this.version = model.version;
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
@@ -27,7 +27,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
             return false;
         }
 
-        let text = (this.title! || "") + (this.text! || "");
+        let text = (this.title || "") + (this.text || "");
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }
@@ -38,7 +38,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
             hdId: this.hdid,
             title: this.title,
             text: this.text,
-            journalDateTime: this.date,
+            journalDateTime: this.date.toISODate(),
             version: this.version || 0,
         };
     }

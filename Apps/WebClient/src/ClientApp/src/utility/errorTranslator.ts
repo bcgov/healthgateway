@@ -36,7 +36,7 @@ export default class ErrorTranslator {
     }
 
     public static getDisplayMessage(errorCode: string): string {
-        let sections = errorCode.split("-");
+        const sections = errorCode.split("-");
         if (sections.length === 1) {
             return sections[0];
         } else if (sections.length === 2) {
@@ -77,6 +77,8 @@ export default class ErrorTranslator {
 
     private static getServiceName(serviceName: string): string {
         switch (serviceName) {
+            case ServiceName.HealthGatewayUser:
+                return "User Profile";
             case ServiceName.DataBase:
                 return "Data Base";
             case ServiceName.ClientRegistries:

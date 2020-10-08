@@ -54,10 +54,10 @@ namespace HealthGateway.Encounter.Models
         public string SpecialtyDesc { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Practitioner Number.
+        /// Gets or sets the Practitioner Name.
         /// </summary>
-        [JsonPropertyName("practitionerNumber")]
-        public string PractitionerNumber { get; set; } = string.Empty;
+        [JsonPropertyName("practitionerName")]
+        public string PractitionerName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Location Name.

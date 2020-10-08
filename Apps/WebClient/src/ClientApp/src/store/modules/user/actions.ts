@@ -11,6 +11,7 @@ import { RootState, UserState } from "@/models/storeState";
 import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
+import { DateWrapper } from "@/models/dateWrapper";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -71,10 +72,10 @@ export const actions: ActionTree<UserState, RootState> = {
 
                     // If registered retrieve the invite as well
                     if (isRegistered) {
-                        var latestEmailPromise = userProfileService.getLatestEmailInvite(
+                        const latestEmailPromise = userProfileService.getLatestEmailInvite(
                             params.hdid
                         );
-                        var latestSMSPromise = userProfileService.getLatestSMSInvite(
+                        const latestSMSPromise = userProfileService.getLatestSMSInvite(
                             params.hdid
                         );
 
@@ -129,7 +130,10 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-    getUserSMS(context, params: { hdid: string }): Promise<UserSMSInvite> {
+    getUserSMS(
+        context,
+        params: { hdid: string }
+    ): Promise<UserSMSInvite | null> {
         return new Promise((resolve, reject) => {
             userProfileService
                 .getLatestSMSInvite(params.hdid)
@@ -158,6 +162,9 @@ export const actions: ActionTree<UserState, RootState> = {
                     reject(error);
                 });
         });
+    },
+    updateSMSResendDateTime(context, params: { dateTime: DateWrapper }): void {
+        context.commit("setSMSResendDateTime", params.dateTime);
     },
     updateUserPreference(
         context,

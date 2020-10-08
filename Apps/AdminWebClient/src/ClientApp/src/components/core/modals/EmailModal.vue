@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialog" persistent max-width="1000px">
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on"
                 >New Email Communication</v-btn
             >
@@ -42,6 +42,24 @@
                             ></v-select>
                         </v-col>
                     </v-row>
+                    <!-- Email Status & Draft/Publish button row -->
+                    <v-row>
+                        <v-col>
+                            <v-text-field
+                                v-model="editedItem.communicationStatusCode"
+                                label="Status"
+                                disabled
+                            ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="togglePublish()"
+                                >{{ publishingStatus }}</v-btn
+                            >
+                        </v-col>
+                    </v-row>
                     <!-- WYSIWYG Editor -->
                     <v-row>
                         <v-col>
@@ -78,8 +96,9 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/adminCommunication";
-import { ResultType } from "@/constants/resulttype";
+import Communication, {
+    CommunicationStatus
+} from "@/models/adminCommunication";
 import moment from "moment";
 import {
     TiptapVuetify,
@@ -105,7 +124,10 @@ import {
     }
 })
 export default class EmailModal extends Vue {
-    private dialog: boolean = false;
+    @Prop() editedItem!: Communication;
+    @Prop() isNew!: number;
+
+    private dialog = false;
     private priorityItems = [
         { text: "Urgent", number: 1000 },
         { text: "High", number: 100 },
@@ -136,9 +158,6 @@ export default class EmailModal extends Vue {
         Paragraph,
         HardBreak
     ];
-
-    @Prop() editedItem!: Communication;
-    @Prop() isNew!: number;
 
     @Watch("editedItem")
     private onPropChange() {
@@ -187,6 +206,26 @@ export default class EmailModal extends Vue {
                 resetValidation: () => any;
             }).resetValidation();
         }
+    }
+
+    private get isDraft(): boolean {
+        return (
+            this.editedItem.communicationStatusCode ===
+            CommunicationStatus.Draft
+        );
+    }
+
+    private get publishingStatus(): string {
+        return this.isDraft ? "Publish" : "Draft";
+    }
+
+    private togglePublish() {
+        if (this.isDraft) {
+            this.editedItem.communicationStatusCode = CommunicationStatus.New;
+        } else {
+            this.editedItem.communicationStatusCode = CommunicationStatus.Draft;
+        }
+        this.saveChanges();
     }
 
     @Emit()

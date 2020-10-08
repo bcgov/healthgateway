@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
-    using HealthGateway.Immunization.Factories;
+    using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -28,6 +28,7 @@ namespace HealthGateway.Immunization
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
@@ -71,10 +72,9 @@ namespace HealthGateway.Immunization
             // Add Services
             services.AddTransient<IImmunizationService, ImmunizationService>();
             services.AddSingleton<ITraceService, TimedTraceService>();
-            services.AddSingleton<IImmunizationDelegateFactory, ImmunizationDelegateFactory>();
 
             // Add delegates
-            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
+            services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
         }
 
         /// <summary>

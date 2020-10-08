@@ -8,16 +8,12 @@ export default class EncounterTimelineEntry extends TimelineEntry {
     public specialtyDescription: string;
     public clinic: ClinicViewModel;
 
-    public constructor(model?: Encounter) {
-        super(
-            model?.id ?? "",
-            EntryType.Encounter,
-            model?.serviceDateTime ?? new Date()
-        );
+    public constructor(model: Encounter) {
+        super(model.id, EntryType.Encounter, model.encounterDate);
         this.practitionerName =
-            model?.practitionerName || "Unknown Practitioner";
-        this.specialtyDescription = model?.specialtyDescription || "";
-        this.clinic = new ClinicViewModel(model?.clinic);
+            model.practitionerName || "Unknown Practitioner";
+        this.specialtyDescription = model.specialtyDescription || "";
+        this.clinic = new ClinicViewModel(model.clinic);
     }
 
     public filterApplies(filterText: string, filterTypes: string[]): boolean {
@@ -26,9 +22,9 @@ export default class EncounterTimelineEntry extends TimelineEntry {
         }
 
         let text =
-            (this.practitionerName! || "") +
-            (this.specialtyDescription! || "") +
-            (this.clinic?.name || "");
+            this.practitionerName +
+            this.specialtyDescription +
+            this.clinic.name;
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }
@@ -36,22 +32,28 @@ export default class EncounterTimelineEntry extends TimelineEntry {
 
 class ClinicViewModel {
     public id: string;
-    public name?: string;
-    public address?: string;
-    public phoneNumber?: string;
+    public name: string;
+    public address: string;
+    public phoneNumber: string;
 
-    constructor(model?: Clinic) {
-        this.id = model?.clinicId || "";
-        this.name = model?.name;
-        this.phoneNumber = model?.phoneNumber;
+    constructor(model: Clinic) {
+        this.id = model.clinicId || "";
+        this.name = model.name;
+        this.phoneNumber = model.phoneNumber || "";
 
+        const addressArray = [
+            model.addressLine1,
+            model.addressLine2,
+            model.addressLine3,
+            model.addressLine4,
+        ];
         this.address =
-            (model?.addressLine1 || "") +
-            " " +
-            (model?.addressLine2 || "") +
+            addressArray.filter((val) => val.length > 0).join(" ") +
             ", " +
-            (model?.city || "") +
+            (model.city || "") +
             " " +
-            (model?.province || "");
+            (model.province || "") +
+            ", " +
+            (model.postalCode || "");
     }
 }

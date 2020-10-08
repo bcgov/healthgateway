@@ -1,74 +1,3 @@
-<style scoped lang="scss">
-.error-message {
-    color: #ff5252 !important;
-}
-</style>
-<template>
-    <v-data-table
-        :headers="headers"
-        :items="communicationList"
-        :custom-sort="customSort"
-        class="elevation-1"
-    >
-        <template v-slot:item.effectiveDateTime="{ item }">
-            <span>{{ formatDate(item.effectiveDateTime) }}</span>
-        </template>
-        <template v-slot:item.expiryDateTime="{ item }">
-            <span>{{ formatDate(item.expiryDateTime) }}</span>
-        </template>
-        <template v-slot:item.scheduledDateTime="{ item }">
-            <span>{{ formatDate(item.scheduledDateTime) }}</span>
-        </template>
-        <template v-slot:top>
-            <v-toolbar dark>
-                <v-tabs v-model="tab" dark>
-                    <v-tab>
-                        Banner Posts
-                    </v-tab>
-                    <v-tab>
-                        Emails
-                    </v-tab>
-                </v-tabs>
-                <v-spacer></v-spacer>
-                <BannerModal
-                    v-if="tab == 0"
-                    :edited-item="editedBanner"
-                    :is-new="isNewCommunication"
-                    @emit-add="add"
-                    @emit-update="update"
-                    @emit-close="close"
-                />
-                <EmailModal
-                    v-if="tab == 1"
-                    :edited-item="editedEmail"
-                    :is-new="isNewCommunication"
-                    @emit-send="add"
-                    @emit-update="update"
-                    @emit-close="close"
-                />
-            </v-toolbar>
-        </template>
-        <template v-slot:item.actions="{ item }">
-            <v-btn
-                class="mr-2"
-                :disabled="checkDisabled(item)"
-                @click="edit(item)"
-            >
-                <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
-            </v-btn>
-
-            <v-btn :disabled="checkDisabled(item)" @click="deleteComm(item)">
-                <font-awesome-icon icon="trash" size="1x"> </font-awesome-icon>
-            </v-btn>
-        </template>
-        <template v-slot:item.priority="{ item }">
-            <span>{{ formatPriority(item.priority) }}</span>
-        </template>
-        <template v-slot:no-data>
-            <span>Nothing to show here.</span>
-        </template>
-    </v-data-table>
-</template>
 <script lang="ts">
 import { Component, Vue, Watch, Emit } from "vue-property-decorator";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -82,7 +11,6 @@ import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
 import { ICommunicationService } from "@/services/interfaces";
-import { faWater } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 
 @Component({
@@ -96,23 +24,23 @@ export default class CommunicationTable extends Vue {
     private bannerList: Communication[] = [];
     private emailList: Communication[] = [];
     private communicationService!: ICommunicationService;
-    private isLoading: boolean = false;
-    private showFeedback: boolean = false;
+    private isLoading = false;
+    private showFeedback = false;
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
         message: ""
     };
     // 0: Banners, 1: Emails
-    private tab: number = 0;
-    private isNewCommunication: boolean = true;
+    private tab = 0;
+    private isNewCommunication = true;
     private headers: any[] = [];
     private editedBanner: Communication = {
         id: "-1",
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         priority: 10,
         version: 0,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -126,7 +54,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         subject: "",
         communicationTypeCode: CommunicationType.Email,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -140,7 +68,7 @@ export default class CommunicationTable extends Vue {
         text: "",
         subject: "",
         communicationTypeCode: CommunicationType.Banner,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         version: 0,
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -154,7 +82,7 @@ export default class CommunicationTable extends Vue {
         id: "-1",
         subject: "",
         communicationTypeCode: CommunicationType.Email,
-        communicationStatusCode: CommunicationStatus.New,
+        communicationStatusCode: CommunicationStatus.Draft,
         text: "<p></p>",
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
@@ -190,6 +118,12 @@ export default class CommunicationTable extends Vue {
             value: "subject",
             align: "start",
             width: "20%",
+            sortable: false
+        },
+        {
+            text: "Status",
+            value: "communicationStatusCode",
+            width: "130px",
             sortable: false
         },
         {
@@ -259,15 +193,17 @@ export default class CommunicationTable extends Vue {
         this.isNewCommunication = false;
         if (item.communicationTypeCode === CommunicationType.Email) {
             this.editedEmail = item;
-            this.editedEmail.scheduledDateTime = new Date(
-                item.scheduledDateTime
-            );
+            this.editedEmail.scheduledDateTime = moment
+                .utc(item.scheduledDateTime)
+                .toDate();
         } else {
             this.editedBanner = item;
-            this.editedBanner.effectiveDateTime = new Date(
-                item.effectiveDateTime
-            );
-            this.editedBanner.expiryDateTime = new Date(item.expiryDateTime);
+            this.editedBanner.effectiveDateTime = moment
+                .utc(item.effectiveDateTime)
+                .toDate();
+            this.editedBanner.expiryDateTime = moment
+                .utc(item.expiryDateTime)
+                .toDate();
         }
     }
 
@@ -315,11 +251,23 @@ export default class CommunicationTable extends Vue {
     }
 
     private checkDisabled(item: Communication) {
-        if (
-            item.communicationTypeCode === CommunicationType.Email &&
-            item.communicationStatusCode != CommunicationStatus.New
-        ) {
-            return true;
+        const now = new Date();
+        if (item.communicationTypeCode === CommunicationType.Banner) {
+            const expiryDateTime = new Date(item.expiryDateTime);
+            if (
+                item.communicationStatusCode != CommunicationStatus.Draft &&
+                expiryDateTime < now
+            ) {
+                return true;
+            }
+        } else if (item.communicationTypeCode === CommunicationType.Email) {
+            const scheduledDateTime = new Date(item.scheduledDateTime);
+            if (
+                item.communicationStatusCode != CommunicationStatus.Draft &&
+                scheduledDateTime < now
+            ) {
+                return true;
+            }
         }
         return false;
     }
@@ -367,7 +315,7 @@ export default class CommunicationTable extends Vue {
                 subject: comm.subject,
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
-                communicationStatusCode: CommunicationStatus.New,
+                communicationStatusCode: comm.communicationStatusCode,
                 priority: comm.priority,
                 version: 0,
                 scheduledDateTime: comm.scheduledDateTime,
@@ -406,7 +354,7 @@ export default class CommunicationTable extends Vue {
                 subject: comm.subject,
                 text: comm.text,
                 communicationTypeCode: comm.communicationTypeCode,
-                communicationStatusCode: CommunicationStatus.New,
+                communicationStatusCode: comm.communicationStatusCode,
                 priority: comm.priority,
                 version: comm.version,
                 scheduledDateTime: comm.scheduledDateTime,
@@ -492,3 +440,76 @@ export default class CommunicationTable extends Vue {
     }
 }
 </script>
+
+<template>
+    <v-data-table
+        :headers="headers"
+        :items="communicationList"
+        :custom-sort="customSort"
+        class="elevation-1"
+    >
+        <template #item.effectiveDateTime="{ item }">
+            <span>{{ formatDate(item.effectiveDateTime) }}</span>
+        </template>
+        <template #item.expiryDateTime="{ item }">
+            <span>{{ formatDate(item.expiryDateTime) }}</span>
+        </template>
+        <template #item.scheduledDateTime="{ item }">
+            <span>{{ formatDate(item.scheduledDateTime) }}</span>
+        </template>
+        <template #top>
+            <v-toolbar dark>
+                <v-tabs v-model="tab" dark>
+                    <v-tab>
+                        Banner Posts
+                    </v-tab>
+                    <v-tab>
+                        Emails
+                    </v-tab>
+                </v-tabs>
+                <v-spacer></v-spacer>
+                <BannerModal
+                    v-if="tab == 0"
+                    :edited-item="editedBanner"
+                    :is-new="isNewCommunication"
+                    @emit-add="add"
+                    @emit-update="update"
+                    @emit-close="close"
+                />
+                <EmailModal
+                    v-if="tab == 1"
+                    :edited-item="editedEmail"
+                    :is-new="isNewCommunication"
+                    @emit-send="add"
+                    @emit-update="update"
+                    @emit-close="close"
+                />
+            </v-toolbar>
+        </template>
+        <template #item.actions="{ item }">
+            <v-btn
+                class="mr-2"
+                :disabled="checkDisabled(item)"
+                @click="edit(item)"
+            >
+                <font-awesome-icon icon="edit" size="1x"> </font-awesome-icon>
+            </v-btn>
+
+            <v-btn :disabled="checkDisabled(item)" @click="deleteComm(item)">
+                <font-awesome-icon icon="trash" size="1x"> </font-awesome-icon>
+            </v-btn>
+        </template>
+        <template #item.priority="{ item }">
+            <span>{{ formatPriority(item.priority) }}</span>
+        </template>
+        <template #no-data>
+            <span>Nothing to show here.</span>
+        </template>
+    </v-data-table>
+</template>
+
+<style scoped lang="scss">
+.error-message {
+    color: #ff5252 !important;
+}
+</style>

@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the Prescription status.
         /// </summary>
-        public char PrescriptionStatus { get; set; } = '\0';
+        public char PrescriptionStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the date the medication was dispensed.
@@ -60,7 +60,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the medication for the current MedicationStatementHistory.
         /// </summary>
-        public MedicationSumary MedicationSumary { get; set; } = new MedicationSumary();
+        public MedicationSummary MedicationSummary { get; set; } = new MedicationSummary();
 
         /// <summary>
         /// Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
@@ -76,7 +76,7 @@ namespace HealthGateway.Medication.Models
         {
             return new MedicationStatementHistory()
             {
-                MedicationSumary = new MedicationSumary() { DIN = model.DIN, Quantity = model.Quantity, GenericName = model.GenericName },
+                MedicationSummary = new MedicationSummary() { DIN = model.DIN, Quantity = model.Quantity, GenericName = model.GenericName, BrandName = "Unknown brand name" },
                 Directions = model.Directions,
                 DispensedDate = model.DispenseDate,
                 DispensingPharmacy = Pharmacy.FromODRModel(model.DispensingPharmacy),

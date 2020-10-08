@@ -1,10 +1,52 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.title {
-    color: $primary;
-    font-size: 2.1em;
+<script lang="ts">
+import Vue from "vue";
+import { Component, Prop } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { IUserProfileService } from "@/services/interfaces";
+import User from "@/models/user";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+library.add(faTimesCircle);
+
+@Component
+export default class ValidateEmailView extends Vue {
+    @Prop() inviteKey!: string;
+
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    @Action("checkRegistration", { namespace: "user" })
+    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+
+    private isLoading = false;
+    private isSuccess: boolean | null = null;
+
+    private mounted() {
+        this.isLoading = true;
+        const userProfileService: IUserProfileService = container.get(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
+        userProfileService
+            .validateEmail(this.user.hdid, this.inviteKey)
+            .then((isValid) => {
+                this.isSuccess = isValid;
+                if (isValid) {
+                    this.checkRegistration({ hdid: this.user.hdid });
+                    setTimeout(
+                        () => this.$router.push({ path: "/timeline" }),
+                        2000
+                    );
+                }
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
 }
-</style>
+</script>
+
 <template>
     <b-container>
         <b-row class="pt-5">
@@ -50,51 +92,11 @@
         </b-row>
     </b-container>
 </template>
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { IUserProfileService } from "@/services/interfaces";
-import User from "@/models/user";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-library.add(faTimesCircle);
 
-@Component
-export default class ValidateEmailView extends Vue {
-    @Prop() inviteKey!: string;
-
-    @Getter("user", { namespace: "user" }) user!: User;
-
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
-
-    private isLoading: boolean = false;
-    private isSuccess: boolean | null = null;
-
-    private mounted() {
-        this.isLoading = true;
-        const userProfileService: IUserProfileService = container.get(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
-        userProfileService
-            .validateEmail(this.user.hdid, this.inviteKey)
-            .then((isValid) => {
-                this.isSuccess = isValid;
-                if (isValid) {
-                    this.checkRegistration({ hdid: this.user.hdid });
-                    setTimeout(
-                        () => this.$router.push({ path: "/timeline" }),
-                        2000
-                    );
-                }
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.title {
+    color: $primary;
+    font-size: 2.1em;
 }
-</script>
+</style>

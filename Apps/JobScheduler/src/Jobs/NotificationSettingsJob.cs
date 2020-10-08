@@ -79,7 +79,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
-                    throw new Exception($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                    throw new FormatException($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
                 }
                 else
                 {
@@ -88,7 +88,7 @@ namespace Healthgateway.JobScheduler.Jobs
                     if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
                     {
                         this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
-                        throw new Exception($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                        throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
                     }
                 }
             }

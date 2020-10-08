@@ -59,5 +59,10 @@ namespace HealthGateway.Database.Constants
         /// Represents the Job Scheduler application.
         /// </summary>
         public const string JobScheduler = "JOBS";
+
+        /// <summary>
+        /// Represents the Encounter application.
+        /// </summary>
+        public const string Encounter = "ENC";
     }
 }

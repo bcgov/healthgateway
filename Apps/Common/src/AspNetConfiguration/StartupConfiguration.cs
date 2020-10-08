@@ -115,6 +115,13 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
                 });
+
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(180);
+            });
         }
 
         /// <summary>
@@ -226,7 +233,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Read, FhirResourceLookup.Parameter));
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Read));
                 });
                 options.AddPolicy(EncounterPolicy.Write, policy =>
                 {
@@ -427,6 +434,9 @@ namespace HealthGateway.Common.AspNetConfiguration
                 context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
                 await next().ConfigureAwait(true);
             });
+
+            // Enable Cache control and set defaults
+            this.UseResponseCaching(app);
         }
 
         /// <summary>
@@ -439,9 +449,11 @@ namespace HealthGateway.Common.AspNetConfiguration
             string connectSrc = cspSection.GetValue<string>("connect-src", string.Empty);
             string frameSrc = cspSection.GetValue<string>("frame-src", string.Empty);
             string scriptSrc = cspSection.GetValue<string>("script-src", string.Empty);
+            string styleSrc = cspSection.GetValue<string>("style-src", string.Empty);
+            string fontSrc = cspSection.GetValue<string>("font-src", string.Empty);
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'self'; script-src 'self' 'unsafe-eval' {scriptSrc}; connect-src 'self' {connectSrc}; img-src 'self' data:; style-src 'self' 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self'; frame-src 'self' {frameSrc}");
+                context.Response.Headers.Add("Content-Security-Policy", $"default-src 'self'; script-src 'self' 'unsafe-eval' {scriptSrc}; connect-src 'self' {connectSrc} file: data: blob: filesystem:; img-src 'self' data:; style-src 'self' {styleSrc} 'unsafe-inline';base-uri 'self';form-action 'self'; font-src 'self' {fontSrc}; frame-src 'self' {frameSrc}");
                 await next().ConfigureAwait(true);
             });
         }
@@ -468,6 +480,29 @@ namespace HealthGateway.Common.AspNetConfiguration
             app.UseEndpoints(routes =>
             {
                 routes.MapControllers();
+            });
+        }
+
+        /// <summary>
+        /// Enables response caching and sets default no cache.
+        /// </summary>
+        /// <param name="app">The application build provider.</param>
+        private void UseResponseCaching(IApplicationBuilder app)
+        {
+            this.Logger.LogDebug("Setting up Response Cache");
+            app.UseResponseCaching();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                    {
+                        NoCache = true,
+                        NoStore = true,
+                    };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Pragma] =
+                    new string[] { "no-cache" };
+                await next().ConfigureAwait(true);
             });
         }
 

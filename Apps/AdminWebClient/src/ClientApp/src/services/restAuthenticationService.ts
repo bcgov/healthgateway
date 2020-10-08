@@ -24,15 +24,15 @@ export class RestAuthenticationService implements IAuthenticationService {
         // We get back a JWT signed if the authentication was successful
         console.log("Starting login flow....");
 
-        var fullRedirectUrl = new URL(relativeToPath, window.location.href);
+        const fullRedirectUrl = new URL(relativeToPath, window.location.href);
 
-        var authPathUrl = new URL(
+        const authPathUrl = new URL(
             `${this.config.forwardProxies.basePath}/Login`,
             window.location.href
         );
 
-        let queryParams = `?redirectUri=${fullRedirectUrl.href}`;
-        let fullPath = authPathUrl + queryParams;
+        const queryParams = `?redirectUri=${fullRedirectUrl.href}`;
+        const fullPath = authPathUrl + queryParams;
 
         console.log(fullPath);
         window.location.href = fullPath;
@@ -63,19 +63,12 @@ export class RestAuthenticationService implements IAuthenticationService {
         return new Promise((resolve, reject) => {
             console.log("Starting Logout flow....");
 
-            var authPathUrl = new URL(
+            const authPathUrl = new URL(
                 `${this.config.forwardProxies.basePath}/Logout`,
                 window.location.href
             );
 
             window.location.href = authPathUrl.href;
-            this.expireSiteMinderCookie();
         });
-    }
-
-    public expireSiteMinderCookie() {
-        // This expires the siteminder cookie preventing the app from login in using the cache.
-        var d = new Date();
-        document.cookie = `SMSESSION=;domain=.gov.bc.ca;path=/;expires=${d.toUTCString()}`;
     }
 }

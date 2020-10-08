@@ -66,11 +66,11 @@ namespace HealthGateway.Encounter.Controllers
         }
 
         /// <summary>
-        /// Gets a json list of claims records.
+        /// Gets a json list of encounter records.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
-        /// <returns>a list of claim records.</returns>
-        /// <response code="200">Returns the List of Claim records.</response>
+        /// <returns>a list of Encounter records.</returns>
+        /// <response code="200">Returns the List of Encounter records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         /// <response code="503">The service is unavailable for use.</response>
@@ -78,10 +78,10 @@ namespace HealthGateway.Encounter.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = EncounterPolicy.Read)]
-        public async Task<IActionResult> GetClaims(string hdid)
+        public async Task<IActionResult> GetEncounters(string hdid)
         {
             this.logger.LogDebug($"Getting claims from controller... {hdid}");
-            RequestResult<IEnumerable<Claim>> result = await this.service.GetClaims(hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncounters(hdid).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished getting claims from controller... {hdid}");
             return new JsonResult(result);

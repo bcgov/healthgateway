@@ -1,5 +1,6 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import { LaboratoryOrder, LaboratoryResult } from "./laboratory";
+import { LaboratoryOrder, LaboratoryResult } from "@/models/laboratory";
+import { DateWrapper } from "@/models/dateWrapper";
 
 // The laboratory timeline entry model
 export default class LaboratoryTimelineEntry extends TimelineEntry {
@@ -8,7 +9,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     public orderingProviders: string | null;
     public reportingLab: string | null;
     public location: string | null;
-    public displayDate: Date;
+    public displayDate: DateWrapper;
     public reportAvailable: boolean;
 
     public summaryTitle: string;
@@ -31,7 +32,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.location = model.location;
         this.reportAvailable = model.reportAvailable;
 
-        this.resultList = new Array();
+        this.resultList = [];
         model.labResults.forEach((result) => {
             this.resultList.push(new LaboratoryResultViewModel(result));
         });
@@ -51,8 +52,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
             return false;
         }
 
-        let text =
-            (this.summaryTitle! || "") + (this.summaryDescription! || "");
+        let text = this.summaryTitle + this.summaryDescription;
         text = text.toUpperCase();
         return text.includes(filterText.toUpperCase());
     }
@@ -72,11 +72,11 @@ export class LaboratoryResultViewModel {
     public id: string;
     public testType: string | null;
     public outOfRange: string;
-    public collectedDateTime: Date;
+    public collectedDateTime: DateWrapper;
     public testStatus: string | null;
     public resultDescription: string | null;
-    public receivedDateTime: Date;
-    public resultDateTime: Date;
+    public receivedDateTime: DateWrapper;
+    public resultDateTime: DateWrapper;
     public loinc: string | null;
     public loincName: string | null;
 
@@ -84,11 +84,11 @@ export class LaboratoryResultViewModel {
         this.id = model.id;
         this.testType = model.testType;
         this.outOfRange = model.outOfRange ? "True" : "False";
-        this.collectedDateTime = model.collectedDateTime;
+        this.collectedDateTime = new DateWrapper(model.collectedDateTime);
         this.testStatus = model.testStatus;
         this.resultDescription = model.resultDescription;
-        this.receivedDateTime = model.receivedDateTime;
-        this.resultDateTime = model.resultDateTime;
+        this.receivedDateTime = new DateWrapper(model.receivedDateTime);
+        this.resultDateTime = new DateWrapper(model.resultDateTime);
         this.loinc = model.loinc;
         this.loincName = model.loincName;
     }

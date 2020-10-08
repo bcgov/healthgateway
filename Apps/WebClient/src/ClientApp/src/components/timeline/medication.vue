@@ -1,58 +1,32 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+import { Component, Prop } from "vue-property-decorator";
+import { IconDefinition, faPills } from "@fortawesome/free-solid-svg-icons";
+import PhoneUtil from "@/utility/phoneUtil";
 
-$radius: 15px;
+@Component({
+    components: {
+        CommentSection: CommentSectionComponent,
+    },
+})
+export default class MedicationTimelineComponent extends Vue {
+    @Prop() entry!: MedicationTimelineEntry;
+    @Prop() index!: number;
+    @Prop() datekey!: string;
 
-.timelineCard {
-    border-radius: $radius $radius $radius $radius;
-    border-color: $soft_background;
-    border-style: solid;
-    border-width: 2px;
+    private detailsVisible = false;
+
+    private get entryIcon(): IconDefinition {
+        return faPills;
+    }
+
+    private formatPhone(phoneNumber: string): string {
+        return PhoneUtil.formatPhone(phoneNumber);
+    }
 }
-
-.entryTitle {
-    background-color: $soft_background;
-    color: $primary;
-    padding: 13px 15px;
-    font-weight: bold;
-    margin-right: -1px;
-    border-radius: 0px $radius 0px 0px;
-}
-
-.icon {
-    background-color: $primary;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    border-radius: $radius 0px 0px 0px;
-}
-
-.leftPane {
-    width: 60px;
-    max-width: 60px;
-}
-
-.detailsButton {
-    padding: 0px;
-}
-
-.detailSection {
-    margin-top: 15px;
-}
-
-.commentButton {
-    border-radius: $radius;
-}
-
-.newComment {
-    border-radius: $radius;
-}
-
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
-}
-</style>
+</script>
 
 <template>
     <b-col class="timelineCard">
@@ -63,7 +37,7 @@ $radius: 15px;
                     size="2x"
                 ></font-awesome-icon>
             </b-col>
-            <b-col class="entryTitle">
+            <b-col class="entryTitle" data-testid="medicationTitle">
                 {{ entry.medication.brandName }}
             </b-col>
         </b-row>
@@ -79,12 +53,10 @@ $radius: 15px;
                     <b-col>
                         <div class="d-flex flex-row-reverse">
                             <b-btn
-                                v-b-toggle="
-                                    'entryDetails-' + index + '-' + datekey
-                                "
+                                data-testid="medicationViewDetailsBtn"
                                 variant="link"
                                 class="detailsButton"
-                                @click="toggleDetails(entry)"
+                                @click="detailsVisible = !detailsVisible"
                             >
                                 <span class="when-opened">
                                     <font-awesome-icon
@@ -106,9 +78,9 @@ $radius: 15px;
                             :id="'entryDetails-' + index + '-' + datekey"
                             v-model="detailsVisible"
                         >
-                            <div v-if="detailsLoaded">
+                            <div>
                                 <div class="detailSection">
-                                    <div>
+                                    <div data-testid="medicationPractitioner">
                                         <strong>Practitioner:</strong>
                                         {{ entry.practitionerSurname }}
                                     </div>
@@ -184,21 +156,6 @@ $radius: 15px;
                                     </div>
                                 </div>
                             </div>
-                            <div v-else-if="isLoading">
-                                <div class="d-flex align-items-center">
-                                    <strong>Loading...</strong>
-                                    <b-spinner class="ml-5"></b-spinner>
-                                </div>
-                            </div>
-                            <div v-else-if="hasErrors" class="pt-1">
-                                <b-alert :show="hasErrors" variant="danger">
-                                    <h5>Error</h5>
-                                    <span
-                                        >An unexpected error occured while
-                                        processing the request.</span
-                                    >
-                                </b-alert>
-                            </div>
                         </b-collapse>
                     </b-col>
                 </b-row>
@@ -208,87 +165,58 @@ $radius: 15px;
     </b-col>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-import Pharmacy from "@/models/pharmacy";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import { IconDefinition, faPills } from "@fortawesome/free-solid-svg-icons";
-import MedicationResult from "@/models/medicationResult";
-import PhoneUtil from "@/utility/phoneUtil";
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-@Component({
-    components: {
-        CommentSection: CommentSectionComponent,
-    },
-})
-export default class MedicationTimelineComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    @Prop() entry!: MedicationTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
+$radius: 15px;
 
-    @Action("getMedicationInformation", { namespace: "medication" })
-    getMedication!: (params: { din: string }) => Promise<MedicationResult>;
-
-    private isLoadingMedication: boolean = false;
-    private isLoadingPharmacy: boolean = false;
-    private hasErrors: boolean = false;
-    private medicationLoaded: boolean = false;
-    private detailsVisible: boolean = false;
-
-    private get detailsLoaded(): boolean {
-        return this.medicationLoaded;
-    }
-
-    private get isLoading(): boolean {
-        return this.isLoadingMedication || this.isLoadingPharmacy;
-    }
-
-    private get entryIcon(): IconDefinition {
-        return faPills;
-    }
-
-    private toggleDetails(medicationEntry: MedicationTimelineEntry): void {
-        this.detailsVisible = !this.detailsVisible;
-        this.hasErrors = false;
-
-        if (!this.detailsVisible) {
-            return;
-        }
-
-        // Load medication details
-        if (!this.medicationLoaded) {
-            this.isLoadingMedication = true;
-            this.logger.debug(
-                `Loading Medication Entry : ${JSON.stringify(medicationEntry)}`
-            );
-            var medicationPromise = this.getMedication({
-                din: medicationEntry.medication.din,
-            })
-                .then((result) => {
-                    if (result) {
-                        medicationEntry.medication.populateFromModel(result);
-                    }
-                    this.medicationLoaded = true;
-                    this.isLoadingMedication = false;
-                })
-                .catch((err) => {
-                    this.logger.error(
-                        `Error loading medication details : ${err}`
-                    );
-                    this.hasErrors = true;
-                    this.isLoadingMedication = false;
-                });
-        }
-    }
-    private formatPhone(phoneNumber: string): string {
-        return PhoneUtil.formatPhone(phoneNumber);
-    }
+.timelineCard {
+    border-radius: $radius $radius $radius $radius;
+    border-color: $soft_background;
+    border-style: solid;
+    border-width: 2px;
 }
-</script>
+
+.entryTitle {
+    background-color: $soft_background;
+    color: $primary;
+    padding: 13px 15px;
+    font-weight: bold;
+    margin-right: -1px;
+    border-radius: 0px $radius 0px 0px;
+}
+
+.icon {
+    background-color: $primary;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: $radius 0px 0px 0px;
+}
+
+.leftPane {
+    width: 60px;
+    max-width: 60px;
+}
+
+.detailsButton {
+    padding: 0px;
+}
+
+.detailSection {
+    margin-top: 15px;
+}
+
+.commentButton {
+    border-radius: $radius;
+}
+
+.newComment {
+    border-radius: $radius;
+}
+
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+    display: none;
+}
+</style>

@@ -39,7 +39,7 @@ namespace HealthGateway.EncounterTests
             encounterService = new Mock<IEncounterService>();
             var loggerService = new Mock<ILogger<EncounterController>>();
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            encounterService.Setup(x => x.GetClaims(It.IsAny<string>())).ReturnsAsync(GetClaims());
+            encounterService.Setup(x => x.GetEncounters(It.IsAny<string>())).ReturnsAsync(GetEncounters());
 
             encounterController = new EncounterController(loggerService.Object, encounterService.Object, httpContextAccessorMock.Object);
         }
@@ -47,65 +47,51 @@ namespace HealthGateway.EncounterTests
         [Fact]
         public void TestGetClaims()
         {
-            var result = encounterController.GetClaims("123");
+            var result = encounterController.GetEncounters("123");
             var jsonResult = Assert.IsType<JsonResult>(result.Result);
         }
 
-        private RequestResult<IEnumerable<Claim>> GetClaims()
+        private RequestResult<IEnumerable<EncounterModel>> GetEncounters()
         {
-            RequestResult<IEnumerable<Claim>> result = new RequestResult<IEnumerable<Claim>>();
-            var claims = new List<Claim>();
-            claims.Add(new Claim()
+            RequestResult<IEnumerable<EncounterModel>> result = new RequestResult<IEnumerable<EncounterModel>>();
+            var encounters = new List<EncounterModel>();
+            encounters.Add(new EncounterModel()
             {
-                ClaimId = 1,
-                ServiceDate = new DateTime(2020-05-27),
-                FeeDesc = "TACROLIMUS",
-                DiagnosticCode = new DiagnosticCode()
+                Id = "1",
+                EncounterDate = new DateTime(2020 - 05 - 27),
+                SpecialtyDescription = "LABORATORY MEDICINE",
+                PractitionerName = "PRACTITIONER NAME",
+                Clinic = new Clinic()
                 {
-                    DiagCode1 = "01L",
-                    DiagCode2 = "02L",
-                    DiagCode3 = "03L",
-                },
-                SpecialtyDesc = "LABORATORY MEDICINE",
-                PractitionerNumber = "PRACTITIONER NAME",
-                LocationName = "PAYEE NAME",
-                LocationAddress = new LocationAddress()
-                {
-                    AddrLine1 = "address line 1",
-                    AddrLine2 = "address line 2",
-                    AddrLine3 = "address line 3",
-                    AddrLine4 = "address line 4",
+                    Name = "LOCATION NAME",
+                    AddressLine1 = "address line 1",
+                    AddressLine2 = "address line 2",
+                    AddressLine3 = "address line 3",
+                    AddressLine4 = "address line 4",
                     City = "Victoria",
                     PostalCode = "V9V9V9",
                     Province = "BC",
                 }
             });
-            claims.Add(new Claim()
+            encounters.Add(new EncounterModel()
             {
-                ClaimId = 2,
-                ServiceDate = new DateTime(2020 - 06 - 27),
-                FeeDesc = "TACROLIMUS2",
-                DiagnosticCode = new DiagnosticCode()
+                Id = "2",
+                EncounterDate = new DateTime(2020 - 06 - 27),
+                SpecialtyDescription = "LABORATORY MEDICINE",
+                PractitionerName = "PRACTITIONER NAME",
+                Clinic = new Clinic()
                 {
-                    DiagCode1 = "01L",
-                    DiagCode2 = "02L",
-                    DiagCode3 = "03L",
-                },
-                SpecialtyDesc = "LABORATORY MEDICINE",
-                PractitionerNumber = "PRACTITIONER NAME",
-                LocationName = "PAYEE NAME",
-                LocationAddress = new LocationAddress()
-                {
-                    AddrLine1 = "address line 1",
-                    AddrLine2 = "address line 2",
-                    AddrLine3 = "address line 3",
-                    AddrLine4 = "address line 4",
+                    Name = "LOCATION NAME",
+                    AddressLine1 = "address line 1",
+                    AddressLine2 = "address line 2",
+                    AddressLine3 = "address line 3",
+                    AddressLine4 = "address line 4",
                     City = "Victoria",
                     PostalCode = "V9V9V9",
                     Province = "BC",
                 }
             });
-            result.ResourcePayload = claims;
+            result.ResourcePayload = encounters;
             return result;
         }
     }

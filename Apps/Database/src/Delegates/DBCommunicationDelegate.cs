@@ -55,7 +55,10 @@ namespace HealthGateway.Database.Delegates
             };
             result.Payload = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
-                .FirstOrDefault(c => c.CommunicationTypeCode == CommunicationType.Banner && (DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime));
+                .Where(c => c.CommunicationTypeCode == CommunicationType.Banner)
+                .Where(c => c.CommunicationStatusCode == CommunicationStatus.New)
+                .Where(c => DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime)
+                .FirstOrDefault();
 
             if (result.Payload != null)
             {
@@ -140,6 +143,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting Communications by Type and Status Code from DB...");
             List<Communication> retVal = this.dbContext.Communication.Where(c =>
                 c.CommunicationTypeCode == CommunicationType.Email &&
+                c.CommunicationStatusCode != CommunicationStatus.Draft &&
                 c.CommunicationStatusCode != CommunicationStatus.Processed &&
                 c.ScheduledDateTime <= DateTime.UtcNow)
                 .OrderByDescending(c => c.CreatedDateTime).ToList();

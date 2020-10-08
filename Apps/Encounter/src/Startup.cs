@@ -15,9 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Encounter.Delegates;
+    using HealthGateway.Encounter.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -26,6 +30,7 @@ namespace HealthGateway.Encounter
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
@@ -68,7 +73,12 @@ namespace HealthGateway.Encounter
 
             // Add services
             services.AddTransient<IPatientDelegate, RestPatientDelegate>();
+            services.AddTransient<IEncounterService, EncounterService>();
             services.AddSingleton<ITraceService, TimedTraceService>();
+
+            // Add Delegates
+            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
+            services.AddTransient<IMSPVisitDelegate, RestMSPVisitDelegate>();
         }
 
         /// <summary>

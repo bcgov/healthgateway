@@ -51,7 +51,7 @@ namespace HealthGateway.Patient.Services
             this.logger.LogTrace($"Getting the reply response... {reply.State}");
             using (MessageBuffer buffer = reply.CreateBufferedCopy(int.MaxValue))
             {
-                XmlDocument document = this.GetDocument(buffer.CreateMessage());
+                XmlDocument document = GetDocument(buffer.CreateMessage());
                 this.logger.LogDebug($"Finished getting the reply response. {document.OuterXml}");
                 reply = buffer.CreateMessage();
             }
@@ -70,14 +70,14 @@ namespace HealthGateway.Patient.Services
 
             using (var buffer = request.CreateBufferedCopy(int.MaxValue))
             {
-                var document = this.GetDocument(buffer.CreateMessage());
+                var document = GetDocument(buffer.CreateMessage());
                 this.logger.LogDebug($"Finished getting the reply request. {document.OuterXml}");
                 request = buffer.CreateMessage();
                 return null!;
             }
         }
 
-        private XmlDocument GetDocument(Message request)
+        private static XmlDocument GetDocument(Message request)
         {
             XmlDocument document = new XmlDocument();
             using (MemoryStream memoryStream = new MemoryStream())

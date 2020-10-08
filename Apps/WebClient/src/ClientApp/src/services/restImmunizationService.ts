@@ -6,7 +6,7 @@ import {
     IHttpDelegate,
     IImmunizationService,
 } from "@/services/interfaces";
-import ImmunizationData from "@/models/immunizationData";
+import ImmunizationModel from "@/models/immunizationModel";
 import { ExternalConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
@@ -17,11 +17,9 @@ import { ServiceName } from "@/models/errorInterfaces";
 export class RestImmunizationService implements IImmunizationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly IMMS_BASE_URI: string = "v1/api/Immunization";
-    private baseUri: string = "";
+    private baseUri = "";
     private http!: IHttpDelegate;
-    private isEnabled: boolean = false;
-
-    constructor() {}
+    private isEnabled = false;
 
     public initialize(
         config: ExternalConfiguration,
@@ -34,7 +32,7 @@ export class RestImmunizationService implements IImmunizationService {
 
     public getPatientImmunizations(
         hdid: string
-    ): Promise<RequestResult<ImmunizationData[]>> {
+    ): Promise<RequestResult<ImmunizationModel[]>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
@@ -48,7 +46,7 @@ export class RestImmunizationService implements IImmunizationService {
             }
 
             this.http
-                .getWithCors<RequestResult<ImmunizationData[]>>(
+                .getWithCors<RequestResult<ImmunizationModel[]>>(
                     `${this.baseUri}${this.IMMS_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {

@@ -1,24 +1,101 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
+<script lang="ts">
+import Vue from "vue";
+import { Component, Watch, Ref } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import { ILogger } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import User from "@/models/user";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import RatingComponent from "@/components/modal/rating.vue";
+library.add(faSignInAlt);
+library.add(faSignOutAlt);
 
-nav {
-    z-index: $z_top_layer;
+const auth = "auth";
+const user = "user";
+const sidebar = "sidebar";
 
-    a h4 {
-        text-decoration: none;
-        color: white;
+@Component({
+    components: {
+        RatingComponent,
+    },
+})
+export default class HeaderComponent extends Vue {
+    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
+    @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+
+    @Getter("oidcIsAuthenticated", {
+        namespace: auth,
+    })
+    oidcIsAuthenticated!: boolean;
+
+    @Getter("userIsRegistered", {
+        namespace: user,
+    })
+    userIsRegistered!: boolean;
+
+    @Getter("userIsActive", { namespace: user })
+    userIsActive!: boolean;
+
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("isValidIdentityProvider", {
+        namespace: auth,
+    })
+    isValidIdentityProvider!: boolean;
+
+    @Ref("ratingComponent")
+    readonly ratingComponent!: RatingComponent;
+
+    private sidebarExpanded = false;
+    private logger!: ILogger;
+
+    @Watch("$route")
+    private closeSidebar() {
+        this.sidebarExpanded = false;
     }
-    a:hover h4 {
-        text-decoration: underline;
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
-    button {
-        svg {
-            width: 1.5em;
-            height: 1.5em;
+
+    private get displayMenu(): boolean {
+        return (
+            this.oidcIsAuthenticated &&
+            this.userIsRegistered &&
+            this.userIsActive
+        );
+    }
+
+    private handleToggleClick() {
+        this.sidebarExpanded = !this.sidebarExpanded;
+        this.toggleSidebar();
+    }
+
+    private toggleMenu() {
+        this.toggleSidebar();
+    }
+
+    private handleLogoutClick() {
+        if (this.isValidIdentityProvider) {
+            this.showRating();
+        } else {
+            this.processLogout();
         }
     }
+
+    private showRating() {
+        this.ratingComponent.showModal();
+    }
+
+    private processLogout() {
+        this.logger.debug(`redirecting to logout view ...`);
+        this.$router.push({ path: "/logout" });
+    }
 }
-</style>
+</script>
+
 <template>
     <b-navbar toggleable="md" type="dark">
         <!-- Hamburger toggle -->
@@ -28,7 +105,7 @@ nav {
             target="NONE"
             @click="handleToggleClick"
         >
-            <template>
+            <template #:default="{ sidebarExpanded }">
                 <b-icon v-if="sidebarExpanded" icon="x"></b-icon>
                 <b-icon v-else icon="list"></b-icon>
             </template>
@@ -65,100 +142,53 @@ nav {
 
         <!-- Navbar links -->
         <b-navbar-nav class="ml-auto">
-            <b-btn
+            <div
                 v-if="oidcIsAuthenticated"
                 id="menuBtnLogout"
+                data-testid="logoutBtn"
                 variant="link"
                 class="nav-link"
-                @click="showRating()"
+                @click="handleLogoutClick()"
             >
                 <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
-                Logout
-            </b-btn>
-            <router-link v-else id="menuBtnLogin" class="nav-link" to="/login">
-                <font-awesome-icon icon="sign-in-alt"></font-awesome-icon> Login
+                <span class="pl-1">Logout</span>
+            </div>
+            <router-link
+                v-else
+                id="menuBtnLogin"
+                data-testid="loginBtn"
+                class="nav-link"
+                to="/login"
+            >
+                <font-awesome-icon icon="sign-in-alt"></font-awesome-icon>
+                <span class="pl-1">Login</span>
             </router-link>
         </b-navbar-nav>
-        <RatingComponent ref="ratingComponent" @on-close="modalClosed()" />
+        <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
     </b-navbar>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop, Watch, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
-import { User as OidcUser } from "oidc-client";
-import { ILogger } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import User from "@/models/user";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
-import RatingComponent from "@/components/modal/rating.vue";
-library.add(faSignInAlt);
-library.add(faSignOutAlt);
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
 
-interface ILanguage {
-    code: string;
-    description: string;
-}
+nav {
+    z-index: $z_top_layer;
 
-const auth: string = "auth";
-const user: string = "user";
-const sidebar: string = "sidebar";
-
-@Component({
-    components: {
-        RatingComponent,
-    },
-})
-export default class HeaderComponent extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
-    @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
-
-    @Getter("oidcIsAuthenticated", {
-        namespace: auth,
-    })
-    oidcIsAuthenticated!: boolean;
-
-    @Getter("userIsRegistered", {
-        namespace: user,
-    })
-    userIsRegistered!: boolean;
-
-    @Getter("userIsActive", { namespace: user })
-    userIsActive!: boolean;
-
-    @Ref("ratingComponent")
-    readonly ratingComponent!: RatingComponent;
-
-    private sidebarExpanded: boolean = false;
-
-    private get displayMenu(): boolean {
-        return (
-            this.oidcIsAuthenticated &&
-            this.userIsRegistered &&
-            this.userIsActive
-        );
+    a h4 {
+        text-decoration: none;
+        color: white;
     }
-
-    private handleToggleClick() {
-        this.sidebarExpanded = !this.sidebarExpanded;
-        this.toggleSidebar();
+    a:hover h4 {
+        text-decoration: underline;
     }
-
-    private toggleMenu() {
-        this.toggleSidebar();
+    button {
+        svg {
+            width: 1.5em;
+            height: 1.5em;
+        }
     }
-
-    private showRating() {
-        this.ratingComponent.showModal();
-    }
-
-    private modalClosed() {
-        this.logger.debug(`redirecting to logout view ...`);
-        this.$router.push({ path: "/logout" });
+    .nav-link {
+        cursor: pointer;
     }
 }
-</script>
+</style>

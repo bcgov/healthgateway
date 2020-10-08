@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,8 @@ namespace HealthGateway.Patient.Services
         /// <summary>
         /// Gets the patient record.
         /// </summary>
-        /// <param name="id">The patient id.</param>
+        /// <param name="hdid">The patient id.</param>
         /// <returns>The patient model.</returns>
-        Task<RequestResult<Patient>> GetPatient(string id);
+        Task<RequestResult<Patient>> GetPatient(string hdid);
     }
 }

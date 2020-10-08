@@ -3,9 +3,10 @@ import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import MedicationResult from "@/models/medicationResult";
 import Pharmacy from "@/models/pharmacy";
-import { LaboratoryOrder, LaboratoryReport } from "@/models//laboratory";
-import BannerError from "./bannerError";
-import MedicationStatementHistory from "./medicationStatementHistory";
+import { LaboratoryOrder } from "@/models//laboratory";
+import BannerError from "@/models/bannerError";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import { DateWrapper } from "@/models/dateWrapper";
 
 export enum StateType {
     NONE,
@@ -22,7 +23,7 @@ export interface AuthState {
     authentication: AuthenticationData;
     isAuthenticated: boolean;
     statusMessage: string;
-    error: any;
+    error: unknown;
     stateType: StateType;
 }
 
@@ -35,6 +36,7 @@ export interface ConfigState {
 
 export interface UserState {
     user: User;
+    smsResendDateTime?: DateWrapper;
     statusMessage: string;
     error: boolean;
     stateType: StateType;

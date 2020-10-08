@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Migrations
             modelBuilder
                 .HasDefaultSchema("gateway")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.6")
+                .HasAnnotation("ProductVersion", "3.1.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("Relational:Sequence:.gateway.trace_seq", "'gateway.trace_seq', '', '1', '1', '1', '999999', 'Int64', 'True'");
 
@@ -462,10 +462,12 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("EffectiveDateTime")
+                    b.Property<DateTime?>("EffectiveDateTime")
+                        .IsRequired()
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("ExpiryDateTime")
+                    b.Property<DateTime?>("ExpiryDateTime")
+                        .IsRequired()
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Priority")
@@ -642,6 +644,16 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A Communication that will not be sent",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            StatusCode = "Draft",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A draft Communication which has not been published",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -2657,6 +2669,16 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Admin Client",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            ProgramCode = "ENC",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Encounter Service",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u

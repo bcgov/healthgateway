@@ -1,0 +1,137 @@
+#Template Parameters
+parameters:
+    - name: Application
+      type: string 
+      default: NotSpecified
+      values:
+      - AdminWebClient
+      - Common
+      - Database
+      - Encounter
+      - Immunization
+      - JobScheduler
+      - Laboratory
+      - Medication
+      - Patient
+      - WebClient
+      - NotSpecified
+
+    - name: DotNetTests
+      type: boolean
+      default: true
+
+    - name: FunctionalTests
+      type: boolean
+      default: false
+ 
+    - name: NPMInstall
+      type: boolean
+      default: false
+
+    - name: NPMTests
+      type: boolean
+      default: false
+    
+    - name: Library
+      type: boolean
+      default: false
+
+#Build variables
+variables:
+    App.Name: ${{ parameters.Application }}
+    NPMInstall: ${{ parameters.NPMInstall }}
+    NPMTests: ${{ parameters.NPMTests }}
+    UnitTests: ${{ parameters.DotNetTests }}
+    FunctionalTests: ${{ parameters.FunctionalTests }}
+    Library: ${{ parameters.Library }}
+    App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
+    OpenShift.Name: $[lower(variables['App.Name'])]
+    App.UnitTests: $(App.Home)/test/unit
+    App.FunctionalTests: $(App.Home)/test/functional
+    PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
+    PublishFunctionalTests: $[and(eq(variables['FunctionalTests'],true), eq(variables['PullRequest'],false))]
+    RunOpenShift: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
+    ${{ if eq(variables['PullRequest'], true) }}: 
+        BuildPrefix: "PR-$(SourceBranchName)"
+    ${{ if eq(variables['PullRequest'], false) }}: 
+        BuildPrefix: "$(SourceBranchName)"
+
+steps:
+    - task: Npm@1
+      displayName: Installing NPM Packages"
+      condition: and(succeeded(), eq(variables['NPMInstall'], true))
+      inputs:
+          command: "install"
+          workingDir: "$(App.Home)/src/ClientApp"
+         
+    - task: Npm@1
+      displayName: "Running NPM Tests for $(App.Name)"
+      condition: and(succeeded(), eq(variables['NPMTests'], true))
+      inputs:
+          command: "custom"
+          customCommand: "test"
+          workingDir: "$(App.Home)/src/ClientApp"
+         
+    - task: DotNetCoreCLI@2
+      displayName: "Runing Unit Tests for $(App.Name)"
+      condition: and(succeeded(), eq(variables['UnitTests'], true))
+      inputs:
+          command: "test"
+          projects: "$(App.Home)/test/unit/$(App.Name)Tests.csproj"
+          arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
+          testRunTitle: "$(App.Name): Performing Unit Tests"
+
+    - script: |
+          set -e
+          reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+      displayName: "Creating Code Coverage Report for $(App.Name)"
+      condition: and(succeeded(), eq(variables['UnitTests'], true))
+      
+    - task: PublishCodeCoverageResults@1
+      displayName: "Publishing Code Coverage for $(App.Name)"
+      condition: and(succeeded(), eq(variables['UnitTests'], true))
+      inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
+          pathToSources: "$(App.Home)/src"
+          reportDirectory: "$(App.Home)/CodeCoverage"
+          
+    - task: DotNetCoreCLI@2
+      displayName: "Publishing code for $(App.Name)"
+      inputs:
+          modifyOutputPath: false
+          command: "publish"
+          publishWebProjects: false
+          projects: "$(App.Home)/src"
+          arguments: "-o $(Build.BinariesDirectory)"
+          zipAfterPublish: false
+
+    - script: |
+          set -e
+          cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
+          oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(OpenShift.Name) | oc apply -f -
+          oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 
+          oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
+      displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
+      condition: and(succeeded(), eq(variables['RunOpenShift'], true))
+    
+    - task: CopyFiles@2
+      displayName: "Copying Functional Tests to Staging for $(App.Name)"
+      condition: and(succeeded(), eq(variables['PublishFunctionalTests'], true))
+      inputs:
+          SourceFolder: "$(App.FunctionalTests)"
+          Contents: "**"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)"
+
+    - script: |
+          set -e
+          echo Creating Artifact
+          echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+      displayName: "Create Trigger Build Artifact for $(App.Name)"
+      condition: and(succeeded(), eq(variables['Library'], true))         
+
+    - task: PublishPipelineArtifact@0
+      displayName: "Publishing Pipeline Artifact for $(App.Name)"
+      condition: and(succeeded(), or(eq(variables['PublishFunctionalTests'], true), eq(variables['Library'], true)))
+      inputs:
+          targetPath: "$(Build.ArtifactStagingDirectory)"

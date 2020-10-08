@@ -37,7 +37,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the version of the resource.
         /// </summary>
-        public uint Version { get; set; } = 0;
+        public uint Version { get; set; }
 
         /// <summary>
         /// Gets or sets the date when the request was created.

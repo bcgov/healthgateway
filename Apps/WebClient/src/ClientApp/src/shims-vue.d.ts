@@ -4,17 +4,17 @@ declare module "*.vue" {
 }
 
 declare module "*.png" {
-    const value: any;
+    const value: string;
     export = value;
 }
 
 declare module "*.jpg" {
-    const value: any;
+    const value: string;
     export = value;
 }
 
 declare module "*.jpeg" {
-    const value: any;
+    const value: string;
     export = value;
 }
 
@@ -24,3 +24,5 @@ declare module "vue-loading-overlay";
 declare module "vue-fullcalendar";
 declare module "vue-content-placeholders";
 declare module "vue-clickaway";
+declare module "html2pdf.js";
+declare module "@chenfengyuan/vue-countdown";

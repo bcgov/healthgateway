@@ -1,5 +1,5 @@
-﻿// -------------------------------------------------------------------------
-//  Copyright © 2019-2020 Province of British Columbia
+// -------------------------------------------------------------------------
+//  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -34,80 +34,147 @@ namespace HealthGateway.DrugMaintainer.Apps
     public abstract class BaseDrugApp<T> : IDrugApp
     {
         /// <summary>
-        /// Gets or sets the file parser.
-        /// </summary>
-        protected T parser { get; set; }
-
-        /// <summary>
-        /// Gets or sets the logger.
-        /// </summary>
-        protected ILogger logger { get; set; }
-
-        /// <summary>
-        /// Gets or sets the configuration.
-        /// </summary>
-        protected IConfiguration configuration { get; set; }
-
-        /// <summary>
-        /// The Downloader utility which gets the file and gives us a unique hash.
-        /// </summary>
-        protected IFileDownloadService downloadService { get; set; }
-
-        /// <summary>
-        /// The database contect to use to to interact with the DB.
-        /// </summary>
-        protected GatewayDbContext drugDbContext { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BaseDrugApp{T}"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="parser">The file parser.</param>
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
-        /// <param name="drugDBContext">The database context to interact with./</param>
-        public BaseDrugApp(ILogger logger, T parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
+        /// <param name="drugDBContext">The database context to interact with.</param>
+        protected BaseDrugApp(ILogger logger, T parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
         {
-            this.logger = logger;
-            this.parser = parser;
-            this.downloadService = downloadService;
-            this.configuration = configuration;
-            this.drugDbContext = drugDBContext;
+            this.Logger = logger;
+            this.Parser = parser;
+            this.DownloadService = downloadService;
+            this.Configuration = configuration;
+            this.DrugDbContext = drugDBContext;
+        }
+
+        /// <summary>
+        /// Gets or sets the file parser.
+        /// </summary>
+        protected T Parser { get; set; }
+
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        protected ILogger Logger { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
+        protected IConfiguration Configuration { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Downloader utility which gets the file and gives us a unique hash.
+        /// </summary>
+        protected IFileDownloadService DownloadService { get; set; }
+
+        /// <summary>
+        /// Gets or sets the database context to use to to interact with the DB.
+        /// </summary>
+        protected GatewayDbContext DrugDbContext { get; set; }
+
+        /// <summary>
+        /// Processes the downloaded file.
+        /// </summary>
+        /// <param name="sourceFolder">The source folder.</param>
+        /// <param name="downloadedFile">The filedownload to process.</param>
+        public abstract void ProcessDownload(string sourceFolder, FileDownload downloadedFile);
+
+        /// <inheritdoc/>
+        public virtual void Process(string configSectionName)
+        {
+            this.Logger.LogInformation($"Reading configuration for section {configSectionName}");
+            IConfigurationSection section = this.Configuration.GetSection(configSectionName);
+            Uri source = section.GetValue<Uri>("Url");
+
+            string programType = section.GetValue<string>("AppName");
+            this.Logger.LogInformation($"Program Type = {programType}");
+            string targetFolder = this.Configuration.GetSection(configSectionName).GetValue<string>("TargetFolder");
+
+            FileDownload downloadedFile = this.DownloadFile(source, targetFolder);
+            if (!this.FileProcessed(downloadedFile))
+            {
+                string sourceFolder = this.ExtractFiles(downloadedFile);
+                this.Logger.LogInformation("File has not been processed - Attempting to process");
+                downloadedFile.ProgramCode = programType;
+                this.ProcessDownload(sourceFolder, downloadedFile);
+                this.RemoveExtractedFiles(sourceFolder);
+            }
+            else
+            {
+                this.Logger.LogInformation("File has been previously processed - exiting");
+                if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
+                {
+                    string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
+                    this.Logger.LogInformation($"Removing zip file: {filename}");
+                    File.Delete(filename);
+                }
+                else
+                {
+                    this.Logger.LogWarning($"Unable to clean up as FileDownload contains null data, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds the processed file to the DB to ensure we don't process again.
+        /// </summary>
+        /// <param name="downloadedFile">The FileDownload to add to the DB.</param>
+        protected void AddFileToDB(FileDownload downloadedFile)
+        {
+            this.Logger.LogInformation($"Marking file with hash {downloadedFile.Hash} as processed in DB");
+            this.DrugDbContext.FileDownload.Add(downloadedFile);
+        }
+
+        /// <summary>
+        /// Removes All Download Files that match the Program type but do not match the file hash.
+        /// </summary>
+        /// <param name="downloadedFile">Search for all download files not matching this one.</param>
+        protected void RemoveOldFiles(FileDownload downloadedFile)
+        {
+            List<FileDownload> oldIds = this.DrugDbContext.FileDownload
+                                            .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
+                                            .Select(f => new FileDownload { Id = f.Id, Version = f.Version })
+                                            .ToList();
+            oldIds.ForEach(s => this.Logger.LogInformation($"Deleting old Download file with hash: {s}"));
+            this.DrugDbContext.RemoveRange(oldIds);
         }
 
         /// <summary>
         /// Downloads the given file to the target folder.
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="targetFolder"></param>
-        /// <returns></returns>
+        /// <param name="source">The URI of a file to download.</param>
+        /// <param name="targetFolder">The location to store the file.</param>
+        /// <returns>A FileDownload object.</returns>
         private FileDownload DownloadFile(Uri source, string targetFolder)
         {
-            logger.LogInformation($"Downloading file from {source.ToString()} to {targetFolder}");
-            return Task.Run(async() => await this.downloadService.GetFileFromUrl(source, targetFolder, true)).Result;
+            this.Logger.LogInformation($"Downloading file from {source.ToString()} to {targetFolder}");
+            return Task.Run(async () => await this.DownloadService.GetFileFromUrl(source, targetFolder, true).ConfigureAwait(true)).Result;
         }
 
         /// <summary>
         /// Extracts the file referenced via FileDownload.
         /// </summary>
-        /// <param name="downloadedFile"></param>
+        /// <param name="downloadedFile">The FileDownload object to extract.</param>
         /// <returns>The path to the unzipped folder.</returns>
         private string ExtractFiles(FileDownload downloadedFile)
         {
             if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
             {
                 string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
-                logger.LogInformation($"Extracting zip file: {filename}");
+                this.Logger.LogInformation($"Extracting zip file: {filename}");
                 string unzipedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.Name));
                 ZipFile.ExtractToDirectory(filename, unzipedPath);
-                logger.LogInformation("Deleting Zip file");
+                this.Logger.LogInformation("Deleting Zip file");
                 File.Delete(filename);
                 return unzipedPath;
             }
             else
             {
                 throw new ArgumentNullException(
-                            nameof(FileDownload),
+                            nameof(downloadedFile),
                             $"Downloaded file has null attributes, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
             }
         }
@@ -118,7 +185,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// <param name="folder">The folder to delete.</param>
         private void RemoveExtractedFiles(string folder)
         {
-            logger.LogInformation($"Removing extracted files under {folder}");
+            this.Logger.LogInformation($"Removing extracted files under {folder}");
             Directory.Delete(folder, true);
         }
 
@@ -126,80 +193,10 @@ namespace HealthGateway.DrugMaintainer.Apps
         /// Confirms if the downloadedFile has been processed previously.
         /// </summary>
         /// <param name="downloadedFile">The file to verify.</param>
-        /// <returns></returns>
+        /// <returns>True if the file has been previously processed.</returns>
         private bool FileProcessed(FileDownload downloadedFile)
         {
-            return this.drugDbContext.FileDownload.Where(p => p.Hash == downloadedFile.Hash).Any();
+            return this.DrugDbContext.FileDownload.Where(p => p.Hash == downloadedFile.Hash).Any();
         }
-
-        /// <summary>
-        /// Adds the processed file to the DB to ensure we don't process again.
-        /// </summary>
-        /// <param name="downloadedFile"></param>
-        protected void AddFileToDB(FileDownload downloadedFile)
-        {
-            logger.LogInformation($"Marking file with hash {downloadedFile.Hash} as processed in DB");
-            this.drugDbContext.FileDownload.Add(downloadedFile);
-        }
-
-        /// <summary>
-        /// Removes All Download Files that match the Program type but do not match the file hash. 
-        /// </summary>
-        /// <param name="downloadedFile">Search for all download files not matching this one.</param>
-        protected void RemoveOldFiles(FileDownload downloadedFile)
-        {
-            List<FileDownload> oldIds = this.drugDbContext.FileDownload
-                                            .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
-                                            .Select(f => new FileDownload{ Id = f.Id, Version = f.Version})
-                                            .ToList();
-            oldIds.ForEach(s => logger.LogInformation($"Deleting old Download file with hash: {s}"));
-            this.drugDbContext.RemoveRange(oldIds);
-        }
-
-        /// <summary>
-        /// Performs the actual download of the file and verifies if it has been
-        /// previously processed.
-        /// </summary>
-        public virtual void Process(string configSectionName)
-        {
-            this.logger.LogInformation($"Reading configuration for section {configSectionName}");
-            IConfigurationSection section = configuration.GetSection(configSectionName);
-            Uri source = section.GetValue<Uri>("Url");
-
-            string programType = section.GetValue<string>("AppName");
-            this.logger.LogInformation($"Program Type = {programType}");
-            string targetFolder = configuration.GetSection(configSectionName).GetValue<string>("TargetFolder");
-
-            FileDownload downloadedFile = DownloadFile(source, targetFolder);
-            if (!FileProcessed(downloadedFile))
-            {
-                string sourceFolder = ExtractFiles(downloadedFile);
-                logger.LogInformation("File has not been processed - Attempting to process");
-                downloadedFile.ProgramCode = programType;
-                ProcessDownload(sourceFolder, downloadedFile);
-                RemoveExtractedFiles(sourceFolder);
-            }
-            else
-            {
-                this.logger.LogInformation("File has been previously processed - exiting");
-                if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
-                {
-                    string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
-                    logger.LogInformation($"Removing zip file: {filename}");
-                    File.Delete(filename);
-                }
-                else
-                {
-                    logger.LogWarning($"Unable to clean up as FileDownload contains null data, LocalFilePath = {downloadedFile.LocalFilePath} Name = {downloadedFile.Name}");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Processes the downloaded file.
-        /// </summary>
-        /// <param name="sourceFolder"></param>
-        /// <param name="downloadedFile"></param>
-        public abstract void ProcessDownload(string sourceFolder, FileDownload downloadedFile);
     }
 }

@@ -15,18 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Delegates;
-    using HealthGateway.Immunization.Factories;
     using HealthGateway.Immunization.Models;
-    using Hl7.Fhir.Specification;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
@@ -36,86 +31,44 @@ namespace HealthGateway.Immunization.Services
     public class ImmunizationService : IImmunizationService
     {
         private readonly ILogger logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IImmunizationFhirDelegate immunizationDelegate;
-        private readonly IPatientDelegate patientDelegate;
+        private readonly IImmunizationDelegate immunizationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="immunizationDelegateFactory">The factory to create immunization delegates.</param>
-        /// <param name="patientDelegate">The injected patient delegate.</param>
+        /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
         public ImmunizationService(
             ILogger<ImmunizationService> logger,
-            IHttpContextAccessor httpAccessor,
-            IImmunizationDelegateFactory immunizationDelegateFactory,
-            IPatientDelegate patientDelegate)
+            IImmunizationDelegate immunizationDelegate)
         {
             this.logger = logger;
-            this.httpContextAccessor = httpAccessor;
-            this.immunizationDelegate = immunizationDelegateFactory.CreateInstance();
-            this.patientDelegate = patientDelegate;
+            this.immunizationDelegate = immunizationDelegate;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<ImmunizationView>>> GetImmunizations(string hdid)
+        public async Task<RequestResult<IEnumerable<ImmunizationModel>>> GetImmunizations(string bearerToken, int pageIndex = 0)
         {
-            this.logger.LogDebug($"Getting immunization from Immunization Service... {hdid}");
-
-            RequestResult<IEnumerable<ImmunizationView>> result = new RequestResult<IEnumerable<ImmunizationView>>();
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
-            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+            RequestResult<IEnumerable<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(bearerToken, pageIndex).ConfigureAwait(true);
+            if (delegateResult.ResultStatus == ResultType.Success)
             {
-                ImmunizationRequest request = new ImmunizationRequest()
+                return new RequestResult<IEnumerable<ImmunizationModel>>()
                 {
-                    PersonalHealthNumber = patientResult.ResourcePayload.PersonalHealthNumber,
-                    DateOfBirth = patientResult.ResourcePayload.Birthdate,
+                    ResultStatus = delegateResult.ResultStatus,
+                    ResourcePayload = ImmunizationModel.FromPHSAModelList(delegateResult.ResourcePayload),
+                    PageIndex = delegateResult.PageIndex,
+                    PageSize = delegateResult.PageSize,
+                    TotalResultCount = delegateResult.TotalResultCount,
                 };
-
-                Hl7.Fhir.Model.Bundle fhirBundle = await this.immunizationDelegate.GetImmunizationBundle(request).ConfigureAwait(true);
-                IEnumerable<Hl7.Fhir.Model.Immunization> immmsLiist = fhirBundle.Entry
-                                                                                .Where(r => r.Resource is Hl7.Fhir.Model.Immunization)
-                                                                                .Select(f => (Hl7.Fhir.Model.Immunization)f.Resource);
-
-                List<ImmunizationView> immunizations = new List<ImmunizationView>();
-                foreach (Hl7.Fhir.Model.Immunization entry in immmsLiist)
-                {
-                    ImmunizationView immunizationView = new ImmunizationView
-                    {
-                        Id = entry.Id,
-                        Name = entry.VaccineCode.Text,
-                        Status = entry.Status.ToString()!,
-                        OccurrenceDateTime = System.DateTime.Parse(entry.Occurrence.ToString()!, CultureInfo.InvariantCulture),
-                    };
-                    foreach (Hl7.Fhir.Model.Coding code in entry.VaccineCode.Coding)
-                    {
-                        ImmunizationAgent immunizationAgent = new ImmunizationAgent
-                        {
-                            Code = code.Code,
-                            Name = code.Display,
-                        };
-                        immunizationView.ImmunizationAgents.Add(immunizationAgent);
-                    }
-
-                    immunizations.Add(immunizationView);
-                }
-                result.ResultStatus = ResultType.Success;
-                result.PageIndex = 0;
-                result.PageSize = immunizations.Count;
-                result.TotalResultCount = immunizations.Count;
-                result.ResourcePayload = immunizations;
             }
             else
             {
-                result.ResultError = patientResult.ResultError;
+                return new RequestResult<IEnumerable<ImmunizationModel>>()
+                {
+                    ResultStatus = delegateResult.ResultStatus,
+                    ResultError = delegateResult.ResultError,
+                };
             }
-
-
-            this.logger.LogDebug($"Finished getting immunization records {result.TotalResultCount}");
-            return result;
         }
     }
 }

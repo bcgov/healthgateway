@@ -1,51 +1,33 @@
 name: 1.0.0$(Rev:.r) #Build number
 
-#Build variables
-variables:
-  App.Home: $(Build.SourcesDirectory)/Apps/Common
-  App.Name: common
-  App.UnitTests: $(App.Home)/test/unit
-
 pr: none
 
-trigger: none
-#  batch: 'true'
-#  branches:
-#    include:
-#      - dev
-#  paths:
-#    include:
-#      - Apps/Common/src
-#      - Apps/Common/test
-#      - Apps/Common/azure/build.yml
+resources:
+    pipelines:
+      - pipeline: Database
+        source: Database
+        trigger:
+          branches:
+          - dev
+
+trigger:
+    batch: "true"
+    branches:
+        include:
+        - dev
+    paths:
+        include:
+        - Apps/Common
 
 pool:
-  name: 'HealthGateway'
+    name: "HealthGateway"
 
-steps:
-- task: DotNetCoreCLI@2
-  displayName: Run dotnet Tests
-  inputs:
-    command: 'test'
-    projects: '$(App.UnitTests)/CommonTests.csproj'
-    testRunTitle: 'Common Library Tests'
-
-- task: DotNetCoreCLI@2
-  displayName: Publish dotnet code
-  inputs:
-    modifyOutputPath: false
-    command: 'publish'
-    publishWebProjects: false
-    projects: '$(App.Home)/src'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
-
-- script: |
-    set -e
-    echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-  displayName: 'Create Artifact'
-
-- task: PublishPipelineArtifact@0
-  displayName: 'Publish Pipeline Artifact'
-  inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)'
+extends:
+  template: /Build/hg.yaml
+  parameters:
+    Application: Common
+    DotNetTests: true
+    FunctionalTests: false
+    NPMInstall: false
+    NPMTests: false
+    Library: true

@@ -21,6 +21,7 @@ namespace HealthGateway.WebClient.Services
     using System.Text.Json;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -30,7 +31,6 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.WebClient.Constant;
     using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
-    using HealthGateway.Common.ErrorHandling;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
@@ -171,7 +171,7 @@ namespace HealthGateway.WebClient.Services
                 if (emailInvite == null || (emailInvite != null &&
                         (emailInvite.Email == null || emailInvite.Email.To == null ||
                          emailInvite.Validated || !hdidIsValid ||
-                         !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.CurrentCultureIgnoreCase))))
+                         !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.OrdinalIgnoreCase))))
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultError = new RequestResultError() { ResultMessage = "Invalid email invite", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
@@ -349,7 +349,11 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = dbResult.Payload.ToDictionary(x => x.Preference, x => x.Value),
                 ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) }
+                ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError()
+                {
+                    ResultMessage = dbResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
             };
 
             this.logger.LogTrace($"Finished getting user preference. {JsonSerializer.Serialize(dbResult)}");

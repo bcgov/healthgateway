@@ -76,7 +76,6 @@ export const actions: ActionTree<MedicationState, RootState> = {
                 medicationService
                     .getMedicationInformation(params.din)
                     .then((medicationData) => {
-                        //console.log("Medication Data: ", requestResult);
                         if (medicationData) {
                             context.commit(
                                 "addMedicationInformation",

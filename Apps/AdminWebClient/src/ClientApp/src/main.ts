@@ -20,6 +20,7 @@ import {
     ICommunicationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import container from "@/plugins/inversify.config";
 import ExternalConfiguration from "@/models/externalConfiguration";
@@ -34,7 +35,7 @@ Vue.use(TiptapVuetifyPlugin, {
     iconsGroup: "md"
 });
 Vue.filter("date", dateFilter);
-Vue.component("font-awesome-icon", FontAwesomeIcon);
+Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
 const httpDelegate: IHttpDelegate = container.get(
     DELEGATE_IDENTIFIER.HttpDelegate

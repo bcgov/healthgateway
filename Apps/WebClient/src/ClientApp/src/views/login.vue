@@ -1,10 +1,84 @@
+<script lang="ts">
+import Vue from "vue";
+import { Component, Prop } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import VueRouter from "vue-router";
+import LoadingComponent from "@/components/loading.vue";
+import { IdentityProviderConfiguration } from "@/models/configData";
+
+const namespace = "auth";
+
+@Component({
+    components: {
+        LoadingComponent,
+    },
+})
+export default class LoginView extends Vue {
+    @Prop() isRetry?: boolean;
+
+    @Action("authenticateOidc", { namespace }) authenticateOidc!: (params: {
+        idpHint: string;
+        redirectPath: string;
+    }) => Promise<void>;
+
+    @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated!: boolean;
+    @Getter("userIsRegistered", { namespace: "user" })
+    userIsRegistered!: boolean;
+    @Getter("identityProviders", { namespace: "config" })
+    identityProviders!: IdentityProviderConfiguration[];
+
+    private isLoading = true;
+    private redirectPath = "";
+    private routeHandler!: VueRouter;
+
+    private mounted() {
+        if (this.$route.query.redirect && this.$route.query.redirect !== "") {
+            this.redirectPath = this.$route.query.redirect.toString();
+        } else {
+            this.redirectPath = "/timeline";
+        }
+
+        this.routeHandler = this.$router;
+        if (this.oidcIsAuthenticated && this.userIsRegistered) {
+            this.routeHandler.push({ path: this.redirectPath });
+        } else if (this.oidcIsAuthenticated) {
+            this.redirectPath = "/registrationInfo";
+            this.routeHandler.push({ path: this.redirectPath });
+        } else if (
+            !this.oidcIsAuthenticated &&
+            this.identityProviders.length == 1
+        ) {
+            this.oidcLogin(this.identityProviders[0].hint);
+        } else {
+            this.isLoading = false;
+        }
+    }
+
+    private get hasMultipleProviders(): boolean {
+        return this.identityProviders.length > 1;
+    }
+
+    private oidcLogin(hint: string) {
+        // if the login action returns it means that the user already had credentials.
+        this.authenticateOidc({
+            idpHint: hint,
+            redirectPath: this.redirectPath,
+        }).then(() => {
+            if (this.oidcIsAuthenticated) {
+                this.routeHandler.push({ path: this.redirectPath });
+            }
+        });
+    }
+}
+</script>
+
 <template>
     <div class="container my-5" align="center">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-row>
             <b-col>
                 <b-alert
-                    style="max-width: 25rem;"
+                    style="max-width: 25rem"
                     :show="isRetry"
                     dismissible
                     variant="danger"
@@ -19,7 +93,7 @@
                     v-if="identityProviders && identityProviders.length > 0"
                     id="loginPicker"
                     class="shadow-lg bg-white"
-                    style="max-width: 25rem;"
+                    style="max-width: 25rem"
                     align="center"
                 >
                     <h3 slot="header">Log In</h3>
@@ -36,6 +110,7 @@
                                 <b-col>
                                     <b-button
                                         :id="`${provider.id}Btn`"
+                                        :data-testid="`${provider.id}Btn`"
                                         block
                                         :disabled="provider.disabled"
                                         variant="primary"
@@ -76,80 +151,3 @@
         </b-row>
     </div>
 </template>
-
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import VueRouter, { Route } from "vue-router";
-import LoadingComponent from "@/components/loading.vue";
-import {
-    ExternalConfiguration,
-    IdentityProviderConfiguration,
-} from "@/models/configData";
-
-const namespace: string = "auth";
-
-@Component({
-    components: {
-        LoadingComponent,
-    },
-})
-export default class LoginView extends Vue {
-    @Action("authenticateOidc", { namespace }) authenticateOidc!: (params: {
-        idpHint: string;
-        redirectPath: string;
-    }) => Promise<void>;
-
-    @Getter("oidcIsAuthenticated", { namespace }) oidcIsAuthenticated!: boolean;
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
-    @Getter("identityProviders", { namespace: "config" })
-    identityProviders!: IdentityProviderConfiguration[];
-
-    @Prop() isRetry?: boolean;
-
-    private isLoading: boolean = true;
-    private redirectPath: string = "";
-    private routeHandler!: VueRouter;
-
-    private mounted() {
-        if (this.$route.query.redirect && this.$route.query.redirect !== "") {
-            this.redirectPath = this.$route.query.redirect.toString();
-        } else {
-            this.redirectPath = "/timeline";
-        }
-
-        this.routeHandler = this.$router;
-        if (this.oidcIsAuthenticated && this.userIsRegistered) {
-            this.routeHandler.push({ path: this.redirectPath });
-        } else if (this.oidcIsAuthenticated) {
-            this.redirectPath = "/registrationInfo";
-            this.routeHandler.push({ path: this.redirectPath });
-        } else if (
-            !this.oidcIsAuthenticated &&
-            this.identityProviders.length == 1
-        ) {
-            this.oidcLogin(this.identityProviders[0].hint);
-        } else {
-            this.isLoading = false;
-        }
-    }
-
-    get hasMultipleProviders(): boolean {
-        return this.identityProviders.length > 1;
-    }
-
-    oidcLogin(hint: string) {
-        // if the login action returns it means that the user already had credentials.
-        this.authenticateOidc({
-            idpHint: hint,
-            redirectPath: this.redirectPath,
-        }).then(() => {
-            if (this.oidcIsAuthenticated) {
-                this.routeHandler.push({ path: this.redirectPath });
-            }
-        });
-    }
-}
-</script>

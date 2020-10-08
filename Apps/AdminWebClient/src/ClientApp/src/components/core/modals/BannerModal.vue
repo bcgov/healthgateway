@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="dialog" persistent max-width="1000px">
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on"
                 >New Banner Communication</v-btn
             >
@@ -68,6 +68,21 @@
                                 required
                             ></v-text-field>
                         </v-col>
+                        <v-col>
+                            <v-text-field
+                                v-model="editedItem.communicationStatusCode"
+                                label="Status"
+                                disabled
+                            ></v-text-field>
+                        </v-col>
+                        <v-col>
+                            <v-btn
+                                color="blue darken-1"
+                                text
+                                @click="togglePublish()"
+                                >{{ publishingStatus }}</v-btn
+                            >
+                        </v-col>
                     </v-row>
                     <v-row>
                         <v-col>
@@ -94,10 +109,10 @@
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
-import Communication from "@/models/adminCommunication";
-import { ResultType } from "@/constants/resulttype";
-import { ValidationProvider, extend, validate } from "vee-validate";
-import { required, email } from "vee-validate/dist/rules";
+import Communication, {
+    CommunicationStatus
+} from "@/models/adminCommunication";
+import { ValidationProvider, extend } from "vee-validate";
 import moment from "moment";
 import {
     TiptapVuetify,
@@ -133,7 +148,7 @@ extend("dateValid", {
     }
 })
 export default class BannerModal extends Vue {
-    private dialog: boolean = false;
+    private dialog = false;
     private extensions: any = [
         History,
         Blockquote,
@@ -161,6 +176,17 @@ export default class BannerModal extends Vue {
 
     @Prop() editedItem!: Communication;
     @Prop() isNew!: number;
+
+    private get isDraft(): boolean {
+        return (
+            this.editedItem.communicationStatusCode ===
+            CommunicationStatus.Draft
+        );
+    }
+
+    private get publishingStatus(): string {
+        return this.isDraft ? "Publish" : "Draft";
+    }
 
     @Watch("editedItem")
     private onPropChange() {
@@ -201,6 +227,15 @@ export default class BannerModal extends Vue {
             }
             this.close();
         }
+    }
+
+    private togglePublish() {
+        if (this.isDraft) {
+            this.editedItem.communicationStatusCode = CommunicationStatus.New;
+        } else {
+            this.editedItem.communicationStatusCode = CommunicationStatus.Draft;
+        }
+        this.save();
     }
 
     private close() {

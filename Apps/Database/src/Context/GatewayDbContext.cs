@@ -438,6 +438,15 @@ namespace HealthGateway.Database.Context
                 },
                 new ProgramTypeCode
                 {
+                    ProgramCode = ApplicationType.Encounter,
+                    Description = "Encounter Service",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new ProgramTypeCode
+                {
                     ProgramCode = ApplicationType.JobScheduler,
                     Description = "Job Scheduler",
                     CreatedBy = UserId.DefaultUser,
@@ -782,6 +791,15 @@ namespace HealthGateway.Database.Context
                 {
                     StatusCode = CommunicationStatus.Error,
                     Description = "A Communication that will not be sent",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationStatusCode
+                {
+                    StatusCode = CommunicationStatus.Draft,
+                    Description = "A draft Communication which has not been published",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

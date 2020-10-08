@@ -1,8 +1,7 @@
 import Axios, { AxiosRequestConfig } from "axios";
-import { IHttpDelegate } from "./interfaces";
 import { injectable } from "inversify";
 import { Dictionary } from "vue-router/types/router";
-import { ILogger } from "@/services/interfaces";
+import { IHttpDelegate, ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 
@@ -42,7 +41,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `GET error: ${err.toString()}`;
+                    const errorMessage = `GET error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
@@ -50,7 +49,7 @@ export default class HttpDelegate implements IHttpDelegate {
     }
     public post<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
@@ -62,7 +61,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `POST error: ${err.toString()}`;
+                    const errorMessage = `POST error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
@@ -71,7 +70,7 @@ export default class HttpDelegate implements IHttpDelegate {
 
     public put<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
@@ -84,7 +83,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `PUT error: ${err.toString()}`;
+                    const errorMessage = `PUT error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
@@ -93,7 +92,7 @@ export default class HttpDelegate implements IHttpDelegate {
 
     public patch<T>(
         url: string,
-        payload: Object,
+        payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
@@ -106,7 +105,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     return resolve(response.data);
                 })
                 .catch((err) => {
-                    const errorMessage: string = `PATCH error: ${err.toString()}`;
+                    const errorMessage = `PATCH error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
                 });
@@ -114,16 +113,28 @@ export default class HttpDelegate implements IHttpDelegate {
     }
     public delete<T>(
         url: string,
-        payload: Object | undefined = undefined,
+        payload: unknown | undefined = undefined,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             const config: AxiosRequestConfig = {
                 headers,
-                data: payload,
             };
             this.logger.debug(`Config: ${JSON.stringify(config)}`);
-            Axios.delete(url, config)
+
+            Axios.request({ data: payload, url, headers, method: "delete" })
+                .then((response) => {
+                    return resolve(response.data);
+                })
+                .catch((err) => {
+                    const errorMessage = `DELETE error: ${err.toString()}`;
+                    this.logger.error(errorMessage);
+                    return reject(errorMessage);
+                });
+
+            // TODO: Axios has bug with the delete method not using data fields.
+            // Change it back once a new version that fixes it comes availiable
+            /*Axios.delete(url, config)
                 .then((response) => {
                     return resolve(response.data);
                 })
@@ -131,7 +142,7 @@ export default class HttpDelegate implements IHttpDelegate {
                     const errorMessage: string = `DELETE error: ${err.toString()}`;
                     this.logger.error(errorMessage);
                     return reject(errorMessage);
-                });
+                });*/
         });
     }
 }

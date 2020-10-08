@@ -32,7 +32,7 @@ export class RestUserFeedbackService implements IUserFeedbackService {
 
     public toggleReviewed(feedback: UserFeedback): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let headers: Dictionary<string> = {};
+            const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
             this.http
                 .patch<boolean>(
@@ -54,10 +54,10 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         });
     }
 
-    private handleResult(
-        requestResult: RequestResult<any>,
-        resolve: any,
-        reject: any
+    private handleResult<T>(
+        requestResult: RequestResult<T>,
+        resolve: (value?: T | PromiseLike<T> | undefined) => void,
+        reject: (reason?: unknown) => void
     ) {
         if (requestResult.resultStatus === ResultType.Success) {
             resolve(requestResult.resourcePayload);

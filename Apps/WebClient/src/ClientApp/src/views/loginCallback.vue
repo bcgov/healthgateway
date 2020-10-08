@@ -1,14 +1,7 @@
-<template>
-    <div>
-        Waiting...
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { Action, Getter, State } from "vuex-class";
-import VueRouter, { Route } from "vue-router";
+import { Action, Getter } from "vuex-class";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -16,7 +9,6 @@ import User from "@/models/user";
 
 @Component
 export default class LoginCallbackView extends Vue {
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     @Action("oidcSignInCallback", { namespace: "auth" })
     oidcSignInCallback!: () => Promise<string>;
 
@@ -25,9 +17,12 @@ export default class LoginCallbackView extends Vue {
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
 
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("isValidIdentityProvider", { namespace: "auth" })
+    isValidIdentityProvider!: boolean;
+
+    private logger!: ILogger;
 
     private created() {
         this.oidcSignInCallback()
@@ -35,22 +30,18 @@ export default class LoginCallbackView extends Vue {
                 this.logger.debug(
                     `oidcSignInCallback for user: ${JSON.stringify(this.user)}`
                 );
-                this.checkRegistration({ hdid: this.user.hdid }).then(() => {
-                    if (this.userIsRegistered) {
-                        this.$router.push({ path: redirectPath });
-                    } else {
-                        if (redirectPath.startsWith("/registration")) {
+
+                // If the idp is valid, check the registration status and continue the route.
+                // Otherwise the router will handle the path.
+                if (this.isValidIdentityProvider) {
+                    this.checkRegistration({ hdid: this.user.hdid }).then(
+                        () => {
                             this.$router.push({ path: redirectPath });
-                        } else {
-                            this.$router.push({ path: "/registration" });
                         }
-                    }
-                    this.logger.debug(
-                        `checkRegistration RedirectPath: ${JSON.stringify(
-                            redirectPath
-                        )}`
                     );
-                });
+                } else {
+                    this.$router.push({ path: redirectPath });
+                }
             })
             .catch((err) => {
                 // Login failed redirect it back to the login page.
@@ -62,5 +53,13 @@ export default class LoginCallbackView extends Vue {
                 });
             });
     }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
 }
 </script>
+
+<template>
+    <div>Waiting...</div>
+</template>

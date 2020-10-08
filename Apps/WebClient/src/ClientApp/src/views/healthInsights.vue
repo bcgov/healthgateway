@@ -1,92 +1,13 @@
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-.column-wrapper {
-    border: 1px;
-}
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-</style>
-<template>
-    <div>
-        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
-        <b-row class="my-3 fluid justify-content-md-center">
-            <b-col
-                id="healthInsights"
-                class="col-12 col-md-10 col-lg-9 column-wrapper"
-            >
-                <div id="pageTitle">
-                    <h1 id="subject">Health Insights</h1>
-                    <hr />
-                </div>
-                <div>
-                    <h3>Medication count over time</h3>
-                    <b-row class="py-4">
-                        <b-col cols="auto">
-                            <strong>First month with data: </strong>
-                            {{ getReadableDate(startDate) }}
-                        </b-col>
-                        <b-col cols="auto">
-                            <strong>Last month with data: </strong
-                            >{{ getReadableDate(endDate) }}
-                        </b-col>
-                        <b-col cols="auto">
-                            <strong>Total records: </strong>{{ visibleCount }}
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="!isLoading && visibleCount > 0">
-                        <b-col>
-                            <LineChart
-                                :chartdata="timeChartData"
-                                :options="chartOptions"
-                            />
-                        </b-col>
-                    </b-row>
-                    <b-row
-                        v-if="!isLoading && visibleCount === 0"
-                        class="text-center pt-5"
-                    >
-                        <b-col>
-                            No medication records
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="isLoading">
-                        <b-col>
-                            <content-placeholders>
-                                <content-placeholders-img />
-                                <content-placeholders-text :lines="1" />
-                            </content-placeholders>
-                        </b-col>
-                    </b-row>
-                </div>
-            </b-col>
-        </b-row>
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :error="protectiveWordAttempts > 1"
-            :is-loading="isLoading"
-            @submit="onProtectiveWordSubmit"
-            @cancel="onProtectiveWordCancel"
-        />
-    </div>
-</template>
-
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import moment from "moment";
 
 import { ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import TimelineEntry from "@/models/timelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
@@ -97,12 +18,12 @@ import TimelineLoadingComponent from "@/components/timelineLoading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 
-import { Dictionary } from "vue-router/types/router";
 import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { DateWrapper } from "@/models/dateWrapper";
 
-const namespace: string = "user";
+const namespace = "user";
 
 @Component({
     components: {
@@ -127,33 +48,27 @@ export default class HealthInsightsView extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
-    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private logger!: ILogger;
 
     private timelineEntries: TimelineEntry[] = [];
-    private isMedicationLoading: boolean = false;
-    private protectiveWordAttempts: number = 0;
+    private isMedicationLoading = false;
+    private protectiveWordAttempts = 0;
 
-    private startDate: Date | null = null;
-    private endDate: Date | null = null;
+    private startDate: DateWrapper | null = null;
+    private endDate: DateWrapper | null = null;
 
-    private timeChartData: any | null = null;
-    private chartOptions: {} = { responsive: true, maintainAspectRatio: false };
+    private timeChartData: Chart.ChartData = {};
+
+    private chartOptions: Chart.ChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+    };
 
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;
 
     private mounted() {
-        this.timeChartData = {
-            labels: [],
-            datasets: [
-                {
-                    label: "Monthly medications count",
-                    backgroundColor: "#ff6666",
-                    data: [],
-                },
-            ],
-        };
-
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchMedicationStatements();
     }
 
@@ -185,7 +100,7 @@ export default class HealthInsightsView extends Vue {
                             new MedicationTimelineEntry(result)
                         );
                     }
-                    let timelineEntries = this.timelineEntries.reverse();
+                    this.timelineEntries = this.timelineEntries.reverse();
                     this.startDate = this.timelineEntries[0].date;
                     this.endDate = this.timelineEntries[
                         this.timelineEntries.length - 1
@@ -234,18 +149,18 @@ export default class HealthInsightsView extends Vue {
     /**
      * Gets an array of months between two dates
      */
-    private getMonthsBetweenDates(start: Date, end: Date): string[] {
-        var startDate = moment(start);
-        var endDate = moment(end);
-
+    private getMonthsBetweenDates(
+        startDate: DateWrapper,
+        endDate: DateWrapper
+    ): string[] {
         if (endDate.isBefore(startDate)) {
             throw "End date must be greated than start date.";
         }
 
         var result: string[] = [];
         while (startDate.isBefore(endDate)) {
-            result.push(startDate.format("YYYY-MM-01"));
-            startDate.add(1, "month");
+            result.push(startDate.format("yyyy-LL-01"));
+            startDate = startDate.add({ months: 1 });
         }
         return result;
     }
@@ -255,8 +170,8 @@ export default class HealthInsightsView extends Vue {
      */
     private prepareMonthlyChart() {
         let months: string[] = this.getMonthsBetweenDates(
-            this.startDate as Date,
-            this.endDate as Date
+            this.startDate as DateWrapper,
+            this.endDate as DateWrapper
         );
 
         let entryIndex = 0;
@@ -267,7 +182,7 @@ export default class HealthInsightsView extends Vue {
 
             while (entryIndex < this.timelineEntries.length) {
                 let entry = this.timelineEntries[entryIndex];
-                if (moment(currentMonth).isSame(entry.date, "month")) {
+                if (new DateWrapper(currentMonth).isSame(entry.date, "month")) {
                     monthCounter[monthIndex] += 1;
                     entryIndex++;
                 } else {
@@ -276,22 +191,110 @@ export default class HealthInsightsView extends Vue {
             }
         }
 
+        this.timeChartData.labels = [];
+        this.timeChartData.datasets = [
+            {
+                label: "Monthly medications count",
+                backgroundColor: "#ff6666",
+                data: [],
+            },
+        ];
         this.timeChartData.datasets[0].data = [];
 
         for (let i = 0; i < months.length; i++) {
             this.timeChartData.labels.push(
-                moment(months[i]).format("MMM YYYY")
+                new DateWrapper(months[i]).format("LLL yyyy")
             );
             this.timeChartData.datasets[0].data.push(monthCounter[i]);
         }
     }
 
-    private getReadableDate(date: Date | null): string {
+    private getReadableDate(date: DateWrapper | null): string {
         if (date === null) {
             return "N/A";
         }
 
-        return moment(date).format("MMMM YYYY");
+        return date.format("LLL yyyy");
     }
 }
 </script>
+
+<template>
+    <div>
+        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
+        <b-row class="my-3 fluid">
+            <b-col
+                id="healthInsights"
+                class="col-12 col-md-10 col-lg-9 column-wrapper"
+            >
+                <div id="pageTitle">
+                    <h1 id="subject">Health Insights</h1>
+                    <hr />
+                </div>
+                <div>
+                    <h3>Medication count over time</h3>
+                    <b-row class="py-4">
+                        <b-col cols="auto">
+                            <strong>First month with data: </strong>
+                            {{ getReadableDate(startDate) }}
+                        </b-col>
+                        <b-col cols="auto">
+                            <strong>Last month with data: </strong
+                            >{{ getReadableDate(endDate) }}
+                        </b-col>
+                        <b-col cols="auto">
+                            <strong>Total records: </strong
+                            ><span data-testid="totalRecordsText">{{
+                                visibleCount
+                            }}</span>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="!isLoading && visibleCount > 0">
+                        <b-col>
+                            <LineChart
+                                :chartdata="timeChartData"
+                                :options="chartOptions"
+                            />
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="!isLoading && visibleCount === 0"
+                        class="text-center pt-5"
+                    >
+                        <b-col> No medication records </b-col>
+                    </b-row>
+                    <b-row v-if="isLoading">
+                        <b-col>
+                            <content-placeholders>
+                                <content-placeholders-img />
+                                <content-placeholders-text :lines="1" />
+                            </content-placeholders>
+                        </b-col>
+                    </b-row>
+                </div>
+            </b-col>
+        </b-row>
+        <ProtectiveWordComponent
+            ref="protectiveWordModal"
+            :error="protectiveWordAttempts > 1"
+            :is-loading="isLoading"
+            @submit="onProtectiveWordSubmit"
+            @cancel="onProtectiveWordCancel"
+        />
+    </div>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.column-wrapper {
+    border: 1px;
+}
+
+#pageTitle {
+    color: $primary;
+}
+
+#pageTitle hr {
+    border-top: 2px solid $primary;
+}
+</style>

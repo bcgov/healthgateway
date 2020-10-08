@@ -25,10 +25,16 @@ namespace HealthGateway.Laboratory.Models
     public class LaboratoryOrder
     {
         /// <summary>
-        /// Gets or sets the id for the lab result.
+        /// Gets or sets the id for the lab order.
         /// </summary>
         [JsonPropertyName("id")]
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sourceSystemId for the lab order.
+        /// </summary>
+        [JsonPropertyName("sourceSystemId")]
+        public string SourceSystemId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the PHN the report is for.
