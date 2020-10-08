@@ -17,6 +17,12 @@ export default class LoginCallbackView extends Vue {
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
 
+    @Action("toggleSidebar", { namespace: "sidebar" })
+    toggleSidebar!: () => void;
+
+    @Getter("isOpen", { namespace: "sidebar" })
+    isSidebarOpen!: boolean;
+
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("isValidIdentityProvider", { namespace: "auth" })
@@ -37,6 +43,9 @@ export default class LoginCallbackView extends Vue {
                     this.checkRegistration({ hdid: this.user.hdid }).then(
                         () => {
                             this.$router.push({ path: redirectPath });
+                            if (!this.isSidebarOpen) {
+                                this.toggleSidebar();
+                            }
                         }
                     );
                 } else {
