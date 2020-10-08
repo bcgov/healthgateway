@@ -97,6 +97,7 @@ export function authenticateUser(user) {
     else {
         console.log("Authentication Error for user= " + user.username + ". ResponseCode[" + res.status + "] " + res.error);
         user.token = null;
+        user.hdid = null;
     }
 
     return res.status;
@@ -137,6 +138,7 @@ export function refreshUser(user) {
     else {
         console.log("Token Refresh Error for user= " + user.username + ". ResponseCode[" + res.status + "] " + res.error);
         user.token = null; // clear out the expiring token, forcing to re-authenticate.
+        user.hdid = null;
         sleep(1);
         return authenticateUser(user);
     }
