@@ -55,7 +55,7 @@ const ReleaseNotesView = () =>
 const ContactUsView = () =>
     import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
 const DependentsView = () =>
-    import(/* webpackChunkName: "contactUs" */ "@/views/dependents.vue");
+    import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 
 Vue.use(VueRouter);
 
@@ -143,11 +143,6 @@ const routes = [
     {
         path: "/reports",
         component: ReportsView,
-        meta: { validStates: [UserState.registered] },
-    },
-    {
-        path: "/dependents",
-        component: DependentsView,
         meta: { validStates: [UserState.registered] },
     },
     {
