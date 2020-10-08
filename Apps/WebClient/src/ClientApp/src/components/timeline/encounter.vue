@@ -92,7 +92,7 @@ export default class EncounterTimelineEntryComponent extends Vue {
                             <div>
                                 <div class="detailSection">
                                     <div>
-                                        <strong>Location:</strong>
+                                        <strong>Clinic/Practitioner:</strong>
                                     </div>
                                     <div>
                                         {{ entry.clinic.name }}
