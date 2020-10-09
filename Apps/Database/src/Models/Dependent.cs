@@ -36,30 +36,5 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(52)]
         public string HdId { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets the PHN.
-        /// </summary>
-        public string PHN { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Date of Birth datetime.
-        /// </summary>
-        public DateTime DateOfBirth { get; set; }
-
-        /// <summary>
-        /// Gets or sets the first name.
-        /// </summary>
-        public string FirstName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the last name.
-        /// </summary>
-        public string LastName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the gender.
-        /// </summary>
-        public string Gender { get; set; } = string.Empty;
     }
 }

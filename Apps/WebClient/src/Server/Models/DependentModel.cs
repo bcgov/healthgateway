@@ -82,11 +82,6 @@ namespace HealthGateway.WebClient.Models
             {
                 HdId = model.HdId,
                 ParentHdId = model.ParentHdId,
-                PHN = model.PHN,
-                DateOfBirth = model.DateOfBirth,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Gender = model.Gender,
             };
         }
 
@@ -116,11 +111,6 @@ namespace HealthGateway.WebClient.Models
             {
                 HdId = this.HdId,
                 ParentHdId = this.ParentHdId,
-                PHN = this.PHN,
-                DateOfBirth = this.DateOfBirth,
-                FirstName = this.FirstName,
-                LastName = this.LastName,
-                Gender = this.Gender,
             };
         }
     }

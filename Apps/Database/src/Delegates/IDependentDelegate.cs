@@ -27,8 +27,7 @@ namespace HealthGateway.Database.Delegates
         /// Add the given note.
         /// </summary>
         /// <param name="dependent">The dependent to be added to the backend.</param>
-        /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>A Note wrapped in a DBResult.</returns>
-        DBResult<Dependent> AddDependent(Dependent dependent, bool commit = true);
+        /// <returns>A Dependent wrapped in a DBResult.</returns>
+        DBResult<Dependent> InsertDependent(Dependent dependent);
     }
 }

@@ -16,9 +16,6 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text.Json;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
@@ -44,6 +41,7 @@ namespace HealthGateway.WebClient.Services
         /// Initializes a new instance of the <see cref="DependentService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="patientDelegate">The injected patient registry provider.</param>
         /// <param name="dependentDelegate">The dedendent delegate to interact with the DB.</param>
         /// <param name="configuration">The configuration service.</param>
@@ -111,7 +109,7 @@ namespace HealthGateway.WebClient.Services
             // (2) Inserts Dependent to database
             Dependent dependent = dependentModel.ToDbModel();
 
-            DBResult<Dependent> dbDependent = this.dependentDelegate.AddDependent(dependent);
+            DBResult<Dependent> dbDependent = this.dependentDelegate.InsertDependent(dependent);
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()
             {
                 ResourcePayload = DependentModel.CreateFromDbModel(dbDependent.Payload),
