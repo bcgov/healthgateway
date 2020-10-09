@@ -53,8 +53,9 @@ namespace HealthGateway.Database.Delegates
                 Payload = userDelegate,
                 Status = DBStatusCode.Deferred,
             };
+
             this.dbContext.Add<UserDelegate>(userDelegate);
-            if (commit) 
+            if (commit)
             {
                 try
                 {
@@ -67,6 +68,7 @@ namespace HealthGateway.Database.Delegates
                     result.Message = e.Message;
                 }
             }
+
             this.logger.LogDebug($"Finished inserting user delegate to DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
