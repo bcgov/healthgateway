@@ -241,7 +241,7 @@ export function webClientRequests(user) {
     return webClientRequests;
 }
 
-export function checkResponses(responses, errorRate) {
+export function checkResponses(responses) {
 
     if (responses['beta']) {
         var ok = check(responses['beta'], {
