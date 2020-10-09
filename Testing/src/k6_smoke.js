@@ -18,7 +18,6 @@ import { check, group, sleep } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
 import * as common from './inc/common.js';
 
-export let errorRate = new Rate('errors');
 let groupDuration = Trend('batch');
 
 export let options = {
@@ -44,8 +43,8 @@ export default function () {
     let webClientBatchResponses = http.batch(common.webClientRequests(user));
     let timelineBatchResponses = http.batch(common.timelineRequests(user));
 
-    common.checkResponses(webClientBatchResponses, errorRate);
-    common.checkResponses(timelineBatchResponses, errorRate);
+    common.checkResponses(webClientBatchResponses);
+    common.checkResponses(timelineBatchResponses);
   });
 
   sleep(1);

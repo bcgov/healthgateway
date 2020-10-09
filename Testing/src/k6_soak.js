@@ -19,8 +19,6 @@ import { check, sleep, group } from 'k6';
 import { Rate } from 'k6/metrics';
 import * as common from './inc/common.js';
 
-export let errorRate = new Rate('errors');
-
 export let options = {
   stages: [
     { duration: '1m', target: 10 }, // below normal load
@@ -39,8 +37,8 @@ export default function () {
   let webClientBatchResponses = http.batch(common.webClientRequests(user));
   let timelineBatchResponses = http.batch(common.timelineRequests(user));
 
-  common.checkResponses(webClientBatchResponses, errorRate);
-  common.checkResponses(timelineBatchResponses, errorRate);
+  common.checkResponses(webClientBatchResponses);
+  common.checkResponses(timelineBatchResponses);
 
   sleep(common.getRandom(1.0, 3.0));
 }

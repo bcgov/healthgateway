@@ -16,8 +16,14 @@
 import http from 'k6/http';
 import { b64decode } from 'k6/encoding';
 import { check, sleep } from 'k6';
+import { Rate } from 'k6/metrics';
 
 let passwd = __ENV.HG_PASSWORD;
+
+export let authSuccess = new Rate('authentication_successful');
+export let errorRate = new Rate('errors');
+
+export let refreshTokenSuccess = new Rate('auth_refresh_successful');
 
 let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
 
@@ -103,9 +109,12 @@ function authenticateUser(user) {
         var seconds = res_json["expires_in"];
         user.expires = getExpiresTime(seconds);
         user.hdid = parseHdid(user.token);
+        authSuccess.add(1);
+
     }
     else {
         console.log("Authentication Error for user= " + user.username + ". ResponseCode[" + res.status + "] " + res.error);
+        authSuccess.add(0);
         user.token = null;
         user.hdid = null;
     }
@@ -143,9 +152,11 @@ export function refreshUser(user) {
         user.refresh = res_json["refresh_token"];
         var seconds = res_json["expires_in"];
         user.expires = getExpiresTime(seconds);
+        refreshTokenSuccess.add(1);
     }
     else {
         console.log("Token Refresh Error for user= " + user.username + ". ResponseCode[" + res.status + "] " + res.error);
+        refreshTokenSuccess.add(0);
         user.token = null; // clear out the expiring token, forcing to re-authenticate.
         user.hdid = null;
         sleep(1);
@@ -233,7 +244,7 @@ export function webClientRequests(user) {
 export function checkResponses(responses, errorRate) {
 
     if (responses['beta']) {
-        check(responses['beta'], {
+        var ok = check(responses['beta'], {
             "Beta HttpStatusCode is 200": (r) => r.status === 200,
             "Beta HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
             "Beta HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
