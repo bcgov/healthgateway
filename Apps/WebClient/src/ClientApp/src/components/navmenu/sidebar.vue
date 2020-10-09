@@ -307,8 +307,8 @@ export default class SidebarComponent extends Vue {
                                 />
                             </b-col>
                             <b-col
-                                data-testid="timelineLabel"
                                 v-if="isOpen"
+                                data-testid="timelineLabel"
                                 cols="7"
                                 class="button-title d-none"
                             >
