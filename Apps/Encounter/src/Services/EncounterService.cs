@@ -72,10 +72,10 @@ namespace HealthGateway.Encounter.Services
 
             // Retrieve the phn
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
+            RequestResult<PatientModel> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
-                Patient patient = patientResult.ResourcePayload;
+                PatientModel patient = patientResult.ResourcePayload;
                 ODRHistoryQuery mspHistoryQuery = new ODRHistoryQuery()
                 {
                     StartDate = patient.Birthdate,
