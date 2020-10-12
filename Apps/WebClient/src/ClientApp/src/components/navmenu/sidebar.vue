@@ -233,6 +233,10 @@ export default class SidebarComponent extends Vue {
     private get isNoteEnabled(): boolean {
         return this.config.modules["Note"];
     }
+
+    private get isDependents(): boolean {
+        return this.$route.path == "/dependents";
+    }
 }
 </script>
 
@@ -456,6 +460,38 @@ export default class SidebarComponent extends Vue {
                                 class="button-title d-none"
                             >
                                 <span>Reports</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
+                    <router-link
+                        v-show="isActiveProfile"
+                        id="menuBtnDependents"
+                        data-testid="menuBtnDependentsLink"
+                        to="/dependents"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isDependents }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
+                                <font-awesome-icon
+                                    icon="umbrella"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-if="isOpen"
+                                cols="7"
+                                class="button-title d-none"
+                            >
+                                <span>Dependents</span>
                             </b-col>
                         </b-row>
                     </router-link>
