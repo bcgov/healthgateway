@@ -41,7 +41,7 @@
         "eslint-plugin-prettier-vue": "^2.1.1",
         "eslint-plugin-sonarjs": "^0.5.0",
         "eslint-plugin-vue": "^7.0.1",
-        "event-source-polyfill": "^1.0.20",
+        "event-source-polyfill": "^1.0.21",
         "file-loader": "^6.1.0",
         "isomorphic-fetch": "^3.0.0",
         "jest": "^26.5.2",
