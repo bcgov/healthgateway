@@ -8,8 +8,15 @@ describe('Authentication', () => {
     })
 
 
-    it('BCSC Login', () => {
+    it('BCSC UI Login', () => {
         cy.login(Cypress.env('bcsc.username'), Cypress.env('bcsc.password'), AuthMethod.BCSC)
+        cy.get('[data-testid=logoutBtn]')
+            .should('be.visible')
+            .should('not.be.disabled');
+    })
+
+    it('KeyCloak UI Login', () => {
+        cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloakUI)
         cy.get('[data-testid=logoutBtn]')
             .should('be.visible')
             .should('not.be.disabled');
