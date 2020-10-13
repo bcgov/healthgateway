@@ -15,11 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
-    using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
-    using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Represents a Dependent Model.
@@ -29,14 +28,14 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the dependent hdid.
         /// </summary>
-        [JsonPropertyName("hdId")]
-        public string HdId { get; set; } = string.Empty;
+        [JsonPropertyName("ownerId")]
+        public string OwnerId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the parent's hdid.
         /// </summary>
-        [JsonPropertyName("parentHdId")]
-        public string ParentHdId { get; set; } = string.Empty;
+        [JsonPropertyName("delegateId")]
+        public string DelegateId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Patient.
@@ -53,8 +52,8 @@ namespace HealthGateway.WebClient.Models
         {
             return new DependentModel()
             {
-                HdId = model.OwnerId,
-                ParentHdId = model.DelegateId,
+                OwnerId = model.OwnerId,
+                DelegateId = model.DelegateId,
             };
         }
 
@@ -82,8 +81,8 @@ namespace HealthGateway.WebClient.Models
         {
             return new Database.Models.UserDelegate()
             {
-                OwnerId = this.HdId,
-                DelegateId = this.ParentHdId,
+                OwnerId = this.OwnerId,
+                DelegateId = this.DelegateId,
             };
         }
     }
