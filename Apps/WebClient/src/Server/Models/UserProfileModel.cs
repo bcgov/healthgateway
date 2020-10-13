@@ -71,11 +71,6 @@ namespace HealthGateway.WebClient.Models
         /// <returns>The user profile model.</returns>
         public static UserProfileModel CreateFromDbModel(Database.Models.UserProfile model)
         {
-            if (model == null)
-            {
-                return null!;
-            }
-
             return new UserProfileModel()
             {
                 HdId = model.HdId,

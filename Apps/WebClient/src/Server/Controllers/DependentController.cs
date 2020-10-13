@@ -72,8 +72,6 @@ namespace HealthGateway.WebClient.Controllers
             }
             else
             {
-                ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-                dependent.ParentHdId = user.FindFirst("hdid").Value;
                 RequestResult<DependentModel> result = this.dependentService.CreateDependent(dependent);
                 return new JsonResult(result);
             }

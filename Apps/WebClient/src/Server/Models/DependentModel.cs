@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Models
 {
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
@@ -48,13 +49,8 @@ namespace HealthGateway.WebClient.Models
         /// </summary>
         /// <param name="model">The dependent database model.</param>
         /// <returns>The user note model.</returns>
-        public static DependentModel CreateFromDbModel(Database.Models.UserDelegate model)
+        public static DependentModel CreateFromDbModel(UserDelegate model)
         {
-            if (model == null)
-            {
-                return null!;
-            }
-
             return new DependentModel()
             {
                 HdId = model.OwnerId,
