@@ -1,5 +1,6 @@
 
 export const AuthMethod = {
+        KeyCloak: 'KeyCloak',
         BCSC: 'BCSC',
-        KeyCloak: 'KeyCloak'
-} 
+        KeyCloakUI: 'KeyCloakUI'
+}

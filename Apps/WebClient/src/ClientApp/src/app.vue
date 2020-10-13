@@ -86,6 +86,8 @@ import {
     faClipboardList,
     faChartLine,
     faStream,
+    faUmbrella,
+    faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
     faUser,
@@ -115,7 +117,9 @@ library.add(
     faUserMd,
     faClipboardList,
     faChartLine,
-    faStream
+    faStream,
+    faUmbrella,
+    faUserPlus
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
