@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using HealthGateway.Database.Models;
     using System;
     using System.Collections.Generic;
 
@@ -69,7 +70,7 @@ namespace HealthGateway.WebClient.Models
         /// </summary>
         /// <param name="model">The user profile database model.</param>
         /// <returns>The user profile model.</returns>
-        public static UserProfileModel CreateFromDbModel(Database.Models.UserProfile model)
+        public static UserProfileModel CreateFromDbModel(UserProfile model)
         {
             return new UserProfileModel()
             {
