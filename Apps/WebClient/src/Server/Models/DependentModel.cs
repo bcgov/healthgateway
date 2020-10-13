@@ -58,22 +58,6 @@ namespace HealthGateway.WebClient.Models
         }
 
         /// <summary>
-        /// Constructs a List of DependentModels from a List of Dependent database models.
-        /// </summary>
-        /// <param name="models">The list of Dependent database model.</param>
-        /// <returns>A list of DependentModels.</returns>
-        public static IEnumerable<DependentModel> CreateListFromDbModel(IEnumerable<Database.Models.UserDelegate> models)
-        {
-            List<DependentModel> newList = new List<DependentModel>();
-            foreach (Database.Models.UserDelegate model in models)
-            {
-                newList.Add(DependentModel.CreateFromDbModel(model));
-            }
-
-            return newList;
-        }
-
-        /// <summary>
         /// Constructs a database Note model from a user Node model.
         /// </summary>
         /// <returns>The database Dependent model.</returns>
