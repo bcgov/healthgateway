@@ -37,19 +37,15 @@ namespace HealthGateway.WebClient.Controllers
     public class DependentController
     {
         private readonly IDependentService dependentService;
-        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentController"/> class.
         /// </summary>
         /// <param name="dependentService">The injected user feedback service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public DependentController(
-            IDependentService dependentService,
-            IHttpContextAccessor httpContextAccessor)
+            IDependentService dependentService)
         {
             this.dependentService = dependentService;
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
