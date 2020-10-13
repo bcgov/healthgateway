@@ -31,5 +31,12 @@ namespace HealthGateway.WebClient.Services
         /// <param name="dependentModel">The Dependent to create.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
         RequestResult<DependentModel> CreateDependent(DependentModel dependentModel);
+
+        /// <summary>
+        /// Gets all the dependents for the given hdId.
+        /// </summary>
+        /// <param name="hdId">The users HDID.</param>
+        /// <returns>A List of dependents wrapped in a RequestResult.</returns>
+        RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId);
     }
 }
