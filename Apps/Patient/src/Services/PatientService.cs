@@ -15,20 +15,11 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Patient.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Linq;
-    using System.ServiceModel;
-    using System.Text.Json;
-    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Patient.Delegates;
     using Microsoft.Extensions.Logging;
-    using ServiceReference;
 
     /// <summary>
     /// The Patient data service.
@@ -56,7 +47,7 @@ namespace HealthGateway.Patient.Services
         /// <inheritdoc/>
         public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetPatient(string hdid)
         {
-            return await this.patientDelegate.GetDemographicsByHDIDAsync(hdid);
+            return await this.patientDelegate.GetDemographicsByHDIDAsync(hdid).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
@@ -64,11 +55,11 @@ namespace HealthGateway.Patient.Services
         {
             if (identifier.Key == "phn")
             {
-                return await this.patientDelegate.GetDemographicsByPHNAsync(identifier.Value);
+                return await this.patientDelegate.GetDemographicsByPHNAsync(identifier.Value).ConfigureAwait(true);
             }
             else if (identifier.Key == "hdid")
             {
-                return await this.patientDelegate.GetDemographicsByHDIDAsync(identifier.Value);
+                return await this.patientDelegate.GetDemographicsByHDIDAsync(identifier.Value).ConfigureAwait(true);
             }
             else
             {

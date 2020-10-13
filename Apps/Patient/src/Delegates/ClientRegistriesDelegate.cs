@@ -59,13 +59,14 @@ namespace HealthGateway.Patient.Delegates
         public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid)
         {
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
+
             // Create request object
             HCIM_IN_GetDemographicsRequest request = CreateRequest(OIDType.HDID, hdid);
             try
             {
                 // Perform the request
                 HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
-                return this.parseResponse(reply, OIDType.HDID);
+                return this.ParseResponse(reply);
             }
             catch (CommunicationException e)
             {
@@ -82,13 +83,14 @@ namespace HealthGateway.Patient.Delegates
         public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetDemographicsByPHNAsync(string phn)
         {
             using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
+
             // Create request object
             HCIM_IN_GetDemographicsRequest request = CreateRequest(OIDType.PHN, phn);
             try
             {
                 // Perform the request
                 HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
-                return this.parseResponse(reply, OIDType.PHN);
+                return this.ParseResponse(reply);
             }
             catch (CommunicationException e)
             {
@@ -101,7 +103,7 @@ namespace HealthGateway.Patient.Delegates
             }
         }
 
-        private HCIM_IN_GetDemographicsRequest CreateRequest(OIDType oIDType, string identifierValue)
+        private static HCIM_IN_GetDemographicsRequest CreateRequest(OIDType oIDType, string identifierValue)
         {
             HCIM_IN_GetDemographics request = new HCIM_IN_GetDemographics();
             request.id = new II() { root = "2.16.840.1.113883.3.51.1.1.1", extension = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture) };
@@ -139,12 +141,12 @@ namespace HealthGateway.Patient.Delegates
             request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
             request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
             request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = oIDType.Value, extension = identifierValue, assigningAuthorityName = "LCTZ_IAS" };
+            request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = oIDType.ToString(), extension = identifierValue, assigningAuthorityName = "LCTZ_IAS" };
 
             return new HCIM_IN_GetDemographicsRequest(request);
         }
 
-        private RequestResult<PatientModel> parseResponse(HCIM_IN_GetDemographicsResponse1 reply, OIDType searchType)
+        private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply)
         {
             // Verify that the reply contains a result
             string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
@@ -196,8 +198,6 @@ namespace HealthGateway.Patient.Delegates
             string delimiter = " ";
             string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
             string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
-            string personIdentifierType = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).root;
-            string personIdentifier = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).extension;
             string? dobStr = ((TS)retrievedPerson.identifiedPerson.birthTime).value; // yyyyMMdd
             DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
             string genderCode = retrievedPerson.identifiedPerson.administrativeGenderCode.code;
@@ -212,35 +212,56 @@ namespace HealthGateway.Patient.Delegates
             }
 
             PatientModel patient = new PatientModel() { FirstName = givenNames, LastName = lastNames, Birthdate = dob, Gender = gender, EmailAddress = string.Empty };
-            if (personIdentifierType == OIDType.HDID.Value)
+
+            string personIdentifierType = ((II)retrievedPerson.identifiedPerson.id.GetValue(0) !).root;
+            string personIdentifier = ((II)retrievedPerson.identifiedPerson.id.GetValue(0) !).extension;
+            if (personIdentifierType == OIDType.HDID.ToString())
             {
-                patient.PersonalHealthNumber = personIdentifier;
-                return new RequestResult<PatientModel>()
-                {
-                    ResultStatus = ResultType.Success,
-                    ResourcePayload = patient,
-                };
+                patient.HdId = personIdentifier;
             }
-            else if (personIdentifierType == OIDType.PHN.Value)
+            else if (personIdentifierType == OIDType.PHN.ToString())
             {
                 patient.PersonalHealthNumber = personIdentifier;
-                return new RequestResult<PatientModel>()
-                {
-                    ResultStatus = ResultType.Success,
-                    ResourcePayload = patient,
-                };
             }
             else
             {
                 PatientModel emptyPatient = new PatientModel();
-                this.logger.LogWarning($"Client Registry returned a person with an identifier not recognized. No PHN was populated. {personIdentifier}");
+                this.logger.LogWarning($"Client Registry returned a person with a person identifier not recognized. No PHN was populated. {personIdentifier}");
                 this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(emptyPatient)}");
                 return new RequestResult<PatientModel>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Client Registry returned a person with the deceasedIndicator set to true", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                    ResultError = new RequestResultError() { ResultMessage = "Client Registry returned a person with a person identifier not recognized.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
                 };
             }
+
+            string subjectIdentifierType = ((II)retrievedPerson.id.GetValue(0) !).root;
+            string subjectIdentifier = ((II)retrievedPerson.id.GetValue(0) !).extension;
+            if (subjectIdentifierType == OIDType.HDID.ToString())
+            {
+                patient.HdId = subjectIdentifier;
+            }
+            else if (personIdentifierType == OIDType.PHN.ToString())
+            {
+                patient.PersonalHealthNumber = subjectIdentifier;
+            }
+            else
+            {
+                PatientModel emptyPatient = new PatientModel();
+                this.logger.LogWarning($"Client Registry returned a person with a subject identifier not recognized. No PHN was populated. {subjectIdentifier}");
+                this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(emptyPatient)}");
+                return new RequestResult<PatientModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Client Registry returned a person with a subject identifier not recognized. No PHN was populated", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                };
+            }
+
+            return new RequestResult<PatientModel>()
+            {
+                ResultStatus = ResultType.Success,
+                ResourcePayload = patient,
+            };
         }
     }
 }

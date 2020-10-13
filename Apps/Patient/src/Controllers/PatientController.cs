@@ -17,9 +17,10 @@ namespace HealthGateway.Patient.Controllers
 {
     using System;
     using System.Threading.Tasks;
-
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
     using HealthGateway.Patient.Services;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ namespace HealthGateway.Patient.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class PatientController : ControllerBase
     {
         /// <summary>
@@ -72,7 +73,7 @@ namespace HealthGateway.Patient.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        //[Authorize(Policy = PatientPolicy.Read)]
+        [Authorize(Policy = PatientPolicy.Read)]
         public async Task<IActionResult> GetPatient(string hdid)
         {
             RequestResult<PatientModel> result = await this.service.GetPatient(hdid).ConfigureAwait(true);
@@ -89,7 +90,7 @@ namespace HealthGateway.Patient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Produces("application/json")]
-        //[Authorize(Policy = PatientPolicy.Read)]
+        [Authorize(Policy = PatientPolicy.Read)]
         public async Task<IActionResult> SearchPatientByIdentifier([FromQuery] string identifier)
         {
             try
@@ -103,7 +104,6 @@ namespace HealthGateway.Patient.Controllers
                 this.logger.LogError($"Error extracting patient identifier {e.ToString()}");
                 return new BadRequestResult();
             }
-
         }
     }
 }
