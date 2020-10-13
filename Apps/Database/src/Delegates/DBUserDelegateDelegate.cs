@@ -64,6 +64,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
+                    this.logger.LogError($"Error inserting user delegate to DB with exception ({e.ToString()})");
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
