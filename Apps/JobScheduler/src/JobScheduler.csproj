@@ -12,7 +12,7 @@
     <DocumentationFile>bin\Debug\netcoreapp3.1\JobScheduler.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.14" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.15" />
     <PackageReference Include="Hangfire.MaximumConcurrentExecutions" Version="1.1.0" />
     <PackageReference Include="Hangfire.Postgresql" Version="1.7.1" />
     <PackageReference Include="mailkit" Version="2.9.0" />
