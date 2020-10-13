@@ -34,7 +34,7 @@ namespace HealthGateway.Patient.Test
         public async Task ShouldGetDemographics()
         {
             // Setup
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
+            string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
             string expectedResponseCode = "BCHCIM.GD.0.0013";
             string expectedFirstName = "Jane";
@@ -43,9 +43,17 @@ namespace HealthGateway.Patient.Test
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson identifiedPerson =
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget =
                 new HCIM_IN_GetDemographicsResponseIdentifiedPerson()
                 {
+                    id = new II[]
+                        {
+                            new II()
+                            {
+                                root = "2.16.840.1.113883.3.51.1.1.6",
+                                extension = expectedHdId
+                            }
+                        },
                     identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
                     {
                         id = new II[]
@@ -102,7 +110,7 @@ namespace HealthGateway.Patient.Test
                               {
                                   new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2()
                                   {
-                                      target = identifiedPerson
+                                      target = subjectTarget
                                   }
                               }
                         }
@@ -117,10 +125,11 @@ namespace HealthGateway.Patient.Test
 
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHDIDAsync(hdid);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHDIDAsync(expectedHdId);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
+            Assert.Equal(expectedHdId, actual.ResourcePayload.HdId);
             Assert.Equal(expectedPhn, actual.ResourcePayload.PersonalHealthNumber);
             Assert.Equal(expectedFirstName, actual.ResourcePayload.FirstName);
             Assert.Equal(expectedLastName, actual.ResourcePayload.LastName);
@@ -140,9 +149,17 @@ namespace HealthGateway.Patient.Test
             DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
 
 
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson identifiedPerson =
+            HCIM_IN_GetDemographicsResponseIdentifiedPerson subjectTarget =
                 new HCIM_IN_GetDemographicsResponseIdentifiedPerson()
                 {
+                    id = new II[]
+                        {
+                            new II()
+                            {
+                                root = "2.16.840.1.113883.3.51.1.1.6",
+                                extension = hdid
+                            }
+                        },
                     identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
                     {
                         id = new II[]
@@ -199,7 +216,7 @@ namespace HealthGateway.Patient.Test
                               {
                                   new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2()
                                   {
-                                      target = identifiedPerson
+                                      target = subjectTarget
                                   }
                               }
                         }

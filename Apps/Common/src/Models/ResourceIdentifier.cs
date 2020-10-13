@@ -14,28 +14,20 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-using System;
-
 namespace HealthGateway.Common.Models
 {
+    using System;
+
     /// <summary>
     /// Resource Identifier model for query.
     /// </summary>
     public class ResourceIdentifier
     {
         /// <summary>
-        /// Identifier key
-        /// </summary>
-        public readonly string Key;
-
-        /// <summary>
-        /// identifier value.
-        /// </summary>
-        public readonly string Value;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ResourceIdentifier"/> class.
         /// </summary>
+        /// <param name="key">The Resource identifier key.</param>
+        /// <param name="value">The Resource identifier value.</param>
         public ResourceIdentifier(string key, string value)
         {
             this.Key = key;
@@ -43,8 +35,20 @@ namespace HealthGateway.Common.Models
         }
 
         /// <summary>
+        /// Gets the Identifier key.
+        /// </summary>
+        public string Key { get; private set; }
+
+        /// <summary>
+        /// Gets the identifier value.
+        /// </summary>
+        public string Value { get; private set; }
+
+        /// <summary>
         /// Creates a new instance of <see cref="ResourceIdentifier"/> from a query string.
         /// </summary>
+        /// <param name="query">Query representation fof the resource identifier.</param>
+        /// <returns>A new Resource identifier.</returns>
         public static ResourceIdentifier FromSearchString(string query)
         {
             string[] queryParams = query.Split('|');
