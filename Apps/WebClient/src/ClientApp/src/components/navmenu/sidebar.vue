@@ -32,6 +32,10 @@ export default class SidebarComponent extends Vue {
 
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
 
+    @Action("setSidebarState", { namespace: sidebar }) setSidebarState!: (
+        isOpen: boolean
+    ) => void;
+
     @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
 
     @Getter("oidcIsAuthenticated", {
@@ -119,6 +123,9 @@ export default class SidebarComponent extends Vue {
 
         this.$nextTick(() => {
             window.addEventListener("resize", this.onResize);
+            if (!this.isMobileWidth) {
+                this.setSidebarState(true);
+            }
         });
         this.windowWidth = window.innerWidth;
     }
