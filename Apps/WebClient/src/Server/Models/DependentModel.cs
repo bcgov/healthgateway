@@ -32,6 +32,12 @@ namespace HealthGateway.WebClient.Models
         public string HdId { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the delegate hdId.
+        /// </summary>
+        [JsonPropertyName("delegateHdId")]
+        public string DelegateHdId { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the dependent name.
         /// </summary>
         [JsonPropertyName("name")]
@@ -53,6 +59,7 @@ namespace HealthGateway.WebClient.Models
             return new DependentModel()
             {
                 HdId = model.OwnerId,
+                DelegateHdId = model.DelegateId,
             };
         }
 
@@ -65,6 +72,7 @@ namespace HealthGateway.WebClient.Models
             return new Database.Models.UserDelegate()
             {
                 OwnerId = this.HdId,
+                DelegateId = this.DelegateHdId,
             };
         }
     }
