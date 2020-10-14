@@ -70,7 +70,7 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished inserting user delegate to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogTrace($"Finished inserting user delegate to DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
 
@@ -83,7 +83,7 @@ namespace HealthGateway.Database.Delegates
                     .OrderBy(dependent => dependent.DelegateId == delegateId),
                 page,
                 pageSize);
-            this.logger.LogDebug($"Finished getting user delegates to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogTrace($"Finished getting user delegates to DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
     }
