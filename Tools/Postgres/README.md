@@ -172,5 +172,11 @@ curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_connections":100}}}' http:
 patronictl restart patroni-postgres
 ```
 
+Other) Get/View the current config:
+
+``` bash
+curl -s localhost:8008/config | jq .
+```
+
 
 
