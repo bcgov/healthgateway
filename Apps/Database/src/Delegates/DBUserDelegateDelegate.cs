@@ -75,14 +75,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<IEnumerable<UserDelegate>> Get(string delegateId)
+        public DBResult<IEnumerable<UserDelegate>> Get(string delegateId, int page, int pageSize)
         {
-            this.logger.LogTrace($"Getting dependents from DB...");
-            return DBDelegateHelper.GetPagedDBResult(
+            this.logger.LogTrace($"Getting user delegates from DB...");
+            var result = DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.UserDelegate
                     .OrderBy(dependent => dependent.DelegateId == delegateId),
-                1,
-                100);
+                page,
+                pageSize);
+            this.logger.LogDebug($"Finished getting user delegates to DB... {JsonSerializer.Serialize(result)}");
+            return result;
         }
     }
 }

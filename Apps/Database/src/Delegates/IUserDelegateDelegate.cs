@@ -39,6 +39,6 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="delegateId">The user delegate to create.</param>
         /// <returns>A list of UserDelegates wrapped in a DBResult</returns>
-        DBResult<IEnumerable<UserDelegate>> Get(string delegateId);
+        DBResult<IEnumerable<UserDelegate>> Get(string delegateId, int page, int pageSize);
     }
 }
