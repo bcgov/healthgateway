@@ -151,3 +151,26 @@ psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
 ```
 
 4) Run Migrations Scripts
+
+## Edit Patroni configuration using Rest API
+
+1) Connect the terminal to any of the patroni pods running using remote shell:
+
+``` bash
+oc rsh patroni-postgres-1
+```
+
+2) Update config (e.g. postgresql.parameters.max_connections to 100):
+
+``` bash
+curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_connections":100}}}' http://localhost:8008/config | jq .
+```
+
+3) Restart Cluster:
+
+``` bash
+patronictl restart patroni-postgres
+```
+
+
+
