@@ -37,7 +37,6 @@ namespace HealthGateway.WebClient.Controllers
     public class DependentController
     {
         private readonly IDependentService dependentService;
-        private readonly IHttpContextAccessor httpContextAccessor;
 
         private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -52,25 +51,6 @@ namespace HealthGateway.WebClient.Controllers
         {
             this.dependentService = dependentService;
             this.httpContextAccessor = httpContextAccessor;
-        }
-
-        /// <summary>
-        /// Posts a Register Dependent Request json to be validated then inserted into the database.
-        /// </summary>
-        /// <returns>The http status.</returns>
-        /// <param name="registerDependentRequest">The Register Dependent request model.</param>
-        /// <response code="200">The Dependent record was saved.</response>
-        /// <response code="400">The Dependent was already inserted.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpPost]
-        [Authorize(Policy = UserPolicy.Write)]
-        public IActionResult Register([FromBody] RegisterDependentRequest registerDependentRequest)
-        {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string delegateHdId = user.FindFirst("hdid").Value;
-            RequestResult<DependentModel> result = this.dependentService.Register(delegateHdId, registerDependentRequest);
-            return new JsonResult(result);
         }
 
         /// <summary>
