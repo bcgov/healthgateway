@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Controllers
 {
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
@@ -38,6 +39,8 @@ namespace HealthGateway.WebClient.Controllers
         private readonly IDependentService dependentService;
         private readonly IHttpContextAccessor httpContextAccessor;
 
+        private readonly IHttpContextAccessor httpContextAccessor;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentController"/> class.
         /// </summary>
@@ -52,28 +55,22 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Posts a dependent json to be inserted into the database.
+        /// Posts a Register Dependent Request json to be validated then inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
-        /// <param name="dependent">The user feedback model.</param>
-        /// <response code="200">The dependent record was saved.</response>
-        /// <response code="400">The dependent object is invalid.</response>
-        /// <response code="409">The dependent was already inserted.</response>
+        /// <param name="registerDependentRequest">The Register Dependent request model.</param>
+        /// <response code="200">The Dependent record was saved.</response>
+        /// <response code="400">The Dependent was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Authorize(Policy = UserPolicy.UserOnly)]
-        public IActionResult CreateDependent([FromBody] DependentModel dependent)
+        [Authorize(Policy = UserPolicy.Write)]
+        public IActionResult Register([FromBody] RegisterDependentRequest registerDependentRequest)
         {
-            if (dependent == null)
-            {
-                return new BadRequestResult();
-            }
-            else
-            {
-                RequestResult<DependentModel> result = this.dependentService.CreateDependent(dependent);
-                return new JsonResult(result);
-            }
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string delegateHdId = user.FindFirst("hdid").Value;
+            RequestResult<DependentModel> result = this.dependentService.Register(delegateHdId, registerDependentRequest);
+            return new JsonResult(result);
         }
 
         /// <summary>

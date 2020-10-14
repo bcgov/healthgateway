@@ -26,11 +26,12 @@ namespace HealthGateway.WebClient.Services
     public interface IDependentService
     {
         /// <summary>
-        /// Creates a Dependent in the backend.
+        /// Saves the User Delegate to the database.
         /// </summary>
-        /// <param name="dependentModel">The Dependent to create.</param>
+        /// <param name="delegateHdId">The HdId of the Delegate (parent or guardian).</param>
+        /// <param name="registerDependentRequest">The request to create a User Delegate model.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
-        RequestResult<DependentModel> CreateDependent(DependentModel dependentModel);
+        RequestResult<DependentModel> Register(string delegateHdId, RegisterDependentRequest registerDependentRequest);
 
         /// <summary>
         /// Gets all the dependents for the given hdId.
