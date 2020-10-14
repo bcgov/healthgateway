@@ -82,12 +82,6 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public RequestResult<string> GetPatientHdId(string phn, string authorization)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
         public RequestResult<PatientModel> GetPatient(string hdid, string authorization)
         {
             RequestResult<PatientModel> retVal = new RequestResult<PatientModel>()

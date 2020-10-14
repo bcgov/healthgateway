@@ -60,25 +60,11 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<DependentModel> CreateDependent(DependentModel dependentModel)
+        public RequestResult<DependentModel> Register(string delegateHdId, RegisterDependentRequest registerDependentRequest)
         {
-            this.logger.LogDebug("Getting dependent hdid...");
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-
-            // (1) Retrieve the hdid
-            dependentModel.HdId = this.patientDelegate.GetPatientHdId(dependentModel.PHN, jwtString).ResourcePayload!;
-            if (string.IsNullOrEmpty(dependentModel.HdId))
-            {
-                return new RequestResult<DependentModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Communication Exception when trying to retrieve the HdId", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient) },
-                };
-            }
-
-            this.logger.LogTrace($"Dependent hdid: {dependentModel.HdId}");
+            this.logger.LogTrace($"Dependent hdid: {delegateHdId}");
             this.logger.LogDebug("Getting dependent details...");
-            RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(dependentModel.HdId, jwtString);
+            RequestResult<PatientModel> patientResult = this.patientDelegate.SearchPatientByIdentifier(dependentModel.HdId, jwtString);
             if (patientResult.ResourcePayload == null)
             {
                 return new RequestResult<DependentModel>()
