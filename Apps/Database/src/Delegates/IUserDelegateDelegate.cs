@@ -33,5 +33,12 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
         DBResult<UserDelegate> Insert(UserDelegate userDelegate, bool commit);
+
+        /// <summary>
+        /// Gets the list of User Delegate records for a specific delegate Id from the database.
+        /// </summary>
+        /// <param name="delegateId">The user delegate to create.</param>
+        /// <returns>A list of UserDelegates wrapped in a DBResult</returns>
+        DBResult<IEnumerable<UserDelegate>> Get(string delegateId);
     }
 }

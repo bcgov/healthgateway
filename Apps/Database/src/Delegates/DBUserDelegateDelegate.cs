@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,6 +72,17 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished inserting user delegate to DB... {JsonSerializer.Serialize(result)}");
             return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<UserDelegate>> Get(string delegateId)
+        {
+            this.logger.LogTrace($"Getting dependents from DB...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.UserDelegate
+                    .OrderBy(dependent => dependent.DelegateId == delegateId),
+                1,
+                100);
         }
     }
 }
