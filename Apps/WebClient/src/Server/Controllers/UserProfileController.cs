@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
@@ -29,6 +30,8 @@ namespace HealthGateway.WebClient.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Web API to handle user profile interactions.
@@ -39,6 +42,7 @@ namespace HealthGateway.WebClient.Controllers
     [ApiController]
     public class UserProfileController
     {
+        private readonly ILogger logger;
         private readonly IUserProfileService userProfileService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IUserEmailService userEmailService;
@@ -47,16 +51,19 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
         /// </summary>
+        /// <param name="logger">The service Logger.</param>
         /// <param name="userProfileService">The injected user profile service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="userEmailService">The injected user email service.</param>
         /// <param name="userSMSService">The injected user sms service.</param>
         public UserProfileController(
+            ILogger<UserProfileController> logger,
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
             IUserSMSService userSMSService)
         {
+            this.logger = logger;
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
             this.userEmailService = userEmailService;
@@ -109,6 +116,12 @@ namespace HealthGateway.WebClient.Controllers
         public IActionResult GetUserProfile(string hdid)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            var jsonSettings = new JsonSerializerSettings()
+            {
+                Converters = new List<JsonConverter>() { new JsonClaimConverter(), new JsonClaimsPrincipalConverter(), new JsonClaimsIdentityConverter() },
+            };
+
+            this.logger.LogTrace($"HTTP context user: {JsonConvert.SerializeObject(user, jsonSettings)}");
             string rowAuthTime = user.FindFirst(c => c.Type == "auth_time").Value;
 
             // Auth time at comes in the JWT as seconds after 1970-01-01

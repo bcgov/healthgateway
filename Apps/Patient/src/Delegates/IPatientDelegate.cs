@@ -16,18 +16,25 @@
 namespace HealthGateway.Patient.Delegates
 {
     using System.Threading.Tasks;
-    using ServiceReference;
+    using HealthGateway.Common.Models;
 
     /// <summary>
     /// The Patient data service.
     /// </summary>
-    public interface IClientRegistriesDelegate
+    public interface IPatientDelegate
     {
         /// <summary>
         /// Gets the patient record.
         /// </summary>
-        /// <param name="request">The get demographics request.</param>
-        /// <returns>The patient get demographics response.</returns>
-        Task<HCIM_IN_GetDemographicsResponse1> GetDemographicsAsync(HCIM_IN_GetDemographicsRequest request);
+        /// <param name="hdid">The hdid to retrieve the patient demographics in.</param>
+        /// <returns>The patient information.</returns>
+        Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid);
+
+        /// <summary>
+        /// Gets the patient record.
+        /// </summary>
+        /// <param name="phn">The phn to retrive the patient demographics information.</param>
+        /// <returns>The patient information.</returns>
+        Task<RequestResult<PatientModel>> GetDemographicsByPHNAsync(string phn);
     }
 }

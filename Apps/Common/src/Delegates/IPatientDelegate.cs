@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates
 {
-    using System.Threading.Tasks;
     using HealthGateway.Common.Models;
 
     /// <summary>
@@ -45,6 +44,6 @@ namespace HealthGateway.Common.Delegates
         /// <param name="hdid">The patient hdid.</param>
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns>The patient model.</returns>
-        RequestResult<Patient> GetPatient(string hdid, string authorization);
+        RequestResult<PatientModel> GetPatient(string hdid, string authorization);
     }
 }
