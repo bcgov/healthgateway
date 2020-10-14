@@ -15,23 +15,36 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
-    using System.Text.Json.Serialization;
+    using System;
 
     /// <summary>
-    /// Represents a Dependent Model.
+    /// Object that defines the request for registering a dependent.
     /// </summary>
-    public class DependentModel
+    public class RegisterDependentRequest
     {
         /// <summary>
-        /// Gets or sets the name of the dependent.
+        /// Gets or sets the First Name.
         /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the hdId of the dependent.
+        /// Gets or sets the Last Name.
         /// </summary>
-        [JsonPropertyName("hdId")]
-        public string HdId { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Date Of Birth.
+        /// </summary>
+        public DateTime DateOfBirth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the dependent's PHN.
+        /// </summary>
+        public string PHN { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the gender.
+        /// </summary>
+        public string Gender { get; set; } = string.Empty;
     }
 }
