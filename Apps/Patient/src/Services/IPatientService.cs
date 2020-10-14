@@ -28,6 +28,13 @@ namespace HealthGateway.Patient.Services
         /// </summary>
         /// <param name="hdid">The patient id.</param>
         /// <returns>The patient model.</returns>
-        Task<RequestResult<Patient>> GetPatient(string hdid);
+        Task<RequestResult<PatientModel>> GetPatient(string hdid);
+
+        /// <summary>
+        /// Searches for a patient record given an identifier.
+        /// </summary>
+        /// <param name="identifier">The identifier to use.</param>
+        /// <returns>The patient model if found.</returns>
+        Task<RequestResult<PatientModel>> SearchPatientByIdentifier(ResourceIdentifier identifier);
     }
 }
