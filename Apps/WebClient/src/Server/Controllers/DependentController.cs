@@ -65,11 +65,11 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = UserPolicy.Write)]
-        public IActionResult Register([FromBody] RegisterDependentRequest registerDependentRequest)
+        public IActionResult AddDependent([FromBody] AddDependentRequest registerDependentRequest)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             string delegateHdId = user.FindFirst("hdid").Value;
-            RequestResult<DependentModel> result = this.dependentService.Register(delegateHdId, registerDependentRequest);
+            RequestResult<DependentModel> result = this.dependentService.AddDependent(delegateHdId, registerDependentRequest);
             return new JsonResult(result);
         }
     }

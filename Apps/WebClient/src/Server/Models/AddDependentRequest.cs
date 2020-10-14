@@ -20,7 +20,7 @@ namespace HealthGateway.WebClient.Models
     /// <summary>
     /// Object that defines the request for registering a dependent.
     /// </summary>
-    public class RegisterDependentRequest
+    public class AddDependentRequest
     {
         /// <summary>
         /// Gets or sets the First Name.
