@@ -95,8 +95,8 @@ namespace HealthGateway.Patient
                 return client;
             });
 
-            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
-            services.AddTransient<IPatientService, SoapPatientService>();
+            services.AddTransient<IPatientDelegate, ClientRegistriesDelegate>();
+            services.AddTransient<IPatientService, PatientService>();
             services.AddSingleton<ITraceService, TimedTraceService>();
         }
 

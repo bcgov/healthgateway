@@ -67,7 +67,7 @@ namespace HealthGateway.Common.Delegates
                 ResultStatus = Constants.ResultType.Error,
             };
             string retrievedPhn = string.Empty;
-            RequestResult<Patient> patientResult = this.GetPatient(hdid, authorization);
+            RequestResult<PatientModel> patientResult = this.GetPatient(hdid, authorization);
             if (patientResult != null)
             {
                 retVal.ResultError = patientResult.ResultError;
@@ -82,9 +82,9 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public RequestResult<Patient> GetPatient(string hdid, string authorization)
+        public RequestResult<PatientModel> GetPatient(string hdid, string authorization)
         {
-            RequestResult<Patient> retVal = new RequestResult<Patient>()
+            RequestResult<PatientModel> retVal = new RequestResult<PatientModel>()
             {
                 ResultStatus = Constants.ResultType.Error,
             };
@@ -104,8 +104,8 @@ namespace HealthGateway.Common.Delegates
                     await response.Content.ReadAsStringAsync().ConfigureAwait(true)).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    RequestResult<Patient> result = JsonSerializer.Deserialize<RequestResult<Patient>>(payload);
-                    Patient? patient = result.ResourcePayload;
+                    RequestResult<PatientModel> result = JsonSerializer.Deserialize<RequestResult<PatientModel>>(payload);
+                    PatientModel? patient = result.ResourcePayload;
                     if (result.ResultStatus == ResultType.Success && patient != null)
                     {
                         if (!string.IsNullOrEmpty(patient.PersonalHealthNumber))

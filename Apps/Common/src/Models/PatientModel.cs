@@ -22,37 +22,19 @@ namespace HealthGateway.Common.Models
     /// <summary>
     /// The patient data model.
     /// </summary>
-    public class Patient
+    public class PatientModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Patient"/> class.
+        /// Initializes a new instance of the <see cref="PatientModel"/> class.
         /// </summary>
-        public Patient()
+        public PatientModel()
         {
             this.HdId = string.Empty;
             this.PersonalHealthNumber = string.Empty;
             this.FirstName = string.Empty;
             this.LastName = string.Empty;
             this.EmailAddress = string.Empty;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Patient"/> class.
-        /// </summary>
-        /// <param name="hdid">The patient health directed identifier.</param>
-        /// <param name="phn">The patient personal health number.</param>
-        /// <param name="firstName">The patient first name.</param>
-        /// <param name="lastName">The patient last name.</param>
-        /// <param name="birthDate">The date of birth for the patient.</param>
-        /// <param name="email">The patient email.</param>
-        public Patient(string hdid, string phn, string firstName, string lastName, DateTime birthDate, string email)
-        {
-            this.HdId = hdid;
-            this.PersonalHealthNumber = phn;
-            this.FirstName = firstName;
-            this.LastName = lastName;
-            this.Birthdate = birthDate;
-            this.EmailAddress = email;
+            this.Gender = string.Empty;
         }
 
         /// <summary>
@@ -90,5 +72,11 @@ namespace HealthGateway.Common.Models
         /// </summary>
         [JsonPropertyName("email")]
         public string EmailAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the patients gender.
+        /// </summary>
+        [JsonPropertyName("gender")]
+        public string Gender { get; set; }
     }
 }

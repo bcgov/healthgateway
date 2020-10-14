@@ -81,10 +81,10 @@ namespace HealthGateway.Encounter.Test.Service
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
-            RequestResult<Patient> patientResult = new RequestResult<Patient>()
+            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new Patient()
+                ResourcePayload = new PatientModel()
                 {
                     PersonalHealthNumber = "912345678",
                     Birthdate = DateTime.ParseExact("1983/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture)
@@ -139,10 +139,10 @@ namespace HealthGateway.Encounter.Test.Service
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
-            RequestResult<Patient> patientResult = new RequestResult<Patient>()
+            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new Patient()
+                ResourcePayload = new PatientModel()
                 {
                     PersonalHealthNumber = "912345678",
                     Birthdate = DateTime.ParseExact("1983/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture)
@@ -190,7 +190,7 @@ namespace HealthGateway.Encounter.Test.Service
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
-            RequestResult<Patient> patientResult = new RequestResult<Patient>()
+            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 ResultError = new RequestResultError()
