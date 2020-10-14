@@ -49,7 +49,7 @@ export default class NewDependentComponent extends Vue {
             },
             birthdate: {
                 required: true,
-                underage: {},
+                underage: false,
             },
             gender: {
                 required: true,
@@ -153,6 +153,11 @@ export default class NewDependentComponent extends Vue {
                                     >
                                         Valid birthdate is required
                                     </b-form-invalid-feedback>
+                                    <b-form-invalid-feedback
+                                        :state="$v.birthdate.$underage"
+                                    >
+                                        Dependent must be under the age of 19
+                                    </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
                             <b-row class="mb-4">
@@ -212,10 +217,12 @@ export default class NewDependentComponent extends Vue {
         <template #modal-footer>
             <b-row>
                 <div class="mr-2">
-                    <b-btn variant="primary">Register dependent</b-btn>
+                    <b-btn variant="primary" @click="handleOk"
+                        >Register dependent</b-btn
+                    >
                 </div>
                 <div>
-                    <b-btn variant="secondary">Cancel</b-btn>
+                    <b-btn variant="secondary" @click="hideModal">Cancel</b-btn>
                 </div>
             </b-row>
         </template>
