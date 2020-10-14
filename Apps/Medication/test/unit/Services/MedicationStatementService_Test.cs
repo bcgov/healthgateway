@@ -177,9 +177,9 @@ namespace HealthGateway.Medication.Services.Test
 
             Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
             patientDelegateMock.Setup(s => s.GetPatient(hdid, "Bearer TestJWT")).Returns(
-                new RequestResult<Patient>()
+                new RequestResult<PatientModel>()
                 {
-                    ResourcePayload = new Patient()
+                    ResourcePayload = new PatientModel()
                     {
                         Birthdate = DateTime.Parse("2000/01/31"),
                         FirstName = "Patient",
@@ -250,9 +250,9 @@ namespace HealthGateway.Medication.Services.Test
 
             Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
             patientDelegateMock.Setup(s => s.GetPatient(hdid, "Bearer TestJWT")).Returns(
-                new RequestResult<Patient>()
+                new RequestResult<PatientModel>()
                 {
-                    ResourcePayload = new Patient()
+                    ResourcePayload = new PatientModel()
                     {
                         Birthdate = DateTime.Parse("2000/01/31"),
                         FirstName = "Patient",
@@ -361,9 +361,9 @@ namespace HealthGateway.Medication.Services.Test
 
             Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
             patientDelegateMock.Setup(s => s.GetPatient(hdid, "Bearer TestJWT")).Returns(
-                new RequestResult<Patient>()
+                new RequestResult<PatientModel>()
                 {
-                    ResourcePayload = new Patient()
+                    ResourcePayload = new PatientModel()
                     {
                         Birthdate = DateTime.Parse("2000/01/31"),
                         FirstName = "Patient",
@@ -459,9 +459,9 @@ namespace HealthGateway.Medication.Services.Test
 
             Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
             patientDelegateMock.Setup(s => s.GetPatient(hdid, "Bearer TestJWT")).Returns(
-                new RequestResult<Patient>()
+                new RequestResult<PatientModel>()
                 {
-                    ResourcePayload = new Patient()
+                    ResourcePayload = new PatientModel()
                     {
                         Birthdate = DateTime.Parse("2000/01/31"),
                         FirstName = "Patient",
@@ -555,9 +555,9 @@ namespace HealthGateway.Medication.Services.Test
 
             Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
             patientDelegateMock.Setup(s => s.GetPatient(hdid, "Bearer TestJWT")).Returns(
-                new RequestResult<Patient>()
+                new RequestResult<PatientModel>()
                 {
-                    ResourcePayload = new Patient()
+                    ResourcePayload = new PatientModel()
                     {
                         Birthdate = DateTime.Parse("2000/01/31"),
                         FirstName = "Patient",
@@ -631,7 +631,7 @@ namespace HealthGateway.Medication.Services.Test
 
             Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
             patientDelegateMock.Setup(s => s.GetPatient(hdid, "Bearer TestJWT")).Returns(
-                new RequestResult<Patient>()
+                new RequestResult<PatientModel>()
                 {
                     ResultStatus = Common.Constants.ResultType.Error,
                 });

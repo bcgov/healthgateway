@@ -31,90 +31,103 @@ namespace HealthGateway.Patient.Test
         [Fact]
         public async Task ShouldGetPatient()
         {
-            // Setup
-            string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0013";
-            string expectedFirstName = "John";
-            string expectedLastName = "Doe";
-            DateTime expectedBirthDate = DateTime.ParseExact("20001231", "yyyyMMdd", CultureInfo.InvariantCulture);
+            string hdid = "abc123";
 
-
-            HCIM_IN_GetDemographicsResponseIdentifiedPerson identifiedPerson =
-                new HCIM_IN_GetDemographicsResponseIdentifiedPerson()
+            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 1,
+                PageSize = 1,
+                ResourcePayload = new PatientModel()
                 {
-                    identifiedPerson = new HCIM_IN_GetDemographicsResponsePerson()
-                    {
-                        id = new II[]
-                        {
-                            new II()
-                            {
-                                extension = expectedPhn
-                            }
-                        },
-                        name = new PN[]
-                        {
-                            new PN()
-                            {
-                                Items = new ENXP[] {
-                                    new engiven()
-                                    {
-                                        Text = new string[]{ expectedFirstName }
-                                    },
-                                    new enfamily()
-                                    {
-                                        Text = new string[]{ expectedLastName }
-                                    }
-                                }
-                            }
-                        },
-                        birthTime = new TS()
-                        {
-                            value = "20001231"
-                        }
-                    }
-                };
+                    FirstName = "John",
+                    LastName = "Doe",
+                    HdId = hdid,
+                },
+            };
 
-            Mock<IClientRegistriesDelegate> clientRegistriesDelegateMock = new Mock<IClientRegistriesDelegate>();
-            clientRegistriesDelegateMock.Setup(s => s.GetDemographicsAsync(It.IsAny<HCIM_IN_GetDemographicsRequest>())).ReturnsAsync(
-                new HCIM_IN_GetDemographicsResponse1()
-                {
-                    HCIM_IN_GetDemographicsResponse = new HCIM_IN_GetDemographicsResponse()
-                    {
-                        controlActProcess = new HCIM_IN_GetDemographicsResponseQUQI_MT120001ControlActProcess()
-                        {
-                            queryAck = new HCIM_MT_QueryResponseQueryAck()
-                            {
-                                queryResponseCode = new CS()
-                                {
-                                    code = expectedResponseCode
-                                },
-                            },
-                            subject = new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2[]
-                              {
-                                  new HCIM_IN_GetDemographicsResponseQUQI_MT120001Subject2()
-                                  {
-                                      target = identifiedPerson
-                                  }
-                              }
-                        }
-                    }
-                }
-            );
+            Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
+            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
 
-            IPatientService service = new SoapPatientService(
-                new Mock<ILogger<SoapPatientService>>().Object,
-                clientRegistriesDelegateMock.Object
-            );
+            IPatientService service = new PatientService(
+                new Mock<ILogger<PatientService>>().Object,
+                patientDelegateMock.Object);
 
             // Act
-            RequestResult<Patient> actual = await service.GetPatient(hdid);
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(hdid).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.Equal(expectedPhn, actual.ResourcePayload.PersonalHealthNumber);
-            Assert.Equal(expectedFirstName, actual.ResourcePayload.FirstName);
-            Assert.Equal(expectedLastName, actual.ResourcePayload.LastName);
-            Assert.Equal(expectedBirthDate, actual.ResourcePayload.Birthdate);
+            Assert.Equal(Common.Constants.ResultType.Success, actual.ResultStatus);
+            Assert.Equal(hdid, actual.ResourcePayload.HdId);
+        }
+
+        [Fact]
+        public async Task ShoulSearchByValidIdentifier()
+        {
+            string phn = "abc123";
+
+            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 1,
+                PageSize = 1,
+                ResourcePayload = new PatientModel()
+                {
+                    FirstName = "John",
+                    LastName = "Doe",
+                    PersonalHealthNumber = phn,
+                },
+            };
+
+            Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
+            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+
+            IPatientService service = new PatientService(
+                new Mock<ILogger<PatientService>>().Object,
+                patientDelegateMock.Object);
+
+
+            ResourceIdentifier identifier = new ResourceIdentifier("phn", "abc123");
+            // Act
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.SearchPatientByIdentifier(identifier).ConfigureAwait(true)).Result;
+
+            // Verify
+            Assert.Equal(Common.Constants.ResultType.Success, actual.ResultStatus);
+            Assert.Equal(phn, actual.ResourcePayload.PersonalHealthNumber);
+        }
+
+        [Fact]
+        public async Task ShoulBeEmptyIfInvalidIdentifier()
+        {
+            string phn = "abc123";
+
+            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 1,
+                PageSize = 1,
+                ResourcePayload = new PatientModel()
+                {
+                    FirstName = "John",
+                    LastName = "Doe",
+                    PersonalHealthNumber = phn,
+                },
+            };
+
+            Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
+            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+
+            IPatientService service = new PatientService(
+                new Mock<ILogger<PatientService>>().Object,
+                patientDelegateMock.Object);
+
+
+            ResourceIdentifier identifier = new ResourceIdentifier("notValid", "abc123");
+            // Act
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.SearchPatientByIdentifier(identifier).ConfigureAwait(true)).Result;
+
+            // Verify
+            Assert.Equal(Common.Constants.ResultType.Error, actual.ResultStatus);
         }
     }
 }

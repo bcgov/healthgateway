@@ -16,4 +16,10 @@ describe('Validate Side bar menu', () => {
         cy.get('[data-testid=feedbackContainer]').should('be.visible')
     })
 
+    it('Side bar expands on login for desktop', () => {
+        cy.get('[data=testid=timelineLabel]').should('be.visible');
+        cy.viewport('iphone-6')  // Set viewport to 375px x 667px
+        cy.get('[data-testid="timelineLabel]').should('not.be.visible');
+    })
+
 })
