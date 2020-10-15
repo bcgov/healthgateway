@@ -60,5 +60,14 @@ namespace HealthGateway.Common.Models
 
             return new ResourceIdentifier(queryParams[0], queryParams[1]);
         }
+
+        /// <summary>
+        /// Returns the query parameter representation of the ResourceIdentifier
+        /// </summary>
+        /// <returns>The string representation of the ResourceIdentifier.</returns>
+        public string ToQueryParameter()
+        {
+            return $"identifier={this.Key}|{this.Value}";
+        }
     }
 }

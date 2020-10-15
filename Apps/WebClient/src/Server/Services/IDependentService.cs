@@ -31,6 +31,6 @@ namespace HealthGateway.WebClient.Services
         /// <param name="delegateHdId">The HdId of the Delegate (parent or guardian).</param>
         /// <param name="registerDependentRequest">The request to create a User Delegate model.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
-        RequestResult<DependentModel> Register(string delegateHdId, RegisterDependentRequest registerDependentRequest);
+        RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest registerDependentRequest);
     }
 }

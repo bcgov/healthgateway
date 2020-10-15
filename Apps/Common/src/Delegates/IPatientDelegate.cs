@@ -31,11 +31,19 @@ namespace HealthGateway.Common.Delegates
         RequestResult<string> GetPatientPHN(string hdid, string authorization);
 
         /// <summary>
-        /// Gets the patient phn.
+        /// Gets the patient from a given hdid.
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
         /// <param name="authorization">Authorization for the call.</param>
         /// <returns>The patient model.</returns>
         RequestResult<PatientModel> GetPatient(string hdid, string authorization);
+
+        /// <summary>
+        /// Gets the patient information using a ResourceIdentifier.
+        /// </summary>
+        /// <param name="identifier">The identifier.</param>
+        /// <param name="authorization">Authorization for the call.</param>
+        /// <returns>The patient model.</returns>
+        RequestResult<PatientModel> GetPatientByIdentifier(ResourceIdentifier identifier, string authorization);
     }
 }
