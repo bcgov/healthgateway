@@ -1,4 +1,4 @@
-#Functional Tests
+# Functional Tests
 
 Implements functional tests for Health Gateway using Cypress.io tooling.
 
@@ -21,7 +21,9 @@ Create a cypress.env.json and update with passwords or any other environment var
 ```bash
 {
     "bcsc.password": "THE PASSWORD",
-    "keycloak.password": "THE PASSWORD"
+    "keycloak.password": "THE PASSWORD",
+    "idir.password": "THE PASSWORD",
+    "keycloak.unregistered.password": "THE PASSWORD"
 }
 ```
 
@@ -30,8 +32,18 @@ Create a cypress.env.json and update with passwords or any other environment var
 While creating and debugging tests you will want to run Cypress interactively.  
 
 ```bash
+export CYPRESS_BASE_URL=http://localhost:5000 
 npm run launch
 ```
+
+or
+
+```bash
+export CYPRESS_BASE_URL=http://localhost:5000
+npx cypress open
+```
+
+If you want to verify the tests againt https://dev.healthgateway.gov.bc.ca then do not set the CYPRESS_BASE_URL environment variable.
 
 ### Running via CLI
 
@@ -48,6 +60,7 @@ npx cypress run --browser chrome
 ```
 
 Run and record the results to the Cypress dashboard
+
 ```bash
 npx cypress run --record --key KEY
 ```
@@ -64,4 +77,3 @@ npx browserstack-cypress run --username USERNAME --key KEY
 Environment variables
 BROWSERSTACK_USERNAME
 BROWSERSTACK_ACCESS_KEY
-
