@@ -159,13 +159,6 @@ namespace HealthGateway.WebClient.Test.Services
                 patientHdIdResult.ResultStatus = Common.Constants.ResultType.Success;
                 patientHdIdResult.ResourcePayload = mockHdId;
             }
-            else
-            {
-                // Test Scenario - Unhappy Path: input PHN not found
-                patientHdIdResult.ResultStatus = Common.Constants.ResultType.Error;
-                patientHdIdResult.ResultError = new RequestResultError() { ResultMessage = phnNotFound, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient) };
-                patientHdIdResult.ResourcePayload = string.Empty;
-            }
 
             RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
             // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
