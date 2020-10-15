@@ -31,5 +31,13 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hdId">The users HDID.</param>
         /// <returns>A List of dependents wrapped in a RequestResult.</returns>
         RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId);
+
+        /// <summary>
+        /// Add a dependents to the given hdId of the delegate (parent or guardiant).
+        /// </summary>
+        /// <param name="delegateHdId">The HdId of the Delegate (parent or guardian).</param>
+        /// <param name="registerDependentRequest">The request to create a User Delegate model.</param>
+        /// <returns>A dependent model wrapped in a RequestResult.</returns>
+        RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest registerDependentRequest);
     }
 }

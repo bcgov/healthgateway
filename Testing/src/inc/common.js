@@ -231,11 +231,6 @@ export function webClientRequests(user) {
             method: 'GET',
             url: common.ConfigurationUrl + "/" + user.hdid,
             params: params(user)
-        },
-        'profile': {
-            method: 'GET',
-            url: common.UserProfileUrl + "/" + user.hdid,
-            params: params(user)
         }
     };
     return webClientRequests;

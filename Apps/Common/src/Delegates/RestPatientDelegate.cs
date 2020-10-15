@@ -148,5 +148,73 @@ namespace HealthGateway.Common.Delegates
 
             return retVal;
         }
+
+        /// <inheritdoc/>
+        public RequestResult<PatientModel> GetPatientByIdentifier(ResourceIdentifier identifier, string authorization)
+        {
+            RequestResult<PatientModel> retVal = new RequestResult<PatientModel>()
+            {
+                ResultStatus = Constants.ResultType.Error,
+            };
+            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
+            this.logger.LogDebug($"GetPatientAsync: Getting patient information from an identifier {identifier}");
+            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("Authorization", authorization);
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            client.BaseAddress = new Uri(this.configuration.GetSection("PatientService").GetValue<string>("Url"));
+            try
+            {
+                using HttpResponseMessage response = Task.Run<HttpResponseMessage>(async () =>
+                    await client.GetAsync(new Uri($"v1/api/Patient?{identifier.ToQueryParameter()}", UriKind.Relative)).ConfigureAwait(true)).Result;
+                string payload = Task.Run<string>(async () =>
+                    await response.Content.ReadAsStringAsync().ConfigureAwait(true)).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    RequestResult<PatientModel> result = JsonSerializer.Deserialize<RequestResult<PatientModel>>(payload);
+                    PatientModel? patient = result.ResourcePayload;
+                    if (result.ResultStatus == ResultType.Success && patient != null)
+                    {
+                        if (!string.IsNullOrEmpty(patient.PersonalHealthNumber))
+                        {
+                            retVal.ResultStatus = Constants.ResultType.Success;
+                            retVal.ResourcePayload = patient;
+                            this.logger.LogDebug($"Finished getting patient from an identifier. {identifier}");
+                            this.logger.LogTrace($"{patient.PersonalHealthNumber.Substring(0, 3)}");
+                        }
+                        else
+                        {
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Patient not found", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
+                            this.logger.LogDebug($"Finished getting patient.");
+                        }
+                    }
+                    else
+                    {
+                        if (result.ResultError != null)
+                        {
+                            retVal.ResultError = result.ResultError;
+                        }
+                        else
+                        {
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Invalid response object returned from PatientService", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
+                            this.logger.LogError($"Could not deserialize patient response object");
+                        }
+                    }
+                }
+                else
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Response {response.StatusCode}/{response.ReasonPhrase} from Patient Service", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
+                    this.logger.LogError($"Error getting patient. {identifier}, {payload}");
+                }
+            }
+            catch (AggregateException e)
+            {
+                this.logger.LogError($"Error connecting to Patient service {e.ToString()}");
+                retVal.ResultError = new RequestResultError() { ResultMessage = "Unable to connect to Health Gateway Patient Service", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Patient) };
+            }
+
+            return retVal;
+        }
     }
 }
