@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Test.Services
 {
     using Xunit;
     using Moq;
-    using DeepEqual.Syntax;
     using HealthGateway.WebClient.Services;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -26,7 +25,6 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using System;
-    using System.Globalization;
     using HealthGateway.Common.Delegates;
     using Microsoft.AspNetCore.Http;
     using System.Net;
