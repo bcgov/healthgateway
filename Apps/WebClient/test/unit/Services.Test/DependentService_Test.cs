@@ -74,19 +74,6 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public void ValidateDependentWithPatientNotFound()
-        {
-            AddDependentRequest addDependentRequest = SetupMockInput();
-            IDependentService service = SetupMockDependentService(addDependentRequest);
-            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
-
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
-            Assert.Equal(patientNotFound, actualResult.ResultError.ResultMessage);
-        }
-
-        [Fact]
         public void ValidateDependentWithWrongFirstName()
         {
             AddDependentRequest addDependentRequest = SetupMockInput();
