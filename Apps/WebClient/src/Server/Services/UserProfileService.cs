@@ -168,10 +168,9 @@ namespace HealthGateway.WebClient.Services
                 // Email's recipient is not found
                 // Email invite must have a blank/null HDID or be the same as the one in the request
                 // Email address doesn't match the invite
-                if (emailInvite == null || (emailInvite != null &&
-                        (emailInvite.Email == null || emailInvite.Email.To == null ||
+                if (emailInvite == null || (emailInvite.Email == null || emailInvite.Email.To == null ||
                          emailInvite.Validated || !hdidIsValid ||
-                         !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.OrdinalIgnoreCase))))
+                         !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.OrdinalIgnoreCase)))
                 {
                     requestResult.ResultStatus = ResultType.Error;
                     requestResult.ResultError = new RequestResultError() { ResultMessage = "Invalid email invite", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
