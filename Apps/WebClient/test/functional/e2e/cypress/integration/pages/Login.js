@@ -4,10 +4,7 @@ describe("Login Page", () => {
     });
 
     it("Validate URL", () => {
-        cy.url().should(
-            "contains",
-            "https://dev.healthgateway.gov.bc.ca/login"
-        );
+        cy.url().should("include", "login");
     });
 
     it("Greeting", () => {

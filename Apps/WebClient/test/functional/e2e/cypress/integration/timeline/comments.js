@@ -2,16 +2,20 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Comments', () => {
     before(() => {
-        cy.server();
-        cy.fixture('AllDisabledConfig').then(config => {
-            config.webClient.modules.Comment = true;
-            config.webClient.modules.Medication = true;
-            cy.route('GET', '/v1/api/configuration/', config);            
-        });
-        cy.login(Cypress.env('keycloak.username'), 
-                Cypress.env('keycloak.password'), 
-                AuthMethod.KeyCloak);
-        cy.checkTimelineHasLoaded();
+        cy.readConfig().as("config").then(config => {
+            config.webClient.modules.CovidLabResults = false
+            config.webClient.modules.Comment = true
+            config.webClient.modules.Encounter = false
+            config.webClient.modules.Immunization = false
+            config.webClient.modules.Laboratory = false
+            config.webClient.modules.Medication = true
+            config.webClient.modules.MedicationHistory = false
+            config.webClient.modules.Note = false
+            cy.server();
+            cy.route('GET', '/v1/api/configuration/', config);
+            cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak);
+            cy.checkTimelineHasLoaded();
+        })
     });
 
     it('Validate Add', () => {
@@ -30,7 +34,7 @@ describe('Comments', () => {
             .first()
             .click();
         cy.get('[data-testid=commentMenuEditBtn]')
-            .first({ force: true })
+            .first()
             .click();
         cy.get('[data-testid=editCommentInput]')
             .type('edited comment');
@@ -51,8 +55,7 @@ describe('Comments', () => {
             .first()
             .click();
         cy.get('[data-testid=commentText]')
-            .first()
-            .should('not.have.text', 'edited comment');
+            .should('not.exist');
     })
 
 })
