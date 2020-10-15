@@ -2,9 +2,7 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Health Insights', () => {
     before(() => {
-        cy.request(`${Cypress.config("baseUrl")}/v1/api/configuration`)
-        .should((response) => { expect(response.status).to.eq(200) })
-        .its("body").then(config => {
+        cy.readConfig().as("config").then(config => {
             config.webClient.modules.CovidLabResults = false
             config.webClient.modules.Comment = false
             config.webClient.modules.Encounter = false
