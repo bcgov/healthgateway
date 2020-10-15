@@ -4,6 +4,8 @@ import LoadingComponent from "@/components/loading.vue";
 import { Component } from "vue-property-decorator";
 import { Validation } from "vuelidate/vuelidate";
 import { sameAs } from "vuelidate/lib/validators";
+import { DateWrapper } from "@/models/dateWrapper";
+import { DateTime, Duration } from "luxon";
 
 export enum GenderType {
     NotSelected = "",
@@ -23,7 +25,7 @@ export default class NewDependentComponent extends Vue {
     private isLoading = true;
     private firstName = "";
     private lastName = "";
-    private birthdate = "";
+    private birthdate = "2005-12-03";
     private PHN = "";
     private gender = GenderType.NotSelected;
     private accepted = false;
@@ -49,7 +51,7 @@ export default class NewDependentComponent extends Vue {
             },
             birthdate: {
                 required: true,
-                underage: false,
+                underage: this.isUnderage(),
             },
             gender: {
                 required: true,
@@ -63,6 +65,23 @@ export default class NewDependentComponent extends Vue {
 
     private isValid(param: Validation): boolean | undefined {
         return param.$dirty ? !param.$invalid : undefined;
+    }
+
+    private isUnderage() {
+        console.log(this.birthdate);
+        let dob: DateWrapper = new DateWrapper(
+            DateTime.fromISO(this.birthdate)
+        );
+        if (
+            dob.isAfter(
+                new DateWrapper().subtract(Duration.fromObject({ years: 19 }))
+            )
+        ) {
+            console.log("Underage!");
+            return true;
+        }
+        console.log("Not underage.");
+        return false;
     }
 
     public showModal(): void {
@@ -80,8 +99,13 @@ export default class NewDependentComponent extends Vue {
     private handleOk(bvModalEvt: Event) {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
+        this.$v.$touch();
+        if (this.$v.$invalid) {
+            console.log("One or more fields are invalid.");
+        }
+
         // Trigger submit handler
-        this.handleSubmit();
+        // this.handleSubmit();
     }
 
     private handleSubmit() {
@@ -126,12 +150,12 @@ export default class NewDependentComponent extends Vue {
                                 </b-col>
                                 <b-col>
                                     <label for="lastName">Last Name</label>
-                                    <b-input
+                                    <b-form-input
                                         id="lastName"
                                         data-testid="lastNameInput"
                                         placeholder="Doe"
                                         :state="isValid($v.name)"
-                                    ></b-input>
+                                    ></b-form-input>
                                     <b-form-invalid-feedback
                                         :state="isValid($v.name)"
                                     >
@@ -142,9 +166,9 @@ export default class NewDependentComponent extends Vue {
                                     <label for="birthdate">Date of Birth</label>
                                     <b-form-input
                                         id="birthdate"
-                                        v-mask="'####/##/##'"
+                                        v-mask="'####-##-##'"
                                         data-testid="birthdateInput"
-                                        placeholder="YYYY/MM/DD"
+                                        placeholder="YYYY-MM-DD"
                                         type="text"
                                         :state="isValid($v.birthdate)"
                                     ></b-form-input>
@@ -165,8 +189,9 @@ export default class NewDependentComponent extends Vue {
                                     <label for="phn">PHN</label>
                                     <b-form-input
                                         id="phn"
+                                        v-mask="'#### ### ###'"
                                         data-testid="phnInput"
-                                        placeholder="P347492"
+                                        placeholder="1234 567 890"
                                         :state="isValid($v.PHN)"
                                     ></b-form-input>
                                     <b-form-invalid-feedback
