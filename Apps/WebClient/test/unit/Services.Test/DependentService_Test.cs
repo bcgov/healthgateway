@@ -60,7 +60,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateDependentWithDbError()
         {
-            DBResult<Dependent> insertResult = new DBResult<Dependent>
+            DBResult<UserDelegate> insertResult = new DBResult<UserDelegate>
             {
                 Payload = null,
                 Status = DBStatusCode.Error
@@ -132,7 +132,7 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
-        private IDependentService SetupMockDependentService(AddDependentRequest addDependentRequest, DBResult<Dependent> insertResult = null)
+        private IDependentService SetupMockDependentService(AddDependentRequest addDependentRequest, DBResult<UserDelegate> insertResult = null)
         {
             string ipAddress = "127.0.0.1";
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
@@ -174,19 +174,19 @@ namespace HealthGateway.WebClient.Test.Services
             };
             mockPatientDelegate.Setup(s => s.GetPatientByIdentifier(It.IsAny<ResourceIdentifier>(), It.IsAny<string>())).Returns(patientResult);
 
-            Dependent expectedDbDependent = new Dependent() { ParentHdId = mockParentHdId, HdId = mockHdId };
+            UserDelegate expectedDbDependent = new UserDelegate() { DelegateId = mockParentHdId, OwnerId = mockHdId };
 
             if (insertResult == null)
             {
-                insertResult = new DBResult<Dependent>
+                insertResult = new DBResult<UserDelegate>
                 {
                     Status = DBStatusCode.Created
                 };
             }
             insertResult.Payload = expectedDbDependent;
 
-            Mock<IDependentDelegate> mockDependentDelegate = new Mock<IDependentDelegate>();
-            mockDependentDelegate.Setup(s => s.InsertDependent(It.Is<Dependent>(r => r.ParentHdId == expectedDbDependent.ParentHdId && r.HdId == expectedDbDependent.HdId))).Returns(insertResult);
+            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            mockDependentDelegate.Setup(s => s.Insert(It.Is<UserDelegate>(r => r.DelegateId == expectedDbDependent.DelegateId && r.OwnerId == expectedDbDependent.OwnerId), true)).Returns(insertResult);
 
             return new DependentService(
                 new Mock<ILogger<DependentService>>().Object,

@@ -34,7 +34,7 @@ namespace HealthGateway.WebClient.Services
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPatientDelegate patientDelegate;
-        private readonly IDependentDelegate dependentDelegate;
+        private readonly IUserDelegateDelegate userDelegateDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -42,17 +42,17 @@ namespace HealthGateway.WebClient.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="patientDelegate">The injected patient registry provider.</param>
-        /// <param name="dependentDelegate">The dedendent delegate to interact with the DB.</param>
+        /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
         public DependentService(
             ILogger<DependentService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientDelegate patientDelegate,
-            IDependentDelegate dependentDelegate)
+            IUserDelegateDelegate userDelegateDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.patientDelegate = patientDelegate;
-            this.dependentDelegate = dependentDelegate;
+            this.userDelegateDelegate = userDelegateDelegate;
         }
 
         /// <inheritdoc />
@@ -88,12 +88,12 @@ namespace HealthGateway.WebClient.Services
             }
 
             // (2) Inserts Dependent to database
-            var dependent = new Dependent() { HdId = patientResult.ResourcePayload.HdId, ParentHdId = delegateHdId };
+            var dependent = new UserDelegate() { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId };
 
-            DBResult<Dependent> dbDependent = this.dependentDelegate.InsertDependent(dependent);
+            DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Insert(dependent, true);
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()
             {
-                ResourcePayload = new DependentModel() { HdId = dbDependent.Payload.HdId, Name = patientResult.ResourcePayload.FirstName + " " + patientResult.ResourcePayload.LastName },
+                ResourcePayload = new DependentModel() { HdId = dbDependent.Payload.OwnerId, Name = patientResult.ResourcePayload.FirstName + " " + patientResult.ResourcePayload.LastName },
                 ResultStatus = dbDependent.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultError = dbDependent.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
