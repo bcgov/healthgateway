@@ -33,7 +33,7 @@ namespace HealthGateway.WebClient.Models
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the masked PHN of the dependent.
+        /// Gets or sets the Masked PHN of the dependent.
         /// </summary>
         [JsonPropertyName("maskedPHN")]
         public string MaskedPHN { get; set; } = string.Empty;

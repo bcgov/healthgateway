@@ -41,7 +41,6 @@ namespace HealthGateway.WebClient.Test.Controllers
         private const string hdid = "mockedHdId";
         private const string token = "Fake Access Token";
         private const string userId = "mockedUserId";
-        private const string dependentHdId = "mockedDependentHdId";
         private const string dependentName = "mockedDependentName";
 
         [Fact]
@@ -75,7 +74,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             {
                 dependentModels.Add(new DependentModel()
                 {
-                    HdId = $"{dependentModels}-{i}",
+                    MaskedPHN = $"{dependentModels}-{i}",
                     DateOfBirth = new DateTime(1980 + i, 1, 1),
                     Gender = "Female",
                     Name = $"{dependentName}-{i}"
