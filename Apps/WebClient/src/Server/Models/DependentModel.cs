@@ -33,10 +33,10 @@ namespace HealthGateway.WebClient.Models
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the hdId of the dependent.
+        /// Gets or sets the masked PHN of the dependent.
         /// </summary>
-        [JsonPropertyName("hdId")]
-        public string HdId { get; set; } = string.Empty;
+        [JsonPropertyName("maskedPHN")]
+        public string MaskedPHN { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Date Of Birth.
