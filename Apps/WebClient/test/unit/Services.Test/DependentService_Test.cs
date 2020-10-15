@@ -41,9 +41,7 @@ namespace HealthGateway.WebClient.Test.Services
         private DateTime mockDateOfBirth = new DateTime(2010, 10, 10);
         private const string mockHdId = "MockHdId";
         private const string mockJWTHeader = "MockJWTHeader";
-        private const string mismatchedError = "Information of the Dependent enterned don't match.";
-        private const string phnNotFound = "Communication Exception when trying to retrieve the HdId";
-        private const string patientNotFound = "Communication Exception when trying to retrieve the Dependent";
+        private const string mismatchedError = "The information you entered did not match. Please try again.";
 
         [Fact]
         public void ValidateDependent()

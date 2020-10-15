@@ -73,17 +73,12 @@ namespace HealthGateway.WebClient.Services
             }
 
             // Verify dependent's details entered by user
-            if (!patientResult.ResourcePayload.LastName.Equals(addDependentRequest.LastName, StringComparison.OrdinalIgnoreCase)
-                || !patientResult.ResourcePayload.FirstName.Equals(addDependentRequest.FirstName, StringComparison.OrdinalIgnoreCase)
-                || patientResult.ResourcePayload.Birthdate.Year != addDependentRequest.DateOfBirth.Year
-                || patientResult.ResourcePayload.Birthdate.Month != addDependentRequest.DateOfBirth.Month
-                || patientResult.ResourcePayload.Birthdate.Day != addDependentRequest.DateOfBirth.Day
-                || !patientResult.ResourcePayload.Gender.Equals(addDependentRequest.Gender, StringComparison.OrdinalIgnoreCase))
+            if (!addDependentRequest.Equals(patientResult.ResourcePayload))
             {
                 return new RequestResult<DependentModel>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Information of the Dependent enterned don't match.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
+                    ResultError = new RequestResultError() { ResultMessage = "The information you entered did not match. Please try again.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
                 };
             }
 
