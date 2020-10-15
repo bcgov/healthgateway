@@ -87,11 +87,6 @@ namespace HealthGateway.WebClient.Models
         /// <returns>The user note model.</returns>
         public static UserNote CreateFromDbModel(Database.Models.Note model, ICryptoDelegate cryptoDelegate, string key)
         {
-            if (model == null)
-            {
-                return null!;
-            }
-
             return new UserNote()
             {
                 Id = model.Id,
