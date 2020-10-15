@@ -35,7 +35,6 @@ namespace HealthGateway.WebClient.Services
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPatientDelegate patientDelegate;
         private readonly IDependentDelegate dependentDelegate;
-        private readonly IConfigurationService configurationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -44,27 +43,26 @@ namespace HealthGateway.WebClient.Services
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="patientDelegate">The injected patient registry provider.</param>
         /// <param name="dependentDelegate">The dedendent delegate to interact with the DB.</param>
-        /// <param name="configuration">The configuration service.</param>
         public DependentService(
             ILogger<DependentService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientDelegate patientDelegate,
-            IDependentDelegate dependentDelegate,
-            IConfigurationService configuration)
+            IDependentDelegate dependentDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
             this.patientDelegate = patientDelegate;
             this.dependentDelegate = dependentDelegate;
-            this.configurationService = configuration;
         }
 
         /// <inheritdoc />
-        public RequestResult<DependentModel> Register(string delegateHdId, RegisterDependentRequest registerDependentRequest)
+        public RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest)
         {
             this.logger.LogTrace($"Dependent hdid: {delegateHdId}");
             this.logger.LogDebug("Getting dependent details...");
-            RequestResult<PatientModel> patientResult = this.patientDelegate.SearchPatientByIdentifier(dependentModel.HdId, jwtString);
+            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
+            ResourceIdentifier identifier = new ResourceIdentifier("phn", addDependentRequest.PHN);
+            RequestResult<PatientModel> patientResult = this.patientDelegate.GetPatientByIdentifier(identifier, jwtString);
             if (patientResult.ResourcePayload == null)
             {
                 return new RequestResult<DependentModel>()
@@ -73,32 +71,29 @@ namespace HealthGateway.WebClient.Services
                     ResultError = new RequestResultError() { ResultMessage = "Communication Exception when trying to retrieve the Dependent", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient) },
                 };
             }
-            else
+
+            // Verify dependent's details entered by user
+            if (!patientResult.ResourcePayload.LastName.Equals(addDependentRequest.LastName, StringComparison.OrdinalIgnoreCase)
+                || !patientResult.ResourcePayload.FirstName.Equals(addDependentRequest.FirstName, StringComparison.OrdinalIgnoreCase)
+                || patientResult.ResourcePayload.Birthdate.Year != addDependentRequest.DateOfBirth.Year
+                || patientResult.ResourcePayload.Birthdate.Month != addDependentRequest.DateOfBirth.Month
+                || patientResult.ResourcePayload.Birthdate.Day != addDependentRequest.DateOfBirth.Day
+                || !patientResult.ResourcePayload.Gender.Equals(addDependentRequest.Gender, StringComparison.OrdinalIgnoreCase))
             {
-                // Verify dependent's details entered by user
-                if (!patientResult.ResourcePayload.LastName.Equals(dependentModel.LastName, StringComparison.OrdinalIgnoreCase)
-                    || !patientResult.ResourcePayload.FirstName.Equals(dependentModel.FirstName, StringComparison.OrdinalIgnoreCase)
-                    || patientResult.ResourcePayload.Birthdate.Year != dependentModel.DateOfBirth.Year
-                    || patientResult.ResourcePayload.Birthdate.Month != dependentModel.DateOfBirth.Month
-                    || patientResult.ResourcePayload.Birthdate.Day != dependentModel.DateOfBirth.Day
-                    // Todo: add the check for Gender.
-                    )
+                return new RequestResult<DependentModel>()
                 {
-                    return new RequestResult<DependentModel>()
-                    {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError() { ResultMessage = "Information of the Dependent enterned don't match.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
-                    };
-                }
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Information of the Dependent enterned don't match.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
+                };
             }
 
             // (2) Inserts Dependent to database
-            Dependent dependent = dependentModel.ToDbModel();
+            var dependent = new Dependent() { HdId = patientResult.ResourcePayload.HdId, ParentHdId = delegateHdId };
 
             DBResult<Dependent> dbDependent = this.dependentDelegate.InsertDependent(dependent);
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()
             {
-                ResourcePayload = DependentModel.CreateFromDbModel(dbDependent.Payload),
+                ResourcePayload = new DependentModel() { HdId = dbDependent.Payload.HdId, Name = patientResult.ResourcePayload.FirstName + " " + patientResult.ResourcePayload.LastName },
                 ResultStatus = dbDependent.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultError = dbDependent.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };

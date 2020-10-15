@@ -50,9 +50,9 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateDependent()
         {
-            DependentModel inputDependent = SetupMockInput();
-            IDependentService service = SetupMockDependentService(inputDependent);
-            RequestResult<DependentModel> actualResult = service.CreateDependent(inputDependent);
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            IDependentService service = SetupMockDependentService(addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
         }
@@ -65,35 +65,20 @@ namespace HealthGateway.WebClient.Test.Services
                 Payload = null,
                 Status = DBStatusCode.Error
             };
-            DependentModel inputDependent = SetupMockInput();
-            IDependentService service = SetupMockDependentService(inputDependent, insertResult);
-            RequestResult<DependentModel> actualResult = service.CreateDependent(inputDependent);
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            IDependentService service = SetupMockDependentService(addDependentRequest, insertResult);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             var serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database);
             Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
         }
 
         [Fact]
-        public void ValidateDependentWithWrongPHN()
-        {
-            DependentModel inputDependent = SetupMockInput();
-            inputDependent.PHN = "wrong";
-            IDependentService service = SetupMockDependentService(inputDependent);
-            RequestResult<DependentModel> actualResult = service.CreateDependent(inputDependent);
-
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
-            Assert.Equal(phnNotFound, actualResult.ResultError.ResultMessage);
-        }
-
-        [Fact]
         public void ValidateDependentWithPatientNotFound()
         {
-            DependentModel inputDependent = SetupMockInput();
-            inputDependent.HdId = "wrong";
-            IDependentService service = SetupMockDependentService(inputDependent);
-            RequestResult<DependentModel> actualResult = service.CreateDependent(inputDependent);
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            IDependentService service = SetupMockDependentService(addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             var serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient);
@@ -104,10 +89,10 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateDependentWithWrongFirstName()
         {
-            DependentModel inputDependent = SetupMockInput();
-            inputDependent.FirstName = "wrong";
-            IDependentService service = SetupMockDependentService(inputDependent);
-            RequestResult<DependentModel> actualResult = service.CreateDependent(inputDependent);
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            addDependentRequest.FirstName = "wrong";
+            IDependentService service = SetupMockDependentService(addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
@@ -118,10 +103,10 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateDependentWithWrongLastName()
         {
-            DependentModel inputDependent = SetupMockInput();
-            inputDependent.LastName = "wrong";
-            IDependentService service = SetupMockDependentService(inputDependent);
-            RequestResult<DependentModel> actualResult = service.CreateDependent(inputDependent);
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            addDependentRequest.LastName = "wrong";
+            IDependentService service = SetupMockDependentService(addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
@@ -133,10 +118,10 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateDependentWithWrongDateOfBirth()
         {
-            DependentModel inputDependent = SetupMockInput();
-            inputDependent.DateOfBirth = DateTime.Now;
-            IDependentService service = SetupMockDependentService(inputDependent);
-            RequestResult<DependentModel> actualResult = service.CreateDependent(inputDependent);
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            addDependentRequest.DateOfBirth = DateTime.Now;
+            IDependentService service = SetupMockDependentService(addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
@@ -148,10 +133,10 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateDependentWithWrongGender()
         {
-            DependentModel inputDependent = SetupMockInput();
-            inputDependent.Gender = "wrong";
-            IDependentService service = SetupMockDependentService(inputDependent);
-            RequestResult<DependentModel> actualResult = service.CreateDependent(inputDependent);
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            addDependentRequest.Gender = "wrong";
+            IDependentService service = SetupMockDependentService(addDependentRequest);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
@@ -160,7 +145,7 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
-        private IDependentService SetupMockDependentService(DependentModel inputDependent, DBResult<Dependent> insertResult = null)
+        private IDependentService SetupMockDependentService(AddDependentRequest addDependentRequest, DBResult<Dependent> insertResult = null)
         {
             string ipAddress = "127.0.0.1";
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
@@ -181,7 +166,7 @@ namespace HealthGateway.WebClient.Test.Services
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = mockHdId
             };
-            if (inputDependent.PHN.Equals(mockPHN))
+            if (addDependentRequest.PHN.Equals(mockPHN))
             {
                 // Test Scenario - Happy Path: HiId found for the mockPHN
                 patientHdIdResult.ResultStatus = Common.Constants.ResultType.Success;
@@ -194,33 +179,22 @@ namespace HealthGateway.WebClient.Test.Services
                 patientHdIdResult.ResultError = new RequestResultError() { ResultMessage = phnNotFound, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient) };
                 patientHdIdResult.ResourcePayload = string.Empty;
             }
-            mockPatientDelegate.Setup(s => s.GetPatientHdId(It.IsAny<string>(), It.IsAny<string>())).Returns(patientHdIdResult);
 
-            RequestResult<Patient> patientResult = new RequestResult<Patient>();
-            if (!string.IsNullOrEmpty(inputDependent.HdId) && !inputDependent.HdId.Equals(mockHdId))
+            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+            // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
+            patientResult.ResultStatus = Common.Constants.ResultType.Success;
+            patientResult.ResourcePayload = new PatientModel()
             {
-                // Test Scenario - Unhappy Path: Found HdId for the PHN, but Failed to retrieve Patient.
-                patientResult.ResultStatus = Common.Constants.ResultType.Error;
-                patientResult.ResourcePayload = null;
-            }
-            else
-            {
-                // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
-                patientResult.ResultStatus = Common.Constants.ResultType.Success;
-                patientResult.ResourcePayload = new Patient()
-                {
-                    HdId = mockHdId,
-                    PersonalHealthNumber = mockPHN,
-                    FirstName = mockFirstName,
-                    LastName = mockLastName,
-                    Birthdate = mockDateOfBirth,
-                    //Todo Gender = mockGender,
-                };
-            }
-            mockPatientDelegate.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<string>())).Returns(patientResult);
+                HdId = mockHdId,
+                PersonalHealthNumber = mockPHN,
+                FirstName = mockFirstName,
+                LastName = mockLastName,
+                Birthdate = mockDateOfBirth,
+                Gender = mockGender,
+            };
+            mockPatientDelegate.Setup(s => s.GetPatientByIdentifier(It.IsAny<ResourceIdentifier>(), It.IsAny<string>())).Returns(patientResult);
 
-            Dependent expectedDbDependent = inputDependent.ToDbModel();
-            expectedDbDependent.HdId = mockHdId;
+            Dependent expectedDbDependent = new Dependent() { ParentHdId = mockParentHdId, HdId = mockHdId };
 
             if (insertResult == null)
             {
@@ -238,16 +212,14 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ILogger<DependentService>>().Object,
                 mockHttpContextAccessor.Object,
                 mockPatientDelegate.Object,
-                mockDependentDelegate.Object,
-                null
+                mockDependentDelegate.Object
             );
         }
 
-        private DependentModel SetupMockInput()
+        private AddDependentRequest SetupMockInput()
         {
-            return new DependentModel
+            return new AddDependentRequest
             {
-                ParentHdId = mockParentHdId,
                 PHN = mockPHN,
                 FirstName = mockFirstName,
                 LastName = mockLastName,
