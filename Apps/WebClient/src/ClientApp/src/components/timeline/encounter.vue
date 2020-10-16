@@ -65,7 +65,7 @@ export default class EncounterTimelineEntryComponent extends Vue {
                     <b-col>
                         <div class="d-flex flex-row-reverse">
                             <b-btn
-                                data-testid="detailsButton"
+                                data-testid="encounterDetailsButton"
                                 variant="link"
                                 class="detailsButton"
                                 @click="toggleDetails()"
@@ -92,16 +92,16 @@ export default class EncounterTimelineEntryComponent extends Vue {
                         >
                             <div>
                                 <div class="detailSection">
-                                    <div data-testid="clinicLabel">
+                                    <div data-testid="encounterClinicLabel">
                                         <strong>Clinic/Practitioner:</strong>
                                     </div>
-                                    <div data-testid="clinicName">
+                                    <div data-testid="encounterClinicName">
                                         {{ entry.clinic.name }}
                                     </div>
-                                    <div data-testid="clinicAddress">
+                                    <div data-testid="encounterClinicAddress">
                                         {{ entry.clinic.address }}
                                     </div>
-                                    <div data-testid="clinicPhone">
+                                    <div data-testid="encounterClinicPhone">
                                         {{
                                             formatPhone(
                                                 entry.clinic.phoneNumber

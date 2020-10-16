@@ -18,30 +18,32 @@ import { b64decode } from 'k6/encoding';
 import { check, sleep } from 'k6';
 import { Rate } from 'k6/metrics';
 
-let passwd = __ENV.HG_PASSWORD;
+export let passwd = __ENV.HG_PASSWORD;
 
 export let authSuccess = new Rate('authentication_successful');
 export let errorRate = new Rate('errors');
 
 export let refreshTokenSuccess = new Rate('auth_refresh_successful');
 
-let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
+export let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
 
-let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
-let TokenEndpointUrl = "https://" + environment + ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
+export let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
+export let TokenEndpointUrl = "https://" + environment + ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
 export let MedicationServiceUrl = baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
 export let LaboratoryServiceUrl = baseUrl + "/api/laboratoryservice/v1/api/Laboratory";
 export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
 
 // console.log("Running tests against baseUrl := " + baseUrl);
 
-// Healthgateway WebClient app APIs:
+// Health Gateway WebClient app APIs:
 export let BetaRequestUrl = baseUrl + "/v1/api/BetaRequest";
 export let CommentUrl = baseUrl + "/v1/api/Comment";
 export let CommunicationUrl = baseUrl + "/v1/api/Communication";
 export let ConfigurationUrl = baseUrl + "/v1/api/Configuration";
 export let NoteUrl = baseUrl + "/v1/api/Note";
 export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
+
+export let ClientId = (__ENV.HG_CLIENT) ? __ENV.HG_CLIENT : 'k6'; // default to k6 client id
 
 export let users = [
     { username: "loadtest_01", password: passwd, hdid: null, token: null, refresh: null, expires: null },
@@ -81,7 +83,7 @@ export function getExpiresTime(seconds) {
 }
 
 export function authorizeUser(user) {
-    if (((__ITER == 0) && (user.hdid == null)) || (user.hdid == null)) {
+    if (((__ITER == 0) && (user.token == null)) || (user.hdid == null)) {
         let loginRes = authenticateUser(user);
         check(loginRes, {
             'Authenticated successfully': loginRes === 200
@@ -94,13 +96,13 @@ function authenticateUser(user) {
 
     let auth_form_data = {
         grant_type: "password",
-        client_id: "healthgateway",
+        client_id: ClientId,
         audience: "healthgateway",
         scope: "openid patient/Laboratory.read patient/MedicationStatement.read patient/Immunization.read",
         username: user.username,
         password: user.password,
     };
-    console.log("Authenticating username: " + auth_form_data.username);
+    console.log("Authenticating username: " + auth_form_data.username + ", KeyCloak client_id: " + ClientId);
     var res = http.post(TokenEndpointUrl, auth_form_data);
     if (res.status == 200) {
         var res_json = JSON.parse(res.body);
@@ -110,7 +112,6 @@ function authenticateUser(user) {
         user.expires = getExpiresTime(seconds);
         user.hdid = parseHdid(user.token);
         authSuccess.add(1);
-
     }
     else {
         console.log("Authentication Error for user= " + user.username + ". ResponseCode[" + res.status + "] " + res.error);
@@ -139,7 +140,7 @@ export function refreshUser(user) {
 
     let refresh_form_data = {
         grant_type: "refresh_token",
-        client_id: "healthgateway",
+        client_id: ClientId,
         refresh_token: user.refresh,
     };
 

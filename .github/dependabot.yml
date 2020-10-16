@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/AdminWebClient/src" # Location of package manifests
+    directory: "/Apps" # Location of package manifests
     schedule:
       interval: "daily"
     reviewers:
@@ -17,96 +17,6 @@ updates:
       
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/Apps/AdminWebClient/src/ClientApp" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"
-
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/Common/src" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"
-
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/DBMaintainer" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"
-
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/Encounter/src" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"
-
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/Immunization/src" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"
-
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/JobScheduler/src" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"
-      
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/Laboratory//src" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"      
-
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/Medication/src" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"
-      
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/Patient/src" # Location of package manifests
-    schedule:
-      interval: "daily"
-    reviewers:
-      - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "leobcgov"  
-
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/Apps/WebClient/src" # Location of package manifests
     schedule:
       interval: "daily"
     reviewers:

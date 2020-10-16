@@ -32,6 +32,7 @@ namespace HealthGateway.WebClient.Test.Controllers
     using System.Collections.Generic;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.Extensions.Logging;
 
     public class UserProfileControllerTest
     {
@@ -66,6 +67,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
 
             UserProfileController service = new UserProfileController(
+                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
@@ -109,6 +111,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
 
             UserProfileController service = new UserProfileController(
+                new Mock<ILogger<UserProfileController>>().Object,
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,

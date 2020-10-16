@@ -2,15 +2,22 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Notes', () => {
     before(() => {
-        cy.server();
-        cy.fixture('AllDisabledConfig').then(config => {
-            config.webClient.modules.Note = true;
-            cy.route('GET', '/v1/api/configuration/', config);            
-        });
-        cy.login(Cypress.env('keycloak.username'), 
-                Cypress.env('keycloak.password'), 
+        cy.readConfig().as("config").then(config => {
+            config.webClient.modules.CovidLabResults = false
+            config.webClient.modules.Comment = false
+            config.webClient.modules.Encounter = false
+            config.webClient.modules.Immunization = false
+            config.webClient.modules.Laboratory = false
+            config.webClient.modules.Medication = false
+            config.webClient.modules.MedicationHistory = false
+            config.webClient.modules.Note = true
+            cy.server();
+            cy.route('GET', '/v1/api/configuration/', config);
+            cy.login(Cypress.env('keycloak.username'),
+                Cypress.env('keycloak.password'),
                 AuthMethod.KeyCloak);
-        cy.checkTimelineHasLoaded();
+            cy.checkTimelineHasLoaded();
+        })
     })
 
     it('Validate Add', () => {
@@ -59,7 +66,6 @@ describe('Notes', () => {
             .first()
             .click();
         cy.get('[data-testid=dateGroup]')
-            .first()
-            .should('not.have.text', 'Jan 01, 2050');
+            .should('not.exist');
     })
 })
