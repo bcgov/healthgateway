@@ -20,7 +20,9 @@ export default class DependentsView extends Vue {
     }
 
     private fetchDependents() {
+        this.isLoading = true;
 
+        this.isLoading = false;
     }
 }
 </script>
