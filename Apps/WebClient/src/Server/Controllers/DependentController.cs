@@ -15,13 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System.Collections.Generic;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -52,6 +51,23 @@ namespace HealthGateway.WebClient.Controllers
         {
             this.dependentService = dependentService;
             this.httpContextAccessor = httpContextAccessor;
+        }
+
+        /// <summary>
+        /// Gets all dependents for the specified user.
+        /// </summary>
+        /// <returns>The list of dependent model wrapped in a request result.</returns>
+        /// <response code="200">Returns the list of dependents.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Authorize(Policy = UserPolicy.UserOnly)]
+        public IActionResult GetAll()
+        {
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            string userHdid = user.FindFirst("hdid").Value;
+            RequestResult<IEnumerable<DependentModel>> result = this.dependentService.GetDependents(userHdid);
+            return new JsonResult(result);
         }
 
         /// <summary>
