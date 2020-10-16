@@ -3,16 +3,15 @@ import Vue from "vue";
 import LoadingComponent from "@/components/loading.vue";
 import { Component } from "vue-property-decorator";
 import { Validation } from "vuelidate/vuelidate";
-import { sameAs } from "vuelidate/lib/validators";
+import { sameAs, required, minLength } from "vuelidate/lib/validators";
 import { DateWrapper } from "@/models/dateWrapper";
-import { DateTime, Duration } from "luxon";
+import { Duration } from "luxon";
 
 export enum GenderType {
     NotSelected = "",
-    Male = "male",
-    Female = "female",
-    Other = "other",
-    None = "none",
+    Male = "m",
+    Female = "f",
+    Other = "x",
 }
 
 @Component({
@@ -25,7 +24,7 @@ export default class NewDependentComponent extends Vue {
     private isLoading = true;
     private firstName = "";
     private lastName = "";
-    private birthdate = "2005-12-03";
+    private birthdate = "";
     private PHN = "";
     private gender = GenderType.NotSelected;
     private accepted = false;
@@ -41,23 +40,29 @@ export default class NewDependentComponent extends Vue {
         { value: GenderType.NotSelected, text: "Please select an option" },
         { value: GenderType.Male, text: "Male" },
         { value: GenderType.Female, text: "Female" },
-        { value: GenderType.Other, text: "Other" },
-        { value: GenderType.None, text: "Prefer not to say" },
+        { value: GenderType.Other, text: "X" },
     ];
+
     private validations() {
         return {
-            name: {
-                required: true,
+            firstName: {
+                required: required,
+            },
+            lastName: {
+                required: required,
             },
             birthdate: {
-                required: true,
-                underage: this.isUnderage(),
+                required: required,
+                minLength: minLength(10),
+                minValue: (value: string) =>
+                    new DateWrapper(value).toJSDate() > this.minBirthdate,
             },
             gender: {
-                required: true,
+                required: required,
             },
             PHN: {
-                required: true,
+                required: required,
+                minLength: minLength(12),
             },
             accepted: { isChecked: sameAs(() => true) },
         };
@@ -67,21 +72,11 @@ export default class NewDependentComponent extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private isUnderage() {
-        console.log(this.birthdate);
-        let dob: DateWrapper = new DateWrapper(
-            DateTime.fromISO(this.birthdate)
-        );
-        if (
-            dob.isAfter(
-                new DateWrapper().subtract(Duration.fromObject({ years: 19 }))
-            )
-        ) {
-            console.log("Underage!");
-            return true;
-        }
-        console.log("Not underage.");
-        return false;
+    private get minBirthdate(): Date {
+        let mindate = new DateWrapper()
+            .subtract(Duration.fromObject({ years: 19 }))
+            .toJSDate();
+        return mindate;
     }
 
     public showModal(): void {
@@ -89,11 +84,13 @@ export default class NewDependentComponent extends Vue {
     }
 
     public hideModal(): void {
+        this.$v.$reset();
         this.isVisible = false;
     }
 
     private mounted() {
         this.isLoading = false;
+        console.log("Date: ", new Date("1999-12-03"));
     }
 
     private handleOk(bvModalEvt: Event) {
@@ -102,10 +99,16 @@ export default class NewDependentComponent extends Vue {
         this.$v.$touch();
         if (this.$v.$invalid) {
             console.log("One or more fields are invalid.");
+        } else {
+            this.$v.$reset();
+            this.addDependent();
+            this.handleSubmit();
         }
 
-        // Trigger submit handler
-        // this.handleSubmit();
+    }
+
+    private addDependent() {
+        
     }
 
     private handleSubmit() {
@@ -122,7 +125,7 @@ export default class NewDependentComponent extends Vue {
         id="new-dependent-modal"
         v-model="isVisible"
         data-testid="newDependentModal"
-        title="New Dependent"
+        title="Dependent Registration"
         size="lg"
         header-bg-variant="primary"
         header-text-variant="light"
@@ -138,12 +141,14 @@ export default class NewDependentComponent extends Vue {
                                     <label for="firstName">First Name</label>
                                     <b-form-input
                                         id="firstName"
+                                        v-model="firstName"
                                         data-testid="firstNameInput"
                                         placeholder="John"
-                                        :state="isValid($v.name)"
+                                        :state="isValid($v.firstName)"
+                                        @blur.native="$v.firstName.$touch()"
                                     ></b-form-input>
                                     <b-form-invalid-feedback
-                                        :state="isValid($v.name)"
+                                        :state="isValid($v.firstName)"
                                     >
                                         First name is required
                                     </b-form-invalid-feedback>
@@ -152,12 +157,14 @@ export default class NewDependentComponent extends Vue {
                                     <label for="lastName">Last Name</label>
                                     <b-form-input
                                         id="lastName"
+                                        v-model="lastName"
                                         data-testid="lastNameInput"
                                         placeholder="Doe"
-                                        :state="isValid($v.name)"
+                                        :state="isValid($v.lastName)"
+                                        @blur.native="$v.lastName.$touch()"
                                     ></b-form-input>
                                     <b-form-invalid-feedback
-                                        :state="isValid($v.name)"
+                                        :state="isValid($v.lastName)"
                                     >
                                         Last name is required
                                     </b-form-invalid-feedback>
@@ -166,19 +173,17 @@ export default class NewDependentComponent extends Vue {
                                     <label for="birthdate">Date of Birth</label>
                                     <b-form-input
                                         id="birthdate"
+                                        v-model="birthdate"
                                         v-mask="'####-##-##'"
+                                        masked="false"
                                         data-testid="birthdateInput"
                                         placeholder="YYYY-MM-DD"
                                         type="text"
                                         :state="isValid($v.birthdate)"
+                                        @blur.native="$v.birthdate.$touch()"
                                     ></b-form-input>
                                     <b-form-invalid-feedback
                                         :state="isValid($v.birthdate)"
-                                    >
-                                        Valid birthdate is required
-                                    </b-form-invalid-feedback>
-                                    <b-form-invalid-feedback
-                                        :state="$v.birthdate.$underage"
                                     >
                                         Dependent must be under the age of 19
                                     </b-form-invalid-feedback>
@@ -189,10 +194,12 @@ export default class NewDependentComponent extends Vue {
                                     <label for="phn">PHN</label>
                                     <b-form-input
                                         id="phn"
+                                        v-model="PHN"
                                         v-mask="'#### ### ###'"
                                         data-testid="phnInput"
                                         placeholder="1234 567 890"
                                         :state="isValid($v.PHN)"
+                                        @blur.native="$v.PHN.$touch()"
                                     ></b-form-input>
                                     <b-form-invalid-feedback
                                         :state="isValid($v.PHN)"
@@ -202,16 +209,17 @@ export default class NewDependentComponent extends Vue {
                                 </b-col>
                                 <b-col>
                                     <b-row>
-                                        <label for="gender">Gender</label>
-                                    </b-row>
-                                    <b-row>
                                         <b-col>
+                                            <label for="gender">Gender</label>
                                             <b-form-select
                                                 id="gender"
                                                 v-model="gender"
                                                 data-testid="genderInput"
                                                 :options="genderOptions"
                                                 :state="isValid($v.gender)"
+                                                @blur.native="
+                                                    $v.gender.$touch()
+                                                "
                                             >
                                             </b-form-select>
                                             <b-form-invalid-feedback
@@ -228,6 +236,7 @@ export default class NewDependentComponent extends Vue {
                                 <b-col
                                     ><b-checkbox
                                         id="termsCheckbox"
+                                        v-model="accepted"
                                         data-testid="termsCheckbox"
                                         :state="isValid($v.accepted)"
                                         >{{ agreement }}</b-checkbox
