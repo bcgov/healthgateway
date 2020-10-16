@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Collections.Generic;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
@@ -93,6 +94,14 @@ namespace HealthGateway.WebClient.Services
                 ResultError = dbDependent.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId)
+        {
+
+
+            throw new NotImplementedException();
         }
     }
 }
