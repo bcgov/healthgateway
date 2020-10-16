@@ -15,11 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
-    using System;
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Represents a Dependent Model.
