@@ -4,6 +4,14 @@ import { Component } from "vue-property-decorator";
 import LoadingComponent from "@/components/loading.vue";
 import DependentCardComponent from "@/components/dependentCard.vue";
 import Dependent from "@/models/dependent";
+import { IDependentService, ILogger } from "@/services/interfaces";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ResultType } from "@/constants/resulttype";
+import ErrorTranslator from "@/utility/errorTranslator";
+import { Action, Getter } from "vuex-class";
+import User from "@/models/user";
+import BannerError from "@/models/bannerError";
 
 @Component({
     components: {
@@ -12,17 +20,53 @@ import Dependent from "@/models/dependent";
     },
 })
 export default class DependentsView extends Vue {
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
+    private logger!: ILogger;
+    private dependentService!: IDependentService;
     private isLoading = true;
     private dependents: Dependent[] = [];
 
     private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.dependentService = container.get<IDependentService>(
+            SERVICE_IDENTIFIER.DependentService
+        );
         this.fetchDependents();
     }
 
     private fetchDependents() {
         this.isLoading = true;
-
-        this.isLoading = false;
+        this.dependentService
+            .getAll(this.user.hdid)
+            .then((results) => {
+                if (results.resultStatus == ResultType.Success) {
+                    this.dependents = results.resourcePayload;
+                } else {
+                    this.logger.error(
+                        "Error returned from the fetch dependents call: " +
+                            JSON.stringify(results.resultError)
+                    );
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Fetch Dependents Error",
+                            results.resultError
+                        )
+                    );
+                }
+            })
+            .catch((err) => {
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Fetch Dependents Error", err)
+                );
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 }
 </script>

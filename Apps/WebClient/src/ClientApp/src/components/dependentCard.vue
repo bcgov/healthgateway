@@ -44,7 +44,7 @@ export default class DependentCardComponent extends Vue {
     private isDataLoaded = false;
 
     private get isExpired() {
-        let birthDate = new DateWrapper(this.dependent.birthDate);
+        let birthDate = new DateWrapper(this.dependent.dateOfBirth);
         let now = new DateWrapper();
         return now.diff(birthDate, "year").years > 19;
     }
@@ -98,7 +98,7 @@ export default class DependentCardComponent extends Vue {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
                 link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${this.dependent.firstName}${this.dependent.lastName}_${labResult.collectedDateTime}.pdf`;
+                link.download = `COVID_Result_${this.dependent.name}_${labResult.collectedDateTime}.pdf`;
                 link.click();
                 URL.revokeObjectURL(link.href);
             })
@@ -154,9 +154,7 @@ export default class DependentCardComponent extends Vue {
                                 <b-col class="col-12">PHN</b-col>
                                 <b-col class="col-12">
                                     <b-form-input
-                                        v-model="
-                                            dependent.maskedPersonalHealthNumber
-                                        "
+                                        v-model="dependent.maskedPHN"
                                         readonly
                                     ></b-form-input>
                                 </b-col>
@@ -167,7 +165,9 @@ export default class DependentCardComponent extends Vue {
                                 <b-col class="col-12">Date of Birth</b-col>
                                 <b-col class="col-12">
                                     <b-form-input
-                                        :value="formatDate(dependent.birthDate)"
+                                        :value="
+                                            formatDate(dependent.dateOfBirth)
+                                        "
                                         readonly
                                     ></b-form-input>
                                 </b-col>

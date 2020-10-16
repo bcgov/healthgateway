@@ -12,22 +12,17 @@ export default class Dependent {
     /**
      * The dependent masked phn.
      */
-    public maskedPersonalHealthNumber!: string;
+    public maskedPHN!: string;
 
     /**
-     * The dependent first name.
+     * The dependent name.
      */
-    public firstName!: string;
-
-    /**
-     * The dependent last name.
-     */
-    public lastName!: string;
+    public name!: string;
 
     /**
      * The dependent birth date.
      */
-    public birthDate!: StringISODate;
+    public dateOfBirth!: StringISODate;
 
     /**
      * The dependent gender.
