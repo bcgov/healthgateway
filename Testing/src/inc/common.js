@@ -18,17 +18,17 @@ import { b64decode } from 'k6/encoding';
 import { check, sleep } from 'k6';
 import { Rate } from 'k6/metrics';
 
-let passwd = __ENV.HG_PASSWORD;
+export let passwd = __ENV.HG_PASSWORD;
 
 export let authSuccess = new Rate('authentication_successful');
 export let errorRate = new Rate('errors');
 
 export let refreshTokenSuccess = new Rate('auth_refresh_successful');
 
-let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
+export let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
 
-let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
-let TokenEndpointUrl = "https://" + environment + ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
+export let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
+export let TokenEndpointUrl = "https://" + environment + ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
 export let MedicationServiceUrl = baseUrl + "/api/medicationservice/v1/api/MedicationStatement";
 export let LaboratoryServiceUrl = baseUrl + "/api/laboratoryservice/v1/api/Laboratory";
 export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
@@ -83,7 +83,7 @@ export function getExpiresTime(seconds) {
 }
 
 export function authorizeUser(user) {
-    if (((__ITER == 0) && (user.hdid == null)) || (user.hdid == null)) {
+    if (((__ITER == 0) && (user.token == null)) || (user.hdid == null)) {
         let loginRes = authenticateUser(user);
         check(loginRes, {
             'Authenticated successfully': loginRes === 200
@@ -112,7 +112,6 @@ function authenticateUser(user) {
         user.expires = getExpiresTime(seconds);
         user.hdid = parseHdid(user.token);
         authSuccess.add(1);
-
     }
     else {
         console.log("Authentication Error for user= " + user.username + ". ResponseCode[" + res.status + "] " + res.error);
