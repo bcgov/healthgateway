@@ -96,7 +96,8 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHttpClient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddHealthChecks();
+            services.AddHealthChecks()
+                    .AddDbContextCheck<GatewayDbContext>();
 
             services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
