@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
+    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
