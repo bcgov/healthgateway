@@ -35,13 +35,15 @@ export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
 
 // console.log("Running tests against baseUrl := " + baseUrl);
 
-// Healthgateway WebClient app APIs:
+// Health Gateway WebClient app APIs:
 export let BetaRequestUrl = baseUrl + "/v1/api/BetaRequest";
 export let CommentUrl = baseUrl + "/v1/api/Comment";
 export let CommunicationUrl = baseUrl + "/v1/api/Communication";
 export let ConfigurationUrl = baseUrl + "/v1/api/Configuration";
 export let NoteUrl = baseUrl + "/v1/api/Note";
 export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
+
+export let ClientId = (__ENV.HG_CLIENT) ? __ENV.HG_CLIENT : 'k6'; // default to k6 client id
 
 export let users = [
     { username: "loadtest_01", password: passwd, hdid: null, token: null, refresh: null, expires: null },
@@ -94,13 +96,13 @@ function authenticateUser(user) {
 
     let auth_form_data = {
         grant_type: "password",
-        client_id: "healthgateway",
+        client_id: ClientId,
         audience: "healthgateway",
         scope: "openid patient/Laboratory.read patient/MedicationStatement.read patient/Immunization.read",
         username: user.username,
         password: user.password,
     };
-    console.log("Authenticating username: " + auth_form_data.username);
+    console.log("Authenticating username: " + auth_form_data.username + ", KeyCloak client_id: " + ClientId);
     var res = http.post(TokenEndpointUrl, auth_form_data);
     if (res.status == 200) {
         var res_json = JSON.parse(res.body);
@@ -139,7 +141,7 @@ export function refreshUser(user) {
 
     let refresh_form_data = {
         grant_type: "refresh_token",
-        client_id: "healthgateway",
+        client_id: ClientId,
         refresh_token: user.refresh,
     };
 
@@ -230,6 +232,11 @@ export function webClientRequests(user) {
         'conf': {
             method: 'GET',
             url: common.ConfigurationUrl + "/" + user.hdid,
+            params: params(user)
+        },
+        'profile': {
+            method: 'GET',
+            url: common.UserProfileUrl + "/" + user.hdid,
             params: params(user)
         }
     };
