@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../support/constants");
+const { AuthMethod, localDevUri } = require("../../support/constants");
 
 describe("Filters", () => {
     before(() => {
@@ -52,13 +52,18 @@ describe("Filters", () => {
     });
 
     it("Filter Immunization", () => {
-        cy.get("[data-testid=immunization-filter]").click({ force: true });
-        cy.get("[data-testid=immunizationTitle]").should("be.visible");
-        cy.get("[data-testid=noteTitle]").should("not.be.visible");
-        cy.get("[data-testid=encounterTitle]").should("not.be.visible");
-        cy.get("[data-testid=laboratoryTitle]").should("not.be.visible");
-        cy.get("[data-testid=medicationTitle]").should("not.be.visible");
-        cy.get('[data-testid="filterDropdown"]').contains("Clear").click();
+        if (Cypress.config().baseUrl != localDevUri) {
+            cy.get("[data-testid=immunization-filter]").click({ force: true });
+            cy.get("[data-testid=immunizationTitle]").should("be.visible");
+            cy.get("[data-testid=noteTitle]").should("not.be.visible");
+            cy.get("[data-testid=encounterTitle]").should("not.be.visible");
+            cy.get("[data-testid=laboratoryTitle]").should("not.be.visible");
+            cy.get("[data-testid=medicationTitle]").should("not.be.visible");
+            cy.get('[data-testid="filterDropdown"]').contains("Clear").click();
+        }
+        else {
+            cy.log("Skipped Filter Immunization as running locally")
+        }
     });
 
     it("Filter Medication", () => {
@@ -126,14 +131,18 @@ describe("Filters", () => {
     });
 
     it("Validate disabled filters", () => {
-        cy.server();
-        cy.fixture("AllDisabledConfig").as("config");
-        cy.fixture("AllDisabledConfig")
-            .then((config) => {
-                config.webClient.modules["Medication"] = true;
-            })
-            .as("config");
-        cy.route("GET", "/v1/api/configuration/", "@config");
+        cy.readConfig().as("config").then(config => {
+            config.webClient.modules.CovidLabResults = false
+            config.webClient.modules.Comment = false
+            config.webClient.modules.Encounter = false
+            config.webClient.modules.Immunization = false
+            config.webClient.modules.Laboratory = false
+            config.webClient.modules.Medication = true
+            config.webClient.modules.MedicationHistory = false
+            config.webClient.modules.Note = false
+            cy.server();
+            cy.route('GET', '/v1/api/configuration/', config);
+        })
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),

@@ -4,3 +4,4 @@ export const AuthMethod = {
         BCSC: 'BCSC',
         KeyCloakUI: 'KeyCloakUI'
 }
+export const localDevUri = "http://localhost:5000"
