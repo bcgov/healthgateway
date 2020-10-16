@@ -20,7 +20,6 @@ import { Rate } from 'k6/metrics';
 import * as common from './inc/common.js';
 
 export let options = {
-  discardResponseBodies: true,
   stages: [
     { duration: '1m', target: 10 }, // below normal load
     { duration: '2m', target: 200 },
