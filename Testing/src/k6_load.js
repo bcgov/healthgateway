@@ -22,7 +22,6 @@ import * as common from './inc/common.js';
 let groupDuration = Trend('batch');
 
 export let options = {
-  discardResponseBodies: true,
   vu: 300,
   stages: [
     { duration: '3m', target: 70 }, // simulate ramp-up of traffic from 1 users over a few minutes.
