@@ -100,7 +100,8 @@ export default class VerifySMSComponent extends Vue {
         let now = new DateWrapper();
         this.allowRetry = smsTimeWhenEnabled.isBefore(now);
         if (!this.allowRetry) {
-            let millisecondsToExpire = smsTimeWhenEnabled.diff(now);
+            let millisecondsToExpire = smsTimeWhenEnabled.diff(now)
+                .milliseconds;
             setTimeout(() => {
                 this.allowRetry = true;
             }, millisecondsToExpire);
@@ -186,7 +187,7 @@ export default class VerifySMSComponent extends Vue {
             resendTime = this.smsResendDateTime;
         }
         resendTime = resendTime.add(this.config.timeouts.resendSMS * 60 * 1000);
-        return resendTime.diff(new DateWrapper());
+        return resendTime.diff(new DateWrapper()).milliseconds;
     }
 
     private onVerificationChange(): void {
