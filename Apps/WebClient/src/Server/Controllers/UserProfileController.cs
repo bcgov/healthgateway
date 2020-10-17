@@ -122,9 +122,15 @@ namespace HealthGateway.WebClient.Controllers
             };
 
             this.logger.LogTrace($"HTTP context user: {JsonConvert.SerializeObject(user, jsonSettings)}");
-            string rowAuthTime = user.FindFirst(c => c.Type == "auth_time").Value;
 
-            // Auth time at comes in the JWT as seconds after 1970-01-01
+            string rowAuthTime = user.FindFirstValue("auth_time"); // auth_time is not mandatory in a Bearer token.
+
+            if (rowAuthTime == null)
+            {
+                rowAuthTime = user.FindFirstValue("iat"); // get token  "issued at time", which *is* mandatory in JWT bearer token.
+            }
+
+            // Auth time comes in the JWT as seconds after 1970-01-01
             DateTime jwtAuthTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
 

@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Delegates
         /// Gets the list of User Delegate records for a specific delegate Id from the database.
         /// </summary>
         /// <param name="delegateId">The user delegate to create.</param>
-        /// <param name="page">The data page to fetch.</param>
+        /// <param name="page">The page to start at.</param>
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
         /// <returns>A list of UserDelegates wrapped in a DBResult</returns>
         DBResult<IEnumerable<UserDelegate>> Get(string delegateId, int page, int pageSize);

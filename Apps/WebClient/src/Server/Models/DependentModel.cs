@@ -16,10 +16,7 @@
 namespace HealthGateway.WebClient.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Represents a Dependent Model.
@@ -33,9 +30,19 @@ namespace HealthGateway.WebClient.Models
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the hdId of the dependent.
+        /// Gets or sets the Masked PHN of the dependent.
         /// </summary>
-        [JsonPropertyName("hdId")]
-        public string HdId { get; set; } = string.Empty;
+        [JsonPropertyName("maskedPHN")]
+        public string MaskedPHN { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Date Of Birth.
+        /// </summary>
+        public DateTime DateOfBirth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the gender.
+        /// </summary>
+        public string Gender { get; set; } = string.Empty;
     }
 }
