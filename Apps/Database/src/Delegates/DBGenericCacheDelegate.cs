@@ -98,12 +98,12 @@ namespace HealthGateway.Database.Delegates
         public T? GetCacheObjectByJSONProperty<T>(string propertyName, string propertyValue, string domain)
             where T : class
         {
-            DBResult<GenericCache> cacheObject = this.GetCacheObjectbyJSONProperty(propertyName, propertyValue, domain);
+            DBResult<GenericCache> cacheObject = this.GetCacheObjectByJSONProperty(propertyName, propertyValue, domain);
             return this.DeserializeCacheObject<T>(cacheObject);
         }
 
         /// <inheritdoc />
-        public DBResult<GenericCache> GetCacheObjectbyJSONProperty(string propertyName, string propertyValue, string domain)
+        public DBResult<GenericCache> GetCacheObjectByJSONProperty(string propertyName, string propertyValue, string domain)
         {
             DBResult<GenericCache> result = new DBResult<GenericCache>()
             {
@@ -235,6 +235,7 @@ namespace HealthGateway.Database.Delegates
                     }
                 }
             }
+
             return retVal;
         }
 #pragma warning restore CA1303 // Do not pass literals as localized parameters

@@ -1696,7 +1696,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HdId");
+                    b.HasIndex("HdId", "Domain");
 
                     b.ToTable("GenericCache");
                 });

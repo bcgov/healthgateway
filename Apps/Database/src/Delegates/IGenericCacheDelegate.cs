@@ -70,7 +70,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="propertyValue">The JSON property value to search for.</param>
         /// <param name="domain">The domain area for the cache object.</param>
         /// <returns>The GenericCache object wrapped in a DBResult.</returns>
-        DBResult<GenericCache> GetCacheObjectbyJSONProperty(string propertyName, string propertyValue, string domain);
+        DBResult<GenericCache> GetCacheObjectByJSONProperty(string propertyName, string propertyValue, string domain);
 
         /// <summary>
         /// Add the given GenericCache object.
