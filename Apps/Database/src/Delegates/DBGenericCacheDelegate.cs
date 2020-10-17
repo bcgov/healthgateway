@@ -24,6 +24,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Npgsql.EntityFrameworkCore;
 
     /// <summary>
     /// Entity framework based implementation of the GenericCache delegate.
@@ -68,34 +69,12 @@ namespace HealthGateway.Database.Delegates
         public T? GetCacheObject<T>(string hdid, string domain)
             where T : class
         {
-            T? retVal = null;
             DBResult<GenericCache> cacheObject = this.GetCacheObject(hdid, domain);
-            if (cacheObject.Status == DBStatusCode.Read)
-            {
-                if (cacheObject.Payload != null &&
-                    cacheObject.Payload.JSON != null &&
-                    cacheObject.Payload.JSONType != null)
-                {
-                    Type? t = Type.GetType(cacheObject.Payload.JSONType);
-                    if (t != null)
-                    {
-                        try
-                        {
-                            retVal = (T)JsonSerializer.Deserialize(cacheObject.Payload.JSON.RootElement.GetRawText(), t);
-                        }
-                        catch (JsonException e)
-                        {
-                            this.logger.LogError($"Error parsing GenericCache object {cacheObject.Payload.Id} Error = {e.Message}");
-                        }
-                    }
-                }
-            }
-
-            return retVal;
+            return this.DeserializeCacheObject<T>(cacheObject);
         }
 
         /// <inheritdoc />
-        public DBResult<GenericCache> GetCacheObject(string hdid, string typeName)
+        public DBResult<GenericCache> GetCacheObject(string hdid, string domain)
         {
             DBResult<GenericCache> result = new DBResult<GenericCache>()
             {
@@ -103,7 +82,37 @@ namespace HealthGateway.Database.Delegates
             };
             result.Payload = this.dbContext.GenericCache
                                     .Where(p => p.HdId == hdid &&
-                                                p.Domain == typeName &&
+                                                p.Domain == domain &&
+                                                p.ExpiryDateTime >= DateTime.UtcNow)
+                                    .OrderByDescending(o => o.CreatedDateTime)
+                                    .FirstOrDefault();
+            if (result.Payload != null)
+            {
+                result.Status = DBStatusCode.Read;
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public T? GetCacheObjectByJSONProperty<T>(string propertyName, string propertyValue, string domain)
+            where T : class
+        {
+            DBResult<GenericCache> cacheObject = this.GetCacheObjectbyJSONProperty(propertyName, propertyValue, domain);
+            return this.DeserializeCacheObject<T>(cacheObject);
+        }
+
+        /// <inheritdoc />
+        public DBResult<GenericCache> GetCacheObjectbyJSONProperty(string propertyName, string propertyValue, string domain)
+        {
+            DBResult<GenericCache> result = new DBResult<GenericCache>()
+            {
+                Status = DBStatusCode.NotFound,
+            };
+
+            result.Payload = this.dbContext.GenericCache
+                                    .Where(p => p.JSON!.RootElement.GetProperty(propertyName).GetString() == propertyValue &&
+                                                p.Domain == domain &&
                                                 p.ExpiryDateTime >= DateTime.UtcNow)
                                     .OrderByDescending(o => o.CreatedDateTime)
                                     .FirstOrDefault();
@@ -200,6 +209,33 @@ namespace HealthGateway.Database.Delegates
 
             this.logger.LogDebug($"Finished deleting Generic cache object in DB with result {result.Status}");
             return result;
+        }
+
+        private T? DeserializeCacheObject<T>(DBResult<GenericCache> cacheObject)
+            where T : class
+        {
+            T? retVal = null;
+            if (cacheObject.Status == DBStatusCode.Read)
+            {
+                if (cacheObject.Payload != null &&
+                    cacheObject.Payload.JSON != null &&
+                    cacheObject.Payload.JSONType != null)
+                {
+                    Type? t = Type.GetType(cacheObject.Payload.JSONType);
+                    if (t != null)
+                    {
+                        try
+                        {
+                            retVal = (T)JsonSerializer.Deserialize(cacheObject.Payload.JSON.RootElement.GetRawText(), t);
+                        }
+                        catch (JsonException e)
+                        {
+                            this.logger.LogError($"Error parsing GenericCache object {cacheObject.Payload.Id} Error = {e.Message}");
+                        }
+                    }
+                }
+            }
+            return retVal;
         }
 #pragma warning restore CA1303 // Do not pass literals as localized parameters
     }
