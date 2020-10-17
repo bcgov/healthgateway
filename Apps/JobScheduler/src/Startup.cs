@@ -17,7 +17,6 @@
 namespace HealthGateway.JobScheduler
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -164,6 +163,7 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<NotifyUpdatedLegalAgreementsJob>(this.configuration, "NotifyUpdatedLegalAgreements", j => j.Process());
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
             SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
+            SchedulerHelper.ScheduleJob<CleanCacheJob>(this.configuration, "CleanCache", j => j.Process());
 
             // SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
             app.UseStaticFiles(new StaticFileOptions
