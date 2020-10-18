@@ -44,7 +44,7 @@ export class RestDependentService implements IDependentService {
                 )
                 .then((result) => {
                     this.logger.verbose(
-                        `createComment result: ${JSON.stringify(result)}`
+                        `addDependent result: ${JSON.stringify(result)}`
                     );
                     return this.handleResult(result, resolve, reject);
                 })
@@ -82,12 +82,7 @@ export class RestDependentService implements IDependentService {
                 })
                 .catch((err) => {
                     this.logger.error(`getNotes error: ${err}`);
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceName.HealthGatewayUser
-                        )
-                    );
+                    return reject(err);
                 });
         });
     }

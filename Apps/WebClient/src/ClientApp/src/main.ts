@@ -32,6 +32,7 @@ import {
     IUserProfileService,
     IUserRatingService,
     IEncounterService,
+    IDependentService,
 } from "@/services/interfaces";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -75,6 +76,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const encounterService: IEncounterService = container.get(
         SERVICE_IDENTIFIER.EncounterService
     );
+    const dependentService: IDependentService = container.get(
+        SERVICE_IDENTIFIER.DependentService
+    );
     const userProfileService: IUserProfileService = container.get(
         SERVICE_IDENTIFIER.UserProfileService
     );
@@ -112,6 +116,8 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     communicationService.initialize(httpDelegate);
     userCommentService.initialize(config, httpDelegate);
     userRatingService.initialize(httpDelegate);
+    dependentService.initialize(config, httpDelegate);
+
     Vue.use(IdleVue, {
         eventEmitter: new Vue(),
         idleTime: config.webClient.timeouts.idle,
