@@ -21,8 +21,8 @@ import * as common from './inc/common.js';
 export let options = {
   stages: [
     { duration: '1m', target: 10 }, // below normal load
-    { duration: '2m', target: 200 },
-    { duration: '3h56m', target: 200 }, // stay at high users for hours 'soaking' the system
+    { duration: '2m', target: 250 },
+    { duration: '3h56m', target: 250 }, // stay at high users for hours 'soaking' the system
     { duration: '2m', target: 0 }, // drop back down 
   ],
 };
