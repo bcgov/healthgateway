@@ -6,12 +6,19 @@ import { Validation } from "vuelidate/vuelidate";
 import { sameAs, required, minLength } from "vuelidate/lib/validators";
 import { DateWrapper } from "@/models/dateWrapper";
 import { Duration } from "luxon";
+import { IDependentService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import ErrorTranslator from "@/utility/errorTranslator";
+import BannerError from "@/models/bannerError";
+import { AddDependentRequest } from "@/models/addDependentRequest";
+import { Action } from "vuex-class";
 
 export enum GenderType {
     NotSelected = "",
-    Male = "m",
-    Female = "f",
-    Other = "x",
+    Male = "Male",
+    Female = "Female",
+    Other = "NotSpecified",
 }
 
 @Component({
@@ -20,6 +27,10 @@ export enum GenderType {
     },
 })
 export default class NewDependentComponent extends Vue {
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
+    private dependentService!: IDependentService;
     private isVisible = false;
     private isLoading = true;
     private firstName = "";
@@ -89,8 +100,10 @@ export default class NewDependentComponent extends Vue {
     }
 
     private mounted() {
+        this.dependentService = container.get<IDependentService>(
+            SERVICE_IDENTIFIER.DependentService
+        );
         this.isLoading = false;
-        console.log("Date: ", new Date("1999-12-03"));
     }
 
     private handleOk(bvModalEvt: Event) {
@@ -102,13 +115,44 @@ export default class NewDependentComponent extends Vue {
         } else {
             this.$v.$reset();
             this.addDependent();
-            this.handleSubmit();
         }
-
     }
 
     private addDependent() {
-        
+        console.log(
+            this.firstName,
+            this.lastName,
+            new DateWrapper(this.birthdate).toISODate(),
+            this.PHN.trim(),
+            this.gender
+        );
+        this.dependentService
+            .addDependent({
+                firstName: this.firstName,
+                lastName: this.lastName,
+                dateOfBirth: new DateWrapper(this.birthdate).toISODate(),
+                PHN: this.PHN.trim(),
+                gender: this.gender,
+                version: 0,
+            })
+            .then((result) => {
+                this.onDependentAdded(result);
+            })
+            .catch((err) => {
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Error adding dependent. Please review fields and try again.",
+                        err
+                    )
+                );
+            })
+            .finally(() => {
+                this.handleSubmit();
+            });
+    }
+
+    private onDependentAdded(res: AddDependentRequest) {
+        console.log(res);
     }
 
     private handleSubmit() {
