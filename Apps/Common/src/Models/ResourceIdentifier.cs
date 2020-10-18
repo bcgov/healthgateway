@@ -62,7 +62,7 @@ namespace HealthGateway.Common.Models
         }
 
         /// <summary>
-        /// Returns the query parameter representation of the ResourceIdentifier
+        /// Returns the query parameter representation of the ResourceIdentifier.
         /// </summary>
         /// <returns>The string representation of the ResourceIdentifier.</returns>
         public string ToQueryParameter()

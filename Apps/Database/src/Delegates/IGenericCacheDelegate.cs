@@ -24,7 +24,8 @@ namespace HealthGateway.Database.Delegates
     public interface IGenericCacheDelegate
     {
         /// <summary>
-        /// Convenience method to insert a CacheObject into the DB.
+        /// Performs a best efforts Upsert for the given Cache object.
+        /// If the item is found then the JSON, Type and Expiry will be upated based on the new object.
         /// </summary>
         /// <param name="cacheObject">The object to cache.</param>
         /// <param name="hdid">The HDID of the user this will apply to.</param>
@@ -73,7 +74,8 @@ namespace HealthGateway.Database.Delegates
         DBResult<GenericCache> GetCacheObjectByJSONProperty(string propertyName, string propertyValue, string domain);
 
         /// <summary>
-        /// Add the given GenericCache object.
+        /// Performs a best efforts Upsert for the given Cache object.
+        /// If the item is found then the JSON, Type and Expiry will be upated based on the new object.
         /// </summary>
         /// <param name="cacheObject">The GenericCache object to be added to the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>

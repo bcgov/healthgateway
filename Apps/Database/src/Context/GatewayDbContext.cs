@@ -267,7 +267,8 @@ namespace HealthGateway.Database.Context
 
             // Create HDID index on GenericCache
             modelBuilder!.Entity<GenericCache>()
-                    .HasIndex(i => new { i.HdId, i.Domain });
+                    .HasIndex(i => new { i.HdId, i.Domain })
+                    .IsUnique();
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

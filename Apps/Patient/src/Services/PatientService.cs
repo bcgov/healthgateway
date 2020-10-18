@@ -54,7 +54,6 @@ namespace HealthGateway.Patient.Services
         private readonly IGenericCacheDelegate cacheDelegate;
         private readonly int cacheTTL;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientService"/> class.
         /// </summary>
@@ -171,6 +170,5 @@ namespace HealthGateway.Patient.Services
                 this.logger.LogDebug($"Patient caching is disabled will not cache patient: {hdid}");
             }
         }
-
     }
 }

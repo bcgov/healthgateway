@@ -59,7 +59,6 @@ namespace HealthGateway.Database.Delegates
                 Domain = domain,
                 JSON = jsonDoc,
                 JSONType = cacheObject.GetType().AssemblyQualifiedName,
-                CreatedBy = hdid,
                 ExpiryDateTime = DateTime.UtcNow.AddMinutes(expires),
             };
             return this.AddCacheObject(genericCache, commit);
@@ -114,7 +113,7 @@ namespace HealthGateway.Database.Delegates
                                     .Where(p => p.JSON!.RootElement.GetProperty(propertyName).GetString() == propertyValue &&
                                                 p.Domain == domain &&
                                                 p.ExpiryDateTime >= DateTime.UtcNow)
-                                    .OrderByDescending(o => o.CreatedDateTime)
+                                    .OrderByDescending(o => o.ExpiryDateTime)
                                     .FirstOrDefault();
             if (result.Payload != null)
             {
@@ -133,7 +132,22 @@ namespace HealthGateway.Database.Delegates
                 Payload = cacheObject,
                 Status = DBStatusCode.Deferred,
             };
-            this.dbContext.GenericCache.Add(cacheObject);
+            GenericCache dbCacheItem = this.dbContext.GenericCache
+                                            .Where(p => p.HdId == cacheObject.HdId && p.Domain == cacheObject.Domain)
+                                            .OrderByDescending(o => o.ExpiryDateTime)
+                                            .FirstOrDefault();
+            if (dbCacheItem == null)
+            {
+                this.dbContext.GenericCache.Add(cacheObject);
+            }
+            else
+            {
+                dbCacheItem.ExpiryDateTime = cacheObject.ExpiryDateTime;
+                dbCacheItem.JSON = cacheObject.JSON;
+                dbCacheItem.JSONType = cacheObject.JSONType;
+                this.dbContext.GenericCache.Update(cacheObject);
+            }
+
             if (commit)
             {
                 try
@@ -143,7 +157,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Unable to save note to DB {e.ToString()}");
+                    this.logger.LogInformation($"Unable to save cache item to DB {(e.InnerException != null ? e.InnerException.Message : e.Message)}");
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
