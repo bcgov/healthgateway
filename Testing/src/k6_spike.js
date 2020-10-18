@@ -15,8 +15,7 @@
 //-------------------------------------------------------------------------
 
 import http from 'k6/http';
-import { check, sleep, group } from 'k6';
-import { Rate } from 'k6/metrics';
+import { sleep } from 'k6';
 import * as common from './inc/common.js';
 
 export let options = {
@@ -34,7 +33,6 @@ export let options = {
 export default function () {
 
   let user = common.users[__VU % common.users.length];
-
 
   common.authorizeUser(user); // only refreshes if needed.
 

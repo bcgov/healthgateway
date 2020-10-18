@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 import http from 'k6/http';
 import { b64decode } from 'k6/encoding';
-import { check, sleep } from 'k6';
-import { Rate } from 'k6/metrics';
+import { check, group, sleep } from 'k6';
+import { Rate, Trend } from 'k6/metrics';
 
 export let passwd = __ENV.HG_PASSWORD;
 
@@ -26,6 +26,31 @@ export let errorRate = new Rate('errors');
 export let refreshTokenSuccess = new Rate('auth_refresh_successful');
 
 export let environment = (__ENV.HG_ENV) ? __ENV.HG_ENV : 'test'; // default to test environment
+
+export let smokeOptions = {
+    vus: 5,
+    iterations: 5,
+  }
+
+export let loadOptions = {
+    vu: 300,
+    stages: [
+        { duration: '3m', target: 70 }, // simulate ramp-up of traffic from 1 users over a few minutes.
+        { duration: '5m', target: 70 }, // stay at number of users for several minutes
+        { duration: '3m', target: 300 }, // ramp-up to users peak for some minutes (peak hour starts)
+        { duration: '2m', target: 300 }, // stay at users for short amount of time (peak hour)
+        { duration: '3m', target: 70 }, // ramp-down to lower users over 3 minutes (peak hour ends)
+        { duration: '5m', target: 70 }, // continue for additional time
+        { duration: '3m', target: 0 }, // ramp-down to 0 users
+    ],
+    thresholds: {
+        'errors': ['rate < 0.05'], // threshold on a custom metric
+        'http_req_duration': ['p(90)< 9000'], // 90% of requests must complete this threshold 
+        'http_req_duration': ['avg < 5000'], // average of requests must complete within this time
+    },
+}
+export let groupDuration = Trend('batch');
+
 
 export let baseUrl = "https://" + environment + ".healthgateway.gov.bc.ca"; // with this, we can be confident that production can't be hit.
 export let TokenEndpointUrl = "https://" + environment + ".oidc.gov.bc.ca/auth/realms/ff09qn3f/protocol/openid-connect/token";
@@ -44,6 +69,7 @@ export let NoteUrl = baseUrl + "/v1/api/Note";
 export let UserProfileUrl = baseUrl + "/v1/api/UserProfile";
 
 export let ClientId = (__ENV.HG_CLIENT) ? __ENV.HG_CLIENT : 'k6'; // default to k6 client id
+export let OptionsType = (__ENV.HG_TEST) ? __ENV.HG_TEST : 'load'; // default to smoke test
 
 export let users = [
     { username: "loadtest_01", password: passwd, hdid: null, token: null, refresh: null, expires: null },
@@ -76,6 +102,24 @@ function parseHdid(accessToken) {
     var json = parseJwt(accessToken);
     var hdid = json["hdid"];
     return hdid;
+}
+
+export function groupWithDurationMetric(name, group_function) {
+    let start = new Date();
+    group(name, group_function);
+    let end = new Date();
+    groupDuration.add(end - start, { groupName: name });
+}
+
+export function OptionConfig() {
+
+    if (OptionsType == 'load') {
+        return loadOptions;
+    }
+    if (OptionsType === 'smoke') {
+        return smokeOptions;
+    }
+    return loadOptions;
 }
 
 export function getExpiresTime(seconds) {
@@ -123,7 +167,7 @@ function authenticateUser(user) {
     return res.status;
 }
 
- function refreshTokenIfNeeded(user) {
+function refreshTokenIfNeeded(user) {
 
     if ((user.refresh != null) && (user.expires < (Date.now() + 45000))) // refresh 45 seconds before expiry
     {
@@ -174,6 +218,10 @@ export function getRandom(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+export function getHdid(user) {
+    return user.hdid;
+}
+
 export function params(user) {
     var params = {
         headers: {
@@ -185,13 +233,13 @@ export function params(user) {
 }
 
 export function timelineRequests(user) {
-    let timelineRequest = {
-        'comment': {
-            method: 'GET',
+    let timelineRequests = {
+        'comments': {
+            method: 'GET',  
             url: common.CommentUrl + "/" + user.hdid,
             params: params(user)
         },
-        'note': {
+        'notes': {
             method: 'GET',
             url: common.NoteUrl + "/" + user.hdid,
             params: params(user)
@@ -208,10 +256,11 @@ export function timelineRequests(user) {
             params: params(user)
         }
     };
-    return timelineRequest;
+    return timelineRequests;
 }
 
 export function webClientRequests(user) {
+
     let webClientRequests = {
         'patient': {
             method: 'GET',
@@ -228,7 +277,7 @@ export function webClientRequests(user) {
             url: common.CommunicationUrl + "/" + user.hdid,
             params: params(user)
         },
-        'conf': {
+        'configuration': {
             method: 'GET',
             url: common.ConfigurationUrl + "/" + user.hdid,
             params: params(user)
@@ -242,8 +291,34 @@ export function webClientRequests(user) {
     return webClientRequests;
 }
 
-export function checkResponses(responses) {
+function isObject(val) {
+    if (val === null) { return false;}
+    return ((typeof val === 'object') );
+}
 
+export function checkResponse(response) {
+    if (isObject(response))
+    {
+        var ok = check(response, {
+            "HttpStatusCode is 200": (r) => r.status === 200,
+            "HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
+            "HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
+            "HttpStatusCode is NOT 402 Payment Required": (r) => (r.status != 402),
+            "HttpStatusCode is NOT 403 Forbidden": (r) => (r.status != 403),
+            "HttpStatusCode is NOT 404 Not Found": (r) => (r.status != 404),
+            "HttpStatusCode is NOT 405 Method Not Allowed": (r) => (r.status != 405),
+            "HttpStatusCode is NOT 406 Not Acceptable": (r) => (r.status != 406),
+            "HttpStatusCode is NOT 407 Proxy Authentication Required": (r) => (r.status != 407),
+            "HttpStatusCode is NOT 408 Request Timeout": (r) => (r.status != 408),
+            "HttpStatusCode is NOT 4xx Client Error": (r) => !((r.status >= 409) && (r.status <= 499)),
+            "HttpStatusCode is NOT 5xx Server Error": (r) => !((r.status >= 500) && (r.status <= 598)),
+            "HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
+        }) || errorRate.add(1);
+        return; 
+    }
+}
+
+export function checkResponses(responses) {
     if (responses['beta']) {
         var ok = check(responses['beta'], {
             "Beta HttpStatusCode is 200": (r) => r.status === 200,
@@ -254,9 +329,8 @@ export function checkResponses(responses) {
             "Beta HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
         }) || errorRate.add(1);
     }
-
-    if (responses['comment']) {
-        check(responses['comment'], {
+    if (responses['comments']) {
+        check(responses['comments'], {
             "Beta HttpStatusCode is 200": (r) => r.status === 200,
             "Beta HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
             "Beta HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
@@ -265,7 +339,6 @@ export function checkResponses(responses) {
             "Beta HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
         }) || errorRate.add(1);
     }
-
     if (responses['communication']) {
         check(responses['communication'], {
             "Communication HttpStatusCode is 200": (r) => r.status === 200,
@@ -276,9 +349,8 @@ export function checkResponses(responses) {
             "Communication HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
         }) || errorRate.add(1);
     }
-
-    if (responses['conf']) {
-        check(responses['conf'], {
+    if (responses['configuration']) {
+        check(responses['configuration'], {
             "Configuration HttpStatusCode is 200": (r) => r.status === 200,
             "Configuration HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
             "Configuration HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
@@ -287,7 +359,6 @@ export function checkResponses(responses) {
             "Configuration HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
         }) || errorRate.add(1);
     }
-
     if (responses['labs']) {
         check(responses['labs'], {
             "LaboratoryService HttpStatusCode is 200": (r) => r.status === 200,
@@ -298,7 +369,6 @@ export function checkResponses(responses) {
             "LaboratoryService HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
         }) || errorRate.add(1);
     }
-
     if (responses['meds']) {
         check(responses['meds'], {
             "MedicationService HttpStatusCode is 200": (r) => r.status === 200,
@@ -309,8 +379,8 @@ export function checkResponses(responses) {
             "MedicationService HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
         }) || errorRate.add(1);
     }
-    if (responses['note']) {
-        check(responses['note'], {
+    if (responses['notes']) {
+        check(responses['notes'], {
             "Note HttpStatusCode is 200": (r) => r.status === 200,
             "Note HttpStatusCode is NOT 3xx Redirection": (r) => !((r.status >= 300) && (r.status <= 306)),
             "Note HttpStatusCode is NOT 401 Unauthorized": (r) => (r.status != 401),
@@ -319,7 +389,6 @@ export function checkResponses(responses) {
             "Note HttpStatusCode is NOT 0 (Timeout Error)": (r) => (r.status != 0),
         }) || errorRate.add(1);
     }
-
     if (responses['patient']) {
         check(responses['patient'], {
             "PatientService HttpStatusCode is 200": (r) => r.status === 200,

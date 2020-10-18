@@ -16,26 +16,17 @@
 
 import http from 'k6/http';
 import { sleep } from 'k6';
-import * as common from './inc/common.js';
+import * as common from '../inc/common.js';
 
-export let options = common.loadOptions;
+export let options = common.OptionConfig();
 
 export default function () {
 
   let user = common.users[__VU % common.users.length];
 
   common.authorizeUser(user);
-
-  common.groupWithDurationMetric('batch', function () {
-
-    let webClientBatchResponses = http.batch(common.webClientRequests(user));
-    let timelineBatchResponses = http.batch(common.timelineRequests(user));
-
-    common.checkResponses(webClientBatchResponses);
-    common.checkResponses(timelineBatchResponses);
-
-  });
-
+  let response = http.get(common.PatientServiceUrl + "/" + user.hdid, common.params(user));
+  common.checkResponse(response);
   sleep(1);
 }
 
