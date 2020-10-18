@@ -24,7 +24,8 @@ namespace HealthGateway.Database.Delegates
     public interface IGenericCacheDelegate
     {
         /// <summary>
-        /// Convience method to insert a CacheObject into the DB.
+        /// Performs a best efforts Upsert for the given Cache object.
+        /// If the item is found then the JSON, Type and Expiry will be upated based on the new object.
         /// </summary>
         /// <param name="cacheObject">The object to cache.</param>
         /// <param name="hdid">The HDID of the user this will apply to.</param>
@@ -32,33 +33,54 @@ namespace HealthGateway.Database.Delegates
         /// <param name="expires">The number of minutes from now when the cache will expire.</param>
         /// <param name="commit">The string representing the type of object.</param>
         /// <returns>The GenericCache object wrapped in a DBResult.</returns>
-        public DBResult<GenericCache> CacheObject(object cacheObject, string hdid, string domain, int expires, bool commit = true);
+        DBResult<GenericCache> CacheObject(object cacheObject, string hdid, string domain, int expires, bool commit = true);
 
         /// <summary>
-        /// Convience method to query the GenericCache and return the JSON object as type T.
+        /// Convenience method to query the GenericCache and return the JSON object as type T.
         /// </summary>
         /// <typeparam name="T">The type to return.</typeparam>
         /// <param name="hdid">The hdid of the user.</param>
-        /// <param name="domain">The string representing the type of object.</param>
+        /// <param name="domain">The domain area for the cache object.</param>
         /// <returns>The Generic Cache JSON object as T or null.</returns>
-        public T? GetCacheObject<T>(string hdid, string domain)
+        T? GetCacheObject<T>(string hdid, string domain)
             where T : class;
 
         /// <summary>
         /// Gets a GenericCache object from the DB using the hdid and type.
         /// </summary>
         /// <param name="hdid">The hdid of the user.</param>
-        /// <param name="typeName">The string representing the type of object.</param>
+        /// <param name="domain">The domain area for the cache object.</param>
         /// <returns>The GenericCache object wrapped in a DBResult.</returns>
-        public DBResult<GenericCache> GetCacheObject(string hdid, string typeName);
+        DBResult<GenericCache> GetCacheObject(string hdid, string domain);
 
         /// <summary>
-        /// Add the given GenericCache object.
+        /// Convenience method to query the GenericCache and return the JSON object as type T.
+        /// </summary>
+        /// <typeparam name="T">The type to return.</typeparam>
+        /// <param name="propertyName">The JSON property name to search for.</param>
+        /// <param name="propertyValue">The JSON property value to search for.</param>
+        /// <param name="domain">The domain area for the cache object.</param>
+        /// <returns>The Generic Cache JSON object as T or null.</returns>
+        T? GetCacheObjectByJSONProperty<T>(string propertyName, string propertyValue, string domain)
+            where T : class;
+
+        /// <summary>
+        /// Gets a GenericCache object from the DB by searcing the JSON document data.
+        /// </summary>
+        /// <param name="propertyName">The JSON property name to search for.</param>
+        /// <param name="propertyValue">The JSON property value to search for.</param>
+        /// <param name="domain">The domain area for the cache object.</param>
+        /// <returns>The GenericCache object wrapped in a DBResult.</returns>
+        DBResult<GenericCache> GetCacheObjectByJSONProperty(string propertyName, string propertyValue, string domain);
+
+        /// <summary>
+        /// Performs a best efforts Upsert for the given Cache object.
+        /// If the item is found then the JSON, Type and Expiry will be upated based on the new object.
         /// </summary>
         /// <param name="cacheObject">The GenericCache object to be added to the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        public DBResult<GenericCache> AddCacheObject(GenericCache cacheObject, bool commit = true);
+        DBResult<GenericCache> AddCacheObject(GenericCache cacheObject, bool commit = true);
 
         /// <summary>
         /// Update the supplied CacheObject.
@@ -66,7 +88,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="cacheObject">The GenericCache object to be updated in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        public DBResult<GenericCache> UpdateCacheObject(GenericCache cacheObject, bool commit = true);
+        DBResult<GenericCache> UpdateCacheObject(GenericCache cacheObject, bool commit = true);
 
         /// <summary>
         /// Deletes the supplied note.
@@ -74,6 +96,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="cacheObject">The GenericCache object to be deleted in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        public DBResult<GenericCache> DeleteCacheObject(GenericCache cacheObject, bool commit = true);
+        DBResult<GenericCache> DeleteCacheObject(GenericCache cacheObject, bool commit = true);
     }
 }

@@ -57,6 +57,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             dependentServiceMock.Setup(s => s.GetDependents(hdid)).Returns(expectedResult);
 
             DependentController dependentController = new DependentController(
+                new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object
             );

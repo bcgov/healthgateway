@@ -25,6 +25,7 @@ namespace HealthGateway.Patient
     using System.ServiceModel.Security;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Instrumentation;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Patient.Delegates;
     using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Builder;
@@ -98,6 +99,7 @@ namespace HealthGateway.Patient
             services.AddTransient<IPatientDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
             services.AddSingleton<ITraceService, TimedTraceService>();
+            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
         }
 
         /// <summary>

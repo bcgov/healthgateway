@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Collections.Generic;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
@@ -88,11 +89,19 @@ namespace HealthGateway.WebClient.Services
             DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Insert(dependent, true);
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()
             {
-                ResourcePayload = new DependentModel() { HdId = dbDependent.Payload.OwnerId, Name = patientResult.ResourcePayload.FirstName + " " + patientResult.ResourcePayload.LastName },
+                ResourcePayload = new DependentModel() { Name = patientResult.ResourcePayload.FirstName + " " + patientResult.ResourcePayload.LastName },
                 ResultStatus = dbDependent.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
                 ResultError = dbDependent.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId)
+        {
+
+
+            throw new NotImplementedException();
         }
     }
 }
