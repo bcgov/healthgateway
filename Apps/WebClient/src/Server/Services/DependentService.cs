@@ -17,11 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
-<<<<<<< HEAD
-    using System.Text;
-=======
     using System.Threading.Tasks;
->>>>>>> e1182ee320d2100e41815da38f5b743087dfbc07
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -96,62 +92,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page, int pageSize)
+        public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId)
         {
-<<<<<<< HEAD
-            // (1) Get Dependents from database
-            int offset = page * pageSize;
-            DBResult<IEnumerable<UserDelegate>> dbUserDelegates = this.userDelegateDelegate.Get(hdId, offset, pageSize);
-
-            // (2) Get Dependents Details from the Patient service
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-
-            List<DependentModel> dependentModels = new List<DependentModel>();
-            RequestResult<IEnumerable<DependentModel>> result = new RequestResult<IEnumerable<DependentModel>>()
-            {
-                ResultStatus = ResultType.Success,
-            };
-            StringBuilder resultErrorMessage = new StringBuilder();
-            foreach (UserDelegate userDelegate in dbUserDelegates.Payload)
-            {
-                this.logger.LogDebug($"Getting dependent details for Dependent hdid: {userDelegate.OwnerId} ...");
-                ResourceIdentifier identifier = new ResourceIdentifier("hdid", userDelegate.OwnerId);
-                RequestResult<PatientModel> patientResult = this.patientDelegate.GetPatientByIdentifier(identifier, jwtString);
-
-                if (patientResult.ResourcePayload != null)
-                {
-                    dependentModels.Add(ModelConverter.PatientModelToDependentModel(patientResult.ResourcePayload));
-                }
-                else
-                {
-                    if (result.ResultStatus != ResultType.Error)
-                    {
-                        result.ResultStatus = ResultType.Error;
-                        resultErrorMessage.Append($"Communication Exception when trying to retrieve Dependent(s) - HdId: {userDelegate.OwnerId};");
-                    }
-                    else
-                    {
-                        resultErrorMessage.Append($" HdId: {userDelegate.OwnerId};");
-                    }
-                }
-            }
-
-            result.ResourcePayload = dependentModels;
-            if (result.ResultStatus != ResultType.Error)
-            {
-                result.ResultStatus = ResultType.Success;
-                result.ResultError = null;
-                result.TotalResultCount = dependentModels.Count;
-            }
-            else
-            {
-                result.ResultError = new RequestResultError() { ResultMessage = resultErrorMessage.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Patient) };
-            }
-
-            return result;
-=======
             throw new NotImplementedException();
->>>>>>> e1182ee320d2100e41815da38f5b743087dfbc07
         }
     }
 }
