@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Services
+namespace HealthGateway.Common.Delegates
 {
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
@@ -21,20 +21,20 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// The Patient data service.
     /// </summary>
-    public interface IPatientService
+    public interface IClientRegistriesDelegate
     {
         /// <summary>
         /// Gets the patient record.
         /// </summary>
-        /// <param name="hdid">The patient id.</param>
-        /// <returns>The patient model.</returns>
-        Task<RequestResult<PatientModel>> GetPatient(string hdid);
+        /// <param name="hdid">The hdid to retrieve the patient demographics in.</param>
+        /// <returns>The patient information.</returns>
+        Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid);
 
         /// <summary>
-        /// Searches for a patient record given an identifier.
+        /// Gets the patient record.
         /// </summary>
-        /// <param name="identifier">The identifier to use.</param>
-        /// <returns>The patient model if found.</returns>
-        Task<RequestResult<PatientModel>> SearchPatientByIdentifier(ResourceIdentifier identifier);
+        /// <param name="phn">The phn to retrive the patient demographics information.</param>
+        /// <returns>The patient information.</returns>
+        Task<RequestResult<PatientModel>> GetDemographicsByPHNAsync(string phn);
     }
 }

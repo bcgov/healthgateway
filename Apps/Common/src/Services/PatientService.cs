@@ -13,15 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Services
+namespace HealthGateway.Common.Services
 {
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.Patient.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -30,16 +30,6 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     public class PatientService : IPatientService
     {
-        /// <summary>
-        /// The resource identifier that represents an HDID.
-        /// </summary>
-        private const string HDIDIdentifier = "hdid";
-
-        /// <summary>
-        /// The resource identifier that represents a PHN.
-        /// </summary>
-        private const string PHNIdentifier = "phn";
-
         /// <summary>
         /// The generic cache domain to store patients against.
         /// </summary>
@@ -50,7 +40,7 @@ namespace HealthGateway.Patient.Services
         /// </summary>
         private readonly ILogger<PatientService> logger;
         private readonly IConfiguration configuration;
-        private readonly IPatientDelegate patientDelegate;
+        private readonly IClientRegistriesDelegate patientDelegate;
         private readonly IGenericCacheDelegate cacheDelegate;
         private readonly int cacheTTL;
 
@@ -61,7 +51,7 @@ namespace HealthGateway.Patient.Services
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientDelegate">The injected client registries delegate.</param>
         /// <param name="genericCacheDelegate">The delegate responsible for caching.</param>
-        public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IPatientDelegate patientDelegate, IGenericCacheDelegate genericCacheDelegate)
+        public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IClientRegistriesDelegate patientDelegate, IGenericCacheDelegate genericCacheDelegate)
         {
             this.logger = logger;
             this.configuration = configuration;
@@ -71,41 +61,55 @@ namespace HealthGateway.Patient.Services
         }
 
         /// <inheritdoc/>
-        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetPatient(string hdid)
+        public async System.Threading.Tasks.Task<RequestResult<string>> GetPatientPHN(string hdid)
         {
-            return await this.SearchPatientByIdentifier(new ResourceIdentifier(HDIDIdentifier, hdid)).ConfigureAwait(true);
+            RequestResult<string> retVal = new RequestResult<string>()
+            {
+                ResultError = new RequestResultError() { ResultMessage = "Error during PHN retrieval", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                ResultStatus = Constants.ResultType.Error,
+            };
+            string retrievedPhn = string.Empty;
+            RequestResult<PatientModel> patientResult = await this.GetPatient(hdid).ConfigureAwait(true);
+            if (patientResult != null)
+            {
+                retVal.ResultError = patientResult.ResultError;
+                retVal.ResultStatus = patientResult.ResultStatus;
+                if (patientResult.ResultStatus == Constants.ResultType.Success && patientResult.ResourcePayload != null)
+                {
+                    retVal.ResourcePayload = patientResult.ResourcePayload.PersonalHealthNumber;
+                }
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
-        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> SearchPatientByIdentifier(ResourceIdentifier identifier)
+        public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID)
         {
             RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>();
-            PatientModel? patient = this.GetFromCache(identifier);
+            PatientModel? patient = this.GetFromCache(identifier, identifierType);
             if (patient == null)
             {
-                if (identifier.Key == HDIDIdentifier || identifier.Key == PHNIdentifier)
+                switch (identifierType)
                 {
-                    if (identifier.Key == HDIDIdentifier)
-                    {
+                    case PatientIdentifierType.HDID:
                         this.logger.LogDebug("Performing Patient lookup by HDID");
-                        requestResult = await this.patientDelegate.GetDemographicsByHDIDAsync(identifier.Value).ConfigureAwait(true);
-                    }
-                    else if (identifier.Key == PHNIdentifier)
-                    {
+                        requestResult = await this.patientDelegate.GetDemographicsByHDIDAsync(identifier).ConfigureAwait(true);
+                        break;
+                    case PatientIdentifierType.PHN:
                         this.logger.LogDebug("Performing Patient lookup by PHN");
-                        requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier.Value).ConfigureAwait(true);
-                    }
-
-                    if (requestResult.ResultStatus == ResultType.Success && requestResult.ResourcePayload != null)
-                    {
-                        this.CachePatient(requestResult.ResourcePayload);
-                    }
+                        requestResult = await this.patientDelegate.GetDemographicsByPHNAsync(identifier).ConfigureAwait(true);
+                        break;
+                    default:
+                        this.logger.LogDebug($"Failed Patient lookup unknown PatientIdentifierType");
+                        requestResult.ResultStatus = ResultType.Error;
+                        requestResult.ResultError = new RequestResultError() { ResultMessage = $"Internal Error: PatientIdentifierType is unknown '{identifierType.ToString()}'", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
+                        break;
                 }
-                else
+
+                if (requestResult.ResultStatus == ResultType.Success && requestResult.ResourcePayload != null)
                 {
-                    this.logger.LogDebug($"Failed Patient lookup key {identifier.Key} is unknown");
-                    requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultError = new RequestResultError() { ResultMessage = $"Identifier not recognized '{identifier.Key}'", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
+                    this.CachePatient(requestResult.ResourcePayload);
                 }
             }
             else
@@ -122,24 +126,26 @@ namespace HealthGateway.Patient.Services
         /// Attempts to get the Patient model from the Generic Cache.
         /// </summary>
         /// <param name="identifier">The resource identifier used to determine the key to use.</param>
+        /// <param name="identifierType">The type of patient identifier we are searching for.</param>
         /// <returns>The found Patient model or null.</returns>
-        private PatientModel? GetFromCache(ResourceIdentifier identifier)
+        private PatientModel? GetFromCache(string identifier, PatientIdentifierType identifierType)
         {
             PatientModel? retPatient = null;
             if (this.cacheTTL > 0)
             {
-                bool hdidSearch = identifier.Key == HDIDIdentifier;
-                this.logger.LogDebug($"Querying Patient Cache for {(hdidSearch ? "HDID" : "PHN")}: {identifier.Value}");
-                if (hdidSearch)
+                switch (identifierType)
                 {
-                    retPatient = this.cacheDelegate.GetCacheObject<PatientModel>(identifier.Value, PatientCacheDomain);
-                }
-                else
-                {
-                    retPatient = this.cacheDelegate.GetCacheObjectByJSONProperty<PatientModel>("personalhealthnumber", identifier.Value, PatientCacheDomain);
+                    case PatientIdentifierType.HDID:
+                        this.logger.LogDebug($"Querying Patient Cache by HDID");
+                        retPatient = this.cacheDelegate.GetCacheObject<PatientModel>(identifier, PatientCacheDomain);
+                        break;
+                    case PatientIdentifierType.PHN:
+                        this.logger.LogDebug($"Querying Patient Cache by PHN");
+                        retPatient = this.cacheDelegate.GetCacheObjectByJSONProperty<PatientModel>("personalhealthnumber", identifier, PatientCacheDomain);
+                        break;
                 }
 
-                this.logger.LogDebug($"Patient with identifier {identifier.Value} was {(retPatient == null ? "not" : string.Empty)} found in cache");
+                this.logger.LogDebug($"Patient with identifier {identifier} was {(retPatient == null ? "not" : string.Empty)} found in cache");
             }
 
             return retPatient;
