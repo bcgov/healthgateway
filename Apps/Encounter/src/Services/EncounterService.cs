@@ -20,10 +20,10 @@ namespace HealthGateway.Encounter.Services
     using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.ODR;
@@ -36,7 +36,7 @@ namespace HealthGateway.Encounter.Services
         private readonly ILogger logger;
         private readonly ITraceService traceService;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPatientDelegate patientDelegate;
+        private readonly IPatientService patientService;
         private readonly IMSPVisitDelegate mspVisitDelegate;
 
         /// <summary>
@@ -45,19 +45,19 @@ namespace HealthGateway.Encounter.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="patientDelegate">The injected patient registry provider.</param>
+        /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="mspVisitDelegate">The MSPVisit delegate.</param>
         public EncounterService(
             ILogger<EncounterService> logger,
             ITraceService traceService,
             IHttpContextAccessor httpAccessor,
-            IPatientDelegate patientDelegate,
+            IPatientService patientService,
             IMSPVisitDelegate mspVisitDelegate)
         {
             this.logger = logger;
             this.traceService = traceService;
             this.httpContextAccessor = httpAccessor;
-            this.patientDelegate = patientDelegate;
+            this.patientService = patientService;
             this.mspVisitDelegate = mspVisitDelegate;
         }
 
@@ -71,8 +71,7 @@ namespace HealthGateway.Encounter.Services
             RequestResult<IEnumerable<EncounterModel>> result = new RequestResult<IEnumerable<EncounterModel>>();
 
             // Retrieve the phn
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            RequestResult<PatientModel> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
                 PatientModel patient = patientResult.ResourcePayload;

@@ -13,12 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Test
+namespace HealthGateway.CommonTests.Delegates
 {
     using Xunit;
     using Moq;
     using System.Threading.Tasks;
-    using HealthGateway.Patient.Delegates;
+    using HealthGateway.Common.Delegates;
     using ServiceReference;
     using Microsoft.Extensions.Configuration;
     using System;
@@ -118,7 +118,7 @@ namespace HealthGateway.Patient.Test
                 }
             );
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IPatientDelegate patientDelegate = new ClientRegistriesDelegate(
+            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 new Mock<ITraceService>().Object,
                 clientMock.Object);
@@ -224,7 +224,7 @@ namespace HealthGateway.Patient.Test
                 }
             );
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            IPatientDelegate patientDelegate = new ClientRegistriesDelegate(
+            IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 new Mock<ITraceService>().Object,
                 clientMock.Object);

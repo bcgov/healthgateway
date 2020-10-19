@@ -13,37 +13,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Delegates
+namespace HealthGateway.Common.Services
 {
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
 
     /// <summary>
-    /// Interface that defines a delegate to retrieve patient information.
+    /// The Patient data service.
     /// </summary>
-    public interface IPatientDelegate
+    public interface IPatientService
     {
         /// <summary>
         /// Gets the patient phn.
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
-        /// <param name="authorization">Authorization for the call.</param>
         /// <returns>The patient phn.</returns>
-        RequestResult<string> GetPatientPHN(string hdid, string authorization);
+        Task<RequestResult<string>> GetPatientPHN(string hdid);
 
         /// <summary>
-        /// Gets the patient from a given hdid.
+        /// Gets the patient record.
         /// </summary>
-        /// <param name="hdid">The patient hdid.</param>
-        /// <param name="authorization">Authorization for the call.</param>
+        /// <param name="identifier">The patient identifier.</param>
+        /// <param name="identifierType">The type of identifier being passed in.</param>
         /// <returns>The patient model.</returns>
-        RequestResult<PatientModel> GetPatient(string hdid, string authorization);
-
-        /// <summary>
-        /// Gets the patient information using a ResourceIdentifier.
-        /// </summary>
-        /// <param name="identifier">The identifier.</param>
-        /// <param name="authorization">Authorization for the call.</param>
-        /// <returns>The patient model.</returns>
-        RequestResult<PatientModel> GetPatientByIdentifier(ResourceIdentifier identifier, string authorization);
+        Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID);
     }
 }

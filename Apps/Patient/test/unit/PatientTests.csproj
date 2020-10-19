@@ -28,9 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="UnitTest.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Folder Include="Controllers\" />
   </ItemGroup>
 </Project>

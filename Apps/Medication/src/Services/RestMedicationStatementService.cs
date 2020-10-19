@@ -23,11 +23,11 @@ namespace HealthGateway.Medication.Services
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Constants;
@@ -47,7 +47,7 @@ namespace HealthGateway.Medication.Services
         private readonly ILogger logger;
         private readonly ITraceService traceService;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPatientDelegate patientDelegate;
+        private readonly IPatientService patientService;
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IMedStatementDelegate medicationStatementDelegate;
 
@@ -57,21 +57,21 @@ namespace HealthGateway.Medication.Services
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="patientDelegate">The injected patient registry provider.</param>
+        /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
             ITraceService traceService,
             IHttpContextAccessor httpAccessor,
-            IPatientDelegate patientDelegate,
+            IPatientService patientService,
             IDrugLookupDelegate drugLookupDelegate,
             IMedStatementDelegate medicationStatementDelegate)
         {
             this.logger = logger;
             this.traceService = traceService;
             this.httpContextAccessor = httpAccessor;
-            this.patientDelegate = patientDelegate;
+            this.patientService = patientService;
             this.drugLookupDelegate = drugLookupDelegate;
             this.medicationStatementDelegate = medicationStatementDelegate;
         }
@@ -90,7 +90,7 @@ namespace HealthGateway.Medication.Services
             {
                 // Retrieve the phn
                 string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-                RequestResult<PatientModel> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
                 if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
                     PatientModel patient = patientResult.ResourcePayload;
