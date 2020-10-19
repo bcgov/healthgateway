@@ -99,8 +99,6 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId)
         {
-
-
             throw new NotImplementedException();
         }
     }
