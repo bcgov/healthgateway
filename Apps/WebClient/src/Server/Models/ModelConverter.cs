@@ -34,7 +34,7 @@ namespace HealthGateway.WebClient.Models
         {
             DependentModel result = new DependentModel()
             {
-                HhdId = patientModel.HdId,
+                HdId = patientModel.HdId,
                 Name = $"{patientModel.FirstName} {patientModel.LastName} ",
                 Gender = patientModel.Gender,
                 DateOfBirth = patientModel.Birthdate,
