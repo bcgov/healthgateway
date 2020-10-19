@@ -104,7 +104,7 @@ namespace HealthGateway.WebClient.Services
             int offset = page * pageSize;
             DBResult<IEnumerable<UserDelegate>> dbUserDelegates = this.userDelegateDelegate.Get(hdId, offset, pageSize);
 
-            // (2) Get Dependents Details from Patient service
+            // (2) Get Dependents Details from the Patient service
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
 
             List<DependentModel> dependentModels = new List<DependentModel>();
