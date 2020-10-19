@@ -265,6 +265,11 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<UserDelegate>()
                 .HasKey(userDelegate => new { userDelegate.OwnerId, userDelegate.DelegateId });
 
+            // Create HDID index on GenericCache
+            modelBuilder!.Entity<GenericCache>()
+                    .HasIndex(i => new { i.HdId, i.Domain })
+                    .IsUnique();
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);

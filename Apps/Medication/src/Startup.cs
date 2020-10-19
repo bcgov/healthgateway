@@ -61,6 +61,7 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigurePatientAccess(services);
 
             services.AddCors(options =>
             {
@@ -83,9 +84,7 @@ namespace HealthGateway.Medication
             services.AddSingleton<ITraceService, TimedTraceService>();
 
             // Add delegates
-            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();
-            services.AddTransient<ISequenceDelegate, DBSequenceDelegate>();
         }
 
         /// <summary>

@@ -25,12 +25,15 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using System;
-    using HealthGateway.Common.Delegates;
-    using Microsoft.AspNetCore.Http;
-    using System.Net;
     using HealthGateway.WebClient.Models;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
+<<<<<<< HEAD
     using System.Collections.Generic;
+=======
+    using HealthGateway.Common.Services;
+    using System.Threading.Tasks;
+>>>>>>> e1182ee320d2100e41815da38f5b743087dfbc07
 
     public class DependentService_Test
     {
@@ -226,19 +229,7 @@ namespace HealthGateway.WebClient.Test.Services
 
         private IDependentService SetupMockForAddDependent(AddDependentRequest addDependentRequest, DBResult<UserDelegate> insertResult = null)
         {
-            string ipAddress = "127.0.0.1";
-            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            var context = new DefaultHttpContext()
-            {
-                Connection =
-                {
-                    RemoteIpAddress = IPAddress.Parse(ipAddress),
-                },
-            };
-            context.Request.Headers.Add("Authorization", mockJWTHeader);
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
-
-            var mockPatientDelegate = new Mock<IPatientDelegate>();
+            var mockPatientService = new Mock<IPatientService>();
 
             RequestResult<string> patientHdIdResult = new RequestResult<string>()
             {
@@ -264,7 +255,7 @@ namespace HealthGateway.WebClient.Test.Services
                 Birthdate = mockDateOfBirth,
                 Gender = mockGender,
             };
-            mockPatientDelegate.Setup(s => s.GetPatientByIdentifier(It.IsAny<ResourceIdentifier>(), It.IsAny<string>())).Returns(patientResult);
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
 
             UserDelegate expectedDbDependent = new UserDelegate() { DelegateId = mockParentHdId, OwnerId = mockHdId };
 
@@ -282,8 +273,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             return new DependentService(
                 new Mock<ILogger<DependentService>>().Object,
-                mockHttpContextAccessor.Object,
-                mockPatientDelegate.Object,
+                mockPatientService.Object,
                 mockDependentDelegate.Object
             );
         }

@@ -17,11 +17,15 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Collections.Generic;
+<<<<<<< HEAD
     using System.Text;
+=======
+    using System.Threading.Tasks;
+>>>>>>> e1182ee320d2100e41815da38f5b743087dfbc07
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -34,26 +38,22 @@ namespace HealthGateway.WebClient.Services
     public class DependentService : IDependentService
     {
         private readonly ILogger logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPatientDelegate patientDelegate;
+        private readonly IPatientService patientService;
         private readonly IUserDelegateDelegate userDelegateDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="patientDelegate">The injected patient registry provider.</param>
+        /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
         public DependentService(
             ILogger<DependentService> logger,
-            IHttpContextAccessor httpAccessor,
-            IPatientDelegate patientDelegate,
+            IPatientService patientService,
             IUserDelegateDelegate userDelegateDelegate)
         {
             this.logger = logger;
-            this.httpContextAccessor = httpAccessor;
-            this.patientDelegate = patientDelegate;
+            this.patientService = patientService;
             this.userDelegateDelegate = userDelegateDelegate;
         }
 
@@ -62,9 +62,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Dependent hdid: {delegateHdId}");
             this.logger.LogDebug("Getting dependent details...");
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            ResourceIdentifier identifier = new ResourceIdentifier("phn", addDependentRequest.PHN);
-            RequestResult<PatientModel> patientResult = this.patientDelegate.GetPatientByIdentifier(identifier, jwtString);
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.PHN, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
             if (patientResult.ResourcePayload == null)
             {
                 return new RequestResult<DependentModel>()
@@ -100,6 +98,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page, int pageSize)
         {
+<<<<<<< HEAD
             // (1) Get Dependents from database
             int offset = page * pageSize;
             DBResult<IEnumerable<UserDelegate>> dbUserDelegates = this.userDelegateDelegate.Get(hdId, offset, pageSize);
@@ -150,6 +149,9 @@ namespace HealthGateway.WebClient.Services
             }
 
             return result;
+=======
+            throw new NotImplementedException();
+>>>>>>> e1182ee320d2100e41815da38f5b743087dfbc07
         }
     }
 }

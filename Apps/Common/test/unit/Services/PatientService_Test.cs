@@ -20,16 +20,17 @@ namespace HealthGateway.Patient.Test
     using Moq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
-    using HealthGateway.Patient.Delegates;
-    using HealthGateway.Patient.Services;
-    using ServiceReference;
-    using System;
-    using System.Globalization;
+    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Services;
+    using Microsoft.Extensions.Configuration;
+    using HealthGateway.Database.Delegates;
+    using System.Collections.Generic;
+    using HealthGateway.Common.Constants;
 
     public class PatientService_Test
     {
         [Fact]
-        public async Task ShouldGetPatient()
+        public void ShouldGetPatient()
         {
             string hdid = "abc123";
 
@@ -46,12 +47,18 @@ namespace HealthGateway.Patient.Test
                 },
             };
 
-            Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>())
+                .Build();
+
             patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
-                patientDelegateMock.Object);
+                configuration,
+                patientDelegateMock.Object,
+                new Mock<IGenericCacheDelegate>().Object);
 
             // Act
             RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(hdid).ConfigureAwait(true)).Result;
@@ -62,7 +69,7 @@ namespace HealthGateway.Patient.Test
         }
 
         [Fact]
-        public async Task ShoulSearchByValidIdentifier()
+        public void ShoulSearchByValidIdentifier()
         {
             string phn = "abc123";
 
@@ -79,17 +86,20 @@ namespace HealthGateway.Patient.Test
                 },
             };
 
-            Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>())
+                .Build();
             patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
-                patientDelegateMock.Object);
+                configuration,
+                patientDelegateMock.Object,
+                new Mock<IGenericCacheDelegate>().Object);
 
-
-            ResourceIdentifier identifier = new ResourceIdentifier("phn", "abc123");
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.SearchPatientByIdentifier(identifier).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient("abc123",Common.Constants.PatientIdentifierType.PHN).ConfigureAwait(true)).Result;            
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Success, actual.ResultStatus);
@@ -97,7 +107,7 @@ namespace HealthGateway.Patient.Test
         }
 
         [Fact]
-        public async Task ShoulBeEmptyIfInvalidIdentifier()
+        public void ShoulBeEmptyIfInvalidIdentifier()
         {
             string phn = "abc123";
 
@@ -114,17 +124,20 @@ namespace HealthGateway.Patient.Test
                 },
             };
 
-            Mock<IPatientDelegate> patientDelegateMock = new Mock<IPatientDelegate>();
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>())
+                .Build();
             patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
-                patientDelegateMock.Object);
+                configuration,
+                patientDelegateMock.Object,
+                new Mock<IGenericCacheDelegate>().Object);
 
-
-            ResourceIdentifier identifier = new ResourceIdentifier("notValid", "abc123");
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.SearchPatientByIdentifier(identifier).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient("abc123", (PatientIdentifierType)23).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Error, actual.ResultStatus);

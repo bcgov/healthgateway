@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Delegates
+namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -25,14 +25,13 @@ namespace HealthGateway.Patient.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
-    using HealthGateway.Patient.Constants;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
     /// <summary>
     /// The Client Registries delegate.
     /// </summary>
-    public class ClientRegistriesDelegate : IPatientDelegate
+    public class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
         private readonly ILogger<ClientRegistriesDelegate> logger;
         private readonly ITraceService traceService;

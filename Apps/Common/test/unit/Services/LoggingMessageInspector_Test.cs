@@ -18,9 +18,10 @@ namespace HealthGateway.Patient.Test
     using Xunit;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using HealthGateway.Patient.Services;
+    using HealthGateway.Common.Services;
     using System.ServiceModel.Dispatcher;
     using System.ServiceModel.Channels;
+
 
     public class LoggingMessageInspector_Test
     {

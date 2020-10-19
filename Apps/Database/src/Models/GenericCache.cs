@@ -36,14 +36,14 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(54)]
-        public string? HdId { get; set; }
+        public string HdId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the cache domain.
         /// </summary>
         [Required]
         [MaxLength(250)]
-        public string? Domain { get; set; }
+        public string Domain { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the cache expiry datetime.

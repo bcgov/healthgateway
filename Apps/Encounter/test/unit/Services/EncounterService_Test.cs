@@ -16,10 +16,11 @@
 namespace HealthGateway.Encounter.Test.Service
 {
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.ODR;
@@ -91,8 +92,8 @@ namespace HealthGateway.Encounter.Test.Service
                 }
             };
 
-            var mockPatientDelegate = new Mock<IPatientDelegate>();
-            mockPatientDelegate.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<string>())).Returns(patientResult);
+            var mockPatientService = new Mock<IPatientService>();
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext()
@@ -110,7 +111,7 @@ namespace HealthGateway.Encounter.Test.Service
             IEncounterService service = new EncounterService(new Mock<ILogger<EncounterService>>().Object,
                                                              traceService,
                                                              mockHttpContextAccessor.Object,
-                                                             mockPatientDelegate.Object,
+                                                             mockPatientService.Object,
                                                              mockMSPDelegate.Object);
 
             var actualResult = service.GetEncounters(hdid).Result;
@@ -149,8 +150,8 @@ namespace HealthGateway.Encounter.Test.Service
                 }
             };
 
-            var mockPatientDelegate = new Mock<IPatientDelegate>();
-            mockPatientDelegate.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<string>())).Returns(patientResult);
+            var mockPatientService = new Mock<IPatientService>();
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext()
@@ -168,7 +169,7 @@ namespace HealthGateway.Encounter.Test.Service
             IEncounterService service = new EncounterService(new Mock<ILogger<EncounterService>>().Object,
                                                              traceService,
                                                              mockHttpContextAccessor.Object,
-                                                             mockPatientDelegate.Object,
+                                                             mockPatientService.Object,
                                                              mockMSPDelegate.Object);
 
             var actualResult = service.GetEncounters(hdid).Result;
@@ -200,8 +201,8 @@ namespace HealthGateway.Encounter.Test.Service
                 }
             };
 
-            var mockPatientDelegate = new Mock<IPatientDelegate>();
-            mockPatientDelegate.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<string>())).Returns(patientResult);
+            var mockPatientService = new Mock<IPatientService>();
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext()
@@ -218,7 +219,7 @@ namespace HealthGateway.Encounter.Test.Service
             IEncounterService service = new EncounterService(new Mock<ILogger<EncounterService>>().Object,
                                                              traceService,
                                                              mockHttpContextAccessor.Object,
-                                                             mockPatientDelegate.Object,
+                                                             mockPatientService.Object,
                                                              mockMSPDelegate.Object);
 
             var actualResult = service.GetEncounters(hdid).Result;

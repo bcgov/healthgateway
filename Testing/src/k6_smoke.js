@@ -18,19 +18,7 @@ import { check, group, sleep } from 'k6';
 import { Rate, Trend } from 'k6/metrics';
 import * as common from './inc/common.js';
 
-let groupDuration = Trend('batch');
-
-export let options = {
-  vus: 5,
-  iterations: 5,
-}
-
-function groupWithDurationMetric(name, group_function) {
-  let start = new Date();
-  group(name, group_function);
-  let end = new Date();
-  groupDuration.add(end - start, { groupName: name });
-}
+export let options = common.smokeOptions;
 
 export default function () {
 
@@ -38,7 +26,7 @@ export default function () {
 
   common.authorizeUser(user);
 
-  groupWithDurationMetric('batch', function () {
+  common.groupWithDurationMetric('batch', function () {
 
     let webClientBatchResponses = http.batch(common.webClientRequests(user));
     let timelineBatchResponses = http.batch(common.timelineRequests(user));
