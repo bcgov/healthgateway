@@ -74,6 +74,7 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureHangfireQueue(services);
+            this.startupConfig.ConfigurePatientAccess(services);
 
             // Add services
             services.AddMemoryCache();
