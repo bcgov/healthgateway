@@ -43,7 +43,7 @@ namespace HealthGateway.WebClient.Models
             {
                 if (patientModel.PersonalHealthNumber.Length > 3)
                 {
-                    result.MaskedPHN = patientModel.PersonalHealthNumber.Remove(patientModel.PersonalHealthNumber.Length - 1, 4) + "****";
+                    result.MaskedPHN = patientModel.PersonalHealthNumber.Remove(patientModel.PersonalHealthNumber.Length - 5, 4) + "****";
                 }
                 else
                 {

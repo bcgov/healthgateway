@@ -108,7 +108,10 @@ namespace HealthGateway.WebClient.Services
             string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
 
             List<DependentModel> dependentModels = new List<DependentModel>();
-            RequestResult<IEnumerable<DependentModel>> result = new RequestResult<IEnumerable<DependentModel>>();
+            RequestResult<IEnumerable<DependentModel>> result = new RequestResult<IEnumerable<DependentModel>>()
+            {
+                ResultStatus = ResultType.Success,
+            };
             StringBuilder resultErrorMessage = new StringBuilder();
             foreach (UserDelegate userDelegate in dbUserDelegates.Payload)
             {
@@ -139,6 +142,7 @@ namespace HealthGateway.WebClient.Services
             {
                 result.ResultStatus = ResultType.Success;
                 result.ResultError = null;
+                result.TotalResultCount = dependentModels.Count;
             }
             else
             {
