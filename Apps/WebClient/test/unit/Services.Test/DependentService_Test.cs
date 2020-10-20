@@ -30,6 +30,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Services;
     using System.Threading.Tasks;
+    using System.Collections.Generic;
 
     public class DependentService_Test
     {
@@ -42,6 +43,88 @@ namespace HealthGateway.WebClient.Test.Services
         private const string mockHdId = "MockHdId";
         private const string mockJWTHeader = "MockJWTHeader";
         private const string mismatchedError = "The information you entered did not match. Please try again.";
+
+        private IDependentService SetupCommonMocks(Mock<IUserDelegateDelegate> mockDependentDelegate, Mock<IPatientService> mockPatientService)
+        {
+            return new DependentService(
+                new Mock<ILogger<DependentService>>().Object,
+                mockPatientService.Object,
+                mockDependentDelegate.Object
+            );
+        }
+
+        private IEnumerable<UserDelegate> GenerateMockUserDelegatesList()
+        {
+            List<UserDelegate> userDelegates = new List<UserDelegate>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                userDelegates.Add(new UserDelegate()
+                {
+                    DelegateId = mockParentHdId,
+                    OwnerId = $"{mockHdId}-{i}",
+                });
+            }
+            return userDelegates;
+        }
+
+        private IDependentService SetupMockForGetDependents()
+        {
+            // (1) Setup UserDelegateDelegate's mock
+            IEnumerable<UserDelegate> expectedUserDelegates = GenerateMockUserDelegatesList();
+
+            DBResult<IEnumerable<UserDelegate>> readResult = new DBResult<IEnumerable<UserDelegate>>
+            {
+                Status = DBStatusCode.Read,
+            };
+            readResult.Payload = expectedUserDelegates;
+
+            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            mockDependentDelegate.Setup(s => s.Get(mockParentHdId, 0, 500)).Returns(readResult);
+
+            // (2) Setup PatientDelegate's mock
+            var mockPatientService = new Mock<IPatientService>();
+
+            RequestResult<string> patientHdIdResult = new RequestResult<string>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = mockHdId
+            };
+
+            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+            patientResult.ResultStatus = Common.Constants.ResultType.Success;
+            patientResult.ResourcePayload = new PatientModel()
+            {
+                HdId = mockHdId,
+                PersonalHealthNumber = mockPHN,
+                FirstName = mockFirstName,
+                LastName = mockLastName,
+                Birthdate = mockDateOfBirth,
+                Gender = mockGender,
+            };
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
+
+            // (3) Setup other common Mocks
+            IDependentService dependentService = SetupCommonMocks(mockDependentDelegate, mockPatientService);
+
+            return dependentService;
+        }
+
+        [Fact]
+        public void GetDependents()
+        {
+            IDependentService service = SetupMockForGetDependents();
+            RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(mockParentHdId, 0, 500);
+
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(10, actualResult.TotalResultCount);
+
+            // Validate masked PHN
+            foreach (DependentModel model in actualResult.ResourcePayload)
+            {
+                Assert.Equal(model.MaskedPHN, mockPHN.Remove(mockPHN.Length - 5, 4) + "****");
+            }
+        }
 
         [Fact]
         public void ValidateDependent()

@@ -28,8 +28,10 @@ namespace HealthGateway.WebClient.Services
         /// Gets all the dependents for the given hdId.
         /// </summary>
         /// <param name="hdId">The users HDID.</param>
+        /// <param name="page">The page of data to fetch indexed from 0.</param>
+        /// <param name="pageSize">The amount of records per page.</param>
         /// <returns>A List of dependents wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId);
+        RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page = 0, int pageSize = 500);
 
         /// <summary>
         /// Add a dependent to the given hdId of the delegate (parent or guardiant).
