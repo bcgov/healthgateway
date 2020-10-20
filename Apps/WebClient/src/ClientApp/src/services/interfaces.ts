@@ -22,7 +22,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import UserRating from "@/models/userRating";
 import Encounter from "@/models/encounter";
 import { OidcUserProfile } from "@/models/user";
-import { AddDependentRequest } from "@/models/addDependentRequest";
+import AddDependentRequest from "@/models/addDependentRequest";
 import Dependent from "@/models/dependent";
 
 export interface IAuthenticationService {

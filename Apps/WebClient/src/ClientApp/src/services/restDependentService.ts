@@ -7,7 +7,7 @@ import {
     IDependentService,
 } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
-import type { AddDependentRequest } from "@/models/addDependentRequest";
+import AddDependentRequest from "@/models/addDependentRequest";
 import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";

@@ -1,6 +1,6 @@
 import { StringISODate } from "@/models/dateWrapper";
 
-export interface AddDependentRequest {
+export default interface AddDependentRequest {
     // Gets or sets the id.
     id?: string;
 
@@ -18,7 +18,4 @@ export interface AddDependentRequest {
 
     // Gets or sets the dependent gender.
     gender: string;
-
-    // Gets or sets the comment db version.
-    version: number;
 }
