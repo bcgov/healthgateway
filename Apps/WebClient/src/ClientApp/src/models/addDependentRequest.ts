@@ -17,7 +17,7 @@ export interface AddDependentRequest {
     PHN: string;
 
     // Gets or sets the dependent gender.
-    gender: string
+    gender: string;
 
     // Gets or sets the comment db version.
     version: number;
