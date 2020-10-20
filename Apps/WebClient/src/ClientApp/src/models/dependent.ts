@@ -1,21 +1,31 @@
 import { StringISODate } from "@/models/dateWrapper";
 
-export interface Dependent {
-    // Gets or sets the id.
-    id?: string;
+/**
+ * The dependent view model.
+ */
+export default class Dependent {
+    /**
+     * The dependent hdid.
+     */
+    public hdid!: string;
 
-    // Gets or sets the dependent first name.
-    name: string;
+    /**
+     * The dependent masked phn.
+     */
+    public maskedPHN!: string;
 
-    // Gets or sets the dependent last name.
-    maskedPHN: string;
+    /**
+     * The dependent name.
+     */
+    public name!: string;
 
-    // Gets or sets the dependent date of birth.
-    dateOfBirth: StringISODate;
+    /**
+     * The dependent birth date.
+     */
+    public dateOfBirth!: StringISODate;
 
-    // Gets or sets the dependent gender.
-    gender: string
-
-    // Gets or sets the comment db version.
-    version: number;/// <summary>
+    /**
+     * The dependent gender.
+     */
+    public gender!: string;
 }

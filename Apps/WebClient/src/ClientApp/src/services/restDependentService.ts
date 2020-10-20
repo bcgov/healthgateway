@@ -12,12 +12,12 @@ import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
-import { Dependent } from "@/models/dependent";
+import Dependent from "@/models/dependent";
 
 @injectable()
 export class RestDependentService implements IDependentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly DEPENDENT_BASE_URI: string = "/v1/api/Dependent";
+    private readonly BASE_URI: string = "/v1/api/Dependent";
     private http!: IHttpDelegate;
     private isEnabled = false;
 
@@ -39,7 +39,7 @@ export class RestDependentService implements IDependentService {
             }
             this.http
                 .post<RequestResult<AddDependentRequest>>(
-                    `${this.DEPENDENT_BASE_URI}/`,
+                    `${this.BASE_URI}/`,
                     dependent
                 )
                 .then((result) => {
@@ -60,25 +60,12 @@ export class RestDependentService implements IDependentService {
         });
     }
 
-    public getAllDependents(): Promise<RequestResult<Dependent[]>> {
+    public getAll(): Promise<RequestResult<Dependent[]>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: [],
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-
             this.http
-                .getWithCors<RequestResult<Dependent[]>>(
-                    `${this.DEPENDENT_BASE_URI}/`
-                )
-                .then((requestResult) => {
-                    return resolve(requestResult);
+                .getWithCors<RequestResult<Dependent[]>>(`${this.BASE_URI}/`)
+                .then((dependents) => {
+                    return resolve(dependents);
                 })
                 .catch((err) => {
                     this.logger.error(`getNotes error: ${err}`);

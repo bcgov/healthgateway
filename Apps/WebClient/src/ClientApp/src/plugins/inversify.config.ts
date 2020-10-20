@@ -93,16 +93,16 @@ container
     .to(RestCommunicationService)
     .inSingletonScope();
 container
+    .bind<IDependentService>(SERVICE_IDENTIFIER.DependentService)
+    .to(RestDependentService)
+    .inSingletonScope();
+container
     .bind<IUserCommentService>(SERVICE_IDENTIFIER.UserCommentService)
     .to(RestUserCommentService)
     .inSingletonScope();
 container
     .bind<IUserRatingService>(SERVICE_IDENTIFIER.UserRatingService)
     .to(RestUserRatingService)
-    .inSingletonScope();
-container
-    .bind<IDependentService>(SERVICE_IDENTIFIER.DependentService)
-    .to(RestDependentService)
     .inSingletonScope();
 container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

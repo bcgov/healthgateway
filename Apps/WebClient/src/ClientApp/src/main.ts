@@ -76,9 +76,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const encounterService: IEncounterService = container.get(
         SERVICE_IDENTIFIER.EncounterService
     );
-    const dependentService: IDependentService = container.get(
-        SERVICE_IDENTIFIER.DependentService
-    );
     const userProfileService: IUserProfileService = container.get(
         SERVICE_IDENTIFIER.UserProfileService
     );
@@ -99,6 +96,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     );
     const userRatingService: IUserRatingService = container.get(
         SERVICE_IDENTIFIER.UserRatingService
+    );
+    const dependentService: IDependentService = container.get(
+        SERVICE_IDENTIFIER.DependentService
     );
     logger.initialize(config.webClient.logLevel);
 

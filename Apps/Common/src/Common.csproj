@@ -16,6 +16,7 @@
     <Compile Remove="Authorization\**" />
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Authorization\**" />
+    <None Remove="ServiceReference\dotnet-svcutil.params.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,7 +43,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="3.1.9" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.7.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.7.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.7.0" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.7.0" />
+  </ItemGroup>
+    
   <ItemGroup>
     <ProjectReference Include="..\..\Database\src\Database.csproj" />
   </ItemGroup>
@@ -68,8 +76,16 @@
     <Folder Include="Filters\" />
     <Folder Include="Models\" />
     <Folder Include="Services\" />
+    <Folder Include="resources\" />
+    <Folder Include="ServiceReference\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ServiceReference\dotnet-svcutil.params.json" Condition="'$(ExcludeConfigFilesFromBuildOutput)'=='true'">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 </Project>

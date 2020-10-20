@@ -17,7 +17,6 @@ namespace HealthGateway.Encounter
 {
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Encounter.Delegates;
@@ -59,6 +58,7 @@ namespace HealthGateway.Encounter
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigurePatientAccess(services);
 
             services.AddCors(options =>
             {
@@ -72,7 +72,6 @@ namespace HealthGateway.Encounter
             });
 
             // Add services
-            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IEncounterService, EncounterService>();
             services.AddSingleton<ITraceService, TimedTraceService>();
 

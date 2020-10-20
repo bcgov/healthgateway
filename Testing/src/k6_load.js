@@ -15,36 +15,10 @@
 //-------------------------------------------------------------------------
 
 import http from 'k6/http';
-import { check, group, sleep } from 'k6';
-import { Rate, Trend } from 'k6/metrics';
+import { sleep } from 'k6';
 import * as common from './inc/common.js';
 
-let groupDuration = Trend('batch');
-
-export let options = {
-  vu: 300,
-  stages: [
-    { duration: '3m', target: 70 }, // simulate ramp-up of traffic from 1 users over a few minutes.
-    { duration: '5m', target: 70 }, // stay at number of users for several minutes
-    { duration: '3m', target: 300 }, // ramp-up to users peak for some minutes (peak hour starts)
-    { duration: '2m', target: 300 }, // stay at users for short amount of time (peak hour)
-    { duration: '3m', target: 70 }, // ramp-down to lower users over 3 minutes (peak hour ends)
-    { duration: '5m', target: 70 }, // continue for additional time
-    { duration: '3m', target: 0 }, // ramp-down to 0 users
-  ],
-  thresholds: {
-    'errors': ['rate < 0.05'], // threshold on a custom metric
-    'http_req_duration': ['p(90)< 9000'], // 90% of requests must complete this threshold 
-    'http_req_duration': ['avg < 5000'], // average of requests must complete within this time
-  },
-}
-
-function groupWithDurationMetric(name, group_function) {
-  let start = new Date();
-  group(name, group_function);
-  let end = new Date();
-  groupDuration.add(end - start, { groupName: name });
-}
+export let options = common.loadOptions;
 
 export default function () {
 
@@ -52,7 +26,7 @@ export default function () {
 
   common.authorizeUser(user);
 
-  groupWithDurationMetric('batch', function () {
+  common.groupWithDurationMetric('batch', function () {
 
     let webClientBatchResponses = http.batch(common.webClientRequests(user));
     let timelineBatchResponses = http.batch(common.timelineRequests(user));

@@ -74,6 +74,7 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureHangfireQueue(services);
+            this.startupConfig.ConfigurePatientAccess(services);
 
             // Add services
             services.AddMemoryCache();
@@ -107,12 +108,11 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICryptoDelegate, AESCryptoDelegate>();
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
-            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
             services.AddTransient<IUserDelegateDelegate, DBUserDelegateDelegate>();
 
             // Add Background Services
             services.AddHostedService<BannerListener>();
-
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
