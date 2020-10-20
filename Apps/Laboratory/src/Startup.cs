@@ -16,7 +16,6 @@
 namespace HealthGateway.Laboratory
 {
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Instrumentation;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Services;
@@ -56,7 +55,6 @@ namespace HealthGateway.Laboratory
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
-            this.startupConfig.ConfigurePatientAccess(services);
 
             services.AddCors(options =>
             {
