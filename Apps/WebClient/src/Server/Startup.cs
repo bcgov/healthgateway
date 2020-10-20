@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Listeners;
@@ -89,7 +90,8 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IUserSMSService, UserSMSService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
-            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
+            services.AddTransient<IDependentService, DependentService>();
+            services.AddSingleton<ITraceService, TimedTraceService>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
@@ -105,6 +107,8 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICryptoDelegate, AESCryptoDelegate>();
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
+            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
+            services.AddTransient<IUserDelegateDelegate, DBUserDelegateDelegate>();
 
             // Add Background Services
             services.AddHostedService<BannerListener>();

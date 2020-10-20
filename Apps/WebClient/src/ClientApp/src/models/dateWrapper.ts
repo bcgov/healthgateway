@@ -188,10 +188,10 @@ export class DateWrapper {
      * Difference between two Dates in milliseconds
      * @param other Other date to compare to
      * @param unit (optional) unit of comparision (year, hour, minute, second...)
-     * @returns the difference in milliseconds
+     * @returns the difference with the Duration object
      */
-    public diff(other: DateWrapper, unit?: DurationUnit): number {
-        return this.internalDate.diff(other.internalDate, unit).milliseconds;
+    public diff(other: DateWrapper, unit?: DurationUnit): Duration {
+        return this.internalDate.diff(other.internalDate, unit);
     }
 
     /**

@@ -22,6 +22,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import UserRating from "@/models/userRating";
 import Encounter from "@/models/encounter";
 import { OidcUserProfile } from "@/models/user";
+import Dependent from "@/models/dependent";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -136,6 +137,11 @@ export interface IUserCommentService {
 export interface ICommunicationService {
     initialize(http: IHttpDelegate): void;
     getActive(): Promise<RequestResult<Communication>>;
+}
+
+export interface IDependentService {
+    initialize(http: IHttpDelegate): void;
+    getAll(): Promise<RequestResult<Dependent[]>>;
 }
 
 export interface IHttpDelegate {

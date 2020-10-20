@@ -24,6 +24,12 @@ namespace HealthGateway.WebClient.Models
     public class DependentModel
     {
         /// <summary>
+        /// Gets or sets the hdid of the dependent.
+        /// </summary>
+        [JsonPropertyName("hdid")]
+        public string HdId { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the name of the dependent.
         /// </summary>
         [JsonPropertyName("name")]
