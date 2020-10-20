@@ -32,11 +32,19 @@ namespace HealthGateway.WebClient.Services
         RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId);
 
         /// <summary>
-        /// Add a dependents to the given hdId of the delegate (parent or guardiant).
+        /// Add a dependent to the given hdId of the delegate (parent or guardiant).
         /// </summary>
         /// <param name="delegateHdId">The HdId of the Delegate (parent or guardian).</param>
         /// <param name="addDependentRequest">The request to create a User Delegate model.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
         RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest);
+
+        /// <summary>
+        /// Removes a dependent delegate relation.
+        /// </summary>
+        /// <param name="dependentHdid">The HdId of the Dependent.</param>
+        /// <param name="delegateHdid">The HdId of the Delegated user.</param>
+        /// <returns>A dependent model wrapped in a RequestResult.</returns>
+        RequestResult<DependentModel> Remove(string dependentHdid, string delegateHdid);
     }
 }

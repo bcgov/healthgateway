@@ -86,7 +86,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResourcePayload = new DependentModel() { Name = patientResult.ResourcePayload.FirstName + " " + patientResult.ResourcePayload.LastName },
                 ResultStatus = dbDependent.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = dbDependent.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                ResultError = dbDependent.Status == DBStatusCode.Created ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
         }
@@ -95,6 +95,18 @@ namespace HealthGateway.WebClient.Services
         public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public RequestResult<DependentModel> Remove(string dependentHdid, string delegateHdid) {
+            DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Delete(dependentHdid, delegateHdid, true);
+            RequestResult<DependentModel> result = new RequestResult<DependentModel>()
+            {
+                ResourcePayload = new DependentModel(),
+                ResultStatus = dbDependent.Status == DBStatusCode.Deleted ? ResultType.Success : ResultType.Error,
+                ResultError = dbDependent.Status == DBStatusCode.Read ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+            };
+            return result;
         }
     }
 }
