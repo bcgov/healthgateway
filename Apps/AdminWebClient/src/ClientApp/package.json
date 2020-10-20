@@ -35,7 +35,7 @@
     "@mdi/font": "^5.7.55",
     "@nuxtjs/vuetify": "^1.11.2",
     "@types/node": "^14.11.10",
-    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.4.1",
     "@vue/cli-plugin-babel": "^4.5.7",
     "@vue/cli-plugin-eslint": "^4.5.7",
