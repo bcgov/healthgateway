@@ -17,7 +17,7 @@ import {
     IUserFeedbackService,
     IDashboardService,
     IEmailAdminService,
-    ICommunicationService,
+    ICommunicationService
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 
