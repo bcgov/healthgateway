@@ -11,8 +11,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import ErrorTranslator from "@/utility/errorTranslator";
 import BannerError from "@/models/bannerError";
-import { AddDependentRequest } from "@/models/addDependentRequest";
 import { Action } from "vuex-class";
+import { ResultError } from "@/models/requestResult";
 
 export enum GenderType {
     NotSelected = "",
@@ -119,40 +119,35 @@ export default class NewDependentComponent extends Vue {
     }
 
     private addDependent() {
-        console.log(
-            this.firstName,
-            this.lastName,
-            new DateWrapper(this.birthdate).toISODate(),
-            this.PHN.trim(),
-            this.gender
-        );
         this.dependentService
             .addDependent({
                 firstName: this.firstName,
                 lastName: this.lastName,
                 dateOfBirth: new DateWrapper(this.birthdate).toISODate(),
-                PHN: this.PHN.trim(),
+                PHN: this.PHN.replace(/\s/g, ""),
                 gender: this.gender,
                 version: 0,
             })
-            .then((result) => {
-                this.onDependentAdded(result);
+            .then(() => {
+                this.handleSubmit();
             })
-            .catch((err) => {
+            .catch((err: ResultError) => {
                 this.addError(
                     ErrorTranslator.toBannerError(
                         "Error adding dependent. Please review fields and try again.",
                         err
                     )
                 );
+                this.handleSubmit();
             })
             .finally(() => {
-                this.handleSubmit();
+                this.firstName = "";
+                this.lastName = "";
+                this.birthdate = "";
+                this.PHN = "";
+                this.gender = GenderType.NotSelected;
+                this.accepted = false;
             });
-    }
-
-    private onDependentAdded(res: AddDependentRequest) {
-        console.log(res);
     }
 
     private handleSubmit() {
@@ -169,6 +164,7 @@ export default class NewDependentComponent extends Vue {
         id="new-dependent-modal"
         v-model="isVisible"
         data-testid="newDependentModal"
+        content-class="mt-5"
         title="Dependent Registration"
         size="lg"
         header-bg-variant="primary"
@@ -180,8 +176,8 @@ export default class NewDependentComponent extends Vue {
                 <form>
                     <b-row data-testid="newDependentModalText">
                         <b-col>
-                            <b-row class="mb-2">
-                                <b-col>
+                            <b-row>
+                                <b-col class="col-12 col-md-4 mb-2">
                                     <label for="firstName">First Name</label>
                                     <b-form-input
                                         id="firstName"
@@ -197,7 +193,7 @@ export default class NewDependentComponent extends Vue {
                                         First name is required
                                     </b-form-invalid-feedback>
                                 </b-col>
-                                <b-col>
+                                <b-col class="col-12 col-md-4 mb-2">
                                     <label for="lastName">Last Name</label>
                                     <b-form-input
                                         id="lastName"
@@ -213,7 +209,7 @@ export default class NewDependentComponent extends Vue {
                                         Last name is required
                                     </b-form-invalid-feedback>
                                 </b-col>
-                                <b-col>
+                                <b-col class="col-12 col-md-4 mb-2">
                                     <label for="birthdate">Date of Birth</label>
                                     <b-form-input
                                         id="birthdate"
@@ -233,8 +229,8 @@ export default class NewDependentComponent extends Vue {
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
-                            <b-row class="mb-4">
-                                <b-col>
+                            <b-row class="mb-2">
+                                <b-col class="col-12 col-md-6 mb-2">
                                     <label for="phn">PHN</label>
                                     <b-form-input
                                         id="phn"
@@ -251,7 +247,7 @@ export default class NewDependentComponent extends Vue {
                                         Valid PHN is required
                                     </b-form-invalid-feedback>
                                 </b-col>
-                                <b-col>
+                                <b-col class="col-12 col-md-6 mb-2">
                                     <b-row>
                                         <b-col>
                                             <label for="gender">Gender</label>

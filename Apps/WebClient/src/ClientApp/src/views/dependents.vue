@@ -36,10 +36,10 @@ export default class DependentsView extends Vue {
                 <b-row>
                     <b-col>
                         <b-row id="pageTitle">
-                            <b-col cols="8">
+                            <b-col cols="7">
                                 <h1 id="Subject">Dependents</h1>
                             </b-col>
-                            <b-col cols="4" align-self="end">
+                            <b-col cols="5" align-self="end">
                                 <b-btn
                                     variant="primary"
                                     class="float-right"
