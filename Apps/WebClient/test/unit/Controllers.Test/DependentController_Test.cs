@@ -19,12 +19,10 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Moq;
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Services;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Controllers;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Http;
     using System.Security.Claims;
-    using System.Threading.Tasks;
     using System;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Models;
@@ -32,9 +30,6 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.Extensions.Logging;
-    using Microsoft.AspNetCore.Routing;
-    using Microsoft.AspNetCore.Mvc.Abstractions;
-    using System.IO;
 
     public class DependentController_Test
     {
@@ -54,7 +49,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResourcePayload = expectedDependends,
                 ResultStatus = Common.Constants.ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.GetDependents(hdid)).Returns(expectedResult);
+            dependentServiceMock.Setup(s => s.GetDependents(hdid, 0, 500)).Returns(expectedResult);
 
             DependentController dependentController = new DependentController(
                 new Mock<ILogger<UserProfileController>>().Object,
