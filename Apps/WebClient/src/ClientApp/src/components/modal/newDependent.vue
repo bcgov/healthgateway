@@ -124,7 +124,10 @@ export default class NewDependentComponent extends Vue {
 
     private addDependent() {
         this.dependentService
-            .addDependent(this.dependent)
+            .addDependent({
+                ...this.dependent,
+                PHN: this.dependent.PHN.replace(/\D/g, ""),
+            })
             .then(() => {
                 this.handleSubmit();
             })

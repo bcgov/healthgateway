@@ -147,6 +147,8 @@ namespace HealthGateway.Common.Delegates
 
         private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply)
         {
+            this.logger.LogDebug($"Parsing patient response... {JsonSerializer.Serialize(reply)}");
+
             // Verify that the reply contains a result
             string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
@@ -164,7 +166,7 @@ namespace HealthGateway.Common.Delegates
             HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
 
             // If the deceased indicator is set and true, return an empty person.
-            bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value == true;
+            bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
             if (deceasedInd)
             {
                 PatientModel emptyPatient = new PatientModel();
