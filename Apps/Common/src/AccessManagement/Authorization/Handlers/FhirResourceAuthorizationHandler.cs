@@ -184,7 +184,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                     if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID) && scopes.Intersect(userDelegatedScopes).Any())
                     {
                         string userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
-                        if (this.userDelegateDelegate.Find(resourceHDID, userHDID))
+                        if (this.userDelegateDelegate.Exists(resourceHDID, userHDID))
                         {
                             if (requirement.Resource == FhirResource.Observation)
                             {

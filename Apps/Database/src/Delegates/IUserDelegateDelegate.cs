@@ -58,6 +58,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="ownerId">The owner hdid.</param>
         /// <param name="delegateId">The delegated user hdid.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        bool Find(string ownerId, string delegateId);
+        bool Exists(string ownerId, string delegateId);
     }
 }

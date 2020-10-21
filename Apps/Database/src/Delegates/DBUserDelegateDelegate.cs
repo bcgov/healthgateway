@@ -94,7 +94,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public bool Find(string ownerId, string delegateId)
+        public bool Exists(string ownerId, string delegateId)
         {
             var userDelegate = this.dbContext.UserDelegate.Find(delegateId, ownerId);
             if (userDelegate != null)

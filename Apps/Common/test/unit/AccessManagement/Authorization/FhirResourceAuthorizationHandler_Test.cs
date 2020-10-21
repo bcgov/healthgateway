@@ -531,7 +531,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
-            mockDependentDelegate.Setup(s => s.Find(string.Empty, hdid));
+            mockDependentDelegate.Setup(s => s.Exists(string.Empty, hdid));
 
             FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);
             var requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
@@ -673,7 +673,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
-            mockDependentDelegate.Setup(s => s.Find(string.Empty, hdid));
+            mockDependentDelegate.Setup(s => s.Exists(string.Empty, hdid));
 
             FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);
             var requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
@@ -769,7 +769,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
             Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
-            mockDependentDelegate.Setup(s => s.Find(resourceHDID, hdid)).Returns(true);
+            mockDependentDelegate.Setup(s => s.Exists(resourceHDID, hdid)).Returns(true);
 
             FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);
             var requirements = new[] { new FhirRequirement(FhirResource.Observation, FhirAccessType.Read) };
