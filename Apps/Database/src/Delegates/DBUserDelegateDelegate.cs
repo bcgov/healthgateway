@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -91,6 +91,20 @@ namespace HealthGateway.Database.Delegates
         public DBResult<UserDelegate> Delete(string ownerId, string delegateId, bool commit)
         {
             throw new System.NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public bool Find(string ownerId, string delegateId)
+        {
+            var userDelegate = this.dbContext.UserDelegate.Find(delegateId, ownerId);
+            if (userDelegate != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
