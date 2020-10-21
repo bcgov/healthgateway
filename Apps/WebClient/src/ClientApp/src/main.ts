@@ -116,7 +116,8 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     communicationService.initialize(httpDelegate);
     userCommentService.initialize(config, httpDelegate);
     userRatingService.initialize(httpDelegate);
-    dependentService.initialize(httpDelegate);
+    dependentService.initialize(config, httpDelegate);
+
     Vue.use(IdleVue, {
         eventEmitter: new Vue(),
         idleTime: config.webClient.timeouts.idle,
