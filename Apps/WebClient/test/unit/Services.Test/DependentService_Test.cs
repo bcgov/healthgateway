@@ -211,6 +211,24 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
+        [Fact]
+        public void ValidateRemove()
+        {
+            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            mockDependentDelegate.Setup(s => s.Delete(mockHdId, mockParentHdId, true)).Returns(new DBResult<UserDelegate>() {
+                Status = DBStatusCode.Deleted,
+            });
+
+            IDependentService service = new DependentService(
+                new Mock<ILogger<DependentService>>().Object,
+                new Mock<IPatientService>().Object,
+                mockDependentDelegate.Object
+            );
+            RequestResult<DependentModel> actualResult = service.Remove(mockHdId, mockParentHdId);
+
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+        }
+
         private IDependentService SetupMockDependentService(AddDependentRequest addDependentRequest, DBResult<UserDelegate> insertResult = null)
         {
             var mockPatientService = new Mock<IPatientService>();

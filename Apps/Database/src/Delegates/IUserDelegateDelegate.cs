@@ -42,5 +42,14 @@ namespace HealthGateway.Database.Delegates
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
         /// <returns>A list of UserDelegates wrapped in a DBResult</returns>
         DBResult<IEnumerable<UserDelegate>> Get(string delegateId, int page, int pageSize);
+
+        /// <summary>
+        /// Deletes a User Delegate record in the database.
+        /// </summary>
+        /// <param name="ownerId">The owner hdid.</param>
+        /// <param name="delegateId">The delegated user hdid.</param>
+        /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
+        /// <returns>A DB result which encapsulates the return record and status.</returns>
+        DBResult<UserDelegate> Delete(string ownerId, string delegateId, bool commit);
     }
 }
