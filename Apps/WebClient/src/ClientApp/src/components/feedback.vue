@@ -152,7 +152,7 @@ export default class FeedbackComponent extends Vue {
                 </b-col>
                 <b-col
                     v-show="isSidebarOpen"
-                    class="button-title d-none text-left col-7 col-md-6 p-0 pl-3 py-2"
+                    class="button-title text-left col-7 col-md-6 p-0 pl-3 py-2"
                 >
                     <span> Feedback </span>
                 </b-col>
@@ -180,7 +180,7 @@ export default class FeedbackComponent extends Vue {
             <div v-if="!hasSubmitted">
                 <b-row class="p-3 description-container">
                     <b-col class="text-left small"
-                        ><span class="button-title d-none"
+                        ><span class="button-title"
                             >Do you have a suggestion or idea? Let us know in
                             the field below.</span
                         >
