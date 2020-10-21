@@ -124,7 +124,9 @@ export default class SidebarComponent extends Vue {
         this.$nextTick(() => {
             window.addEventListener("resize", this.onResize);
             if (!this.isMobileWidth) {
-                this.setSidebarState(true);
+                window.setInterval(() => {
+                    this.setSidebarState(true);
+                }, 2000);
             }
         });
         this.windowWidth = window.innerWidth;
