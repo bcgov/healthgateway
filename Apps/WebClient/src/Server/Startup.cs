@@ -22,7 +22,6 @@ namespace HealthGateway.WebClient
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.WebClient.Listeners;
@@ -75,6 +74,7 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureHangfireQueue(services);
             this.startupConfig.ConfigurePatientAccess(services);
+            this.startupConfig.ConfigureTracing(services);
 
             // Add services
             services.AddMemoryCache();
@@ -91,8 +91,8 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IUserSMSService, UserSMSService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
+            services.AddTransient<IDependentService, DependentService>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
-            services.AddTransient<ITraceService, TimedTraceService>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();

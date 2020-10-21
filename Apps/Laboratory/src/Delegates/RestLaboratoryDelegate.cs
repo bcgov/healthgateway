@@ -17,6 +17,7 @@ namespace HealthGateway.Laboratory.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -24,7 +25,6 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -41,7 +41,6 @@ namespace HealthGateway.Laboratory.Delegates
         private const string LabConfigSectionKey = "Laboratory";
 
         private readonly ILogger logger;
-        private readonly ITraceService traceService;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
         private readonly LaboratoryConfig labConfig;
@@ -50,171 +49,174 @@ namespace HealthGateway.Laboratory.Delegates
         /// Initializes a new instance of the <see cref="RestLaboratoryDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestLaboratoryDelegate(
             ILogger<RestLaboratoryDelegate> logger,
-            ITraceService traceService,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {
             this.logger = logger;
-            this.traceService = traceService;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
             this.labConfig = new LaboratoryConfig();
             this.configuration.Bind(LabConfigSectionKey, this.labConfig);
         }
 
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestLaboratoryDelegate));
+
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
         {
-            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-            RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
+            using (Source.StartActivity("GetLaboratoryOrders"))
             {
-                ResultStatus = Common.Constants.ResultType.Error,
-                PageIndex = pageIndex,
-            };
-
-            this.logger.LogDebug($"Getting laboratory orders...");
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            var query = new Dictionary<string, string>
-            {
-                ["limit"] = this.labConfig.FetchSize,
-            };
-            try
-            {
-                Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.labConfig.Endpoint, query));
-                HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                this.logger.LogTrace($"Response: {response}");
-                switch (response.StatusCode)
+                RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
                 {
-                    case HttpStatusCode.OK:
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                            IgnoreNullValues = true,
-                            WriteIndented = true,
-                        };
-                        this.logger.LogTrace($"Response payload: {payload}");
-                        PHSAResult<LaboratoryOrder> phsaResult = JsonSerializer.Deserialize<PHSAResult<LaboratoryOrder>>(payload, options);
-                        if (phsaResult != null && phsaResult.Result != null)
-                        {
+                    ResultStatus = Common.Constants.ResultType.Error,
+                    PageIndex = pageIndex,
+                };
+
+                this.logger.LogDebug($"Getting laboratory orders...");
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+                client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                var query = new Dictionary<string, string>
+                {
+                    ["limit"] = this.labConfig.FetchSize,
+                };
+                try
+                {
+                    Uri endpoint = new Uri(QueryHelpers.AddQueryString(this.labConfig.Endpoint, query));
+                    HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    this.logger.LogTrace($"Response: {response}");
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            var options = new JsonSerializerOptions
+                            {
+                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                                IgnoreNullValues = true,
+                                WriteIndented = true,
+                            };
+                            this.logger.LogTrace($"Response payload: {payload}");
+                            PHSAResult<LaboratoryOrder> phsaResult = JsonSerializer.Deserialize<PHSAResult<LaboratoryOrder>>(payload, options);
+                            if (phsaResult != null && phsaResult.Result != null)
+                            {
+                                retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                retVal.ResourcePayload = phsaResult.Result;
+                                retVal.TotalResultCount = phsaResult.Result.Count;
+#pragma warning disable CA1305 // Specify IFormatProvider
+                                retVal.PageSize = int.Parse(this.labConfig.FetchSize);
+#pragma warning restore CA1305 // Specify IFormatProvider
+                            }
+                            else
+                            {
+                                retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            }
+
+                            break;
+                        case HttpStatusCode.NoContent: // No Lab exits for this user
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
-                            retVal.ResourcePayload = phsaResult.Result;
-                            retVal.TotalResultCount = phsaResult.Result.Count;
+                            retVal.ResourcePayload = new List<LaboratoryOrder>();
+                            retVal.TotalResultCount = 0;
 #pragma warning disable CA1305 // Specify IFormatProvider
                             retVal.PageSize = int.Parse(this.labConfig.FetchSize);
 #pragma warning restore CA1305 // Specify IFormatProvider
-                        }
-                        else
-                        {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                        }
-
-                        break;
-                    case HttpStatusCode.NoContent: // No Lab exits for this user
-                        retVal.ResultStatus = Common.Constants.ResultType.Success;
-                        retVal.ResourcePayload = new List<LaboratoryOrder>();
-                        retVal.TotalResultCount = 0;
-#pragma warning disable CA1305 // Specify IFormatProvider
-                        retVal.PageSize = int.Parse(this.labConfig.FetchSize);
-#pragma warning restore CA1305 // Specify IFormatProvider
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                        break;
-                    default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                        this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
-                        break;
+                            break;
+                        case HttpStatusCode.Forbidden:
+                            retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            break;
+                        default:
+                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                            break;
+                    }
                 }
-            }
 #pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
+                catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
-            {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Lab Orders: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                this.logger.LogError($"Unexpected exception in Get Lab Orders {e}");
-            }
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Lab Orders: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    this.logger.LogError($"Unexpected exception in Get Lab Orders {e}");
+                }
 
-            this.logger.LogDebug($"Finished getting Laboratory Orders");
-            return retVal;
+                this.logger.LogDebug($"Finished getting Laboratory Orders");
+                return retVal;
+            }
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken)
         {
-            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-            RequestResult<LaboratoryReport> retVal = new RequestResult<LaboratoryReport>()
+            using (Source.StartActivity("GetLaboratoryOrders"))
             {
-                ResultStatus = Common.Constants.ResultType.Error,
-            };
-
-            this.logger.LogTrace($"Getting laboratory report...");
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            try
-            {
-                Uri endpoint = new Uri($"{this.labConfig.Endpoint}/{id}/LabReportDocument");
-                HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                switch (response.StatusCode)
+                RequestResult<LaboratoryReport> retVal = new RequestResult<LaboratoryReport>()
                 {
-                    case HttpStatusCode.OK:
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                            IgnoreNullValues = true,
-                            WriteIndented = true,
-                        };
-                        LaboratoryReport report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);
-                        if (report != null)
-                        {
+                    ResultStatus = Common.Constants.ResultType.Error,
+                };
+
+                this.logger.LogTrace($"Getting laboratory report...");
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+                client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                try
+                {
+                    Uri endpoint = new Uri($"{this.labConfig.Endpoint}/{id}/LabReportDocument");
+                    HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            var options = new JsonSerializerOptions
+                            {
+                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                                IgnoreNullValues = true,
+                                WriteIndented = true,
+                            };
+                            LaboratoryReport report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);
+                            if (report != null)
+                            {
+                                retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                retVal.ResourcePayload = report;
+                                retVal.TotalResultCount = 1;
+                            }
+                            else
+                            {
+                                retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            }
+
+                            break;
+                        case HttpStatusCode.NoContent: // No Lab exits for this user
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
-                            retVal.ResourcePayload = report;
-                            retVal.TotalResultCount = 1;
-                        }
-                        else
-                        {
-                            retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                        }
-
-                        break;
-                    case HttpStatusCode.NoContent: // No Lab exits for this user
-                        retVal.ResultStatus = Common.Constants.ResultType.Success;
-                        retVal.PageIndex = 0;
-                        retVal.TotalResultCount = 0;
-                        retVal.ResourcePayload = new LaboratoryReport();
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                        break;
-                    default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                        this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
-                        break;
+                            retVal.PageIndex = 0;
+                            retVal.TotalResultCount = 0;
+                            retVal.ResourcePayload = new LaboratoryReport();
+                            break;
+                        case HttpStatusCode.Forbidden:
+                            retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            break;
+                        default:
+                            retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Labs Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                            this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                            break;
+                    }
                 }
-            }
 #pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
+                catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
-            {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Lab Report: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
-                this.logger.LogError($"Unexpected exception in Lab Report {e}");
-            }
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Lab Report: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                    this.logger.LogError($"Unexpected exception in Lab Report {e}");
+                }
 
-            this.logger.LogDebug($"Finished getting Laboratory Report");
-            return retVal;
+                this.logger.LogDebug($"Finished getting Laboratory Report");
+                return retVal;
+            }
         }
     }
 }

@@ -34,7 +34,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Filters;
-    using HealthGateway.Common.Instrumentation;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Constants;
@@ -57,6 +57,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
+    using OpenTelemetry.Trace;
     using ServiceReference;
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
@@ -394,8 +395,40 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
-            services.AddSingleton<ITraceService, TimedTraceService>();
             services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
+        }
+
+        /// <summary>
+        /// Configures OpenTelemetry tracing.
+        /// </summary>
+        /// <param name="services">The service collection to add forward proxies into.</param>
+        public void ConfigureTracing(IServiceCollection services)
+        {
+            this.Logger.LogDebug("Setting up OpenTelemetry");
+            OpenTelemetryConfig config = new OpenTelemetryConfig();
+            this.configuration.GetSection("OpenTelemetry").Bind(config);
+            if (config.Enabled)
+            {
+                services.AddOpenTelemetryTracing(tracing =>
+                 {
+                     tracing.AddAspNetCoreInstrumentation()
+                            .AddHttpClientInstrumentation()
+                            .AddSource(config.Sources);
+                     if (config.ZipkinEnabled)
+                     {
+                         tracing.AddZipkinExporter(options =>
+                         {
+                             options.ServiceName = config.ServiceName;
+                             options.Endpoint = config.ZipkinUri;
+                         });
+                     }
+
+                     if (config.ConsoleEnabled)
+                     {
+                         tracing.AddConsoleExporter();
+                     }
+                 });
+            }
         }
 
         /// <summary>

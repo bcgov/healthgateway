@@ -31,7 +31,6 @@ namespace HealthGateway.LaboratoryTests
     using System.Net;
     using System.Linq;
     using System;
-    using HealthGateway.Common.Instrumentation;
 
     public class LaboratoryDelegate_Test
     {
@@ -64,7 +63,7 @@ namespace HealthGateway.LaboratoryTests
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), new Mock<ITraceService>().Object, mockHttpClientService.Object, this.configuration);
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty)).Result;
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.Equal("9735352542", actualResult.ResourcePayload.First<LaboratoryOrder>().PHN);
@@ -91,7 +90,7 @@ namespace HealthGateway.LaboratoryTests
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), new Mock<ITraceService>().Object, mockHttpClientService.Object, this.configuration);
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty)).Result;
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.Empty(actualResult.ResourcePayload);
@@ -118,7 +117,7 @@ namespace HealthGateway.LaboratoryTests
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), new Mock<ITraceService>().Object, mockHttpClientService.Object, this.configuration);
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<IEnumerable<LaboratoryOrder>> actualResult = Task.Run(async () => await labDelegate.GetLaboratoryOrders(string.Empty)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
@@ -146,7 +145,6 @@ namespace HealthGateway.LaboratoryTests
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 loggerFactory.CreateLogger<RestLaboratoryDelegate>(),
-                new Mock<ITraceService>().Object,
                 mockHttpClientService.Object,
                 this.configuration
             );
@@ -177,7 +175,7 @@ namespace HealthGateway.LaboratoryTests
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), new Mock<ITraceService>().Object, mockHttpClientService.Object, this.configuration);
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty)).Result;
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
         }
@@ -203,7 +201,7 @@ namespace HealthGateway.LaboratoryTests
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), new Mock<ITraceService>().Object, mockHttpClientService.Object, this.configuration);
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }

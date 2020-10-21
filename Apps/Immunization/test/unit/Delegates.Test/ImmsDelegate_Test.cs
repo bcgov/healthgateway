@@ -17,7 +17,6 @@ namespace HealthGateway.Immunization.Test.Delegate
 {
     using DeepEqual.Syntax;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -81,10 +80,9 @@ namespace HealthGateway.Immunization.Test.Delegate
             };
 
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IHttpClientService httpClientService = GetHttpClientService(HttpStatusCode.OK, json);
 
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), traceService, httpClientService, this.configuration);
+            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), httpClientService, this.configuration);
             var actualResult = immsDelegate.GetImmunizations("token", 0).Result;
 
             Assert.True(expectedResult.IsDeepEqual(actualResult));
@@ -107,10 +105,9 @@ namespace HealthGateway.Immunization.Test.Delegate
             };
 
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IHttpClientService httpClientService = GetHttpClientService(HttpStatusCode.OK, json);
 
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), traceService, httpClientService, this.configuration);
+            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), httpClientService, this.configuration);
             var actualResult = immsDelegate.GetImmunizations("token", 0).Result;
 
             Assert.True(expectedResult.IsDeepEqual(actualResult));
@@ -127,9 +124,8 @@ namespace HealthGateway.Immunization.Test.Delegate
             };
 
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IHttpClientService httpClientService = GetHttpClientService(HttpStatusCode.NoContent, string.Empty);
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), traceService, httpClientService, this.configuration);
+            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), httpClientService, this.configuration);
             var actualResult = immsDelegate.GetImmunizations("token", pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success && actualResult.ResourcePayload.Count() == 0);
@@ -151,9 +147,8 @@ namespace HealthGateway.Immunization.Test.Delegate
             };
 
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IHttpClientService httpClientService = GetHttpClientService(HttpStatusCode.Forbidden, string.Empty);
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), traceService, httpClientService, this.configuration);
+            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), httpClientService, this.configuration);
             var actualResult = immsDelegate.GetImmunizations("token", pageIndex).Result;
 
             Assert.True(actualResult.IsDeepEqual(expectedResult));
@@ -175,9 +170,8 @@ namespace HealthGateway.Immunization.Test.Delegate
             };
 
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IHttpClientService httpClientService = GetHttpClientService(HttpStatusCode.RequestTimeout, string.Empty);
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), traceService, httpClientService, this.configuration);
+            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), httpClientService, this.configuration);
             var actualResult = immsDelegate.GetImmunizations("token", pageIndex).Result;
 
             Assert.True(actualResult.IsDeepEqual(expectedResult));
@@ -203,9 +197,8 @@ namespace HealthGateway.Immunization.Test.Delegate
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IHttpClientService httpClientService = GetHttpClientService(HttpStatusCode.RequestTimeout, string.Empty);
-            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), traceService, mockHttpClientService.Object, this.configuration);
+            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), mockHttpClientService.Object, this.configuration);
             var actualResult = immsDelegate.GetImmunizations("token", pageIndex).Result;
 
             Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error && actualResult.ResultError.ErrorCode == "testhostServer-CE-PHSA");

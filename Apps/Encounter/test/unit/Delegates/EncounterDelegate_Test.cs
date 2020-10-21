@@ -26,7 +26,6 @@ namespace HealthGateway.Encounter.Test.Delegate
     using Moq.Protected;
     using System.Threading;
     using System.Net;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models.ODR;
     using HealthGateway.Common.Models.ODR;
@@ -92,12 +91,10 @@ namespace HealthGateway.Encounter.Test.Delegate
                })
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<ITraceService> mockTrace = new Mock<ITraceService>(MockBehavior.Loose);
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
                 loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
-                mockTrace.Object,
                 mockHttpClientService.Object,
                 this.configuration);
             ODRHistoryQuery query = new ODRHistoryQuery()
@@ -128,7 +125,6 @@ namespace HealthGateway.Encounter.Test.Delegate
                })
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<ITraceService> mockTrace = new Mock<ITraceService>(MockBehavior.Loose);
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
@@ -144,7 +140,6 @@ namespace HealthGateway.Encounter.Test.Delegate
 
             IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
                 loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
-                mockTrace.Object,
                 mockHttpClientService.Object,
                 localConfig);
             ODRHistoryQuery query = new ODRHistoryQuery()
@@ -173,12 +168,10 @@ namespace HealthGateway.Encounter.Test.Delegate
                })
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<ITraceService> mockTrace = new Mock<ITraceService>(MockBehavior.Loose);
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
                 loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
-                mockTrace.Object,
                 mockHttpClientService.Object,
                 this.configuration);
             ODRHistoryQuery query = new ODRHistoryQuery()
@@ -203,12 +196,10 @@ namespace HealthGateway.Encounter.Test.Delegate
                .Throws<HttpRequestException>()
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<ITraceService> mockTrace = new Mock<ITraceService>(MockBehavior.Loose);
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
                 loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
-                mockTrace.Object,
                 mockHttpClientService.Object,
                 this.configuration);
             ODRHistoryQuery query = new ODRHistoryQuery()

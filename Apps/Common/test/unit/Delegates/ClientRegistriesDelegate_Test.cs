@@ -24,7 +24,6 @@ namespace HealthGateway.CommonTests.Delegates
     using System;
     using System.Globalization;
     using Microsoft.Extensions.Logging;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Constants;
 
@@ -120,7 +119,6 @@ namespace HealthGateway.CommonTests.Delegates
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                new Mock<ITraceService>().Object,
                 clientMock.Object);
 
 
@@ -226,7 +224,6 @@ namespace HealthGateway.CommonTests.Delegates
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                new Mock<ITraceService>().Object,
                 clientMock.Object);
 
 

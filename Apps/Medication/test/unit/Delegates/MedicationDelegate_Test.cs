@@ -25,7 +25,6 @@ namespace HealthGateway.Medication.Delegates.Test
     using System.Net.Http;
     using Moq;
     using Microsoft.Extensions.Logging;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Database.Delegates;
@@ -170,7 +169,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                                      new Mock<ITraceService>().Object,
                                                                                       mockHttpClientService.Object,
                                                                                       this.configuration,
                                                                                       mockCacheDelegate.Object,
@@ -282,7 +280,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                                      new Mock<ITraceService>().Object,
                                                                                       mockHttpClientService.Object,
                                                                                       this.configuration,
                                                                                       mockCacheDelegate.Object,
@@ -357,7 +354,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                                      new Mock<ITraceService>().Object,
                                                                                       mockHttpClientService.Object,
                                                                                       this.configuration,
                                                                                       mockCacheDelegate.Object,
@@ -444,7 +440,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                                      new Mock<ITraceService>().Object,
                                                                                       mockHttpClientService.Object,
                                                                                       this.configuration,
                                                                                       mockCacheDelegate.Object,
@@ -527,7 +522,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                                      new Mock<ITraceService>().Object,
                                                                                       mockHttpClientService.Object,
                                                                                       this.configuration,
                                                                                       mockCacheDelegate.Object,
@@ -587,7 +581,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                                      new Mock<ITraceService>().Object,
                                                                                       mockHttpClientService.Object,
                                                                                       this.configuration,
                                                                                       mockCacheDelegate.Object,
@@ -647,7 +640,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                                      new Mock<ITraceService>().Object,
                                                                                       mockHttpClientService.Object,
                                                                                       this.configuration,
                                                                                       mockCacheDelegate.Object,
@@ -707,7 +699,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                                      new Mock<ITraceService>().Object,
                                                                                       mockHttpClientService.Object,
                                                                                       this.configuration,
                                                                                       mockCacheDelegate.Object,
@@ -730,7 +721,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                          new Mock<ITraceService>().Object,
                                                                           mockHttpClientService.Object,
                                                                           this.configuration,
                                                                           mockCacheDelegate.Object,
@@ -751,7 +741,6 @@ namespace HealthGateway.Medication.Delegates.Test
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             IMedStatementDelegate medStatementDelegate = new RestMedStatementDelegate(loggerFactory.CreateLogger<RestMedStatementDelegate>(),
-                                                                          new Mock<ITraceService>().Object,
                                                                           mockHttpClientService.Object,
                                                                           this.configuration,
                                                                           mockCacheDelegate.Object,
