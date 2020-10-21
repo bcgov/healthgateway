@@ -50,7 +50,7 @@ namespace HealthGateway.Common.Delegates
             this.clientRegistriesClient = clientRegistriesClient;
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMSPVisitDelegate));
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc />
         public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetDemographicsByHDIDAsync(string hdid)
@@ -219,8 +219,8 @@ namespace HealthGateway.Common.Delegates
 
                 PatientModel patient = new PatientModel() { FirstName = givenNames, LastName = lastNames, Birthdate = dob, Gender = gender, EmailAddress = string.Empty };
 
-                string personIdentifierType = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).root;
-                string personIdentifier = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).extension;
+                string personIdentifierType = ((II)retrievedPerson.identifiedPerson.id.GetValue(0) !).root;
+                string personIdentifier = ((II)retrievedPerson.identifiedPerson.id.GetValue(0) !).extension;
                 if (personIdentifierType == OIDType.HDID.ToString())
                 {
                     patient.HdId = personIdentifier;
@@ -241,8 +241,8 @@ namespace HealthGateway.Common.Delegates
                     };
                 }
 
-                string subjectIdentifierType = ((II)retrievedPerson.id.GetValue(0)!).root;
-                string subjectIdentifier = ((II)retrievedPerson.id.GetValue(0)!).extension;
+                string subjectIdentifierType = ((II)retrievedPerson.id.GetValue(0) !).root;
+                string subjectIdentifier = ((II)retrievedPerson.id.GetValue(0) !).extension;
                 if (subjectIdentifierType == OIDType.HDID.ToString())
                 {
                     patient.HdId = subjectIdentifier;
