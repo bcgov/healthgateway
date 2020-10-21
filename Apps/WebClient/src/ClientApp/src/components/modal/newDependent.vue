@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import LoadingComponent from "@/components/loading.vue";
-import { Component } from "vue-property-decorator";
+import { Component, Emit } from "vue-property-decorator";
 import { Validation } from "vuelidate/vuelidate";
 import { sameAs, required, minLength } from "vuelidate/lib/validators";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -152,6 +152,7 @@ export default class NewDependentComponent extends Vue {
             });
     }
 
+    @Emit()
     private handleSubmit() {
         // Hide the modal manually
         this.$nextTick(() => {

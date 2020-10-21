@@ -124,7 +124,11 @@ export default class DependentsView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <NewDependentComponent ref="newDependentModal" @show="showModal" />
+        <NewDependentComponent
+            ref="newDependentModal"
+            @show="showModal"
+            @handle-submit="fetchDependents"
+        />
     </div>
 </template>
 <style lang="scss" scoped>
