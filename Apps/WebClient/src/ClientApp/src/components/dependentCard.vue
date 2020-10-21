@@ -122,10 +122,12 @@ export default class DependentCardComponent extends Vue {
 <template>
     <b-card no-body>
         <b-tabs card>
-            <b-tab
-                :title="`${dependent.firstName} ${dependent.lastName}`"
-                active
-            >
+            <b-tab active>
+                <template #title>
+                    <strong data-testid="dependentName">{{
+                        dependent.name
+                    }}</strong>
+                </template>
                 <div v-if="isExpired">
                     <b-row>
                         <b-col class="d-flex justify-content-center">
@@ -155,6 +157,7 @@ export default class DependentCardComponent extends Vue {
                                 <b-col class="col-12">
                                     <b-form-input
                                         v-model="dependent.maskedPHN"
+                                        data-testid="dependentPHN"
                                         readonly
                                     ></b-form-input>
                                 </b-col>
@@ -168,6 +171,7 @@ export default class DependentCardComponent extends Vue {
                                         :value="
                                             formatDate(dependent.dateOfBirth)
                                         "
+                                        data-testid="dependentDOB"
                                         readonly
                                     ></b-form-input>
                                 </b-col>
@@ -179,6 +183,7 @@ export default class DependentCardComponent extends Vue {
                                 <b-col class="col-12">
                                     <b-form-input
                                         v-model="dependent.gender"
+                                        data-testid="dependentGender"
                                         readonly
                                     ></b-form-input>
                                 </b-col>
@@ -193,10 +198,10 @@ export default class DependentCardComponent extends Vue {
                 class="tableTab mt-2"
                 @click="fetchLaboratoryResults()"
             >
-                <b-row v-if="isLoading">
+                <b-row v-if="isLoading" class="m-2">
                     <b-col><b-spinner></b-spinner></b-col>
                 </b-row>
-                <b-row v-else-if="labResults.length == 0">
+                <b-row v-else-if="labResults.length == 0" class="m-2">
                     <b-col>No records found.</b-col>
                 </b-row>
                 <table v-else class="w-100">
