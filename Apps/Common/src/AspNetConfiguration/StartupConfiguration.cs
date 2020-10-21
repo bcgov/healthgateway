@@ -418,7 +418,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                      {
                          tracing.AddZipkinExporter(options =>
                          {
-                             options.ServiceName = "MedicationService";
+                             options.ServiceName = config.ServiceName;
                              options.Endpoint = config.ZipkinUri;
                          });
                      }
