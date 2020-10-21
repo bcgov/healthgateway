@@ -122,7 +122,12 @@ export default class DependentCardComponent extends Vue {
 <template>
     <b-card no-body>
         <b-tabs card>
-            <b-tab :title="dependent.name" active>
+            <b-tab active>
+                <template #title>
+                    <strong data-testid="dependentName">{{
+                        dependent.name
+                    }}</strong>
+                </template>
                 <div v-if="isExpired">
                     <b-row>
                         <b-col class="d-flex justify-content-center">
@@ -152,6 +157,7 @@ export default class DependentCardComponent extends Vue {
                                 <b-col class="col-12">
                                     <b-form-input
                                         v-model="dependent.maskedPHN"
+                                        data-testid="dependentPHN"
                                         readonly
                                     ></b-form-input>
                                 </b-col>
@@ -165,6 +171,7 @@ export default class DependentCardComponent extends Vue {
                                         :value="
                                             formatDate(dependent.dateOfBirth)
                                         "
+                                        data-testid="dependentDOB"
                                         readonly
                                     ></b-form-input>
                                 </b-col>
@@ -176,6 +183,7 @@ export default class DependentCardComponent extends Vue {
                                 <b-col class="col-12">
                                     <b-form-input
                                         v-model="dependent.gender"
+                                        data-testid="dependentGender"
                                         readonly
                                     ></b-form-input>
                                 </b-col>
