@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System.Diagnostics;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
@@ -60,9 +61,12 @@ namespace HealthGateway.Common.Services
             this.cacheTTL = this.configuration.GetSection("PatientService").GetValue<int>("CacheTTL", 0);
         }
 
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(PatientService));
+
         /// <inheritdoc/>
         public async System.Threading.Tasks.Task<RequestResult<string>> GetPatientPHN(string hdid)
         {
+            using Activity? activity = Source.StartActivity("GetPatientPHN");
             RequestResult<string> retVal = new RequestResult<string>()
             {
                 ResultError = new RequestResultError() { ResultMessage = "Error during PHN retrieval", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
@@ -80,12 +84,14 @@ namespace HealthGateway.Common.Services
                 }
             }
 
+            activity?.Stop();
             return retVal;
         }
 
         /// <inheritdoc/>
         public async System.Threading.Tasks.Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.HDID)
         {
+            using Activity? activity = Source.StartActivity("GetPatient");
             RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>();
             PatientModel? patient = this.GetFromCache(identifier, identifierType);
             if (patient == null)
@@ -119,6 +125,7 @@ namespace HealthGateway.Common.Services
                 requestResult.ResultStatus = ResultType.Success;
             }
 
+            activity?.Stop();
             return requestResult;
         }
 
@@ -130,6 +137,7 @@ namespace HealthGateway.Common.Services
         /// <returns>The found Patient model or null.</returns>
         private PatientModel? GetFromCache(string identifier, PatientIdentifierType identifierType)
         {
+            using Activity? activity = Source.StartActivity("GetFromCache");
             PatientModel? retPatient = null;
             if (this.cacheTTL > 0)
             {
@@ -148,6 +156,7 @@ namespace HealthGateway.Common.Services
                 this.logger.LogDebug($"Patient with identifier {identifier} was {(retPatient == null ? "not" : string.Empty)} found in cache");
             }
 
+            activity?.Stop();
             return retPatient;
         }
 
@@ -157,6 +166,7 @@ namespace HealthGateway.Common.Services
         /// <param name="patient">The patient to cache.</param>
         private void CachePatient(PatientModel patient)
         {
+            using Activity? activity = Source.StartActivity("CachePatient");
             string hdid = patient.HdId;
             if (this.cacheTTL > 0)
             {
@@ -175,6 +185,8 @@ namespace HealthGateway.Common.Services
             {
                 this.logger.LogDebug($"Patient caching is disabled will not cache patient: {hdid}");
             }
+
+            activity?.Stop();
         }
     }
 }

@@ -17,7 +17,6 @@ namespace HealthGateway.Immunization
 {
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Services;
     using Microsoft.AspNetCore.Builder;
@@ -57,6 +56,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigureTracing(services);
 
             services.AddCors(options =>
             {
@@ -71,7 +71,6 @@ namespace HealthGateway.Immunization
 
             // Add Services
             services.AddTransient<IImmunizationService, ImmunizationService>();
-            services.AddSingleton<ITraceService, TimedTraceService>();
 
             // Add delegates
             services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();

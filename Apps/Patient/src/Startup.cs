@@ -53,6 +53,7 @@ namespace HealthGateway.Patient
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigurePatientAccess(services);
+            this.startupConfig.ConfigureTracing(services);
         }
 
         /// <summary>
