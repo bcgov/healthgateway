@@ -149,7 +149,13 @@ objects:
             protocol: TCP
           - containerPort: 5432
             protocol: TCP
-          resources: {}
+          resources: 
+            limits:
+              cpu: 500m
+              memory: 4Gi
+            requests:
+              cpu: 250m
+              memory: 2Gi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
