@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Watch, Ref } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -48,13 +48,7 @@ export default class HeaderComponent extends Vue {
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
-    private sidebarExpanded = false;
     private logger!: ILogger;
-
-    @Watch("$route")
-    private closeSidebar() {
-        this.sidebarExpanded = false;
-    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -69,7 +63,6 @@ export default class HeaderComponent extends Vue {
     }
 
     private handleToggleClick() {
-        this.sidebarExpanded = !this.sidebarExpanded;
         this.toggleSidebar();
     }
 
@@ -99,17 +92,15 @@ export default class HeaderComponent extends Vue {
 <template>
     <b-navbar toggleable="md" type="dark">
         <!-- Hamburger toggle -->
-        <b-navbar-toggle
+        <span
             v-if="displayMenu"
-            class="mr-1"
-            target="NONE"
+            class="navbar-toggler mr-1"
+            displayMenu
             @click="handleToggleClick"
         >
-            <template #:default="{ sidebarExpanded }">
-                <b-icon v-if="sidebarExpanded" icon="x"></b-icon>
-                <b-icon v-else icon="list"></b-icon>
-            </template>
-        </b-navbar-toggle>
+            <b-icon v-if="isOpen" icon="x" class="icon-class"></b-icon>
+            <b-icon v-else icon="list" class="icon-class"></b-icon>
+        </span>
 
         <!-- Brand -->
         <b-navbar-brand class="mx-0">
@@ -170,6 +161,11 @@ export default class HeaderComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
+.icon-class {
+    width: 1.5em;
+    height: 1.5em;
+}
 
 nav {
     z-index: $z_top_layer;
