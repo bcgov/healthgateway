@@ -143,7 +143,8 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<DependentModel> Remove(string dependentHdid, string delegateHdid) {
+        public RequestResult<DependentModel> Remove(string dependentHdid, string delegateHdid)
+        {
             DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Delete(dependentHdid, delegateHdid, true);
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()
             {

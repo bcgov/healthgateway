@@ -17,7 +17,6 @@ namespace HealthGateway.Encounter.Test.Service
 {
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
@@ -107,9 +106,7 @@ namespace HealthGateway.Encounter.Test.Service
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
 
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IEncounterService service = new EncounterService(new Mock<ILogger<EncounterService>>().Object,
-                                                             traceService,
                                                              mockHttpContextAccessor.Object,
                                                              mockPatientService.Object,
                                                              mockMSPDelegate.Object);
@@ -165,9 +162,7 @@ namespace HealthGateway.Encounter.Test.Service
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
 
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IEncounterService service = new EncounterService(new Mock<ILogger<EncounterService>>().Object,
-                                                             traceService,
                                                              mockHttpContextAccessor.Object,
                                                              mockPatientService.Object,
                                                              mockMSPDelegate.Object);
@@ -215,9 +210,7 @@ namespace HealthGateway.Encounter.Test.Service
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
-            ITraceService traceService = new TimedTraceService(loggerFactory.CreateLogger<TimedTraceService>());
             IEncounterService service = new EncounterService(new Mock<ILogger<EncounterService>>().Object,
-                                                             traceService,
                                                              mockHttpContextAccessor.Object,
                                                              mockPatientService.Object,
                                                              mockMSPDelegate.Object);

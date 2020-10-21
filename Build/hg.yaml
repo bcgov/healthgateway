@@ -108,6 +108,8 @@ steps:
 
     - script: |
           set -e
+          oc projects
+          oc project q6qfzk-tools
           cp $(App.Home)/Dockerfile $(Build.BinariesDirectory)
           oc process -f $(Build.SourcesDirectory)/Tools/BaseBuild/build.yaml -p NAME=$(OpenShift.Name) | oc apply -f -
           oc start-build $(OpenShift.Name) --wait --follow --from-dir $(Build.BinariesDirectory) 

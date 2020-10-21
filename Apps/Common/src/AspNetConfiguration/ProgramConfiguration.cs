@@ -45,7 +45,9 @@ namespace HealthGateway.Common.AspNetConfiguration
                     logging.AddConsole(options =>
                     {
                         options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                        options.IncludeScopes = true;
                     });
+                    logging.AddOpenTelemetry();
                 })
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {

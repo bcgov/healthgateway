@@ -61,6 +61,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <returns>The Authorization Result.</returns>
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
+            using var x = this.logger.BeginScope(new { Operation = "Authoization Handler" });
             foreach (FhirRequirement requirement in context.PendingRequirements.OfType<FhirRequirement>().ToList())
             {
                 string? resourceHDID = this.GetResourceHDID(requirement);
