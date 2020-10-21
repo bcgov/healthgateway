@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Authorization.Infrastructure;
     using Microsoft.AspNetCore.Http;
@@ -529,7 +530,10 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
-            FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object);
+            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            mockDependentDelegate.Setup(s => s.Find(string.Empty, hdid));
+
+            FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);
             var requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Read) };
 
             AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, claimsPrincipal, null);
@@ -668,7 +672,10 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
-            FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object);
+            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            mockDependentDelegate.Setup(s => s.Find(string.Empty, hdid));
+
+            FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);
             var requirements = new[] { new FhirRequirement(FhirResource.Patient, FhirAccessType.Write) };
 
             AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, claimsPrincipal, null);
@@ -720,6 +727,56 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, claimsPrincipal, null);
             authHandler.HandleAsync(context);
             Assert.False(context.HasSucceeded);
+            Assert.False(context.HasFailed);
+        }
+
+        [Fact]
+        public void ShouldAuthPatientDelegate()
+        {
+            // Setup
+            string hdid = "The User HDID";
+            string resourceHDID = "The Resource HDID";
+            string token = "Fake Access Token";
+            string userId = "User ID";
+            string username = "User Name";
+            string scopes = "user/Observation.read";
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(GatewayClaims.HDID, hdid),
+                new Claim(GatewayClaims.Scope, scopes),
+            };
+            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+
+            IHeaderDictionary headerDictionary = new HeaderDictionary();
+            headerDictionary.Add("Authorization", token);
+            RouteValueDictionary routeValues = new RouteValueDictionary();
+            routeValues.Add("hdid", resourceHDID);
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+            httpRequestMock.Setup(s => s.RouteValues).Returns(routeValues);
+
+            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
+
+            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            mockDependentDelegate.Setup(s => s.Find(resourceHDID, hdid)).Returns(true);
+
+            FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);
+            var requirements = new[] { new FhirRequirement(FhirResource.Observation, FhirAccessType.Read) };
+
+            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, claimsPrincipal, null);
+            authHandler.HandleAsync(context);
+            Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
         }
     }

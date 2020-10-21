@@ -45,7 +45,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <param name="logger">the injected logger.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
         /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
-        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor, IUserDelegateDelegate userDelegateDelegate)
+        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor, IUserDelegateDelegate userDelegateDelegate = null)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
