@@ -1,7 +1,8 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Ref } from "vue-property-decorator";
 import LoadingComponent from "@/components/loading.vue";
+import NewDependentComponent from "@/components/modal/newDependent.vue";
 import DependentCardComponent from "@/components/dependentCard.vue";
 import Dependent from "@/models/dependent";
 import { IDependentService, ILogger } from "@/services/interfaces";
@@ -17,9 +18,13 @@ import BannerError from "@/models/bannerError";
     components: {
         LoadingComponent,
         DependentCardComponent,
+        NewDependentComponent,
     },
 })
 export default class DependentsView extends Vue {
+    @Ref("newDependentModal")
+    readonly newDependentModal!: NewDependentComponent;
+
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Action("addError", { namespace: "errorBanner" })
@@ -27,6 +32,7 @@ export default class DependentsView extends Vue {
 
     private logger!: ILogger;
     private dependentService!: IDependentService;
+
     private isLoading = true;
     private dependents: Dependent[] = [];
 
@@ -68,6 +74,14 @@ export default class DependentsView extends Vue {
                 this.isLoading = false;
             });
     }
+
+    private showModal() {
+        this.newDependentModal.showModal();
+    }
+
+    private hideModal() {
+        this.newDependentModal.hideModal();
+    }
 }
 </script>
 <template>
@@ -75,19 +89,27 @@ export default class DependentsView extends Vue {
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-row class="my-3 fluid">
             <b-col class="col-12 col-lg-9 column-wrapper">
-                <b-row id="pageTitle">
-                    <b-col cols="8">
-                        <h1 id="Subject">Dependents</h1>
-                    </b-col>
-                    <b-col cols="4" align-self="end">
-                        <b-btn variant="primary" class="float-right">
-                            <font-awesome-icon icon="user-plus" class="mr-2" />
-                            Add a new dependent
-                        </b-btn>
-                    </b-col>
-                </b-row>
                 <b-row>
                     <b-col>
+                        <b-row id="pageTitle">
+                            <b-col cols="7">
+                                <h1 id="Subject">Dependents</h1>
+                            </b-col>
+                            <b-col cols="5" align-self="end">
+                                <b-btn
+                                    variant="primary"
+                                    class="float-right"
+                                    @click="showModal()"
+                                >
+                                    <font-awesome-icon
+                                        icon="user-plus"
+                                        class="mr-2"
+                                    >
+                                    </font-awesome-icon
+                                    >Add a new dependent</b-btn
+                                >
+                            </b-col>
+                        </b-row>
                         <hr />
                     </b-col>
                 </b-row>
@@ -102,6 +124,7 @@ export default class DependentsView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
+        <NewDependentComponent ref="newDependentModal" @show="showModal" />
     </div>
 </template>
 <style lang="scss" scoped>

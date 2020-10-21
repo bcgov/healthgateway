@@ -87,11 +87,12 @@ namespace HealthGateway.WebClient
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<INoteService, NoteService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IDependentService, DependentService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IUserSMSService, UserSMSService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
-            services.AddTransient<IDependentService, DependentService>();
-            services.AddSingleton<ITraceService, TimedTraceService>();
+            services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
+            services.AddTransient<ITraceService, TimedTraceService>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
@@ -112,7 +113,6 @@ namespace HealthGateway.WebClient
 
             // Add Background Services
             services.AddHostedService<BannerListener>();
-
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
