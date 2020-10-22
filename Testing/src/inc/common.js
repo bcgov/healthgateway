@@ -21,8 +21,9 @@ import { Rate, Trend } from 'k6/metrics';
 export let passwd = __ENV.HG_PASSWORD;
 
 export let maxVus = (__ENV.HG_VUS) ? __ENV.HG_VUS : 300; 
-maxVus = (maxVus < 4) ? 4 : maxVus;
+maxVus = (maxVus < 1) ? 1 : maxVus;
 export let rampVus = (maxVus / 4).toFixed(0);
+rampVus = (rampVus < 1) ? 1 : rampVus;
 
 export let authSuccess = new Rate('authentication_successful');
 export let errorRate = new Rate('errors');
