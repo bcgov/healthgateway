@@ -41,7 +41,6 @@ namespace HealthGateway.WebClient.Test.Services
         private const string mockGender = "Male";
         private DateTime mockDateOfBirth = new DateTime(2010, 10, 10);
         private const string mockHdId = "MockHdId";
-        private const string mockJWTHeader = "MockJWTHeader";
         private const string mismatchedError = "The information you entered did not match. Please try again.";
 
         private IDependentService SetupCommonMocks(Mock<IUserDelegateDelegate> mockDependentDelegate, Mock<IPatientService> mockPatientService)

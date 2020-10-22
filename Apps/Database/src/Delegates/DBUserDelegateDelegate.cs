@@ -120,5 +120,19 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished deleting UserDelegate from DB");
             return result;
         }
+
+        /// <inheritdoc />
+        public bool Exists(string ownerId, string delegateId)
+        {
+            var userDelegate = this.dbContext.UserDelegate.Find(delegateId, ownerId);
+            if (userDelegate != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
