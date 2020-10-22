@@ -62,6 +62,29 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
 
+        [Fact]
+        public void ShouldDeleteDependent()
+        {
+            string dependentId = "123";
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
+            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
+            RequestResult<DependentModel> expectedResult = new RequestResult<DependentModel>()
+            {
+                ResourcePayload = new DependentModel(),
+                ResultStatus = Common.Constants.ResultType.Success,
+            };
+            dependentServiceMock.Setup(s => s.Remove(dependentId, hdid)).Returns(expectedResult);
+
+            DependentController dependentController = new DependentController(
+                new Mock<ILogger<UserProfileController>>().Object,
+                dependentServiceMock.Object,
+                httpContextAccessorMock.Object
+            );
+            var actualResult = dependentController.Delete(dependentId);
+            
+            Assert.IsType<JsonResult>(actualResult);
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+        }
         private IEnumerable<DependentModel> GetMockDependends()
         {
             List<DependentModel> dependentModels = new List<DependentModel>();
