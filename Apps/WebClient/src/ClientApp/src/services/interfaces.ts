@@ -143,7 +143,7 @@ export interface ICommunicationService {
 export interface IDependentService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     addDependent(dependent: AddDependentRequest): Promise<AddDependentRequest>;
-    getAll(): Promise<RequestResult<Dependent[]>>;
+    getAll(hdid: string): Promise<RequestResult<Dependent[]>>;
 }
 
 export interface IHttpDelegate {

@@ -47,7 +47,7 @@ export default class DependentsView extends Vue {
     private fetchDependents() {
         this.isLoading = true;
         this.dependentService
-            .getAll()
+            .getAll(this.user.hdid)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.dependents = results.resourcePayload;
