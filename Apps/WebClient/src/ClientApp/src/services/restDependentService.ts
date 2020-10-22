@@ -60,10 +60,12 @@ export class RestDependentService implements IDependentService {
         });
     }
 
-    public getAll(): Promise<RequestResult<Dependent[]>> {
+    public getAll(hdid: string): Promise<RequestResult<Dependent[]>> {
         return new Promise((resolve, reject) => {
             this.http
-                .getWithCors<RequestResult<Dependent[]>>(`${this.BASE_URI}/`)
+                .getWithCors<RequestResult<Dependent[]>>(
+                    `${this.BASE_URI}/${hdid}`
+                )
                 .then((dependents) => {
                     return resolve(dependents);
                 })

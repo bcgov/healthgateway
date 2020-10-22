@@ -56,7 +56,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object
             );
-            var actualResult = dependentController.GetAll();
+            var actualResult = dependentController.GetAll(hdid);
             
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
