@@ -60,7 +60,11 @@ export class DateWrapper {
                     });
                     // DST times at 00:00 can be ambigious. Coherse the internal representation to be the day.
                     // 3 Hours bypases the ambiguousness of Move forward and fallback
-                    if (this._internal_date.isInDST) {
+                    if (
+                        this._internal_date.isInDST &&
+                        this._internal_date.hour == 0 &&
+                        this._internal_date.minute == 0
+                    ) {
                         this._internal_date = this._internal_date.plus({
                             hour: 3,
                         });
