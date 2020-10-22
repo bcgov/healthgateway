@@ -20,6 +20,8 @@ import { Rate, Trend } from 'k6/metrics';
 
 export let passwd = __ENV.HG_PASSWORD;
 
+export let maxVus = (__ENV.HG_VUS) ? __ENV.HG_VUS : 300; 
+
 export let authSuccess = new Rate('authentication_successful');
 export let errorRate = new Rate('errors');
 
@@ -33,12 +35,12 @@ export let smokeOptions = {
   }
 
 export let loadOptions = {
-    vu: 300,
+    vu: maxVus,
     stages: [
         { duration: '3m', target: 70 }, // simulate ramp-up of traffic from 1 users over a few minutes.
         { duration: '5m', target: 70 }, // stay at number of users for several minutes
-        { duration: '3m', target: 300 }, // ramp-up to users peak for some minutes (peak hour starts)
-        { duration: '2m', target: 300 }, // stay at users for short amount of time (peak hour)
+        { duration: '3m', target: maxVus }, // ramp-up to users peak for some minutes (peak hour starts)
+        { duration: '2m', target: maxVus }, // stay at users for short amount of time (peak hour)
         { duration: '3m', target: 70 }, // ramp-down to lower users over 3 minutes (peak hour ends)
         { duration: '5m', target: 70 }, // continue for additional time
         { duration: '3m', target: 0 }, // ramp-down to 0 users
