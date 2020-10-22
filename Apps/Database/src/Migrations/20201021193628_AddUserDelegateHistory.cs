@@ -22,6 +22,7 @@ namespace HealthGateway.Database.Migrations
 {
     public partial class AddUserDelegateHistory : Migration
     {
+        private const string Schema = "gateway";
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -44,10 +45,41 @@ namespace HealthGateway.Database.Migrations
                 {
                     table.PrimaryKey("PK_UserDelegateHistory", x => x.UserDelegateHistoryId);
                 });
+
+            string triggerFunction = @$"
+CREATE FUNCTION {Schema}.""UserDelegateHistoryFunction""()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    NOT LEAKPROOF
+AS $BODY$
+BEGIN
+    IF(TG_OP = 'DELETE') THEN
+        INSERT INTO {Schema}.""UserDelegateHistory""(""UserDelegateHistoryId"", ""Operation"", ""OperationDateTime"",
+                    ""OwnerId"", ""DelegateId"", 						 
+				    ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"") 
+		VALUES(uuid_generate_v4(), TG_OP, now(),
+               old.""OwnerId"", old.""DelegateId"",
+               old.""CreatedBy"", old.""CreatedDateTime"", old.""UpdatedBy"", old.""UpdatedDateTime"");
+        RETURN old;
+    END IF;
+END;$BODY$;";
+
+            string trigger = @$"
+CREATE TRIGGER ""UserDelegateHistoryTrigger""
+    AFTER DELETE
+    ON {Schema}.""UserDelegate""
+    FOR EACH ROW
+    EXECUTE PROCEDURE {Schema}.""UserDelegateHistoryFunction""();";
+
+            migrationBuilder.Sql(triggerFunction);
+            migrationBuilder.Sql(trigger);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""UserDelegateHistoryTrigger"" ON {Schema}.""UserDelegate""");
+            migrationBuilder.Sql(@$"DROP FUNCTION IF EXISTS {Schema}.""UserDelegateHistoryFunction""();");
+
             migrationBuilder.DropTable(
                 name: "UserDelegateHistory",
                 schema: "gateway");
