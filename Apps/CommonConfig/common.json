@@ -1,0 +1,13 @@
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft": "Warning"
+        }
+    },
+    "OpenIdConnect": {
+        "Authority": "https://oidc.gov.bc.ca/auth/realms/ff09qn3f",
+        "ClientId": "healthgateway",
+        "Audience": "healthgateway"
+    }
+}

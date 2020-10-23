@@ -7,9 +7,10 @@
     "HealthGateway.Admin": {
       "commandName": "Project",
       "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development",
+            "CommonPath": "../../CommonConfig/"
+        },
       "applicationUrl": "http://localhost:5010"
     }
   }
