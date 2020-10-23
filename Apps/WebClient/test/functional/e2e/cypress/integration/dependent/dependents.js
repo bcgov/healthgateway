@@ -8,7 +8,7 @@ describe('dependents', () => {
             config.webClient.modules.Encounter = false
             config.webClient.modules.Immunization = false
             config.webClient.modules.Laboratory = false
-            config.webClient.modules.Medication = true
+            config.webClient.modules.Medication = false
             config.webClient.modules.MedicationHistory = false
             config.webClient.modules.Note = false
             cy.server();
@@ -17,7 +17,22 @@ describe('dependents', () => {
         })
     })
 
-    it('Validate medication records count.', () => {
-        cy.get('[data-testid=totalRecordsText]').should('not.contain', '0 ')
-    })
+    it('Validate Add', () => {
+        cy.get('[data-testid=addNoteBtn]')
+            .click();
+        cy.get('[data-testid=noteTitleInput]')
+            .type('Note Title!');
+        cy.get('[data-testid=noteDateInput]')
+            .type('2050-01-01');
+        cy.get('[data-testid=noteTextInput]')
+            .type('Test');
+        cy.get('[data-testid=saveNoteBtn]')
+            .click();
+        cy.get('[data-testid=noteTitle]')
+            .first()
+            .should('have.text', ' Note Title! ');
+        cy.get('[data-testid=dateGroup]')
+            .first()
+            .should('have.text', ' Jan 1, 2050 ');
+    });
 })
