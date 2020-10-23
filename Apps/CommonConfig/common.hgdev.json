@@ -1,0 +1,10 @@
+{
+    "Logging": {
+        "LogLevel": {
+            "HealthGateway": "Trace"
+        }
+    },
+    "OpenIdConnect": {
+        "Authority": "https://dev.oidc.gov.bc.ca/auth/realms/ff09qn3f"
+    }
+}

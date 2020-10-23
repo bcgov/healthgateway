@@ -11,9 +11,10 @@
     "Healthgateway.JobScheduler": {
       "commandName": "Project",
       "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development",
+            "CommonPath": "../../CommonConfig/"
+        },
       "applicationUrl": "http://localhost:5005"
     }
   }
