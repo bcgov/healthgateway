@@ -17,22 +17,45 @@ describe('dependents', () => {
         })
     })
 
-    it('Validate Add', () => {
-        cy.get('[data-testid=addNoteBtn]')
+
+    it('Validate Disqualidfied Birthdate and Cancel Button', () => {
+        cy.get('[data-testid=addNewDependentBtn]')
+        .click();
+        cy.get('[data-testid=firstNameInput]')
+        .type('John');
+        cy.get('[data-testid=lastNameInput]')
+        .type('Tester');
+        cy.get('[data-testid=dateOfBirthInput]')
+        .type('1988-01-21');
+        cy.get('[data-testid=phnInput]')
+            .type('9874307215');
+        cy.get('[data-testid=dateOfBirthInput]')
+        .clear()
+        .type('2005-01-01');
+    
+        cy.get('[data-testid=cancelRegistrationBtn]')
             .click();
-        cy.get('[data-testid=noteTitleInput]')
-            .type('Note Title!');
-        cy.get('[data-testid=noteDateInput]')
-            .type('2050-01-01');
-        cy.get('[data-testid=noteTextInput]')
-            .type('Test');
-        cy.get('[data-testid=saveNoteBtn]')
-            .click();
-        cy.get('[data-testid=noteTitle]')
-            .first()
-            .should('have.text', ' Note Title! ');
-        cy.get('[data-testid=dateGroup]')
-            .first()
-            .should('have.text', ' Jan 1, 2050 ');
     });
+
+    it('Validate Add', () => {
+        cy.get('[data-testid=addNewDependentBtn]')
+            .click();
+        cy.get('[data-testid=firstNameInput]')
+            .type('John');
+        cy.get('[data-testid=lastNameInput]')
+            .type('Tester');
+        cy.get('[data-testid=dateOfBirthInput]')
+            .type('2005-01-01');
+        cy.get('[data-testid=phnInput]')
+            .type('9874307215');
+        cy.get('[data-testid=genderInput]').select('Male');
+        cy.get('[data-testid=termsCheckbox]')
+            .click({ force: true });
+            cy.get('[data-testid=registerDependentBtn]')
+            .click();
+         
+            
+    });
+
+
 })
