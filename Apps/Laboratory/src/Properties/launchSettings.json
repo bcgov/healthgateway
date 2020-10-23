@@ -11,9 +11,10 @@
   "profiles": {
     "HealthGateway.Laboratory": {
       "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development",
+            "CommonPath": "../../CommonConfig/"
+        },
       "applicationUrl": "http://localhost:3004;"
     }
   }
