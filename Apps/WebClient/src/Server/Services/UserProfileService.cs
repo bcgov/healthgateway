@@ -184,6 +184,14 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
+            if (!this.ValidateMinimumAge(hdid))
+            {
+                requestResult.ResultStatus = ResultType.Error;
+                requestResult.ResultError = new RequestResultError() { ResultMessage = "Patient under minimum age", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
+                this.logger.LogWarning($"Patient under minimum age. {JsonSerializer.Serialize(createProfileRequest)}");
+                return requestResult;
+            }
+
             string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
             string? requestedEmail = createProfileRequest.Profile.Email;
             UserProfile newProfile = createProfileRequest.Profile;
