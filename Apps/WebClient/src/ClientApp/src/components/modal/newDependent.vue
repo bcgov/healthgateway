@@ -310,12 +310,20 @@ export default class NewDependentComponent extends Vue {
         <template #modal-footer>
             <b-row>
                 <div class="mr-2">
-                    <b-btn variant="primary" @click="handleOk"
+                    <b-btn
+                        data-testid="registerDependentBtn"
+                        variant="primary"
+                        @click="handleOk"
                         >Register dependent</b-btn
                     >
                 </div>
                 <div>
-                    <b-btn variant="secondary" @click="hideModal">Cancel</b-btn>
+                    <b-btn
+                        data-testid="cancelRegistrationBtn"
+                        variant="secondary"
+                        @click="hideModal"
+                        >Cancel</b-btn
+                    >
                 </div>
             </b-row>
         </template>
