@@ -146,6 +146,23 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
+        /// Gets a result indicating the profile is valid.
+        /// </summary>
+        /// <returns>A boolean wrapped in a request result.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">The request result is returned.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/Validate")]
+        [Authorize(Policy = UserPolicy.Read)]
+        public async Task<IActionResult> Validate(string hdid)
+        {
+            bool result = await this.userProfileService.ValidateMinimumAge(hdid);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
         /// Closes a user profile.
         /// </summary>
         /// <returns>The user profile model wrapped in a request result.</returns>

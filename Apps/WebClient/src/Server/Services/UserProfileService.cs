@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
@@ -48,6 +49,7 @@ namespace HealthGateway.WebClient.Services
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly IPatientService patientService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -63,6 +65,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
+        /// <param name="patientService">The patient service.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IUserProfileDelegate userProfileDelegate,
@@ -74,7 +77,8 @@ namespace HealthGateway.WebClient.Services
             ILegalAgreementDelegate legalAgreementDelegate,
             ICryptoDelegate cryptoDelegate,
             INotificationSettingsService notificationSettingsService,
-            IMessagingVerificationDelegate messageVerificationDelegate)
+            IMessagingVerificationDelegate messageVerificationDelegate,
+            IPatientService patientService)
         {
             this.logger = logger;
             this.userProfileDelegate = userProfileDelegate;
@@ -87,6 +91,7 @@ namespace HealthGateway.WebClient.Services
             this.cryptoDelegate = cryptoDelegate;
             this.notificationSettingsService = notificationSettingsService;
             this.messageVerificationDelegate = messageVerificationDelegate;
+            this.patientService = patientService;
         }
 
         /// <inheritdoc />
@@ -359,6 +364,20 @@ namespace HealthGateway.WebClient.Services
             return requestResult;
         }
 
+        /// <inheritdoc />
+        public async Task<bool> ValidateMinimumAge(string hdid) 
+        {
+            int minAge = this.configurationService.GetConfiguration().WebClient.MinPatientAge;
+
+            if (minAge == 0) 
+            {
+                return true;
+            }
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid);
+            DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? new DateTime();
+            return birthDate.AddYears(minAge) < DateTime.Now;
+        }
+
         private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)
         {
             // Update the notification settings
@@ -366,5 +385,6 @@ namespace HealthGateway.WebClient.Services
             this.notificationSettingsService.QueueNotificationSettings(request);
             return request;
         }
+
     }
 }

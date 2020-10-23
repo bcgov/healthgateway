@@ -83,5 +83,12 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>The wrappeed user reference.</returns>
         RequestResult<Dictionary<string, string>> GetUserPreferences(string hdid);
+
+        /// <summary>
+        /// Gets a value indicating if the patient age is valid for registration.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <returns>A boolean result.</returns>
+        Task<bool> ValidateMinimumAge(string hdid);
     }
 }
