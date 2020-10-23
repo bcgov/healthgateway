@@ -97,6 +97,7 @@ export default class DependentsView extends Vue {
                             </b-col>
                             <b-col cols="5" align-self="end">
                                 <b-btn
+                                    data-testid="addNewDependentBtn"
                                     variant="primary"
                                     class="float-right"
                                     @click="showModal()"
