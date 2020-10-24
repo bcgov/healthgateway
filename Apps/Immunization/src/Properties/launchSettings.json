@@ -12,8 +12,7 @@
     "HealthGateway.Immunization": {
       "commandName": "Project",
         "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development",
-            "CommonPath": "../../CommonConfig/"
+            "ASPNETCORE_ENVIRONMENT": "Development"
         },
       "applicationUrl": "http://localhost:3001;"
     }
