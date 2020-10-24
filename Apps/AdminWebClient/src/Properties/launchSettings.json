@@ -8,8 +8,7 @@
       "commandName": "Project",
       "launchBrowser": true,
         "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development",
-            "CommonPath": "../../CommonConfig/"
+            "ASPNETCORE_ENVIRONMENT": "Development"
         },
       "applicationUrl": "http://localhost:5010"
     }
