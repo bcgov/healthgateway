@@ -136,7 +136,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
@@ -184,7 +184,7 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
-            if (!this.ValidateMinimumAge(hdid))
+            if (!await this.ValidateMinimumAge(hdid))
             {
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultError = new RequestResultError() { ResultMessage = "Patient under minimum age", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };

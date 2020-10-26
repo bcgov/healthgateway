@@ -120,7 +120,7 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public void ShouldInsertUserProfile()
+        public async void ShouldInsertUserProfile()
         {
             UserProfile userProfile = new UserProfile
             {
@@ -170,14 +170,14 @@ namespace HealthGateway.WebClient.Test.Services
                 messageVerificationDelegateMock.Object,
                 new Mock<IPatientService>().Object);
 
-            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
 
         [Fact]
-        public void ShouldQueueNotificationUpdate()
+        public async void ShouldQueueNotificationUpdate()
         {
             UserProfile userProfile = new UserProfile
             {
@@ -228,7 +228,7 @@ namespace HealthGateway.WebClient.Test.Services
                 messageVerificationDelegateMock.Object,
                 new Mock<IPatientService>().Object);
 
-            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
             notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
