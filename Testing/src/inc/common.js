@@ -85,14 +85,15 @@ export let users = [
     { username: "loadtest_06", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_07", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_08", password: passwd, hdid: null, token: null, refresh: null, expires: null },
-    { username: "loadtest_09", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_10", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_11", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_12", password: passwd, hdid: null, token: null, refresh: null, expires: null },
-    { username: "loadtest_13", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_14", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_15", password: passwd, hdid: null, token: null, refresh: null, expires: null },
     { username: "loadtest_20", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+    { username: "loadtest_401", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+    { username: "loadtest_402", password: passwd, hdid: null, token: null, refresh: null, expires: null },
+    { username: "loadtest_403", password: passwd, hdid: null, token: null, refresh: null, expires: null },
 ];
 
 function parseJwt(jwt) {
