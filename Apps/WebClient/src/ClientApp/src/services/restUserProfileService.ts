@@ -109,6 +109,24 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
+    public validateAge(hdid: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            console.log(hdid, reject);
+            resolve(true);
+            /*this.http
+                .get<RequestResult<boolean>>(
+                    `${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
+                )
+                .then((requestResult) => {
+                    this.handleResult(requestResult, resolve, reject);
+                })
+                .catch((err) => {
+                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    reject(err);
+                });*/
+        });
+    }
+
     public getTermsOfService(): Promise<TermsOfService> {
         return new Promise((resolve, reject) => {
             this.http

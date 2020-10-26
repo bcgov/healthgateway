@@ -100,9 +100,8 @@ namespace HealthGateway.WebClient.Services
             {
                 return new RequestResult<UserProfileModel>()
                 {
-                    ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = retVal.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
-                    ResourcePayload = null,
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = new UserProfileModel(),
                 };
             }
 
