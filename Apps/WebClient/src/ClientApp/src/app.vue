@@ -31,6 +31,7 @@ import {
     FormRatingPlugin,
     IconsPlugin,
     FormSelectPlugin,
+    FormDatepickerPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -52,6 +53,7 @@ Vue.use(FormGroupPlugin);
 Vue.use(FormRadioPlugin);
 Vue.use(FormRatingPlugin);
 Vue.use(FormSelectPlugin);
+Vue.use(FormDatepickerPlugin);
 Vue.use(IconsPlugin);
 Vue.use(VueTheMask);
 
