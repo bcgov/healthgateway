@@ -54,7 +54,7 @@ export default class NewDependentComponent extends Vue {
         { value: GenderType.NotSelected, text: "Please select an option" },
         { value: GenderType.Male, text: "Male" },
         { value: GenderType.Female, text: "Female" },
-        { value: GenderType.Other, text: "X" },
+        { value: GenderType.Other, text: "Unknown" },
     ];
 
     private validations() {
