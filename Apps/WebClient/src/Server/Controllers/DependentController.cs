@@ -60,6 +60,7 @@ namespace HealthGateway.WebClient.Controllers
         /// Gets all dependents for the specified user.
         /// </summary>
         /// <returns>The list of dependent model wrapped in a request result.</returns>
+        /// <param name="hdid">The owner hdid.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
@@ -108,6 +109,6 @@ namespace HealthGateway.WebClient.Controllers
             string delegateHdId = user.FindFirst("hdid").Value;
             RequestResult<DependentModel> result = this.dependentService.Remove(dependentHdid, delegateHdId);
             return new JsonResult(result);
-        }    
+        }
     }
 }

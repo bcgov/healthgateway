@@ -53,10 +53,10 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the number of hours until an account is removed after being closed.
         /// </summary>
         public int HoursForDeletion { get; set; }
-    
+
         /// <summary>
         /// Gets or sets the minimum required patient age allowed for registration.
         /// </summary>
-        public int MinPatientAge { get; set; } = 0;
+        public int? MinPatientAge { get; set; }
     }
 }

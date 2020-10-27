@@ -241,7 +241,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { MinPatientAge = 19 } });
             PatientModel patientModel = new PatientModel() {
-                Birthdate = new DateTime(2010, 1, 1)
+                Birthdate = DateTime.Now.AddYears(-15)
             };
             Mock<IPatientService> patientServiceMock = new Mock<IPatientService>();
             patientServiceMock.Setup(s => s.GetPatient(hdid, PatientIdentifierType.HDID)).ReturnsAsync(new RequestResult<PatientModel> { ResourcePayload = patientModel });

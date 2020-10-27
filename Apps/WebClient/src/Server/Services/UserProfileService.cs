@@ -184,7 +184,7 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
-            if (!await this.ValidateMinimumAge(hdid))
+            if (!await this.ValidateMinimumAge(hdid).ConfigureAwait(true))
             {
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultError = new RequestResultError() { ResultMessage = "Patient under minimum age", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
@@ -373,17 +373,18 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> ValidateMinimumAge(string hdid) 
+        public async Task<bool> ValidateMinimumAge(string hdid)
         {
-            int minAge = this.configurationService.GetConfiguration().WebClient.MinPatientAge;
+            int? minAge = this.configurationService.GetConfiguration().WebClient.MinPatientAge;
 
-            if (minAge == 0) 
+            if (!minAge.HasValue || minAge.Value == 0)
             {
                 return true;
             }
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid);
+
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
             DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? new DateTime();
-            return birthDate.AddYears(minAge) < DateTime.Now;
+            return birthDate.AddYears(minAge.Value) < DateTime.Now;
         }
 
         private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)
