@@ -67,7 +67,7 @@ export default class RegistrationView extends Vue {
     private waitlistedSuccessfully = false;
 
     private isValidAge = false;
-    private minimunAge!: number;
+    private minimumAge!: number;
 
     private termsOfService = "";
 
@@ -77,7 +77,7 @@ export default class RegistrationView extends Vue {
             SERVICE_IDENTIFIER.BetaRequestService
         );
 
-        this.minimunAge = 16; //this.webClientConfig.minPatientAge;
+        this.minimumAge = this.webClientConfig.minPatientAge;
 
         if (
             this.webClientConfig.registrationStatus == RegistrationStatus.Open
@@ -657,8 +657,8 @@ export default class RegistrationView extends Vue {
                     </b-row>
                 </b-form>
                 <div v-else>
-                    <h1>Minimun age required for registration</h1>
-                    You must be <strong>{{ minimunAge }}</strong> years of age
+                    <h1>Minimum age required for registration</h1>
+                    You must be <strong>{{ minimumAge }}</strong> years of age
                     or older to use this application
                 </div>
             </div>
