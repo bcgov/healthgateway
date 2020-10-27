@@ -110,7 +110,8 @@ namespace HealthGateway.WebClient.Test.Services
                 legalAgreementDelegateMock.Object,
                 cryptoDelegateMock.Object,
                 notificationServiceMock.Object,
-                messageVerificationDelegateMock.Object);
+                messageVerificationDelegateMock.Object,
+                new Mock<IPatientService>().Object);
 
             RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid);
 
@@ -119,7 +120,7 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public void ShouldInsertUserProfile()
+        public async void ShouldInsertUserProfile()
         {
             UserProfile userProfile = new UserProfile
             {
@@ -166,16 +167,17 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ILegalAgreementDelegate>().Object,
                 cryptoDelegateMock.Object,
                 notificationServiceMock.Object,
-                messageVerificationDelegateMock.Object);
+                messageVerificationDelegateMock.Object,
+                new Mock<IPatientService>().Object);
 
-            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
 
         [Fact]
-        public void ShouldQueueNotificationUpdate()
+        public async void ShouldQueueNotificationUpdate()
         {
             UserProfile userProfile = new UserProfile
             {
@@ -223,12 +225,44 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ILegalAgreementDelegate>().Object,
                 cryptoDelegateMock.Object,
                 notificationServiceMock.Object,
-                messageVerificationDelegateMock.Object);
+                messageVerificationDelegateMock.Object,
+                new Mock<IPatientService>().Object);
 
-            RequestResult<UserProfileModel> actualResult = service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
             notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task ShouldValidateAgeAsync()
+        {
+            string hdid = "1234567890123456789012345678901234567890123456789012";
+            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
+            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { MinPatientAge = 19 } });
+            PatientModel patientModel = new PatientModel() {
+                Birthdate = DateTime.Now.AddYears(-15)
+            };
+            Mock<IPatientService> patientServiceMock = new Mock<IPatientService>();
+            patientServiceMock.Setup(s => s.GetPatient(hdid, PatientIdentifierType.HDID)).ReturnsAsync(new RequestResult<PatientModel> { ResourcePayload = patientModel });
+
+            IUserProfileService service = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IUserProfileDelegate>().Object,
+                new Mock<IUserPreferenceDelegate>().Object,
+                new Mock<IEmailDelegate>().Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                new Mock<ILegalAgreementDelegate>().Object,
+                new Mock<ICryptoDelegate>().Object,
+                new Mock<INotificationSettingsService>().Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
+                patientServiceMock.Object
+            );
+
+            bool actualResult = await service.ValidateMinimumAge(hdid);
+            Assert.False(actualResult);
         }
     }
 }

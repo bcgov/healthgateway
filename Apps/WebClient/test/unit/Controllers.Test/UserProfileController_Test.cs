@@ -107,7 +107,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>(), It.IsAny<string>())).Returns(expected);
+            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<Uri>(), It.IsAny<string>())).ReturnsAsync(expected);
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
             Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
 
@@ -122,6 +122,39 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
+        }
+
+        [Fact]
+        public async Task ShouldValidateAge()
+        {
+            string hdid = "1234567890123456789012345678901234567890123456789012";
+            string token = "Fake Access Token";
+            string userId = "1001";
+
+            UserProfile userProfile = new UserProfile
+            {
+                HdId = hdid,
+                AcceptedTermsOfService = true
+            };
+
+            bool expected = true;
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
+
+            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
+            userProfileServiceMock.Setup(s => s.ValidateMinimumAge(hdid)).ReturnsAsync(expected);
+
+
+            UserProfileController controller = new UserProfileController(
+                new Mock<ILogger<UserProfileController>>().Object,
+                userProfileServiceMock.Object,
+                httpContextAccessorMock.Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object
+            );
+            IActionResult actualResult = await controller.Validate(hdid);
+
+            Assert.IsType<JsonResult>(actualResult);
+            Assert.Equal(expected, ((JsonResult)actualResult).Value);
         }
 
         private Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
