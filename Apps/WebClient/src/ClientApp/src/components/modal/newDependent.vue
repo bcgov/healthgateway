@@ -54,7 +54,7 @@ export default class NewDependentComponent extends Vue {
         { value: GenderType.NotSelected, text: "Please select an option" },
         { value: GenderType.Male, text: "Male" },
         { value: GenderType.Female, text: "Female" },
-        { value: GenderType.Other, text: "X" },
+        { value: GenderType.Other, text: "Unknown" },
     ];
 
     private validations() {
@@ -220,21 +220,27 @@ export default class NewDependentComponent extends Vue {
                                     <label for="dateOfBirth"
                                         >Date of Birth</label
                                     >
-                                    <b-form-input
+                                    <b-form-datepicker
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
-                                        v-mask="'####-##-##'"
-                                        masked="false"
-                                        data-testid="dateOfBirthInput"
-                                        placeholder="YYYY-MM-DD"
-                                        type="text"
+                                        placeholder="YYYY/MM/DD"
+                                        :date-format-options="{
+                                            year: 'numeric',
+                                            month: 'numeric',
+                                            day: 'numeric',
+                                        }"
+                                        :min="minBirthdate"
+                                        :max="new Date()"
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
                                         "
-                                        @blur.native="
-                                            $v.dependent.dateOfBirth.$touch()
-                                        "
-                                    ></b-form-input>
+                                        data-testid="dateOfBirthInput"
+                                        selected-variant="primary"
+                                        today-variant="primary"
+                                        nav-button-variant="primary"
+                                        hide-header
+                                    >
+                                    </b-form-datepicker>
                                     <b-form-invalid-feedback
                                         :state="
                                             isValid($v.dependent.dateOfBirth)

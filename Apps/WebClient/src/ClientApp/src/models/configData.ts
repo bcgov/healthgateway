@@ -63,6 +63,8 @@ export interface WebClientConfiguration {
     modules: { [id: string]: boolean };
     // Gets or sets the hours for deletion.
     hoursForDeletion: number;
+    // Gets or sets the minimum required patient age allowed for registration.
+    minPatientAge: number;
 }
 
 // Various timeout values used by the VUE WebClient application.

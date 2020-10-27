@@ -135,6 +135,7 @@ const a: WebClientConfiguration = {
     externalURLs: {},
     modules: { Note: true },
     hoursForDeletion: 1,
+    minPatientAge: 16,
 };
 
 const configGetters = {
