@@ -54,7 +54,7 @@ export class DateWrapper {
                     this._internal_date = DateTime.fromISO(param, {
                         zone: "utc",
                     }).setZone("America/Vancouver");
-                } else if (/-\d{2}:\d{2}$/.test(param)) {
+                } else if (/\d{2}:\d{2}$/.test(param)) {
                     this._internal_date = DateTime.fromISO(param);
                 } else {
                     this._internal_date = DateTime.fromISO(param, {
