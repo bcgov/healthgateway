@@ -106,7 +106,7 @@ namespace HealthGateway.Laboratory.Models
             return new LaboratoryModel()
             {
                 Id = model.SourceSystemId,
-                PHN = model.PHN,
+                PHN = MaskPHN(model.PHN),
                 OrderProviderIDs = model.OrderProviderIDs,
                 OrderingProviders = model.OrderingProviders,
                 ReportingLab = model.ReportingLab,
@@ -137,6 +137,17 @@ namespace HealthGateway.Laboratory.Models
             }
 
             return objects;
+        }
+
+        private static string MaskPHN(string phn)
+        {
+            string retPHN = "****";
+            if (phn != null && phn.Length > 3)
+            {
+                retPHN = $"{phn.Remove(phn.Length - 5, 4)}****";
+            }
+
+            return retPHN;
         }
     }
 }
