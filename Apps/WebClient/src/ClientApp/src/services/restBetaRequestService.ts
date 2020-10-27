@@ -23,7 +23,7 @@ export class RestBetaRequestService implements IBetaRequestService {
         this.http = http;
     }
 
-    public getRequest(hdid: string): Promise<BetaRequest> {
+    public getRequested(hdid: string): Promise<BetaRequest> {
         return new Promise((resolve, reject) => {
             this.http
                 .get<BetaRequest>(`${this.BETA_REQUEST_BASE_URI}/${hdid}`)
