@@ -4,7 +4,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 
 // The laboratory timeline entry model
 export default class LaboratoryTimelineEntry extends TimelineEntry {
-    public id: string;
     public orderingProviderIds: string | null;
     public orderingProviders: string | null;
     public reportingLab: string | null;
@@ -20,12 +19,11 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 
     public constructor(model: LaboratoryOrder) {
         super(
-            model.id,
+            model.labResults[0].id,
             EntryType.Laboratory,
             model.labResults[0].collectedDateTime
         );
 
-        this.id = model.id;
         this.orderingProviderIds = model.orderingProviderIds;
         this.orderingProviders = model.orderingProviders;
         this.reportingLab = model.reportingLab;
