@@ -76,6 +76,31 @@ export class RestDependentService implements IDependentService {
         });
     }
 
+    public removeDependent(dependent: Dependent): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .delete<RequestResult<void>>(
+                    `${this.BASE_URI}/`,
+                    dependent.hdid
+                )
+                .then((result) => {
+                    this.logger.verbose(
+                        `removeDependent result: ${JSON.stringify(result)}`
+                    );
+                    return this.handleResult(result, resolve, reject);
+                })
+                .catch((err) => {
+                    this.logger.error(`removeDependent error: ${err}`);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
+
     private handleResult<T>(
         requestResult: RequestResult<T>,
         resolve: (value?: T | PromiseLike<T> | undefined) => void,

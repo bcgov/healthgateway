@@ -4,18 +4,22 @@ import { Component, Prop } from "vue-property-decorator";
 import Dependent from "@/models/dependent";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { Action, Getter } from "vuex-class";
-import RequestResult from "@/models/requestResult";
+import RequestResult, { ResultError } from "@/models/requestResult";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import container from "@/plugins/inversify.config";
-import { ILogger, ILaboratoryService } from "@/services/interfaces";
+import {
+    ILogger,
+    ILaboratoryService,
+    IDependentService,
+} from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import User from "@/models/user";
 import { BTabs, BTab } from "bootstrap-vue";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
 library.add(faFileDownload);
 
 @Component({
@@ -40,6 +44,7 @@ export default class DependentCardComponent extends Vue {
     private isLoading = false;
     private logger!: ILogger;
     private laboratoryService!: ILaboratoryService;
+    private dependentService!: IDependentService;
     private labResults: LaboratoryOrder[] = [];
     private isDataLoaded = false;
 
@@ -49,10 +54,17 @@ export default class DependentCardComponent extends Vue {
         return now.diff(birthDate, "year").years > 19;
     }
 
+    private get menuIcon(): IconDefinition {
+        return faEllipsisV;
+    }
+
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
+        );
+        this.dependentService = container.get<IDependentService>(
+            SERVICE_IDENTIFIER.DependentService
         );
     }
 
@@ -111,6 +123,27 @@ export default class DependentCardComponent extends Vue {
                     )
                 );
             });
+    }
+
+    private deleteDependent(): void {
+        if (
+            confirm(
+                "Are you sure you want to remove " +
+                    this.dependent.name +
+                    " from your list of dependents?"
+            )
+        ) {
+            this.dependentService
+                .removeDependent(this.dependent)
+                .catch((err: ResultError) => {
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Error removing dependent",
+                            err
+                        )
+                    );
+                });
+        }
     }
 
     private formatDate(date: StringISODate): string {
@@ -240,6 +273,30 @@ export default class DependentCardComponent extends Vue {
                     </tr>
                 </table>
             </b-tab>
+            <template #tabs-end>
+                <li
+                    role="presentation"
+                    class="ml-auto nav-item align-self-center"
+                >
+                    <b-nav-item-dropdown right text="" :no-caret="true">
+                        <template slot="button-content">
+                            <font-awesome-icon
+                                data-testid="dependentMenuBtn"
+                                class="dependentMenu"
+                                :icon="menuIcon"
+                                size="1x"
+                            ></font-awesome-icon>
+                        </template>
+                        <b-dropdown-item
+                            data-testid="deleteDependentMenuBtn"
+                            class="menuItem"
+                            @click="deleteDependent()"
+                        >
+                            Delete
+                        </b-dropdown-item>
+                    </b-nav-item-dropdown>
+                </li>
+            </template>
         </b-tabs>
     </b-card>
 </template>
@@ -258,5 +315,8 @@ th {
 }
 .tableTab {
     padding: 0;
+}
+.dependentMenu {
+    color: $soft_text;
 }
 </style>
