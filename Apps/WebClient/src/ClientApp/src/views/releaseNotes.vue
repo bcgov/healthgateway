@@ -10,6 +10,35 @@
                         </div>
                     </b-col>
                 </b-row>
+                                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >October 28, 2020 - v1.2.9 - Optimized Application Infrastructure, Age Check on Registration, Initial Work for Parent 
+                                    Access to Children's COVID19 results
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We made some changes in our infrastructure to improve our 
+                                        application's performance under load. 
+                                    </li>
+                                    <li>
+                                        We added an age check on registration. In an upcoming sprint, BC residents will be able to use non-photo BC Services Card
+                                        to access their health infomration in the Health Gateway. 
+                                    </li>
+                                    <li>
+                                        We started working on a feature which will allow parents to access their children's COVID-19 results. 
+                                    </li>
+                                 </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
