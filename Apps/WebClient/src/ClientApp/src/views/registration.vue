@@ -136,7 +136,7 @@ export default class RegistrationView extends Vue {
                                         console.log(err);
                                         this.addError(
                                             ErrorTranslator.toBannerError(
-                                                "Retriving Beta requests",
+                                                "Retrieving Beta requests",
                                                 err
                                             )
                                         );
@@ -165,7 +165,10 @@ export default class RegistrationView extends Vue {
             .catch((err) => {
                 this.loadingUserData = false;
                 this.addError(
-                    ErrorTranslator.toBannerError("Retriving User profile", err)
+                    ErrorTranslator.toBannerError(
+                        "Retrieving User profile",
+                        err
+                    )
                 );
             });
 
