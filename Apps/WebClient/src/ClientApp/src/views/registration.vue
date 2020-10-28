@@ -20,6 +20,8 @@ import BetaRequest from "@/models/betaRequest";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import type { OidcUserProfile } from "@/models/user";
+import ErrorTranslator from "@/utility/errorTranslator";
+import BannerError from "@/models/bannerError";
 
 library.add(faCheck);
 
@@ -41,6 +43,9 @@ export default class RegistrationView extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
 
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
     private accepted = false;
     private email = "";
     private emailConfirmation = "";
@@ -54,7 +59,7 @@ export default class RegistrationView extends Vue {
     private submitStatus = "";
     private loadingUserData = true;
     private loadingTermsOfService = true;
-    private hasErrors = false;
+    private clientRegistryError = false;
     private errorMessage = "";
 
     private logger!: ILogger;
@@ -129,7 +134,12 @@ export default class RegistrationView extends Vue {
                                     })
                                     .catch((err) => {
                                         console.log(err);
-                                        this.hasErrors = true;
+                                        this.addError(
+                                            ErrorTranslator.toBannerError(
+                                                "Retriving Beta requests",
+                                                err
+                                            )
+                                        );
                                     })
                                     .finally(() => {
                                         this.loadingUserData = false;
@@ -137,14 +147,26 @@ export default class RegistrationView extends Vue {
                             } else {
                                 this.loadingUserData = false;
                             }
+                        })
+                        .catch((err) => {
+                            this.loadingUserData = false;
+                            this.clientRegistryError = true;
+                            this.addError(
+                                ErrorTranslator.toBannerError(
+                                    "Validating user",
+                                    err
+                                )
+                            );
                         });
                 } else {
                     this.loadingUserData = false;
                 }
             })
-            .catch(() => {
-                this.hasErrors = true;
+            .catch((err) => {
                 this.loadingUserData = false;
+                this.addError(
+                    ErrorTranslator.toBannerError("Retriving User profile", err)
+                );
             });
 
         this.loadTermsOfService();
@@ -215,7 +237,12 @@ export default class RegistrationView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.handleError("Please refresh your browser.");
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Loading Terms of service",
+                        err
+                    )
+                );
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -256,13 +283,23 @@ export default class RegistrationView extends Vue {
                             if (isRegistered) {
                                 this.$router.push({ path: "/timeline" });
                             } else {
-                                this.hasErrors = true;
+                                this.addError({
+                                    title: "User profile creation",
+                                    description: "Profile already created",
+                                    detail: "",
+                                    errorCode: "",
+                                });
                             }
                         }
                     );
                 })
                 .catch((err) => {
-                    this.handleError(err);
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "User profile creation",
+                            err
+                        )
+                    );
                 })
                 .finally(() => {
                     this.loadingTermsOfService = false;
@@ -302,11 +339,12 @@ export default class RegistrationView extends Vue {
                     this.waitlistEmailConfirmation = "";
                     this.waitlistTempEmail = this.email;
                     this.waitlistedSuccessfully = true;
-                    this.hasErrors = false;
                     this.$v.$reset();
                 })
                 .catch((err) => {
-                    this.hasErrors = true;
+                    this.addError(
+                        ErrorTranslator.toBannerError("Saving Waitlist", err)
+                    );
                     this.logger.error(`Error saving new beta request. ${err}`);
                 })
                 .finally(() => {
@@ -334,30 +372,12 @@ export default class RegistrationView extends Vue {
             this.smsNumber = "";
         }
     }
-
-    private handleError(error: string): void {
-        this.hasErrors = true;
-        this.errorMessage = error;
-        this.logger.error(error);
-    }
 }
 </script>
 
 <template>
     <b-container class="py-5">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row>
-            <b-col>
-                <b-alert :show="hasErrors" dismissible variant="danger">
-                    <h4>Error</h4>
-                    <p>
-                        An unexpected error occured while processing the
-                        request:
-                    </p>
-                    <span>{{ errorMessage }}</span>
-                </b-alert>
-            </b-col>
-        </b-row>
         <div v-if="!isLoading && termsOfService !== ''">
             <b-row v-if="isRegistrationClosed">
                 <b-col>
@@ -656,10 +676,15 @@ export default class RegistrationView extends Vue {
                         </b-col>
                     </b-row>
                 </b-form>
-                <div v-else>
+                <div v-else-if="!clientRegistryError">
                     <h1>Minimum age required for registration</h1>
                     You must be <strong>{{ minimumAge }}</strong> years of age
                     or older to use this application
+                </div>
+                <div v-else>
+                    <h1>Error retrieving user information</h1>
+                    There may be an issue in our Client Registry. Please contact
+                    <strong>HealthGateway@gov.bc.ca</strong>
                 </div>
             </div>
         </div>

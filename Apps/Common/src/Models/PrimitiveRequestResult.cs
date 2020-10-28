@@ -15,23 +15,23 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
-    using System;
-    using System.Collections;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants;
 
     /// <summary>
-    /// Class that represents the result of a request. Contains members for handling pagination and error resolution.
+    /// Class that represents the result of a request with a primitive values. 
+    /// Contains members for handling pagination and error resolution.
+    /// Note: Will not be necessary on the next release of c#
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
-    public class RequestResult<T>
-        where T : class
+    public class PrimitiveRequestResult<T>
+        where T : struct
     {
         /// <summary>
         /// Gets or sets the result payload.
         /// </summary>
         [JsonPropertyName("resourcePayload")]
-        public T? ResourcePayload { get; set; } = default(T);
+        public T ResourcePayload { get; set; } = default(T);
 
         /// <summary>
         /// Gets or sets the total result count for the request for pagination.

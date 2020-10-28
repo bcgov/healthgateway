@@ -158,7 +158,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserPolicy.Read)]
         public async Task<IActionResult> Validate(string hdid)
         {
-            bool result = await this.userProfileService.ValidateMinimumAge(hdid);
+            PrimitiveRequestResult<bool> result = await this.userProfileService.ValidateMinimumAge(hdid).ConfigureAwait(true);
             return new JsonResult(result);
         }
 

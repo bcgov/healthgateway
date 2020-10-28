@@ -55,6 +55,6 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the datetime the operation was performed.
         /// </summary>
         [Required]
-        public DateTime OperationDateTime { get; set; } = DateTime.MaxValue;    
+        public DateTime OperationDateTime { get; set; } = DateTime.MaxValue;
     }
 }
