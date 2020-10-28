@@ -47,7 +47,7 @@ export default class DependentsView extends Vue {
     private fetchDependents() {
         this.isLoading = true;
         this.dependentService
-            .getAll()
+            .getAll(this.user.hdid)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.dependents = results.resourcePayload;
@@ -97,6 +97,7 @@ export default class DependentsView extends Vue {
                             </b-col>
                             <b-col cols="5" align-self="end">
                                 <b-btn
+                                    data-testid="addNewDependentBtn"
                                     variant="primary"
                                     class="float-right"
                                     @click="showModal()"
@@ -124,7 +125,11 @@ export default class DependentsView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <NewDependentComponent ref="newDependentModal" @show="showModal" />
+        <NewDependentComponent
+            ref="newDependentModal"
+            @show="showModal"
+            @handle-submit="fetchDependents"
+        />
     </div>
 </template>
 <style lang="scss" scoped>

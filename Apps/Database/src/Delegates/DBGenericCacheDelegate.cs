@@ -157,6 +157,7 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
+                    this.dbContext.Entry(cacheObject).State = EntityState.Detached;
                     this.logger.LogInformation($"Unable to save cache item to DB {(e.InnerException != null ? e.InnerException.Message : e.Message)}");
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;

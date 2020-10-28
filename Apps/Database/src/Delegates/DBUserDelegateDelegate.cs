@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -90,7 +90,49 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<UserDelegate> Delete(string ownerId, string delegateId, bool commit)
         {
-            throw new System.NotImplementedException();
+            this.logger.LogTrace($"Deleting UserDelegate (ownerId: {ownerId}, delegateId: {delegateId}) from DB...");
+            UserDelegate userDelegate = new UserDelegate()
+            {
+                OwnerId = ownerId,
+                DelegateId = delegateId,
+            };
+            DBResult<UserDelegate> result = new DBResult<UserDelegate>()
+            {
+                Payload = userDelegate,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.UserDelegate.Remove(userDelegate);
+
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Deleted;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished deleting UserDelegate from DB");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public bool Exists(string ownerId, string delegateId)
+        {
+            var userDelegate = this.dbContext.UserDelegate.Find(delegateId, ownerId);
+            if (userDelegate != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

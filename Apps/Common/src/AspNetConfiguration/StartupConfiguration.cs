@@ -17,6 +17,8 @@ namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
@@ -411,7 +413,13 @@ namespace HealthGateway.Common.AspNetConfiguration
             {
                 services.AddOpenTelemetryTracing(tracing =>
                  {
-                     tracing.AddAspNetCoreInstrumentation()
+                     tracing.AddAspNetCoreInstrumentation(options =>
+                     {
+                         options.Filter = (httpContext) =>
+                         {
+                             return !config.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
+                         };
+                     })
                             .AddHttpClientInstrumentation()
                             .AddSource(config.Sources);
                      if (config.ZipkinEnabled)

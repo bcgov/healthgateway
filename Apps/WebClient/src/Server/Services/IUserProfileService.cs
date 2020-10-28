@@ -41,7 +41,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hostUri">The host of the email validation endpoint.</param>
         /// <param name="bearerToken">The access token of the authenticated user.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<UserProfileModel> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken);
+        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken);
 
         /// <summary>
         /// Closed the user profile.
@@ -83,5 +83,12 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>The wrappeed user reference.</returns>
         RequestResult<Dictionary<string, string>> GetUserPreferences(string hdid);
+
+        /// <summary>
+        /// Gets a value indicating if the patient age is valid for registration.
+        /// </summary>
+        /// <param name="hdid">The requested user hdid.</param>
+        /// <returns>A boolean result.</returns>
+        Task<bool> ValidateMinimumAge(string hdid);
     }
 }

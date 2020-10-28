@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import LoadingComponent from "@/components/loading.vue";
-import { Component } from "vue-property-decorator";
+import { Component, Emit } from "vue-property-decorator";
 import { Validation } from "vuelidate/vuelidate";
 import { sameAs, required, minLength } from "vuelidate/lib/validators";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -54,7 +54,7 @@ export default class NewDependentComponent extends Vue {
         { value: GenderType.NotSelected, text: "Please select an option" },
         { value: GenderType.Male, text: "Male" },
         { value: GenderType.Female, text: "Female" },
-        { value: GenderType.Other, text: "X" },
+        { value: GenderType.Other, text: "Unknown" },
     ];
 
     private validations() {
@@ -152,6 +152,7 @@ export default class NewDependentComponent extends Vue {
             });
     }
 
+    @Emit()
     private handleSubmit() {
         // Hide the modal manually
         this.$nextTick(() => {
@@ -219,21 +220,27 @@ export default class NewDependentComponent extends Vue {
                                     <label for="dateOfBirth"
                                         >Date of Birth</label
                                     >
-                                    <b-form-input
+                                    <b-form-datepicker
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
-                                        v-mask="'####-##-##'"
-                                        masked="false"
-                                        data-testid="dateOfBirthInput"
-                                        placeholder="YYYY-MM-DD"
-                                        type="text"
+                                        placeholder="YYYY/MM/DD"
+                                        :date-format-options="{
+                                            year: 'numeric',
+                                            month: 'numeric',
+                                            day: 'numeric',
+                                        }"
+                                        :min="minBirthdate"
+                                        :max="new Date()"
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
                                         "
-                                        @blur.native="
-                                            $v.dependent.dateOfBirth.$touch()
-                                        "
-                                    ></b-form-input>
+                                        data-testid="dateOfBirthInput"
+                                        selected-variant="primary"
+                                        today-variant="primary"
+                                        nav-button-variant="primary"
+                                        hide-header
+                                    >
+                                    </b-form-datepicker>
                                     <b-form-invalid-feedback
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
@@ -309,12 +316,20 @@ export default class NewDependentComponent extends Vue {
         <template #modal-footer>
             <b-row>
                 <div class="mr-2">
-                    <b-btn variant="primary" @click="handleOk"
+                    <b-btn
+                        data-testid="registerDependentBtn"
+                        variant="primary"
+                        @click="handleOk"
                         >Register dependent</b-btn
                     >
                 </div>
                 <div>
-                    <b-btn variant="secondary" @click="hideModal">Cancel</b-btn>
+                    <b-btn
+                        data-testid="cancelRegistrationBtn"
+                        variant="secondary"
+                        @click="hideModal"
+                        >Cancel</b-btn
+                    >
                 </div>
             </b-row>
         </template>

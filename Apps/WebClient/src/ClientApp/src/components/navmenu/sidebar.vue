@@ -238,6 +238,10 @@ export default class SidebarComponent extends Vue {
         return this.config.modules["Note"];
     }
 
+    private get isDependentEnabled(): boolean {
+        return this.config.modules["Dependent"];
+    }
+
     private get isDependents(): boolean {
         return this.$route.path == "/dependents";
     }
@@ -469,7 +473,7 @@ export default class SidebarComponent extends Vue {
                         </b-row>
                     </router-link>
                     <router-link
-                        v-show="isActiveProfile"
+                        v-show="isDependentEnabled"
                         id="menuBtnDependents"
                         data-testid="menuBtnDependentsLink"
                         to="/dependents"

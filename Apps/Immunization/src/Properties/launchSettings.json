@@ -11,9 +11,9 @@
   "profiles": {
     "HealthGateway.Immunization": {
       "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development"
+        },
       "applicationUrl": "http://localhost:3001;"
     }
   }

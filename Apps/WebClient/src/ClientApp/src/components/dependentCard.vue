@@ -122,7 +122,7 @@ export default class DependentCardComponent extends Vue {
 <template>
     <b-card no-body>
         <b-tabs card>
-            <b-tab active>
+            <b-tab active data-testid="dependentTab">
                 <template #title>
                     <strong data-testid="dependentName">{{
                         dependent.name
@@ -193,6 +193,7 @@ export default class DependentCardComponent extends Vue {
                 </div>
             </b-tab>
             <b-tab
+                data-testid="covid19Tab"
                 :disabled="isExpired"
                 title="COVID-19"
                 class="tableTab mt-2"
@@ -202,7 +203,9 @@ export default class DependentCardComponent extends Vue {
                     <b-col><b-spinner></b-spinner></b-col>
                 </b-row>
                 <b-row v-else-if="labResults.length == 0" class="m-2">
-                    <b-col>No records found.</b-col>
+                    <b-col data-testid="covid19NoRecords"
+                        >No records found.</b-col
+                    >
                 </b-row>
                 <table v-else class="w-100">
                     <tr>

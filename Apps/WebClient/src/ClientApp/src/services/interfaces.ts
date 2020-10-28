@@ -85,6 +85,7 @@ export interface IUserProfileService {
     initialize(http: IHttpDelegate): void;
     createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
     getProfile(hdid: string): Promise<UserProfile>;
+    validateAge(hdid: string): Promise<boolean>;
     getTermsOfService(): Promise<TermsOfService>;
     closeAccount(hdid: string): Promise<UserProfile>;
     recoverAccount(hdid: string): Promise<UserProfile>;
@@ -113,7 +114,7 @@ export interface IUserRatingService {
 
 export interface IBetaRequestService {
     initialize(http: IHttpDelegate): void;
-    getRequest(hdid: string): Promise<BetaRequest>;
+    getRequested(hdid: string): Promise<BetaRequest>;
     putRequest(request: BetaRequest): Promise<BetaRequest>;
 }
 
@@ -143,7 +144,7 @@ export interface ICommunicationService {
 export interface IDependentService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     addDependent(dependent: AddDependentRequest): Promise<AddDependentRequest>;
-    getAll(): Promise<RequestResult<Dependent[]>>;
+    getAll(hdid: string): Promise<RequestResult<Dependent[]>>;
 }
 
 export interface IHttpDelegate {

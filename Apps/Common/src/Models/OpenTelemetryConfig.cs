@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -53,5 +54,11 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the URI to send Zipkin tracing results.
         /// </summary>
         public Uri? ZipkinUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path prefixes that tracing will ignore.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Configuration Binding")]
+        public string[] IgnorePathPrefixes { get; set; } = Array.Empty<string>();
     }
 }
