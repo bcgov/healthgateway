@@ -112,9 +112,11 @@ export class RestUserProfileService implements IUserProfileService {
     public validateAge(hdid: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.http
-                .get<boolean>(`${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`)
-                .then((result) => {
-                    resolve(result);
+                .get<RequestResult<boolean>>(
+                    `${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
+                )
+                .then((requestResult) => {
+                    this.handleResult(requestResult, resolve, reject);
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);
