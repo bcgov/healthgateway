@@ -1,6 +1,7 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import Encounter from "@/models/encounter";
 import Clinic from "@/models/clinic";
+import { DateWrapper } from "@/models/dateWrapper";
 
 // The encounter timeline entry model
 export default class EncounterTimelineEntry extends TimelineEntry {
@@ -9,7 +10,11 @@ export default class EncounterTimelineEntry extends TimelineEntry {
     public clinic: ClinicViewModel;
 
     public constructor(model: Encounter) {
-        super(model.id, EntryType.Encounter, model.encounterDate);
+        super(
+            model.id,
+            EntryType.Encounter,
+            new DateWrapper(model.encounterDate)
+        );
         this.practitionerName =
             model.practitionerName || "Unknown Practitioner";
         this.specialtyDescription = model.specialtyDescription || "";
