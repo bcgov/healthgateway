@@ -21,7 +21,9 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         super(
             model.labResults[0].id,
             EntryType.Laboratory,
-            model.labResults[0].collectedDateTime
+            new DateWrapper(model.labResults[0].collectedDateTime, {
+                hasTime: true,
+            })
         );
 
         this.orderingProviderIds = model.orderingProviderIds;
@@ -82,11 +84,17 @@ export class LaboratoryResultViewModel {
         this.id = model.id;
         this.testType = model.testType;
         this.outOfRange = model.outOfRange ? "True" : "False";
-        this.collectedDateTime = new DateWrapper(model.collectedDateTime);
+        this.collectedDateTime = new DateWrapper(model.collectedDateTime, {
+            hasTime: true,
+        });
         this.testStatus = model.testStatus;
         this.resultDescription = model.resultDescription;
-        this.receivedDateTime = new DateWrapper(model.receivedDateTime);
-        this.resultDateTime = new DateWrapper(model.resultDateTime);
+        this.receivedDateTime = new DateWrapper(model.receivedDateTime, {
+            hasTime: true,
+        });
+        this.resultDateTime = new DateWrapper(model.resultDateTime, {
+            hasTime: true,
+        });
         this.loinc = model.loinc;
         this.loincName = model.loincName;
     }
