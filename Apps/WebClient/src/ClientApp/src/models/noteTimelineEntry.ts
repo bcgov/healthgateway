@@ -1,5 +1,6 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import UserNote from "@/models/userNote";
+import { DateWrapper } from "@/models/dateWrapper";
 
 // The note timeline entry model
 export default class NoteTimelineEntry extends TimelineEntry {
@@ -13,7 +14,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
         super(
             model.id ?? "TEMP_ID",
             EntryType.Note,
-            model.journalDateTime ?? ""
+            new DateWrapper(model.journalDateTime ?? "")
         );
         this.text = model.text || "";
         this.title = model.title || "No Title";

@@ -4,7 +4,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 
 // The laboratory timeline entry model
 export default class LaboratoryTimelineEntry extends TimelineEntry {
-    public id: string;
     public orderingProviderIds: string | null;
     public orderingProviders: string | null;
     public reportingLab: string | null;
@@ -20,12 +19,13 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 
     public constructor(model: LaboratoryOrder) {
         super(
-            model.id,
+            model.labResults[0].id,
             EntryType.Laboratory,
-            model.labResults[0].collectedDateTime
+            new DateWrapper(model.labResults[0].collectedDateTime, {
+                hasTime: true,
+            })
         );
 
-        this.id = model.id;
         this.orderingProviderIds = model.orderingProviderIds;
         this.orderingProviders = model.orderingProviders;
         this.reportingLab = model.reportingLab;
@@ -84,11 +84,17 @@ export class LaboratoryResultViewModel {
         this.id = model.id;
         this.testType = model.testType;
         this.outOfRange = model.outOfRange ? "True" : "False";
-        this.collectedDateTime = new DateWrapper(model.collectedDateTime);
+        this.collectedDateTime = new DateWrapper(model.collectedDateTime, {
+            hasTime: true,
+        });
         this.testStatus = model.testStatus;
         this.resultDescription = model.resultDescription;
-        this.receivedDateTime = new DateWrapper(model.receivedDateTime);
-        this.resultDateTime = new DateWrapper(model.resultDateTime);
+        this.receivedDateTime = new DateWrapper(model.receivedDateTime, {
+            hasTime: true,
+        });
+        this.resultDateTime = new DateWrapper(model.resultDateTime, {
+            hasTime: true,
+        });
         this.loinc = model.loinc;
         this.loincName = model.loincName;
     }

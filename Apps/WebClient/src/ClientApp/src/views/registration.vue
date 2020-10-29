@@ -20,6 +20,8 @@ import BetaRequest from "@/models/betaRequest";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import type { OidcUserProfile } from "@/models/user";
+import ErrorTranslator from "@/utility/errorTranslator";
+import BannerError from "@/models/bannerError";
 
 library.add(faCheck);
 
@@ -41,6 +43,9 @@ export default class RegistrationView extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
 
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
     private accepted = false;
     private email = "";
     private emailConfirmation = "";
@@ -54,7 +59,7 @@ export default class RegistrationView extends Vue {
     private submitStatus = "";
     private loadingUserData = true;
     private loadingTermsOfService = true;
-    private hasErrors = false;
+    private clientRegistryError = false;
     private errorMessage = "";
 
     private logger!: ILogger;
@@ -66,6 +71,9 @@ export default class RegistrationView extends Vue {
 
     private waitlistedSuccessfully = false;
 
+    private isValidAge = false;
+    private minimumAge!: number;
+
     private termsOfService = "";
 
     private mounted() {
@@ -73,6 +81,8 @@ export default class RegistrationView extends Vue {
         this.betaRequestService = container.get(
             SERVICE_IDENTIFIER.BetaRequestService
         );
+
+        this.minimumAge = this.webClientConfig.minPatientAge;
 
         if (
             this.webClientConfig.registrationStatus == RegistrationStatus.Open
@@ -99,36 +109,67 @@ export default class RegistrationView extends Vue {
                 if (oidcUser) {
                     this.oidcUser = oidcUser;
 
-                    return this.betaRequestService
-                        .getRequest(this.oidcUser.hdid)
-                        .then((betaRequest) => {
-                            this.logger.debug(
-                                `getOidcUserProfile result: ${JSON.stringify(
-                                    betaRequest
-                                )}`
-                            );
-                            if (betaRequest) {
-                                this.email = betaRequest.emailAddress;
-                                this.emailConfirmation = this.email;
-                                this.waitlistTempEmail = this.email;
-                                this.waitlistEdditable = false;
+                    return this.userProfileService
+                        .validateAge(oidcUser.hdid)
+                        .then((isValid) => {
+                            this.isValidAge = isValid;
+                            if (isValid) {
+                                return this.betaRequestService
+                                    .getRequested(this.oidcUser.hdid)
+                                    .then((betaRequest) => {
+                                        this.logger.debug(
+                                            `getOidcUserProfile result: ${JSON.stringify(
+                                                betaRequest
+                                            )}`
+                                        );
+                                        if (betaRequest) {
+                                            this.email =
+                                                betaRequest.emailAddress;
+                                            this.emailConfirmation = this.email;
+                                            this.waitlistTempEmail = this.email;
+                                            this.waitlistEdditable = false;
+                                        } else {
+                                            this.makeWaitlistEdditable();
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        console.log(err);
+                                        this.addError(
+                                            ErrorTranslator.toBannerError(
+                                                "Retrieving Beta requests",
+                                                err
+                                            )
+                                        );
+                                    })
+                                    .finally(() => {
+                                        this.loadingUserData = false;
+                                    });
                             } else {
-                                this.makeWaitlistEdditable();
+                                this.loadingUserData = false;
                             }
                         })
-                        .catch(() => {
-                            this.hasErrors = true;
-                        })
-                        .finally(() => {
+                        .catch((err) => {
                             this.loadingUserData = false;
+                            this.clientRegistryError = true;
+                            this.addError(
+                                ErrorTranslator.toBannerError(
+                                    "Validating user",
+                                    err
+                                )
+                            );
                         });
                 } else {
                     this.loadingUserData = false;
                 }
             })
-            .catch(() => {
-                this.hasErrors = true;
+            .catch((err) => {
                 this.loadingUserData = false;
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Retrieving User profile",
+                        err
+                    )
+                );
             });
 
         this.loadTermsOfService();
@@ -199,7 +240,12 @@ export default class RegistrationView extends Vue {
             })
             .catch((err) => {
                 this.logger.error(err);
-                this.handleError("Please refresh your browser.");
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Loading Terms of service",
+                        err
+                    )
+                );
             })
             .finally(() => {
                 this.loadingTermsOfService = false;
@@ -240,13 +286,23 @@ export default class RegistrationView extends Vue {
                             if (isRegistered) {
                                 this.$router.push({ path: "/timeline" });
                             } else {
-                                this.hasErrors = true;
+                                this.addError({
+                                    title: "User profile creation",
+                                    description: "Profile already created",
+                                    detail: "",
+                                    errorCode: "",
+                                });
                             }
                         }
                     );
                 })
                 .catch((err) => {
-                    this.handleError(err);
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "User profile creation",
+                            err
+                        )
+                    );
                 })
                 .finally(() => {
                     this.loadingTermsOfService = false;
@@ -286,11 +342,12 @@ export default class RegistrationView extends Vue {
                     this.waitlistEmailConfirmation = "";
                     this.waitlistTempEmail = this.email;
                     this.waitlistedSuccessfully = true;
-                    this.hasErrors = false;
                     this.$v.$reset();
                 })
                 .catch((err) => {
-                    this.hasErrors = true;
+                    this.addError(
+                        ErrorTranslator.toBannerError("Saving Waitlist", err)
+                    );
                     this.logger.error(`Error saving new beta request. ${err}`);
                 })
                 .finally(() => {
@@ -318,30 +375,12 @@ export default class RegistrationView extends Vue {
             this.smsNumber = "";
         }
     }
-
-    private handleError(error: string): void {
-        this.hasErrors = true;
-        this.errorMessage = error;
-        this.logger.error(error);
-    }
 }
 </script>
 
 <template>
     <b-container class="py-5">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row>
-            <b-col>
-                <b-alert :show="hasErrors" dismissible variant="danger">
-                    <h4>Error</h4>
-                    <p>
-                        An unexpected error occured while processing the
-                        request:
-                    </p>
-                    <span>{{ errorMessage }}</span>
-                </b-alert>
-            </b-col>
-        </b-row>
         <div v-if="!isLoading && termsOfService !== ''">
             <b-row v-if="isRegistrationClosed">
                 <b-col>
@@ -486,145 +525,171 @@ export default class RegistrationView extends Vue {
                     </b-row>
                 </b-col>
             </b-row>
-            <b-form v-else ref="registrationForm" @submit.prevent="onSubmit">
-                <b-row class="my-3">
-                    <b-col>
-                        <div id="pageTitle">
-                            <h1 id="Subject">Communication Preferences</h1>
+            <div v-else>
+                <b-form
+                    v-if="isValidAge"
+                    ref="registrationForm"
+                    @submit.prevent="onSubmit"
+                >
+                    <b-row class="my-3">
+                        <b-col>
+                            <div id="pageTitle">
+                                <h1 id="Subject">Welcome to Health Gateway!</h1>
+                            </div>
+                        </b-col>
+                    </b-row>
+                    <b-row class="my-4">
+                        <b-col>
+                            <h2>Communication Preferences</h2>
                             <div id="Description">
                                 Health Gateway will send you notifications via
                                 email and based on your preference, may send
                                 email and/or text for other notifications.
                             </div>
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row class="mb-3">
-                    <b-col>
-                        <b-row class="d-flex">
-                            <b-col class="d-flex pr-0">
-                                <b-form-checkbox
-                                    id="emailCheckbox"
-                                    v-model="isEmailChecked"
-                                    @change="onEmailOptout($event)"
-                                >
-                                </b-form-checkbox>
-                                <label class="d-flex" for="email">
-                                    Email Notifications <Address></Address>
-                                </label>
-                            </b-col>
-                        </b-row>
-                        <b-form-input
-                            id="emailInput"
-                            v-model="$v.email.$model"
-                            data-testid="emailInput"
-                            type="email"
-                            placeholder="Your email address"
-                            :disabled="isPredefinedEmail || !isEmailChecked"
-                            :state="isValid($v.email)"
-                        />
-                        <b-form-invalid-feedback :state="isValid($v.email)">
-                            Valid email is required
-                        </b-form-invalid-feedback>
-                    </b-col>
-                </b-row>
-                <b-row v-if="!isPredefinedEmail" class="mb-3">
-                    <b-col>
-                        <b-form-input
-                            id="emailConfirmationInput"
-                            v-model="$v.emailConfirmation.$model"
-                            data-testid="emailConfirmationInput"
-                            type="email"
-                            placeholder="Confirm your email address"
-                            :disabled="!isEmailChecked"
-                            :state="isValid($v.emailConfirmation)"
-                        />
-                        <b-form-invalid-feedback
-                            :state="$v.emailConfirmation.sameAsEmail"
-                        >
-                            Emails must match
-                        </b-form-invalid-feedback>
-                    </b-col>
-                </b-row>
-                <!-- SMS section -->
-                <b-row class="mb-3">
-                    <b-col>
-                        <b-row class="d-flex">
-                            <b-col class="d-flex pr-0">
-                                <b-form-checkbox
-                                    id="smsCheckbox"
-                                    v-model="isSMSNumberChecked"
-                                    @change="onSMSOptout($event)"
-                                ></b-form-checkbox>
-                                <label class="d-flex" for="smsNumber"
-                                    >SMS Notifications <Address></Address>
-                                </label>
-                            </b-col>
-                        </b-row>
-                        <b-form-input
-                            id="smsNumberInput"
-                            v-model="$v.smsNumber.$model"
-                            data-testid="smsNumberInput"
-                            class="d-flex"
-                            type="text"
-                            placeholder="Your phone number"
-                            :state="isValid($v.smsNumber)"
-                            :disabled="!isSMSNumberChecked"
-                        >
-                        </b-form-input>
-                        <b-form-invalid-feedback :state="isValid($v.smsNumber)">
-                            Valid sms number is required
-                        </b-form-invalid-feedback>
-                    </b-col>
-                </b-row>
-                <b-row v-if="!isEmailChecked && !isSMSNumberChecked">
-                    <b-col class="font-weight-bold text-primary">
-                        <font-awesome-icon
-                            icon="exclamation-triangle"
-                            aria-hidden="true"
-                        ></font-awesome-icon>
-                        You won't receive notifications from the Health Gateway.
-                        You can update this from your Profile Page later.
-                    </b-col>
-                </b-row>
-                <b-row class="mt-4">
-                    <b-col>
-                        <h2>Terms of Service</h2>
-                    </b-col>
-                </b-row>
-                <b-row class="mb-3">
-                    <b-col>
-                        <HtmlTextAreaComponent :input="termsOfService" />
-                    </b-col>
-                </b-row>
-                <b-row class="mb-3">
-                    <b-col>
-                        <b-form-checkbox
-                            id="accept"
-                            v-model="accepted"
-                            class="accept"
-                            :state="isValid($v.accepted)"
-                        >
-                            I agree to the terms of service above.
-                        </b-form-checkbox>
-                        <b-form-invalid-feedback :state="isValid($v.accepted)">
-                            You must accept the terms of service.
-                        </b-form-invalid-feedback>
-                    </b-col>
-                </b-row>
-                <b-row class="mb-5">
-                    <b-col class="justify-content-right">
-                        <b-button
-                            class="px-5 float-right"
-                            type="submit"
-                            size="lg"
-                            variant="primary"
-                            :class="{ disabled: !accepted }"
-                            >Register</b-button
-                        >
-                    </b-col>
-                </b-row>
-            </b-form>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-3">
+                        <b-col>
+                            <b-row class="d-flex">
+                                <b-col class="d-flex pr-0">
+                                    <b-form-checkbox
+                                        id="emailCheckbox"
+                                        v-model="isEmailChecked"
+                                        @change="onEmailOptout($event)"
+                                    >
+                                    </b-form-checkbox>
+                                    <label class="d-flex" for="email">
+                                        Email Notifications <Address></Address>
+                                    </label>
+                                </b-col>
+                            </b-row>
+                            <b-form-input
+                                id="emailInput"
+                                v-model="$v.email.$model"
+                                data-testid="emailInput"
+                                type="email"
+                                placeholder="Your email address"
+                                :disabled="isPredefinedEmail || !isEmailChecked"
+                                :state="isValid($v.email)"
+                            />
+                            <b-form-invalid-feedback :state="isValid($v.email)">
+                                Valid email is required
+                            </b-form-invalid-feedback>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="!isPredefinedEmail" class="mb-3">
+                        <b-col>
+                            <b-form-input
+                                id="emailConfirmationInput"
+                                v-model="$v.emailConfirmation.$model"
+                                data-testid="emailConfirmationInput"
+                                type="email"
+                                placeholder="Confirm your email address"
+                                :disabled="!isEmailChecked"
+                                :state="isValid($v.emailConfirmation)"
+                            />
+                            <b-form-invalid-feedback
+                                :state="$v.emailConfirmation.sameAsEmail"
+                            >
+                                Emails must match
+                            </b-form-invalid-feedback>
+                        </b-col>
+                    </b-row>
+                    <!-- SMS section -->
+                    <b-row class="mb-3">
+                        <b-col>
+                            <b-row class="d-flex">
+                                <b-col class="d-flex pr-0">
+                                    <b-form-checkbox
+                                        id="smsCheckbox"
+                                        v-model="isSMSNumberChecked"
+                                        @change="onSMSOptout($event)"
+                                    ></b-form-checkbox>
+                                    <label class="d-flex" for="smsNumber"
+                                        >SMS Notifications <Address></Address>
+                                    </label>
+                                </b-col>
+                            </b-row>
+                            <b-form-input
+                                id="smsNumberInput"
+                                v-model="$v.smsNumber.$model"
+                                data-testid="smsNumberInput"
+                                class="d-flex"
+                                type="text"
+                                placeholder="Your phone number"
+                                :state="isValid($v.smsNumber)"
+                                :disabled="!isSMSNumberChecked"
+                            >
+                            </b-form-input>
+                            <b-form-invalid-feedback
+                                :state="isValid($v.smsNumber)"
+                            >
+                                Valid sms number is required
+                            </b-form-invalid-feedback>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="!isEmailChecked && !isSMSNumberChecked">
+                        <b-col class="font-weight-bold text-primary">
+                            <font-awesome-icon
+                                icon="exclamation-triangle"
+                                aria-hidden="true"
+                            ></font-awesome-icon>
+                            You won't receive notifications from the Health
+                            Gateway. You can update this from your Profile Page
+                            later.
+                        </b-col>
+                    </b-row>
+                    <b-row class="mt-4">
+                        <b-col>
+                            <h2>Terms of Service</h2>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-3">
+                        <b-col>
+                            <HtmlTextAreaComponent :input="termsOfService" />
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-3">
+                        <b-col>
+                            <b-form-checkbox
+                                id="accept"
+                                v-model="accepted"
+                                class="accept"
+                                :state="isValid($v.accepted)"
+                            >
+                                I agree to the terms of service above.
+                            </b-form-checkbox>
+                            <b-form-invalid-feedback
+                                :state="isValid($v.accepted)"
+                            >
+                                You must accept the terms of service.
+                            </b-form-invalid-feedback>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-5">
+                        <b-col class="justify-content-right">
+                            <b-button
+                                class="px-5 float-right"
+                                type="submit"
+                                size="lg"
+                                variant="primary"
+                                :class="{ disabled: !accepted }"
+                                >Register</b-button
+                            >
+                        </b-col>
+                    </b-row>
+                </b-form>
+                <div v-else-if="!clientRegistryError">
+                    <h1>Minimum age required for registration</h1>
+                    You must be <strong>{{ minimumAge }}</strong> years of age
+                    or older to use this application
+                </div>
+                <div v-else>
+                    <h1>Error retrieving user information</h1>
+                    There may be an issue in our Client Registry. Please contact
+                    <strong>HealthGateway@gov.bc.ca</strong>
+                </div>
+            </div>
         </div>
     </b-container>
 </template>

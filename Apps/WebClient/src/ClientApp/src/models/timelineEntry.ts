@@ -1,4 +1,4 @@
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 
 export enum EntryType {
     Medication,
@@ -70,10 +70,10 @@ export default abstract class TimelineEntry {
     public readonly type: EntryType;
     public readonly date: DateWrapper;
 
-    public constructor(id: string, type: EntryType, date: StringISODate) {
+    public constructor(id: string, type: EntryType, date: DateWrapper) {
         this.id = id;
         this.type = type;
-        this.date = new DateWrapper(date);
+        this.date = date;
     }
 
     public abstract filterApplies(

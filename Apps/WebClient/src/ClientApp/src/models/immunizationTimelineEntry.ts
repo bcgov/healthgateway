@@ -7,7 +7,11 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
     public immunization: ImmunizationViewModel;
 
     public constructor(model: ImmunizationModel) {
-        super(model.id, EntryType.Immunization, model.dateOfImmunization);
+        super(
+            model.id,
+            EntryType.Immunization,
+            new DateWrapper(model.dateOfImmunization)
+        );
         this.immunization = new ImmunizationViewModel(model);
     }
 
