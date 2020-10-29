@@ -2,7 +2,6 @@ import Vue from "vue";
 import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-
 // Routes
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
@@ -86,6 +85,16 @@ function calculateUserState() {
     }
 }
 
+enum ClientModule {
+    Immunization = "Immunization",
+    Medication = "Medication",
+    Laboratory = "Laboratory",
+    Encounter = "Encounter",
+    Comment = "Comment",
+    CovidLabResults = "CovidLabResults",
+    Dependent = "Dependent",
+}
+
 const REGISTRATION_PATH = "/registration";
 const REGISTRATION_INFO_PATH = "/registrationInfo";
 
@@ -148,7 +157,10 @@ const routes = [
     {
         path: "/dependents",
         component: DependentsView,
-        meta: { validStates: [UserState.registered] },
+        meta: {
+            validStates: [UserState.registered],
+            requiredModules: [ClientModule.Dependent],
+        },
     },
     {
         path: "/termsOfService",
@@ -241,8 +253,17 @@ router.beforeEach(async (to, from, next) => {
         // Make sure that the route accepts the current state
         const currentUserState = calculateUserState();
         logger.debug(`current state: ${currentUserState}`);
+        const config = store.getters["config/webClient"];
+        logger.debug(`config/webClient: ${config.modules.Dependent}`);
         if (to.meta.validStates.includes(currentUserState)) {
-            next();
+            if (
+                to.meta.requiredModules?.includes(ClientModule.Dependent) &&
+                !config.modules.Dependent
+            ) {
+                next({ path: "/dependentsNotFound" });
+            } else {
+                next();
+            }
         } else {
             // If the route does not accept the state, go to one of the default locations
             if (currentUserState === UserState.pendingDeletion) {
