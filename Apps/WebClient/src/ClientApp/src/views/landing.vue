@@ -34,27 +34,13 @@ interface Tile {
     },
 })
 export default class LandingView extends Vue {
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
     private logo: string = Image00;
     private devices: string = Image02;
     private bottomImage: string = Image07;
     private isOpenRegistration = false;
-    private getTileClass(index: number): string {
-        return index % 2 == 0 ? "order-md-1" : "order-md-2";
-    }
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
-    private mounted() {
-        this.isOpenRegistration =
-            this.webClientConfig.registrationStatus == RegistrationStatus.Open;
-
-        for (const moduleName in this.webClientConfig.modules) {
-            var icon = this.icons.find((val) => val.name === moduleName);
-            if (icon) {
-                icon.active = this.webClientConfig.modules[moduleName];
-            }
-        }
-    }
 
     private icons: Icon[] = [
         {
@@ -126,6 +112,24 @@ export default class LandingView extends Vue {
             imageSrc: Image06,
         },
     ];
+
+    private mounted() {
+        this.isOpenRegistration =
+            this.webClientConfig.registrationStatus == RegistrationStatus.Open;
+
+        for (const moduleName in this.webClientConfig.modules) {
+            var icon = this.icons.find(
+                (iconEntry) => iconEntry.name === moduleName
+            );
+            if (icon) {
+                icon.active = this.webClientConfig.modules[moduleName];
+            }
+        }
+    }
+
+    private getTileClass(index: number): string {
+        return index % 2 == 0 ? "order-md-1" : "order-md-2";
+    }
 }
 </script>
 
