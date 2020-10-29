@@ -681,13 +681,17 @@ export default class RegistrationView extends Vue {
                 </b-form>
                 <div v-else-if="!clientRegistryError">
                     <h1>Minimum age required for registration</h1>
-                    You must be <strong>{{ minimumAge }}</strong> years of age
-                    or older to use this application
+                    <p data-testid="minimumAgeErrorText">
+                        You must be <strong>{{ minimumAge }}</strong> years of
+                        age or older to use this application
+                    </p>
                 </div>
                 <div v-else>
                     <h1>Error retrieving user information</h1>
-                    There may be an issue in our Client Registry. Please contact
-                    <strong>HealthGateway@gov.bc.ca</strong>
+                    <p data-testid="clientRegistryErrorText">
+                        There may be an issue in our Client Registry. Please
+                        contact <strong>HealthGateway@gov.bc.ca</strong>
+                    </p>
                 </div>
             </div>
         </div>
