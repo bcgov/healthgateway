@@ -683,7 +683,7 @@ export default class RegistrationView extends Vue {
                     <h1>Minimum age required for registration</h1>
                     <p data-testid="minimumAgeErrorText">
                         You must be <strong>{{ minimumAge }}</strong> years of
-                        age age or older to use this application
+                        age or older to use this application
                     </p>
                 </div>
                 <div v-else>
