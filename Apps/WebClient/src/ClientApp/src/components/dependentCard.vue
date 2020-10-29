@@ -41,6 +41,11 @@ export default class DependentCardComponent extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
+    private message =
+        "Are you sure you want to remove " +
+        this.dependent.name +
+        " from your list of dependents?";
+
     private isLoading = false;
     private logger!: ILogger;
     private laboratoryService!: ILaboratoryService;
@@ -126,13 +131,7 @@ export default class DependentCardComponent extends Vue {
     }
 
     private deleteDependent(): void {
-        if (
-            confirm(
-                "Are you sure you want to remove " +
-                    this.dependent.name +
-                    " from your list of dependents?"
-            )
-        ) {
+        if (confirm(this.message)) {
             this.dependentService
                 .removeDependent(this.dependent)
                 .catch((err: ResultError) => {
