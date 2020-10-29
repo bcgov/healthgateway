@@ -15,9 +15,11 @@ import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
 
 interface Icon {
+    name: string;
     label: string;
     definition: string;
     active: boolean;
+    color: string;
 }
 
 interface Tile {
@@ -32,50 +34,55 @@ interface Tile {
     },
 })
 export default class LandingView extends Vue {
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
     private logo: string = Image00;
     private devices: string = Image02;
     private bottomImage: string = Image07;
     private isOpenRegistration = false;
-    private getTileClass(index: number): string {
-        return index % 2 == 0 ? "order-md-1" : "order-md-2";
-    }
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
-    private mounted() {
-        this.isOpenRegistration =
-            this.webClientConfig.registrationStatus == RegistrationStatus.Open;
-        this.icons[0].active = this.webClientConfig.modules["Medication"];
-        this.icons[1].active = this.webClientConfig.modules["Note"];
-        this.icons[2].active = this.webClientConfig.modules["Immunization"];
-        this.icons[3].active = this.webClientConfig.modules["Laboratory"];
-        this.icons[4].active = this.webClientConfig.modules["Encounter"];
-    }
 
     private icons: Icon[] = [
         {
+            name: "Medication",
             definition: "pills",
-            label: "Medications (Dec 2019)",
+            label: "Prescription Medications (Dec 2019)",
+            color: "",
             active: false,
         },
         {
+            name: "Note",
             definition: "edit",
             label: "Add Notes to Records (Mar 2020)",
+            color: "#fcba19",
             active: false,
         },
         {
-            definition: "syringe",
-            label: "Immunizations",
-            active: false,
+            name: "Laboratory",
+            definition: "exclamation-triangle",
+            label: "COVID-19 Test Results (Sep 2020)",
+            color: "#dc3545",
+            active: true,
         },
         {
+            name: "Laboratory-Inactive",
             definition: "flask",
             label: "Lab Results",
+            color: "",
             active: false,
         },
         {
+            name: "Encounter",
             definition: "user-md",
             label: "Health Visits",
+            color: "",
+            active: false,
+        },
+        {
+            name: "Immunization",
+            definition: "syringe",
+            label: "Immunizations",
+            color: "",
             active: false,
         },
     ];
@@ -105,6 +112,24 @@ export default class LandingView extends Vue {
             imageSrc: Image06,
         },
     ];
+
+    private mounted() {
+        this.isOpenRegistration =
+            this.webClientConfig.registrationStatus == RegistrationStatus.Open;
+
+        for (const moduleName in this.webClientConfig.modules) {
+            var icon = this.icons.find(
+                (iconEntry) => iconEntry.name === moduleName
+            );
+            if (icon) {
+                icon.active = this.webClientConfig.modules[moduleName];
+            }
+        }
+    }
+
+    private getTileClass(index: number): string {
+        return index % 2 == 0 ? "order-md-1" : "order-md-2";
+    }
 }
 </script>
 
@@ -148,7 +173,7 @@ export default class LandingView extends Vue {
                 >
                     <b-col
                         class="mr-2 px-0 icon"
-                        :class="icon.definition"
+                        :style="{ background: icon.color }"
                         cols="0"
                     >
                         <font-awesome-icon
@@ -163,18 +188,6 @@ export default class LandingView extends Vue {
                                 (Coming soon)</span
                             ></span
                         >
-                    </b-col>
-                    <b-col
-                        v-if="icon.definition === 'flask' && icon.active"
-                        cols="0"
-                        class="covid-container ml-2 px-2"
-                    >
-                        <font-awesome-icon
-                            class="px-1"
-                            icon="exclamation-triangle"
-                            size="1x"
-                        ></font-awesome-icon>
-                        <span class="pr-1">COVID-19 Test Result</span>
                     </b-col>
                 </b-row>
                 <b-row
@@ -302,9 +315,6 @@ export default class LandingView extends Vue {
                 height: 40px;
                 width: 40px;
             }
-            .edit {
-                background-color: #fcba19 !important;
-            }
 
             .status-active {
                 color: $primary;
@@ -324,15 +334,6 @@ export default class LandingView extends Vue {
 
             #btnLogin {
                 color: $primary;
-            }
-
-            .covid-container {
-                color: white;
-                background-color: $danger;
-                border-radius: 15px;
-                height: 25px;
-                line-height: 28px;
-                margin-top: 5px;
             }
         }
 
