@@ -1,11 +1,12 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { Component, Prop, Ref } from "vue-property-decorator";
 import Dependent from "@/models/dependent";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { Action, Getter } from "vuex-class";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
@@ -26,6 +27,7 @@ library.add(faFileDownload);
     components: {
         BTabs,
         BTab,
+        DeleteModalComponent,
     },
 })
 export default class DependentCardComponent extends Vue {
@@ -40,6 +42,9 @@ export default class DependentCardComponent extends Vue {
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
+
+    @Ref("deleteModal")
+    readonly deleteModal!: DeleteModalComponent;
 
     private message =
         "Are you sure you want to remove " +
@@ -131,18 +136,20 @@ export default class DependentCardComponent extends Vue {
     }
 
     private deleteDependent(): void {
-        if (confirm(this.message)) {
-            this.dependentService
-                .removeDependent(this.dependent)
-                .catch((err: ResultError) => {
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Error removing dependent",
-                            err
-                        )
-                    );
-                });
-        }
+        this.dependentService
+            .removeDependent(this.dependent)
+            .catch((err: ResultError) => {
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Error removing dependent",
+                        err
+                    )
+                );
+            });
+    }
+
+    private showConfirmationModal(): void {
+        this.deleteModal.showModal();
     }
 
     private formatDate(date: StringISODate): string {
@@ -152,152 +159,171 @@ export default class DependentCardComponent extends Vue {
 </script>
 
 <template>
-    <b-card no-body>
-        <b-tabs card>
-            <b-tab active data-testid="dependentTab">
-                <template #title>
-                    <strong data-testid="dependentName">{{
-                        dependent.name
-                    }}</strong>
-                </template>
-                <div v-if="isExpired">
-                    <b-row>
-                        <b-col class="d-flex justify-content-center">
-                            <h5>Your access has been expired</h5>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col class="d-flex justify-content-center">
-                            <p>
-                                This dependent was removed from your profile due
-                                to reaching the age of 19, for more information
-                                visit the following page.
-                            </p>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col class="d-flex justify-content-center">
-                            <b-button type="link">Dependent age limit</b-button>
-                        </b-col>
-                    </b-row>
-                </div>
-                <div v-else>
-                    <b-row>
-                        <b-col class="col-12 col-sm-4">
-                            <b-row>
-                                <b-col class="col-12">PHN</b-col>
-                                <b-col class="col-12">
-                                    <b-form-input
-                                        v-model="dependent.maskedPHN"
-                                        data-testid="dependentPHN"
-                                        readonly
-                                    ></b-form-input>
-                                </b-col>
-                            </b-row>
-                        </b-col>
-                        <b-col class="col-12 col-sm-4">
-                            <b-row>
-                                <b-col class="col-12">Date of Birth</b-col>
-                                <b-col class="col-12">
-                                    <b-form-input
-                                        :value="
-                                            formatDate(dependent.dateOfBirth)
-                                        "
-                                        data-testid="dependentDOB"
-                                        readonly
-                                    ></b-form-input>
-                                </b-col>
-                            </b-row>
-                        </b-col>
-                        <b-col class="col-12 col-sm-4">
-                            <b-row>
-                                <b-col class="col-12">Gender</b-col>
-                                <b-col class="col-12">
-                                    <b-form-input
-                                        v-model="dependent.gender"
-                                        data-testid="dependentGender"
-                                        readonly
-                                    ></b-form-input>
-                                </b-col>
-                            </b-row>
-                        </b-col>
-                    </b-row>
-                </div>
-            </b-tab>
-            <b-tab
-                data-testid="covid19Tab"
-                :disabled="isExpired"
-                title="COVID-19"
-                class="tableTab mt-2"
-                @click="fetchLaboratoryResults()"
-            >
-                <b-row v-if="isLoading" class="m-2">
-                    <b-col><b-spinner></b-spinner></b-col>
-                </b-row>
-                <b-row v-else-if="labResults.length == 0" class="m-2">
-                    <b-col data-testid="covid19NoRecords"
-                        >No records found.</b-col
-                    >
-                </b-row>
-                <table v-else class="w-100">
-                    <tr>
-                        <th>Test Date</th>
-                        <th class="d-none d-sm-table-cell">Test Type</th>
-                        <th class="d-none d-sm-table-cell">Test Location</th>
-                        <th>Result</th>
-                        <th>Report</th>
-                    </tr>
-                    <tr v-for="item in labResults" :key="item.labResults[0].id">
-                        <td>
-                            {{
-                                formatDate(item.labResults[0].collectedDateTime)
-                            }}
-                        </td>
-                        <td class="d-none d-sm-table-cell">
-                            {{ item.labResults[0].testType }}
-                        </td>
-                        <td class="d-none d-sm-table-cell">
-                            {{ item.location }}
-                        </td>
-                        <td>{{ item.labResults[0].testStatus }}</td>
-                        <td>
-                            <b-btn variant="link" @click="getReport(item)">
-                                <font-awesome-icon
-                                    icon="file-download"
-                                    aria-hidden="true"
-                                    size="1x"
-                                />
-                            </b-btn>
-                        </td>
-                    </tr>
-                </table>
-            </b-tab>
-            <template #tabs-end>
-                <li
-                    role="presentation"
-                    class="ml-auto nav-item align-self-center"
+    <div>
+        <b-card no-body>
+            <b-tabs card>
+                <b-tab active data-testid="dependentTab">
+                    <template #title>
+                        <strong data-testid="dependentName">{{
+                            dependent.name
+                        }}</strong>
+                    </template>
+                    <div v-if="isExpired">
+                        <b-row>
+                            <b-col class="d-flex justify-content-center">
+                                <h5>Your access has been expired</h5>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col class="d-flex justify-content-center">
+                                <p>
+                                    This dependent was removed from your profile
+                                    due to reaching the age of 19, for more
+                                    information visit the following page.
+                                </p>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col class="d-flex justify-content-center">
+                                <b-button type="link"
+                                    >Dependent age limit</b-button
+                                >
+                            </b-col>
+                        </b-row>
+                    </div>
+                    <div v-else>
+                        <b-row>
+                            <b-col class="col-12 col-sm-4">
+                                <b-row>
+                                    <b-col class="col-12">PHN</b-col>
+                                    <b-col class="col-12">
+                                        <b-form-input
+                                            v-model="dependent.maskedPHN"
+                                            data-testid="dependentPHN"
+                                            readonly
+                                        ></b-form-input>
+                                    </b-col>
+                                </b-row>
+                            </b-col>
+                            <b-col class="col-12 col-sm-4">
+                                <b-row>
+                                    <b-col class="col-12">Date of Birth</b-col>
+                                    <b-col class="col-12">
+                                        <b-form-input
+                                            :value="
+                                                formatDate(
+                                                    dependent.dateOfBirth
+                                                )
+                                            "
+                                            data-testid="dependentDOB"
+                                            readonly
+                                        ></b-form-input>
+                                    </b-col>
+                                </b-row>
+                            </b-col>
+                            <b-col class="col-12 col-sm-4">
+                                <b-row>
+                                    <b-col class="col-12">Gender</b-col>
+                                    <b-col class="col-12">
+                                        <b-form-input
+                                            v-model="dependent.gender"
+                                            data-testid="dependentGender"
+                                            readonly
+                                        ></b-form-input>
+                                    </b-col>
+                                </b-row>
+                            </b-col>
+                        </b-row>
+                    </div>
+                </b-tab>
+                <b-tab
+                    data-testid="covid19Tab"
+                    :disabled="isExpired"
+                    title="COVID-19"
+                    class="tableTab mt-2"
+                    @click="fetchLaboratoryResults()"
                 >
-                    <b-nav-item-dropdown right text="" :no-caret="true">
-                        <template slot="button-content">
-                            <font-awesome-icon
-                                data-testid="dependentMenuBtn"
-                                class="dependentMenu"
-                                :icon="menuIcon"
-                                size="1x"
-                            ></font-awesome-icon>
-                        </template>
-                        <b-dropdown-item
-                            data-testid="deleteDependentMenuBtn"
-                            class="menuItem"
-                            @click="deleteDependent()"
+                    <b-row v-if="isLoading" class="m-2">
+                        <b-col><b-spinner></b-spinner></b-col>
+                    </b-row>
+                    <b-row v-else-if="labResults.length == 0" class="m-2">
+                        <b-col data-testid="covid19NoRecords"
+                            >No records found.</b-col
                         >
-                            Delete
-                        </b-dropdown-item>
-                    </b-nav-item-dropdown>
-                </li>
-            </template>
-        </b-tabs>
-    </b-card>
+                    </b-row>
+                    <table v-else class="w-100">
+                        <tr>
+                            <th>Test Date</th>
+                            <th class="d-none d-sm-table-cell">Test Type</th>
+                            <th class="d-none d-sm-table-cell">
+                                Test Location
+                            </th>
+                            <th>Result</th>
+                            <th>Report</th>
+                        </tr>
+                        <tr
+                            v-for="item in labResults"
+                            :key="item.labResults[0].id"
+                        >
+                            <td>
+                                {{
+                                    formatDate(
+                                        item.labResults[0].collectedDateTime
+                                    )
+                                }}
+                            </td>
+                            <td class="d-none d-sm-table-cell">
+                                {{ item.labResults[0].testType }}
+                            </td>
+                            <td class="d-none d-sm-table-cell">
+                                {{ item.location }}
+                            </td>
+                            <td>{{ item.labResults[0].testStatus }}</td>
+                            <td>
+                                <b-btn variant="link" @click="getReport(item)">
+                                    <font-awesome-icon
+                                        icon="file-download"
+                                        aria-hidden="true"
+                                        size="1x"
+                                    />
+                                </b-btn>
+                            </td>
+                        </tr>
+                    </table>
+                </b-tab>
+                <template #tabs-end>
+                    <li
+                        role="presentation"
+                        class="ml-auto nav-item align-self-center"
+                    >
+                        <b-nav-item-dropdown right text="" :no-caret="true">
+                            <template slot="button-content">
+                                <font-awesome-icon
+                                    data-testid="dependentMenuBtn"
+                                    class="dependentMenu"
+                                    :icon="menuIcon"
+                                    size="1x"
+                                ></font-awesome-icon>
+                            </template>
+                            <b-dropdown-item
+                                data-testid="deleteDependentMenuBtn"
+                                class="menuItem"
+                                @click="showConfirmationModal()"
+                            >
+                                Delete
+                            </b-dropdown-item>
+                        </b-nav-item-dropdown>
+                    </li>
+                </template>
+            </b-tabs>
+        </b-card>
+        <delete-modal-component
+            ref="deleteModal"
+            title="Delete Dependent"
+            message="Are you sure you want to delete this dependent?"
+            @submit="deleteDependent()"
+        ></delete-modal-component>
+    </div>
 </template>
 
 <style lang="scss" scoped>
