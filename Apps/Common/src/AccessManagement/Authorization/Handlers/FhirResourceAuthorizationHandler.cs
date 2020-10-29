@@ -18,13 +18,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Constants;
     using HealthGateway.Database.Delegates;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// FhirResourceAuthorizationHandler validates that a FhirRequirement has been met.
@@ -37,7 +37,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 
         private readonly ILogger<FhirResourceAuthorizationHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IUserDelegateDelegate userDelegateDelegate;
+        private readonly IUserDelegateDelegate? userDelegateDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FhirResourceAuthorizationHandler"/> class.
@@ -45,7 +45,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <param name="logger">the injected logger.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
         /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
-        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor, IUserDelegateDelegate userDelegateDelegate = null)
+        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor, IUserDelegateDelegate? userDelegateDelegate = null)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
@@ -61,7 +61,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <returns>The Authorization Result.</returns>
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
-            using var x = this.logger.BeginScope(new { Operation = "Authoization Handler" });
             foreach (FhirRequirement requirement in context.PendingRequirements.OfType<FhirRequirement>().ToList())
             {
                 string? resourceHDID = this.GetResourceHDID(requirement);
@@ -169,39 +168,55 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             {
                 string scopeclaim = context.User.FindFirstValue(GatewayClaims.Scope);
                 string[] scopes = scopeclaim.Split(' ');
-                this.logger.LogInformation($"Performing system delegation validation for Patient resource {resourceHDID}");
+                this.logger.LogInformation($"Performing system delegation validation for resource {resourceHDID}");
                 this.logger.LogInformation($"Caller has the following scopes: {scopeclaim}");
                 string[] systemDelegatedScopes = GetAcceptedScopes(System, requirement);
                 if (scopes.Intersect(systemDelegatedScopes).Any())
                 {
-                    this.logger.LogInformation($"Authorized caller as system to have {requirement.AccessType} access to Patient resource {resourceHDID}");
+                    this.logger.LogInformation($"Authorized caller as system to have {requirement.AccessType} access to resource {resourceHDID}");
                     retVal = true;
                 }
                 else
                 {
-                    this.logger.LogInformation($"Performing user delegation validation for Patient resource {resourceHDID}");
-                    string[] userDelegatedScopes = GetAcceptedScopes(User, requirement);
-                    if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID) && scopes.Intersect(userDelegatedScopes).Any())
+                    switch (requirement.Resource)
                     {
-                        string userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
-                        if (this.userDelegateDelegate.Exists(resourceHDID, userHDID))
-                        {
-                            if (requirement.Resource == FhirResource.Observation)
-                            {
-                                this.logger.LogInformation($"Authorized caller as system to have {requirement.AccessType} access to Patient resource {resourceHDID}");
-                                retVal = true;
-                            }
-                            else
-                            {
-                                this.logger.LogWarning($"Patient delegation validation for Patient resource {resourceHDID} failed as the Requirement Resource is not {FhirResource.Observation}");
-                            }
-                        }
-                        else
-                        {
-                            this.logger.LogWarning($"Patient delegation validation for Patient resource {resourceHDID} - userHdId {userHDID} failed as Delegate is not found in Health Gateway's database.");
-                        }
+                        case FhirResource.Observation:
+                            retVal = this.ValidateObservationDelegate(context, resourceHDID, requirement, scopes);
+                            break;
+                        default:
+                            this.logger.LogError($"User delegation is not implemented on resource type {requirement.Resource.GetType().Name} for Resource {resourceHDID}");
+                            break;
                     }
                 }
+            }
+
+            return retVal;
+        }
+
+        private bool ValidateObservationDelegate(AuthorizationHandlerContext context, string resourceHDID, FhirRequirement requirement, string[] scopes)
+        {
+            bool retVal = false;
+            if (this.userDelegateDelegate != null)
+            {
+                this.logger.LogInformation($"Performing user delegation validation for resource {resourceHDID}");
+                string[] userDelegatedScopes = GetAcceptedScopes(User, requirement);
+                if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID) && scopes.Intersect(userDelegatedScopes).Any())
+                {
+                    string userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
+                    if (this.userDelegateDelegate.Exists(resourceHDID, userHDID))
+                    {
+                        this.logger.LogInformation($"Authorized user {userHDID} to have {requirement.AccessType} access to Observation resource {resourceHDID}");
+                        retVal = true;
+                    }
+                    else
+                    {
+                        this.logger.LogWarning($"Delegation validation for User {userHDID} on Observation resource {resourceHDID} failed");
+                    }
+                }
+            }
+            else
+            {
+                this.logger.LogError($"Performing Observation delegation on resource {resourceHDID} failed as userDelegateDelegate is null");
             }
 
             return retVal;
