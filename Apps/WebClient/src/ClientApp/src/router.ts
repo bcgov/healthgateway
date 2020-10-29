@@ -98,30 +98,13 @@ enum ClientModule {
 
 function getAvailableModules() {
     const availableModules: string[] = [];
-    const configModules = store.getters["config/webClient"].modules;
-    if (configModules.Comment) {
-        availableModules.push(ClientModule.Comment);
-    }
-    if (configModules.CovidLabResults) {
-        availableModules.push(ClientModule.CovidLabResults);
-    }
-    if (configModules.Dependent) {
-        availableModules.push(ClientModule.Dependent);
-    }
-    if (configModules.Encounter) {
-        availableModules.push(ClientModule.Encounter);
-    }
-    if (configModules.Immunization) {
-        availableModules.push(ClientModule.Immunization);
-    }
-    if (configModules.Laboratory) {
-        availableModules.push(ClientModule.Laboratory);
-    }
-    if (configModules.Medication) {
-        availableModules.push(ClientModule.Medication);
-    }
-    if (configModules.Note) {
-        availableModules.push(ClientModule.Note);
+    const configModules: { [id: string]: boolean } =
+        store.getters["config/webClient"].modules;
+
+    for (const moduleName in configModules) {
+        if (configModules[moduleName]) {
+            availableModules.push(moduleName);
+        }
     }
     return availableModules;
 }
@@ -299,7 +282,11 @@ router.beforeEach(async (to, from, next) => {
             if (currentUserState === UserState.pendingDeletion) {
                 next({ path: "/profile" });
             } else if (currentUserState === UserState.registered) {
-                next({ path: "/timeline" });
+                if (hasRequiredModules) {
+                    next({ path: "/timeline" });
+                } else {
+                    next({ path: "/unauthorized" });
+                }
             } else if (currentUserState === UserState.notRegistered) {
                 next({ path: REGISTRATION_PATH });
             } else if (currentUserState === UserState.invalidLogin) {
