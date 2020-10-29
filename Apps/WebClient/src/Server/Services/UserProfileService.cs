@@ -183,7 +183,15 @@ namespace HealthGateway.WebClient.Services
                 }
             }
 
-            if (!await this.ValidateMinimumAge(hdid).ConfigureAwait(true))
+            PrimitiveRequestResult<bool> isMimimunAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
+
+            if (isMimimunAgeResult.ResultStatus != ResultType.Success)
+            {
+                requestResult.ResultStatus = isMimimunAgeResult.ResultStatus;
+                requestResult.ResultError = isMimimunAgeResult.ResultError;
+                return requestResult;
+            }
+            else if (!isMimimunAgeResult.ResourcePayload)
             {
                 requestResult.ResultStatus = ResultType.Error;
                 requestResult.ResultError = new RequestResultError() { ResultMessage = "Patient under minimum age", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
@@ -372,18 +380,36 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> ValidateMinimumAge(string hdid)
+        public async Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid)
         {
             int? minAge = this.configurationService.GetConfiguration().WebClient.MinPatientAge;
 
             if (!minAge.HasValue || minAge.Value == 0)
             {
-                return true;
+                return new PrimitiveRequestResult<bool>() { ResourcePayload = true, ResultStatus = ResultType.Success };
             }
 
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
-            DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? new DateTime();
-            return birthDate.AddYears(minAge.Value) < DateTime.Now;
+
+            if (patientResult.ResultStatus != ResultType.Success)
+            {
+                this.logger.LogWarning($"Error retrieving patient age. {JsonSerializer.Serialize(patientResult)}");
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResultStatus = patientResult.ResultStatus,
+                    ResultError = patientResult.ResultError,
+                    ResourcePayload = false,
+                };
+            }
+            else
+            {
+                DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? new DateTime();
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResultStatus = patientResult.ResultStatus,
+                    ResourcePayload = birthDate.AddYears(minAge.Value) < DateTime.Now,
+                };
+            }
         }
 
         private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)
@@ -393,6 +419,5 @@ namespace HealthGateway.WebClient.Services
             this.notificationSettingsService.QueueNotificationSettings(request);
             return request;
         }
-
     }
 }

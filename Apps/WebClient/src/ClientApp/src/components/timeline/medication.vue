@@ -58,13 +58,13 @@ export default class MedicationTimelineComponent extends Vue {
                                 class="detailsButton"
                                 @click="detailsVisible = !detailsVisible"
                             >
-                                <span class="when-opened">
+                                <span v-if="detailsVisible">
                                     <font-awesome-icon
                                         icon="chevron-up"
                                         aria-hidden="true"
                                     ></font-awesome-icon
                                 ></span>
-                                <span class="when-closed">
+                                <span v-else>
                                     <font-awesome-icon
                                         icon="chevron-down"
                                         aria-hidden="true"
@@ -213,10 +213,5 @@ $radius: 15px;
 
 .newComment {
     border-radius: $radius;
-}
-
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
 }
 </style>

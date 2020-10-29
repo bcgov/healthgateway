@@ -89,6 +89,6 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>A boolean result.</returns>
-        Task<bool> ValidateMinimumAge(string hdid);
+        Task<PrimitiveRequestResult<bool>> ValidateMinimumAge(string hdid);
     }
 }

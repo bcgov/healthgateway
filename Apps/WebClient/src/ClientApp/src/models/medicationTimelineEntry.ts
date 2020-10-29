@@ -2,6 +2,7 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import Pharmacy from "@/models/pharmacy";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models//medicationSummary";
+import { DateWrapper } from "@/models/dateWrapper";
 
 // The medication timeline entry model
 export default class MedicationTimelineEntry extends TimelineEntry {
@@ -15,7 +16,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         super(
             model.prescriptionIdentifier,
             EntryType.Medication,
-            model.dispensedDate
+            new DateWrapper(model.dispensedDate)
         );
 
         this.medication = new MedicationViewModel(model.medicationSummary);
