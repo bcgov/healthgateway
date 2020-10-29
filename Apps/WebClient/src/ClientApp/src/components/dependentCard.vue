@@ -4,7 +4,6 @@ import { Component, Prop } from "vue-property-decorator";
 import Dependent from "@/models/dependent";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { Action, Getter } from "vuex-class";
-import RequestResult from "@/models/requestResult";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
@@ -28,11 +27,6 @@ export default class DependentCardComponent extends Vue {
     @Prop() dependent!: Dependent;
 
     @Getter("user", { namespace: "user" }) user!: User;
-
-    @Action("getOrders", { namespace: "laboratory" })
-    getLaboratoryOrders!: (params: {
-        hdid: string;
-    }) => Promise<RequestResult<LaboratoryOrder[]>>;
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
@@ -61,7 +55,8 @@ export default class DependentCardComponent extends Vue {
             return;
         }
         this.isLoading = true;
-        this.getLaboratoryOrders({ hdid: this.dependent.hdid })
+        this.laboratoryService
+            .getOrders(this.dependent.hdid)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.labResults = results.resourcePayload;
@@ -113,6 +108,11 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
+    private removeDependent(): void {
+        // TODO:
+        console.log("removing", this.dependent);
+    }
+
     private formatDate(date: StringISODate): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
@@ -131,21 +131,22 @@ export default class DependentCardComponent extends Vue {
                 <div v-if="isExpired">
                     <b-row>
                         <b-col class="d-flex justify-content-center">
-                            <h5>Your access has been expired</h5>
+                            <h5>Your access has expired</h5>
                         </b-col>
                     </b-row>
                     <b-row>
                         <b-col class="d-flex justify-content-center">
                             <p>
-                                This dependent was removed from your profile due
-                                to reaching the age of 19, for more information
-                                visit the following page.
+                                You no longer have access to this dependent as
+                                they have turned 19
                             </p>
                         </b-col>
                     </b-row>
                     <b-row>
                         <b-col class="d-flex justify-content-center">
-                            <b-button type="link">Dependent age limit</b-button>
+                            <b-button type="link" @click="removeDependent()"
+                                >Remove Dependent</b-button
+                            >
                         </b-col>
                     </b-row>
                 </div>

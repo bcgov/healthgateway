@@ -93,11 +93,11 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page, int pageSize)
         {
-            // (1) Get Dependents from database
+            // Get Dependents from database
             int offset = page * pageSize;
             DBResult<IEnumerable<UserDelegate>> dbUserDelegates = this.userDelegateDelegate.Get(hdId, offset, pageSize);
 
-            // (2) Get Dependents Details from Patient service
+            // Get Dependents Details from Patient service
             List<DependentModel> dependentModels = new List<DependentModel>();
             RequestResult<IEnumerable<DependentModel>> result = new RequestResult<IEnumerable<DependentModel>>()
             {
