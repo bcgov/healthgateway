@@ -253,12 +253,11 @@ router.beforeEach(async (to, from, next) => {
         // Make sure that the route accepts the current state
         const currentUserState = calculateUserState();
         logger.debug(`current state: ${currentUserState}`);
-        const config = store.getters["config/webClient"];
-        logger.debug(`config/webClient: ${config.modules.Dependent}`);
+        const configModules = store.getters["config/webClient"].modules;
         if (to.meta.validStates.includes(currentUserState)) {
             if (
                 to.meta.requiredModules?.includes(ClientModule.Dependent) &&
-                !config.modules.Dependent
+                !configModules.Dependent
             ) {
                 next({ path: "/dependentsNotFound" });
             } else {
