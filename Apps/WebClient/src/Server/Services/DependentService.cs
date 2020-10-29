@@ -35,21 +35,29 @@ namespace HealthGateway.WebClient.Services
         private readonly ILogger logger;
         private readonly IPatientService patientService;
         private readonly IUserDelegateDelegate userDelegateDelegate;
+        private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="patientService">The injected patient registry provider.</param>
+        /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
         public DependentService(
             ILogger<DependentService> logger,
+            IUserProfileDelegate userProfileDelegate,
             IPatientService patientService,
+            INotificationSettingsService notificationSettingsService,
             IUserDelegateDelegate userDelegateDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
             this.userDelegateDelegate = userDelegateDelegate;
+            this.notificationSettingsService = notificationSettingsService;
+            this.userProfileDelegate = userProfileDelegate;
         }
 
         /// <inheritdoc />
@@ -81,6 +89,10 @@ namespace HealthGateway.WebClient.Services
             var dependent = new UserDelegate() { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId };
 
             DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Insert(dependent, true);
+            if (dbDependent.Status == DBStatusCode.Created) {
+                this.UpdateNotificationSettings(dependent.OwnerId, delegateHdId);
+            }
+
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()
             {
                 ResourcePayload = new DependentModel() { Name = patientResult.ResourcePayload.FirstName + " " + patientResult.ResourcePayload.LastName },
@@ -146,6 +158,11 @@ namespace HealthGateway.WebClient.Services
         public RequestResult<DependentModel> Remove(string dependentHdid, string delegateHdid)
         {
             DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Delete(dependentHdid, delegateHdid, true);
+
+            if (dbDependent.Status == DBStatusCode.Deleted) {
+                this.UpdateNotificationSettings(dependentHdid, delegateHdid, isDelete: true);
+            }
+
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()
             {
                 ResourcePayload = new DependentModel(),
@@ -153,6 +170,24 @@ namespace HealthGateway.WebClient.Services
                 ResultError = dbDependent.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
+        }
+
+        private NotificationSettingsRequest UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
+        {
+            DBResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
+            UserProfile delegateUserProfile = dbResult.Payload;
+            // Update the notification settings
+            NotificationSettingsRequest request = new NotificationSettingsRequest(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SMSNumber);
+            request.SubjectHdid = dependentHdid;
+            if (isDelete) {
+                request.EmailAddress = null;
+                request.EmailEnabled = false;
+                request.SMSNumber = null;
+                request.SMSEnabled = false;
+                request.SMSVerified = false;
+            }
+            this.notificationSettingsService.QueueNotificationSettings(request);
+            return request;
         }
     }
 }

@@ -46,9 +46,13 @@ namespace HealthGateway.WebClient.Test.Services
 
         private IDependentService SetupCommonMocks(Mock<IUserDelegateDelegate> mockDependentDelegate, Mock<IPatientService> mockPatientService)
         {
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new Mock<IUserProfileDelegate>();
+            Mock<INotificationSettingsService> mockNotificationSettingsService = new Mock<INotificationSettingsService>();
             return new DependentService(
                 new Mock<ILogger<DependentService>>().Object,
+                mockUserProfileDelegate.Object,
                 mockPatientService.Object,
+                mockNotificationSettingsService.Object,
                 mockDependentDelegate.Object
             );
         }
@@ -219,9 +223,15 @@ namespace HealthGateway.WebClient.Test.Services
                 Status = DBStatusCode.Deleted,
             });
 
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new Mock<IUserProfileDelegate>();
+            mockUserProfileDelegate.Setup(s => s.GetUserProfile(mockParentHdId)).Returns(new DBResult<UserProfile>() { Payload = new UserProfile() });
+            Mock<INotificationSettingsService> mockNotificationSettingsService = new Mock<INotificationSettingsService>();
+            mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
             IDependentService service = new DependentService(
                 new Mock<ILogger<DependentService>>().Object,
+                mockUserProfileDelegate.Object,
                 new Mock<IPatientService>().Object,
+                mockNotificationSettingsService.Object,
                 mockDependentDelegate.Object
             );
             RequestResult<DependentModel> actualResult = service.Remove(mockHdId, mockParentHdId);
@@ -273,9 +283,15 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
             mockDependentDelegate.Setup(s => s.Insert(It.Is<UserDelegate>(r => r.DelegateId == expectedDbDependent.DelegateId && r.OwnerId == expectedDbDependent.OwnerId), true)).Returns(insertResult);
 
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new Mock<IUserProfileDelegate>();
+            mockUserProfileDelegate.Setup(s => s.GetUserProfile(mockParentHdId)).Returns(new DBResult<UserProfile>() { Payload = new UserProfile() });
+            Mock<INotificationSettingsService> mockNotificationSettingsService = new Mock<INotificationSettingsService>();
+            mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
             return new DependentService(
                 new Mock<ILogger<DependentService>>().Object,
+                mockUserProfileDelegate.Object,
                 mockPatientService.Object,
+                mockNotificationSettingsService.Object,
                 mockDependentDelegate.Object
             );
         }
