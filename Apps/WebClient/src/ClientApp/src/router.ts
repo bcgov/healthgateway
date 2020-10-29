@@ -93,6 +93,37 @@ enum ClientModule {
     Comment = "Comment",
     CovidLabResults = "CovidLabResults",
     Dependent = "Dependent",
+    Note = "Note",
+}
+
+function getAvailableModules() {
+    const availableModules: string[] = [];
+    const configModules = store.getters["config/webClient"].modules;
+    if (configModules.Comment) {
+        availableModules.push(ClientModule.Comment);
+    }
+    if (configModules.CovidLabResults) {
+        availableModules.push(ClientModule.CovidLabResults);
+    }
+    if (configModules.Dependent) {
+        availableModules.push(ClientModule.Dependent);
+    }
+    if (configModules.Encounter) {
+        availableModules.push(ClientModule.Encounter);
+    }
+    if (configModules.Immunization) {
+        availableModules.push(ClientModule.Immunization);
+    }
+    if (configModules.Laboratory) {
+        availableModules.push(ClientModule.Laboratory);
+    }
+    if (configModules.Medication) {
+        availableModules.push(ClientModule.Medication);
+    }
+    if (configModules.Note) {
+        availableModules.push(ClientModule.Note);
+    }
+    return availableModules;
 }
 
 const REGISTRATION_PATH = "/registration";
@@ -253,16 +284,16 @@ router.beforeEach(async (to, from, next) => {
         // Make sure that the route accepts the current state
         const currentUserState = calculateUserState();
         logger.debug(`current state: ${currentUserState}`);
-        const configModules = store.getters["config/webClient"].modules;
-        if (to.meta.validStates.includes(currentUserState)) {
-            if (
-                to.meta.requiredModules?.includes(ClientModule.Dependent) &&
-                !configModules.Dependent
-            ) {
-                next({ path: "/dependentsNotFound" });
-            } else {
-                next();
-            }
+        const isValidState = to.meta.validStates.includes(currentUserState);
+        const availableModules = getAvailableModules();
+        const hasRequiredModules =
+            to.meta.requiredModules === undefined
+                ? true
+                : to.meta.requiredModules.every((val: string) =>
+                      availableModules.includes(val)
+                  );
+        if (isValidState && hasRequiredModules) {
+            next();
         } else {
             // If the route does not accept the state, go to one of the default locations
             if (currentUserState === UserState.pendingDeletion) {
