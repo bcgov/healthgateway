@@ -54,5 +54,10 @@ namespace HealthGateway.Common.Constants
         /// See <a href="http://www.hl7.org/fhir/stu3/encounter.html"/>.
         /// </summary>
         public const string Encounter = "Encounter";
+
+        /// <summary>
+        /// The Health Gateway specific resource that represents a UserProfile.
+        /// </summary>
+        public const string UserProfile = "UserProfile";
     }
 }

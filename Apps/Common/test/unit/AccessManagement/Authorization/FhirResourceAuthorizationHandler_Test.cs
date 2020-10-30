@@ -732,7 +732,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         }
 
         [Fact]
-        public void ShouldAuthPatientDelegate()
+        public void ShouldAuthObservationDelegate()
         {
             // Setup
             string hdid = "The User HDID";
