@@ -123,7 +123,7 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             MimeMessage msg = new MimeMessage();
             msg.From.Add(new MailboxAddress("Health Gateway", email.From));
-            msg.To.Add(new MailboxAddress(email.To));
+            msg.To.Add(MailboxAddress.Parse(email.To));
             msg.Subject = email.Subject;
             msg.Body = new TextPart(email.FormatCode == EmailFormat.HTML ? MimeKit.Text.TextFormat.Html : MimeKit.Text.TextFormat.Plain)
             {
