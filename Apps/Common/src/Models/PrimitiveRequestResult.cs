@@ -19,9 +19,9 @@ namespace HealthGateway.Common.Models
     using HealthGateway.Common.Constants;
 
     /// <summary>
-    /// Class that represents the result of a request with a primitive values. 
+    /// Class that represents the result of a request with a primitive values.
     /// Contains members for handling pagination and error resolution.
-    /// Note: Will not be necessary on the next release of c#
+    /// Note: Will not be necessary on the next release of c#.
     /// </summary>
     /// <typeparam name="T">The payload type.</typeparam>
     public class PrimitiveRequestResult<T>
