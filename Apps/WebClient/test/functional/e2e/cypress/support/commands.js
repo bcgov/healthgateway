@@ -95,7 +95,8 @@ Cypress.Commands.add(
             cy.get("#passcode").click();
             cy.get("#passcode").type(password);
             cy.get("#btnSubmit").click();
-            cy.get("#btnSubmit").click();
+            if (username != "hlthgw401")
+                cy.get("#btnSubmit").click();
         } else {
             cy.log(`Authenticating as KeyCloak user ${username} using the UI`);
             cy.visit(path)

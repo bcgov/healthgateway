@@ -16,6 +16,10 @@
   "env": {
     "bcsc.username": "hthgtwy11",
     "bcsc.password": "",
+    "bcsc.hlthgw401.username": "hlthgw401",
+    "bcsc.hlthgw401.password": "",
+    "bcsc.hthgtwy12.username": "hthgtwy12",
+    "bcsc.hthgtwy12.password": "",
     "keycloak.username": "healthgateway",
     "keycloak.password": "",
     "keycloak.accountclosure.username": "AccountClosure",
