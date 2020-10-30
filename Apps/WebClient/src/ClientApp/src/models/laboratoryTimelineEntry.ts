@@ -19,7 +19,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 
     public constructor(model: LaboratoryOrder) {
         super(
-            model.labResults[0].id,
+            model.id,
             EntryType.Laboratory,
             new DateWrapper(model.labResults[0].collectedDateTime, {
                 hasTime: true,
