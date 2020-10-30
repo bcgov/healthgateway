@@ -30,6 +30,7 @@ export class RestDependentService implements IDependentService {
     }
 
     public addDependent(
+        hdid: string,
         dependent: AddDependentRequest
     ): Promise<AddDependentRequest> {
         return new Promise((resolve, reject) => {
@@ -39,7 +40,7 @@ export class RestDependentService implements IDependentService {
             }
             this.http
                 .post<RequestResult<AddDependentRequest>>(
-                    `${this.BASE_URI}/UserProfile/{hdid}/Dependent`,
+                    `${this.BASE_URI}/UserProfile/${hdid}/Dependent`,
                     dependent
                 )
                 .then((result) => {
