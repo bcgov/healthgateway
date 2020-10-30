@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-ARG NODE_VERSION=v12.18.3
+ARG NODE_VERSION=v14.15.0
 ARG DOTNET_VERSION=3.1
 ARG OPENSHIFT_VERSION=v3.11.0-0cbc58b
 
@@ -11,7 +11,7 @@ LABEL summary="$SUMMARY" \
     io.k8s.description="$DESCRIPTION" \
     io.k8s.display-name="azure-devlops-.net${DOTNET_VERSION}" \
     io.openshift.expose-services="8080:http" \
-    io.openshift.tags="builder,azure,devops,agent-v${DEVOPS_AGENT_VERSION},.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift-${OPENSHIFT_VERSION}" \
+    io.openshift.tags="builder,azure,devops,agent,.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift-${OPENSHIFT_VERSION}" \
     release="1"
 
 RUN  export DEBIAN_FRONTEND=noninteractive && \
@@ -34,10 +34,10 @@ RUN mkdir -p /opt && \
     rm -f node-${NODE_VERSION}-linux-x64.tar.gz
 
 #Fetch OpenShift client and install
-RUN mkdir -p /opt && \
-    cd /opt && \
-    curl -sL https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit.tar.gz | tar -zx && \
-    rm -f openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit.tar.gz
+RUN mkdir -p /opt/bin && \
+    cd /opt/bin && \
+    curl -sL https://downloads-openshift-console.apps.silver.devops.gov.bc.ca/amd64/linux/oc.tar | tar -x && \
+    rm -f oc.tar
 
 # Update environment variables
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
@@ -45,7 +45,7 @@ ENV AZP_URL=set_me_to_the_org_url
 ENV AZP_TOKEN=set_me_to_a_pat
 ENV HOME=/tmp
 ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
-ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/openshift-origin-client-tools-${OPENSHIFT_VERSION}-linux-64bit:$HOME/.local/bin/:$HOME/.dotnet/tools
+ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/bin:$HOME/.local/bin/:$HOME/.dotnet/tools
 
 # Update the version of `npm` that came with the packages above
 # and install a few additional tools.
