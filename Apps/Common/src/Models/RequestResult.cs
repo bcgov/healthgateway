@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    using System;
+    using System.Collections;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants;
 
@@ -29,7 +31,7 @@ namespace HealthGateway.Common.Models
         /// Gets or sets the result payload.
         /// </summary>
         [JsonPropertyName("resourcePayload")]
-        public T? ResourcePayload { get; set; } = null;
+        public T? ResourcePayload { get; set; } = default(T);
 
         /// <summary>
         /// Gets or sets the total result count for the request for pagination.

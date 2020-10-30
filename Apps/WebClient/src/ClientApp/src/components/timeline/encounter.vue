@@ -65,17 +65,18 @@ export default class EncounterTimelineEntryComponent extends Vue {
                     <b-col>
                         <div class="d-flex flex-row-reverse">
                             <b-btn
+                                data-testid="encounterDetailsButton"
                                 variant="link"
                                 class="detailsButton"
                                 @click="toggleDetails()"
                             >
-                                <span class="when-opened">
+                                <span v-if="detailsVisible">
                                     <font-awesome-icon
                                         icon="chevron-up"
                                         aria-hidden="true"
                                     ></font-awesome-icon
                                 ></span>
-                                <span class="when-closed">
+                                <span v-else>
                                     <font-awesome-icon
                                         icon="chevron-down"
                                         aria-hidden="true"
@@ -91,16 +92,16 @@ export default class EncounterTimelineEntryComponent extends Vue {
                         >
                             <div>
                                 <div class="detailSection">
-                                    <div>
-                                        <strong>Location:</strong>
+                                    <div data-testid="encounterClinicLabel">
+                                        <strong>Clinic/Practitioner:</strong>
                                     </div>
-                                    <div>
+                                    <div data-testid="encounterClinicName">
                                         {{ entry.clinic.name }}
                                     </div>
-                                    <div>
+                                    <div data-testid="encounterClinicAddress">
                                         {{ entry.clinic.address }}
                                     </div>
-                                    <div>
+                                    <div data-testid="encounterClinicPhone">
                                         {{
                                             formatPhone(
                                                 entry.clinic.phoneNumber
@@ -165,10 +166,5 @@ $radius: 15px;
 
 .newComment {
     border-radius: $radius;
-}
-
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
 }
 </style>

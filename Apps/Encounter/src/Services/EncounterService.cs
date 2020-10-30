@@ -16,14 +16,14 @@
 namespace HealthGateway.Encounter.Services
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Delegates;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.ODR;
@@ -34,82 +34,81 @@ namespace HealthGateway.Encounter.Services
     public class EncounterService : IEncounterService
     {
         private readonly ILogger logger;
-        private readonly ITraceService traceService;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IPatientDelegate patientDelegate;
+        private readonly IPatientService patientService;
         private readonly IMSPVisitDelegate mspVisitDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncounterService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpAccessor">The injected http context accessor provider.</param>
-        /// <param name="patientDelegate">The injected patient registry provider.</param>
+        /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="mspVisitDelegate">The MSPVisit delegate.</param>
         public EncounterService(
             ILogger<EncounterService> logger,
-            ITraceService traceService,
             IHttpContextAccessor httpAccessor,
-            IPatientDelegate patientDelegate,
+            IPatientService patientService,
             IMSPVisitDelegate mspVisitDelegate)
         {
             this.logger = logger;
-            this.traceService = traceService;
             this.httpContextAccessor = httpAccessor;
-            this.patientDelegate = patientDelegate;
+            this.patientService = patientService;
             this.mspVisitDelegate = mspVisitDelegate;
         }
+
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(EncounterService));
 
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
         {
-            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-            this.logger.LogDebug("Getting encounters");
-            this.logger.LogTrace($"User hdid: {hdid}");
-
-            RequestResult<IEnumerable<EncounterModel>> result = new RequestResult<IEnumerable<EncounterModel>>();
-
-            // Retrieve the phn
-            string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
-            RequestResult<Patient> patientResult = this.patientDelegate.GetPatient(hdid, jwtString);
-            if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
+            using (Source.StartActivity("GetEncounters"))
             {
-                Patient patient = patientResult.ResourcePayload;
-                ODRHistoryQuery mspHistoryQuery = new ODRHistoryQuery()
+                this.logger.LogDebug("Getting encounters");
+                this.logger.LogTrace($"User hdid: {hdid}");
+
+                RequestResult<IEnumerable<EncounterModel>> result = new RequestResult<IEnumerable<EncounterModel>>();
+
+                // Retrieve the phn
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
-                    StartDate = patient.Birthdate,
-                    EndDate = System.DateTime.Now,
-                    PHN = patient.PersonalHealthNumber,
-                    PageSize = 20000,
-                };
-                IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-                string ipv4Address = address.MapToIPv4().ToString();
-                RequestResult<MSPVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
-                result.ResultStatus = response.ResultStatus;
-                result.ResultError = response.ResultError;
-                if (response.ResultStatus == ResultType.Success)
-                {
-                    result.PageSize = mspHistoryQuery.PageSize;
-                    result.PageIndex = mspHistoryQuery.PageNumber;
-                    if (response.ResourcePayload != null && response.ResourcePayload.Claims != null)
+                    PatientModel patient = patientResult.ResourcePayload;
+                    ODRHistoryQuery mspHistoryQuery = new ODRHistoryQuery()
                     {
-                        result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                        result.ResourcePayload = EncounterModel.FromODRClaimModelList(response.ResourcePayload.Claims.ToList());
-                    }
-                    else
+                        StartDate = patient.Birthdate,
+                        EndDate = System.DateTime.Now,
+                        PHN = patient.PersonalHealthNumber,
+                        PageSize = 20000,
+                    };
+                    IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
+                    string ipv4Address = address.MapToIPv4().ToString();
+                    RequestResult<MSPVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
+                    result.ResultStatus = response.ResultStatus;
+                    result.ResultError = response.ResultError;
+                    if (response.ResultStatus == ResultType.Success)
                     {
-                        result.ResourcePayload = new List<EncounterModel>();
+                        result.PageSize = mspHistoryQuery.PageSize;
+                        result.PageIndex = mspHistoryQuery.PageNumber;
+                        if (response.ResourcePayload != null && response.ResourcePayload.Claims != null)
+                        {
+                            result.TotalResultCount = response.ResourcePayload.TotalRecords;
+                            result.ResourcePayload = EncounterModel.FromODRClaimModelList(response.ResourcePayload.Claims.ToList());
+                        }
+                        else
+                        {
+                            result.ResourcePayload = new List<EncounterModel>();
+                        }
                     }
                 }
-            }
-            else
-            {
-                result.ResultError = patientResult.ResultError;
-            }
+                else
+                {
+                    result.ResultError = patientResult.ResultError;
+                }
 
-            this.logger.LogDebug($"Finished getting history of medication statements");
-            return result;
+                this.logger.LogDebug($"Finished getting history of medication statements");
+                return result;
+            }
         }
     }
 }

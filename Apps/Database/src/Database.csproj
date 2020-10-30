@@ -1,11 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>HealthGateway.Database</RootNamespace>
-    <Nullable>enable</Nullable>
-    <LangVersion>8.0</LangVersion>
-    <WarningsAsErrors>CS8600;CS8602;CS8603</WarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -13,18 +9,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Macross.Json.Extensions" Version="1.5.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
-
+    
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" />
+  </ItemGroup>
+  
   <ItemGroup>
     <SonarQubeSetting Include="sonar.stylecop.projectFilePath">
       <Value>$(MSBuildProjectFullPath)</Value>
@@ -33,10 +25,6 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\dist\vendor-manifest.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,8 +54,5 @@
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />
     <None Remove="Assets\Legal\TermsOfService.20200317.html" />
     <None Remove="Assets\Legal\TermsOfService.20200511.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" />
   </ItemGroup>
 </Project>

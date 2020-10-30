@@ -2,7 +2,6 @@ import Vue from "vue";
 import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-
 // Routes
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
@@ -54,6 +53,8 @@ const ReleaseNotesView = () =>
     import(/* webpackChunkName: "releaseNotes" */ "@/views/releaseNotes.vue");
 const ContactUsView = () =>
     import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
+const DependentsView = () =>
+    import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 
 Vue.use(VueRouter);
 
@@ -82,6 +83,30 @@ function calculateUserState() {
     } else {
         return UserState.registered;
     }
+}
+
+enum ClientModule {
+    Immunization = "Immunization",
+    Medication = "Medication",
+    Laboratory = "Laboratory",
+    Encounter = "Encounter",
+    Comment = "Comment",
+    CovidLabResults = "CovidLabResults",
+    Dependent = "Dependent",
+    Note = "Note",
+}
+
+function getAvailableModules() {
+    const availableModules: string[] = [];
+    const configModules: { [id: string]: boolean } =
+        store.getters["config/webClient"].modules;
+
+    for (const moduleName in configModules) {
+        if (configModules[moduleName]) {
+            availableModules.push(moduleName);
+        }
+    }
+    return availableModules;
 }
 
 const REGISTRATION_PATH = "/registration";
@@ -142,6 +167,14 @@ const routes = [
         path: "/reports",
         component: ReportsView,
         meta: { validStates: [UserState.registered] },
+    },
+    {
+        path: "/dependents",
+        component: DependentsView,
+        meta: {
+            validStates: [UserState.registered],
+            requiredModules: [ClientModule.Dependent],
+        },
     },
     {
         path: "/termsOfService",
@@ -234,14 +267,26 @@ router.beforeEach(async (to, from, next) => {
         // Make sure that the route accepts the current state
         const currentUserState = calculateUserState();
         logger.debug(`current state: ${currentUserState}`);
-        if (to.meta.validStates.includes(currentUserState)) {
+        const isValidState = to.meta.validStates.includes(currentUserState);
+        const availableModules = getAvailableModules();
+        const hasRequiredModules =
+            to.meta.requiredModules === undefined
+                ? true
+                : to.meta.requiredModules.every((val: string) =>
+                      availableModules.includes(val)
+                  );
+        if (isValidState && hasRequiredModules) {
             next();
         } else {
             // If the route does not accept the state, go to one of the default locations
             if (currentUserState === UserState.pendingDeletion) {
                 next({ path: "/profile" });
             } else if (currentUserState === UserState.registered) {
-                next({ path: "/timeline" });
+                if (hasRequiredModules) {
+                    next({ path: "/timeline" });
+                } else {
+                    next({ path: "/unauthorized" });
+                }
             } else if (currentUserState === UserState.notRegistered) {
                 next({ path: REGISTRATION_PATH });
             } else if (currentUserState === UserState.invalidLogin) {

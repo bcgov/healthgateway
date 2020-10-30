@@ -224,7 +224,7 @@ export default class NoteTimelineComponent extends Vue {
                         </div>
                     </div>
                     <b-row v-else class="editableEntryTitle pr-1">
-                        <b-col class="p-0 col-lg-7 col-md-7 col-6">
+                        <b-col class="p-0 col-sm-7 col-12">
                             <b-form-input
                                 id="title"
                                 v-model="title"
@@ -234,7 +234,7 @@ export default class NoteTimelineComponent extends Vue {
                                 maxlength="100"
                             />
                         </b-col>
-                        <b-col class="p-0 pl-1 col-lg-5 col-md-5 col-6">
+                        <b-col class="p-0 pl-sm-1 pt-sm-0 pt-1 col-sm-5 col-12">
                             <b-form-input
                                 id="date"
                                 v-model="dateString"

@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:3004",
+      "applicationUrl": "http://localhost:3004",
       "sslPort": 0
     }
   },
@@ -11,9 +11,9 @@
   "profiles": {
     "HealthGateway.Laboratory": {
       "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development"
+        },
       "applicationUrl": "http://localhost:3004;"
     }
   }

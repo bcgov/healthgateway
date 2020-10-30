@@ -17,21 +17,17 @@ namespace HealthGateway.Encounter.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
-    using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models.Cacheable;
-    using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -44,7 +40,6 @@ namespace HealthGateway.Encounter.Delegates
         private const string ODRConfigSectionKey = "ODR";
 
         private readonly ILogger logger;
-        private readonly ITraceService traceService;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
         private readonly ODRConfig odrConfig;
@@ -54,17 +49,14 @@ namespace HealthGateway.Encounter.Delegates
         /// Initializes a new instance of the <see cref="RestMSPVisitDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="traceService">Injected TraceService Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         public RestMSPVisitDelegate(
             ILogger<RestMSPVisitDelegate> logger,
-            ITraceService traceService,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {
             this.logger = logger;
-            this.traceService = traceService;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
             this.odrConfig = new ODRConfig();
@@ -88,64 +80,67 @@ namespace HealthGateway.Encounter.Delegates
             logger.LogInformation($"ODR Proxy URL resolved as {this.baseURL.ToString()}");
         }
 
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMSPVisitDelegate));
+
         /// <inheritdoc/>
         public async Task<RequestResult<MSPVisitHistoryResponse>> GetMSPVisitHistoryAsync(ODRHistoryQuery query, string hdid, string ipAddress)
         {
-            using ITracer tracer = this.traceService.TraceMethod(this.GetType().Name);
-            RequestResult<MSPVisitHistoryResponse> retVal = new RequestResult<MSPVisitHistoryResponse>();
-            using var traceSection = this.traceService.TraceSection(this.GetType().Name, "ODRQuery");
-            this.logger.LogTrace($"Getting MSP visits... {query.PHN.Substring(0, 3)}");
+            using (Source.StartActivity("GetMSPVisitHistoryAsync"))
+            {
+                RequestResult<MSPVisitHistoryResponse> retVal = new RequestResult<MSPVisitHistoryResponse>();
+                this.logger.LogTrace($"Getting MSP visits... {query.PHN.Substring(0, 3)}");
 
-            using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            MSPVisitHistory request = new MSPVisitHistory()
-            {
-                Id = System.Guid.NewGuid(),
-                RequestorHDID = hdid,
-                RequestorIP = ipAddress,
-                Query = query,
-            };
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
-                WriteIndented = true,
-            };
-            try
-            {
-                string json = JsonSerializer.Serialize(request, options);
-                using HttpContent content = new StringContent(json);
-                Uri endpoint = new Uri(this.baseURL, this.odrConfig.MSPVisitsEndpoint);
-                HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-                if (response.IsSuccessStatusCode)
+                using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                MSPVisitHistory request = new MSPVisitHistory()
                 {
-                    MSPVisitHistory visitHistory = JsonSerializer.Deserialize<MSPVisitHistory>(payload, options);
-                    retVal.ResultStatus = Common.Constants.ResultType.Success;
-                    retVal.ResourcePayload = visitHistory.Response;
-                    retVal.TotalResultCount = visitHistory.Response?.TotalRecords;
+                    Id = System.Guid.NewGuid(),
+                    RequestorHDID = hdid,
+                    RequestorIP = ipAddress,
+                    Query = query,
+                };
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true,
+                    WriteIndented = true,
+                };
+                try
+                {
+                    string json = JsonSerializer.Serialize(request, options);
+                    using HttpContent content = new StringContent(json);
+                    Uri endpoint = new Uri(this.baseURL, this.odrConfig.MSPVisitsEndpoint);
+                    HttpResponseMessage response = await client.PostAsync(endpoint, content).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MSPVisitHistory visitHistory = JsonSerializer.Deserialize<MSPVisitHistory>(payload, options);
+                        retVal.ResultStatus = Common.Constants.ResultType.Success;
+                        retVal.ResourcePayload = visitHistory.Response;
+                        retVal.TotalResultCount = visitHistory.Response?.TotalRecords;
+                    }
+                    else
+                    {
+                        retVal.ResultStatus = Common.Constants.ResultType.Error;
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                        this.logger.LogError(retVal.ResultError.ResultMessage);
+                    }
                 }
-                else
+#pragma warning disable CA1031 // Do not catch general exception types
+                catch (Exception e)
+#pragma warning restore CA1031 // Do not catch general exception types
                 {
                     retVal.ResultStatus = Common.Constants.ResultType.Error;
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
-                    this.logger.LogError(retVal.ResultError.ResultMessage);
+                    retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                    this.logger.LogError($"Unable to post message {e.ToString()}");
                 }
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                retVal.ResultStatus = Common.Constants.ResultType.Error;
-                retVal.ResultError = new RequestResultError() { ResultMessage = e.ToString(), ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
-                this.logger.LogError($"Unable to post message {e.ToString()}");
-            }
 
-            this.logger.LogDebug($"Finished getting MSP visits");
+                this.logger.LogDebug($"Finished getting MSP visits");
 
-            return retVal;
+                return retVal;
+            }
         }
     }
 }

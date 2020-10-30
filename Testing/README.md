@@ -29,6 +29,15 @@ cd run
 HG_PASSWORD=<loadtestusers_password> smoke.sh
 ```
 
+### Smoke Testing Individual Services
+
+You can smoke and load test the individual services. To smoke test an individual service use the HG_TEST environment variable set to 'smoke' and use the bash script run.sh that takes the argument of the test JavaScript file.
+
+```bash
+cd run
+HG_PASSWORD=<loadtestusers_password> HG_TEST=smoke run.sh src/services\k6_<service>.js
+```
+
 ### When to run the smoke test
 
 Run this test often, after each system change/release.  This ensures that functionality has not broken under basic loads.
@@ -40,6 +49,13 @@ Load testing is primarily concerned with assessing the systems performance, the 
 ```bash
 cd run
 HG_PASSWORD=<loadtestusers_password> load.sh
+```
+
+### Load Testing Individual Services
+
+```bash
+cd run
+HG_PASSWORD=<loadtestusers_password> run.sh src/services\k6_<service>.js
 ```
 
 ## Stress Testing

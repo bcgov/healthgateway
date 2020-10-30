@@ -21,6 +21,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -36,16 +37,19 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 
         private readonly ILogger<FhirResourceAuthorizationHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IUserDelegateDelegate userDelegateDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FhirResourceAuthorizationHandler"/> class.
         /// </summary>
         /// <param name="logger">the injected logger.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
-        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor)
+        /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
+        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor, IUserDelegateDelegate userDelegateDelegate = null)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
+            this.userDelegateDelegate = userDelegateDelegate;
         }
 
         /// <summary>
@@ -57,6 +61,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <returns>The Authorization Result.</returns>
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
+            using var x = this.logger.BeginScope(new { Operation = "Authoization Handler" });
             foreach (FhirRequirement requirement in context.PendingRequirements.OfType<FhirRequirement>().ToList())
             {
                 string? resourceHDID = this.GetResourceHDID(requirement);
@@ -178,13 +183,23 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                     string[] userDelegatedScopes = GetAcceptedScopes(User, requirement);
                     if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID) && scopes.Intersect(userDelegatedScopes).Any())
                     {
-                        this.logger.LogError("user delgation is not implemented, returning not authorized");
-
-                        // TODO:  Future check needed for patient to patient delegation.
-                    }
-                    else
-                    {
-                        this.logger.LogWarning($"Patient delgation validation for Patient resource {resourceHDID} failed");
+                        string userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
+                        if (this.userDelegateDelegate.Exists(resourceHDID, userHDID))
+                        {
+                            if (requirement.Resource == FhirResource.Observation)
+                            {
+                                this.logger.LogInformation($"Authorized caller as system to have {requirement.AccessType} access to Patient resource {resourceHDID}");
+                                retVal = true;
+                            }
+                            else
+                            {
+                                this.logger.LogWarning($"Patient delegation validation for Patient resource {resourceHDID} failed as the Requirement Resource is not {FhirResource.Observation}");
+                            }
+                        }
+                        else
+                        {
+                            this.logger.LogWarning($"Patient delegation validation for Patient resource {resourceHDID} - userHdId {userHDID} failed as Delegate is not found in Health Gateway's database.");
+                        }
                     }
                 }
             }

@@ -17,8 +17,15 @@ namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Security.Cryptography.X509Certificates;
+    using System.ServiceModel;
+    using System.ServiceModel.Description;
+    using System.ServiceModel.Dispatcher;
+    using System.ServiceModel.Security;
     using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.PostgreSql;
@@ -27,7 +34,9 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Filters;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Common.Swagger;
     using HealthGateway.Database.Constants;
@@ -50,6 +59,8 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
+    using OpenTelemetry.Trace;
+    using ServiceReference;
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
@@ -96,7 +107,8 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHttpClient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpClientService, HttpClientService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddHealthChecks();
+            services.AddHealthChecks()
+                    .AddDbContextCheck<GatewayDbContext>();
 
             services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
@@ -346,6 +358,85 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
             JobStorage.Current = new PostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection"));
+        }
+
+        /// <summary>
+        /// Configures the ability to use Patient services.
+        /// </summary>
+        /// <param name="services">The service collection to add forward proxies into.</param>
+        public void ConfigurePatientAccess(IServiceCollection services)
+        {
+            services.AddTransient<IEndpointBehavior, LoggingEndpointBehaviour>();
+            services.AddTransient<IClientMessageInspector, LoggingMessageInspector>();
+            services.AddTransient<QUPA_AR101102_PortType>(s =>
+            {
+                IConfigurationSection clientConfiguration = this.configuration.GetSection("PatientService:ClientRegistry");
+                EndpointAddress clientRegistriesEndpoint = new EndpointAddress(new Uri(clientConfiguration.GetValue<string>("ServiceUrl")));
+
+                // Load Certificate, Note:  As per reading we do not have to dispose of the certificate.
+                string clientCertificatePath = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Path");
+                string certificatePassword = clientConfiguration.GetSection("ClientCertificate").GetValue<string>("Password");
+                X509Certificate2 clientRegistriesCertificate = new X509Certificate2(System.IO.File.ReadAllBytes(clientCertificatePath), certificatePassword);
+
+                QUPA_AR101102_PortTypeClient client = new QUPA_AR101102_PortTypeClient(
+                    QUPA_AR101102_PortTypeClient.EndpointConfiguration.QUPA_AR101102_Port,
+                    clientRegistriesEndpoint);
+                client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
+                client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
+
+                // TODO: - HACK - Remove this once we can get the server certificate to be trusted.
+                client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
+                    new X509ServiceCertificateAuthentication()
+                    {
+                        CertificateValidationMode = X509CertificateValidationMode.None,
+                        RevocationMode = X509RevocationMode.NoCheck,
+                    };
+
+                return client;
+            });
+
+            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
+            services.AddTransient<IPatientService, PatientService>();
+            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
+        }
+
+        /// <summary>
+        /// Configures OpenTelemetry tracing.
+        /// </summary>
+        /// <param name="services">The service collection to add forward proxies into.</param>
+        public void ConfigureTracing(IServiceCollection services)
+        {
+            this.Logger.LogDebug("Setting up OpenTelemetry");
+            OpenTelemetryConfig config = new OpenTelemetryConfig();
+            this.configuration.GetSection("OpenTelemetry").Bind(config);
+            if (config.Enabled)
+            {
+                services.AddOpenTelemetryTracing(tracing =>
+                 {
+                     tracing.AddAspNetCoreInstrumentation(options =>
+                     {
+                         options.Filter = (httpContext) =>
+                         {
+                             return !config.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
+                         };
+                     })
+                            .AddHttpClientInstrumentation()
+                            .AddSource(config.Sources);
+                     if (config.ZipkinEnabled)
+                     {
+                         tracing.AddZipkinExporter(options =>
+                         {
+                             options.ServiceName = config.ServiceName;
+                             options.Endpoint = config.ZipkinUri;
+                         });
+                     }
+
+                     if (config.ConsoleEnabled)
+                     {
+                         tracing.AddConsoleExporter();
+                     }
+                 });
+            }
         }
 
         /// <summary>

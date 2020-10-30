@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
@@ -45,12 +47,14 @@ namespace HealthGateway.Common.AspNetConfiguration
                     logging.AddConsole(options =>
                     {
                         options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
+                        options.IncludeScopes = true;
                     });
+                    logging.AddOpenTelemetry();
                 })
                 .ConfigureAppConfiguration((builderContext, config) =>
                 {
+                    config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings last to keep override
                     config.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-                    config.AddJsonFile("appsettings.local.json", true, true); // Loads local settings
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

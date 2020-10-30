@@ -6,6 +6,8 @@ import Process, { EnvironmentType } from "@/constants/process.ts";
 import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import VueTheMask from "vue-the-mask";
+
 // Load Bootstrap general plugins
 import {
     AlertPlugin,
@@ -28,6 +30,8 @@ import {
     TooltipPlugin,
     FormRatingPlugin,
     IconsPlugin,
+    FormSelectPlugin,
+    FormDatepickerPlugin,
 } from "bootstrap-vue";
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
@@ -48,7 +52,10 @@ Vue.use(TooltipPlugin);
 Vue.use(FormGroupPlugin);
 Vue.use(FormRadioPlugin);
 Vue.use(FormRatingPlugin);
+Vue.use(FormSelectPlugin);
+Vue.use(FormDatepickerPlugin);
 Vue.use(IconsPlugin);
+Vue.use(VueTheMask);
 
 // Load general icons
 import { config, library } from "@fortawesome/fontawesome-svg-core";
@@ -86,6 +93,8 @@ import {
     faClipboardList,
     faChartLine,
     faStream,
+    faUmbrella,
+    faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
     faUser,
@@ -115,7 +124,9 @@ library.add(
     faUserMd,
     faClipboardList,
     faChartLine,
-    faStream
+    faStream,
+    faUmbrella,
+    faUserPlus
 );
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";

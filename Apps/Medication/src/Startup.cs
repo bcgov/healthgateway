@@ -16,15 +16,12 @@
 #pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.Medication
 {
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Instrumentation;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Delegates;
-    using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -61,6 +58,8 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigurePatientAccess(services);
+            this.startupConfig.ConfigureTracing(services);
 
             services.AddCors(options =>
             {
@@ -80,12 +79,9 @@ namespace HealthGateway.Medication
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
             services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
             services.AddTransient<IHashDelegate, HMACHashDelegate>();
-            services.AddSingleton<ITraceService, TimedTraceService>();
 
             // Add delegates
-            services.AddTransient<IPatientDelegate, RestPatientDelegate>();
             services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();
-            services.AddTransient<ISequenceDelegate, DBSequenceDelegate>();
         }
 
         /// <summary>

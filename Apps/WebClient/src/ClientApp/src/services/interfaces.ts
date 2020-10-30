@@ -22,6 +22,8 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import UserRating from "@/models/userRating";
 import Encounter from "@/models/encounter";
 import { OidcUserProfile } from "@/models/user";
+import AddDependentRequest from "@/models/addDependentRequest";
+import Dependent from "@/models/dependent";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -83,6 +85,7 @@ export interface IUserProfileService {
     initialize(http: IHttpDelegate): void;
     createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
     getProfile(hdid: string): Promise<UserProfile>;
+    validateAge(hdid: string): Promise<boolean>;
     getTermsOfService(): Promise<TermsOfService>;
     closeAccount(hdid: string): Promise<UserProfile>;
     recoverAccount(hdid: string): Promise<UserProfile>;
@@ -111,7 +114,7 @@ export interface IUserRatingService {
 
 export interface IBetaRequestService {
     initialize(http: IHttpDelegate): void;
-    getRequest(hdid: string): Promise<BetaRequest>;
+    getRequested(hdid: string): Promise<BetaRequest>;
     putRequest(request: BetaRequest): Promise<BetaRequest>;
 }
 
@@ -136,6 +139,12 @@ export interface IUserCommentService {
 export interface ICommunicationService {
     initialize(http: IHttpDelegate): void;
     getActive(): Promise<RequestResult<Communication>>;
+}
+
+export interface IDependentService {
+    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
+    addDependent(dependent: AddDependentRequest): Promise<AddDependentRequest>;
+    getAll(hdid: string): Promise<RequestResult<Dependent[]>>;
 }
 
 export interface IHttpDelegate {

@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Migrations
             modelBuilder
                 .HasDefaultSchema("gateway")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.7")
+                .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("Relational:Sequence:.gateway.trace_seq", "'gateway.trace_seq', '', '1', '1', '1', '999999', 'Int64', 'True'");
 
@@ -462,12 +462,10 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("EffectiveDateTime")
-                        .IsRequired()
+                    b.Property<DateTime>("EffectiveDateTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("ExpiryDateTime")
-                        .IsRequired()
+                    b.Property<DateTime>("ExpiryDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Priority")
@@ -1697,6 +1695,9 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("xid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HdId", "Domain")
+                        .IsUnique();
 
                     b.ToTable("GenericCache");
                 });
@@ -2954,6 +2955,94 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("TherapeuticClass");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.UserDelegate", b =>
+                {
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("DelegateId")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("OwnerId", "DelegateId");
+
+                    b.ToTable("UserDelegate");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.UserDelegateHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("UserDelegateHistoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("DelegateId")
+                        .IsRequired()
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OperationDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserDelegateHistory");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>

@@ -16,13 +16,19 @@ export default class ErrorCardComponent extends Vue {
 
 <template>
     <b-alert
+        data-testid="errorBanner"
         variant="danger"
         dismissible
         class="no-print mt-3"
         :show="isShowing"
     >
         <h4>Whoops, something went wrong... Try refreshing the page</h4>
-        <b-btn v-b-toggle.errorDetails variant="link" class="detailsButton">
+        <b-btn
+            v-b-toggle.errorDetails
+            data-testid="errorDetailsBtn"
+            variant="link"
+            class="detailsButton"
+        >
             <span class="when-opened">
                 <font-awesome-icon
                     icon="chevron-up"
@@ -42,8 +48,10 @@ export default class ErrorCardComponent extends Vue {
             <div v-for="(error, index) in errors" :key="index" class="py-2">
                 <h6>{{ error.title }} | {{ error.errorCode }}</h6>
                 <div class="pl-4">
-                    <p>{{ error.description }}</p>
-                    <p>{{ error.detail }}</p>
+                    <p data-testid="errorTextDescription">
+                        {{ error.description }}
+                    </p>
+                    <p data-testid="errorTextDetails">{{ error.detail }}</p>
                 </div>
             </div>
         </b-collapse>

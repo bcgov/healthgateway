@@ -18,6 +18,8 @@ namespace HealthGateway.WebClient.Models
     using System;
     using System.Collections.Generic;
 
+    using HealthGateway.Database.Models;
+
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
     /// </summary>
@@ -69,13 +71,8 @@ namespace HealthGateway.WebClient.Models
         /// </summary>
         /// <param name="model">The user profile database model.</param>
         /// <returns>The user profile model.</returns>
-        public static UserProfileModel CreateFromDbModel(Database.Models.UserProfile model)
+        public static UserProfileModel CreateFromDbModel(UserProfile model)
         {
-            if (model == null)
-            {
-                return null!;
-            }
-
             return new UserProfileModel()
             {
                 HdId = model.HdId,

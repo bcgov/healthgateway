@@ -32,6 +32,10 @@ export default class SidebarComponent extends Vue {
 
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
 
+    @Action("setSidebarState", { namespace: sidebar }) setSidebarState!: (
+        isOpen: boolean
+    ) => void;
+
     @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
 
     @Getter("oidcIsAuthenticated", {
@@ -102,8 +106,6 @@ export default class SidebarComponent extends Vue {
                 transitionEvent.propertyName !== "max-width"
             ) {
                 return;
-            } else {
-                this.isTutorialEnabled = false;
             }
 
             this.isTutorialEnabled = true;
@@ -116,11 +118,16 @@ export default class SidebarComponent extends Vue {
                 }
             });
         });
+    }
 
+    private created() {
+        this.windowWidth = window.innerWidth;
         this.$nextTick(() => {
             window.addEventListener("resize", this.onResize);
+            if (!this.isMobileWidth) {
+                this.setSidebarState(true);
+            }
         });
-        this.windowWidth = window.innerWidth;
     }
 
     private beforeDestroy() {
@@ -204,10 +211,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private get isTimeline(): boolean {
-        let isTimeLine = this.$route.path == "/timeline";
-        if (isTimeLine && !this.isTutorialEnabled)
-            this.isTutorialEnabled = true;
-        return isTimeLine;
+        return this.$route.path == "/timeline";
     }
 
     private get isProfile(): boolean {
@@ -232,6 +236,14 @@ export default class SidebarComponent extends Vue {
 
     private get isNoteEnabled(): boolean {
         return this.config.modules["Note"];
+    }
+
+    private get isDependentEnabled(): boolean {
+        return this.config.modules["Dependent"];
+    }
+
+    private get isDependents(): boolean {
+        return this.$route.path == "/dependents";
     }
 }
 </script>
@@ -271,10 +283,10 @@ export default class SidebarComponent extends Vue {
                                 />
                             </b-col>
                             <b-col
-                                v-if="isOpen"
+                                v-show="isOpen"
                                 data-testid="sidebarUserName"
                                 cols="7"
-                                class="button-title d-none"
+                                class="button-title"
                                 >{{ name }}</b-col
                             >
                         </b-row>
@@ -307,9 +319,10 @@ export default class SidebarComponent extends Vue {
                                 />
                             </b-col>
                             <b-col
-                                v-if="isOpen"
+                                v-show="isOpen"
+                                data-testid="timelineLabel"
                                 cols="7"
-                                class="button-title d-none"
+                                class="button-title"
                             >
                                 <span>Timeline</span>
                             </b-col>
@@ -337,9 +350,9 @@ export default class SidebarComponent extends Vue {
                                 />
                             </b-col>
                             <b-col
-                                v-if="isOpen"
+                                v-show="isOpen"
                                 cols="8"
-                                class="button-title sub-menu d-none"
+                                class="button-title sub-menu"
                             >
                                 <span>Add a Note</span>
                             </b-col>
@@ -382,9 +395,9 @@ export default class SidebarComponent extends Vue {
                                 />
                             </b-col>
                             <b-col
-                                v-if="isOpen"
+                                v-show="isOpen"
                                 cols="8"
-                                class="button-title sub-menu d-none"
+                                class="button-title sub-menu"
                             >
                                 <span>Print</span>
                             </b-col>
@@ -418,9 +431,9 @@ export default class SidebarComponent extends Vue {
                                 />
                             </b-col>
                             <b-col
-                                v-if="isOpen"
+                                v-show="isOpen"
                                 cols="7"
-                                class="button-title d-none"
+                                class="button-title"
                             >
                                 <span>Health Insights</span>
                             </b-col>
@@ -451,11 +464,43 @@ export default class SidebarComponent extends Vue {
                                 />
                             </b-col>
                             <b-col
-                                v-if="isOpen"
+                                v-show="isOpen"
                                 cols="7"
-                                class="button-title d-none"
+                                class="button-title"
                             >
                                 <span>Reports</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
+                    <router-link
+                        v-show="isDependentEnabled"
+                        id="menuBtnDependents"
+                        data-testid="menuBtnDependentsLink"
+                        to="/dependents"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isDependents }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
+                                <font-awesome-icon
+                                    icon="umbrella"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-show="isOpen"
+                                cols="7"
+                                class="button-title"
+                            >
+                                <span>Dependents</span>
                             </b-col>
                         </b-row>
                     </router-link>
@@ -467,7 +512,7 @@ export default class SidebarComponent extends Vue {
                 <b-col class="m-0 p-0">
                     <!-- Collapse Button -->
                     <b-row
-                        class="align-items-center my-4 d-none d-sm-block"
+                        class="align-items-center my-4 d-sm-block"
                         :class="[isOpen ? 'mx-4' : 'button-container']"
                     >
                         <b-col

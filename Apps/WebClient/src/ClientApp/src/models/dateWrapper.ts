@@ -6,6 +6,26 @@ import { DateTime, DurationUnit, Duration, DurationObject } from "luxon";
 export type StringISODate = string;
 
 /**
+ * Typed representation of a ISO Date with time.
+ */
+export type StringISODateTime = string;
+
+/**
+ * Defines the options for parsing the date time. Ignored if constructed
+ * from a copy or a DateTime object.
+ */
+export interface ParseOptions {
+    /**
+     * True if it should be parsed as a UTC date time.
+     */
+    isUtc?: boolean;
+    /**
+     * True if the string representation contains also time information with no zone or offset.
+     */
+    hasTime?: boolean;
+}
+
+/**
  * Class that wraps a library definition of a date time. Immutable to prevent bad date manipulation.
  * Centralizes date operations and modifications while abstracting library specific implementations.
  */
@@ -35,7 +55,10 @@ export class DateWrapper {
      * @param param type of object to base this object. If none passed creates sets the current date time to NOW.
      * @param isUtc True if the date passed is in UTC, false by default.
      */
-    constructor(param?: StringISODate | DateWrapper | DateTime, isUtc = false) {
+    constructor(
+        param?: StringISODate | StringISODateTime | DateWrapper | DateTime,
+        options?: ParseOptions
+    ) {
         if (param) {
             if (param instanceof DateWrapper) {
                 this._date_source = "DateWrapper";
@@ -50,10 +73,14 @@ export class DateWrapper {
                 this._raw_string_value = param;
                 if (param.includes("z")) {
                     this._internal_date = DateTime.fromISO(param);
-                } else if (isUtc) {
+                } else if (options?.isUtc) {
                     this._internal_date = DateTime.fromISO(param, {
                         zone: "utc",
                     }).setZone("America/Vancouver");
+                } else if (options?.hasTime) {
+                    this._internal_date = DateTime.fromISO(param, {
+                        zone: "America/Vancouver",
+                    });
                 } else {
                     this._internal_date = DateTime.fromISO(param, {
                         zone: "America/Vancouver",
@@ -188,10 +215,10 @@ export class DateWrapper {
      * Difference between two Dates in milliseconds
      * @param other Other date to compare to
      * @param unit (optional) unit of comparision (year, hour, minute, second...)
-     * @returns the difference in milliseconds
+     * @returns the difference with the Duration object
      */
-    public diff(other: DateWrapper, unit?: DurationUnit): number {
-        return this.internalDate.diff(other.internalDate, unit).milliseconds;
+    public diff(other: DateWrapper, unit?: DurationUnit): Duration {
+        return this.internalDate.diff(other.internalDate, unit);
     }
 
     /**

@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
@@ -29,6 +30,8 @@ namespace HealthGateway.WebClient.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Web API to handle user profile interactions.
@@ -39,6 +42,7 @@ namespace HealthGateway.WebClient.Controllers
     [ApiController]
     public class UserProfileController
     {
+        private readonly ILogger logger;
         private readonly IUserProfileService userProfileService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IUserEmailService userEmailService;
@@ -47,16 +51,19 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
         /// </summary>
+        /// <param name="logger">The service Logger.</param>
         /// <param name="userProfileService">The injected user profile service.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="userEmailService">The injected user email service.</param>
         /// <param name="userSMSService">The injected user sms service.</param>
         public UserProfileController(
+            ILogger<UserProfileController> logger,
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
             IUserSMSService userSMSService)
         {
+            this.logger = logger;
             this.userProfileService = userProfileService;
             this.httpContextAccessor = httpContextAccessor;
             this.userEmailService = userEmailService;
@@ -91,7 +98,7 @@ namespace HealthGateway.WebClient.Controllers
 
             string bearerToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken);
+            RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), bearerToken).ConfigureAwait(true);
             return new JsonResult(result);
         }
 
@@ -109,9 +116,21 @@ namespace HealthGateway.WebClient.Controllers
         public IActionResult GetUserProfile(string hdid)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string rowAuthTime = user.FindFirst(c => c.Type == "auth_time").Value;
+            var jsonSettings = new JsonSerializerSettings()
+            {
+                Converters = new List<JsonConverter>() { new JsonClaimConverter(), new JsonClaimsPrincipalConverter(), new JsonClaimsIdentityConverter() },
+            };
 
-            // Auth time at comes in the JWT as seconds after 1970-01-01
+            this.logger.LogTrace($"HTTP context user: {JsonConvert.SerializeObject(user, jsonSettings)}");
+
+            string rowAuthTime = user.FindFirstValue("auth_time"); // auth_time is not mandatory in a Bearer token.
+
+            if (rowAuthTime == null)
+            {
+                rowAuthTime = user.FindFirstValue("iat"); // get token  "issued at time", which *is* mandatory in JWT bearer token.
+            }
+
+            // Auth time comes in the JWT as seconds after 1970-01-01
             DateTime jwtAuthTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
 
@@ -123,6 +142,23 @@ namespace HealthGateway.WebClient.Controllers
                 result.ResourcePayload.Preferences = userPreferences.ResourcePayload != null ? userPreferences.ResourcePayload : new Dictionary<string, string>();
             }
 
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Gets a result indicating the profile is valid.
+        /// </summary>
+        /// <returns>A boolean wrapped in a request result.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <response code="200">The request result is returned.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/Validate")]
+        [Authorize(Policy = UserPolicy.Read)]
+        public async Task<IActionResult> Validate(string hdid)
+        {
+            PrimitiveRequestResult<bool> result = await this.userProfileService.ValidateMinimumAge(hdid).ConfigureAwait(true);
             return new JsonResult(result);
         }
 

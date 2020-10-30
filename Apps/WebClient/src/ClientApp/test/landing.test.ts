@@ -23,6 +23,7 @@ describe("Landing view", () => {
         externalURLs: {},
         modules: {},
         hoursForDeletion: 1,
+        minPatientAge: 16,
     };
 
     const configGetters = {

@@ -248,7 +248,7 @@ export default class ProfileView extends Vue {
 
         let endDate = new DateWrapper(this.user.closedDateTime);
         endDate = endDate.add({ hour: this.webClientConfig.hoursForDeletion });
-        this.timeForDeletion = endDate.diff(new DateWrapper());
+        this.timeForDeletion = endDate.diff(new DateWrapper()).milliseconds;
     }
 
     private get timeForDeletionString(): string {
