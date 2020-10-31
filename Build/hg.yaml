@@ -61,7 +61,7 @@ jobs:
     name: "HealthGateway"
   strategy:
     parallel: 2
-job:
+jobs:
 - job: OpenShift3
   displayName:  Build and Package (OCP3)
   steps:
