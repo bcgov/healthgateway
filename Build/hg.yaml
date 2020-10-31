@@ -62,7 +62,7 @@ jobs:
   strategy:
     parallel: 2
 job:
-- job:
+- job: OpenShift3
   displayName:  Build and Package (OCP3)
   steps:
     - task: Npm@1
@@ -146,7 +146,7 @@ job:
       inputs:
         targetPath: "$(Build.ArtifactStagingDirectory)"
 job:
-- job:
+- job: OpenShift4
   displayName:  Build and Package (OCP4)
   pool:
     name: "HealthGatewayOCP4"
