@@ -56,7 +56,6 @@ variables:
     ${{ if eq(variables['PullRequest'], false) }}: 
         BuildPrefix: "$(SourceBranchName)"
 jobs:
-  displayName: Build and Package
   pool:
     name: "HealthGateway"
   strategy:
@@ -146,8 +145,7 @@ jobs:
         targetPath: "$(Build.ArtifactStagingDirectory)"
 - job: OpenShift4
   displayName:  Build and Package (OCP4)
-  pool:
-    name: "HealthGatewayOCP4"
+  pool: "HealthGatewayOCP4"
   steps:
     - script: |
       set -e
