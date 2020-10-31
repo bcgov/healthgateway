@@ -61,7 +61,6 @@ jobs:
     name: "HealthGateway"
   strategy:
     parallel: 2
-jobs:
 - job: OpenShift3
   displayName:  Build and Package (OCP3)
   steps:
@@ -145,7 +144,6 @@ jobs:
       condition: and(succeeded(), or(eq(variables['PublishFunctionalTests'], true), eq(variables['Library'], true)))
       inputs:
         targetPath: "$(Build.ArtifactStagingDirectory)"
-job:
 - job: OpenShift4
   displayName:  Build and Package (OCP4)
   pool:
