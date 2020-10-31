@@ -35,12 +35,12 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.DrugMaintainer;
-    using HealthGateway.JobScheduler.Authorization;
     using Healthgateway.JobScheduler.Jobs;
     using Healthgateway.JobScheduler.Utils;
 
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -84,6 +84,16 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.ConfigureHttpServices(services);
             this.ConfigureAuthentication(services);
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Hangfire", policy =>
+                    {
+                        policy.AddRequirements().RequireAuthenticatedUser();
+                        policy.AddAuthenticationSchemes(OpenIdConnectDefaults.AuthenticationScheme);
+                        policy.RequireRole("AdminUser");
+                    });
+            });
+
             services.AddDbContextPool<GatewayDbContext>(options =>
                 options.UseNpgsql(
                     this.configuration.GetConnectionString("GatewayConnection"),
@@ -117,6 +127,9 @@ namespace HealthGateway.JobScheduler
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
+
+            // Add processing server as IHostedService
+            services.AddHangfireServer();
         }
 
         /// <summary>
@@ -128,22 +141,22 @@ namespace HealthGateway.JobScheduler
         {
             this.logger.LogInformation($"Hosting Environment: {env!.EnvironmentName}");
             this.startupConfig.UseForwardHeaders(app!);
-            this.startupConfig.UseAuth(app!);
+
             this.startupConfig.UseHttp(app!);
+            app.UseCookiePolicy();
+            this.startupConfig.UseAuth(app!);
+
             app.UseEndpoints(endpoints =>
             {
-                // Mapping of endpoints goes here:
                 endpoints.MapControllers();
+                endpoints.MapHangfireDashboard(string.Empty, new DashboardOptions
+                {
+                    DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
+                    AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
+                })
+                .RequireAuthorization("Hangfire");
                 endpoints.MapRazorPages();
                 endpoints.MapControllerRoute(@"default", "{controller=Home}/{action=Index}/{id?}");
-            });
-
-            // Empty string signifies the root URL
-            app.UseHangfireDashboard(string.Empty, new DashboardOptions
-            {
-                DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
-                Authorization = new[] { new AuthorizationDashboardFilter(this.configuration, this.logger) },
-                AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
             });
 
             app.UseHangfireServer();
@@ -166,26 +179,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<CleanCacheJob>(this.configuration, "CleanCache", j => j.Process());
 
             // SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = (content) =>
-                {
-                    var headers = content.Context.Response.Headers;
-                    var contentType = headers["Content-Type"];
-                    if (contentType != "application/x-gzip" && !content.File.Name.EndsWith(".gz", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        return;
-                    }
-
-                    var mimeTypeProvider = new FileExtensionContentTypeProvider();
-                    var fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
-                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
-                    {
-                        headers.Add("Content-Encoding", "gzip");
-                        headers["Content-Type"] = mimeType;
-                    }
-                },
-            });
         }
 
         /// <summary>
@@ -197,8 +190,8 @@ namespace HealthGateway.JobScheduler
             string basePath = this.GetBasePath();
             services.AddAuthentication(auth =>
                 {
-                    auth.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    auth.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
                     auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 })
                 .AddCookie(options =>
@@ -238,12 +231,12 @@ namespace HealthGateway.JobScheduler
 
                             return Task.CompletedTask;
                         },
-                        OnRedirectToIdentityProvider = ctx =>
+                        OnRedirectToIdentityProvider = redirectContext =>
                         {
                             if (!string.IsNullOrEmpty(this.configuration["Keycloak:IDPHint"]))
                             {
                                 this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                                ctx.ProtocolMessage.SetParameter(this.configuration["Keycloak:IDPHintKey"], this.configuration["Keycloak:IDPHint"]);
+                                redirectContext.ProtocolMessage.SetParameter(this.configuration["Keycloak:IDPHintKey"], this.configuration["Keycloak:IDPHint"]);
                             }
 
                             return Task.FromResult(0);
@@ -264,7 +257,7 @@ namespace HealthGateway.JobScheduler
         /// <summary>
         /// Fetches the base path from the configuration.
         /// </summary>
-        /// <returns>Theh BasePath config for the ForwardProxies.</returns>
+        /// <returns>The BasePath config for the ForwardProxies.</returns>
         private string GetBasePath()
         {
             string basePath = string.Empty;
