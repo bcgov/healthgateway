@@ -17,11 +17,13 @@
 namespace HealthGateway.JobScheduler
 {
     using System;
+    using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Threading.Tasks;
 
     using Hangfire;
+    using Hangfire.Dashboard;
     using Hangfire.PostgreSql;
 
     using HealthGateway.Common.AccessManagement.Administration;
@@ -84,13 +86,20 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.ConfigureHttpServices(services);
             this.ConfigureAuthentication(services);
 
+            string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
+            string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
+
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Hangfire", policy =>
+                options.AddPolicy("AdminUserPolicy", policy =>
                     {
-                        policy.AddRequirements().RequireAuthenticatedUser();
                         policy.AddAuthenticationSchemes(OpenIdConnectDefaults.AuthenticationScheme);
-                        policy.RequireRole("AdminUser");
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireClaim(userRoleClaimType, requiredUserRole);
+                        policy.RequireAssertion(ctx =>
+                        {
+                            return ctx.User.HasClaim(userRoleClaimType, requiredUserRole);
+                        });
                     });
             });
 
@@ -153,8 +162,9 @@ namespace HealthGateway.JobScheduler
                 {
                     DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
                     AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
+                    Authorization = new List<IDashboardAuthorizationFilter> { },
                 })
-                .RequireAuthorization("Hangfire");
+                .RequireAuthorization("AdminUserPolicy");
                 endpoints.MapRazorPages();
                 endpoints.MapControllerRoute(@"default", "{controller=Home}/{action=Index}/{id?}");
             });
@@ -205,6 +215,7 @@ namespace HealthGateway.JobScheduler
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
+                        ValidateAudience = true,
                     };
                     this.configuration.GetSection(@"OpenIdConnect").Bind(options);
                     if (string.IsNullOrEmpty(options.Authority))
