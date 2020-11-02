@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Text.Json;
@@ -24,6 +25,9 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -34,6 +38,7 @@ namespace HealthGateway.Common.Services
         private readonly ILogger<NotificationSettingsService> logger;
         private readonly IBackgroundJobClient jobClient;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
+        private readonly IUserDelegateDelegate userDelegateDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsService"/> class.
@@ -41,14 +46,17 @@ namespace HealthGateway.Common.Services
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="jobClient">The JobScheduler queue client.</param>
         /// <param name="notificationSettingsDelegate">Notification Settings delegate to be used.</param>
+        /// <param name="userDelegateDelegate">The injected db user delegate delegate.</param>
         public NotificationSettingsService(
             ILogger<NotificationSettingsService> logger,
             IBackgroundJobClient jobClient,
-            INotificationSettingsDelegate notificationSettingsDelegate)
+            INotificationSettingsDelegate notificationSettingsDelegate,
+            IUserDelegateDelegate userDelegateDelegate)
         {
             this.logger = logger;
             this.jobClient = jobClient;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
+            this.userDelegateDelegate = userDelegateDelegate;
         }
 
         /// <inheritdoc />
@@ -63,6 +71,22 @@ namespace HealthGateway.Common.Services
             };
             string json = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
+
+            // Only send dependents sms number if it has been verified
+            if (!notificationSettings.SMSVerified)
+            {
+                notificationSettings.SMSNumber = null;
+                notificationSettings.SMSVerificationCode = null;
+            }
+
+            DBResult<IEnumerable<UserDelegate>> dbResult = this.userDelegateDelegate.Get(notificationSettings.SubjectHdid, 1, 500);
+            foreach(UserDelegate userDelegate in dbResult.Payload)
+            {
+                this.logger.LogDebug($"Queueing Dependent Notification Settings.");
+                notificationSettings.SubjectHdid = userDelegate.OwnerId;
+                string delegateJson = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
+                this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
+            }
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
         }
 

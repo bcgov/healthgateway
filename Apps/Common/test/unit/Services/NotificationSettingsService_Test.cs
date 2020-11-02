@@ -44,11 +44,13 @@ namespace HealthGateway.CommonTests.Services
             var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
             var mockJobClient = new Mock<IBackgroundJobClient>();
             var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
+            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
 
             INotificationSettingsService service = new NotificationSettingsService(
                                 mockLogger.Object,
                                 mockJobClient.Object,
-                                mockNSDelegate.Object);
+                                mockNSDelegate.Object,
+                                mockUserDelegateDelegate.Object);
 
             NotificationSettingsRequest nsr = new NotificationSettingsRequest()
             {
@@ -100,11 +102,13 @@ namespace HealthGateway.CommonTests.Services
             var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
             var mockJobClient = new Mock<IBackgroundJobClient>();
             var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
+            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
             mockNSDelegate.Setup(s => s.SetNotificationSettings(nsRequest, bearerToken)).Returns(Task.FromResult(expectedResult));
             INotificationSettingsService service = new NotificationSettingsService(
                                 mockLogger.Object,
                                 mockJobClient.Object,
-                                mockNSDelegate.Object);
+                                mockNSDelegate.Object,
+                                mockUserDelegateDelegate.Object);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await 
                         service.SendNotificationSettings(nsRequest, bearerToken)).Result;
             Assert.True(actualResult.IsDeepEqual(expectedResult));
@@ -116,11 +120,13 @@ namespace HealthGateway.CommonTests.Services
             var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
             var mockJobClient = new Mock<IBackgroundJobClient>();
             var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
+            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
 
             INotificationSettingsService service = new NotificationSettingsService(
                                 mockLogger.Object,
                                 mockJobClient.Object,
-                                mockNSDelegate.Object);
+                                mockNSDelegate.Object,
+                                mockUserDelegateDelegate.Object);
 
             NotificationSettingsRequest nsr = new NotificationSettingsRequest()
             {
