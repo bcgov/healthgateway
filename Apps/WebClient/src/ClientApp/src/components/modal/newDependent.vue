@@ -220,27 +220,16 @@ export default class NewDependentComponent extends Vue {
                                     <label for="dateOfBirth"
                                         >Date of Birth</label
                                     >
-                                    <b-form-datepicker
+                                    <b-form-input
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
-                                        placeholder="YYYY/MM/DD"
-                                        :date-format-options="{
-                                            year: 'numeric',
-                                            month: 'numeric',
-                                            day: 'numeric',
-                                        }"
-                                        :min="minBirthdate"
-                                        :max="new Date()"
+                                        data-testid="dateOfBirthInput"
+                                        required
+                                        type="date"
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
                                         "
-                                        data-testid="dateOfBirthInput"
-                                        selected-variant="primary"
-                                        today-variant="primary"
-                                        nav-button-variant="primary"
-                                        hide-header
-                                    >
-                                    </b-form-datepicker>
+                                    />
                                     <b-form-invalid-feedback
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
