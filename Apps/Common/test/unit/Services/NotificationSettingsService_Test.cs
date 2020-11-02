@@ -41,17 +41,6 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldQueue()
         {
-            var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
-            var mockJobClient = new Mock<IBackgroundJobClient>();
-            var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
-            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
-
-            INotificationSettingsService service = new NotificationSettingsService(
-                                mockLogger.Object,
-                                mockJobClient.Object,
-                                mockNSDelegate.Object,
-                                mockUserDelegateDelegate.Object);
-
             NotificationSettingsRequest nsr = new NotificationSettingsRequest()
             {
                 EmailEnabled = true,
@@ -62,6 +51,20 @@ namespace HealthGateway.CommonTests.Services
                 SMSVerificationCode = "123456",
                 SMSVerified = false,
             };
+
+            var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
+            var mockJobClient = new Mock<IBackgroundJobClient>();
+            var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
+            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
+            var dbResult = new Database.Wrapper.DBResult<IEnumerable<UserDelegate>>();
+            dbResult.Payload = new List<UserDelegate>();
+            mockUserDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 1, 500)).Returns(dbResult);
+            INotificationSettingsService service = new NotificationSettingsService(
+                                mockLogger.Object,
+                                mockJobClient.Object,
+                                mockNSDelegate.Object,
+                                mockUserDelegateDelegate.Object);
+
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -117,17 +120,6 @@ namespace HealthGateway.CommonTests.Services
         [Fact]
         public void ShouldCreateSMSCode()
         {
-            var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
-            var mockJobClient = new Mock<IBackgroundJobClient>();
-            var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
-            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
-
-            INotificationSettingsService service = new NotificationSettingsService(
-                                mockLogger.Object,
-                                mockJobClient.Object,
-                                mockNSDelegate.Object,
-                                mockUserDelegateDelegate.Object);
-
             NotificationSettingsRequest nsr = new NotificationSettingsRequest()
             {
                 EmailEnabled = true,
@@ -137,6 +129,21 @@ namespace HealthGateway.CommonTests.Services
                 SubjectHdid = "hdid",
                 SMSVerified = false,
             };
+
+            var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
+            var mockJobClient = new Mock<IBackgroundJobClient>();
+            var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
+            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
+            var dbResult = new Database.Wrapper.DBResult<IEnumerable<UserDelegate>>();
+            dbResult.Payload = new List<UserDelegate>();
+            mockUserDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 1, 500)).Returns(dbResult);
+
+            INotificationSettingsService service = new NotificationSettingsService(
+                                mockLogger.Object,
+                                mockJobClient.Object,
+                                mockNSDelegate.Object,
+                                mockUserDelegateDelegate.Object);
+
             Assert.True(nsr.SMSVerificationCode == null);
             service.QueueNotificationSettings(nsr);
 
