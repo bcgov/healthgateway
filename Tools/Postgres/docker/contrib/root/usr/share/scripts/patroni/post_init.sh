@@ -11,8 +11,8 @@ if [[ (! -z "$APP_USER") &&  (! -z "$APP_PASSWORD") && (! -z "$APP_DATABASE")]];
   echo "Alter public to be owned by ${APP_USER}"
   psql "$1" -w -c "ALTER DATABASE gateway OWNER TO gateway;"
 
-  echo "Add UUID Extension and alter public to be owned by ${APP_USER}"
-  psql "$1" -d ${APP_DATABASE} -w -c "CREATE EXTENSION IF NOT EXISTS 'uuid-ossp';ALTER SCHEMA public OWNER to gateway;"
+  #echo "Add UUID Extension and alter public to be owned by ${APP_USER}"
+  #psql "$1" -d ${APP_DATABASE} -w -c "CREATE EXTENSION IF NOT EXISTS 'uuid-ossp';ALTER SCHEMA public OWNER to gateway;"
 
 else
   echo "Skipping user creation"
