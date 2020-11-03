@@ -1,26 +1,32 @@
 const { AuthMethod } = require("../../support/constants")
 
+function login(isMobile) {
+    cy.readConfig().as("config").then(config => {
+            config.webClient.modules.CovidLabResults = false
+            config.webClient.modules.Comment = false
+            config.webClient.modules.Encounter = false
+            config.webClient.modules.Immunization = false
+            config.webClient.modules.Laboratory = false
+            config.webClient.modules.Medication = false
+            config.webClient.modules.MedicationHistory = false
+            config.webClient.modules.Note = true
+            cy.server();
+            cy.route('GET', '/v1/api/configuration/', config);
+            if (isMobile)
+                cy.viewport('iphone-6')  // Set viewport to 375px x 667px
+            cy.login(Cypress.env('keycloak.username'),
+                Cypress.env('keycloak.password'),
+                AuthMethod.KeyCloak);
+            cy.checkTimelineHasLoaded();
+        })
+}
+
 describe('Menu System', () => {
     beforeEach(() => {
-        cy.readConfig().as("config").then(config => {
-                config.webClient.modules.CovidLabResults = false
-                config.webClient.modules.Comment = false
-                config.webClient.modules.Encounter = false
-                config.webClient.modules.Immunization = false
-                config.webClient.modules.Laboratory = false
-                config.webClient.modules.Medication = false
-                config.webClient.modules.MedicationHistory = false
-                config.webClient.modules.Note = true
-                cy.server();
-                cy.route('GET', '/v1/api/configuration/', config);
-                cy.login(Cypress.env('keycloak.username'),
-                    Cypress.env('keycloak.password'),
-                    AuthMethod.KeyCloak);
-                cy.checkTimelineHasLoaded();
-            })
     })
 
     it('Validate Toggle Sidebar', () => {
+        login(false);
         cy.get('[data-testid=sidebarUserName]')
             .should('be.visible')
             .should('have.text', 'Dr Gateway');
@@ -34,6 +40,7 @@ describe('Menu System', () => {
     })
 
     it('Side bar contains nav links', () => {
+        login(false);
         cy.get('[data-testid=menuBtnProfileLink]').should('have.attr', 'href', '/profile')
         cy.get('[data-testid=menuBtnTimelineLink]').should('have.attr', 'href', '/timeline')
         cy.get('[data-testid=addNoteBtn]').should('be.visible')
@@ -45,8 +52,7 @@ describe('Menu System', () => {
     })
 
     it('Side bar expands on login for desktop', () => {
-        cy.get('[data-testid=timelineLabel]').should('be.visible');
-        cy.viewport('iphone-6')  // Set viewport to 375px x 667px
+        login(true);
         cy.get('[data-testid=timelineLabel]').should('not.be.visible');
     })
 })
