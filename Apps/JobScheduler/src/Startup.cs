@@ -42,14 +42,14 @@ namespace HealthGateway.JobScheduler
 
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.CookiePolicy;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Tokens;
 
@@ -86,9 +86,19 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.ConfigureHttpServices(services);
             this.ConfigureAuthentication(services);
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("allowAny", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
             string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
             string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
-
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminUserPolicy", policy =>
@@ -149,11 +159,17 @@ namespace HealthGateway.JobScheduler
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             this.logger.LogInformation($"Hosting Environment: {env!.EnvironmentName}");
-            this.startupConfig.UseForwardHeaders(app!);
 
-            this.startupConfig.UseHttp(app!);
-            app.UseCookiePolicy();
-            this.startupConfig.UseAuth(app!);
+            this.startupConfig.UseForwardHeaders(app);
+            this.startupConfig.UseHttp(app);
+            this.startupConfig.UseContentSecurityPolicy(app);
+            app.UseStaticFiles();
+            this.startupConfig.UseAuth(app);
+
+            if (!env.IsDevelopment())
+            {
+                app.UseResponseCompression();
+            }
 
             app.UseEndpoints(endpoints =>
             {
@@ -162,7 +178,7 @@ namespace HealthGateway.JobScheduler
                 {
                     DashboardTitle = this.configuration.GetValue<string>("DashboardTitle", "Hangfire Dashboard"),
                     AppPath = $"{this.configuration.GetValue<string>("JobScheduler:AdminHome")}",
-                    Authorization = new List<IDashboardAuthorizationFilter> { },
+                    Authorization = new List<IDashboardAuthorizationFilter> { }, // Very important to set this, or Authorization won't work.
                 })
                 .RequireAuthorization("AdminUserPolicy");
                 endpoints.MapRazorPages();
@@ -198,6 +214,7 @@ namespace HealthGateway.JobScheduler
         private void ConfigureAuthentication(IServiceCollection services)
         {
             string basePath = this.GetBasePath();
+
             services.AddAuthentication(auth =>
                 {
                     auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -206,9 +223,12 @@ namespace HealthGateway.JobScheduler
                 })
                 .AddCookie(options =>
                 {
-                    options.Cookie.Name = AuthorizationConstants.CookieName;
+                    options.Cookie.Name = AuthorizationConstants.CookieName + ".JobScheduler";
                     options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
                     options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+                    options.SlidingExpiration = true;
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SameSite = this.DetermineSameSiteMode();
                 })
                 .AddOpenIdConnect(options =>
                 {
@@ -216,6 +236,7 @@ namespace HealthGateway.JobScheduler
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
+                        ValidateIssuerSigningKey = true,
                     };
                     this.configuration.GetSection(@"OpenIdConnect").Bind(options);
                     if (string.IsNullOrEmpty(options.Authority))
@@ -280,6 +301,18 @@ namespace HealthGateway.JobScheduler
 
             this.logger.LogDebug($"JobScheduler basePath = {basePath}");
             return basePath;
+        }
+
+        /// <summary>
+        /// This method determines the same site mode to use.
+        /// If Development Mode, returns Unspecified, otherwise returns Lax.
+        /// </summary>
+        /// <returns>The SameSiteMode to configure the cookie policy to.</returns>
+        private SameSiteMode DetermineSameSiteMode()
+        {
+            return this.environment.IsDevelopment()
+                                    ? SameSiteMode.Unspecified
+                                    : SameSiteMode.Lax;
         }
     }
 }

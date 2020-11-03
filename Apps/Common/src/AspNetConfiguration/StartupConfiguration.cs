@@ -495,9 +495,10 @@ namespace HealthGateway.Common.AspNetConfiguration
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                this.Logger.LogInformation("Using HSTS, which sets Strict-Transport-Security Header");
                 app.UseHsts();
             }
-            app.UseHttpsRedirection();
+
             app.UseStaticFiles();
             app.UseRouting();
 
