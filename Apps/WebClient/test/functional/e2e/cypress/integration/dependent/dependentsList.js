@@ -30,7 +30,7 @@ describe('view dependent', () => {
     })
 
     it('Validate covid tab.', () => {
-        cy.get('[data-testid=covid19Tab]').first().click();
+        cy.get('[data-testid=covid19TabTitle]').parent().click();
         cy.get('[data-testid=covid19NoRecords]').first().should('have.text', 'No records found.');
     })
 })
