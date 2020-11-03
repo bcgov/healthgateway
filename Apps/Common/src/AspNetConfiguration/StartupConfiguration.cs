@@ -328,7 +328,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 })
                 .AddCookie(options =>
                 {
-                    options.Cookie.Name = AuthorizationConstants.CookieName + ".JobScheduler";
+                    options.Cookie.Name = this.environment.ApplicationName;
                     options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
                     options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
                     options.SlidingExpiration = true;
@@ -610,6 +610,11 @@ namespace HealthGateway.Common.AspNetConfiguration
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 this.Logger.LogInformation("Using HSTS, which sets Strict-Transport-Security Header");
                 app.UseHsts();
+            }
+
+            if (!this.environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
             }
 
             app.UseStaticFiles();

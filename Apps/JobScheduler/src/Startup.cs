@@ -75,6 +75,7 @@ namespace HealthGateway.JobScheduler
         {
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
+            services.AddRazorPages();
             this.startupConfig.ConfigureOpenIdConnectServices(services);
 
             services.AddCors(options =>
@@ -90,6 +91,7 @@ namespace HealthGateway.JobScheduler
 
             string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
             string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminUserPolicy", policy =>
@@ -164,6 +166,8 @@ namespace HealthGateway.JobScheduler
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapRazorPages();
                 endpoints.MapControllers();
                 endpoints.MapHangfireDashboard(string.Empty, new DashboardOptions
                 {
@@ -172,8 +176,6 @@ namespace HealthGateway.JobScheduler
                     Authorization = new List<IDashboardAuthorizationFilter> { }, // Very important to set this, or Authorization won't work.
                 })
                 .RequireAuthorization("AdminUserPolicy");
-                endpoints.MapRazorPages();
-                endpoints.MapControllerRoute(@"default", "{controller=Home}/{action=Index}/{id?}");
             });
 
             app.UseHangfireServer();
