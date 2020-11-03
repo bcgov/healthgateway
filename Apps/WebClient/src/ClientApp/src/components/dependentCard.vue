@@ -240,7 +240,6 @@ export default class DependentCardComponent extends Vue {
                 >
                     <b-row v-if="isLoading" class="m-2">
                         <b-col><b-spinner></b-spinner></b-col>
-                        >>>>>>> dev
                     </b-row>
                     <b-row v-else-if="labResults.length == 0" class="m-2">
                         <b-col data-testid="covid19NoRecords"
