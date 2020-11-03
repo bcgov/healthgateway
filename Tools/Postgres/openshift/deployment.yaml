@@ -18,31 +18,31 @@ labels:
   app.kubernetes.io/name: patroni  
   app.kubernetes.io/managed-by: template
 objects:
-# It doesn't seem to be used/needed - remote it?
-#- apiVersion: v1
-#  kind: Service
-#  metadata:
-#    creationTimestamp: null
-#    labels:
-#      cluster-name: ${NAME}${SUFFIX}
-#    name: ${NAME}${SUFFIX}
-#  spec:
-#    ports:
-#    - name: 'postgresql'
-#      port: 5432
-#      protocol: TCP
-#      targetPort: 5432
-#    sessionAffinity: None
-#    type: ClusterIP
-#  status:
-#    loadBalancer: {}
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
     labels:
       cluster-name: ${NAME}${SUFFIX}
-    name: ${NAME}-master${SUFFIX}
+    name: ${NAME}${SUFFIX}
+  spec:
+    ports:
+    - name: 'postgresql'
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      cluster-name: ${NAME}${SUFFIX}
+    name: ${NAME}${SUFFIX}-master
   spec:
     ports:
     - port: 5432
@@ -57,35 +57,43 @@ objects:
     type: ClusterIP
   status:
     loadBalancer: {}
-#- apiVersion: v1
-#  kind: Service
-#  metadata:
-#    creationTimestamp: null
-#    labels:
-#      cluster-name: ${NAME}${SUFFIX}
-#    name: ${NAME}-replica${SUFFIX}
-#  spec:
-#    ports:
-#    - port: 5432
-##      name: 'postgresql'
-#      protocol: TCP
-#      targetPort: 5432
-#    selector:
-#      cluster-name: ${NAME}${SUFFIX}
-#      app.kubernetes.io/name: patroni
-#      role: replica
-#    sessionAffinity: None
-#    type: ClusterIP
-#  status:
-#    loadBalancer: {}
-# - apiVersion: v1
-#   kind: ConfigMap
-#   metadata:
-#     name: ${NAME}${SUFFIX}-config
-# - apiVersion: v1
-#   kind: ConfigMap
-#   metadata:
-#     name: ${NAME}${SUFFIX}-leader
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      cluster-name: ${NAME}${SUFFIX}
+    name: ${NAME}${SUFFIX}-replica
+  spec:
+    ports:
+    - port: 5432
+#      name: 'postgresql'
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      cluster-name: ${NAME}${SUFFIX}
+      app.kubernetes.io/name: patroni
+      role: replica
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: ${NAME}${SUFFIX}-config
+    labels:
+      cluster-name: ${NAME}${SUFFIX}
+
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: ${NAME}${SUFFIX}-leader
+    labels:
+      cluster-name: ${NAME}${SUFFIX}
+    
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -248,15 +256,15 @@ objects:
         resources:
           requests:
             storage: ${PVC_SIZE}
-# It doesn't seem to be used/needed - remote it?
-#- apiVersion: v1
-#  kind: Endpoints
-#  metadata:
-#    labels:
-#      app: ${NAME}${SUFFIX}
-#      cluster-name: ${NAME}${SUFFIX}
-#    name: ${NAME}${SUFFIX}
-#  subsets: []
+
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    labels:
+      app: ${NAME}${SUFFIX}
+      cluster-name: ${NAME}${SUFFIX}
+    name: ${NAME}${SUFFIX}
+  subsets: []
 parameters:
 - description: The name of the application for labelling all artifacts.
   displayName: Application Name

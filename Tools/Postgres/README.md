@@ -27,6 +27,8 @@ oc process -f ./openshift/rb-pullers.yaml | oc apply -f -
 oc process -f ./openshift/deployment.yaml | oc apply -f -
 ```
 
+NOTE:  The provisioning of disk is fairly slow and you may not notice anything for a few minutes.
+
 #### Clean up
 
 If you would like to cleanup, you can execute the following which will remove all data associated to Patroni
