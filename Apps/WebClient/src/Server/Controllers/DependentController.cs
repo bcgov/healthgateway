@@ -32,7 +32,7 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/[controller]")]
+    [Route("v{version:apiVersion}/api/UserProfile/")]
     [ApiController]
     public class DependentController
     {
@@ -66,7 +66,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Authorize(Policy = UserPolicy.Read)]
-        [Route("{hdid}")]
+        [Route("{hdid}/[controller]")]
         public IActionResult GetAll(string hdid)
         {
             RequestResult<IEnumerable<DependentModel>> result = this.dependentService.GetDependents(hdid);
@@ -83,6 +83,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
+        [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult AddDependent([FromBody] AddDependentRequest addDependentRequest)
         {
@@ -96,18 +97,18 @@ namespace HealthGateway.WebClient.Controllers
         /// Deletes a dependent from the database.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="hdid">The Delegate hdid.</param>
         /// <param name="dependentHdid">The Dependent hdid.</param>
         /// <response code="200">The Dependent record was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Authorize(Policy = UserPolicy.UserOnly)]
-        [Route("{dependentHdid}")]
-        public IActionResult Delete(string dependentHdid)
+        [Route("{hdid}/[controller]/{dependentHdid}")]
+        public IActionResult Delete(string hdid, string dependentHdid)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string delegateHdId = user.FindFirst("hdid").Value;
-            RequestResult<DependentModel> result = this.dependentService.Remove(dependentHdid, delegateHdId);
+            RequestResult<DependentModel> result = this.dependentService.Remove(dependentHdid, hdid);
             return new JsonResult(result);
         }
     }

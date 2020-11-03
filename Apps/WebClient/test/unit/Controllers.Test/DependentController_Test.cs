@@ -58,7 +58,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object
             );
             var actualResult = dependentController.GetAll(hdid);
-            
+
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
@@ -66,6 +66,7 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldDeleteDependent()
         {
+            string delegateId = hdid;
             string dependentId = "123";
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
             Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
@@ -81,8 +82,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object
             );
-            var actualResult = dependentController.Delete(dependentId);
-            
+            var actualResult = dependentController.Delete(delegateId, dependentId);
+
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
