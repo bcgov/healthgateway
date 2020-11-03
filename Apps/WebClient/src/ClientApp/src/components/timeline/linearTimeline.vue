@@ -65,11 +65,7 @@ export default class LinearTimelineComponent extends Vue {
                 this.setPageFromDate(eventDate);
                 // Wait for next render cycle until the pages have been calculated and displayed
                 this.$nextTick().then(() => {
-                    const date = eventDate.fromEpoch();
-                    let container: HTMLElement[] = this.$refs[
-                        date
-                    ] as HTMLElement[];
-                    container[0].focus();
+                    this.focusOnDate(eventDate);
                 });
             }
         );
@@ -78,6 +74,13 @@ export default class LinearTimelineComponent extends Vue {
             EventMessageName.CalendarMonthUpdated,
             (firstEntryDate: DateWrapper) => {
                 this.setPageFromDate(firstEntryDate);
+            }
+        );
+
+        this.eventBus.$on(
+            EventMessageName.TimelineEntryAdded,
+            (entry: TimelineEntry) => {
+                this.onEntryAdded(entry);
             }
         );
     }
@@ -138,6 +141,21 @@ export default class LinearTimelineComponent extends Vue {
 
     private get timelineIsEmpty(): boolean {
         return this.filteredTimelineEntries.length == 0;
+    }
+
+    private onEntryAdded(entry: TimelineEntry) {
+        this.$nextTick().then(() => {
+            this.setPageFromDate(entry.date);
+            this.$nextTick().then(() => {
+                this.focusOnDate(entry.date);
+            });
+        });
+    }
+
+    private focusOnDate(date: DateWrapper) {
+        const dateEpoch = date.fromEpoch();
+        let container: HTMLElement[] = this.$refs[dateEpoch] as HTMLElement[];
+        container[0].focus();
     }
 }
 </script>
