@@ -20,6 +20,11 @@ An Azure DevOps Administrator will have to:
 
 ## Deployment
 
+You need to ensure that the Network Security Policy has been applied to the namespace.  Our reference NSP is located at:
+/Tools/BaseBuild
+
+Please reference the [README.md](../BaseBuild/README.md) for detailed deployment instructions.
+
 To review the parameters execute:
 
 ```console
@@ -38,9 +43,6 @@ Resulting in
 laws@Crius:.../Health/healthgateway/Tools/AzureAgent$ oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> -p INSTALL_NAMESPACE=0bd5ad-tools | oc apply -f -
 serviceaccount/azure-agent created
 rolebinding.authorization.openshift.io/azure-agent created
-externalnetwork.security.devops.gov.bc.ca/all-things-external created
-networksecuritypolicy.security.devops.gov.bc.ca/builder-to-internet created
-networksecuritypolicy.security.devops.gov.bc.ca/azure-to-internet created
 configmap/azure-agent-config created
 secret/azure-agent-token created
 secret/azure-agent-hooksecret created
@@ -77,7 +79,6 @@ Assuming that the above returns nothing unexpected, you can issue the delete:
 ```console
 oc delete serviceaccount,rolebinding,en,nsp,cm,secret,is,bc,dc --selector app=azure-agent -o name
 ```
-
 
 ## Updating Agent Image
 
