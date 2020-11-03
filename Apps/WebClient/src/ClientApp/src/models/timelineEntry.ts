@@ -1,12 +1,13 @@
 import { DateWrapper } from "@/models/dateWrapper";
+import TimelineFilter from "@/models/timelineFilter";
 
 export enum EntryType {
-    Medication,
-    Immunization,
-    Laboratory,
-    Encounter,
-    Note,
-    NONE,
+    Medication = "Medication",
+    Immunization = "Immunization",
+    Laboratory = "Laboratory",
+    Encounter = "Encounter",
+    Note = "Note",
+    NONE = "NONE",
 }
 
 export class DateGroup {
@@ -76,8 +77,31 @@ export default abstract class TimelineEntry {
         this.date = date;
     }
 
-    public abstract filterApplies(
-        filterText: string,
-        filterTypes: string[]
-    ): boolean;
+    public abstract keywordApplies(filter: TimelineFilter): boolean;
+
+    public filterApplies(filter: TimelineFilter): boolean {
+        return (
+            this.entryTypeApplies(filter) &&
+            this.dateRangeApplies(filter) &&
+            this.keywordApplies(filter)
+        );
+    }
+
+    private entryTypeApplies(filter: TimelineFilter): boolean {
+        return (
+            filter.entryTypes.every((et) => !et.isSelected) ||
+            filter.entryTypes.some(
+                (et) => et.type == this.type && et.isSelected
+            )
+        );
+    }
+
+    public dateRangeApplies(filter: TimelineFilter): boolean {
+        return (
+            (!filter.startDate ||
+                this.date.isAfter(new DateWrapper(filter.startDate))) &&
+            (!filter.endDate ||
+                this.date.isBefore(new DateWrapper(filter.endDate)))
+        );
+    }
 }

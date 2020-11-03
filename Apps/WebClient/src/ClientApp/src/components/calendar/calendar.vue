@@ -7,9 +7,9 @@ import { ILogger } from "@/services/interfaces";
 import CalendarHeader from "./header.vue";
 import CalendarBody from "./body.vue";
 import { DateGroup } from "@/models/timelineEntry";
-
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
+import TimelineFilter from "@/models/timelineFilter";
 
 @Component({
     components: {
@@ -19,8 +19,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 })
 export default class CalendarComponent extends Vue {
     @Prop() dateGroups!: DateGroup[];
-    @Prop() private filterText!: string;
-    @Prop() private filterTypes!: string[];
+    @Prop() private filter!: TimelineFilter;
     @Prop() private isVisible!: boolean;
 
     @Prop({ default: 0, required: false }) firstDay!: number;

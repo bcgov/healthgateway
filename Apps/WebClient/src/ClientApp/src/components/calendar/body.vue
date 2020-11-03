@@ -99,32 +99,35 @@ export default class CalendarBodyComponent extends Vue {
 
         let thisDayEvents: TimelineEntry[] = dateGroup.entries;
 
-        let groups = thisDayEvents.reduce<Record<number, TimelineEntry[]>>(
-            (groups, entry) => {
+        let groups = thisDayEvents.reduce<Record<string, TimelineEntry[]>>(
+            (groups, entry: TimelineEntry) => {
+                let entryType: string = EntryType[entry.type];
                 // Create a new group if it the type doesnt exist in the map
-                if (!groups[entry.type]) {
-                    groups[entry.type] = [];
+                if (!groups[entryType]) {
+                    groups[entryType] = [];
                 }
-                groups[entry.type].push(entry);
+                groups[entryType].push(entry);
                 return groups;
             },
             {}
         );
 
         let index = 0;
-        let groupArrays = Object.keys(groups).map<CalendarEntry>((typeKey) => {
-            index++;
-            return {
-                id: date.fromEpoch() + "-type-" + typeKey,
-                cellIndex: index,
-                type: Number(typeKey),
-                entries: groups[
-                    Number(typeKey)
-                ].sort((a: TimelineEntry, b: TimelineEntry) =>
-                    a.type > b.type ? 1 : a.type < b.type ? -1 : 0
-                ),
-            };
-        });
+        let groupArrays = Object.keys(groups).map<CalendarEntry>(
+            (typeKey: string) => {
+                index++;
+                return {
+                    id: date.fromEpoch() + "-type-" + typeKey,
+                    cellIndex: index,
+                    type: EntryType[typeKey as keyof typeof EntryType],
+                    entries: groups[
+                        typeKey
+                    ].sort((a: TimelineEntry, b: TimelineEntry) =>
+                        a.type > b.type ? 1 : a.type < b.type ? -1 : 0
+                    ),
+                };
+            }
+        );
 
         return groupArrays;
     }
@@ -170,10 +173,6 @@ export default class CalendarBodyComponent extends Vue {
             EventMessageName.CalendarDateEventClick,
             event.entries[0].date
         );
-    }
-
-    private getTypeName(type: EntryType): string {
-        return EntryType[type];
     }
 
     private getEntryText(entry: TimelineEntry, type: EntryType): string {
@@ -244,7 +243,7 @@ export default class CalendarBodyComponent extends Vue {
                                     triggers="hover"
                                 >
                                     <strong>
-                                        {{ getTypeName(event.type) }}
+                                        {{ event.type }}
                                     </strong>
                                     <ul class="text-left pl-3">
                                         <li

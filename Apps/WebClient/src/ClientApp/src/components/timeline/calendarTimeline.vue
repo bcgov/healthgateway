@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import CalendarComponent from "@/components/calendar/calendar.vue";
-
+import TimelineFilter from "@/models/timelineFilter";
 @Component({
     components: {
         CalendarComponent,
@@ -13,17 +13,15 @@ export default class CalendarTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
     @Prop() private isVisible!: boolean;
     @Prop() private totalEntries!: number;
-    @Prop() private filterText!: string;
-    @Prop() private filterTypes!: string[];
+    @Prop() private filter!: TimelineFilter;
 
     private filteredTimelineEntries: TimelineEntry[] = [];
     private dateGroups: DateGroup[] = [];
 
-    @Watch("filterText")
-    @Watch("filterTypes")
+    @Watch("filter", { deep: true })
     private applyTimelineFilter() {
         this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(this.filterText, this.filterTypes)
+            entry.filterApplies(this.filter)
         );
 
         this.dateGroups = DateGroup.createGroups(this.filteredTimelineEntries);
@@ -45,8 +43,7 @@ export default class CalendarTimelineComponent extends Vue {
     <div class="timeline-calendar">
         <CalendarComponent
             :date-groups="dateGroups"
-            :filter-text="filterText"
-            :filter-types="filterTypes"
+            :filter="filter"
             :is-visible="isVisible && !timelineIsEmpty"
         >
             <div slot="month-list-toggle">

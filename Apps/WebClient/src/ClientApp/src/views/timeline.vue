@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
+import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 import { NavigationGuardNext, Route } from "vue-router";
 import EventBus, { EventMessageName } from "@/eventbus";
@@ -38,6 +38,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import FilterComponent from "@/components/timeline/filters.vue";
 import { DateWrapper } from "@/models/dateWrapper";
+import TimelineFilter from "@/models/timelineFilter";
 
 const namespace = "user";
 
@@ -78,7 +79,7 @@ export default class TimelineView extends Vue {
     addError!: (error: BannerError) => void;
 
     private filterText = "";
-    private filterTypes: string[] = [];
+    private filter: TimelineFilter = new TimelineFilter();
     private timelineEntries: TimelineEntry[] = [];
     private isMedicationLoading = false;
     private isImmunizationLoading = false;
@@ -95,7 +96,6 @@ export default class TimelineView extends Vue {
     private isAddingNote = false;
     private isEditingEntry = false;
     private isPacificTime = false;
-    private entriesPerPage = 25;
     private unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
 
@@ -536,12 +536,13 @@ export default class TimelineView extends Vue {
         window.print();
     }
 
-    private filtersChanged(newFilters: string[]) {
-        this.filterTypes = newFilters;
+    private filtersChanged(newFilter: TimelineFilter) {
+        this.filter = newFilter;
     }
 
-    private sliderChanged(newValue: number) {
-        this.entriesPerPage = newValue;
+    @Watch("filterText")
+    private filterTextChanged() {
+        this.filter.keyword = this.filterText;
     }
 }
 </script>
@@ -635,7 +636,6 @@ export default class TimelineView extends Vue {
                                 :note-count="noteCount"
                                 :is-list-view="isListView"
                                 @filters-changed="filtersChanged"
-                                @slider-changed="sliderChanged"
                             />
                         </b-col>
                     </b-row>
@@ -650,9 +650,7 @@ export default class TimelineView extends Vue {
                     :timeline-entries="timelineEntries"
                     :is-visible="isListView"
                     :total-entries="getTotalCount()"
-                    :entries-per-page="entriesPerPage"
-                    :filter-text="filterText"
-                    :filter-types="filterTypes"
+                    :filter="filter"
                 >
                     <b-row
                         slot="month-list-toggle"
@@ -684,8 +682,7 @@ export default class TimelineView extends Vue {
                     :timeline-entries="timelineEntries"
                     :is-visible="!isListView"
                     :total-entries="getTotalCount()"
-                    :filter-text="filterText"
-                    :filter-types="filterTypes"
+                    :filter="filter"
                 >
                     <b-row
                         slot="month-list-toggle"
