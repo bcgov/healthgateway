@@ -84,7 +84,7 @@ namespace HealthGateway.JobScheduler
         {
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
-            this.ConfigureAuthentication(services);
+            this.startupConfig.ConfigureOpenIdConnectAuthentication(services);
 
             services.AddCors(options =>
             {
@@ -159,7 +159,6 @@ namespace HealthGateway.JobScheduler
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             this.logger.LogInformation($"Hosting Environment: {env!.EnvironmentName}");
-
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseHttp(app);
             this.startupConfig.UseContentSecurityPolicy(app);
@@ -205,114 +204,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<CleanCacheJob>(this.configuration, "CleanCache", j => j.Process());
 
             // SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
-        }
-
-        /// <summary>
-        /// This sets up the OIDC authentication for Hangfire.
-        /// </summary>
-        /// <param name="services">The passed in IServiceCollection.</param>
-        private void ConfigureAuthentication(IServiceCollection services)
-        {
-            string basePath = this.GetBasePath();
-
-            services.AddAuthentication(auth =>
-                {
-                    auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    auth.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                    auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                })
-                .AddCookie(options =>
-                {
-                    options.Cookie.Name = AuthorizationConstants.CookieName + ".JobScheduler";
-                    options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
-                    options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
-                    options.SlidingExpiration = true;
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.SameSite = this.DetermineSameSiteMode();
-                })
-                .AddOpenIdConnect(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateIssuerSigningKey = true,
-                    };
-                    this.configuration.GetSection(@"OpenIdConnect").Bind(options);
-                    if (string.IsNullOrEmpty(options.Authority))
-                    {
-                        this.logger.LogCritical(@"OpenIdConnect Authority is missing, bad things are going to occur");
-                    }
-
-                    options.Events = new OpenIdConnectEvents()
-                    {
-                        OnTokenValidated = ctx =>
-                        {
-                            JwtSecurityToken accessToken = ctx.SecurityToken;
-                            if (accessToken != null)
-                            {
-                                if (ctx.Principal.Identity is ClaimsIdentity claimsIdentity)
-                                {
-                                    claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
-                                }
-                                else
-                                {
-                                    throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
-                                }
-                            }
-
-                            return Task.CompletedTask;
-                        },
-                        OnRedirectToIdentityProvider = redirectContext =>
-                        {
-                            if (!string.IsNullOrEmpty(this.configuration["Keycloak:IDPHint"]))
-                            {
-                                this.logger.LogDebug("Adding IDP Hint on Redirect to provider");
-                                redirectContext.ProtocolMessage.SetParameter(this.configuration["Keycloak:IDPHintKey"], this.configuration["Keycloak:IDPHint"]);
-                            }
-
-                            return Task.FromResult(0);
-                        },
-                        OnAuthenticationFailed = c =>
-                        {
-                            c.HandleResponse();
-                            c.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            c.Response.ContentType = "text/plain";
-                            this.logger.LogError(c.Exception.ToString());
-
-                            return c.Response.WriteAsync(c.Exception.ToString());
-                        },
-                    };
-                });
-        }
-
-        /// <summary>
-        /// Fetches the base path from the configuration.
-        /// </summary>
-        /// <returns>The BasePath config for the ForwardProxies.</returns>
-        private string GetBasePath()
-        {
-            string basePath = string.Empty;
-            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
-            if (section.GetValue<bool>("Enabled", false))
-            {
-                basePath = section.GetValue<string>("BasePath");
-            }
-
-            this.logger.LogDebug($"JobScheduler basePath = {basePath}");
-            return basePath;
-        }
-
-        /// <summary>
-        /// This method determines the same site mode to use.
-        /// If Development Mode, returns Unspecified, otherwise returns Lax.
-        /// </summary>
-        /// <returns>The SameSiteMode to configure the cookie policy to.</returns>
-        private SameSiteMode DetermineSameSiteMode()
-        {
-            return this.environment.IsDevelopment()
-                                    ? SameSiteMode.Unspecified
-                                    : SameSiteMode.Lax;
         }
     }
 }

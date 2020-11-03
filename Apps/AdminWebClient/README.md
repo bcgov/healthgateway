@@ -39,7 +39,7 @@ dotnet run
 Open another terminal Window to run the VUE Cli
 
 ```bash
-cd $GATEWAYHOME/Apps/AdminWebClient/src/
+cd $GATEWAYHOME/Apps/AdminWebClient/src/WebClient
 npm run serve
 ```
 
