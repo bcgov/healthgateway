@@ -161,7 +161,7 @@ export default class DependentCardComponent extends Vue {
 <template>
     <div>
         <b-card no-body>
-            <b-tabs card>
+            <b-tabs card data-testid="covid19Tab">
                 <b-tab active data-testid="dependentTab">
                     <template #title>
                         <strong data-testid="dependentName">{{
@@ -237,7 +237,6 @@ export default class DependentCardComponent extends Vue {
                     </div>
                 </b-tab>
                 <b-tab
-                    data-testid="covid19Tab"
                     :disabled="isExpired"
                     title="COVID-19"
                     class="tableTab mt-2"
