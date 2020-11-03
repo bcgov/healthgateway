@@ -3,19 +3,24 @@ apiVersion: v1
 kind: Template
 metadata:
   name: ${NAME}-template
+  labels:
+    app: ${NAME}
 objects:
 
 - apiVersion: v1
   kind: ImageStream
   metadata:
     name: ${NAME}
+    labels:
+      app: ${NAME}  
 
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
+    name: ${NAME}
     labels:
       build: ${NAME}
-    name: ${NAME}
+      app: ${NAME}
   spec:
     failedBuildsHistoryLimit: 5
     output:

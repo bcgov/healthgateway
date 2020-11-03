@@ -2,9 +2,55 @@
 
 Documents our OpenShift Build and Deployment process templates.
 
-## Base Build
+## Prerequisites
+
+Please ensure that the AzureAgents have been deployed into the OpenShift tools namespace.
+
+## Common Configuration, Secrets and Certificates
+
+A few configuration items and secrets are used by the vast majority of applications and are defined globally in OpenShift.
+
+### Common Configuration
+
+Review the common config parameters
+
+```console
+  oc process -f ./commonConfig.yaml --parameters
+```
+
+Create the common config
+
+```console
+oc process -f ./commonConfig.yaml -p DB_STR="Server=patroni-postgres-master;Port=5432;Database=gateway;User ID=gateway;Password=[THE PASSWORD];Integrated Security=true;Pooling=true;Minimum Pool Size=2;Maximum Pool Size=30;Connection Idle Lifetime=300;Connection Pruning Interval=10;" | oc apply -f -
+```
+
+### Common Secrets
+
+The Client Registry backing service requires certificate authentication which requires a password.
+
+```console
+  oc process -f ./commonSecrets.yaml --parameters
+```
+
+Create the common config
+
+```console
+oc process -f ./commonSecrets.yaml -p CR_CERT_PASSWORD=[THE PASSWORD] | oc apply -f -
+```
+
+### Certificates
+
+The Client Registry backing service requires a certificate for system to system authentication
+
+```console
+oc create configmap patient-cert --from-file=path/cert
+```
 
 Creates a Docker based hybrid build along with the associated Image Stream which will be required for each of our configured applications.  These templates are integrated into our Azure Build Pipelines and any change will be reflected in the next build.
+
+### Services
+
+
 
 ### Usage
 

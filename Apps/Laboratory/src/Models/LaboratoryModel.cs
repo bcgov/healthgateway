@@ -28,7 +28,7 @@ namespace HealthGateway.Laboratory.Models
         /// Gets or sets the id for the lab result.
         /// </summary>
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the PHN the report is for.
@@ -105,7 +105,7 @@ namespace HealthGateway.Laboratory.Models
         {
             return new LaboratoryModel()
             {
-                Id = model.SourceSystemId,
+                Id = model.Id,
                 PHN = MaskPHN(model.PHN),
                 OrderProviderIDs = model.OrderProviderIDs,
                 OrderingProviders = model.OrderingProviders,
