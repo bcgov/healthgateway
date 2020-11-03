@@ -238,7 +238,7 @@ namespace HealthGateway.AdminWebClient
                 basePath = section.GetValue<string>("BasePath");
             }
 
-            this.logger.LogDebug($"JobScheduler basePath = {basePath}");
+            this.logger.LogDebug($"basePath = {basePath}");
             return basePath;
         }
     }

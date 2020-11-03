@@ -17,10 +17,11 @@ namespace HealthGateway.Common.AspNetConfiguration
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
     using System.ServiceModel.Description;
@@ -33,6 +34,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Auditing;
+    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Filters;
@@ -43,7 +45,9 @@ namespace HealthGateway.Common.AspNetConfiguration
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -61,6 +65,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Newtonsoft.Json;
     using OpenTelemetry.Trace;
     using ServiceReference;
+
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 
     /// <summary>
@@ -308,6 +313,100 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// This sets up the OIDC authentication.
+        /// </summary>
+        /// <param name="services">The passed in IServiceCollection.</param>
+        public void ConfigureOpenIdConnectServices(IServiceCollection services)
+        {
+            string basePath = this.GetAppBasePath();
+
+            services.AddAuthentication(auth =>
+                {
+                    auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    auth.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = this.environment.ApplicationName;
+                    options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+                    options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+                    options.SlidingExpiration = true;
+                    options.Cookie.HttpOnly = true;
+                    if (this.environment.IsDevelopment())
+                    {
+                        // Allows http://localhost to work on Chromium and Edge.
+                        options.Cookie.SameSite = SameSiteMode.Unspecified;
+                        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    }
+                })
+                .AddOpenIdConnect(options =>
+                {
+                    if (this.environment.IsDevelopment())
+                    {
+                        // Allows http://localhost to work on Chromium and Edge.
+                        options.ProtocolValidator.RequireNonce = false;
+                        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                        options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+                    }
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateIssuerSigningKey = true,
+                        RequireAudience = true,
+                    };
+
+                    this.configuration.GetSection(@"OpenIdConnect").Bind(options);
+                    if (string.IsNullOrEmpty(options.Authority))
+                    {
+                        this.Logger.LogCritical(@"OpenIdConnect Authority is missing, bad things are going to occur");
+                    }
+
+                    options.Events = new OpenIdConnectEvents()
+                    {
+                        OnTokenValidated = ctx =>
+                        {
+                            JwtSecurityToken accessToken = ctx.SecurityToken;
+                            if (accessToken != null)
+                            {
+                                if (ctx.Principal.Identity is ClaimsIdentity claimsIdentity)
+                                {
+                                    claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
+                                }
+                                else
+                                {
+                                    throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
+                                }
+                            }
+
+                            return Task.CompletedTask;
+                        },
+                        OnRedirectToIdentityProvider = redirectContext =>
+                        {
+                            if (!string.IsNullOrEmpty(this.configuration["Keycloak:IDPHint"]))
+                            {
+                                this.Logger.LogDebug("Adding IDP Hint on Redirect to provider");
+                                redirectContext.ProtocolMessage.SetParameter(this.configuration["Keycloak:IDPHintKey"], this.configuration["Keycloak:IDPHint"]);
+                            }
+
+                            return Task.FromResult(0);
+                        },
+                        OnAuthenticationFailed = c =>
+                        {
+                            c.HandleResponse();
+                            c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            c.Response.ContentType = "text/plain";
+                            this.Logger.LogError(c.Exception.ToString());
+
+                            return c.Response.WriteAsync(c.Exception.ToString());
+                        },
+                    };
+                });
+        }
+
+        /// <summary>
         /// Configures the audit services.
         /// </summary>
         /// <param name="services">The services collection provider.</param>
@@ -509,9 +608,16 @@ namespace HealthGateway.Common.AspNetConfiguration
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                this.Logger.LogInformation("Using HSTS, which sets Strict-Transport-Security Header");
                 app.UseHsts();
             }
 
+            if (!this.environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
+
+            app.UseStaticFiles();
             app.UseRouting();
 
             // Enable health endpoint for readiness probe
@@ -623,12 +729,12 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
-        /// Handles authentication failures.
+        /// Handles Bearer Token authentication failures.
         /// </summary>
-        /// <param name="context">The authentication failed context.</param>
+        /// <param name="context">The JWT authentication failed context.</param>
         /// <param name="auditLogger">The audit logger provider.</param>
         /// <returns>An async task.</returns>
-        private Task OnAuthenticationFailed(AuthenticationFailedContext context, IAuditLogger auditLogger)
+        private Task OnAuthenticationFailed(Microsoft.AspNetCore.Authentication.JwtBearer.AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
             this.Logger.LogDebug("OnAuthenticationFailed...");
 
@@ -651,6 +757,23 @@ namespace HealthGateway.Common.AspNetConfiguration
                 State = "AuthenticationFailed",
                 Message = context.Exception.ToString(),
             }));
+        }
+
+        /// <summary>
+        /// Fetches the base path from the configuration.
+        /// </summary>
+        /// <returns>The BasePath config for the ForwardProxies.</returns>
+        private string GetAppBasePath()
+        {
+            string basePath = string.Empty;
+            IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
+            if (section.GetValue<bool>("Enabled", false))
+            {
+                basePath = section.GetValue<string>("BasePath");
+            }
+
+            this.Logger.LogDebug($"BasePath = {basePath}");
+            return basePath;
         }
     }
 }

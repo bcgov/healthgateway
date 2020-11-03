@@ -11,9 +11,10 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import ErrorTranslator from "@/utility/errorTranslator";
 import BannerError from "@/models/bannerError";
-import { Action } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 import { ResultError } from "@/models/requestResult";
 import AddDependentRequest from "@/models/addDependentRequest";
+import User from "@/models/user";
 
 export enum GenderType {
     NotSelected = "",
@@ -28,6 +29,8 @@ export enum GenderType {
     },
 })
 export default class NewDependentComponent extends Vue {
+    @Getter("user", { namespace: "user" }) user!: User;
+
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
@@ -124,7 +127,7 @@ export default class NewDependentComponent extends Vue {
 
     private addDependent() {
         this.dependentService
-            .addDependent({
+            .addDependent(this.user.hdid, {
                 ...this.dependent,
                 PHN: this.dependent.PHN.replace(/\D/g, ""),
             })

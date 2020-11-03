@@ -100,6 +100,9 @@ export default class FilterComponent extends Vue {
                 this.onExternalFilterSelection(filterName);
             }
         );
+        this.eventBus.$on(EventMessageName.TimelineEntryAdded, () => {
+            this.onEntryAdded();
+        });
     }
 
     private destroyed() {
@@ -180,6 +183,10 @@ export default class FilterComponent extends Vue {
                   ((Math.round(num / 100) * 100) / 1000).toFixed(1)
               ).toString() + "K"
             : num.toString();
+    }
+
+    private onEntryAdded() {
+        this.clearFilters();
     }
 }
 </script>

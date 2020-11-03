@@ -86,7 +86,7 @@ namespace HealthGateway.Common.Services
                 string delegateJson = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
                 this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
             }
-            
+
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
         }
 
