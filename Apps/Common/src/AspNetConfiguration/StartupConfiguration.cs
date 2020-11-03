@@ -169,7 +169,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services.AddAuthorization(options =>
             {
-                // User Policies
+                // User Policies this should be removed when migrated to UserProfilePolicy
                 options.AddPolicy(UserPolicy.UserOnly, policy =>
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
@@ -187,6 +187,20 @@ namespace HealthGateway.Common.AspNetConfiguration
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
                     policy.Requirements.Add(new UserRequirement(true));
+                });
+
+                // User Profile Policies
+                options.AddPolicy(UserProfilePolicy.Read, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.UserProfile, FhirAccessType.Read));
+                });
+                options.AddPolicy(UserProfilePolicy.Write, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.UserProfile, FhirAccessType.Write));
                 });
 
                 // Patient Policies
