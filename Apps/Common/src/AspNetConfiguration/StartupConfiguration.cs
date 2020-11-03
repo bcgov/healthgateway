@@ -304,7 +304,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The passed in IServiceCollection.</param>
         public void ConfigureOpenIdConnectServices(IServiceCollection services)
         {
-            string basePath = this.GetBasePath();
+            string basePath = this.GetAppBasePath();
 
             services.AddAuthentication(auth =>
                 {
@@ -744,7 +744,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Fetches the base path from the configuration.
         /// </summary>
         /// <returns>The BasePath config for the ForwardProxies.</returns>
-        private string GetBasePath()
+        private string GetAppBasePath()
         {
             string basePath = string.Empty;
             IConfigurationSection section = this.configuration.GetSection("ForwardProxies");
@@ -753,7 +753,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 basePath = section.GetValue<string>("BasePath");
             }
 
-            this.Logger.LogDebug($"JobScheduler basePath = {basePath}");
+            this.Logger.LogDebug($"BasePath = {basePath}");
             return basePath;
         }
     }

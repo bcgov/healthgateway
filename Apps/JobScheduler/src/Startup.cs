@@ -84,7 +84,7 @@ namespace HealthGateway.JobScheduler
         {
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureHttpServices(services);
-            this.startupConfig.ConfigureOpenIdConnectAuthentication(services);
+            this.startupConfig.ConfigureOpenIdConnectServices(services);
 
             services.AddCors(options =>
             {
