@@ -13,14 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
 namespace HealthGateway.JobScheduler
 {
     using System;
     using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
 
     using Hangfire;
     using Hangfire.Dashboard;
@@ -29,7 +25,6 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
-    using HealthGateway.Common.Authorization.Admin;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.FileDownload;
     using HealthGateway.Common.Jobs;
@@ -40,18 +35,14 @@ namespace HealthGateway.JobScheduler
     using Healthgateway.JobScheduler.Jobs;
     using Healthgateway.JobScheduler.Utils;
 
-    using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.CookiePolicy;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Tokens;
 
     /// <summary>
     /// The startup class.
