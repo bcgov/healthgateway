@@ -199,8 +199,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             if (this.userDelegateDelegate != null)
             {
                 this.logger.LogInformation($"Performing user delegation validation for resource {resourceHDID}");
-                string[] userDelegatedScopes = GetAcceptedScopes(User, requirement);
-                if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID) && scopes.Intersect(userDelegatedScopes).Any())
+                if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID))
                 {
                     string userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
                     if (this.userDelegateDelegate.Exists(resourceHDID, userHDID))
