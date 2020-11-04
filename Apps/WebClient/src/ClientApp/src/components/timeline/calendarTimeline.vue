@@ -17,9 +17,11 @@ export default class CalendarTimelineComponent extends Vue {
 
     private filteredTimelineEntries: TimelineEntry[] = [];
     private dateGroups: DateGroup[] = [];
+    private hasFilter = false;
 
     @Watch("filter", { deep: true })
     private applyTimelineFilter() {
+        this.hasFilter = TimelineFilter.hasFilter(this.filter);
         this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
             entry.filterApplies(this.filter)
         );
@@ -68,10 +70,19 @@ export default class CalendarTimelineComponent extends Vue {
                         class="text-center pt-2 noTimelineEntriesText"
                         data-testid="noTimelineEntriesText"
                     >
-                        No Timeline Entries
+                        <span v-if="hasFilter"
+                            >No records found with the selected filters</span
+                        >
+                        <span v-else>No records found</span>
                     </p>
                 </b-col>
             </b-row>
         </div>
     </div>
 </template>
+<style lang="scss" scoped>
+.noTimelineEntriesText {
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+</style>
