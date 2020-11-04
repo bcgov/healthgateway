@@ -13,7 +13,7 @@ describe('Landing Page', () => {
 
     it('Sign Up Button', () => {
         cy.get('#btnStart').should('be.visible')
-                           .should('have.attr', 'href', '/registrationInfo')
+                           .should('have.attr', 'href', '/registration')
                            .should('have.text', 'Register')
     })
 
