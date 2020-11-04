@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Action, Getter } from "vuex-class";
-import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component
 export default class MainNavbar extends Vue {
@@ -50,6 +50,25 @@ export default class MainNavbar extends Vue {
             title: "System Analytics",
             icon: "fa-download",
             to: "/stats"
+        }
+    ];
+
+    private betaItems = [
+        {
+            title: "Beta",
+            icon: "account_box",
+            items: [
+                {
+                    title: "Beta Invites",
+                    icon: "account_box",
+                    to: "/beta-invites"
+                },
+                {
+                    title: "Resend Emails",
+                    icon: "email",
+                    to: "/admin-email"
+                }
+            ]
         }
     ];
 
@@ -114,6 +133,34 @@ export default class MainNavbar extends Vue {
                         </v-list-item-action>
                         <v-list-item-title v-text="item.title" />
                     </v-list-item>
+                    <v-list-group
+                        v-for="item in betaItems"
+                        :key="item.title"
+                        :prepend-icon="item.icon"
+                        no-action
+                        class="ma-3"
+                    >
+                        <template v-slot:activator>
+                            <v-list-item-content>
+                                <v-list-item-title
+                                    v-text="item.title"
+                                ></v-list-item-title>
+                            </v-list-item-content>
+                        </template>
+
+                        <v-list-item
+                            v-for="(child, i) in item.items"
+                            :key="i"
+                            :to="child.to"
+                            :prepend-icon="child.icon"
+                        >
+                            <v-list-item-content>
+                                <v-list-item-title
+                                    v-text="child.title"
+                                ></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list-group>
                 </v-list>
             </v-layout>
         </v-img>
