@@ -20,16 +20,15 @@ export default class LinearTimelineComponent extends Vue {
 
     private filteredTimelineEntries: TimelineEntry[] = [];
     private visibleTimelineEntries: TimelineEntry[] = [];
-
     private currentPage = 1;
     private hasErrors = false;
-
     private eventBus = EventBus;
-
     private dateGroups: DateGroup[] = [];
+    private hasFilter = false;
 
     @Watch("filter", { deep: true })
     private applyTimelineFilter() {
+        this.hasFilter = TimelineFilter.hasFilter(this.filter);
         this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
             entry.filterApplies(this.filter)
         );
@@ -233,7 +232,10 @@ export default class LinearTimelineComponent extends Vue {
                         class="text-center pt-2 noTimelineEntriesText"
                         data-testid="noTimelineEntriesText"
                     >
-                        No records found whitin the selected filters.
+                        <span v-if="hasFilter"
+                            >No records found with the selected filters</span
+                        >
+                        <span v-else>No records found</span>
                     </p>
                 </b-col>
             </b-row>
