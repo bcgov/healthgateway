@@ -69,10 +69,10 @@ describe('dependents', () => {
         cy.get('[data-testid=cancelRegistrationBtn]')
             .should('be.enabled', 'be.visible')
             .click()
-        // Validate the modal is done, again should use modal id    
-        cy.get('[data-testid=newDependentModalText]').should('not.exist')
+        // Validate the modal is done
+        cy.get('[data-testid=newDependentModal]').should('not.exist')
     })
-
+    
     it('Validate Add', () => {
         cy.get('[data-testid=addNewDependentBtn]')
             .click();
@@ -94,8 +94,8 @@ describe('dependents', () => {
 
         cy.get('[data-testid=registerDependentBtn]').click(); 
 
-        // Validate the modal is done, again should use modal id    
-        cy.get('[data-testid=newDependentModalText]').should('not.exist')
+        // Validate the modal is done 
+        cy.get('[data-testid=newDependentModal]').should('not.exist')
     });
 
     it('Validate Dependent Tab', () => {
