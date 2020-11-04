@@ -32,7 +32,7 @@ describe('dependents', () => {
         cy.get('[data-testid=addNewDependentBtn]')
         .should('be.enabled', 'be.visible')
         .click()
-        //Validate Modal appears - note this should use a modal ID but we don't have one
+        
         cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')   
         //Validate First Name  
         cy.get('[data-testid=firstNameInput]')
@@ -46,9 +46,9 @@ describe('dependents', () => {
             .clear()
             .blur()
             .should('have.class', 'is-invalid')
-        // Mandad this is broken and needs to be fixed to validate
-        //   cy.get('[data-testid=dateOfBirthInput]')
-        //     .should('be.enabled')
+        //Validate Date of Birth
+        cy.get('[data-testid=dateOfBirthInput]')
+            .should('be.enabled')
         // Validate PHN input
         cy.get('[data-testid=phnInput]')
             .should('be.enabled')
@@ -76,8 +76,9 @@ describe('dependents', () => {
     it('Validate Add', () => {
         cy.get('[data-testid=addNewDependentBtn]')
             .click();
-        //Validate Modal appears - note this should use a modal ID but we don't have one
-        cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')      
+        
+        cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
+        
         cy.get('[data-testid=firstNameInput]')
             .type(firstName);
         cy.get('[data-testid=lastNameInput]')
@@ -95,8 +96,6 @@ describe('dependents', () => {
 
         // Validate the modal is done, again should use modal id    
         cy.get('[data-testid=newDependentModalText]').should('not.exist')
-
-        // You should now validate that the Tabs appear 
     });
 
     it('Validate Dependent Tab', () => {
