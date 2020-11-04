@@ -13,19 +13,19 @@ describe("Filters", () => {
     it("Validate Filter Counts", () => {
         const countRegex = /^.*?\((\d+)K?\).*$/;
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=immunizationCount]")
+        cy.get("[data-testid=ImmunizationCount]")
             .should("be.visible")
             .contains(countRegex);
-        cy.get("[data-testid=medicationCount]")
+        cy.get("[data-testid=MedicationCount]")
             .should("be.visible")
             .contains(countRegex);
-        cy.get("[data-testid=laboratoryCount]")
+        cy.get("[data-testid=LaboratoryCount]")
             .should("be.visible")
             .contains(countRegex);
-        cy.get("[data-testid=encounterCount]")
+        cy.get("[data-testid=EncounterCount]")
             .should("be.visible")
             .contains(countRegex);
-        cy.get("[data-testid=noteCount]")
+        cy.get("[data-testid=NoteCount]")
             .should("be.visible")
             .contains(countRegex);
     });
