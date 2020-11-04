@@ -538,6 +538,7 @@ export default class TimelineView extends Vue {
 
     private filtersChanged(newFilter: TimelineFilter) {
         this.filter = newFilter;
+        this.filter.keyword = this.filterText;
     }
 
     @Watch("filterText")

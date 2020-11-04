@@ -68,10 +68,16 @@ export default class CalendarTimelineComponent extends Vue {
                         class="text-center pt-2 noTimelineEntriesText"
                         data-testid="noTimelineEntriesText"
                     >
-                        No Timeline Entries
+                        No records found whitin the selected filters.
                     </p>
                 </b-col>
             </b-row>
         </div>
     </div>
 </template>
+<style lang="scss" scoped>
+.noTimelineEntriesText {
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+</style>

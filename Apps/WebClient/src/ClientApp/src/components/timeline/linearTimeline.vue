@@ -233,7 +233,7 @@ export default class LinearTimelineComponent extends Vue {
                         class="text-center pt-2 noTimelineEntriesText"
                         data-testid="noTimelineEntriesText"
                     >
-                        No Timeline Entries
+                        No records found whitin the selected filters.
                     </p>
                 </b-col>
             </b-row>
