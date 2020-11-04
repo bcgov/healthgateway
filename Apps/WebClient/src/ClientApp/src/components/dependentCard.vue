@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
+import { Component, Emit, Prop, Ref } from "vue-property-decorator";
 import Dependent from "@/models/dependent";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { Action, Getter } from "vuex-class";
@@ -132,8 +132,12 @@ export default class DependentCardComponent extends Vue {
     }
 
     private deleteDependent(): void {
+        this.isLoading = true;
         this.dependentService
-            .removeDependent(this.dependent)
+            .removeDependent(this.user.hdid, this.dependent)
+            .then(() => {
+                this.needsUpdate();
+            })
             .catch((err: ResultError) => {
                 this.addError(
                     ErrorTranslator.toBannerError(
@@ -141,11 +145,19 @@ export default class DependentCardComponent extends Vue {
                         err
                     )
                 );
+            })
+            .finally(() => {
+                this.isLoading = false;
             });
     }
 
     private showConfirmationModal(): void {
         this.deleteModal.showModal();
+    }
+
+    @Emit()
+    private needsUpdate() {
+        return;
     }
 
     private formatDate(date: StringISODate): string {

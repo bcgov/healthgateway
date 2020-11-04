@@ -148,7 +148,7 @@ export interface IDependentService {
         dependent: AddDependentRequest
     ): Promise<AddDependentRequest>;
     getAll(hdid: string): Promise<RequestResult<Dependent[]>>;
-    removeDependent(dependent: Dependent): Promise<void>;
+    removeDependent(hdid: string, dependent: Dependent): Promise<void>;
 }
 
 export interface IHttpDelegate {

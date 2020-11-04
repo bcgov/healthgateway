@@ -82,6 +82,10 @@ export default class DependentsView extends Vue {
     private hideModal() {
         this.newDependentModal.hideModal();
     }
+
+    private needsUpdate() {
+        this.fetchDependents();
+    }
 }
 </script>
 <template>
@@ -120,7 +124,10 @@ export default class DependentsView extends Vue {
                     class="mt-2"
                 >
                     <b-col>
-                        <DependentCardComponent :dependent="dependent" />
+                        <DependentCardComponent
+                            :dependent="dependent"
+                            @needs-update="needsUpdate"
+                        />
                     </b-col>
                 </b-row>
             </b-col>

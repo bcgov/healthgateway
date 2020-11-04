@@ -77,12 +77,11 @@ export class RestDependentService implements IDependentService {
         });
     }
 
-    public removeDependent(dependent: Dependent): Promise<void> {
+    public removeDependent(hdid: string, dependent: Dependent): Promise<void> {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.BASE_URI}/`,
-                    dependent.hdid
+                    `${this.BASE_URI}/UserProfile/${hdid}/Dependent/${dependent.hdid}`
                 )
                 .then((result) => {
                     this.logger.verbose(
