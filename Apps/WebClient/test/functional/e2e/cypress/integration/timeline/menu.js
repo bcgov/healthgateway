@@ -47,6 +47,7 @@ describe('Menu System', () => {
         cy.get('[data-testid=printViewBtn]').should('be.visible')
         cy.get('[data-testid=menuBtnHealthInsightsLink]').should('have.attr', 'href', '/healthInsights')
         cy.get('[data-testid=menuBtnReportsLink]').should('have.attr', 'href', '/reports')
+        cy.get('[data-testid=menuBtnDependentsLink]').should('have.attr', 'href', '/dependents')
         cy.get('[data-testid=sidebarToggle]').should('be.visible')
         cy.get('[data-testid=feedbackContainer]').should('be.visible')
     })
