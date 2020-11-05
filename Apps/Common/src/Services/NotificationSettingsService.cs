@@ -83,7 +83,7 @@ namespace HealthGateway.Common.Services
 
                 this.logger.LogDebug($"Queueing Dependent Notification Settings.");
                 notificationSettings.SubjectHdid = userDelegate.OwnerId;
-                string delegateJson = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
+                string delegateJson = JsonSerializer.Serialize(notificationSettings, options);
                 this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
             }
 

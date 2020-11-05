@@ -77,13 +77,13 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<IEnumerable<UserDelegate>> Get(string delegateId, int page, int pageSize)
         {
-            this.logger.LogTrace($"Getting user delegates from DB...");
+            this.logger.LogTrace($"Getting user delegates from DB... {delegateId}");
             var result = DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.UserDelegate
-                    .OrderBy(dependent => dependent.DelegateId == delegateId),
+                    .Where(dependent => dependent.DelegateId == delegateId),
                 page,
                 pageSize);
-            this.logger.LogTrace($"Finished getting user delegates to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogTrace($"Finished getting user delegates from DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
 
