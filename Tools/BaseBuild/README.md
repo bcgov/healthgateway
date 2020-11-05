@@ -63,7 +63,32 @@ Creates a Docker based hybrid build along with the associated Image Stream which
 
 ### Services
 
+oc process -f ./service.yaml -p NAME=webclient -p APP_NAME=webclient -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=poc -p ASPNETCORE_ENVIRONMENT=hgpoc | oc apply -f -
+oc process -f ./service.yaml -p NAME=hangfire -p APP_NAME=hangfire -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=poc -p ASPNETCORE_ENVIRONMENT=hgpoc | oc apply -f -
+oc process -f ./service.yaml -p NAME=adminwebclient -p APP_NAME=adminwebclient -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=poc -p ASPNETCORE_ENVIRONMENT=hgpoc | oc apply -f -
+oc process -f ./service.yaml -p NAME=encounter -p APP_NAME=encounter -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=poc -p ASPNETCORE_ENVIRONMENT=hgpoc | oc apply -f -
+oc process -f ./service.yaml -p NAME=laboratory -p APP_NAME=laboratory -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=poc -p ASPNETCORE_ENVIRONMENT=hgpoc | oc apply -f -
+oc process -f ./service.yaml -p NAME=immunization -p APP_NAME=immunization -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=poc -p ASPNETCORE_ENVIRONMENT=hgpoc | oc apply -f -
+oc process -f ./service.yaml -p NAME=medication -p APP_NAME=medication -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=poc -p ASPNETCORE_ENVIRONMENT=hgpoc | oc apply -f -
+oc process -f ./service.yaml -p NAME=patient -p APP_NAME=patient -p TOOLS_NAMESPACE=0bd5ad-tools -p ENV=poc -p ASPNETCORE_ENVIRONMENT=hgpoc | oc apply -f -
 
+### Application Specific Configuration
+
+Hangfire and Admin WebClient need additional configuration in order to operate.
+
+To update Hangfire
+
+```console
+oc process -f ./hangfireSecrets.yaml --parameters
+oc process -f ./hangfireSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret] -p ADMIN_SECRET=[Admin OIDC Secret] -p ADMIN_USER=[Admin Username] -p ADMIN_PASSWORD=[Admin Password]
+oc set env --from=secret/hangfire-secrets dc/hangfire
+
+and Admin WebClient
+```console
+oc process -f ./adminWebClientSecrets.yaml --parameters
+oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret]
+oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
+```
 
 ### Usage
 

@@ -13,15 +13,15 @@ objects:
       app: ${NAME}
     name: ${NAME}
   spec:
-    replicas: 2
+    replicas: 1
     selector:
       deploymentconfig: ${NAME}
     strategy:
       activeDeadlineSeconds: 21600
       resources:
         limits:
-          cpu: '2'
-          memory: 2Gi
+          cpu: '500m'
+          memory: 512Mi
       rollingParams:
         intervalSeconds: 1
         maxSurge: 25%
@@ -76,7 +76,7 @@ objects:
             initialDelaySeconds: 10
             periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 1
+            timeoutSeconds: 3
           resources:
             limits:
               cpu: 500m
@@ -120,8 +120,8 @@ objects:
       app: ${NAME}
     name: ${NAME}
   spec:
-    maxReplicas: 4
-    minReplicas: 2
+    maxReplicas: 3
+    minReplicas: 1
     scaleTargetRef:
       apiVersion: v1
       kind: DeploymentConfig
