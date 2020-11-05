@@ -63,13 +63,10 @@ Creates a Docker based hybrid build along with the associated Image Stream which
 
 ### Services
 
-TODO:  Where do you get the certs...
-
 To create the services for a given namespace do the following
 
 ```console
 ./deploy_services.sh NAMESPACE
-./configureRoutes.sh NAMESPACE
 ```
 
 ### Application Specific Configuration
@@ -88,6 +85,16 @@ and Admin WebClient
 oc process -f ./adminWebClientSecrets.yaml --parameters
 oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret]
 oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
+```
+
+### Routes
+
+Once the services have been deployed, you will need to create endpoint routes.  Certificates are required for this step and you can download the HealthgatewayPrivateKey.pem, wildcard.healthgateway.gov.bc.ca.pem and the caCertificate.pem from the Health Gateway Secure Documentation under Certificates 2020.
+
+Once done, proceed to run
+
+```console
+./configureRoutes.sh NAMESPACE
 ```
 
 TODO: Review documentation below and cleaup
