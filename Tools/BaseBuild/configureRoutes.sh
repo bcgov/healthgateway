@@ -1,29 +1,18 @@
 #!/usr/bin/env bash
+namespace=$1
+if [ -z "$namespace" ] 
+then
+  echo Setting namespace to default value: 0bd5ad
+  namespace=0bd5ad
+fi
 
-# oc project q6qfzk-dev
-# ./webclient.sh dev
-# ./route.sh dev jobscheduler hangfire "/admin/jobscheduler"
-# ./route.sh dev medication medication "/api/medicationservice"
-# ./route.sh dev patient patient "/api/patientservice"
-# ./route.sh dev immunization immunization "/api/immunizationservice"
-
-# oc project q6qfzk-test
-# ./route.sh test webclient webclient "" Redirect
-# ./route.sh test jobscheduler hangfire "/admin/jobscheduler"
-# ./route.sh test medication medication "/api/medicationservice"
-# ./route.sh test patient patient "/api/patientservice"
-# ./route.sh test immunization immunization "/api/immunizationservice"
-
-# oc project q6qfzk-test
-# ./route.sh demo webclient-demo webclient-demo "" Redirect
-# ./route.sh demo jobscheduler-demo hangfire-demo "/admin/jobscheduler"
-# ./route.sh demo medication-demo medication-demo "/api/medicationservice"
-# ./route.sh demo patient-demo patient-demo "/api/patientservice"
-# ./route.sh demo immunization-demo immunization-demo "/api/immunizationservice"
-
-oc project q6qfzk-prod
-./route.sh www webclient webclient "" Redirect
-./route.sh www jobscheduler hangfire "/admin/jobscheduler"
-./route.sh www medication medication "/api/medicationservice"
-./route.sh www patient patient "/api/patientservice"
-./route.sh www immunization immunization "/api/immunizationservice"
+oc project $namespace
+./route.sh poc webclient webclient
+./route.sh poc jobscheduler hangfire "/admin/jobscheduler" Redirect
+./route.sh poc adminwebclient adminwebclient "/admin" Redirect
+./route.sh poc medication medication "/api/medicationservice"
+./route.sh poc patient patient "/api/patientservice"
+./route.sh poc immunization immunization "/api/immunizationservice"
+./route.sh poc laboratory laboratory "/api/laboratoryservice"
+./route.sh poc encounter encounter "/api/encounterservice"
+# ./route.sh poc odrproxy odrproxy "/dev/odrproxy"
