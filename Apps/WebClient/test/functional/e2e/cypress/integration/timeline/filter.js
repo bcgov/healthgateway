@@ -44,16 +44,16 @@ describe("Filters", () => {
 
     it("Filter Checkboxes are Visible", () => {
         cy.get('[data-testid="filterDropdown"]').click();
-        cy.get("[data-testid=note-filter]").should("be.visible");
-        cy.get("[data-testid=medication-filter]").should("be.visible");
-        cy.get("[data-testid=immunization-filter]").should("be.visible");
-        cy.get("[data-testid=laboratory-filter]").should("be.visible");
-        cy.get("[data-testid=encounter-filter]").should("be.visible");
+        cy.get("[data-testid=Note-filter]").should("be.visible");
+        cy.get("[data-testid=Medication-filter]").should("be.visible");
+        cy.get("[data-testid=Immunization-filter]").should("be.visible");
+        cy.get("[data-testid=Laboratory-filter]").should("be.visible");
+        cy.get("[data-testid=Encounter-filter]").should("be.visible");
     });
 
     it("Filter Immunization", () => {
         if (Cypress.config().baseUrl != localDevUri) {
-            cy.get("[data-testid=immunization-filter]").click({ force: true });
+            cy.get("[data-testid=Immunization-filter]").click({ force: true });
             cy.get("[data-testid=immunizationTitle]").should("be.visible");
             cy.get("[data-testid=noteTitle]").should("not.be.visible");
             cy.get("[data-testid=encounterTitle]").should("not.be.visible");
@@ -67,7 +67,7 @@ describe("Filters", () => {
     });
 
     it("Filter Medication", () => {
-        cy.get("[data-testid=medication-filter]").click({ force: true });
+        cy.get("[data-testid=Medication-filter]").click({ force: true });
         cy.get("[data-testid=immunizationTitle]").should("not.be.visible");
         cy.get("[data-testid=noteTitle]").should("not.be.visible");
         cy.get("[data-testid=encounterTitle]").should("not.be.visible");
@@ -77,7 +77,7 @@ describe("Filters", () => {
     });
 
     it("Filter Encounter", () => {
-        cy.get("[data-testid=encounter-filter]").click({ force: true });
+        cy.get("[data-testid=Encounter-filter]").click({ force: true });
         cy.get("[data-testid=encounterTitle]").should("be.visible");
         cy.get("[data-testid=noteTitle]").should("not.be.visible");
         cy.get("[data-testid=immunizationTitle]").should("not.be.visible");
@@ -87,7 +87,7 @@ describe("Filters", () => {
     });
 
     it("Filter Laboratory", () => {
-        cy.get("[data-testid=laboratory-filter]").click({ force: true });
+        cy.get("[data-testid=Laboratory-filter]").click({ force: true });
         cy.get("[data-testid=encounterTitle]").should("not.be.visible");
         cy.get("[data-testid=noteTitle]").should("not.be.visible");
         cy.get("[data-testid=immunizationTitle]").should("not.be.visible");
@@ -149,10 +149,10 @@ describe("Filters", () => {
             AuthMethod.KeyCloak
         );
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=medicationCount]").should("be.visible");
-        cy.get("[data-testid=immunizationCount]").should("not.be.visible");
-        cy.get("[data-testid=encounterCount]").should("not.be.visible");
-        cy.get("[data-testid=noteCount]").should("not.be.visible");
-        cy.get("[data-testid=laboratoryCount]").should("not.be.visible");
+        cy.get("[data-testid=MedicationCount]").should("be.visible");
+        cy.get("[data-testid=ImmunizationCount]").should("not.be.visible");
+        cy.get("[data-testid=EncounterCount]").should("not.be.visible");
+        cy.get("[data-testid=NoteCount]").should("not.be.visible");
+        cy.get("[data-testid=LaboratoryCount]").should("not.be.visible");
     });
 });
