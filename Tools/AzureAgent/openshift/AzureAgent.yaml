@@ -124,7 +124,7 @@ objects:
         app: ${NAME}
       name: ${NAME}
     spec:
-      replicas: 3
+      replicas: 1
       selector:
         name: ${NAME}
         deploymentconfig: ${NAME}
@@ -171,17 +171,23 @@ objects:
               name: ${NAME}
               resources: 
                 limits:
-                  cpu: 2500m
-                  memory: 6Gi
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: 500m
                   memory: 512Mi
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
+              volumeMounts:
+              - mountPath: /opt/az/_work
+                name: ephemeral-work
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           serviceAccount: ${NAME}
           terminationGracePeriodSeconds: 30
+          volumes:
+          - name: ephemeral-work
+            emptyDir: {}
       test: false
       triggers:
         - type: ConfigChange
@@ -194,6 +200,22 @@ objects:
               name: '${NAME}:latest'
               namespace: ${INSTALL_NAMESPACE}
           type: ImageChange
+
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      labels:
+        app: ${NAME}
+      name: ${NAME}
+    spec:
+      maxReplicas: 5
+      minReplicas: 1
+      scaleTargetRef:
+        apiVersion: v1
+        kind: DeploymentConfig
+        name: ${NAME}
+      targetCPUUtilizationPercentage: 60
+
 parameters:
 - description: The name of the Azure Agent
   displayName: Name
@@ -238,4 +260,12 @@ parameters:
 - name: INSTALL_NAMESPACE
   displayName: The Namespace where the Azure agent is being deployed.
   description: The namespace of the project to install the agent
-  required: true  
+  required: true
+- name: CPU_LIMIT
+  displayName: The max CPU for this agent
+  required: true
+  value: 2500m
+- name: MEMORY_LIMIT
+  displayName: The max memory for this agent
+  required: true
+  value: 6Gi    
