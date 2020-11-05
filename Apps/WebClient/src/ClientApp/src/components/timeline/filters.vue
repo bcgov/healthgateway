@@ -294,6 +294,7 @@ export default class FilterComponent extends Vue {
         <!-- Mobile view specific modal-->
         <b-button
             class="d-d-sm-inline d-sm-none"
+            :class="{ 'filter-selected': hasFilterSelected }"
             variant="outline-primary"
             @click.stop="toggleMobileView"
         >
