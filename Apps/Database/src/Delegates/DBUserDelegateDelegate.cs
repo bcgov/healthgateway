@@ -88,10 +88,9 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserDelegate> Delete(string ownerId, string delegateId, bool commit)
+        public DBResult<UserDelegate> Delete(UserDelegate userDelegate, bool commit)
         {
-            this.logger.LogTrace($"Deleting UserDelegate (ownerId: {ownerId}, delegateId: {delegateId}) from DB...");
-            UserDelegate userDelegate = this.dbContext.UserDelegate.Find(ownerId, delegateId);
+            this.logger.LogTrace($"Deleting UserDelegate {JsonSerializer.Serialize(userDelegate)} from DB...");
             DBResult<UserDelegate> result = new DBResult<UserDelegate>()
             {
                 Status = DBStatusCode.Deferred,

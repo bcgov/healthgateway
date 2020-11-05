@@ -4,7 +4,7 @@ import { Component, Ref } from "vue-property-decorator";
 import LoadingComponent from "@/components/loading.vue";
 import NewDependentComponent from "@/components/modal/newDependent.vue";
 import DependentCardComponent from "@/components/dependentCard.vue";
-import Dependent from "@/models/dependent";
+import type { Dependent } from "@/models/dependent";
 import { IDependentService, ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
