@@ -235,7 +235,7 @@ export default class FilterComponent extends Vue {
                             cols="4"
                             align-self="end"
                             class="text-right"
-                            :data-testid="`${filter.name}Count`"
+                            :data-testid="`${filter.type}Count`"
                         >
                             ({{ formatFilterCount(filter.numEntries) }})
                         </b-col>
