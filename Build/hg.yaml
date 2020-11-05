@@ -15,6 +15,10 @@ parameters:
     - WebClient
     - NotSpecified
 
+  - name: OpenShiftName
+    type: string
+    default: ''
+
   - name: DotNetTests
     type: boolean
     default: true
@@ -54,7 +58,10 @@ variables:
   EnableOCP3: ${{ parameters.EnableOCP3 }}
   EnableOCP4: ${{ parameters.EnableOCP4 }}
   App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
-  OpenShift.Name: $[lower(variables['App.Name'])]
+  ${{ if ne('${{ parameters.OpenShiftName }}', '') }}: 
+      OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
+  ${{ if eq('${{ parameters.OpenShiftName }}', '') }}:
+      OpenShift.Name: $[lower(variables['App.Name'])]
   App.UnitTests: $(App.Home)/test/unit
   App.FunctionalTests: $(App.Home)/test/functional
   PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
