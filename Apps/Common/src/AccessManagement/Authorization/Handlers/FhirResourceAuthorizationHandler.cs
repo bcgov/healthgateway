@@ -181,7 +181,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                     switch (requirement.Resource)
                     {
                         case FhirResource.Observation:
-                            retVal = this.ValidateObservationDelegate(context, resourceHDID, requirement, scopes);
+                            retVal = this.ValidateObservationDelegate(context, resourceHDID, requirement);
                             break;
                         default:
                             this.logger.LogError($"User delegation is not implemented on resource type {requirement.Resource.GetType().Name} for Resource {resourceHDID}");
@@ -193,14 +193,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             return retVal;
         }
 
-        private bool ValidateObservationDelegate(AuthorizationHandlerContext context, string resourceHDID, FhirRequirement requirement, string[] scopes)
+        private bool ValidateObservationDelegate(AuthorizationHandlerContext context, string resourceHDID, FhirRequirement requirement)
         {
             bool retVal = false;
             if (this.userDelegateDelegate != null)
             {
                 this.logger.LogInformation($"Performing user delegation validation for resource {resourceHDID}");
-                string[] userDelegatedScopes = GetAcceptedScopes(User, requirement);
-                if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID) && scopes.Intersect(userDelegatedScopes).Any())
+                if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID))
                 {
                     string userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
                     if (this.userDelegateDelegate.Exists(resourceHDID, userHDID))
