@@ -84,7 +84,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        [Route("{hdid}/[controller]")]        
+        [Route("{hdid}/[controller]")]
         public IActionResult AddDependent([FromBody] AddDependentRequest addDependentRequest)
         {
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
@@ -99,16 +99,23 @@ namespace HealthGateway.WebClient.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The Delegate hdid.</param>
         /// <param name="dependentHdid">The Dependent hdid.</param>
+        /// <param name="dependent">The dependent model object to be delted.</param>
         /// <response code="200">The Dependent record was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]/{dependentHdid}")]
-        public IActionResult Delete(string hdid, string dependentHdid)
+        public IActionResult Delete(string hdid, string dependentHdid, [FromBody] DependentModel dependent)
         {
+            if (dependent.OwnerId != dependentHdid || dependent.DelegateId != hdid)
+            {
+                this.logger.LogError($"Parameters do not match body of delete.");
+                return new BadRequestResult();
+            }
+
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            RequestResult<DependentModel> result = this.dependentService.Remove(dependentHdid, hdid);
+            RequestResult<DependentModel> result = this.dependentService.Remove(dependent);
             return new JsonResult(result);
         }
     }

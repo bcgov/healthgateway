@@ -15,8 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Models
 {
-    using System;
-    using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Represents a Dependent Model.
@@ -26,29 +26,52 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the hdid of the dependent.
         /// </summary>
-        [JsonPropertyName("hdid")]
-        public string HdId { get; set; } = string.Empty;
+        public DependentInformation DependentInformation { get; set; } = new DependentInformation();
 
         /// <summary>
-        /// Gets or sets the name of the dependent.
+        /// Gets or sets the owner of the hdid.
         /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        public string OwnerId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the Masked PHN of the dependent.
+        /// Gets or sets the hdid which has delegated access to the owner Id.
         /// </summary>
-        [JsonPropertyName("maskedPHN")]
-        public string MaskedPHN { get; set; } = string.Empty;
+        public string DelegateId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the Date Of Birth.
+        /// Gets or sets the version.
         /// </summary>
-        public DateTime DateOfBirth { get; set; }
+        public uint Version { get; set; }
 
         /// <summary>
-        /// Gets or sets the gender.
+        /// Constructs a new DependentModel based on a PatientModel.
         /// </summary>
-        public string Gender { get; set; } = string.Empty;
+        /// <param name="userDeleagate">The UserDelegate model.</param>
+        /// <param name="patientModel">The Patien Model to be converted.</param>
+        /// <returns>The Dependent Model.</returns>
+        public static DependentModel CreateFromModels(UserDelegate userDeleagate, PatientModel patientModel)
+        {
+            return new DependentModel()
+            {
+                OwnerId = userDeleagate.OwnerId,
+                DelegateId = userDeleagate.DelegateId,
+                Version = userDeleagate.Version,
+                DependentInformation = DependentInformation.FromPatientModel(patientModel),
+            };
+        }
+
+        /// <summary>
+        /// Creates a new UserDelegate model based on the dependent model.
+        /// </summary>
+        /// <returns>A new UserDelegate model.</returns>
+        public UserDelegate ToDBModel()
+        {
+            return new UserDelegate()
+            {
+                OwnerId = this.OwnerId,
+                DelegateId = this.DelegateId,
+                Version = this.Version,
+            };
+        }
     }
 }

@@ -126,7 +126,7 @@ namespace HealthGateway.WebClient.Test.Services
             // Validate masked PHN
             foreach (DependentModel model in actualResult.ResourcePayload)
             {
-                Assert.Equal(model.MaskedPHN, mockPHN.Remove(mockPHN.Length - 5, 4) + "****");
+                Assert.Equal(model.DependentInformation.MaskedPHN, mockPHN.Remove(mockPHN.Length - 5, 4) + "****");
             }
         }
 
@@ -218,8 +218,10 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateRemove()
         {
+            DependentModel delegateModel = new DependentModel() { OwnerId = mockHdId, DelegateId = mockParentHdId };
             Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
-            mockDependentDelegate.Setup(s => s.Delete(mockHdId, mockParentHdId, true)).Returns(new DBResult<UserDelegate>() {
+            mockDependentDelegate.Setup(s => s.Delete(It.Is<UserDelegate>(d => d.OwnerId == mockHdId && d.DelegateId == mockParentHdId), true)).Returns(new DBResult<UserDelegate>()
+            {
                 Status = DBStatusCode.Deleted,
             });
 
@@ -234,7 +236,7 @@ namespace HealthGateway.WebClient.Test.Services
                 mockNotificationSettingsService.Object,
                 mockDependentDelegate.Object
             );
-            RequestResult<DependentModel> actualResult = service.Remove(mockHdId, mockParentHdId);
+            RequestResult<DependentModel> actualResult = service.Remove(delegateModel);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
         }
