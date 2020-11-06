@@ -113,7 +113,7 @@ export default class DependentCardComponent extends Vue {
     private getReport(labOrder: LaboratoryOrder) {
         let labResult = labOrder.labResults[0];
         this.laboratoryService
-            .getReportDocument(labResult.id, this.dependent.ownerId)
+            .getReportDocument(labOrder.id, this.dependent.ownerId)
             .then((result) => {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
