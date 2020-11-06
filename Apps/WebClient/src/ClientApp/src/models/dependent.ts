@@ -1,31 +1,56 @@
 import { StringISODate } from "@/models/dateWrapper";
 
 /**
- * The dependent view model.
+ * Represents the dependent demographic information.
  */
-export default class Dependent {
+export interface DependentInformation {
     /**
      * The dependent hdid.
      */
-    public hdid!: string;
+    hdid: string;
 
     /**
      * The dependent masked phn.
      */
-    public maskedPHN!: string;
+    maskedPHN: string;
 
     /**
      * The dependent name.
      */
-    public name!: string;
+    name: string;
 
     /**
      * The dependent birth date.
      */
-    public dateOfBirth!: StringISODate;
+    dateOfBirth: StringISODate;
 
     /**
      * The dependent gender.
      */
-    public gender!: string;
+    gender: string;
+}
+
+/**
+ * Model that reprensetnts a dependent relationship
+ */
+export interface Dependent {
+    /**
+     * The dependent information.
+     */
+    dependentInformation: DependentInformation;
+
+    /**
+     * The owner of the hdid.
+     */
+    ownerId: string;
+
+    /**
+     * The hdid which has delegated access to the owner Id.
+     */
+    delegateId: string;
+
+    /**
+     * The record version.
+     */
+    version: number;
 }

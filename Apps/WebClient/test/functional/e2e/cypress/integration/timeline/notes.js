@@ -26,7 +26,7 @@ describe('Notes', () => {
         cy.get('[data-testid=noteTitleInput]')
             .type('Note Title!');
         cy.get('[data-testid=noteDateInput]')
-            .type('2050-01-01');
+            .type('1950-01-01');
         cy.get('[data-testid=noteTextInput]')
             .type('Test');
         cy.get('[data-testid=saveNoteBtn]')
@@ -35,8 +35,8 @@ describe('Notes', () => {
             .first()
             .should('have.text', ' Note Title! ');
         cy.get('[data-testid=dateGroup]')
-            .first()
-            .should('have.text', ' Jan 1, 2050 ');
+            .last()
+            .should('have.text', ' Jan 1, 1950 ');
     });
 
     it('Validate Edit', () => {

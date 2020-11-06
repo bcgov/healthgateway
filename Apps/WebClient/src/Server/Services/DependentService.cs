@@ -84,22 +84,33 @@ namespace HealthGateway.WebClient.Services
                     ResultError = new RequestResultError() { ResultMessage = "The information you entered did not match. Please try again.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
                 };
             }
-
-            // (2) Inserts Dependent to database
-            var dependent = new UserDelegate() { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId };
-
-            DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Insert(dependent, true);
-            if (dbDependent.Status == DBStatusCode.Created) {
-                this.UpdateNotificationSettings(dependent.OwnerId, delegateHdId);
-            }
-
-            RequestResult<DependentModel> result = new RequestResult<DependentModel>()
+            else
             {
-                ResourcePayload = new DependentModel() { Name = patientResult.ResourcePayload.FirstName + " " + patientResult.ResourcePayload.LastName },
-                ResultStatus = dbDependent.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
-                ResultError = dbDependent.Status == DBStatusCode.Created ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
-            };
-            return result;
+                // Insert Dependent to database
+                var dependent = new UserDelegate() { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId };
+
+                DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Insert(dependent, true);
+                if (dbDependent.Status == DBStatusCode.Created)
+                {
+                    this.logger.LogDebug("Finished adding dependent");
+                    this.UpdateNotificationSettings(dependent.OwnerId, delegateHdId);
+                    return new RequestResult<DependentModel>()
+                    {
+                        ResourcePayload = DependentModel.CreateFromModels(dbDependent.Payload, patientResult.ResourcePayload),
+                        ResultStatus = ResultType.Success,
+                    };
+                }
+                else
+                {
+                    this.logger.LogError("Error adding dependent");
+                    return new RequestResult<DependentModel>()
+                    {
+                        ResourcePayload = new DependentModel(),
+                        ResultStatus = ResultType.Error,
+                        ResultError = new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                    };
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -123,7 +134,7 @@ namespace HealthGateway.WebClient.Services
 
                 if (patientResult.ResourcePayload != null)
                 {
-                    dependentModels.Add(ModelConverter.PatientModelToDependentModel(patientResult.ResourcePayload));
+                    dependentModels.Add(DependentModel.CreateFromModels(userDelegate, patientResult.ResourcePayload));
                 }
                 else
                 {
@@ -155,12 +166,13 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<DependentModel> Remove(string dependentHdid, string delegateHdid)
+        public RequestResult<DependentModel> Remove(DependentModel dependent)
         {
-            DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Delete(dependentHdid, delegateHdid, true);
+            DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Delete(dependent.ToDBModel(), true);
 
-            if (dbDependent.Status == DBStatusCode.Deleted) {
-                this.UpdateNotificationSettings(dependentHdid, delegateHdid, isDelete: true);
+            if (dbDependent.Status == DBStatusCode.Deleted)
+            {
+                this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, isDelete: true);
             }
 
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()
@@ -176,16 +188,19 @@ namespace HealthGateway.WebClient.Services
         {
             DBResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
             UserProfile delegateUserProfile = dbResult.Payload;
+
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SMSNumber);
             request.SubjectHdid = dependentHdid;
-            if (isDelete) {
+            if (isDelete)
+            {
                 request.EmailAddress = null;
                 request.EmailEnabled = false;
                 request.SMSNumber = null;
                 request.SMSEnabled = false;
                 request.SMSVerified = false;
             }
+
             this.notificationSettingsService.QueueNotificationSettings(request);
             return request;
         }

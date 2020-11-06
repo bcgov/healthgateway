@@ -63,7 +63,41 @@ Creates a Docker based hybrid build along with the associated Image Stream which
 
 ### Services
 
+To create the services for a given namespace do the following
 
+```console
+./deploy_services.sh NAMESPACE
+```
+
+### Application Specific Configuration
+
+Hangfire and Admin WebClient require additional configuration in order to operate.
+
+To update Hangfire
+
+```console
+oc process -f ./hangfireSecrets.yaml --parameters
+oc process -f ./hangfireSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret] -p ADMIN_SECRET=[Admin OIDC Secret] -p ADMIN_USER=[Admin Username] -p ADMIN_PASSWORD=[Admin Password]
+oc set env --from=secret/hangfire-secrets dc/hangfire
+
+and Admin WebClient
+```console
+oc process -f ./adminWebClientSecrets.yaml --parameters
+oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret]
+oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
+```
+
+### Routes
+
+Once the services have been deployed, you will need to create endpoint routes.  Certificates are required for this step and you can download the HealthgatewayPrivateKey.pem, wildcard.healthgateway.gov.bc.ca.pem and the caCertificate.pem from the Health Gateway Secure Documentation under Certificates 2020.
+
+Once done, proceed to run
+
+```console
+./configureRoutes.sh NAMESPACE
+```
+
+TODO: Review documentation below and cleaup
 
 ### Usage
 

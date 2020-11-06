@@ -105,6 +105,14 @@ export default class FilterComponent extends Vue {
         });
     }
 
+    private get hasFilterSelected(): boolean {
+        return (
+            this.selectedEntryTypes.length > 0 ||
+            this.filter.startDate !== "" ||
+            this.filter.endDate !== ""
+        );
+    }
+
     private destroyed() {
         window.removeEventListener("handleResize", this.handleResize);
     }
@@ -198,7 +206,7 @@ export default class FilterComponent extends Vue {
                 data-testid="filterDropdown"
                 text="Filter"
                 class="w-100"
-                toggle-class="w-100"
+                :toggle-class="{ 'filter-selected': hasFilterSelected }"
                 menu-class="z-index-large w-100"
                 variant="outline-primary"
                 right
@@ -286,6 +294,7 @@ export default class FilterComponent extends Vue {
         <!-- Mobile view specific modal-->
         <b-button
             class="d-d-sm-inline d-sm-none"
+            :class="{ 'filter-selected': hasFilterSelected }"
             variant="outline-primary"
             @click.stop="toggleMobileView"
         >
@@ -422,5 +431,8 @@ export default class FilterComponent extends Vue {
     .btn-close {
         font-size: 1.5em;
     }
+}
+.filter-selected {
+    border-width: 3px;
 }
 </style>
