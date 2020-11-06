@@ -58,7 +58,7 @@ namespace HealthGateway.CommonTests.Services
             var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
             var dbResult = new Database.Wrapper.DBResult<IEnumerable<UserDelegate>>();
             dbResult.Payload = new List<UserDelegate>();
-            mockUserDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 1, 500)).Returns(dbResult);
+            mockUserDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
             INotificationSettingsService service = new NotificationSettingsService(
                                 mockLogger.Object,
                                 mockJobClient.Object,
@@ -136,7 +136,7 @@ namespace HealthGateway.CommonTests.Services
             var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
             var dbResult = new Database.Wrapper.DBResult<IEnumerable<UserDelegate>>();
             dbResult.Payload = new List<UserDelegate>();
-            mockUserDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 1, 500)).Returns(dbResult);
+            mockUserDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
 
             INotificationSettingsService service = new NotificationSettingsService(
                                 mockLogger.Object,
