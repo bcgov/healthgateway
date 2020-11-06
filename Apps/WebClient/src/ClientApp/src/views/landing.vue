@@ -58,13 +58,6 @@ export default class LandingView extends Vue {
             active: false,
         },
         {
-            name: "Laboratory",
-            definition: "exclamation-triangle",
-            label: "COVID-19 Test Results (Sep 2020)",
-            color: "#dc3545",
-            active: true,
-        },
-        {
             name: "Laboratory-Inactive",
             definition: "flask",
             label: "Lab Results",
@@ -84,6 +77,13 @@ export default class LandingView extends Vue {
             label: "Immunizations",
             color: "",
             active: false,
+        },
+        {
+            name: "Laboratory",
+            definition: "exclamation-triangle",
+            label: "COVID-19 Test Results (Sep 2020)",
+            color: "#dc3545",
+            active: true,
         },
     ];
 
