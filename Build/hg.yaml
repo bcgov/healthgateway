@@ -58,9 +58,9 @@ variables:
   EnableOCP3: ${{ parameters.EnableOCP3 }}
   EnableOCP4: ${{ parameters.EnableOCP4 }}
   App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
-  ${{ if ne('${{ parameters.OpenShiftName }}', '') }}: 
+  ${{ if parameters.OpenShiftName }}:
       OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
-  ${{ if eq(length(parameters.OpenShiftName),0) }}:
+  ${{ if not(parameters.OpenShiftName) }}:
       OpenShift.Name: $[lower(variables['App.Name'])]
   App.UnitTests: $(App.Home)/test/unit
   App.FunctionalTests: $(App.Home)/test/functional
