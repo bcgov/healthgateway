@@ -60,7 +60,7 @@ variables:
   App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
   ${{ if ne('${{ parameters.OpenShiftName }}', '') }}: 
       OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
-  ${{ if not(parameters.OpenShiftName) }}:
+  ${{ if eq(length(parameters.OpenShiftName),0) }}:
       OpenShift.Name: $[lower(variables['App.Name'])]
   App.UnitTests: $(App.Home)/test/unit
   App.FunctionalTests: $(App.Home)/test/functional
