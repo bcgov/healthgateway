@@ -79,10 +79,6 @@ jobs:
       displayName: "Build ${{ parameters.Application }} in OCP3"
       condition: eq(variables['EnableOCP3'], true)
       steps:
-        - script: | 
-            set -e
-            echo Name: \"$(OpenShift.Name)\"
-            echo Parameter: \"${{ parameters.OpenShiftName }}\"
         - template: /Build/hg-steps-template.yaml
           parameters:
             toolsNamespace: "q6qfzk"
