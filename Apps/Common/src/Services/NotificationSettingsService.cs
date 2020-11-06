@@ -71,7 +71,7 @@ namespace HealthGateway.Common.Services
             };
             string json = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
-            DBResult<IEnumerable<UserDelegate>> dbResult = this.userDelegateDelegate.Get(notificationSettings.SubjectHdid, 1, 500);
+            DBResult<IEnumerable<UserDelegate>> dbResult = this.userDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
             foreach (UserDelegate userDelegate in dbResult.Payload)
             {
                 // Only send dependents sms number if it has been verified
