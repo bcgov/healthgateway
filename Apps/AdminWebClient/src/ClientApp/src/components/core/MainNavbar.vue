@@ -31,6 +31,16 @@ export default class MainNavbar extends Vue {
             to: "/job-scheduler"
         },
         {
+            title: "Beta Invites",
+            icon: "account_box",
+            to: "/beta-invites"
+        },
+        {
+            title: "Resend Emails",
+            icon: "email",
+            to: "/admin-email"
+        },
+        {
             title: "Communications",
             icon: "email",
             to: "/communication"
