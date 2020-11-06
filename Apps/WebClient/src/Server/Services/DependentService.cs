@@ -97,7 +97,7 @@ namespace HealthGateway.WebClient.Services
                     return new RequestResult<DependentModel>()
                     {
                         ResourcePayload = DependentModel.CreateFromModels(dbDependent.Payload, patientResult.ResourcePayload),
-                        ResultStatus = ResultType.Success
+                        ResultStatus = ResultType.Success,
                     };
                 }
                 else
@@ -188,6 +188,7 @@ namespace HealthGateway.WebClient.Services
         {
             DBResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
             UserProfile delegateUserProfile = dbResult.Payload;
+
             // Update the notification settings
             NotificationSettingsRequest request = new NotificationSettingsRequest(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SMSNumber);
             request.SubjectHdid = dependentHdid;
@@ -199,6 +200,7 @@ namespace HealthGateway.WebClient.Services
                 request.SMSEnabled = false;
                 request.SMSVerified = false;
             }
+
             this.notificationSettingsService.QueueNotificationSettings(request);
             return request;
         }

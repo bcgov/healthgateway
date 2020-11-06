@@ -66,7 +66,7 @@ namespace HealthGateway.WebClient.Models
                 Gender = patientModel.Gender,
                 DateOfBirth = patientModel.Birthdate,
             };
-            
+
             if (patientModel.PersonalHealthNumber.Length > 3)
             {
                 result.MaskedPHN = patientModel.PersonalHealthNumber.Remove(patientModel.PersonalHealthNumber.Length - 5, 4) + "****";

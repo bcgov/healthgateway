@@ -35,6 +35,7 @@ namespace HealthGateway.WebClient.Models
 
         /// <summary>
         /// Gets or sets the hdid which has delegated access to the owner Id.
+        /// </summary>
         public string DelegateId { get; set; } = null!;
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace HealthGateway.WebClient.Models
                 OwnerId = userDeleagate.OwnerId,
                 DelegateId = userDeleagate.DelegateId,
                 Version = userDeleagate.Version,
-                DependentInformation = DependentInformation.FromPatientModel(patientModel)
+                DependentInformation = DependentInformation.FromPatientModel(patientModel),
             };
         }
 
