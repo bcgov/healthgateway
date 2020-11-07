@@ -173,7 +173,7 @@ export default class DependentCardComponent extends Vue {
 
     private formatResult(labResult: LaboratoryResult): string {
         if (this.checkResultReady(labResult)) {
-            return labResult.resultDescription;
+            return labResult?.resultDescription ?? "";
         } else {
             return "";
         }
