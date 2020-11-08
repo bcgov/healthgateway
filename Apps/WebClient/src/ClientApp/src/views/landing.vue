@@ -65,13 +65,6 @@ export default class LandingView extends Vue {
             active: true,
         },
         {
-            name: "Laboratory-Inactive",
-            definition: "flask",
-            label: "Lab Results",
-            color: "",
-            active: false,
-        },
-        {
             name: "Encounter",
             definition: "user-md",
             label: "Health Visits",
@@ -82,6 +75,13 @@ export default class LandingView extends Vue {
             name: "Immunization",
             definition: "syringe",
             label: "Immunizations",
+            color: "",
+            active: false,
+        },
+        {
+            name: "Laboratory-Inactive",
+            definition: "flask",
+            label: "Lab Results",
             color: "",
             active: false,
         },

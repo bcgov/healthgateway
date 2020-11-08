@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import Dependent from "@/models/dependent";
+import { Component, Emit, Prop, Ref } from "vue-property-decorator";
+import type { Dependent } from "@/models/dependent";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { Action, Getter } from "vuex-class";
 import { ResultError } from "@/models/requestResult";
@@ -43,7 +43,7 @@ export default class DependentCardComponent extends Vue {
 
     private message =
         "Are you sure you want to remove " +
-        this.dependent.name +
+        this.dependent.dependentInformation.name +
         " from your list of dependents?";
 
     private isLoading = false;
@@ -54,7 +54,9 @@ export default class DependentCardComponent extends Vue {
     private isDataLoaded = false;
 
     private get isExpired() {
-        let birthDate = new DateWrapper(this.dependent.dateOfBirth);
+        let birthDate = new DateWrapper(
+            this.dependent.dependentInformation.dateOfBirth
+        );
         let now = new DateWrapper();
         return now.diff(birthDate, "year").years > 19;
     }
@@ -79,7 +81,7 @@ export default class DependentCardComponent extends Vue {
         }
         this.isLoading = true;
         this.laboratoryService
-            .getOrders(this.dependent.hdid)
+            .getOrders(this.dependent.ownerId)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.labResults = results.resourcePayload;
@@ -111,12 +113,12 @@ export default class DependentCardComponent extends Vue {
     private getReport(labOrder: LaboratoryOrder) {
         let labResult = labOrder.labResults[0];
         this.laboratoryService
-            .getReportDocument(labResult.id, this.dependent.hdid)
+            .getReportDocument(labOrder.id, this.dependent.ownerId)
             .then((result) => {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
                 link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${this.dependent.name}_${labResult.collectedDateTime}.pdf`;
+                link.download = `COVID_Result_${this.dependent.dependentInformation.name}_${labResult.collectedDateTime}.pdf`;
                 link.click();
                 URL.revokeObjectURL(link.href);
             })
@@ -132,8 +134,12 @@ export default class DependentCardComponent extends Vue {
     }
 
     private deleteDependent(): void {
+        this.isLoading = true;
         this.dependentService
-            .removeDependent(this.dependent)
+            .removeDependent(this.user.hdid, this.dependent)
+            .then(() => {
+                this.needsUpdate();
+            })
             .catch((err: ResultError) => {
                 this.addError(
                     ErrorTranslator.toBannerError(
@@ -141,11 +147,19 @@ export default class DependentCardComponent extends Vue {
                         err
                     )
                 );
+            })
+            .finally(() => {
+                this.isLoading = false;
             });
     }
 
     private showConfirmationModal(): void {
         this.deleteModal.showModal();
+    }
+
+    @Emit()
+    private needsUpdate() {
+        return;
     }
 
     private formatDate(date: StringISODate): string {
@@ -161,7 +175,7 @@ export default class DependentCardComponent extends Vue {
                 <b-tab active data-testid="dependentTab">
                     <template #title>
                         <strong data-testid="dependentName">{{
-                            dependent.name
+                            dependent.dependentInformation.name
                         }}</strong>
                     </template>
                     <div v-if="isExpired">
@@ -193,7 +207,10 @@ export default class DependentCardComponent extends Vue {
                                     <b-col class="col-12">PHN</b-col>
                                     <b-col class="col-12">
                                         <b-form-input
-                                            v-model="dependent.maskedPHN"
+                                            v-model="
+                                                dependent.dependentInformation
+                                                    .maskedPHN
+                                            "
                                             data-testid="dependentPHN"
                                             readonly
                                         ></b-form-input>
@@ -207,7 +224,9 @@ export default class DependentCardComponent extends Vue {
                                         <b-form-input
                                             :value="
                                                 formatDate(
-                                                    dependent.dateOfBirth
+                                                    dependent
+                                                        .dependentInformation
+                                                        .dateOfBirth
                                                 )
                                             "
                                             data-testid="dependentDOB"
@@ -221,7 +240,10 @@ export default class DependentCardComponent extends Vue {
                                     <b-col class="col-12">Gender</b-col>
                                     <b-col class="col-12">
                                         <b-form-input
-                                            v-model="dependent.gender"
+                                            v-model="
+                                                dependent.dependentInformation
+                                                    .gender
+                                            "
                                             data-testid="dependentGender"
                                             readonly
                                         ></b-form-input>

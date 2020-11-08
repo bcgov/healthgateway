@@ -71,19 +71,25 @@ namespace HealthGateway.Common.Services
             };
             string json = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
-            DBResult<IEnumerable<UserDelegate>> dbResult = this.userDelegateDelegate.Get(notificationSettings.SubjectHdid, 1, 500);
+            DBResult<IEnumerable<UserDelegate>> dbResult = this.userDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
             foreach (UserDelegate userDelegate in dbResult.Payload)
             {
+                this.logger.LogDebug($"Queueing Dependent Notification Settings.");
+                NotificationSettingsRequest dependentNotificationSettings = new NotificationSettingsRequest();
+                dependentNotificationSettings.SubjectHdid = userDelegate.OwnerId;
+                dependentNotificationSettings.EmailAddress = notificationSettings.EmailAddress;
+                dependentNotificationSettings.EmailEnabled = notificationSettings.EmailEnabled;
+                dependentNotificationSettings.EmailScope = notificationSettings.EmailScope;
                 // Only send dependents sms number if it has been verified
-                if (!notificationSettings.SMSVerified)
+                if (notificationSettings.SMSVerified)
                 {
-                    notificationSettings.SMSNumber = null;
-                    notificationSettings.SMSVerificationCode = null;
+                    dependentNotificationSettings.SMSNumber = notificationSettings.SMSNumber;
+                    dependentNotificationSettings.SMSEnabled = notificationSettings.SMSEnabled;
+                    dependentNotificationSettings.SMSScope = notificationSettings.SMSScope;
+                    dependentNotificationSettings.SMSVerified= notificationSettings.SMSVerified;
                 }
 
-                this.logger.LogDebug($"Queueing Dependent Notification Settings.");
-                notificationSettings.SubjectHdid = userDelegate.OwnerId;
-                string delegateJson = JsonSerializer.Serialize(notificationSettings, options);
+                string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings, options);
                 this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
             }
 
