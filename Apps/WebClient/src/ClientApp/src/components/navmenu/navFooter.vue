@@ -44,7 +44,7 @@ export default class FooterComponent extends Vue {
 
             <b-nav-item
                 class="nav-link"
-                href="https://www2.gov.bc.ca/gov/content/health/healthgateway"
+                href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway"
                 target="_blank"
                 >About Us
             </b-nav-item>
