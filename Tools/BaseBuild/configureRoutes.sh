@@ -15,4 +15,4 @@ oc project $namespace
 ./route.sh poc immunization immunization "/api/immunizationservice"
 ./route.sh poc laboratory laboratory "/api/laboratoryservice"
 ./route.sh poc encounter encounter "/api/encounterservice"
-# ./route.sh poc odrproxy odrproxy "/dev/odrproxy"
+#./route.sh poc odrproxy odrproxy "/dev/odrproxy"
