@@ -235,19 +235,40 @@ export default class LaboratoryTimelineComponent extends Vue {
                                     <div>
                                         <strong>What to expect next</strong>
                                         <p>
-                                            If you receive a positive COVID-19
-                                            result:
+                                            If you receive a
+                                            <b>positive</b> COVID-19 result:
                                         </p>
                                         <ul>
                                             <li>
-                                                Public health will contact you
-                                                soon with instructions
+                                                You and the people you live with
+                                                need to self-isolate now.
                                             </li>
                                             <li>
-                                                Wait before notifying others
-                                                until you've been briefed
+                                                Public health will contact you
+                                                in 2 to 3 days with further
+                                                instructions.
                                             </li>
-                                            <li>Self-isolate and stay calm</li>
+                                            <li>
+                                                If you are a health care worker,
+                                                please notify your employer of
+                                                your positive result.
+                                            </li>
+                                            <li>
+                                                Monitor your health and contact
+                                                a health care provider or call
+                                                8-1-1 if you are concerned about
+                                                your symptoms.
+                                            </li>
+                                            <li>
+                                                Go to
+                                                <a
+                                                    href="http://www.bccdc.ca/results"
+                                                    target="blank_"
+                                                    >www.bccdc.ca/results</a
+                                                >
+                                                for more information about your
+                                                test result.
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
