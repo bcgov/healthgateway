@@ -309,6 +309,44 @@ export default class DependentCardComponent extends Vue {
                             </td>
                         </tr>
                     </table>
+                    <b-row class="m-2">
+                        <b-col>What to expect next</b-col>
+                    </b-row>
+                    <b-row class="m-2">
+                        <b-col
+                            >If you receive a positive COVID-19 result:</b-col
+                        >
+                    </b-row>
+                    <b-row class="m-2">
+                        <b-col>
+                            • You and the people you live with need to
+                            self-isolate now.
+                        </b-col>
+                    </b-row>
+                    <b-row class="m-2">
+                        <b-col
+                            >• Public health will contact you in 2 to 3 days
+                            with further instructions.</b-col
+                        >
+                    </b-row>
+                    <b-row class="m-2">
+                        <b-col>
+                            • Monitor your health and contact a health care
+                            provider or call 8-1-1 if you are concerned about
+                            your symptoms.</b-col
+                        >
+                    </b-row>
+                    <b-row class="m-2">
+                        <b-col>
+                            • Go to
+                            <a
+                                href="http://www.bccdc.ca/results"
+                                target="blank_"
+                                >www.bccdc.ca/results</a
+                            >
+                            for more information about your test result.</b-col
+                        >
+                    </b-row>
                 </b-tab>
                 <template #tabs-end>
                     <li
