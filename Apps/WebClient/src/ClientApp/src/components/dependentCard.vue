@@ -173,7 +173,7 @@ export default class DependentCardComponent extends Vue {
 
     private formatResult(labResult: LaboratoryResult): string {
         if (this.checkResultReady(labResult)) {
-            return labResult?.resultDescription ?? "";
+            return labResult?.labResultOutcome ?? "";
         } else {
             return "";
         }
@@ -310,7 +310,7 @@ export default class DependentCardComponent extends Vue {
                             <td class="d-none d-sm-table-cell">
                                 {{ item.location }}
                             </td>
-                            <td :class="item.labResults[0].resultDescription">
+                            <td :class="item.labResults[0].labResultOutcome">
                                 {{ formatResult(item.labResults[0]) }}
                             </td>
                             <td>
