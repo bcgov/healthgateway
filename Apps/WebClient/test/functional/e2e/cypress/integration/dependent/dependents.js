@@ -1,6 +1,5 @@
 const { AuthMethod } = require("../../support/constants")
 
-
 describe('dependents', () => {
     const firstName = "Sam"
     const lastName = "Testfive"
@@ -115,5 +114,18 @@ describe('dependents', () => {
         // Validate the tab and elements are present        
         cy.get('[data-testid=covid19TabTitle]').last().parent().click();
         cy.get('[data-testid=covid19NoRecords]').last().should('have.text', 'No records found.');
+    })
+
+    it('Validate Remove Dependent', () => {       
+        cy.get('[data-testid=dependentMenuBtn]').last().click();
+        cy.get('[data-testid=deleteDependentMenuBtn]').last().click();
+        cy.get('[data-testid=confirmDeleteBtn]').should('be.visible');
+        cy.get('[data-testid=cancelDeleteBtn]').should('be.visible');
+        cy.get('[data-testid=cancelDeleteBtn]').click();
+        
+        // Now click the "Yes, I'm sure" to confirm deletion
+        cy.get('[data-testid=dependentMenuBtn]').last().click();
+        cy.get('[data-testid=deleteDependentMenuBtn]').last().click();
+        cy.get('[data-testid=confirmDeleteBtn]').click();
     })
 }) 
