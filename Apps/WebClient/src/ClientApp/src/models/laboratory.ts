@@ -8,6 +8,7 @@ export interface LaboratoryResult {
     collectedDateTime: StringISODateTime;
     testStatus: string | null;
     resultDescription: string | null;
+    labResultOutcome: string | null;
     receivedDateTime: StringISODateTime;
     resultDateTime: StringISODateTime;
     loinc: string | null;
