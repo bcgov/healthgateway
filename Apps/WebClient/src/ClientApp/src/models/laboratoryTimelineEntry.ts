@@ -9,8 +9,10 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     public orderingProviders: string | null;
     public reportingLab: string | null;
     public location: string | null;
+    public labResultOutcome: string | null;
     public displayDate: DateWrapper;
     public reportAvailable: boolean;
+    public isStatusFinal: boolean;
 
     public summaryTitle: string;
     public summaryDescription: string;
@@ -46,6 +48,9 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.summaryTitle = firstResult.loincName || "";
         this.summaryDescription = firstResult.testType || "";
         this.summaryStatus = firstResult.testStatus || "";
+        this.isStatusFinal = this.summaryStatus == "Final";
+        this.labResultOutcome = firstResult.labResultOutcome;
+        console.log(this.isStatusFinal);
     }
 
     public keywordApplies(filter: TimelineFilter): boolean {
@@ -72,6 +77,7 @@ export class LaboratoryResultViewModel {
     public collectedDateTime: DateWrapper;
     public testStatus: string | null;
     public resultDescription: string | null;
+    public labResultOutcome: string | null;
     public receivedDateTime: DateWrapper;
     public resultDateTime: DateWrapper;
     public loinc: string | null;
@@ -86,6 +92,7 @@ export class LaboratoryResultViewModel {
         });
         this.testStatus = model.testStatus;
         this.resultDescription = model.resultDescription;
+        this.labResultOutcome = model.labResultOutcome;
         this.receivedDateTime = new DateWrapper(model.receivedDateTime, {
             hasTime: true,
         });
