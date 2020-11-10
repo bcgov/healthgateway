@@ -104,7 +104,12 @@ export default class LaboratoryTimelineComponent extends Vue {
                         <strong>{{ entry.summaryTitle }}</strong>
                     </b-col>
                     <b-col cols="auto" class="text-muted">
-                        <strong> Status: {{ entry.summaryStatus }}</strong>
+                        <strong v-show="entry.isStatusFinal">
+                            Result:
+                            <span :class="entry.labResultOutcome"
+                                >{{ entry.labResultOutcome }}
+                            </span></strong
+                        >
                     </b-col>
                 </b-row>
             </b-col>
@@ -309,5 +314,12 @@ $radius: 15px;
 
 .newComment {
     border-radius: $radius;
+}
+
+span.Positive {
+    color: red;
+}
+span.Negative {
+    color: green;
 }
 </style>
