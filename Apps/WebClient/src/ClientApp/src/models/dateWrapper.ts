@@ -247,12 +247,30 @@ export class DateWrapper {
     }
 
     /**
+     * Checks if this date is before or same the parameter date
+     * @param other Date to compare against
+     * @returns True if this date is before or same as passed date, false otherwise.
+     */
+    public isBeforeOrSame(other: DateWrapper): boolean {
+        return this.internalDate.toMillis() <= other.internalDate.toMillis();
+    }
+
+    /**
      * Checks if this date is after the parameter date
      * @param other Date to compare against
      * @returns True if this date is after the passed date, false otherwise
      */
     public isAfter(other: DateWrapper): boolean {
         return this.internalDate.toMillis() > other.internalDate.toMillis();
+    }
+
+    /**
+     * Checks if this date is after or same the parameter date
+     * @param other Date to compare against
+     * @returns True if this date is after or same as the passed date, false otherwise
+     */
+    public isAfterOrSame(other: DateWrapper): boolean {
+        return this.internalDate.toMillis() >= other.internalDate.toMillis();
     }
 
     /**
