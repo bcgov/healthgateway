@@ -63,6 +63,7 @@ export default class DeleteModalComponent extends Vue {
     <b-modal
         id="delete-confirmation"
         v-model="isVisible"
+        data-testid="deleteConfirmationModal"
         :title="title"
         header-bg-variant="danger"
         header-text-variant="light"
@@ -86,6 +87,7 @@ export default class DeleteModalComponent extends Vue {
                     <b-row>
                         <b-col>
                             <b-button
+                                data-testid="confirmDeleteBtn"
                                 class="mr-2"
                                 variant="primary"
                                 @click="handleSubmit($event)"
@@ -93,6 +95,7 @@ export default class DeleteModalComponent extends Vue {
                                 Yes, I'm sure
                             </b-button>
                             <b-button
+                                data-testid="cancelDeleteBtn"
                                 variant="secondary"
                                 @click="handleCancel($event)"
                             >
