@@ -66,8 +66,10 @@ Creates a Docker based hybrid build along with the associated Image Stream which
 To create the services for a given namespace do the following
 
 ```console
-./deploy_services.sh NAMESPACE
+./deploy_services.sh NAMESPACE ENVIRONMENT ASPNETCORE_ENVIRONMENT
 ```
+
+TODO: ODR in tools
 
 ### Application Specific Configuration
 
@@ -97,9 +99,11 @@ Once done, proceed to run
 ./configureRoutes.sh NAMESPACE
 ```
 
-TODO: Review documentation below and cleaup
+TODO: ODR route
 
-### Usage
+### Application Builds
+
+The application build is called from Azure builds and shouldn't have to be run manually but documented for reference.
 
 To review the parameters execute:
 
@@ -116,9 +120,7 @@ oc process -f ./build.yaml -p NAME=testbld | oc apply -f -
 In your Application folder, create a base Dockerfile
 
 ```console
-
 FROM docker-registry.default.svc:5000/q6qfzk-tools/dotnet22-base:latest
-
 COPY src .
 #Additional application specific docker steps
 ```
@@ -127,54 +129,4 @@ and finally run the build from your App folder
 
 ```console
 oc start-build testbld --from-dir . --follow
-```
-
-## Common Config
-
-Creates the common configuration needed for each environment
-
-### Typical Usage
-
-```console
-oc process -f ./common.yaml -p AUTH_OIDC_AUDIENCE=audience AUTH_OIDC_AUTHORITY=https://sso AUTH_OIDC_CLIENTSECRET=secret | oc apply -f -
-```
-
-### Secondary Usage
-
-If you have more than one environment in a namespace, you'll need to pass in the name parameter to uniquely identify the config.
-
-```console
-oc process -f ./common.yaml -p NAME=common-secondary -p AUTH_OIDC_AUDIENCE=audiencey AUTH_OIDC_AUTHORITY=https://sso AUTH_OIDC_CLIENTSECRET=secret | oc apply -f -
-```
-
-## WebClient Deployment
-
-Process the webclient template file that creates:
-
-- Deployment Configuration (image based on "tools namespace/image stream:tag")
-- Horizontal Pod Autoscaler
-- Route
-- Service
-- ConfigMap
-
-### Typical Usage
-
-```console
-oc process -f ./webclient.yaml -p ENV=env | oc apply -f -
-```
-
-### Secondary Usage
-
-If you have more than one environment per namespace then NAME and COMMON_CONFIG parameters have to be unique.
-
-```console
-oc process -f ./webclient.yaml -p NAME=webclient-secondary -p COMMON_CONFIG=common-secondary -p ENV=env | oc apply -f -
-```
-
-### Deployment Script
-
-Deploys the application throughout all environments using default parameters.
-
-```console
-./deployment.sh
 ```
