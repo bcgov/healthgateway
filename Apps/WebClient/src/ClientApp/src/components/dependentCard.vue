@@ -21,6 +21,7 @@ import User from "@/models/user";
 import { BTabs, BTab } from "bootstrap-vue";
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import { LaboratoryResult } from "@/models/laboratory";
 library.add(faFileDownload);
 
 @Component({
@@ -165,6 +166,18 @@ export default class DependentCardComponent extends Vue {
     private formatDate(date: StringISODate): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
+
+    private checkResultReady(labResult: LaboratoryResult): boolean {
+        return labResult.testStatus == "Final";
+    }
+
+    private formatResult(labResult: LaboratoryResult): string {
+        if (this.checkResultReady(labResult)) {
+            return labResult?.labResultOutcome ?? "";
+        } else {
+            return "";
+        }
+    }
 }
 </script>
 
@@ -297,9 +310,15 @@ export default class DependentCardComponent extends Vue {
                             <td class="d-none d-sm-table-cell">
                                 {{ item.location }}
                             </td>
-                            <td>{{ item.labResults[0].testStatus }}</td>
+                            <td :class="item.labResults[0].labResultOutcome">
+                                {{ formatResult(item.labResults[0]) }}
+                            </td>
                             <td>
-                                <b-btn variant="link" @click="getReport(item)">
+                                <b-btn
+                                    v-if="checkResultReady(item.labResults[0])"
+                                    variant="link"
+                                    @click="getReport(item)"
+                                >
                                     <font-awesome-icon
                                         icon="file-download"
                                         aria-hidden="true"
@@ -362,5 +381,11 @@ th {
 }
 .dependentMenu {
     color: $soft_text;
+}
+td.Positive {
+    color: red;
+}
+td.Negative {
+    color: green;
 }
 </style>
