@@ -50,7 +50,6 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.summaryStatus = firstResult.testStatus || "";
         this.isStatusFinal = this.summaryStatus == "Final";
         this.labResultOutcome = firstResult.labResultOutcome;
-        console.log(this.isStatusFinal);
     }
 
     public keywordApplies(filter: TimelineFilter): boolean {
