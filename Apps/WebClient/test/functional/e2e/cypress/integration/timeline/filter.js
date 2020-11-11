@@ -30,6 +30,26 @@ describe("Filters", () => {
             .contains(countRegex);
     });
 
+    it("Validate Date Range Filter", () => {
+        //Validate No records... text should be hidden by default (or with data)
+        cy.get("[data-testid=noTimelineEntriesText]").should("not.be.visible");
+
+        // Validate "No records found with the selected filters" for a Date Range Filter
+        cy.get("[data-testid=filterStartDateInput]").type("2020-10-01");
+        cy.get("[data-testid=filterEndDateInput]").type("2020-10-02");
+        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
+        cy.get("[data-testid=noTimelineEntriesText]").children().first().should("have.text", "No records found with the selected filters");
+        
+        // Select 06/14/2020 to 06/14/2020 should display data for this date range.
+        cy.get("[data-testid=filterStartDateInput]").type("2020-06-14");
+        cy.get("[data-testid=filterEndDateInput]").type("2020-06-14");
+        cy.get("[data-testid=noTimelineEntriesText]").should("not.be.visible");
+
+        // Clear date range filter for next tests
+        cy.get("[data-testid=filterStartDateInput]").clear();
+        cy.get("[data-testid=filterEndDateInput]").clear();
+    });
+
     it("No Records on Linear Timeline", () => {
         cy.get("[data-testid=filterTextInput]").type("xxxx");
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
@@ -154,25 +174,5 @@ describe("Filters", () => {
         cy.get("[data-testid=EncounterCount]").should("not.be.visible");
         cy.get("[data-testid=NoteCount]").should("not.be.visible");
         cy.get("[data-testid=LaboratoryCount]").should("not.be.visible");
-    });
-    
-    it("Validate Date Range Filter", () => {
-        //Validate No records... text should be hidden by default (or with data)
-        cy.get("[data-testid=noTimelineEntriesText]").should("not.be.visible");
-
-        // Validate "No records found with the selected filters" for a Date Range Filter
-        cy.get("[data-testid=filterStartDateInput]").type("2020-10-01");
-        cy.get("[data-testid=filterEndDateInput]").type("2020-10-02");
-        cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
-        cy.get("[data-testid=noTimelineEntriesText]").children().first().should("have.text", "No records found with the selected filters");
-        
-        // Select 06/14/2020 to 06/14/2020 should display data for this date range.
-        cy.get("[data-testid=filterStartDateInput]").type("2020-06-14");
-        cy.get("[data-testid=filterEndDateInput]").type("2020-06-14");
-        cy.get("[data-testid=noTimelineEntriesText]").should("not.be.visible");
-
-        // Clear date range filter for next tests
-        cy.get("[data-testid=filterStartDateInput]").clear();
-        cy.get("[data-testid=filterEndDateInput]").clear();
     });
 });
