@@ -39,8 +39,9 @@ namespace HealthGateway.WebClient.Test.Services
         private const string mockPHN = "MockPHN";
         private const string mockFirstName = "MockFirstName";
         private const string mockLastName = "MockLastName";
-        private const string mockGender = "Male";
+        private DateTime mockTestDate = new DateTime(2020, 1, 10);
         private DateTime mockDateOfBirth = new DateTime(2010, 10, 10);
+        private const string mockGender = "Male";
         private const string mockHdId = "MockHdId";
         private const string mismatchedError = "The information you entered did not match. Please try again.";
 
@@ -201,21 +202,6 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
-        public void ValidateDependentWithWrongGender()
-        {
-            AddDependentRequest addDependentRequest = SetupMockInput();
-            addDependentRequest.Gender = "wrong";
-            IDependentService service = SetupMockDependentService(addDependentRequest);
-            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
-
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
-
-            Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
-        }
-
-        [Fact]
         public void ValidateRemove()
         {
             DependentModel delegateModel = new DependentModel() { OwnerId = mockHdId, DelegateId = mockParentHdId };
@@ -305,7 +291,7 @@ namespace HealthGateway.WebClient.Test.Services
                 PHN = mockPHN,
                 FirstName = mockFirstName,
                 LastName = mockLastName,
-                Gender = mockGender,
+                TestDate = mockTestDate,
                 DateOfBirth = mockDateOfBirth
             };
         }

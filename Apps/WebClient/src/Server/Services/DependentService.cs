@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System.Collections.Generic;
     using System.Text;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
@@ -37,6 +38,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IUserDelegateDelegate userDelegateDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IUserDelegateStatementDelegate userDelegateStatementDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -46,18 +48,21 @@ namespace HealthGateway.WebClient.Services
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
+        /// <param name="userDelegateStatementDelegate">The User Delegate Statement delegate to interact with the DB.</param>
         public DependentService(
             ILogger<DependentService> logger,
             IUserProfileDelegate userProfileDelegate,
             IPatientService patientService,
             INotificationSettingsService notificationSettingsService,
-            IUserDelegateDelegate userDelegateDelegate)
+            IUserDelegateDelegate userDelegateDelegate,
+            IUserDelegateStatementDelegate userDelegateStatementDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
             this.userDelegateDelegate = userDelegateDelegate;
             this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
+            this.userDelegateStatementDelegate = userDelegateStatementDelegate;
         }
 
         /// <inheritdoc />
@@ -75,9 +80,11 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
+            this.logger.LogError($"Getting dependent details...{JsonSerializer.Serialize(patientResult)}");
             // Verify dependent's details entered by user
             if (!addDependentRequest.Equals(patientResult.ResourcePayload))
             {
+
                 return new RequestResult<DependentModel>()
                 {
                     ResultStatus = ResultType.Error,
@@ -88,12 +95,16 @@ namespace HealthGateway.WebClient.Services
             {
                 // Insert Dependent to database
                 var dependent = new UserDelegate() { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId };
-
                 DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Insert(dependent, true);
+
                 if (dbDependent.Status == DBStatusCode.Created)
                 {
                     this.logger.LogDebug("Finished adding dependent");
                     this.UpdateNotificationSettings(dependent.OwnerId, delegateHdId);
+
+                    var dependentStatement = new UserDelegateStatement { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId, TestDate = addDependentRequest.TestDate;
+                    this.userDelegateStatementDelegate.Insert(dependentStatement, true);
+
                     return new RequestResult<DependentModel>()
                     {
                         ResourcePayload = DependentModel.CreateFromModels(dbDependent.Payload, patientResult.ResourcePayload),
