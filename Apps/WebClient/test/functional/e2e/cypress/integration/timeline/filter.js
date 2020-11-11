@@ -31,7 +31,6 @@ describe("Filters", () => {
     });
 
     it("Validate Date Range Filter", () => {
-        
         //Validate No records... text should be hidden by default (or with data)
         cy.get("[data-testid=noTimelineEntriesText]").should("not.be.visible");
 
@@ -50,8 +49,6 @@ describe("Filters", () => {
         cy.get("[data-testid=filterStartDateInput]").clear();
         cy.get("[data-testid=filterEndDateInput]").clear();
     });
-
-/*
 
     it("No Records on Linear Timeline", () => {
         cy.get("[data-testid=filterTextInput]").type("xxxx");
@@ -178,5 +175,4 @@ describe("Filters", () => {
         cy.get("[data-testid=NoteCount]").should("not.be.visible");
         cy.get("[data-testid=LaboratoryCount]").should("not.be.visible");
     });
-    */
 });

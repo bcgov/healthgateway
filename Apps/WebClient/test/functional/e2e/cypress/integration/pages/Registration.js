@@ -17,7 +17,7 @@ describe("Registration Page", () => {
             config.webClient.modules.Note = false
             cy.server();
             cy.route('GET', '/v1/api/configuration/', config);
-            cy.login(Cypress.env('bcsc.hlthgw401.username'), Cypress.env('bcsc.hlthgw401.password'), AuthMethod.BCSC);
+            cy.login(Cypress.env('keycloak.hlthgw401.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloakUI, registrationPage);
         });
         cy.url().should("include", registrationPage);
         cy.get('[data-testid="minimumAgeErrorText"]').should('be.visible');
@@ -35,7 +35,7 @@ describe("Registration Page", () => {
             config.webClient.modules.Note = false
             cy.server();
             cy.route('GET', '/v1/api/configuration/', config);
-            cy.login(Cypress.env('keycloak.healthgateway12.username'), Cypress.env('keycloak.healthgateway12.password'), AuthMethod.KeyCloak, "/registration");   
+            cy.login(Cypress.env('keycloak.healthgateway12.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloakUI, registrationPage);   
         });
         cy.url().should("include", registrationPage);
         cy.get('[data-testid="clientRegistryErrorText"]').should('be.visible');
@@ -54,10 +54,9 @@ describe("Registration Page", () => {
             cy.server();
             cy.route('GET', '/v1/api/configuration/', config);
             cy.login(Cypress.env('keycloak.unregistered.username'), 
-                     Cypress.env('keycloak.unregistered.password'), 
-                     AuthMethod.KeyCloak);
+                     Cypress.env('keycloak.password'), 
+                     AuthMethod.KeyCloakUI);
         });
-        cy.checkTimelineHasLoaded();
         cy.url().should("include", registrationPage);
         cy.contains("footer").should("not.exist");
         cy.get('[data-testid="sidebar"]').should('not.be.visible');

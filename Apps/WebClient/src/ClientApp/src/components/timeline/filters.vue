@@ -34,7 +34,7 @@ export default class FilterComponent extends Vue {
     private steps = [25, 50, 100, 500];
     private stepIndex = 0;
     private filter: TimelineFilter = new TimelineFilter();
-    private selectedEntryTypes: EntryTypeFilter[] = [];
+    private selectedEntryTypes: EntryType[] = [];
 
     private get isMobileView(): boolean {
         return this.windowWidth < 576;
@@ -50,7 +50,7 @@ export default class FilterComponent extends Vue {
     private onSelectedEntryTypesChanged() {
         this.filter.entryTypes.forEach((et: EntryTypeFilter) => {
             et.isSelected = this.selectedEntryTypes.some(
-                (set) => set.type == et.type
+                (set) => set == et.type
             );
         });
     }
@@ -96,8 +96,8 @@ export default class FilterComponent extends Vue {
 
         this.eventBus.$on(
             EventMessageName.SelectedFilter,
-            (filterName: string) => {
-                this.onExternalFilterSelection(filterName);
+            (filterType: EntryType) => {
+                this.onExternalFilterSelection(filterType);
             }
         );
         this.eventBus.$on(EventMessageName.TimelineEntryAdded, () => {
@@ -173,16 +173,9 @@ export default class FilterComponent extends Vue {
         };
     }
 
-    private onExternalFilterSelection(filterName: string) {
-        var externalFilter = this.filter.entryTypes.find(
-            (x) => x.type === filterName
-        );
-        if (externalFilter) {
-            this.clearFilters();
-            externalFilter.isSelected = true;
-        } else {
-            this.logger.error("Invalid filter attempted to be selected");
-        }
+    private onExternalFilterSelection(filterType: EntryType) {
+        this.clearFilters();
+        this.selectedEntryTypes.push(filterType);
     }
 
     private formatFilterCount(num: number): string {
@@ -234,7 +227,7 @@ export default class FilterComponent extends Vue {
                                 v-model="selectedEntryTypes"
                                 :data-testid="`${filter.type}-filter`"
                                 :name="filter.type + '-filter'"
-                                :value="filter"
+                                :value="filter.type"
                             >
                                 {{ filter.display }}
                             </b-form-checkbox>

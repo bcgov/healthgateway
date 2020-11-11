@@ -21,6 +21,7 @@ import User from "@/models/user";
 import { BTabs, BTab } from "bootstrap-vue";
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import { LaboratoryResult } from "@/models/laboratory";
 library.add(faFileDownload);
 
 @Component({
@@ -165,6 +166,18 @@ export default class DependentCardComponent extends Vue {
     private formatDate(date: StringISODate): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
+
+    private checkResultReady(labResult: LaboratoryResult): boolean {
+        return labResult.testStatus == "Final";
+    }
+
+    private formatResult(labResult: LaboratoryResult): string {
+        if (this.checkResultReady(labResult)) {
+            return labResult?.labResultOutcome ?? "";
+        } else {
+            return "";
+        }
+    }
 }
 </script>
 
@@ -284,22 +297,38 @@ export default class DependentCardComponent extends Vue {
                             v-for="item in labResults"
                             :key="item.labResults[0].id"
                         >
-                            <td>
+                            <td data-testid="dependentCovidTestDate">
                                 {{
                                     formatDate(
                                         item.labResults[0].collectedDateTime
                                     )
                                 }}
                             </td>
-                            <td class="d-none d-sm-table-cell">
+                            <td
+                                data-testid="dependentCovidTestType"
+                                class="d-none d-sm-table-cell"
+                            >
                                 {{ item.labResults[0].testType }}
                             </td>
-                            <td class="d-none d-sm-table-cell">
+                            <td
+                                data-testid="dependentCovidTestLocation"
+                                class="d-none d-sm-table-cell"
+                            >
                                 {{ item.location }}
                             </td>
-                            <td>{{ item.labResults[0].testStatus }}</td>
+                            <td
+                                data-testid="dependentCovidTestLabResult"
+                                :class="item.labResults[0].labResultOutcome"
+                            >
+                                {{ formatResult(item.labResults[0]) }}
+                            </td>
                             <td>
-                                <b-btn variant="link" @click="getReport(item)">
+                                <b-btn
+                                    v-if="checkResultReady(item.labResults[0])"
+                                    data-testid="dependentCovidReportDownloadBtn"
+                                    variant="link"
+                                    @click="getReport(item)"
+                                >
                                     <font-awesome-icon
                                         icon="file-download"
                                         aria-hidden="true"
@@ -309,6 +338,41 @@ export default class DependentCardComponent extends Vue {
                             </td>
                         </tr>
                     </table>
+                    <div class="p-1">
+                        <strong>What to expect next</strong>
+                        <p>
+                            If you receive a
+                            <b>positive</b> COVID-19 result:
+                        </p>
+                        <ul>
+                            <li>
+                                You and the people you live with need to
+                                self-isolate now.
+                            </li>
+                            <li>
+                                Public health will contact you in 2 to 3 days
+                                with further instructions.
+                            </li>
+                            <li>
+                                If you are a health care worker, please notify
+                                your employer of your positive result.
+                            </li>
+                            <li>
+                                Monitor your health and contact a health care
+                                provider or call 8-1-1 if you are concerned
+                                about your symptoms.
+                            </li>
+                            <li>
+                                Go to
+                                <a
+                                    href="http://www.bccdc.ca/results"
+                                    target="blank_"
+                                    >www.bccdc.ca/results</a
+                                >
+                                for more information about your test result.
+                            </li>
+                        </ul>
+                    </div>
                 </b-tab>
                 <template #tabs-end>
                     <li
@@ -362,5 +426,11 @@ th {
 }
 .dependentMenu {
     color: $soft_text;
+}
+td.Positive {
+    color: red;
+}
+td.Negative {
+    color: green;
 }
 </style>
