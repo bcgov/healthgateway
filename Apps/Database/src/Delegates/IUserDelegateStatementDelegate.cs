@@ -32,5 +32,14 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
         DBResult<UserDelegateStatement> Insert(UserDelegateStatement userDelegateStatement, bool commit);
+
+        /// <summary>
+        /// Deletes a User Delegate Statement record in the database.
+        /// </summary>
+        /// <param name="ownerId">The owner id to match the record to be deleted.</param>
+        /// <param name="delegateId">The delegate id to match the record to be deleted.</param>
+        /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
+        /// <returns>A DB result which encapsulates the return record and status.</returns>
+        DBResult<UserDelegateStatement> Delete(string ownerId, string delegateId, bool commit);
     }
 }

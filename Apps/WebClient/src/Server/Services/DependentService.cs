@@ -102,7 +102,7 @@ namespace HealthGateway.WebClient.Services
                     this.logger.LogDebug("Finished adding dependent");
                     this.UpdateNotificationSettings(dependent.OwnerId, delegateHdId);
 
-                    var dependentStatement = new UserDelegateStatement { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId, TestDate = addDependentRequest.TestDate;
+                    var dependentStatement = new UserDelegateStatement { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId, TestDate = addDependentRequest.TestDate };
                     this.userDelegateStatementDelegate.Insert(dependentStatement, true);
 
                     return new RequestResult<DependentModel>()
@@ -184,6 +184,7 @@ namespace HealthGateway.WebClient.Services
             if (dbDependent.Status == DBStatusCode.Deleted)
             {
                 this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, isDelete: true);
+                this.userDelegateStatementDelegate.Delete(dependent.OwnerId, dependent.DelegateId, true);
             }
 
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()

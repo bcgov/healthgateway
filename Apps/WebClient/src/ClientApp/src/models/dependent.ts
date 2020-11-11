@@ -10,9 +10,9 @@ export interface DependentInformation {
     hdid: string;
 
     /**
-     * The dependent masked phn.
+     * The dependent phn.
      */
-    maskedPHN: string;
+    PHN: string;
 
     /**
      * The dependent name.

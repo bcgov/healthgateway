@@ -133,7 +133,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                     Version = (uint)i,
                     DependentInformation = new DependentInformation()
                     {
-                        MaskedPHN = $"{dependentModels}-{i}",
+                        PHN = $"{dependentModels}-{i}",
                         DateOfBirth = new DateTime(1980 + i, 1, 1),
                         Gender = "Female",
                         Name = $"{dependentName}-{i}"

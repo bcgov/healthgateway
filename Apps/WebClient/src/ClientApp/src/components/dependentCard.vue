@@ -209,7 +209,7 @@ export default class DependentCardComponent extends Vue {
                                         <b-form-input
                                             v-model="
                                                 dependent.dependentInformation
-                                                    .maskedPHN
+                                                    .PHN
                                             "
                                             data-testid="dependentPHN"
                                             readonly

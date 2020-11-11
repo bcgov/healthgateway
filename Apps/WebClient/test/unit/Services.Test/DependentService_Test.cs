@@ -49,12 +49,17 @@ namespace HealthGateway.WebClient.Test.Services
         {
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new Mock<IUserProfileDelegate>();
             Mock<INotificationSettingsService> mockNotificationSettingsService = new Mock<INotificationSettingsService>();
+
+            Mock<IUserDelegateStatementDelegate> mockUserDelegateStatementDelegate = new Mock<IUserDelegateStatementDelegate>();
+            mockUserDelegateStatementDelegate.Setup(s => s.Insert(It.IsAny<UserDelegateStatement>(), true)).Returns(new DBResult<UserDelegateStatement>());
+
             return new DependentService(
                 new Mock<ILogger<DependentService>>().Object,
                 mockUserProfileDelegate.Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object
+                mockDependentDelegate.Object,
+                mockUserDelegateStatementDelegate.Object
             );
         }
 
@@ -127,7 +132,7 @@ namespace HealthGateway.WebClient.Test.Services
             // Validate masked PHN
             foreach (DependentModel model in actualResult.ResourcePayload)
             {
-                Assert.Equal(model.DependentInformation.MaskedPHN, mockPHN.Remove(mockPHN.Length - 5, 4) + "****");
+                Assert.Equal(model.DependentInformation.PHN, mockPHN);
             }
         }
 
@@ -220,7 +225,8 @@ namespace HealthGateway.WebClient.Test.Services
                 mockUserProfileDelegate.Object,
                 new Mock<IPatientService>().Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object
+                mockDependentDelegate.Object,
+                new Mock<IUserDelegateStatementDelegate>().Object
             );
             RequestResult<DependentModel> actualResult = service.Remove(delegateModel);
 
@@ -280,7 +286,8 @@ namespace HealthGateway.WebClient.Test.Services
                 mockUserProfileDelegate.Object,
                 mockPatientService.Object,
                 mockNotificationSettingsService.Object,
-                mockDependentDelegate.Object
+                mockDependentDelegate.Object,
+                new Mock<IUserDelegateStatementDelegate>().Object
             );
         }
 

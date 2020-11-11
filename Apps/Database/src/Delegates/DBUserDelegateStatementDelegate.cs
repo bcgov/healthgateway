@@ -71,5 +71,34 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Finished inserting user statement delegate to DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
+
+        /// <inheritdoc />
+        public DBResult<UserDelegateStatement> Delete(string ownerId, string delegateId, bool commit)
+        {
+            this.logger.LogTrace($"Deleting UserDelegateStatement for {ownerId} & {delegateId} from DB...");
+            DBResult<UserDelegateStatement> result = new DBResult<UserDelegateStatement>()
+            {
+                Status = DBStatusCode.Deferred,
+            };
+            var userDelegateStatement = this.dbContext.Find<UserDelegateStatement>(ownerId, delegateId);
+            this.dbContext.UserDelegateStatement.Remove(userDelegateStatement);
+
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Deleted;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished deleting UserDelegate from DB");
+            return result;
+        }
     }
 }
