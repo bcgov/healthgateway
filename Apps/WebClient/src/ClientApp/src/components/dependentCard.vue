@@ -297,25 +297,35 @@ export default class DependentCardComponent extends Vue {
                             v-for="item in labResults"
                             :key="item.labResults[0].id"
                         >
-                            <td>
+                            <td data-testid="dependentCovidTestDate">
                                 {{
                                     formatDate(
                                         item.labResults[0].collectedDateTime
                                     )
                                 }}
                             </td>
-                            <td class="d-none d-sm-table-cell">
+                            <td
+                                data-testid="dependentCovidTestType"
+                                class="d-none d-sm-table-cell"
+                            >
                                 {{ item.labResults[0].testType }}
                             </td>
-                            <td class="d-none d-sm-table-cell">
+                            <td
+                                data-testid="dependentCovidTestLocation"
+                                class="d-none d-sm-table-cell"
+                            >
                                 {{ item.location }}
                             </td>
-                            <td :class="item.labResults[0].labResultOutcome">
+                            <td
+                                data-testid="dependentCovidTestLabResult"
+                                :class="item.labResults[0].labResultOutcome"
+                            >
                                 {{ formatResult(item.labResults[0]) }}
                             </td>
                             <td>
                                 <b-btn
                                     v-if="checkResultReady(item.labResults[0])"
+                                    data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
                                     @click="getReport(item)"
                                 >
