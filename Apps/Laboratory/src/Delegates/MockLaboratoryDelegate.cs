@@ -62,6 +62,7 @@ namespace HealthGateway.Laboratory.Delegates
                             CollectedDateTime = DateTime.Now.AddDays(-1),
                             TestStatus = "Final",
                             ResultDescription = "Nasopharyngeal Swab<br>HEALTH CARE WORKER<br>Negative.<br>No COVID-19 virus (2019-nCoV) detected by NAT.<br><br>This test targets the RdRP and E gene regions of COVID-19 virus (2019-nCoV) and has not been fully validated.",
+                            LabResultOutcome = "Positive",
                             ReceivedDateTime = DateTime.Now.AddDays(-1),
                             ResultDateTime = DateTime.Now.AddHours(-1),
                             LOINC = "XXX-3286",

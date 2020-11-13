@@ -11,9 +11,10 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import ErrorTranslator from "@/utility/errorTranslator";
 import BannerError from "@/models/bannerError";
-import { Action } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 import { ResultError } from "@/models/requestResult";
 import AddDependentRequest from "@/models/addDependentRequest";
+import User from "@/models/user";
 
 export enum GenderType {
     NotSelected = "",
@@ -28,6 +29,8 @@ export enum GenderType {
     },
 })
 export default class NewDependentComponent extends Vue {
+    @Getter("user", { namespace: "user" }) user!: User;
+
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
@@ -124,7 +127,7 @@ export default class NewDependentComponent extends Vue {
 
     private addDependent() {
         this.dependentService
-            .addDependent({
+            .addDependent(this.user.hdid, {
                 ...this.dependent,
                 PHN: this.dependent.PHN.replace(/\D/g, ""),
             })
@@ -220,27 +223,16 @@ export default class NewDependentComponent extends Vue {
                                     <label for="dateOfBirth"
                                         >Date of Birth</label
                                     >
-                                    <b-form-datepicker
+                                    <b-form-input
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
-                                        placeholder="YYYY/MM/DD"
-                                        :date-format-options="{
-                                            year: 'numeric',
-                                            month: 'numeric',
-                                            day: 'numeric',
-                                        }"
-                                        :min="minBirthdate"
-                                        :max="new Date()"
+                                        data-testid="dateOfBirthInput"
+                                        required
+                                        type="date"
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
                                         "
-                                        data-testid="dateOfBirthInput"
-                                        selected-variant="primary"
-                                        today-variant="primary"
-                                        nav-button-variant="primary"
-                                        hide-header
-                                    >
-                                    </b-form-datepicker>
+                                    />
                                     <b-form-invalid-feedback
                                         :state="
                                             isValid($v.dependent.dateOfBirth)

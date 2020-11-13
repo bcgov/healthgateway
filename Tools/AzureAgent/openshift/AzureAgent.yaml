@@ -1,189 +1,220 @@
 apiVersion: template.openshift.io/v1
-apiVersion: v1
 kind: Template
 metadata:
   name: ${NAME}-template
+  labels:
+    app: ${NAME}
   annotations:
     description: "Template for the creation of Azure Agents"
     tags: "cicd,azure,build,deploy"
 objects:
-
-- kind: ServiceAccount
-  apiVersion: v1
-  metadata:
-    name: ${NAME}
-  secrets:
-  - fieldPath: metadata.namespace
-
-- kind: RoleBinding
-  apiVersion: v1
-  metadata:
-    name: ${NAME}
-  roleRef:
-    apiGroup: v1
-    kind: Role
-    name: edit
-  subjects:
-  - apiVersion: v1
-    fieldPath: metadata.namespace
-    kind: ServiceAccount
-    name: ${NAME}
-
-- apiVersion: v1
-  data:
-    AZ_DEVOPS_ORG_URL: ${AZ_DEVOPS_ORG_URL}
-    AZ_DEVOPS_POOL: ${AZ_DEVOPS_POOL}
-    AZ_DEVOPS_WORK_DIR: ${AZ_DEVOPS_WORK_DIR}
-  kind: ConfigMap
-  metadata:
-    name: ${NAME}-config
-
-- apiVersion: v1
-  kind: Secret
-  metadata:  
-     name: ${NAME}-token
-  type: Opaque
-  stringData:
-    AZ_DEVOPS_TOKEN: ${AZ_DEVOPS_TOKEN}
-
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    name: ${NAME}-hooksecret
-  type: Opaque
-  stringData:
-    WebHookSecretKey: ${GIT_WEBHOOK_SECRET}
-
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    name: ${NAME}
-
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    name: ${NAME}-build
-  spec:
-    output:
-      to:
-        kind: ImageStreamTag
-        name: ${NAME}:${VERSION}
-    postCommit: {}
-    resources:
-      limits:
-        cpu: "2.5"
-        memory: 6Gi
-      requests:
-        cpu: "100m"
-        memory: 256Mi
-    runPolicy: SerialLatestOnly
-    source:
-      contextDir: ${SOURCE_CONTEXT_DIR}
-      git:
-        ref: ${SOURCE_REPOSITORY_REF}
-        uri: ${SOURCE_REPOSITORY_URL}
-      type: Git
-    strategy:
-      type: Docker
-      noCache: true
-      dockerStrategy:
-        from:
-          kind: DockerImage
-          name: 'ubuntu:20.04'
-    successfulBuildsHistoryLimit: 5
-    failedBuildsHistoryLimit: 3
-    triggers:
-    - type: ConfigChange
-    - imageChange: {}
-      type: ImageChange
-    - type: ConfigChange
-    - github:
-        secretReference:
-          name: ${NAME}-hooksecret
-      type: GitHub
-
-- apiVersion: v1
-  kind: DeploymentConfig
-  metadata:
-    labels:
+  - kind: ServiceAccount
+    apiVersion: v1
+    metadata:
       name: ${NAME}
-    name: ${NAME}
-  spec:
-    replicas: 3
-    selector:
-      name: ${NAME} #azagent
-      deploymentconfig: ${NAME}
-    strategy:
-      activeDeadlineSeconds: 21600
-      resources: {}
-      rollingParams:
-        intervalSeconds: 1
-        maxSurge: 25%
-        maxUnavailable: 25%
-        timeoutSeconds: 600
-        updatePeriodSeconds: 1
-      type: Rolling
-    template:
-      metadata:
-        labels:
-          name: ${NAME}
-          deploymentconfig: ${NAME}
-      spec:
-        containers:
-          - env:
-              - name: AZP_URL
-                valueFrom:
-                  configMapKeyRef:
-                    key: AZ_DEVOPS_ORG_URL
-                    name: ${NAME}-config
-              - name: AZP_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    key: AZ_DEVOPS_TOKEN
-                    name: ${NAME}-token
-              - name: AZP_POOL
-                valueFrom:
-                  configMapKeyRef:
-                    key: AZ_DEVOPS_POOL
-                    name: ${NAME}-config
-              - name: AZP_WORK
-                valueFrom:
-                  configMapKeyRef:
-                    key: AZ_DEVOPS_WORK_DIR
-                    name: ${NAME}-config                    
-            image: ${NAME}
-            imagePullPolicy: Always
-            name: ${NAME}
-            resources: 
-              limits:
-                cpu: 2500m
-                memory: 6Gi
-              requests:
-                cpu: 250m
-                memory: 256Mi
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        serviceAccount: ${NAME}
-        terminationGracePeriodSeconds: 30
-        hostAliases:
-        - ip: "10.248.101.18"
-          hostnames:
-          - "test-citz.healthbc.org"
-    test: false
-    triggers:
-      - type: ConfigChange
-      - imageChangeParams:
-          automatic: true
-          containerNames:
-            - ${NAME}
+      labels:
+        app: ${NAME}
+    secrets:
+    - fieldPath: metadata.namespace
+
+  - kind: RoleBinding
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+      labels:
+        app: ${NAME}
+    roleRef:
+      apiGroup: v1
+      kind: Role
+      name: edit
+    subjects:
+    - apiVersion: v1
+      fieldPath: metadata.namespace
+      kind: ServiceAccount
+      name: ${NAME}
+
+  - apiVersion: v1
+    kind: ConfigMap
+    data:
+      AZ_DEVOPS_ORG_URL: ${AZ_DEVOPS_ORG_URL}
+      AZ_DEVOPS_POOL: ${AZ_DEVOPS_POOL}
+      AZ_DEVOPS_WORK_DIR: ${AZ_DEVOPS_WORK_DIR}
+    metadata:
+      name: ${NAME}-config
+      labels:
+        app: ${NAME}
+
+  - apiVersion: v1
+    kind: Secret
+    metadata:  
+      name: ${NAME}-token
+      labels:
+        app: ${NAME}
+    type: Opaque
+    stringData:
+      AZ_DEVOPS_TOKEN: ${AZ_DEVOPS_TOKEN}
+
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${NAME}-hooksecret
+      labels:
+        app: ${NAME}
+    type: Opaque
+    stringData:
+      WebHookSecretKey: ${GIT_WEBHOOK_SECRET}
+
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: ${NAME}
+      labels:
+        app: ${NAME}
+
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      creationTimestamp: null
+      name: ${NAME}-build
+      labels:
+        app: ${NAME}
+    spec:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${NAME}:${VERSION}
+      postCommit: {}
+      resources:
+        limits:
+          cpu: "2.5"
+          memory: 6Gi
+        requests:
+          cpu: "500m"
+          memory: 512Mi
+      runPolicy: SerialLatestOnly
+      source:
+        contextDir: ${SOURCE_CONTEXT_DIR}
+        git:
+          ref: ${SOURCE_REPOSITORY_REF}
+          uri: ${SOURCE_REPOSITORY_URL}
+        type: Git
+      strategy:
+        type: Docker
+        noCache: true
+        dockerStrategy:
           from:
-            kind: ImageStreamTag
-            name: '${NAME}:latest'
-            namespace: ${TOOLS_NAMESPACE}
+            kind: DockerImage
+            name: 'ubuntu:20.04'
+      successfulBuildsHistoryLimit: 5
+      failedBuildsHistoryLimit: 3
+      triggers:
+      - type: ConfigChange
+      - imageChange: {}
         type: ImageChange
+      - type: ConfigChange
+      - github:
+          secretReference:
+            name: ${NAME}-hooksecret
+        type: GitHub
+
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: ${NAME}
+      name: ${NAME}
+    spec:
+      replicas: 1
+      selector:
+        name: ${NAME}
+        deploymentconfig: ${NAME}
+      strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            name: ${NAME}
+            deploymentconfig: ${NAME}
+        spec:
+          containers:
+            - env:
+                - name: AZP_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: AZ_DEVOPS_ORG_URL
+                      name: ${NAME}-config
+                - name: AZP_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      key: AZ_DEVOPS_TOKEN
+                      name: ${NAME}-token
+                - name: AZP_POOL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: AZ_DEVOPS_POOL
+                      name: ${NAME}-config
+                - name: AZP_WORK
+                  valueFrom:
+                    configMapKeyRef:
+                      key: AZ_DEVOPS_WORK_DIR
+                      name: ${NAME}-config                    
+              image: ${NAME}
+              imagePullPolicy: Always
+              name: ${NAME}
+              resources: 
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+                requests:
+                  cpu: 500m
+                  memory: 512Mi
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+              - mountPath: /opt/az/_work
+                name: ephemeral-work
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          serviceAccount: ${NAME}
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - name: ephemeral-work
+            emptyDir: {}
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${NAME}
+            from:
+              kind: ImageStreamTag
+              name: '${NAME}:latest'
+              namespace: ${INSTALL_NAMESPACE}
+          type: ImageChange
+
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      labels:
+        app: ${NAME}
+      name: ${NAME}
+    spec:
+      maxReplicas: 5
+      minReplicas: 1
+      scaleTargetRef:
+        apiVersion: v1
+        kind: DeploymentConfig
+        name: ${NAME}
+      targetCPUUtilizationPercentage: 60
 
 parameters:
 - description: The name of the Azure Agent
@@ -218,7 +249,7 @@ parameters:
 - description: Azure DevOps Agent pool
   name: AZ_DEVOPS_POOL
   required: true
-  value: HealthGateway
+  value: HealthGatewayOCP4
 - description: Azure DevOps PAT Token
   name: AZ_DEVOPS_TOKEN
   required: true
@@ -226,7 +257,15 @@ parameters:
   name: AZ_DEVOPS_WORK_DIR
   required: true
   value: /opt/az/_work
-- name: TOOLS_NAMESPACE
-  displayName: Tools Project Namespace
-  description: The namespace of the tools project
-  value: q6qfzk-tools  
+- name: INSTALL_NAMESPACE
+  displayName: The Namespace where the Azure agent is being deployed.
+  description: The namespace of the project to install the agent
+  required: true
+- name: CPU_LIMIT
+  displayName: The max CPU for this agent
+  required: true
+  value: 2500m
+- name: MEMORY_LIMIT
+  displayName: The max memory for this agent
+  required: true
+  value: 6Gi    

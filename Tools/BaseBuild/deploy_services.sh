@@ -1,31 +1,30 @@
-# Process the services template for each service in each environment
+#!/usr/bin/env bash
+namespace=$1
+env=$2
+dotnet=$3
 
-# DEV
-echo "DEV started"
-./service.sh -s patient -n q6qfzk-dev -e dev 
-./service.sh -s immunization -n q6qfzk-dev -e dev 
-./service.sh -s medication -n q6qfzk-dev -e dev 
-echo "DEV ended"
+if [ -z "$namespace" ] 
+then
+  echo Parameter 1 must be set and is the namespace to deploy into ex: 0bd5ad
+fi
 
-# TEST
-echo "TEST started"
-./service.sh -s patient -n q6qfzk-test -e test
-./service.sh -s immunization -n q6qfzk-test -e test
-./service.sh -s medication -n q6qfzk-test -e test
-echo "TEST ended"
+if [ -z "$env" ] 
+then
+  echo Parameter 2 must be set and is the environment name ex: dev
+fi
 
-# DEMO
-echo "DEMO started"
-./service.sh -s patient-demo -n q6qfzk-test -e demo -c common-demo -a patient
-./service.sh -s immunization-demo -n q6qfzk-test -e demo -c common-demo -a immunization
-./service.sh -s medication-demo -n q6qfzk-test -e demo -c common-demo -a medication
-echo "DEMO ended"
+if [ -z "$dotnet" ] 
+then
+  echo Parameter 3 must be set and is the dotnet environment name ex: hgpoc, hgdev, hgtest, Production
+fi
 
-# TRAINING
-echo "TRAINING started"
-./service.sh -s patient -n q6qfzk-prod -e production 
-./service.sh -s immunization -n q6qfzk-prod -e production
-./service.sh -s medication -n q6qfzk-prod -e production
-echo "TRAINING ended"
-
-read -p "Deployment is DONE. Press [Enter] to exit..."
+oc project $namespace
+oc process -f ./service.yaml -p NAME=webclient -p APP_NAME=webclient -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=hangfire -p APP_NAME=hangfire -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=adminwebclient -p APP_NAME=adminwebclient -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=encounter -p APP_NAME=encounter -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=laboratory -p APP_NAME=laboratory -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=immunization -p APP_NAME=immunization -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=medication -p APP_NAME=medication -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=patient -p APP_NAME=patient -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -
+oc process -f ./service.yaml -p NAME=odrproxy -p APP_NAME=odrproxy -p TOOLS_NAMESPACE=$namespace-tools -p ENV=$env -p ASPNETCORE_ENVIRONMENT=$dotnet | oc apply -f -

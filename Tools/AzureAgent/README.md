@@ -1,6 +1,6 @@
 # Azure DevOps OpenShift Agent
 
-Creates and deploys the Azure Agent in the OpenShift environment.  The running agent will accept one job and will exit after completion. 
+Creates and deploys the Azure Agent in the OpenShift environment.
 
 Microsoft Azure Agent [documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops) was very helpful.
 
@@ -18,11 +18,12 @@ An Azure DevOps Administrator will have to:
 * Under Agent Pools enable Read & Manage
 * Click create and take note of the PAT which will be used during deployment
 
-## ToDo
-
-After the Azure Agent exits OpenShift will sometimes delay restart due toCrash Loop Back Off.  This is true regardless of the exit code and the number of agents deployed needs to accomodate this downtime and the concurrency of builds.
-
 ## Deployment
+
+You need to ensure that the Network Security Policy has been applied to the namespace.  Our reference NSP is located at:
+/Tools/BaseBuild
+
+Please reference the [README.md](../BaseBuild/README.md) for detailed deployment instructions.
 
 To review the parameters execute:
 
@@ -30,7 +31,7 @@ To review the parameters execute:
 oc process -f ./openshift/AzureAgent.yaml --parameters
 ```
 
-To create the Azure Agent, be in your tools project and minimally execute:
+To create the Azure Agent, switch to your tools project and minimally execute:
 
 ```console
 oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> | oc apply -f -
@@ -39,19 +40,45 @@ oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOP
 Resulting in
 
 ```console
-laws@Crius:.../Health/healthgateway/Tools/AzureAgent$ oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> | oc apply -f -
-warning: error calculating patch from openapi spec: map: map[] does not contain declared merge key: name
-rolebinding.authorization.openshift.io/azure-agent configured
-configmap/azure-agent-config unchanged
-secret/azure-agent-token configured
-secret/azure-agent-hooksecret configured
-imagestream.image.openshift.io/azure-agent unchanged
-buildconfig.build.openshift.io/azure-agent-build configured
-deploymentconfig.apps.openshift.io/azure-agent configured
+laws@Crius:.../Health/healthgateway/Tools/AzureAgent$ oc process -f ./openshift/AzureAgent.yaml -p AZ_DEVOPS_ORG_URL=<URL> -p AZ_DEVOPS_TOKEN=<PAT> -p INSTALL_NAMESPACE=0bd5ad-tools | oc apply -f -
+serviceaccount/azure-agent created
+rolebinding.authorization.openshift.io/azure-agent created
+configmap/azure-agent-config created
+secret/azure-agent-token created
+secret/azure-agent-hooksecret created
+imagestream.image.openshift.io/azure-agent created
+buildconfig.build.openshift.io/azure-agent-build created
+deploymentconfig.apps.openshift.io/azure-agent created
+```
+
+Note:  if you run the script more than once you may see
+
+```console
 error: map: map[] does not contain declared merge key: name
 ```
 
-Note:  The error above is from the service account not being re-recreated.
+This is simply the the Service Account not being re-recreated.
+
+You then need to run two additional role bindings to allow tools to view Dev deployments
+
+```console
+oc process -f ./openshift/rb-dev.yaml -p NAMESPACE=0bd5ad | oc apply -f -
+oc process -f ./openshift/rb-tools.yaml -p NAMESPACE=0bd5ad | oc apply -f -
+```
+
+## Removing AzureAgent
+
+List all resources created
+
+```console
+oc get serviceaccount,rolebinding,en,nsp,cm,secret,is,bc,dc --selector app=azure-agent -o name
+```
+
+Assuming that the above returns nothing unexpected, you can issue the delete:
+
+```console
+oc delete serviceaccount,rolebinding,en,nsp,cm,secret,is,bc,dc --selector app=azure-agent -o name
+```
 
 ## Updating Agent Image
 

@@ -6,10 +6,10 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import CalendarHeader from "./header.vue";
 import CalendarBody from "./body.vue";
-import { DateGroup } from "@/models/timelineEntry";
-
+import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
+import TimelineFilter from "@/models/timelineFilter";
 
 @Component({
     components: {
@@ -19,8 +19,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 })
 export default class CalendarComponent extends Vue {
     @Prop() dateGroups!: DateGroup[];
-    @Prop() private filterText!: string;
-    @Prop() private filterTypes!: string[];
+    @Prop() private filter!: TimelineFilter;
     @Prop() private isVisible!: boolean;
 
     @Prop({ default: 0, required: false }) firstDay!: number;
@@ -70,6 +69,19 @@ export default class CalendarComponent extends Vue {
                 this.currentMonth = eventDate.startOf("month");
             }
         );
+
+        this.eventBus.$on(
+            EventMessageName.TimelineEntryAdded,
+            (entry: TimelineEntry) => {
+                this.onEntryAdded(entry);
+            }
+        );
+    }
+
+    private onEntryAdded(entry: TimelineEntry) {
+        this.$nextTick().then(() => {
+            this.currentMonth = entry.date.startOf("month");
+        });
     }
 
     @Watch("dateGroups")

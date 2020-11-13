@@ -16,7 +16,6 @@
 namespace HealthGateway.Database.Models
 {
     using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// The user delegate model.

@@ -77,28 +77,22 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<IEnumerable<UserDelegate>> Get(string delegateId, int page, int pageSize)
         {
-            this.logger.LogTrace($"Getting user delegates from DB...");
+            this.logger.LogTrace($"Getting user delegates from DB... {delegateId}");
             var result = DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.UserDelegate
-                    .OrderBy(dependent => dependent.DelegateId == delegateId),
+                    .Where(dependent => dependent.DelegateId == delegateId),
                 page,
                 pageSize);
-            this.logger.LogTrace($"Finished getting user delegates to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogTrace($"Finished getting user delegates from DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
 
         /// <inheritdoc />
-        public DBResult<UserDelegate> Delete(string ownerId, string delegateId, bool commit)
+        public DBResult<UserDelegate> Delete(UserDelegate userDelegate, bool commit)
         {
-            this.logger.LogTrace($"Deleting UserDelegate (ownerId: {ownerId}, delegateId: {delegateId}) from DB...");
-            UserDelegate userDelegate = new UserDelegate()
-            {
-                OwnerId = ownerId,
-                DelegateId = delegateId,
-            };
+            this.logger.LogTrace($"Deleting UserDelegate {JsonSerializer.Serialize(userDelegate)} from DB...");
             DBResult<UserDelegate> result = new DBResult<UserDelegate>()
             {
-                Payload = userDelegate,
                 Status = DBStatusCode.Deferred,
             };
             this.dbContext.UserDelegate.Remove(userDelegate);
@@ -124,7 +118,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public bool Exists(string ownerId, string delegateId)
         {
-            var userDelegate = this.dbContext.UserDelegate.Find(delegateId, ownerId);
+            var userDelegate = this.dbContext.UserDelegate.Find(ownerId, delegateId);
             if (userDelegate != null)
             {
                 return true;

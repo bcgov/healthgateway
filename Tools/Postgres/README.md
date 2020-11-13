@@ -2,6 +2,48 @@
 
 ## Installation
 
+### OpenShift 4
+
+In OpenShift 4, we don't have a common image for Postgres and have to create our own
+
+```console
+oc project 0bd5ad-tools
+oc process -f ./openshift/build.yaml | oc apply -f -
+oc start-build patroni-pg11 | oc apply -f -
+```
+
+Once that has completed, we can then deploy a standard single cluster per namespace by
+
+1) Creating the secrets, service account, and role bindings
+1) Allowing the service accounts to pull from the tools namespace
+1) Creating the statefulset
+
+Via the command line this looks like
+
+```console
+oc project 0bd5ad-dev
+oc process -f ./openshift/deployment-prereq.yaml -p PATRONI_SUPERUSER_PASSWORD=[The Password] -p PATRONI_REPLICATION_PASSWORD=[The Password] | oc apply -f -
+oc process -f ./openshift/rb-pullers.yaml | oc apply -f -
+oc process -f ./openshift/deployment.yaml | oc apply -f -
+```
+
+NOTE:  The provisioning of disk is fairly slow and you may not notice anything for a few minutes.
+
+#### Clean up
+
+If you would like to cleanup, you can execute the following which will remove all data associated to Patroni
+
+```console
+# Clean everthing
+oc delete all -l cluster-name=patroni-postgres
+oc delete pvc,secret,configmap,rolebinding,role,sa -l cluster-name=patroni-postgres
+```
+
+Volumes left over to cleanup
+Service account
+
+### OpenShift 3
+
 Process the template patroni.yaml in Openshift, the parameters are self explanatory, populate them as needed. 
 
 The objects created include:
@@ -18,7 +60,7 @@ The objects created include:
     7) Config map that stores the database configuration like "max_connections" (patroni-postgres-config).
     8) Secret containing username and password.
 
-## Initial Configuration
+#### Initial Configuration
 
 Connect to the database as postgres user and execute the following:
 
@@ -62,13 +104,14 @@ Using the command line:
 ``` bash
 oc get pods -l role=master
 ```
+
 or
 
 ``` bash
 oc describe configmaps patroni-postgres-leader;
 ```
 
-### Connection to the database 
+### Connection to the database
 
 The connection requires a port tunnel from the pod in openshift to the local computer,
 use the following command to create a tunnel:
@@ -84,7 +127,6 @@ oc port-forward patroni-postgres-1 5432:5432
 ```
 
 Use pgadmin or psql to connect to server: localhost:5432, username and password defined in the secrets.
-
 
 ### Manual switch of master pod
 
@@ -102,81 +144,80 @@ Backups are generated daily by the dc "backup" in the production realm and are c
 To restore the backup follow these steps:
 
 1) Connect to openshift using the terminal/bash and set the project to the production one.
-2) Download the backup file to your local computer using the command below:
+1) Download the backup file to your local computer using the command below:
 
-``` bash
-oc rsync <backup-pod-name>:/backups/daily/<date> <local-folder>
-```
+    ``` bash
+    oc rsync <backup-pod-name>:/backups/daily/<date> <local-folder>
+    ```
 
-This copies the folder from the pod to the local folder.
+    This copies the folder from the pod to the local folder.
 
-3) Extract backup script using gzip:
+1) Extract backup script using gzip:
 
-``` bash
-gzip -d <file-name>
-```
+    ``` bash
+    gzip -d <file-name>
+    ```
 
-4) Connect to the master database pod using port-forward (See 'Connection to the Database').
+1) Connect to the master database pod using port-forward (See 'Connection to the Database').
 
-5) Manually create the database:
+1) Manually create the database:
 
-``` bash
-psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
-```
+    ``` bash
+    psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
+    ```
 
-6) Execute the script to restore the database:
+1) Execute the script to restore the database:
 
-``` bash
-psql -h localhost -d gateway -U postgres -p 5432 -a -q -f <path-to-file>
-```
+    ``` bash
+    psql -h localhost -d gateway -U postgres -p 5432 -a -q -f <path-to-file>
+    ```
 
 ## Delete Database (Cleanup)
 
 1) Drop all current connections:
 
-``` bash
-psql -h localhost -p 5432 -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='gateway';"
-```
+    ``` bash
+    psql -h localhost -p 5432 -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='gateway';"
+    ```
 
-2) Drop Database:
+1) Drop Database:
 
-``` bash
-psql -h localhost -p 5432 -U postgres -c 'drop database gateway;'
-```
+    ``` bash
+    psql -h localhost -p 5432 -U postgres -c 'drop database gateway;'
+    ```
 
-3) Create Database:
+1) Create Database:
 
-``` bash
-psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
-```
+    ``` bash
+    psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
+    ```
 
-4) Run Migrations Scripts
+1) Run Migrations Scripts
 
-## Edit Patroni configuration using Rest API
+    ?
 
-1) Connect the terminal to any of the patroni pods running using remote shell:
+1) Edit Patroni configuration using Rest API
 
-``` bash
-oc rsh patroni-postgres-1
-```
+    Connect the terminal to any of the patroni pods running using remote shell:
 
-2) Update config (e.g. postgresql.parameters.max_connections to 100):
+    ``` bash
+    oc rsh patroni-postgres-1
+    ```
 
-``` bash
-curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_connections":100}}}' http://localhost:8008/config | jq .
-```
+1) Update config (e.g. postgresql.parameters.max_connections to 100):
 
-3) Restart Cluster:
+    ``` bash
+    curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_connections":100}}}' http://localhost:8008/config | jq .
+    ```
 
-``` bash
-patronictl restart patroni-postgres
-```
+1) Restart Cluster:
 
-Other) Get/View the current config:
+    ``` bash
+    patronictl restart patroni-postgres
+    ```
 
-``` bash
-curl -s localhost:8008/config | jq .
-```
+1) Get/View the current config:
 
-
-
+    ``` bash
+    curl -s localhost:8008/config | jq .
+    ```

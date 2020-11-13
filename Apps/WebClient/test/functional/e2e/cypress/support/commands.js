@@ -16,6 +16,7 @@ Cypress.Commands.add(
             cy.readConfig().then(config => {
                 cy.log(`Performing Keycloak logout`);
                 cy.request({ url: `${config.openIdConnect.authority}/protocol/openid-connect/logout` });
+                
                 const stateStore = {
                     id: "d0b27ba424b64b358b65d40cfdbc040b",
                     created: new Date().getTime(),

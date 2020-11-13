@@ -12,12 +12,12 @@ import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
-import Dependent from "@/models/dependent";
+import type { Dependent } from "@/models/dependent";
 
 @injectable()
 export class RestDependentService implements IDependentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly BASE_URI: string = "/v1/api/Dependent";
+    private readonly BASE_URI: string = "/v1/api";
     private http!: IHttpDelegate;
     private isEnabled = false;
 
@@ -30,6 +30,7 @@ export class RestDependentService implements IDependentService {
     }
 
     public addDependent(
+        hdid: string,
         dependent: AddDependentRequest
     ): Promise<AddDependentRequest> {
         return new Promise((resolve, reject) => {
@@ -39,7 +40,7 @@ export class RestDependentService implements IDependentService {
             }
             this.http
                 .post<RequestResult<AddDependentRequest>>(
-                    `${this.BASE_URI}/`,
+                    `${this.BASE_URI}/UserProfile/${hdid}/Dependent`,
                     dependent
                 )
                 .then((result) => {
@@ -64,7 +65,7 @@ export class RestDependentService implements IDependentService {
         return new Promise((resolve, reject) => {
             this.http
                 .getWithCors<RequestResult<Dependent[]>>(
-                    `${this.BASE_URI}/${hdid}`
+                    `${this.BASE_URI}/UserProfile/${hdid}/Dependent`
                 )
                 .then((dependents) => {
                     return resolve(dependents);
@@ -72,6 +73,31 @@ export class RestDependentService implements IDependentService {
                 .catch((err) => {
                     this.logger.error(`getNotes error: ${err}`);
                     return reject(err);
+                });
+        });
+    }
+
+    public removeDependent(hdid: string, dependent: Dependent): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.http
+                .delete<RequestResult<void>>(
+                    `${this.BASE_URI}/UserProfile/${hdid}/Dependent/${dependent.ownerId}`,
+                    dependent
+                )
+                .then((result) => {
+                    this.logger.verbose(
+                        `removeDependent result: ${JSON.stringify(result)}`
+                    );
+                    return this.handleResult(result, resolve, reject);
+                })
+                .catch((err) => {
+                    this.logger.error(`removeDependent error: ${err}`);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }

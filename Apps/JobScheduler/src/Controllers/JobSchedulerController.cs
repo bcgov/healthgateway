@@ -76,7 +76,17 @@ namespace HealthGateway.JobScheduler.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
             });
         }
-#pragma warning restore CA1822 //  does not access instance data and can be marked as static
 
+        /// <summary>
+        /// Authorization Failed action.
+        /// </summary>
+        /// <returns>Display Authorization Error.</returns>
+        [HttpGet("/Account/AccessDenied")]
+        public IActionResult AccessDenied()
+        {
+            this.Logout();
+            return this.Unauthorized("401 Access Denied. You have not been authorized to access this Dashboard.");
+        }
+#pragma warning restore CA1822 //  does not access instance data and can be marked as static
     }
 }

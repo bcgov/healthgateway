@@ -44,9 +44,8 @@ namespace HealthGateway.WebClient.Services
         /// <summary>
         /// Removes a dependent delegate relation.
         /// </summary>
-        /// <param name="dependentHdid">The HdId of the Dependent.</param>
-        /// <param name="delegateHdid">The HdId of the Delegated user.</param>
+        /// <param name="dependent">The dependent model to be deleted.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
-        RequestResult<DependentModel> Remove(string dependentHdid, string delegateHdid);
+        RequestResult<DependentModel> Remove(DependentModel dependent);
     }
 }

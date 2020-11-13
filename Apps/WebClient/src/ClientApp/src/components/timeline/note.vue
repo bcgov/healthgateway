@@ -39,6 +39,13 @@ export default class NoteTimelineComponent extends Vue {
         this.noteService = container.get<IUserNoteService>(
             SERVICE_IDENTIFIER.UserNoteService
         );
+
+        if (this.isAddMode) {
+            this.$nextTick().then(() => {
+                let container = this.$refs["titleInput"] as HTMLElement;
+                container.focus();
+            });
+        }
     }
     private get entryIcon(): IconDefinition {
         return faEdit;
@@ -227,6 +234,7 @@ export default class NoteTimelineComponent extends Vue {
                         <b-col class="p-0 col-sm-7 col-12">
                             <b-form-input
                                 id="title"
+                                ref="titleInput"
                                 v-model="title"
                                 data-testid="noteTitleInput"
                                 type="text"

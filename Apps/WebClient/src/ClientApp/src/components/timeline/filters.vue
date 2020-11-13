@@ -10,15 +10,9 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
+import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
+import { EntryType } from "@/models/timelineEntry";
 library.add(faSlidersH);
-
-interface Filter {
-    name: string;
-    value: string;
-    display: string;
-    isEnabled: boolean;
-    numEntries: number;
-}
 
 @Component
 export default class FilterComponent extends Vue {
@@ -31,64 +25,34 @@ export default class FilterComponent extends Vue {
     @Prop() private encounterCount!: number;
     @Prop() private laboratoryCount!: number;
     @Prop() private noteCount!: number;
-
-    @Watch("isListView")
-    @Prop()
-    private isListView!: boolean;
+    @Prop() private isListView!: boolean;
 
     private logger!: ILogger;
     private eventBus = EventBus;
     private isVisible = false;
-    private selectedFilters: string[] = [];
     private windowWidth = 0;
     private steps = [25, 50, 100, 500];
     private stepIndex = 0;
-
-    private filters: Filter[] = [
-        {
-            name: "immunization",
-            value: "Immunization",
-            display: "Immunizations",
-            isEnabled: false,
-            numEntries: this.immunizationCount,
-        },
-        {
-            name: "medication",
-            value: "Medication",
-            display: "Medications",
-            isEnabled: false,
-            numEntries: this.medicationCount,
-        },
-
-        {
-            name: "laboratory",
-            value: "Laboratory",
-            display: "Laboratory",
-            isEnabled: false,
-            numEntries: this.laboratoryCount,
-        },
-        {
-            name: "encounter",
-            value: "Encounter",
-            display: "MSP Visits",
-            isEnabled: false,
-            numEntries: this.encounterCount,
-        },
-        {
-            name: "note",
-            value: "Note",
-            display: "My Notes",
-            isEnabled: false,
-            numEntries: this.noteCount,
-        },
-    ];
+    private filter: TimelineFilter = new TimelineFilter();
+    private selectedEntryTypes: EntryType[] = [];
 
     private get isMobileView(): boolean {
         return this.windowWidth < 576;
     }
 
-    private get enabledFilters(): Filter[] {
-        return this.filters.filter((filter) => filter.isEnabled);
+    private get enabledEntryTypes(): EntryTypeFilter[] {
+        return this.filter.entryTypes.filter(
+            (filter: EntryTypeFilter) => filter.isEnabled
+        );
+    }
+
+    @Watch("selectedEntryTypes")
+    private onSelectedEntryTypesChanged() {
+        this.filter.entryTypes.forEach((et: EntryTypeFilter) => {
+            et.isSelected = this.selectedEntryTypes.some(
+                (set) => set == et.type
+            );
+        });
     }
 
     @Watch("isMobileView")
@@ -101,28 +65,24 @@ export default class FilterComponent extends Vue {
         this.isVisible = false;
     }
 
-    @Watch("selectedFilters")
+    @Watch("filter", { deep: true })
     private onFilterUpdate() {
         this.filtersChanged();
     }
 
     @Watch("noteCount")
     private noteCountUpdate(newCount: number) {
-        this.filters[4].numEntries = newCount;
+        this.filter.entryTypes[4].numEntries = newCount;
     }
 
     @Emit()
-    private filtersChanged() {
-        if (this.selectedFilters.length > 0) {
-            return this.selectedFilters;
-        } else {
-            return this.getAllFilters();
-        }
+    private filtersChanged(): TimelineFilter {
+        return this.filter;
     }
 
-    @Emit()
-    private sliderChanged(): number {
-        return this.steps[this.stepIndex];
+    private sliderChanged() {
+        this.filter.pageSize = this.steps[this.stepIndex];
+        this.filtersChanged();
     }
 
     private created() {
@@ -132,19 +92,24 @@ export default class FilterComponent extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-        this.filters[0].isEnabled = this.config.modules["Immunization"];
-        this.filters[1].isEnabled = this.config.modules["Medication"];
-        this.filters[2].isEnabled = this.config.modules["Laboratory"];
-        this.filters[3].isEnabled = this.config.modules["Encounter"];
-        this.filters[4].isEnabled = this.config.modules["Note"];
-        this.selectedFilters = [];
+        this.clearFilters();
 
         this.eventBus.$on(
             EventMessageName.SelectedFilter,
-            (filterName: string) => {
-                this.onExternalFilterSelection(filterName);
+            (filterType: EntryType) => {
+                this.onExternalFilterSelection(filterType);
             }
+        );
+        this.eventBus.$on(EventMessageName.TimelineEntryAdded, () => {
+            this.onEntryAdded();
+        });
+    }
+
+    private get hasFilterSelected(): boolean {
+        return (
+            this.selectedEntryTypes.length > 0 ||
+            this.filter.startDate !== "" ||
+            this.filter.endDate !== ""
         );
     }
 
@@ -161,26 +126,56 @@ export default class FilterComponent extends Vue {
     }
 
     private clearFilters(): void {
-        this.selectedFilters = [];
+        this.selectedEntryTypes = [];
+        this.filter = {
+            keyword: "",
+            pageSize: this.filter.pageSize,
+            startDate: "",
+            endDate: "",
+            entryTypes: [
+                {
+                    type: EntryType.Immunization,
+                    display: "Immunizations",
+                    isEnabled: this.config.modules[EntryType.Immunization],
+                    numEntries: this.immunizationCount,
+                    isSelected: false,
+                },
+                {
+                    type: EntryType.Medication,
+                    display: "Medications",
+                    isEnabled: this.config.modules[EntryType.Medication],
+                    numEntries: this.medicationCount,
+                    isSelected: false,
+                },
+
+                {
+                    type: EntryType.Laboratory,
+                    display: "Laboratory",
+                    isEnabled: this.config.modules[EntryType.Laboratory],
+                    numEntries: this.laboratoryCount,
+                    isSelected: false,
+                },
+                {
+                    type: EntryType.Encounter,
+                    display: "MSP Visits",
+                    isEnabled: this.config.modules[EntryType.Encounter],
+                    numEntries: this.encounterCount,
+                    isSelected: false,
+                },
+                {
+                    type: EntryType.Note,
+                    display: "My Notes",
+                    isEnabled: this.config.modules[EntryType.Note],
+                    numEntries: this.noteCount,
+                    isSelected: false,
+                },
+            ],
+        };
     }
 
-    private onExternalFilterSelection(filterName: string) {
-        var externalFilter = this.filters.find((x) => x.name === filterName);
-        if (externalFilter) {
-            this.selectedFilters = [];
-            this.selectedFilters.push(externalFilter.value);
-        } else {
-            this.logger.error("Invalid filter attempted to be selected");
-        }
-    }
-
-    private getAllFilters(): string[] {
-        return this.filters.reduce<string[]>((groups, entry) => {
-            if (entry.isEnabled) {
-                groups.push(entry.value);
-            }
-            return groups;
-        }, []);
+    private onExternalFilterSelection(filterType: EntryType) {
+        this.clearFilters();
+        this.selectedEntryTypes.push(filterType);
     }
 
     private formatFilterCount(num: number): string {
@@ -189,6 +184,10 @@ export default class FilterComponent extends Vue {
                   ((Math.round(num / 100) * 100) / 1000).toFixed(1)
               ).toString() + "K"
             : num.toString();
+    }
+
+    private onEntryAdded() {
+        this.clearFilters();
     }
 }
 </script>
@@ -200,7 +199,7 @@ export default class FilterComponent extends Vue {
                 data-testid="filterDropdown"
                 text="Filter"
                 class="w-100"
-                toggle-class="w-100"
+                :toggle-class="{ 'filter-selected': hasFilterSelected }"
                 menu-class="z-index-large w-100"
                 variant="outline-primary"
                 right
@@ -219,16 +218,16 @@ export default class FilterComponent extends Vue {
                 </b-row>
                 <div class="px-4">
                     <b-row
-                        v-for="(filter, index) in enabledFilters"
+                        v-for="(filter, index) in enabledEntryTypes"
                         :key="index"
                     >
                         <b-col cols="8" align-self="start">
                             <b-form-checkbox
-                                :id="filter.name + '-filter'"
-                                v-model="selectedFilters"
-                                :data-testid="`${filter.name}-filter`"
-                                :name="filter.name + '-filter'"
-                                :value="filter.value"
+                                :id="filter.type + '-filter'"
+                                v-model="selectedEntryTypes"
+                                :data-testid="`${filter.type}-filter`"
+                                :name="filter.type + '-filter'"
+                                :value="filter.type"
                             >
                                 {{ filter.display }}
                             </b-form-checkbox>
@@ -237,9 +236,33 @@ export default class FilterComponent extends Vue {
                             cols="4"
                             align-self="end"
                             class="text-right"
-                            :data-testid="`${filter.name}Count`"
+                            :data-testid="`${filter.type}Count`"
                         >
                             ({{ formatFilterCount(filter.numEntries) }})
+                        </b-col>
+                    </b-row>
+                    <b-row class="mt-2">
+                        <b-col><strong>Dates</strong> </b-col>
+                        <b-col class="col-auto"></b-col>
+                    </b-row>
+                    <b-row class="mt-1">
+                        <b-col>
+                            <b-form-input
+                                id="start-date"
+                                v-model="filter.startDate"
+                                data-testid="filterStartDateInput"
+                                type="date"
+                            />
+                        </b-col>
+                    </b-row>
+                    <b-row class="mt-1">
+                        <b-col>
+                            <b-form-input
+                                id="end-date"
+                                v-model="filter.endDate"
+                                data-testid="filterEndDateInput"
+                                type="date"
+                            />
                         </b-col>
                     </b-row>
                     <b-row v-if="isListView" class="mt-2">
@@ -264,6 +287,7 @@ export default class FilterComponent extends Vue {
         <!-- Mobile view specific modal-->
         <b-button
             class="d-d-sm-inline d-sm-none"
+            :class="{ 'filter-selected': hasFilterSelected }"
             variant="outline-primary"
             @click.stop="toggleMobileView"
         >
@@ -312,22 +336,47 @@ export default class FilterComponent extends Vue {
                 <b-col class="col-10">
                     <h5>Type</h5>
                     <b-row
-                        v-for="(filter, index) in enabledFilters"
+                        v-for="(filter, index) in enabledEntryTypes"
                         :key="index"
                     >
                         <b-col cols="8" align-self="start">
                             <b-form-checkbox
-                                :id="filter.name + '-filter'"
-                                v-model="selectedFilters"
-                                :data-testid="`${filter.name}-filter`"
-                                :name="filter.name + '-filter'"
-                                :value="filter.value"
+                                :id="filter.type + '-filter'"
+                                v-model="selectedEntryTypes"
+                                :data-testid="`${filter.type}-filter`"
+                                :name="filter.type + '-filter'"
+                                :value="filter"
                             >
                                 {{ filter.display }}
                             </b-form-checkbox>
                         </b-col>
                         <b-col cols="4" align-self="end" class="text-right">
                             ({{ formatFilterCount(filter.numEntries) }})
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-row>
+            <b-row class="justify-content-center py-2">
+                <b-col class="col-10">
+                    <h5>Dates</h5>
+                    <b-row>
+                        <b-col>
+                            <b-form-input
+                                id="start-date"
+                                v-model="filter.startDate"
+                                data-testid="filterStartDateInput"
+                                type="date"
+                            />
+                        </b-col>
+                    </b-row>
+                    <b-row class="mt-1">
+                        <b-col>
+                            <b-form-input
+                                id="end-date"
+                                v-model="filter.endDate"
+                                data-testid="filterEndDateInput"
+                                type="date"
+                            />
                         </b-col>
                     </b-row>
                 </b-col>
@@ -375,5 +424,8 @@ export default class FilterComponent extends Vue {
     .btn-close {
         font-size: 1.5em;
     }
+}
+.filter-selected {
+    border-width: 3px;
 }
 </style>

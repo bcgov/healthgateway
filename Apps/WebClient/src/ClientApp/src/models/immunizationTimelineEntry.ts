@@ -1,6 +1,7 @@
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import ImmunizationModel from "@/models/immunizationModel";
 import { DateWrapper } from "@/models/dateWrapper";
+import TimelineFilter from "@/models/timelineFilter";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
@@ -15,15 +16,11 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         this.immunization = new ImmunizationViewModel(model);
     }
 
-    public filterApplies(filterText: string, filterTypes: string[]): boolean {
-        if (!filterTypes.includes("Immunization")) {
-            return false;
-        }
-
+    public keywordApplies(filter: TimelineFilter): boolean {
         let text =
             (this.immunization.name || "") + (this.immunization.location || "");
         text = text.toUpperCase();
-        return text.includes(filterText.toUpperCase());
+        return text.includes(filter.keyword.toUpperCase());
     }
 }
 

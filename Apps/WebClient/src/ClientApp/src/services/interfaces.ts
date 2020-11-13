@@ -23,7 +23,7 @@ import UserRating from "@/models/userRating";
 import Encounter from "@/models/encounter";
 import { OidcUserProfile } from "@/models/user";
 import AddDependentRequest from "@/models/addDependentRequest";
-import Dependent from "@/models/dependent";
+import type { Dependent } from "@/models/dependent";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -143,8 +143,12 @@ export interface ICommunicationService {
 
 export interface IDependentService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    addDependent(dependent: AddDependentRequest): Promise<AddDependentRequest>;
+    addDependent(
+        hdid: string,
+        dependent: AddDependentRequest
+    ): Promise<AddDependentRequest>;
     getAll(hdid: string): Promise<RequestResult<Dependent[]>>;
+    removeDependent(hdid: string, dependent: Dependent): Promise<void>;
 }
 
 export interface IHttpDelegate {

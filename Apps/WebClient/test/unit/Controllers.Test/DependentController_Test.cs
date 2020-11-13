@@ -58,7 +58,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object
             );
             var actualResult = dependentController.GetAll(hdid);
-            
+
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
@@ -66,26 +66,60 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldDeleteDependent()
         {
+            string delegateId = hdid;
             string dependentId = "123";
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
-            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
+            DependentModel dependentModel = new DependentModel() { DelegateId = delegateId, OwnerId = dependentId };
+
             RequestResult<DependentModel> expectedResult = new RequestResult<DependentModel>()
             {
-                ResourcePayload = new DependentModel(),
+                ResourcePayload = dependentModel,
                 ResultStatus = Common.Constants.ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.Remove(dependentId, hdid)).Returns(expectedResult);
+
+            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
+            dependentServiceMock.Setup(s => s.Remove(dependentModel)).Returns(expectedResult);
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
 
             DependentController dependentController = new DependentController(
                 new Mock<ILogger<UserProfileController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object
             );
-            var actualResult = dependentController.Delete(dependentId);
-            
+            var actualResult = dependentController.Delete(delegateId, dependentId, dependentModel);
+
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
+
+        [Fact]
+        public void ShouldFailDeleteDependent()
+        {
+            string delegateId = hdid;
+            string dependentId = "123";
+            DependentModel dependentModel = new DependentModel() { DelegateId = delegateId, OwnerId = dependentId };
+
+            RequestResult<DependentModel> expectedResult = new RequestResult<DependentModel>()
+            {
+                ResourcePayload = dependentModel,
+                ResultStatus = Common.Constants.ResultType.Success,
+            };
+
+            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
+            dependentServiceMock.Setup(s => s.Remove(dependentModel)).Returns(expectedResult);
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
+
+            DependentController dependentController = new DependentController(
+                new Mock<ILogger<UserProfileController>>().Object,
+                dependentServiceMock.Object,
+                httpContextAccessorMock.Object
+            );
+            
+            var actualResult = dependentController.Delete("anotherId", "wrongId", dependentModel);
+            Assert.IsType<BadRequestResult>(actualResult);
+        }
+
         private IEnumerable<DependentModel> GetMockDependends()
         {
             List<DependentModel> dependentModels = new List<DependentModel>();
@@ -94,10 +128,16 @@ namespace HealthGateway.WebClient.Test.Controllers
             {
                 dependentModels.Add(new DependentModel()
                 {
-                    MaskedPHN = $"{dependentModels}-{i}",
-                    DateOfBirth = new DateTime(1980 + i, 1, 1),
-                    Gender = "Female",
-                    Name = $"{dependentName}-{i}"
+                    OwnerId = $"OWNER00{i}",
+                    DelegateId = $"DELEGATER00{i}",
+                    Version = (uint)i,
+                    DependentInformation = new DependentInformation()
+                    {
+                        MaskedPHN = $"{dependentModels}-{i}",
+                        DateOfBirth = new DateTime(1980 + i, 1, 1),
+                        Gender = "Female",
+                        Name = $"{dependentName}-{i}"
+                    }
                 });
             }
             return dependentModels;
