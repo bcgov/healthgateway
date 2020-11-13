@@ -12,11 +12,11 @@ describe('dependents', () => {
 
     before(() => {
         cy.readConfig().as("config").then(config => {
-            config.webClient.modules.CovidLabResults = false
+            config.webClient.modules.CovidLabResults = true
             config.webClient.modules.Comment = false
             config.webClient.modules.Encounter = false
             config.webClient.modules.Immunization = false
-            config.webClient.modules.Laboratory = false
+            config.webClient.modules.Laboratory = true
             config.webClient.modules.Medication = false
             config.webClient.modules.MedicationHistory = false
             config.webClient.modules.Note = false
@@ -110,11 +110,28 @@ describe('dependents', () => {
             .then(dateOfBirth => expect(dateOfBirth).to.equal(gendeFemale));        
     })
 
-    it('Validate Covid Tab', () => {
+    // it('Validate Covid Tab without Results', () => {
+    //     // Validate the tab and elements are present        
+    //     cy.get('[data-testid=covid19TabTitle]').last().parent().click();
+    //     cy.get('[data-testid=covid19NoRecords]').last().should('have.text', 'No records found.');
+    // })
+
+    it('Validate Covid Tab with Results', () => {
         // Validate the tab and elements are present        
         cy.get('[data-testid=covid19TabTitle]').last().parent().click();
-        cy.get('[data-testid=covid19NoRecords]').last().should('have.text', 'No records found.');
+        cy.get('[data-testid=dependentCovidTestDate]').first().should('have.text', ' 2020-08-21 ');
+        cy.get('[data-testid=dependentCovidTestType]').first().should('have.text', ' BAL ');
+        cy.get('[data-testid=dependentCovidTestLocation]').first().should('have.text', ' Viha ');
+        cy.get('[data-testid=dependentCovidTestLabResult]').first().should('have.text', ' Positive ');
+        cy.get('[data-testid=dependentCovidReportDownloadBtn]').first().click();
+        cy.get('[data-testid=covid19TabTitle]').last().parent().click();
+        cy.get('[data-testid=dependentCovidTestDate]').last().should('have.text', ' 2020-06-14 ');
+        cy.get('[data-testid=dependentCovidTestType]').last().should('have.text', ' Nasopharyngeal Swab ');
+        cy.get('[data-testid=dependentCovidTestLocation]').last().should('have.text', ' Fha ');
+        cy.get('[data-testid=dependentCovidTestLabResult]').last().should('have.text', ' NotSet ');
+        cy.get('[data-testid=dependentCovidReportDownloadBtn]').last().click();
     })
+    
 
     it('Validate Remove Dependent', () => {       
         cy.get('[data-testid=dependentMenuBtn]').last().click();
