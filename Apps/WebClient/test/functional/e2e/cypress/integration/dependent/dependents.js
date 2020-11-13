@@ -119,24 +119,30 @@ describe('dependents', () => {
     it('Validate Covid Tab with Results', () => {
         // Validate the tab and elements are present        
         cy.get('[data-testid=covid19TabTitle]').last().parent().click();
-        cy.get('[data-testid=dependentCovidTestDate]').first().should('have.text', '2020-08-21');
-        cy.get('[data-testid=dependentCovidTestType]').first().should('have.text', 'BAL');
-        cy.get('[data-testid=dependentCovidTestLocation]').first().should('have.text', 'Viha');
-        cy.get('[data-testid=dependentCovidTestLabResult]').first().should('have.text', 'Positive');
+        cy.get('[data-testid=dependentCovidTestDate]').first().should('have.text', ' 2020-08-21 ');
+        cy.get('[data-testid=dependentCovidTestType]').first().should('have.text', ' BAL ');
+        cy.get('[data-testid=dependentCovidTestLocation]').first().should('have.text', ' Viha ');
+        cy.get('[data-testid=dependentCovidTestLabResult]').first().should('have.text', ' Positive ');
         cy.get('[data-testid=dependentCovidReportDownloadBtn]').first().click();
+        cy.get('[data-testid=covid19TabTitle]').last().parent().click();
+        cy.get('[data-testid=dependentCovidTestDate]').last().should('have.text', ' 2020-06-14 ');
+        cy.get('[data-testid=dependentCovidTestType]').last().should('have.text', ' Nasopharyngeal Swab ');
+        cy.get('[data-testid=dependentCovidTestLocation]').last().should('have.text', ' Fha ');
+        cy.get('[data-testid=dependentCovidTestLabResult]').last().should('have.text', ' NotSet ');
+        cy.get('[data-testid=dependentCovidReportDownloadBtn]').last().click();
     })
     
 
-    // it('Validate Remove Dependent', () => {       
-    //     cy.get('[data-testid=dependentMenuBtn]').last().click();
-    //     cy.get('[data-testid=deleteDependentMenuBtn]').last().click();
-    //     cy.get('[data-testid=confirmDeleteBtn]').should('be.visible');
-    //     cy.get('[data-testid=cancelDeleteBtn]').should('be.visible');
-    //     cy.get('[data-testid=cancelDeleteBtn]').click();
+    it('Validate Remove Dependent', () => {       
+        cy.get('[data-testid=dependentMenuBtn]').last().click();
+        cy.get('[data-testid=deleteDependentMenuBtn]').last().click();
+        cy.get('[data-testid=confirmDeleteBtn]').should('be.visible');
+        cy.get('[data-testid=cancelDeleteBtn]').should('be.visible');
+        cy.get('[data-testid=cancelDeleteBtn]').click();
         
-    //     // Now click the "Yes, I'm sure" to confirm deletion
-    //     cy.get('[data-testid=dependentMenuBtn]').last().click();
-    //     cy.get('[data-testid=deleteDependentMenuBtn]').last().click();
-    //     cy.get('[data-testid=confirmDeleteBtn]').click();
-    // })
+        // Now click the "Yes, I'm sure" to confirm deletion
+        cy.get('[data-testid=dependentMenuBtn]').last().click();
+        cy.get('[data-testid=deleteDependentMenuBtn]').last().click();
+        cy.get('[data-testid=confirmDeleteBtn]').click();
+    })
 }) 
