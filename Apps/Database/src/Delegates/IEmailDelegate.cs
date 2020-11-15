@@ -37,7 +37,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="emailId">The Email ID to retrieve.</param>
         /// <returns>The found Email object.</returns>
-        Email GetNewEmail(Guid emailId);
+        Email? GetNewEmail(Guid emailId);
 
         /// <summary>
         /// Gets a sorted list of new low priority emails to process.

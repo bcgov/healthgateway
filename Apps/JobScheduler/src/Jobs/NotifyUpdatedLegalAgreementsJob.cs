@@ -110,8 +110,23 @@ namespace Healthgateway.JobScheduler.Jobs
         {
             this.logger.LogInformation($"{config.Name} found, last updated {agreement.EffectiveDate}");
             this.logger.LogInformation($"Fetching {config.LastCheckedKey} from application settings");
-            ApplicationSetting lastCheckedSetting = this.applicationSettingsDelegate.GetApplicationSetting(ApplicationType.JobScheduler, this.GetType().Name, config.LastCheckedKey);
-            this.logger.LogInformation($"Found {config.LastCheckedKey} with value of {lastCheckedSetting.Value}");
+            ApplicationSetting? lastCheckedSetting = this.applicationSettingsDelegate.GetApplicationSetting(ApplicationType.JobScheduler, this.GetType().Name, config.LastCheckedKey);
+            if (lastCheckedSetting != null)
+            {
+                this.logger.LogInformation($"Found {config.LastCheckedKey} with value of {lastCheckedSetting.Value}");
+            }
+            else
+            {
+                lastCheckedSetting = new ApplicationSetting()
+                {
+                    Application = ApplicationType.JobScheduler,
+                    Component = this.GetType().Name,
+                    Key = config.LastCheckedKey,
+                    Value = DateTime.MinValue.ToString("MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture),
+                };
+                this.dbContext.ApplicationSetting.Add(lastCheckedSetting);
+            }
+
             DateTime lastChecked = System.DateTime.Parse(lastCheckedSetting.Value!, CultureInfo.InvariantCulture);
             if (agreement.EffectiveDate > lastChecked)
             {

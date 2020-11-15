@@ -44,10 +44,10 @@ namespace HealthGateway.Database.Utils
                 if (field != null)
                 {
                     EnumMemberAttribute attr = (EnumMemberAttribute)field.GetCustomAttributes(
-                        typeof(EnumMemberAttribute), false).SingleOrDefault();
+                        typeof(EnumMemberAttribute), false).Single();
                     if (attr != null)
                     {// if there's no EnumMember attr, use the default value
-                        enumString = attr.Value;
+                        enumString = attr.Value !;
                     }
                 }
             }
