@@ -122,11 +122,11 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             string? retVal = null;
             if (requirement.Lookup == Constants.FhirResourceLookup.Route)
             {
-                retVal = this.httpContextAccessor.HttpContext.Request.RouteValues[RouteResourceIdentifier] as string;
+                retVal = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
             }
             else if (requirement.Lookup == Constants.FhirResourceLookup.Parameter)
             {
-                retVal = this.httpContextAccessor.HttpContext.Request.Query[RouteResourceIdentifier];
+                retVal = this.httpContextAccessor.HttpContext?.Request.Query[RouteResourceIdentifier];
             }
 
             return retVal;
@@ -140,10 +140,10 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         private bool IsOwner(AuthorizationHandlerContext context, string resourceHDID)
         {
             bool retVal = false;
-            ClaimsPrincipal user = context.User;
-            if (user.HasClaim(c => c.Type == GatewayClaims.HDID))
+            string? userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
+            if (userHDID != null)
             {
-                string userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
+
                 retVal = userHDID == resourceHDID;
                 this.logger.LogDebug($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
             }
@@ -199,9 +199,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             if (this.userDelegateDelegate != null)
             {
                 this.logger.LogInformation($"Performing user delegation validation for resource {resourceHDID}");
-                if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID))
+                string? userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
+                if (userHDID != null)
                 {
-                    string userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
                     if (this.userDelegateDelegate.Exists(resourceHDID, userHDID))
                     {
                         this.logger.LogInformation($"Authorized user {userHDID} to have {requirement.AccessType} access to Observation resource {resourceHDID}");

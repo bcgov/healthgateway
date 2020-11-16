@@ -73,8 +73,8 @@ namespace HealthGateway.WebClient.Controllers
             }
             else
             {
-                ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-                string userHdid = user.FindFirst("hdid").Value;
+                ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+                string? userHdid = user?.FindFirst("hdid")?.Value;
                 userFeedback.UserProfileId = userHdid;
                 userFeedback.CreatedBy = userHdid;
                 userFeedback.UpdatedBy = userHdid;

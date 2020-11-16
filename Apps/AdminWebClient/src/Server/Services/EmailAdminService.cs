@@ -77,7 +77,7 @@ namespace HealthGateway.Admin.Services
             {
                 ResourcePayload = dbEmail.Payload.Select(e =>
                 {
-                    MessagingVerification emailInvite = emailInvites.FirstOrDefault(ei =>
+                    MessagingVerification emailInvite = emailInvites.First(ei =>
                         e.To!.Equals(ei.Email?.To, System.StringComparison.CurrentCultureIgnoreCase));
                     string inviteStatus = GetEmailInviteStatus(emailInvite);
                     return AdminEmail.CreateFromDbModel(e, inviteStatus);

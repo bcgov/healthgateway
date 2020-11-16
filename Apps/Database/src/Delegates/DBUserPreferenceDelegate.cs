@@ -55,7 +55,7 @@ namespace HealthGateway.Database.Delegates
 
             foreach (UserPreference newPreference in newPreferences)
             {
-                UserPreference preference = preferences.Payload.FirstOrDefault(p => p.Preference == newPreference.Preference);
+                UserPreference? preference = preferences.Payload.FirstOrDefault(p => p.Preference == newPreference.Preference);
                 if (preference != null)
                 {
                     preference.UpdatedBy = newPreference.UpdatedBy;

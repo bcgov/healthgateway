@@ -51,10 +51,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public ApplicationSetting GetApplicationSetting(string application, string component, string key)
+        public ApplicationSetting? GetApplicationSetting(string application, string component, string key)
         {
             this.logger.LogTrace($"Getting application setting for {application}/{component}/{key} from DB...");
-            ApplicationSetting retVal = this.dbContext.ApplicationSetting
+            ApplicationSetting? retVal = this.dbContext.ApplicationSetting
                 .Where(p => p.Application == application &&
                             p.Component == component &&
                             p.Key == key)

@@ -88,7 +88,6 @@ namespace HealthGateway.Medication.Services
                 if (okProtectiveWord)
                 {
                     // Retrieve the phn
-                    string jwtString = this.httpContextAccessor.HttpContext.Request.Headers["Authorization"][0];
                     RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
@@ -100,8 +99,8 @@ namespace HealthGateway.Medication.Services
                             PHN = patient.PersonalHealthNumber,
                             PageSize = 20000,
                         };
-                        IPAddress address = this.httpContextAccessor.HttpContext.Connection.RemoteIpAddress;
-                        string ipv4Address = address.MapToIPv4().ToString();
+                        IPAddress? address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+                        string ipv4Address = address?.MapToIPv4().ToString() ?? "Unknown";
                         RequestResult<MedicationHistoryResponse> response = await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
                         result.ResultStatus = response.ResultStatus;
                         result.ResultError = response.ResultError;
