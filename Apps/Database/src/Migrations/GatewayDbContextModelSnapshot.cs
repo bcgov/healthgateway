@@ -3045,47 +3045,6 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("UserDelegateHistory");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.UserDelegateStatement", b =>
-                {
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("DelegateId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("TestDate")
-                        .HasColumnType("timestamp without time zone")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
-
-                    b.HasKey("OwnerId", "DelegateId");
-
-                    b.ToTable("UserDelegateStatement");
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>
                 {
                     b.Property<Guid>("Id")
