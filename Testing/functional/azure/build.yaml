@@ -14,7 +14,7 @@ variables:
   Tests.Path: $(Build.SourcesDirectory)/Testing/functional/e2e
 
 jobs:
-  - job: "Package Functional Tests"
+  - job: "PackageTests"
     pool:
       name: "HealthGatewayOCP4"
     displayName: "Packaging Functional Tests"
