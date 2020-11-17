@@ -89,8 +89,17 @@ namespace HealthGateway.WebClient.Services
             }
             else
             {
+                string json = JsonSerializer.Serialize(addDependentRequest.TestDate, addDependentRequest.TestDate.GetType());
+                JsonDocument jsonDoc = JsonDocument.Parse(json);
                 // Insert Dependent to database
-                var dependent = new ResourceDelegate() { ResourceOwnerHdid = patientResult.ResourcePayload.HdId, ProfileHdid = delegateHdId, ReasonCode = ResourceDelegateReason.COVIDLaboratoryResult };
+                var dependent = new ResourceDelegate()
+                {
+                    ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
+                    ProfileHdid = delegateHdId,
+                    ReasonCode = ResourceDelegateReason.COVIDLaboratoryResult,
+                    ReasonObjectType = addDependentRequest.TestDate.GetType().AssemblyQualifiedName,
+                    ReasonObject = jsonDoc
+                };
                 DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
 
                 if (dbDependent.Status == DBStatusCode.Created)
