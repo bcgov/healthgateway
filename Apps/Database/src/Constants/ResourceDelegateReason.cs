@@ -25,7 +25,6 @@ namespace HealthGateway.Database.Constants
         /// <summary>
         /// Represents a successful transaction.
         /// </summary>
-        [EnumMember(Value = "COVID_LAB")]
         COVIDLaboratoryResult,
     }
 }
