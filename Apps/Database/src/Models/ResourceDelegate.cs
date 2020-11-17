@@ -16,6 +16,8 @@
 namespace HealthGateway.Database.Models
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Text.Json;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// The resource delegate model.
@@ -35,22 +37,23 @@ namespace HealthGateway.Database.Models
         public string ProfileHdid { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the hdid which has delegated access to the owner Id.
+        /// Gets or sets reason code for the resouce delegate.
         /// </summary>
-        [MaxLength(52)]
-        public string ReasonCode { get; set; } = null!;
+        [Required]
+        [MaxLength(10)]
+        public ResourceDelegateReason ReasonCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the hdid which has delegated access to the owner Id.
+        /// Gets or sets the ReasonObject type.
+        /// This value is used by code to reconstruct the JSON POCO.
         /// </summary>
-        [MaxLength(52)]
-        public string ReasonObjectType { get; set; } = null!;
+        [Required]
+        public string ReasonObjectType { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the hdid which has delegated access to the owner Id.
+        /// Gets or sets the resource delegation Reason object.
         /// </summary>
-        [MaxLength(52)]
-        public string ReasonObject { get; set; } = null!;
-
+        [Required]
+        public JsonDocument? ReasonObject { get; set; } = null;
     }
 }

@@ -18,6 +18,8 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Text.Json;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
     /// The resource delegate history model.
@@ -44,6 +46,26 @@ namespace HealthGateway.Database.Models
         [Required]
         [MaxLength(52)]
         public string DelegateId { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets reason code for the resouce delegate.
+        /// </summary>
+        [Required]
+        [MaxLength(10)]
+        public ResourceDelegateReason ReasonCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ReasonObject type.
+        /// This value is used by code to reconstruct the JSON POCO.
+        /// </summary>
+        [Required]
+        public string ReasonObjectType { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the resource delegation history Reason object.
+        /// </summary>
+        [Required]
+        public JsonDocument? ReasonObject { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the operation that created this history row.

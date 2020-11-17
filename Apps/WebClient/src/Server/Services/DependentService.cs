@@ -90,7 +90,7 @@ namespace HealthGateway.WebClient.Services
             else
             {
                 // Insert Dependent to database
-                var dependent = new ResourceDelegate() { ResourceOwnerHdid = patientResult.ResourcePayload.HdId, ProfileHdid = delegateHdId };
+                var dependent = new ResourceDelegate() { ResourceOwnerHdid = patientResult.ResourcePayload.HdId, ProfileHdid = delegateHdId, ReasonCode = ResourceDelegateReason.COVIDLaboratoryResult };
                 DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
 
                 if (dbDependent.Status == DBStatusCode.Created)
