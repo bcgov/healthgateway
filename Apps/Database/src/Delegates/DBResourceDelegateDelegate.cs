@@ -80,7 +80,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace($"Getting resource delegates from DB... {delegateId}");
             var result = DBDelegateHelper.GetPagedDBResult(
                 this.dbContext.ResourceDelegate
-                    .Where(dependent => dependent.ProfileHdid == delegateId),
+                    .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId),
                 page,
                 pageSize);
             this.logger.LogTrace($"Finished getting resource delegates from DB... {JsonSerializer.Serialize(result)}");
