@@ -23,8 +23,8 @@ namespace HealthGateway.Database.Constants
     public enum ResourceDelegateReason
     {
         /// <summary>
-        /// Represents a successful transaction.
+        /// Represents a delegation for Covid Laboratory.
         /// </summary>
-        COVIDLaboratoryResult,
+        COVIDLab,
     }
 }

@@ -856,7 +856,7 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<ResourceDelegateReasonCode>().HasData(
                 new ResourceDelegateReasonCode
                 {
-                    ReasonTypeCode = ResourceDelegateReason.COVIDLaboratoryResult,
+                    ReasonTypeCode = ResourceDelegateReason.COVIDLab,
                     Description = "Resource Delegation for Covid Laboratory",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
