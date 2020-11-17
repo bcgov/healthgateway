@@ -3,5 +3,5 @@ log/
 screenshots/
 videos/
 reports/
-cypress/fixturees/example.json
+cypress/fixtures/example.json
 cypress.env.json
