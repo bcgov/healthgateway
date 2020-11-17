@@ -15,30 +15,42 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
-    using System;
     using System.ComponentModel.DataAnnotations;
 
     /// <summary>
-    /// The user delegate model.
+    /// The resource delegate model.
     /// </summary>
-    public class UserDelegateStatement : AuditableEntity
+    public class ResourceDelegate : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the owner of the hdid.
         /// </summary>
         [MaxLength(52)]
-        public string OwnerId { get; set; } = null!;
+        public string ResourceOwnerHdid { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the hdid which has delegated access to the owner Id.
         /// </summary>
         [MaxLength(52)]
-        public string DelegateId { get; set; } = null!;
+        public string ProfileHdid { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the Test date of the user delegate statement.
+        /// Gets or sets the hdid which has delegated access to the owner Id.
         /// </summary>
         [MaxLength(52)]
-        public DateTime TestDate { get; set; }
+        public string ReasonCode { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the hdid which has delegated access to the owner Id.
+        /// </summary>
+        [MaxLength(52)]
+        public string ReasonObjectType { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the hdid which has delegated access to the owner Id.
+        /// </summary>
+        [MaxLength(52)]
+        public string ReasonObject { get; set; } = null!;
+
     }
 }

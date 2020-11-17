@@ -73,9 +73,8 @@ namespace HealthGateway.Database.Context
         public DbSet<Communication> Communication { get; set; } = null!;
         public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
         public DbSet<Rating> Rating { get; set; } = null!;
-        public DbSet<UserDelegate> UserDelegate { get; set; } = null!;
-        public DbSet<UserDelegateHistory> UserDelegateHistory { get; set; } = null!;
-        public DbSet<UserDelegateStatement> UserDelegateStatement { get; set; } = null!;
+        public DbSet<ResourceDelegate> UserDelegate { get; set; } = null!;
+        public DbSet<ResourceDelegateHistory> ResourceDelegateHistory { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -264,11 +263,11 @@ namespace HealthGateway.Database.Context
                     v => EnumUtility.ToEnumString<LegalAgreementType>(v, true),
                     v => EnumUtility.ToEnum<LegalAgreementType>(v, true)));
 
-            modelBuilder.Entity<UserDelegate>()
-                .HasKey(userDelegate => new { userDelegate.OwnerId, userDelegate.DelegateId });
+            modelBuilder.Entity<ResourceDelegate>()
+                .HasKey(resourceDelegate => new { resourceDelegate.ResourceOwnerHdid, resourceDelegate.ProfileHdid });
 
-            modelBuilder.Entity<UserDelegateStatement>()
-                .HasKey(userDelegateStatement => new { userDelegateStatement.OwnerId, userDelegateStatement.DelegateId });
+            /*modelBuilder.Entity<UserDelegateStatement>()
+                .HasKey(userDelegateStatement => new { userDelegateStatement.OwnerId, userDelegateStatement.DelegateId });*/
 
             // Create HDID index on GenericCache
             modelBuilder!.Entity<GenericCache>()

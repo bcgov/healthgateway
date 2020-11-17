@@ -46,30 +46,30 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Constructs a new DependentModel based on a PatientModel.
         /// </summary>
-        /// <param name="userDeleagate">The UserDelegate model.</param>
+        /// <param name="resourceDeleagate">The ResourceDelegate model.</param>
         /// <param name="patientModel">The Patien Model to be converted.</param>
         /// <returns>The Dependent Model.</returns>
-        public static DependentModel CreateFromModels(UserDelegate userDeleagate, PatientModel patientModel)
+        public static DependentModel CreateFromModels(ResourceDelegate resourceDeleagate, PatientModel patientModel)
         {
             return new DependentModel()
             {
-                OwnerId = userDeleagate.OwnerId,
-                DelegateId = userDeleagate.DelegateId,
-                Version = userDeleagate.Version,
+                OwnerId = resourceDeleagate.ResourceOwnerHdid,
+                DelegateId = resourceDeleagate.ProfileHdid,
+                Version = resourceDeleagate.Version,
                 DependentInformation = DependentInformation.FromPatientModel(patientModel),
             };
         }
 
         /// <summary>
-        /// Creates a new UserDelegate model based on the dependent model.
+        /// Creates a new ResourceDelegate model based on the dependent model.
         /// </summary>
-        /// <returns>A new UserDelegate model.</returns>
-        public UserDelegate ToDBModel()
+        /// <returns>A new ResourceDelegate model.</returns>
+        public ResourceDelegate ToDBModel()
         {
-            return new UserDelegate()
+            return new ResourceDelegate()
             {
-                OwnerId = this.OwnerId,
-                DelegateId = this.DelegateId,
+                ResourceOwnerHdid = this.OwnerId,
+                ProfileHdid = this.DelegateId,
                 Version = this.Version,
             };
         }

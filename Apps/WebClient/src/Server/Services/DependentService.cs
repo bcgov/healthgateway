@@ -35,10 +35,9 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly IPatientService patientService;
-        private readonly IUserDelegateDelegate userDelegateDelegate;
+        private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IUserDelegateStatementDelegate userDelegateStatementDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -47,22 +46,19 @@ namespace HealthGateway.WebClient.Services
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
-        /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
-        /// <param name="userDelegateStatementDelegate">The User Delegate Statement delegate to interact with the DB.</param>
+        /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
         public DependentService(
             ILogger<DependentService> logger,
             IUserProfileDelegate userProfileDelegate,
             IPatientService patientService,
             INotificationSettingsService notificationSettingsService,
-            IUserDelegateDelegate userDelegateDelegate,
-            IUserDelegateStatementDelegate userDelegateStatementDelegate)
+            IResourceDelegateDelegate resourceDelegateDelegate)
         {
             this.logger = logger;
             this.patientService = patientService;
-            this.userDelegateDelegate = userDelegateDelegate;
+            this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
-            this.userDelegateStatementDelegate = userDelegateStatementDelegate;
         }
 
         /// <inheritdoc />
@@ -94,16 +90,13 @@ namespace HealthGateway.WebClient.Services
             else
             {
                 // Insert Dependent to database
-                var dependent = new UserDelegate() { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId };
-                DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Insert(dependent, true);
+                var dependent = new ResourceDelegate() { ResourceOwnerHdid = patientResult.ResourcePayload.HdId, ProfileHdid = delegateHdId };
+                DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
 
                 if (dbDependent.Status == DBStatusCode.Created)
                 {
                     this.logger.LogDebug("Finished adding dependent");
-                    this.UpdateNotificationSettings(dependent.OwnerId, delegateHdId);
-
-                    var dependentStatement = new UserDelegateStatement { OwnerId = patientResult.ResourcePayload.HdId, DelegateId = delegateHdId, TestDate = addDependentRequest.TestDate };
-                    this.userDelegateStatementDelegate.Insert(dependentStatement, true);
+                    this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
 
                     return new RequestResult<DependentModel>()
                     {
@@ -129,7 +122,7 @@ namespace HealthGateway.WebClient.Services
         {
             // Get Dependents from database
             int offset = page * pageSize;
-            DBResult<IEnumerable<UserDelegate>> dbUserDelegates = this.userDelegateDelegate.Get(hdId, offset, pageSize);
+            DBResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, offset, pageSize);
 
             // Get Dependents Details from Patient service
             List<DependentModel> dependentModels = new List<DependentModel>();
@@ -138,25 +131,25 @@ namespace HealthGateway.WebClient.Services
                 ResultStatus = ResultType.Success,
             };
             StringBuilder resultErrorMessage = new StringBuilder();
-            foreach (UserDelegate userDelegate in dbUserDelegates.Payload)
+            foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
             {
-                this.logger.LogDebug($"Getting dependent details for Dependent hdid: {userDelegate.OwnerId} ...");
-                RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(userDelegate.OwnerId, PatientIdentifierType.HDID).ConfigureAwait(true)).Result;
+                this.logger.LogDebug($"Getting dependent details for Dependent hdid: {resourceDelegate.ResourceOwnerHdid} ...");
+                RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid, PatientIdentifierType.HDID).ConfigureAwait(true)).Result;
 
                 if (patientResult.ResourcePayload != null)
                 {
-                    dependentModels.Add(DependentModel.CreateFromModels(userDelegate, patientResult.ResourcePayload));
+                    dependentModels.Add(DependentModel.CreateFromModels(resourceDelegate, patientResult.ResourcePayload));
                 }
                 else
                 {
                     if (result.ResultStatus != ResultType.Error)
                     {
                         result.ResultStatus = ResultType.Error;
-                        resultErrorMessage.Append($"Communication Exception when trying to retrieve Dependent(s) - HdId: {userDelegate.OwnerId};");
+                        resultErrorMessage.Append($"Communication Exception when trying to retrieve Dependent(s) - HdId: {resourceDelegate.ResourceOwnerHdid};");
                     }
                     else
                     {
-                        resultErrorMessage.Append($" HdId: {userDelegate.OwnerId};");
+                        resultErrorMessage.Append($" HdId: {resourceDelegate.ResourceOwnerHdid};");
                     }
                 }
             }
@@ -179,12 +172,11 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<DependentModel> Remove(DependentModel dependent)
         {
-            DBResult<UserDelegate> dbDependent = this.userDelegateDelegate.Delete(dependent.ToDBModel(), true);
+            DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(dependent.ToDBModel(), true);
 
             if (dbDependent.Status == DBStatusCode.Deleted)
             {
                 this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, isDelete: true);
-                this.userDelegateStatementDelegate.Delete(dependent.OwnerId, dependent.DelegateId, true);
             }
 
             RequestResult<DependentModel> result = new RequestResult<DependentModel>()

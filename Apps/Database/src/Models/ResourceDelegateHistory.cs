@@ -15,23 +15,46 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// The user delegate model.
+    /// The resource delegate history model.
     /// </summary>
-    public class UserDelegate : AuditableEntity
+    public class ResourceDelegateHistory : AuditableEntity
     {
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        [Column("ResourceDelegateHistoryId")]
+        [Key]
+        public Guid Id { get; set; }
+
         /// <summary>
         /// Gets or sets the owner of the hdid.
         /// </summary>
+        [Required]
         [MaxLength(52)]
         public string OwnerId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the hdid which has delegated access to the owner Id.
         /// </summary>
+        [Required]
         [MaxLength(52)]
         public string DelegateId { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the operation that created this history row.
+        /// </summary>
+        [Required]
+        public string Operation { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the datetime the operation was performed.
+        /// </summary>
+        [Required]
+        public DateTime OperationDateTime { get; set; } = DateTime.MaxValue;
     }
 }

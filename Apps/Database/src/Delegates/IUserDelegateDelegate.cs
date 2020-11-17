@@ -22,40 +22,40 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Wrapper;
 
     /// <summary>
-    /// Delegate that performs operations for the User Delegate model.
+    /// Delegate that performs operations for the Resource Delegate model.
     /// </summary>
-    public interface IUserDelegateDelegate
+    public interface IResourceDelegateDelegate
     {
         /// <summary>
-        /// Creates a User Delegate record in the database.
+        /// Creates a Resource Delegate record in the database.
         /// </summary>
-        /// <param name="userDelegate">The user delegate to create.</param>
+        /// <param name="resourceDelegate">The resource delegate to create.</param>
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        DBResult<UserDelegate> Insert(UserDelegate userDelegate, bool commit);
+        DBResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit);
 
         /// <summary>
-        /// Gets the list of User Delegate records for a specific delegate Id from the database.
+        /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
         /// </summary>
-        /// <param name="delegateId">The user delegate to create.</param>
+        /// <param name="delegateId">The resource delegate to create.</param>
         /// <param name="page">The page to start at.</param>
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
-        /// <returns>A list of UserDelegates wrapped in a DBResult</returns>
-        DBResult<IEnumerable<UserDelegate>> Get(string delegateId, int page, int pageSize);
+        /// <returns>A list of resourceDelegates wrapped in a DBResult</returns>
+        DBResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize);
 
         /// <summary>
-        /// Deletes a User Delegate record in the database.
+        /// Deletes a Resource Delegate record in the database.
         /// </summary>
-        /// <param name="userDelegate">The model to be deleted.</param>
+        /// <param name="resourceDelegate">The model to be deleted.</param>
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        DBResult<UserDelegate> Delete(UserDelegate userDelegate, bool commit);
+        DBResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit);
 
         /// <summary>
-        /// Finds a User Delegate record in the database.
+        /// Finds a Resource Delegate record in the database.
         /// </summary>
         /// <param name="ownerId">The owner hdid.</param>
-        /// <param name="delegateId">The delegated user hdid.</param>
+        /// <param name="delegateId">The delegated resource hdid.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
         bool Exists(string ownerId, string delegateId);
     }
