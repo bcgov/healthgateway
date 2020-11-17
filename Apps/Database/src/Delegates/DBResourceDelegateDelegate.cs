@@ -95,7 +95,7 @@ namespace HealthGateway.Database.Delegates
             {
                 Status = DBStatusCode.Deferred,
             };
-            this.dbContext.resourceDelegate.Remove(resourceDelegate);
+            this.dbContext.ResourceDelegate.Remove(resourceDelegate);
 
             if (commit)
             {
@@ -118,7 +118,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public bool Exists(string ownerId, string delegateId)
         {
-            var resourceDelegate = this.dbContext.resourceDelegate.Find(ownerId, delegateId);
+            var resourceDelegate = this.dbContext.ResourceDelegate.Find(ownerId, delegateId);
             if (resourceDelegate != null)
             {
                 return true;
