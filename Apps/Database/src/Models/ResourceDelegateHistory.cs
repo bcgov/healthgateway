@@ -38,17 +38,17 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string OwnerId { get; set; } = null!;
+        public string ResourceOwnerHdid { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the hdid which has delegated access to the owner Id.
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string DelegateId { get; set; } = null!;
+        public string ProfileHdid { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets reason code for the resouce delegate.
+        /// Gets or sets reason code for the resource delegate.
         /// </summary>
         [Required]
         [MaxLength(10)]

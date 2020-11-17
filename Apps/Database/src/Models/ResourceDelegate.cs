@@ -37,7 +37,7 @@ namespace HealthGateway.Database.Models
         public string ProfileHdid { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets reason code for the resouce delegate.
+        /// Gets or sets reason code for the resource delegate.
         /// </summary>
         [Required]
         [MaxLength(10)]
