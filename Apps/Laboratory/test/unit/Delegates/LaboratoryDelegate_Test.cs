@@ -207,6 +207,32 @@ namespace HealthGateway.LaboratoryTests
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
+        [Fact]
+        public void ValidateGetLabReport400()
+        {
+
+            var handlerMock = new Mock<HttpMessageHandler>();
+            handlerMock
+               .Protected()
+               .Setup<Task<HttpResponseMessage>>(
+                  "SendAsync",
+                  ItExpr.IsAny<HttpRequestMessage>(),
+                  ItExpr.IsAny<CancellationToken>()
+               )
+               .ReturnsAsync(new HttpResponseMessage()
+               {
+                   StatusCode = HttpStatusCode.BadRequest,
+                   Content = new StringContent(string.Empty),
+               })
+               .Verifiable();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(loggerFactory.CreateLogger<RestLaboratoryDelegate>(), mockHttpClientService.Object, this.configuration);
+            RequestResult<LaboratoryReport> actualResult = Task.Run(async () => await labDelegate.GetLabReport(Guid.NewGuid(), string.Empty)).Result;
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Contains($"HTTP Error {HttpStatusCode.BadRequest}", actualResult.ResultError.ResultMessage);
+        }
 
         //[Fact]
         //public async void FunctionalGetLabOrders()

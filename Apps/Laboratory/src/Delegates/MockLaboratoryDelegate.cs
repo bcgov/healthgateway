@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ namespace HealthGateway.Laboratory.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
@@ -26,6 +27,7 @@ namespace HealthGateway.Laboratory.Delegates
     /// <summary>
     /// Implementation that uses HTTP to retrieve laboratory information.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class MockLaboratoryDelegate : ILaboratoryDelegate
     {
         /// <inheritdoc/>
