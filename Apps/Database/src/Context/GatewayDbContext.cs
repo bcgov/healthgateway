@@ -264,11 +264,36 @@ namespace HealthGateway.Database.Context
                     v => EnumUtility.ToEnumString<LegalAgreementType>(v, true),
                     v => EnumUtility.ToEnum<LegalAgreementType>(v, true)));
 
-            modelBuilder.Entity<ResourceDelegate>()
-                .HasKey(resourceDelegate => new { resourceDelegate.ResourceOwnerHdid, resourceDelegate.ProfileHdid });
+            // Resource Delegate Models
 
-            /*modelBuilder.Entity<UserDelegateStatement>()
-                .HasKey(userDelegateStatement => new { userDelegateStatement.OwnerId, userDelegateStatement.DelegateId });*/
+            // Create ResourceDelegate
+            modelBuilder.Entity<ResourceDelegate>()
+                .HasKey(resourceDelegate => new { resourceDelegate.ResourceOwnerHdid, resourceDelegate.ProfileHdid, resourceDelegate.ReasonCode });
+
+            // Create FK keys
+            modelBuilder.Entity<ResourceDelegate>()
+                .HasOne<ResourceDelegateReasonCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.ReasonTypeCode)
+                .HasForeignKey(k => k.ReasonCode);
+
+            modelBuilder.Entity<ResourceDelegate>()
+                    .HasOne<UserProfile>()
+                    .WithMany()
+                    .HasPrincipalKey(k => k.HdId)
+                    .HasForeignKey(k => k.ProfileHdid);
+
+            var resourceDelegateReasonCodeConverter = new ValueConverter<ResourceDelegateReason, string>(
+                v => EnumUtility.ToEnumString<ResourceDelegateReason>(v, false),
+                v => EnumUtility.ToEnum<ResourceDelegateReason>(v, false));
+
+            modelBuilder.Entity<ResourceDelegate>()
+                .Property(e => e.ReasonCode)
+                .HasConversion(resourceDelegateReasonCodeConverter);
+
+            modelBuilder.Entity<ResourceDelegateReasonCode>()
+                .Property(e => e.ReasonTypeCode)
+                .HasConversion(resourceDelegateReasonCodeConverter);
 
             // Create HDID index on GenericCache
             modelBuilder!.Entity<GenericCache>()
@@ -283,6 +308,7 @@ namespace HealthGateway.Database.Context
             this.SeedApplicationSettings(modelBuilder);
             this.SeedMessagingVerifications(modelBuilder);
             this.SeedCommunication(modelBuilder);
+            this.SeedResourceDelegateReason(modelBuilder);
         }
 
         /// <summary>
