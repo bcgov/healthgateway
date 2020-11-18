@@ -50,6 +50,11 @@ export interface Dependent {
     delegateId: string;
 
     /**
+     * Code that defines the reason for delegation.
+     */
+    reasonCode: number;
+
+    /**
      * The record version.
      */
     version: number;

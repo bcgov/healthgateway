@@ -96,7 +96,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
                     ProfileHdid = delegateHdId,
-                    ReasonCode = ResourceDelegateReason.COVIDLaboratoryResult,
+                    ReasonCode = ResourceDelegateReason.COVIDLab,
                     ReasonObjectType = addDependentRequest.TestDate.GetType().AssemblyQualifiedName,
                     ReasonObject = jsonDoc
                 };

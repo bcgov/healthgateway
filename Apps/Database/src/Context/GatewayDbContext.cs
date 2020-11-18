@@ -295,6 +295,10 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.ReasonTypeCode)
                 .HasConversion(resourceDelegateReasonCodeConverter);
 
+            modelBuilder.Entity<ResourceDelegateHistory>()
+                .Property(e => e.ReasonCode)
+                .HasConversion(resourceDelegateReasonCodeConverter);
+
             // Create HDID index on GenericCache
             modelBuilder!.Entity<GenericCache>()
                     .HasIndex(i => new { i.HdId, i.Domain })

@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Models
 {
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -39,6 +40,11 @@ namespace HealthGateway.WebClient.Models
         public string DelegateId { get; set; } = null!;
 
         /// <summary>
+        /// Gets or sets the delegate reason code.
+        /// </summary>
+        public ResourceDelegateReason ReasonCode { get; set; }
+
+        /// <summary>
         /// Gets or sets the version.
         /// </summary>
         public uint Version { get; set; }
@@ -55,6 +61,7 @@ namespace HealthGateway.WebClient.Models
             {
                 OwnerId = resourceDeleagate.ResourceOwnerHdid,
                 DelegateId = resourceDeleagate.ProfileHdid,
+                ReasonCode = resourceDeleagate.ReasonCode,
                 Version = resourceDeleagate.Version,
                 DependentInformation = DependentInformation.FromPatientModel(patientModel),
             };
@@ -70,6 +77,7 @@ namespace HealthGateway.WebClient.Models
             {
                 ResourceOwnerHdid = this.OwnerId,
                 ProfileHdid = this.DelegateId,
+                ReasonCode = this.ReasonCode,
                 Version = this.Version,
             };
         }
