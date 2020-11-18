@@ -27,7 +27,6 @@ extends:
   parameters:
     Application: AdminWebClient
     DotNetTests: true
-    FunctionalTests: false
     NPMInstall: true
     NPMTests: false
 

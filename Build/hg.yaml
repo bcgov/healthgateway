@@ -23,10 +23,6 @@ parameters:
     type: boolean
     default: true
 
-  - name: FunctionalTests
-    type: boolean
-    default: false
-
   - name: NPMInstall
     type: boolean
     default: false
@@ -53,7 +49,6 @@ variables:
   NPMInstall: ${{ parameters.NPMInstall }}
   NPMTests: ${{ parameters.NPMTests }}
   UnitTests: ${{ parameters.DotNetTests }}
-  FunctionalTests: ${{ parameters.FunctionalTests }}
   Library: ${{ parameters.Library }}
   EnableOCP3: ${{ parameters.EnableOCP3 }}
   EnableOCP4: ${{ parameters.EnableOCP4 }}
@@ -63,9 +58,7 @@ variables:
   ${{ if not(parameters.OpenShiftName) }}:
       OpenShift.Name: $[lower(variables['App.Name'])]
   App.UnitTests: $(App.Home)/test/unit
-  App.FunctionalTests: $(App.Home)/test/functional
   PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
-  PublishFunctionalTests: $[and(eq(variables['FunctionalTests'],true), eq(variables['PullRequest'],false))]
   RunOpenShift: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
   ${{ if eq(variables['PullRequest'], true) }}: 
       BuildPrefix: "PR-$(SourceBranchName)"
