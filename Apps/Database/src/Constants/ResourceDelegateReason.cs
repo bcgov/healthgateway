@@ -18,7 +18,7 @@ namespace HealthGateway.Database.Constants
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Transaction Result Types for the audit entity.
+    /// ResourceDelegate Reasons for delegation.
     /// </summary>
     public enum ResourceDelegateReason
     {
