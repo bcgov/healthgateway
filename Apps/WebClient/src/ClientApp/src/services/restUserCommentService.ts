@@ -29,6 +29,7 @@ export class RestUserCommentService implements IUserCommentService {
     }
 
     public getCommentsForEntry(
+        hdid: string,
         parentEntryId: string
     ): Promise<RequestResult<UserComment[]>> {
         return new Promise((resolve, reject) => {
@@ -44,7 +45,7 @@ export class RestUserCommentService implements IUserCommentService {
             }
             this.http
                 .getWithCors<RequestResult<UserComment[]>>(
-                    `${this.USER_COMMENT_BASE_URI}?parentEntryId=${parentEntryId}`
+                    `${this.USER_COMMENT_BASE_URI}/${hdid}?parentEntryId=${parentEntryId}`
                 )
                 .then((userComments) => {
                     return resolve(userComments);
@@ -61,7 +62,10 @@ export class RestUserCommentService implements IUserCommentService {
         });
     }
 
-    public createComment(comment: UserComment): Promise<UserComment> {
+    public createComment(
+        hdid: string,
+        comment: UserComment
+    ): Promise<UserComment> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve();
@@ -69,7 +73,7 @@ export class RestUserCommentService implements IUserCommentService {
             }
             this.http
                 .post<RequestResult<UserComment>>(
-                    `${this.USER_COMMENT_BASE_URI}/`,
+                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
                 .then((result) => {
@@ -90,11 +94,14 @@ export class RestUserCommentService implements IUserCommentService {
         });
     }
 
-    public updateComment(comment: UserComment): Promise<UserComment> {
+    public updateComment(
+        hdid: string,
+        comment: UserComment
+    ): Promise<UserComment> {
         return new Promise((resolve, reject) => {
             this.http
                 .put<RequestResult<UserComment>>(
-                    `${this.USER_COMMENT_BASE_URI}/`,
+                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
                 .then((result) => {
@@ -112,11 +119,11 @@ export class RestUserCommentService implements IUserCommentService {
         });
     }
 
-    public deleteComment(comment: UserComment): Promise<void> {
+    public deleteComment(hdid: string, comment: UserComment): Promise<void> {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.USER_COMMENT_BASE_URI}/`,
+                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
                 .then((result) => {

@@ -57,14 +57,16 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a beta request json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="betaRequest">The beta request model.</param>
         /// <response code="200">The beta request record was saved.</response>
         /// <response code="400">The beta request was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Authorize(Policy = UserPolicy.UserOnly)]
-        public IActionResult CreateBetaRequest([FromBody] BetaRequest betaRequest)
+        [Route("{hdid}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult CreateBetaRequest(string hdid, [FromBody] BetaRequest betaRequest)
         {
             string referer = this.httpContextAccessor.HttpContext?.Request
                 .GetTypedHeaders()
@@ -85,7 +87,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}")]
-        [Authorize(Policy = UserPolicy.Read)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult GetBetaRequest(string hdid)
         {
             BetaRequest result = this.betaRequestService.GetBetaRequest(hdid);

@@ -331,7 +331,7 @@ export default class RegistrationView extends Vue {
             };
 
             this.betaRequestService
-                .putRequest(newRequest)
+                .putRequest(this.oidcUser.hdid, newRequest)
                 .then((result) => {
                     this.logger.debug(
                         `Save Beta Request Profile result: ${JSON.stringify(

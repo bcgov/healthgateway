@@ -74,7 +74,7 @@ export default class NoteTimelineComponent extends Vue {
     private updateNote() {
         this.isSaving = true;
         this.noteService
-            .updateNote({
+            .updateNote(this.user.hdid, {
                 id: this.entry.id,
                 text: this.text,
                 title: this.title,
@@ -99,7 +99,7 @@ export default class NoteTimelineComponent extends Vue {
     private createNote() {
         this.isSaving = true;
         this.noteService
-            .createNote({
+            .createNote(this.user.hdid, {
                 text: this.text,
                 title: this.title,
                 journalDateTime: new DateWrapper(this.dateString).toISODate(),
@@ -131,7 +131,7 @@ export default class NoteTimelineComponent extends Vue {
         this.text = this.entry.id;
         if (confirm("Are you sure you want to delete this note?")) {
             this.noteService
-                .deleteNote(this.entry.toModel())
+                .deleteNote(this.user.hdid, this.entry.toModel())
                 .then(() => {
                     this.onNoteDeleted(this.entry);
                 })
