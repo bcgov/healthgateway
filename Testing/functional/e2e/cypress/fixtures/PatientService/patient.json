@@ -1,0 +1,16 @@
+{
+  "resourcePayload": {
+    "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+    "personalhealthnumber": "9735353315",
+    "firstname": "BONNET",
+    "lastname": "PROTERVITY",
+    "birthdate": "1967-06-02T00:00:00",
+    "email": "",
+    "gender": "Female"
+  },
+  "totalResultCount": null,
+  "pageIndex": null,
+  "pageSize": null,
+  "resultStatus": 1,
+  "resultError": null
+}
