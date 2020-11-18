@@ -26,6 +26,10 @@ namespace HealthGateway.Database.Migrations
         private const string Schema = "gateway";
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Drop User Delegate history functions
+            migrationBuilder.Sql(@$"DROP TRIGGER IF EXISTS ""UserDelegateHistoryTrigger"" ON {Schema}.""UserDelegate""");
+            migrationBuilder.Sql(@$"DROP FUNCTION IF EXISTS {Schema}.""UserDelegateHistoryFunction""();");
+
             // Drop the UserDelegate
             migrationBuilder.Sql(@$"DROP TABLE IF EXISTS {Schema}.""UserDelegate""");
 
