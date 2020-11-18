@@ -66,7 +66,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void SendEmail(Guid emailId)
         {
             this.logger.LogTrace($"Sending email... {emailId}");
-            Email email = this.emailDelegate.GetNewEmail(emailId);
+            Email? email = this.emailDelegate.GetNewEmail(emailId);
             if (email != null)
             {
                 this.SendEmail(email);

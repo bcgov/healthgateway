@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,8 +64,8 @@ namespace HealthGateway.WebClient.Controllers
         public IActionResult Create([FromBody] UserComment comment)
         {
             // Validate the hdid to be a patient.
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            string? userHdid = user?.FindFirst("hdid")?.Value;
 
             if (comment == null)
             {
@@ -96,8 +96,8 @@ namespace HealthGateway.WebClient.Controllers
                 return new BadRequestResult();
             }
 
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            string? userHdid = user?.FindFirst("hdid")?.Value;
             if (comment.UserProfileId != userHdid)
             {
                 return new ForbidResult();
@@ -120,8 +120,8 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult Delete([FromBody] UserComment comment)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            string? userHdid = user?.FindFirst("hdid")?.Value;
             if (comment.UserProfileId != userHdid)
             {
                 return new ForbidResult();
@@ -143,9 +143,9 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult GetAllForEntry([FromQuery] string parentEntryId)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetList(userHdid, parentEntryId);
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            string? userHdid = user?.FindFirst("hdid")?.Value;
+            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetList(userHdid ?? string.Empty, parentEntryId);
             return new JsonResult(result);
         }
     }

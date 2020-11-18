@@ -135,9 +135,18 @@ namespace HealthGateway.Medication.Delegates
                             string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                             if (response.IsSuccessStatusCode)
                             {
-                                MedicationHistory medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
-                                retVal.ResultStatus = Common.Constants.ResultType.Success;
-                                retVal.ResourcePayload = medicationHistory.Response!;
+                                MedicationHistory? medicationHistory = JsonSerializer.Deserialize<MedicationHistory>(payload, options);
+                                if (medicationHistory != null)
+                                {
+                                    retVal.ResultStatus = Common.Constants.ResultType.Success;
+                                    retVal.ResourcePayload = medicationHistory.Response;
+                                }
+                                else
+                                {
+                                    retVal.ResultStatus = Common.Constants.ResultType.Error;
+                                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to deserialize ODR response", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                                    this.logger.LogError(retVal.ResultError.ResultMessage);
+                                }
                             }
                             else
                             {
@@ -276,7 +285,7 @@ namespace HealthGateway.Medication.Delegates
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 if (response.IsSuccessStatusCode)
                 {
-                    ProtectiveWord protectiveWord = JsonSerializer.Deserialize<ProtectiveWord>(payload, options);
+                    ProtectiveWord? protectiveWord = JsonSerializer.Deserialize<ProtectiveWord>(payload, options);
                     if (protectiveWord != null && protectiveWord.QueryResponse != null)
                     {
                         retVal = this.hashDelegate.Hash(protectiveWord.QueryResponse.Value);

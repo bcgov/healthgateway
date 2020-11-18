@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,7 @@ namespace HealthGateway.Laboratory.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
@@ -85,13 +83,21 @@ namespace HealthGateway.Laboratory.Controllers
         {
             this.logger.LogDebug($"Getting list of laboratory orders... ");
 
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
+                if (accessToken != null)
+                {
+                    RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
+                    this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
 
-            return new JsonResult(result);
+                    return new JsonResult(result);
+                }
+            }
+
+            return this.Unauthorized();
         }
 
         /// <summary>
@@ -112,13 +118,22 @@ namespace HealthGateway.Laboratory.Controllers
         {
             this.logger.LogDebug($"Getting PDF version of Laboratory Report for hdid {hdid}");
 
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, accessToken).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
+                if (accessToken != null)
+                {
 
-            return new JsonResult(result);
+                    RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, accessToken).ConfigureAwait(true);
+                    this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
+
+                    return new JsonResult(result);
+                }
+            }
+
+            return this.Unauthorized();
         }
     }
 }

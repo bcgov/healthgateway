@@ -128,8 +128,8 @@ namespace HealthGateway.WebClient.Listeners
                 WriteIndented = true,
             };
             options.Converters.Add(new JsonStringEnumConverter());
-            BannerChangeEvent changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, options);
-            if (this.CommunicationService != null && changeEvent.Data != null)
+            BannerChangeEvent? changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, options);
+            if (this.CommunicationService != null && changeEvent != null && changeEvent.Data != null)
             {
                 DateTime utcnow = DateTime.UtcNow;
                 RequestResult<Communication> cacheEntry = new RequestResult<Communication>();

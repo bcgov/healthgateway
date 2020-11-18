@@ -198,7 +198,7 @@ namespace HealthGateway.AdminWebClient
                         JwtSecurityToken accessToken = ctx.SecurityToken;
                         if (accessToken != null)
                         {
-                            ClaimsIdentity? identity = ctx.Principal.Identity as ClaimsIdentity;
+                            ClaimsIdentity? identity = ctx.Principal?.Identity as ClaimsIdentity;
                             if (identity != null)
                             {
                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));

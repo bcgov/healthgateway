@@ -1,6 +1,8 @@
 /* Data Cleanup */
 TRUNCATE gateway."UserProfile" CASCADE;
 TRUNCATE gateway."Communication" CASCADE;
+TRUNCATE gateway."UserDelegate" CASCADE;
+TRUNCATE gateway."UserDelegateHistory" CASCADE;
 
 /* Registered HealthGateway User */
 INSERT INTO gateway."UserProfile"(

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,7 +66,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult CreateBetaRequest([FromBody] BetaRequest betaRequest)
         {
-            string referer = this.httpContextAccessor.HttpContext.Request
+            string referer = this.httpContextAccessor.HttpContext?.Request
                 .GetTypedHeaders()
                 .Referer?
                 .GetLeftPart(UriPartial.Authority) !;

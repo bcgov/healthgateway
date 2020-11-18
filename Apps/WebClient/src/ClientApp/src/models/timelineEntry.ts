@@ -97,11 +97,11 @@ export default abstract class TimelineEntry {
     }
 
     public dateRangeApplies(filter: TimelineFilter): boolean {
+        const startDateWapper = new DateWrapper(filter.startDate);
+        const endDateWapper = new DateWrapper(filter.endDate + "T23:59:59.999");
         return (
-            (!filter.startDate ||
-                this.date.isAfter(new DateWrapper(filter.startDate))) &&
-            (!filter.endDate ||
-                this.date.isBefore(new DateWrapper(filter.endDate)))
+            (!filter.startDate || this.date.isAfterOrSame(startDateWapper)) &&
+            (!filter.endDate || this.date.isBeforeOrSame(endDateWapper))
         );
     }
 }

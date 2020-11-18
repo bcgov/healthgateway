@@ -54,6 +54,12 @@ namespace HealthGateway.Laboratory.Models
         public string? TestStatus { get; set; }
 
         /// <summary>
+        /// Gets or sets the lab result outcome.
+        /// </summary>
+        [JsonPropertyName("labResultOutcome")]
+        public string LabResultOutcome { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the result description.
         /// </summary>
         [JsonPropertyName("resultDescription")]
