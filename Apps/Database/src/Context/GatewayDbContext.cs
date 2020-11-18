@@ -74,8 +74,6 @@ namespace HealthGateway.Database.Context
         public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
         public DbSet<Rating> Rating { get; set; } = null!;
         public DbSet<ResourceDelegate> ResourceDelegate { get; set; } = null!;
-        public DbSet<ResourceDelegateHistory> ResourceDelegateHistory { get; set; } = null!;
-        public DbSet<ResourceDelegateReasonCode> ResourceDelegateReasonCode { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
