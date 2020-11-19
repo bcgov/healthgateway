@@ -71,14 +71,14 @@ namespace HealthGateway.Admin.Controllers
         [HttpGet(AuthorizationConstants.LoginPath)]
         public IActionResult Login()
         {
-            if (!this.HttpContext.User.Identity.IsAuthenticated)
+            if (this.HttpContext.User.Identity != null && !this.HttpContext.User.Identity.IsAuthenticated)
             {
                 this.logger.LogDebug("Issuing Challenge result");
                 return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
             }
 
             this.logger.LogDebug("Redirecting to dashboard");
-            string basePath = this.httpContextAccessor.HttpContext.Request.PathBase.Value;
+            string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
             return new RedirectResult($"{basePath}/");
         }
 

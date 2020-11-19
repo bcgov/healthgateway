@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,8 +66,8 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult CreateNote([FromBody] UserNote note)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            string? userHdid = user?.FindFirst("hdid")?.Value;
             note.HdId = userHdid;
             note.CreatedBy = userHdid;
             note.UpdatedBy = userHdid;
@@ -87,8 +87,8 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult UpdateNote([FromBody] UserNote note)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            string? userHdid = user?.FindFirst("hdid")?.Value;
             note.UpdatedBy = userHdid;
             RequestResult<UserNote> result = this.noteService.UpdateNote(note);
             return new JsonResult(result);
@@ -106,10 +106,6 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult DeleteNote([FromBody] UserNote note)
         {
-            // Validate the hdid to be a patient.
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-
             RequestResult<UserNote> result = this.noteService.DeleteNote(note);
             return new JsonResult(result);
         }
@@ -125,9 +121,9 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserPolicy.UserOnly)]
         public IActionResult GetAll()
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string userHdid = user.FindFirst("hdid").Value;
-            RequestResult<IEnumerable<UserNote>> result = this.noteService.GetNotes(userHdid);
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            string? userHdid = user?.FindFirst("hdid")?.Value;
+            RequestResult<IEnumerable<UserNote>> result = this.noteService.GetNotes(userHdid ?? string.Empty);
             return new JsonResult(result);
         }
     }

@@ -110,7 +110,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse);
+                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse) !;
             }
             catch (HttpRequestException e)
             {
@@ -147,7 +147,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse);
+                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse) !;
             }
             catch (HttpRequestException e)
             {

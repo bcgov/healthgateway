@@ -27,7 +27,6 @@ extends:
   parameters:
     Application: Immunization
     DotNetTests: true
-    FunctionalTests: false
     NPMInstall: false
     NPMTests: false
 

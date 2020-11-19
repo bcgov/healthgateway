@@ -281,7 +281,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The injected services provider.</param>
         public void ConfigureAuthServicesForJwtBearer(IServiceCollection services)
         {
-            IAuditLogger auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
+            IAuditLogger? auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
             bool debugEnabled = this.environment.IsDevelopment() || this.configuration.GetValue<bool>("EnableDebug", true);
             this.Logger.LogDebug($"Debug configuration is {debugEnabled}");
 
@@ -371,7 +371,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                             JwtSecurityToken accessToken = ctx.SecurityToken;
                             if (accessToken != null)
                             {
-                                if (ctx.Principal.Identity is ClaimsIdentity claimsIdentity)
+                                if (ctx.Principal?.Identity is ClaimsIdentity claimsIdentity)
                                 {
                                     claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
                                 }

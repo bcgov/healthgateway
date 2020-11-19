@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,14 +49,14 @@ namespace HealthGateway.JobScheduler.Controllers
         public IActionResult Login()
         {
 #pragma warning disable CA1303 //Disable literals
-            if (!this.HttpContext.User.Identity.IsAuthenticated)
+            if (this.HttpContext.User.Identity != null && !this.HttpContext.User.Identity.IsAuthenticated)
             {
                 this.logger.LogDebug(@"Issuing Challenge result");
                 return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
             }
 
             this.logger.LogDebug(@"Redirecting to dashboard");
-            string basePath = this.httpContextAccessor.HttpContext.Request.PathBase.Value;
+            string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
             return new RedirectResult($"{basePath}/");
 #pragma warning restore CA1303 //Restore literal warning
         }

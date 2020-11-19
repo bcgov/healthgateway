@@ -116,10 +116,10 @@ namespace HealthGateway.Encounter.Delegates
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     if (response.IsSuccessStatusCode)
                     {
-                        MSPVisitHistory visitHistory = JsonSerializer.Deserialize<MSPVisitHistory>(payload, options);
+                        MSPVisitHistory? visitHistory = JsonSerializer.Deserialize<MSPVisitHistory>(payload, options);
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
-                        retVal.ResourcePayload = visitHistory.Response;
-                        retVal.TotalResultCount = visitHistory.Response?.TotalRecords;
+                        retVal.ResourcePayload = visitHistory?.Response;
+                        retVal.TotalResultCount = visitHistory?.Response?.TotalRecords;
                     }
                     else
                     {

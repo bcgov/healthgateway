@@ -81,7 +81,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 if (taskType != null)
                 {
                     this.logger.LogInformation($"OneTimeJob will invoke {taskType.Name}");
-                    ApplicationSetting hasRunAppSetting = this.applicationSettingsDelegate.GetApplicationSetting(
+                    ApplicationSetting? hasRunAppSetting = this.applicationSettingsDelegate.GetApplicationSetting(
                             ApplicationType.JobScheduler,
                             this.GetType().Name,
                             className);
