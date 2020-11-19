@@ -16,7 +16,6 @@
 namespace HealthGateway.Laboratory.Factories
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Laboratory.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +23,6 @@ namespace HealthGateway.Laboratory.Factories
     /// <summary>
     /// Creates the Laboratory Delegate dynamically.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class LaboratoryDelegateFactory : ILaboratoryDelegateFactory
     {
         private const string DefaultInstance = "HealthGateway.Laboratory.Delegates.RestLaboratoryDelegate";
