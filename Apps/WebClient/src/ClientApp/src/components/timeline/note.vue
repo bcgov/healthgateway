@@ -47,6 +47,15 @@ export default class NoteTimelineComponent extends Vue {
             });
         }
     }
+
+    private checkBlankNote() {
+        if (this.text === "" && this.title === "") {
+            this.eventBus.$emit(EventMessageName.IsNoteBlank, true);
+        } else {
+            this.eventBus.$emit(EventMessageName.IsNoteBlank, false);
+        }
+    }
+
     private get entryIcon(): IconDefinition {
         return faEdit;
     }
@@ -240,6 +249,7 @@ export default class NoteTimelineComponent extends Vue {
                                 type="text"
                                 placeholder="Title"
                                 maxlength="100"
+                                @input="checkBlankNote()"
                             />
                         </b-col>
                         <b-col class="p-0 pl-sm-1 pt-sm-0 pt-1 col-sm-5 col-12">
@@ -290,6 +300,7 @@ export default class NoteTimelineComponent extends Vue {
                                 rows="3"
                                 max-rows="6"
                                 maxlength="1000"
+                                @input="checkBlankNote()"
                             ></b-form-textarea>
                         </b-col>
                     </b-row>
