@@ -47,30 +47,25 @@ namespace HealthGateway.Patient.Test.Controllers
             Mock<IPatientService> patientService = new Mock<IPatientService>();
             var loggerService = new Mock<ILogger<PatientController>>();
             Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            var expectedResult = GenegateMockPatient();
+            var expectedResult = new RequestResult<PatientModel>()
+            {
+                ResourcePayload = new PatientModel()
+                {
+                    Birthdate = DateTime.Now,
+                    EmailAddress = MockedEmailAddress,
+                    FirstName = MockedFirstName,
+                    LastName = MockedLastName,
+                    Gender = MockedGender,
+                    HdId = MockedHdId,
+                    PersonalHealthNumber = MockedPersonalHealthNumber,
+                },
+            };
             patientService.Setup(x => x.GetPatient(It.IsAny<string>(), Common.Constants.PatientIdentifierType.HDID)).ReturnsAsync(expectedResult);
 
             PatientController patientController = new PatientController(loggerService.Object, httpContextAccessorMock.Object, patientService.Object);
             var actualResult = patientController.GetPatient("123");
             Assert.IsType<JsonResult>(actualResult.Result);
             Assert.True(((JsonResult)actualResult.Result).Value.IsDeepEqual(expectedResult));
-        }
-
-        private static RequestResult<PatientModel> GenegateMockPatient()
-        {
-            RequestResult<PatientModel> result = new RequestResult<PatientModel>();
-            var patient = new PatientModel()
-            {
-                Birthdate = DateTime.Now,
-                EmailAddress = MockedEmailAddress,
-                FirstName = MockedFirstName,
-                LastName = MockedLastName,
-                Gender = MockedGender,
-                HdId = MockedHdId,
-                PersonalHealthNumber = MockedPersonalHealthNumber,
-            };
-            result.ResourcePayload = patient;
-            return result;
         }
     }
 }
