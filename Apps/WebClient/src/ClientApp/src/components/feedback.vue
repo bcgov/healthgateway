@@ -91,7 +91,7 @@ export default class FeedbackComponent extends Vue {
         this.isLoading = true;
 
         this.userFeedbackService
-            .submitFeedback({
+            .submitFeedback(this.user.hdid, {
                 comment: this.comment,
             })
             .then((result) => {

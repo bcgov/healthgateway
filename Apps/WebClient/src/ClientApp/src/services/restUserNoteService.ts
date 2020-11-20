@@ -29,7 +29,7 @@ export class RestUserNoteService implements IUserNoteService {
         this.isEnabled = config.webClient.modules["Note"];
     }
 
-    public getNotes(): Promise<RequestResult<UserNote[]>> {
+    public getNotes(hdid: string): Promise<RequestResult<UserNote[]>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
@@ -44,7 +44,7 @@ export class RestUserNoteService implements IUserNoteService {
 
             this.http
                 .getWithCors<RequestResult<UserNote[]>>(
-                    `${this.USER_NOTE_BASE_URI}/`
+                    `${this.USER_NOTE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
                     return resolve(requestResult);
@@ -63,7 +63,7 @@ export class RestUserNoteService implements IUserNoteService {
 
     NOT_IMPLENTED = "Method not implemented.";
 
-    public createNote(note: UserNote): Promise<UserNote> {
+    public createNote(hdid: string, note: UserNote): Promise<UserNote> {
         this.logger.debug(`createNote: ${JSON.stringify(note)}`);
         note.id = undefined;
         return new Promise((resolve, reject) => {
@@ -74,7 +74,7 @@ export class RestUserNoteService implements IUserNoteService {
 
             this.http
                 .post<RequestResult<UserNote>>(
-                    `${this.USER_NOTE_BASE_URI}/`,
+                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
                 .then((result) => {
@@ -92,11 +92,11 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    public updateNote(note: UserNote): Promise<UserNote> {
+    public updateNote(hdid: string, note: UserNote): Promise<UserNote> {
         return new Promise((resolve, reject) => {
             this.http
                 .put<RequestResult<UserNote>>(
-                    `${this.USER_NOTE_BASE_URI}/`,
+                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
                 .then((result) => {
@@ -114,14 +114,14 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    public deleteNote(note: UserNote): Promise<void> {
+    public deleteNote(hdid: string, note: UserNote): Promise<void> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
 
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.USER_NOTE_BASE_URI}/`,
+                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     JSON.stringify(note),
                     headers
                 )

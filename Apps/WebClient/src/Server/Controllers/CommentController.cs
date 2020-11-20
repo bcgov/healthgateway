@@ -55,26 +55,24 @@ namespace HealthGateway.WebClient.Controllers
         /// Posts a UserComment json to be inserted into the database.
         /// </summary>
         /// <returns>The http status.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The Comment request model.</param>
         /// <response code="200">The comment record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Authorize(Policy = UserPolicy.UserOnly)]
-        public IActionResult Create([FromBody] UserComment comment)
+        [Route("{hdid}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult Create(string hdid, [FromBody] UserComment comment)
         {
-            // Validate the hdid to be a patient.
-            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
-            string? userHdid = user?.FindFirst("hdid")?.Value;
-
             if (comment == null)
             {
                 return new BadRequestResult();
             }
 
-            comment.UserProfileId = userHdid;
-            comment.CreatedBy = userHdid;
-            comment.UpdatedBy = userHdid;
+            comment.UserProfileId = hdid;
+            comment.CreatedBy = hdid;
+            comment.UpdatedBy = hdid;
             RequestResult<UserComment> result = this.commentService.Add(comment);
             return new JsonResult(result);
         }
@@ -83,27 +81,27 @@ namespace HealthGateway.WebClient.Controllers
         /// Puts a UserComment json to be updated in the database.
         /// </summary>
         /// <returns>The updated Comment wrapped in a RequestResult.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The Comment to be updated.</param>
         /// <response code="200">The comment was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Authorize(Policy = UserPolicy.UserOnly)]
-        public IActionResult Update([FromBody] UserComment comment)
+        [Route("{hdid}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult Update(string hdid, [FromBody] UserComment comment)
         {
             if (comment == null)
             {
                 return new BadRequestResult();
             }
 
-            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
-            string? userHdid = user?.FindFirst("hdid")?.Value;
-            if (comment.UserProfileId != userHdid)
+            if (comment.UserProfileId != hdid)
             {
                 return new ForbidResult();
             }
 
-            comment.UpdatedBy = userHdid;
+            comment.UpdatedBy = hdid;
             RequestResult<UserComment> result = this.commentService.Update(comment);
             return new JsonResult(result);
         }
@@ -112,17 +110,17 @@ namespace HealthGateway.WebClient.Controllers
         /// Deletes a UserComment from the database.
         /// </summary>
         /// <returns>The deleted UserComment wrapped in a RequestResult.</returns>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="comment">The comment to be deleted.</param>
         /// <response code="200">The note was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
-        [Authorize(Policy = UserPolicy.UserOnly)]
-        public IActionResult Delete([FromBody] UserComment comment)
+        [Route("{hdid}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult Delete(string hdid, [FromBody] UserComment comment)
         {
-            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
-            string? userHdid = user?.FindFirst("hdid")?.Value;
-            if (comment.UserProfileId != userHdid)
+            if (comment.UserProfileId != hdid)
             {
                 return new ForbidResult();
             }
@@ -134,18 +132,18 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Gets all comments for the authorized user and event id.
         /// </summary>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
         /// <returns>The list of comments wrapped in a request result.</returns>
         /// <response code="200">Returns the list of comments.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        [Authorize(Policy = UserPolicy.UserOnly)]
-        public IActionResult GetAllForEntry([FromQuery] string parentEntryId)
+        [Route("{hdid}")]
+        [Authorize(Policy = UserProfilePolicy.Read)]
+        public IActionResult GetAllForEntry(string hdid, [FromQuery] string parentEntryId)
         {
-            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
-            string? userHdid = user?.FindFirst("hdid")?.Value;
-            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetList(userHdid ?? string.Empty, parentEntryId);
+            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetList(hdid, parentEntryId);
             return new JsonResult(result);
         }
     }
