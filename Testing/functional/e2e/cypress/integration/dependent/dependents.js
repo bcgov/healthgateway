@@ -102,16 +102,9 @@ describe('dependents', () => {
             .type(testDate)
             .last().invoke('val')
             .then(dependentCovidTestDate => expect(dependentCovidTestDate).to.equal(testDate));
-        // cy.get('[data-testid=dependentGender]')
-        //     .last().invoke('val')
-        //     .then(dateOfBirth => expect(dateOfBirth).to.equal(gendeFemale));        
+          
     })
 
-    // it('Validate Covid Tab without Results', () => {
-    //     // Validate the tab and elements are present        
-    //     cy.get('[data-testid=covid19TabTitle]').last().parent().click();
-    //     cy.get('[data-testid=covid19NoRecords]').last().should('have.text', 'No records found.');
-    // })
 
     it('Validate Covid Tab with Results', () => {
         // Validate the tab and elements are present        
