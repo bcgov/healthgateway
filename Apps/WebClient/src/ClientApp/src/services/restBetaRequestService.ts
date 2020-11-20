@@ -42,13 +42,16 @@ export class RestBetaRequestService implements IBetaRequestService {
         });
     }
 
-    public putRequest(request: BetaRequest): Promise<BetaRequest> {
+    public putRequest(
+        hdid: string,
+        request: BetaRequest
+    ): Promise<BetaRequest> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
             this.http
                 .put<RequestResult<BetaRequest>>(
-                    `${this.BETA_REQUEST_BASE_URI}`,
+                    `${this.BETA_REQUEST_BASE_URI}/${hdid}`,
                     JSON.stringify(request),
                     headers
                 )
