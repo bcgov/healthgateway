@@ -135,13 +135,13 @@ namespace HealthGateway.WebClient
         /// <param name="env">The hosting environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseSpaStaticFiles();
-
+            this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
-            this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseAuth(app);
+
+            app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
             {
