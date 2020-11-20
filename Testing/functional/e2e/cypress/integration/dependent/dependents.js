@@ -4,11 +4,9 @@ describe('dependents', () => {
     const firstName = "Sam"
     const lastName = "Testfive"
     const doB = "2014-03-15"
+    const testDate = "2020-03-21"
     const phn = "9874307168"    
-    const maskedPHN = "987438****"
-    const gendeMale = "Male"
-    const gendeFemale = "Female"
-    const gendeUnknown = "Unknown"
+   
 
     before(() => {
         cy.readConfig().as("config").then(config => {
@@ -54,16 +52,11 @@ describe('dependents', () => {
             .clear()
             .blur()
             .should('have.class', 'is-invalid')
-        // Validate Gender Input  
-        cy.get('[data-testid=genderInput]')
+
+        // Validate tesDate Input
+        cy.get('[data-testid=dependentCovidTestDate]')
             .should('be.enabled')
-            .select('').contains('Please select an option')
-        cy.get('[data-testid=genderInput]')
-            .select(gendeMale).should('have.value', gendeMale)
-        cy.get('[data-testid=genderInput]')
-            .select(gendeFemale).should('have.value', gendeFemale)
-        cy.get('[data-testid=genderInput]')
-            .select(gendeUnknown).should('have.value', 'NotSpecified')
+
         // Validate Cancel out of the form
         cy.get('[data-testid=cancelRegistrationBtn]')
             .should('be.enabled', 'be.visible')
@@ -84,10 +77,10 @@ describe('dependents', () => {
             .type(lastName);
         cy.get('[data-testid=dateOfBirthInput]')
             .type(doB);
+        cy.get('[data-testid=dependentCovidTestDate]')
+            .type(testDate);
         cy.get('[data-testid=phnInput]')
             .type(phn);
-        const genderInput = cy.get('[data-testid=genderInput]')
-        genderInput.select(gendeFemale);
         cy.get('[data-testid=termsCheckbox]')
             .click({ force: true });
 
@@ -101,13 +94,17 @@ describe('dependents', () => {
         // Validate the newly added dependent tab and elements are present        
         cy.get('[data-testid=dependentPHN]')
             .last().invoke('val')
-            .then(phnNumber => expect(phnNumber).to.equal(maskedPHN));
+            .then(phnNumber => expect(phnNumber).to.equal(phn));
         cy.get('[data-testid=dependentDOB]')
             .last().invoke('val')
             .then(dateOfBirth => expect(dateOfBirth).to.equal(doB));
-        cy.get('[data-testid=dependentGender]')
+            cy.get('[data-testid=dependentCovidTestDate]')
+            .type(testDate)
             .last().invoke('val')
-            .then(dateOfBirth => expect(dateOfBirth).to.equal(gendeFemale));        
+            .then(dependentCovidTestDate => expect(dependentCovidTestDate).to.equal(testDate));
+        // cy.get('[data-testid=dependentGender]')
+        //     .last().invoke('val')
+        //     .then(dateOfBirth => expect(dateOfBirth).to.equal(gendeFemale));        
     })
 
     // it('Validate Covid Tab without Results', () => {
