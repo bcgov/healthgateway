@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Laboratory.Factories;
@@ -27,6 +28,7 @@ namespace HealthGateway.Laboratory
     /// <summary>
     /// Configures the application during startup.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;

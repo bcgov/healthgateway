@@ -427,7 +427,7 @@ export default class TimelineView extends Vue {
         );
         this.isNoteLoading = true;
         noteService
-            .getNotes()
+            .getNotes(this.user.hdid)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     // Add the immunization entries to the timeline list

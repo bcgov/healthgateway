@@ -82,7 +82,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
         [Route("{hdid}")]
-        [Authorize(Policy = UserPolicy.Write)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<IActionResult> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest)
         {
             // Validate that the query parameter matches the post body
@@ -120,7 +120,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}")]
-        [Authorize(Policy = UserPolicy.Read)]
+        [Authorize(Policy = UserProfilePolicy.Read)]
         public IActionResult GetUserProfile(string hdid)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
@@ -163,7 +163,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}/Validate")]
-        [Authorize(Policy = UserPolicy.Read)]
+        [Authorize(Policy = UserProfilePolicy.Read)]
         public async Task<IActionResult> Validate(string hdid)
         {
             PrimitiveRequestResult<bool> result = await this.userProfileService.ValidateMinimumAge(hdid).ConfigureAwait(true);
@@ -180,7 +180,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Route("{hdid}")]
-        [Authorize(Policy = UserPolicy.Write)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult CloseUserProfile(string hdid)
         {
             string referer = this.httpContextAccessor.HttpContext!.Request
@@ -206,7 +206,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}/recover")]
-        [Authorize(Policy = UserPolicy.Write)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult RecoverUserProfile(string hdid)
         {
             string referer = this.httpContextAccessor.HttpContext!.Request
@@ -246,7 +246,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="404">The invite key was not found.</response>
         [HttpGet]
         [Route("{hdid}/email/validate/{inviteKey}")]
-        [Authorize(Policy = UserPolicy.Write)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<IActionResult> ValidateEmail(string hdid, Guid inviteKey)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -281,7 +281,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="404">The invite key was not found.</response>
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
-        [Authorize(Policy = UserPolicy.Write)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<IActionResult> ValidateSMS(string hdid, string validationCode)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -316,7 +316,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}/email/invite")]
-        [Authorize(Policy = UserPolicy.Read)]
+        [Authorize(Policy = UserProfilePolicy.Read)]
         public IActionResult GetUserEmailInvite(string hdid)
         {
             MessagingVerification? emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
@@ -334,7 +334,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Route("{hdid}/sms/invite")]
-        [Authorize(Policy = UserPolicy.Read)]
+        [Authorize(Policy = UserProfilePolicy.Read)]
         public IActionResult GetUserSMSInvite(string hdid)
         {
             MessagingVerification? smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
@@ -353,7 +353,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("{hdid}/email")]
-        [Authorize(Policy = UserPolicy.Write)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string emailAddress)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -387,7 +387,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("{hdid}/sms")]
-        [Authorize(Policy = UserPolicy.Write)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<IActionResult> UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
@@ -423,7 +423,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("{hdid}/preference/{name}")]
-        [Authorize(Policy = UserPolicy.Write)]
+        [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult UpdateUserPreference(string hdid, string name, [FromBody] string value)
         {
             if (name == null)
