@@ -1,6 +1,6 @@
 const { AuthMethod } = require("../../support/constants")
 
-describe('User Feedback', () => {
+describe('Patient Service', () => {
     beforeEach(() => {
         cy.readConfig().as("config")
         cy.getTokens(Cypress.env('keycloak.username'), Cypress.env('keycloak.password')).as("tokens")
@@ -15,10 +15,11 @@ describe('User Feedback', () => {
     })
     
     it('Verify Patient Unauthorized', () => {
+      const HDID='P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
       cy.get("@config").then(config => {
         cy.log(`Patient Service Endpoint: ${config.serviceEndpoints.Patient}`)
         cy.request({
-          url: `${config.serviceEndpoints.Patient}v1/api/Patient/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A`,
+          url: `${config.serviceEndpoints.Patient}v1/api/Patient/${HDID}`,
           followRedirect: false,
           failOnStatusCode: false
         })

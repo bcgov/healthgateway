@@ -58,7 +58,10 @@
     },
     {
       "path": "Encounter"
-    },    
+    },
+    {
+      "path": "../Testing/functional/e2e"
+    }
   ],
   "settings": {
     "eslint.workingDirectories": [
