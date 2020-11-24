@@ -15,18 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -54,58 +49,57 @@ namespace HealthGateway.WebClient.Test.Services
             betaRequestDelegateMock.Setup(s => s.GetBetaRequest(HdIdMock)).Returns(expectedDBResult);
 
             var emailQueueServiceMock = new Mock<IEmailQueueService>();
+            IBetaRequestService service = new BetaRequestService(
+                new Mock<ILogger<UserEmailService>>().Object,
+                betaRequestDelegateMock.Object,
+                emailQueueServiceMock.Object);
 
-            IBetaRequestService service = SetupBetaRequestServiceMock(betaRequestDelegateMock.Object, emailQueueServiceMock.Object);
             var betaRequest = service.GetBetaRequest(HdIdMock);
             Assert.Equal(EmailAddressMock, betaRequest.EmailAddress);
             Assert.Equal(HdIdMock, betaRequest.HdId);
         }
 
         /// <summary>
-        /// PutBetaRequest - Insert new BetaRequest test case.
+        /// PutBetaRequest - Insert new BetaRequest - Happy path.
         /// </summary>
         [Fact]
-        public void PutBetaRequestCreated()
+        public void PutBetaRequestInsertSuccess()
         {
-            var returnPreviousDBResult = SetupDBResultBetaRequest(DBStatusCode.Read, false);
-            var betaRequestDelegateMock = new Mock<IBetaRequestDelegate>();
-            betaRequestDelegateMock.Setup(s => s.GetBetaRequest(HdIdMock)).Returns(returnPreviousDBResult);
-
-            var expectedInsertDBResult = SetupDBResultBetaRequest(DBStatusCode.Created);
-            betaRequestDelegateMock.Setup(s => s.InsertBetaRequest(expectedInsertDBResult.Payload)).Returns(expectedInsertDBResult);
-
-            var emailQueueServiceMock = new Mock<IEmailQueueService>();
-            emailQueueServiceMock.Setup(s => s.QueueNewEmail(EmailAddressMock, BetaConfirmationTemplateEmailTemplateMock, false));
-
-            IBetaRequestService service = SetupBetaRequestServiceMock(betaRequestDelegateMock.Object, emailQueueServiceMock.Object);
-
-            var inputPreviousDBResult = SetupDBResultBetaRequest(DBStatusCode.Read);
-            var insertDBResult = service.PutBetaRequest(inputPreviousDBResult.Payload, HostUrlMock);
-            Assert.Equal(ResultType.Success, insertDBResult.ResultStatus);
+            var requestResult = PutBetaRequestInsert(DBStatusCode.Created);
+            Assert.Equal(ResultType.Success, requestResult.ResultStatus);
         }
 
         /// <summary>
-        /// PutBetaRequest - Update an existing BetaRequest - test case.
+        /// PutBetaRequest - Insert new BetaRequest - Error path.
         /// </summary>
         [Fact]
-        public void PutBetaRequestUpdated()
+        public void PutBetaRequestInsertFailed()
         {
-            var returnPreviousDBResult = SetupDBResultBetaRequest(DBStatusCode.Read);
-            var betaRequestDelegateMock = new Mock<IBetaRequestDelegate>();
-            betaRequestDelegateMock.Setup(s => s.GetBetaRequest(HdIdMock)).Returns(returnPreviousDBResult);
+            var requestResult = PutBetaRequestInsert(DBStatusCode.Error);
+            Assert.Equal(ResultType.Error, requestResult.ResultStatus);
+            Assert.Equal("testhostServer-CI-DB", requestResult.ResultError!.ErrorCode);
+        }
 
-            var expectedUpdateDBResult = SetupDBResultBetaRequest(DBStatusCode.Updated);
-            expectedUpdateDBResult.Payload.EmailAddress += "updated";
-            betaRequestDelegateMock.Setup(s => s.UpdateBetaRequest(expectedUpdateDBResult.Payload)).Returns(expectedUpdateDBResult);
+        /// <summary>
+        /// PutBetaRequest - Update a BetaRequest - Happy path.
+        /// </summary>
+        [Fact]
+        public void PutBetaRequestUpdateSuccess()
+        {
+            var requestResult = PutBetaRequestUpdate(DBStatusCode.Updated, "updated");
+            Assert.Equal(ResultType.Success, requestResult.ResultStatus);
+            Assert.Contains("updated", requestResult.ResourcePayload!.EmailAddress, System.StringComparison.OrdinalIgnoreCase);
+        }
 
-            var emailQueueServiceMock = new Mock<IEmailQueueService>();
-            emailQueueServiceMock.Setup(s => s.QueueNewEmail(EmailAddressMock, BetaConfirmationTemplateEmailTemplateMock, false));
-
-            IBetaRequestService service = SetupBetaRequestServiceMock(betaRequestDelegateMock.Object, emailQueueServiceMock.Object);
-
-            var inputPreviousDBResult = SetupDBResultBetaRequest(DBStatusCode.Read);
-            var insertDBResult = service.PutBetaRequest(inputPreviousDBResult.Payload, HostUrlMock);
-            Assert.Equal(ResultType.Success, insertDBResult.ResultStatus);
+        /// <summary>
+        /// PutBetaRequest - Update a BetaRequest - Error path.
+        /// </summary>
+        [Fact]
+        public void PutBetaRequestUpdateFailed()
+        {
+            var requestResult = PutBetaRequestUpdate(DBStatusCode.Error, "updated");
+            Assert.Equal(ResultType.Error, requestResult.ResultStatus);
+            Assert.Equal("testhostServer-CI-DB", requestResult.ResultError!.ErrorCode);
         }
 
         private static DBResult<BetaRequest> SetupDBResultBetaRequest(DBStatusCode statusCode, bool generateBetaRequestMock = true)
@@ -121,6 +115,7 @@ namespace HealthGateway.WebClient.Test.Services
                 {
                     HdId = HdIdMock,
                     EmailAddress = EmailAddressMock,
+                    Version = 1,
                 };
                 dBResult.Payload = betaRequest;
             }
@@ -128,13 +123,49 @@ namespace HealthGateway.WebClient.Test.Services
             return dBResult;
         }
 
-        private static IBetaRequestService SetupBetaRequestServiceMock(IBetaRequestDelegate betaRequestDelegate, IEmailQueueService emailQueueService)
+        private static RequestResult<BetaRequest> PutBetaRequestInsert(DBStatusCode expectedDBStatusCode)
         {
-            IBetaRequestService betaRequestService = new BetaRequestService(
+            var returnPreviousDBResult = SetupDBResultBetaRequest(DBStatusCode.Read, false);
+            var betaRequestDelegateMock = new Mock<IBetaRequestDelegate>();
+            betaRequestDelegateMock.Setup(s => s.GetBetaRequest(HdIdMock)).Returns(returnPreviousDBResult);
+
+            var expectedInsertDBResult = SetupDBResultBetaRequest(expectedDBStatusCode);
+            betaRequestDelegateMock.Setup(s => s.InsertBetaRequest(It.Is<BetaRequest>(x => x.HdId == expectedInsertDBResult.Payload.HdId))).Returns(expectedInsertDBResult);
+
+            var emailQueueServiceMock = new Mock<IEmailQueueService>();
+            emailQueueServiceMock.Setup(s => s.QueueNewEmail(EmailAddressMock, BetaConfirmationTemplateEmailTemplateMock, false));
+
+            IBetaRequestService service = new BetaRequestService(
                 new Mock<ILogger<UserEmailService>>().Object,
-                betaRequestDelegate,
-                emailQueueService);
-            return betaRequestService;
+                betaRequestDelegateMock.Object,
+                emailQueueServiceMock.Object);
+
+            var inputPreviousDBResult = SetupDBResultBetaRequest(DBStatusCode.Read);
+            var insertDBResult = service.PutBetaRequest(inputPreviousDBResult.Payload, HostUrlMock);
+            return insertDBResult;
+        }
+
+        private static RequestResult<BetaRequest> PutBetaRequestUpdate(DBStatusCode expectedDBStatusCode, string updatedValue)
+        {
+            var returnPreviousDBResult = SetupDBResultBetaRequest(DBStatusCode.Read);
+            var betaRequestDelegateMock = new Mock<IBetaRequestDelegate>();
+            betaRequestDelegateMock.Setup(s => s.GetBetaRequest(HdIdMock)).Returns(returnPreviousDBResult);
+
+            var expectedUpdateDBResult = SetupDBResultBetaRequest(expectedDBStatusCode);
+            expectedUpdateDBResult.Payload.EmailAddress += updatedValue;
+            betaRequestDelegateMock.Setup(s => s.UpdateBetaRequest(It.Is<BetaRequest>(x => x.HdId == expectedUpdateDBResult.Payload.HdId))).Returns(expectedUpdateDBResult);
+
+            var emailQueueServiceMock = new Mock<IEmailQueueService>();
+            emailQueueServiceMock.Setup(s => s.QueueNewEmail(EmailAddressMock, BetaConfirmationTemplateEmailTemplateMock, false));
+
+            IBetaRequestService service = new BetaRequestService(
+                new Mock<ILogger<UserEmailService>>().Object,
+                betaRequestDelegateMock.Object,
+                emailQueueServiceMock.Object);
+
+            var inputPreviousDBResult = SetupDBResultBetaRequest(DBStatusCode.Read);
+            var updateDBResult = service.PutBetaRequest(inputPreviousDBResult.Payload, HostUrlMock);
+            return updateDBResult;
         }
     }
 }
