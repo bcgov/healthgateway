@@ -27,7 +27,6 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -125,7 +124,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 {
                     Id = Guid.NewGuid(),
                 },
-                ResultStatus = Common.Constants.ResultType.Success,
+                ResultStatus = Common.Constants.ResultType.Error,
             };
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
@@ -158,6 +157,90 @@ namespace HealthGateway.WebClient.Test.Controllers
             var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
             Assert.IsType<BadRequestResult>(actualResult);
+        }
+
+        /// <summary>
+        /// Delete Comment - Happy path scenario.
+        /// </summary>
+        [Fact]
+        public void ShouldDeleteComment()
+        {
+            RequestResult<UserComment> expectedResult = new RequestResult<UserComment>()
+            {
+                ResourcePayload = new UserComment()
+                {
+                    Id = Guid.NewGuid(),
+                    UserProfileId = Hdid,
+                },
+                ResultStatus = Common.Constants.ResultType.Success,
+            };
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
+            Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
+            commentServiceMock.Setup(s => s.Delete(expectedResult.ResourcePayload)).Returns(expectedResult);
+
+            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            var actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
+            RequestResult<UserComment> actualRequestResult = (RequestResult<UserComment>)((JsonResult)actualResult).Value;
+            Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+        }
+
+        /// <summary>
+        /// Delete Comment - ForbidResult Error scenario.
+        /// </summary>
+        [Fact]
+        public void ShouldDeleteCommentWithForbidResultError()
+        {
+            RequestResult<UserComment> expectedResult = new RequestResult<UserComment>()
+            {
+                ResourcePayload = new UserComment()
+                {
+                    Id = Guid.NewGuid(),
+                },
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
+            Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
+            commentServiceMock.Setup(s => s.Delete(expectedResult.ResourcePayload)).Returns(expectedResult);
+
+            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            var actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
+
+            Assert.IsType<ForbidResult>(actualResult);
+        }
+
+        /// <summary>
+        /// GetAllForEntry - Happy path scenario.
+        /// </summary>
+        [Fact]
+        public void ShouldGetAllForEntry()
+        {
+            List<UserComment> mockedComments = new List<UserComment>();
+            for (int i = 0; i < 10; i++)
+            {
+                mockedComments.Add(new UserComment()
+                {
+                    Text = "comment " + i,
+                    UserProfileId = Hdid,
+                });
+            }
+
+            RequestResult<IEnumerable<UserComment>> expectedResult = new RequestResult<IEnumerable<UserComment>>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = mockedComments,
+            };
+
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
+            Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
+            commentServiceMock.Setup(s => s.GetList(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
+
+            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            var actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
+            RequestResult<IEnumerable<UserComment>> actualRequestResult = (RequestResult<IEnumerable<UserComment>>)((JsonResult)actualResult).Value;
+            Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
         }
 
         private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
