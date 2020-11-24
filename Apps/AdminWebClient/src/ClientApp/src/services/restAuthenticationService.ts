@@ -55,7 +55,7 @@ export class RestAuthenticationService implements IAuthenticationService {
     public refreshToken(): Promise<AuthenticationData> {
         return new Promise((resolve, reject) => {
             // NOT IMPLEMENTED
-            resolve();
+            reject("refresh token not implemented.");
         });
     }
 
