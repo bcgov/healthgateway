@@ -8,10 +8,10 @@ import {
 } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
 import BetaRequest from "@/models/betaRequest";
-import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestBetaRequestService implements IBetaRequestService {
@@ -46,7 +46,7 @@ export class RestBetaRequestService implements IBetaRequestService {
         hdid: string,
         request: BetaRequest
     ): Promise<BetaRequest> {
-        return new Promise((resolve, reject) => {
+        return new Promise<BetaRequest>((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
             this.http
@@ -56,7 +56,11 @@ export class RestBetaRequestService implements IBetaRequestService {
                     headers
                 )
                 .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(err);
@@ -68,17 +72,5 @@ export class RestBetaRequestService implements IBetaRequestService {
                     );
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultError);
-        }
     }
 }

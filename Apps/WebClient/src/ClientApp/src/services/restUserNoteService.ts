@@ -13,6 +13,7 @@ import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
 import { Dictionary } from "vue-router/types/router";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
@@ -68,7 +69,7 @@ export class RestUserNoteService implements IUserNoteService {
         note.id = undefined;
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
-                resolve();
+                reject("note module is disabled.");
                 return;
             }
 
@@ -77,8 +78,12 @@ export class RestUserNoteService implements IUserNoteService {
                     `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`createNote error: ${err}`);
@@ -99,8 +104,12 @@ export class RestUserNoteService implements IUserNoteService {
                     `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`updateNote error: ${err}`);
@@ -125,8 +134,12 @@ export class RestUserNoteService implements IUserNoteService {
                     JSON.stringify(note),
                     headers
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`deleteNote error: ${err}`);
@@ -138,17 +151,5 @@ export class RestUserNoteService implements IUserNoteService {
                     );
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultError);
-        }
     }
 }

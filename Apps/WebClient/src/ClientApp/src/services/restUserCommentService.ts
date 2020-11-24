@@ -12,6 +12,7 @@ import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
@@ -66,9 +67,9 @@ export class RestUserCommentService implements IUserCommentService {
         hdid: string,
         comment: UserComment
     ): Promise<UserComment> {
-        return new Promise((resolve, reject) => {
+        return new Promise<UserComment>((resolve, reject) => {
             if (!this.isEnabled) {
-                resolve();
+                reject("comment module is disabled.");
                 return;
             }
             this.http
@@ -76,11 +77,15 @@ export class RestUserCommentService implements IUserCommentService {
                     `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
-                .then((result) => {
+                .then((requestResult) => {
                     this.logger.verbose(
-                        `createComment result: ${JSON.stringify(result)}`
+                        `createComment result: ${JSON.stringify(requestResult)}`
                     );
-                    return this.handleResult(result, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(err);
@@ -98,14 +103,18 @@ export class RestUserCommentService implements IUserCommentService {
         hdid: string,
         comment: UserComment
     ): Promise<UserComment> {
-        return new Promise((resolve, reject) => {
+        return new Promise<UserComment>((resolve, reject) => {
             this.http
                 .put<RequestResult<UserComment>>(
                     `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(err);
@@ -126,8 +135,12 @@ export class RestUserCommentService implements IUserCommentService {
                     `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(err);
@@ -139,17 +152,5 @@ export class RestUserCommentService implements IUserCommentService {
                     );
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultError);
-        }
     }
 }

@@ -83,7 +83,7 @@ export const actions: ActionTree<MedicationState, RootState> = {
                             );
                             resolve(medicationData);
                         } else {
-                            resolve(undefined);
+                            resolve(new MedicationResult());
                         }
                     })
                     .catch((error) => {

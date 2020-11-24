@@ -8,11 +8,11 @@ import {
 } from "@/services/interfaces";
 import RequestResult from "@/models/requestResult";
 import AddDependentRequest from "@/models/addDependentRequest";
-import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
 import type { Dependent } from "@/models/dependent";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestDependentService implements IDependentService {
@@ -33,9 +33,9 @@ export class RestDependentService implements IDependentService {
         hdid: string,
         dependent: AddDependentRequest
     ): Promise<AddDependentRequest> {
-        return new Promise((resolve, reject) => {
+        return new Promise<AddDependentRequest>((resolve, reject) => {
             if (!this.isEnabled) {
-                resolve();
+                reject("dependent module is disabled.");
                 return;
             }
             this.http
@@ -43,11 +43,15 @@ export class RestDependentService implements IDependentService {
                     `${this.BASE_URI}/UserProfile/${hdid}/Dependent`,
                     dependent
                 )
-                .then((result) => {
+                .then((requestResult) => {
                     this.logger.verbose(
-                        `addDependent result: ${JSON.stringify(result)}`
+                        `addDependent result: ${JSON.stringify(requestResult)}`
                     );
-                    return this.handleResult(result, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(err);
@@ -61,18 +65,32 @@ export class RestDependentService implements IDependentService {
         });
     }
 
-    public getAll(hdid: string): Promise<RequestResult<Dependent[]>> {
+    public getAll(hdid: string): Promise<Dependent[]> {
         return new Promise((resolve, reject) => {
             this.http
                 .getWithCors<RequestResult<Dependent[]>>(
                     `${this.BASE_URI}/UserProfile/${hdid}/Dependent`
                 )
-                .then((dependents) => {
-                    return resolve(dependents);
+                .then((requestResult) => {
+                    this.logger.verbose(
+                        `getAll dependents result: ${JSON.stringify(
+                            requestResult
+                        )}`
+                    );
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
-                    this.logger.error(`getNotes error: ${err}`);
-                    return reject(err);
+                    this.logger.error(`getAll dependents error: ${err}`);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
                 });
         });
     }
@@ -84,11 +102,17 @@ export class RestDependentService implements IDependentService {
                     `${this.BASE_URI}/UserProfile/${hdid}/Dependent/${dependent.ownerId}`,
                     dependent
                 )
-                .then((result) => {
+                .then((requestResult) => {
                     this.logger.verbose(
-                        `removeDependent result: ${JSON.stringify(result)}`
+                        `removeDependent result: ${JSON.stringify(
+                            requestResult
+                        )}`
                     );
-                    return this.handleResult(result, resolve, reject);
+                    RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`removeDependent error: ${err}`);
@@ -100,17 +124,5 @@ export class RestDependentService implements IDependentService {
                     );
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultError);
-        }
     }
 }
