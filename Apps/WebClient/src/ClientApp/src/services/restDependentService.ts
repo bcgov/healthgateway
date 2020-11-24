@@ -32,37 +32,41 @@ export class RestDependentService implements IDependentService {
     public addDependent(
         hdid: string,
         dependent: AddDependentRequest
-    ): Promise<AddDependentRequest> {
-        return new Promise<AddDependentRequest>((resolve, reject) => {
-            if (!this.isEnabled) {
-                reject("dependent module is disabled.");
-                return;
+    ): Promise<AddDependentRequest | undefined> {
+        return new Promise<AddDependentRequest | undefined>(
+            (resolve, reject) => {
+                if (!this.isEnabled) {
+                    resolve(undefined);
+                    return;
+                }
+                this.http
+                    .post<RequestResult<AddDependentRequest>>(
+                        `${this.BASE_URI}/UserProfile/${hdid}/Dependent`,
+                        dependent
+                    )
+                    .then((requestResult) => {
+                        this.logger.verbose(
+                            `addDependent result: ${JSON.stringify(
+                                requestResult
+                            )}`
+                        );
+                        return RequestResultUtil.handleResult(
+                            requestResult,
+                            resolve,
+                            reject
+                        );
+                    })
+                    .catch((err) => {
+                        this.logger.error(err);
+                        return reject(
+                            ErrorTranslator.internalNetworkError(
+                                err,
+                                ServiceName.HealthGatewayUser
+                            )
+                        );
+                    });
             }
-            this.http
-                .post<RequestResult<AddDependentRequest>>(
-                    `${this.BASE_URI}/UserProfile/${hdid}/Dependent`,
-                    dependent
-                )
-                .then((requestResult) => {
-                    this.logger.verbose(
-                        `addDependent result: ${JSON.stringify(requestResult)}`
-                    );
-                    return RequestResultUtil.handleResult(
-                        requestResult,
-                        resolve,
-                        reject
-                    );
-                })
-                .catch((err) => {
-                    this.logger.error(err);
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceName.HealthGatewayUser
-                        )
-                    );
-                });
-        });
+        );
     }
 
     public getAll(hdid: string): Promise<Dependent[]> {

@@ -121,7 +121,7 @@ export interface IBetaRequestService {
 export interface IUserNoteService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getNotes(hdid: string): Promise<RequestResult<UserNote[]>>;
-    createNote(hdid: string, note: UserNote): Promise<UserNote>;
+    createNote(hdid: string, note: UserNote): Promise<UserNote | undefined>;
     updateNote(hdid: string, note: UserNote): Promise<UserNote>;
     deleteNote(hdid: string, note: UserNote): Promise<void>;
 }
@@ -132,7 +132,10 @@ export interface IUserCommentService {
         hdid: string,
         parentEntryId: string
     ): Promise<RequestResult<UserComment[]>>;
-    createComment(hdid: string, comment: UserComment): Promise<UserComment>;
+    createComment(
+        hdid: string,
+        comment: UserComment
+    ): Promise<UserComment | undefined>;
     updateComment(hdid: string, comment: UserComment): Promise<UserComment>;
     deleteComment(hdid: string, comment: UserComment): Promise<void>;
 }
@@ -147,7 +150,7 @@ export interface IDependentService {
     addDependent(
         hdid: string,
         dependent: AddDependentRequest
-    ): Promise<AddDependentRequest>;
+    ): Promise<AddDependentRequest | undefined>;
     getAll(hdid: string): Promise<Dependent[]>;
     removeDependent(hdid: string, dependent: Dependent): Promise<void>;
 }

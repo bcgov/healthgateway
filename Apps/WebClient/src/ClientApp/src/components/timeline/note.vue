@@ -107,7 +107,9 @@ export default class NoteTimelineComponent extends Vue {
                 version: 0,
             })
             .then((result) => {
-                this.onNoteAdded(result);
+                if (result) {
+                    this.onNoteAdded(result);
+                }
             })
             .catch((err) => {
                 this.addError(

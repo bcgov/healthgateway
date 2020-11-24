@@ -66,10 +66,10 @@ export class RestUserCommentService implements IUserCommentService {
     public createComment(
         hdid: string,
         comment: UserComment
-    ): Promise<UserComment> {
-        return new Promise<UserComment>((resolve, reject) => {
+    ): Promise<UserComment | undefined> {
+        return new Promise<UserComment | undefined>((resolve, reject) => {
             if (!this.isEnabled) {
-                reject("comment module is disabled.");
+                resolve(undefined);
                 return;
             }
             this.http

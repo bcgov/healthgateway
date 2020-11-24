@@ -64,12 +64,15 @@ export class RestUserNoteService implements IUserNoteService {
 
     NOT_IMPLENTED = "Method not implemented.";
 
-    public createNote(hdid: string, note: UserNote): Promise<UserNote> {
+    public createNote(
+        hdid: string,
+        note: UserNote
+    ): Promise<UserNote | undefined> {
         this.logger.debug(`createNote: ${JSON.stringify(note)}`);
         note.id = undefined;
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
-                reject("note module is disabled.");
+                resolve(undefined);
                 return;
             }
 
