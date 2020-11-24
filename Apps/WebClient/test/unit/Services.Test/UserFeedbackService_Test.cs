@@ -26,6 +26,7 @@ namespace HealthGateway.WebClient.Test.Services
     using Microsoft.Extensions.Logging;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
+    using System;
 
     public class UserFeedbackService_Test
     {
@@ -86,6 +87,39 @@ namespace HealthGateway.WebClient.Test.Services
             RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+        }
+
+        [Fact]
+        public void ShouldCreateUserFeedback()
+        {
+            UserFeedback expectedUserFeedback = new UserFeedback
+            {
+                Comment = "Mocked Comment",
+                Id = Guid.NewGuid(),
+                UserProfileId = "Mocked UserProfileId",
+                IsSatisfied = true,
+                IsReviewed = true
+            };
+
+            DBResult<UserFeedback> insertResult = new DBResult<UserFeedback>
+            {
+                Payload = expectedUserFeedback,
+                Status = DBStatusCode.Created
+            };
+
+            Mock<IFeedbackDelegate> userFeedbackDelegateMock = new Mock<IFeedbackDelegate>();
+            userFeedbackDelegateMock.Setup(s => s.InsertUserFeedback(It.Is<UserFeedback>(r => r.Comment == expectedUserFeedback.Comment && r.Id == expectedUserFeedback.Id && r.UserProfileId == expectedUserFeedback.UserProfileId && r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed))).Returns(insertResult);
+
+            IUserFeedbackService service = new UserFeedbackService(
+                new Mock<ILogger<UserFeedbackService>>().Object,
+                userFeedbackDelegateMock.Object,
+                null
+            );
+
+            DBResult<UserFeedback> actualResult = service.CreateUserFeedback(expectedUserFeedback);
+
+            Assert.Equal(DBStatusCode.Created, actualResult.Status);
+            Assert.True(actualResult.Payload.IsDeepEqual(expectedUserFeedback));
         }
     }
 }

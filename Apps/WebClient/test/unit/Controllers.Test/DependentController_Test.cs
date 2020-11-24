@@ -64,6 +64,41 @@ namespace HealthGateway.WebClient.Test.Controllers
         }
 
         [Fact]
+        public void ShouldAddDependent()
+        {
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
+            Mock<IDependentService> dependentServiceMock = new Mock<IDependentService>();
+            DependentModel expectedDependend = new DependentModel()
+            {
+                OwnerId = $"OWNER",
+                DelegateId = $"DELEGATER",
+                Version = (uint)1,
+                DependentInformation = new DependentInformation()
+                {
+                    MaskedPHN = $"maskedPHN-1",
+                    DateOfBirth = new DateTime(1980, 1, 1),
+                    Gender = "Female",
+                    Name = $"dependentName"
+                }
+            };
+            RequestResult<DependentModel> expectedResult = new RequestResult<DependentModel>()
+            {
+                ResourcePayload = expectedDependend,
+                ResultStatus = Common.Constants.ResultType.Success,
+            };
+            dependentServiceMock.Setup(s => s.AddDependent(hdid, It.IsAny<AddDependentRequest>())).Returns(expectedResult);
+
+            DependentController dependentController = new DependentController(
+                new Mock<ILogger<UserProfileController>>().Object,
+                dependentServiceMock.Object,
+                httpContextAccessorMock.Object
+            );
+            var actualResult = dependentController.AddDependent(new AddDependentRequest());
+
+            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+        }
+
+        [Fact]
         public void ShouldDeleteDependent()
         {
             string delegateId = hdid;
