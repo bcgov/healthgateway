@@ -32,8 +32,7 @@ namespace HealthGateway.WebClient.Test.Services
 
     public class CommunicationServiceTest
     {
-        [Fact]
-        public void ShouldGetActiveCommunication()
+        private Tuple<RequestResult<Communication>, Communication> ExecuteGetActiveCommunication(Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Read)
         {
             Communication communication = new Communication
             {
@@ -45,7 +44,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Communication> dbResult = new DBResult<Communication>
             {
                 Payload = communication,
-                Status = DBStatusCode.Read
+                Status = dbResultStatus
             };
 
             ServiceCollection services = new ServiceCollection();
@@ -64,8 +63,28 @@ namespace HealthGateway.WebClient.Test.Services
             );
             RequestResult<Communication> actualResult = service.GetActiveBanner();
 
+            return new Tuple<RequestResult<Communication>, Communication>(actualResult, communication);
+        }
+
+        [Fact]
+        public void ShouldGetActiveCommunication()
+        {
+            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(Database.Constants.DBStatusCode.Read);
+            var actualResult = result.Item1;
+            var communication = result.Item2;
+
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(communication));
+        }
+
+        [Fact]
+        public void ShouldGetActiveCommunicationWithDBError()
+        {
+            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(Database.Constants.DBStatusCode.Error);
+            var actualResult = result.Item1;
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal("testhostServer-CI-DB", actualResult.ResultError.ErrorCode);
         }
     }
 }

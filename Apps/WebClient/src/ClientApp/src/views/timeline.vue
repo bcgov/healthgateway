@@ -96,6 +96,7 @@ export default class TimelineView extends Vue {
     private isAddingNote = false;
     private isEditingEntry = false;
     private isPacificTime = false;
+    private isBlankNote = true;
     private unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
 
@@ -161,6 +162,10 @@ export default class TimelineView extends Vue {
         this.eventBus.$on(EventMessageName.CalendarDateEventClick, () => {
             this.isListView = true;
         });
+        this.eventBus.$on(EventMessageName.IsNoteBlank, (isBlank: boolean) => {
+            this.isBlankNote = isBlank;
+        });
+
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
                 ? (this.isPacificTime = false)
@@ -180,6 +185,7 @@ export default class TimelineView extends Vue {
         if (
             !this.idleLogoutWarning &&
             (this.isAddingNote || this.isEditingEntry) &&
+            !this.isBlankNote &&
             !confirm(this.unsavedChangesText)
         ) {
             return;
@@ -190,6 +196,7 @@ export default class TimelineView extends Vue {
     private onBrowserClose(event: BeforeUnloadEvent) {
         if (
             !this.idleLogoutWarning &&
+            !this.isBlankNote &&
             (this.isAddingNote || this.isEditingEntry)
         ) {
             event.returnValue = this.unsavedChangesText;
@@ -427,7 +434,7 @@ export default class TimelineView extends Vue {
         );
         this.isNoteLoading = true;
         noteService
-            .getNotes()
+            .getNotes(this.user.hdid)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     // Add the immunization entries to the timeline list

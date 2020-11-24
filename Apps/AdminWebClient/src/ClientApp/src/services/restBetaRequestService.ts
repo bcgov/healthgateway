@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 import { IHttpDelegate, IBetaRequestService } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
 import BetaRequest from "@/models/userBetaRequest";
-import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestBetaRequestService implements IBetaRequestService {
@@ -21,7 +21,11 @@ export class RestBetaRequestService implements IBetaRequestService {
                     `${this.BETA_REQUEST_BASE_URI}`
                 )
                 .then(requestResult => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch(err => {
                     console.log(err);
@@ -41,24 +45,16 @@ export class RestBetaRequestService implements IBetaRequestService {
                     headers
                 )
                 .then(requestResult => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch(err => {
                     console.log(err);
                     return reject(err);
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultMessage);
-        }
     }
 }

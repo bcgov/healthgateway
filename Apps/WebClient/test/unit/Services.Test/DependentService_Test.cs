@@ -74,7 +74,7 @@ namespace HealthGateway.WebClient.Test.Services
             return resourceDelegates;
         }
 
-        private IDependentService SetupMockForGetDependents()
+        private IDependentService SetupMockForGetDependents(RequestResult<PatientModel> patientResult = null)
         {
             // (1) Setup ResourceDelegateDelegate's mock
             IEnumerable<ResourceDelegate> expectedResourceDelegates = GenerateMockResourceDelegatesList();
@@ -97,17 +97,20 @@ namespace HealthGateway.WebClient.Test.Services
                 ResourcePayload = mockHdId
             };
 
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
-            patientResult.ResultStatus = Common.Constants.ResultType.Success;
-            patientResult.ResourcePayload = new PatientModel()
+            if (patientResult == null)
             {
-                HdId = mockHdId,
-                PersonalHealthNumber = mockPHN,
-                FirstName = mockFirstName,
-                LastName = mockLastName,
-                Birthdate = mockDateOfBirth,
-                Gender = mockGender,
-            };
+                patientResult = new RequestResult<PatientModel>();
+                patientResult.ResultStatus = Common.Constants.ResultType.Success;
+                patientResult.ResourcePayload = new PatientModel()
+                {
+                    HdId = mockHdId,
+                    PersonalHealthNumber = mockPHN,
+                    FirstName = mockFirstName,
+                    LastName = mockLastName,
+                    Birthdate = mockDateOfBirth,
+                    Gender = mockGender,
+                };
+            }
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
 
             // (3) Setup other common Mocks
@@ -133,6 +136,19 @@ namespace HealthGateway.WebClient.Test.Services
         }
 
         [Fact]
+        public void GetDependentsWithEmptyPatientResPayloadError()
+        {
+            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+
+            IDependentService service = SetupMockForGetDependents(patientResult);
+            RequestResult<IEnumerable<DependentModel>> actualResult = service.GetDependents(mockParentHdId, 0, 500);
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal("testhostServer-CE-PAT", actualResult.ResultError.ErrorCode);
+            Assert.Equal("Communication Exception when trying to retrieve Dependent(s) - HdId: MockHdId-0; HdId: MockHdId-1; HdId: MockHdId-2; HdId: MockHdId-3; HdId: MockHdId-4; HdId: MockHdId-5; HdId: MockHdId-6; HdId: MockHdId-7; HdId: MockHdId-8; HdId: MockHdId-9;", actualResult.ResultError.ResultMessage);
+        }
+
+        [Fact]
         public void ValidateDependent()
         {
             AddDependentRequest addDependentRequest = SetupMockInput();
@@ -140,6 +156,19 @@ namespace HealthGateway.WebClient.Test.Services
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+        }
+
+        [Fact]
+        public void ValidateDependentWithEmptyPatientResPayloadError()
+        {
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+            // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
+            IDependentService service = SetupMockDependentService(addDependentRequest, null, patientResult);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal("testhostServer-CE-PAT", actualResult.ResultError.ErrorCode);
         }
 
         [Fact]
@@ -228,7 +257,8 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
         }
 
-        private IDependentService SetupMockDependentService(AddDependentRequest addDependentRequest, DBResult<ResourceDelegate> insertResult = null)
+
+        private IDependentService SetupMockDependentService(AddDependentRequest addDependentRequest, DBResult<ResourceDelegate> insertResult = null, RequestResult<PatientModel> patientResult = null)
         {
             var mockPatientService = new Mock<IPatientService>();
 
@@ -243,19 +273,21 @@ namespace HealthGateway.WebClient.Test.Services
                 patientHdIdResult.ResultStatus = Common.Constants.ResultType.Success;
                 patientHdIdResult.ResourcePayload = mockHdId;
             }
-
-            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
-            // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
-            patientResult.ResultStatus = Common.Constants.ResultType.Success;
-            patientResult.ResourcePayload = new PatientModel()
+            if (patientResult == null)
             {
-                HdId = mockHdId,
-                PersonalHealthNumber = mockPHN,
-                FirstName = mockFirstName,
-                LastName = mockLastName,
-                Birthdate = mockDateOfBirth,
-                Gender = mockGender,
-            };
+                patientResult = new RequestResult<PatientModel>();
+                // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
+                patientResult.ResultStatus = Common.Constants.ResultType.Success;
+                patientResult.ResourcePayload = new PatientModel()
+                {
+                    HdId = mockHdId,
+                    PersonalHealthNumber = mockPHN,
+                    FirstName = mockFirstName,
+                    LastName = mockLastName,
+                    Birthdate = mockDateOfBirth,
+                    Gender = mockGender,
+                };
+            }
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(patientResult));
 
             ResourceDelegate expectedDbDependent = new ResourceDelegate() { ProfileHdid = mockParentHdId, ResourceOwnerHdid = mockHdId };

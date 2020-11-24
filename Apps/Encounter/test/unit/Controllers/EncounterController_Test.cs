@@ -18,7 +18,6 @@ namespace HealthGateway.EncounterTests
 {
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
     using HealthGateway.Common.Models;
@@ -33,7 +32,6 @@ namespace HealthGateway.EncounterTests
     {
         private Mock<IEncounterService> encounterService;
         private EncounterController encounterController;
-
 
         public EncounterController_Test()
         {

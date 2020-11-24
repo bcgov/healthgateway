@@ -217,6 +217,7 @@ export default class NewDependentComponent extends Vue {
                                     <b-form-input
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
+                                        max="2999-12-31"
                                         data-testid="dateOfBirthInput"
                                         required
                                         type="date"

@@ -57,7 +57,7 @@ export default class CommentComponent extends Vue {
     private updateComment(): void {
         this.isLoading = true;
         this.commentService
-            .updateComment({
+            .updateComment(this.user.hdid, {
                 id: this.comment.id,
                 text: this.commentInput,
                 userProfileId: this.comment.userProfileId,
@@ -81,7 +81,7 @@ export default class CommentComponent extends Vue {
         if (confirm("Are you sure you want to delete this comment?")) {
             this.isLoading = true;
             this.commentService
-                .deleteComment(this.comment)
+                .deleteComment(this.user.hdid, this.comment)
                 .then(() => {
                     this.needsUpdate(this.comment);
                 })

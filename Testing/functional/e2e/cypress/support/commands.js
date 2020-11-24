@@ -111,6 +111,70 @@ Cypress.Commands.add(
     }
 );
 
+Cypress.Commands.add("getTokens", (username, password) => {
+  cy.readConfig().then(config => {
+    cy.log(`Performing Keycloak logout`);
+    cy.request({ url: `${config.openIdConnect.authority}/protocol/openid-connect/logout` });
+    
+    cy.log("Performing Keycloak Authentication")
+    cy.request({
+        url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
+        followRedirect: false,
+        qs: {
+            scope: config.openIdConnect.scope,
+            response_type: config.openIdConnect.responseType,
+            approval_prompt: "auto",
+            redirect_uri: config.openIdConnect.callbacks.Logon,
+            client_id: config.openIdConnect.clientId,
+            response_mode: "query",
+            state: "d0b27ba424b64b358b65d40cfdbc040b",
+        }
+    })
+    .then(response => {
+        cy.log("Posting credentials")
+        const html = document.createElement("html");
+        html.innerHTML = response.body;
+        const form = html.getElementsByTagName("form")[0];
+        const url = form.action;
+        return cy.request({
+            method: "POST",
+            url,
+            followRedirect: false,
+            form: true,
+            body: {
+                username: username,
+                password: password
+            }
+        })
+    })
+    .then(response => {
+        let callBackQS = response.headers["location"];
+        const url = new URL(callBackQS);
+        const params = url.search.substring(1).split("&");
+        let code;
+        for (const param of params) {
+          const [key, value] = param.split("=");
+          if (key === "code") {
+            code = value;
+            break;
+          }
+        }
+        cy.request({
+          method: "post",
+          url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
+          body: {
+            client_id: config.openIdConnect.clientId,
+            redirect_uri: config.openIdConnect.callbacks.Logon,
+            code,
+            grant_type: "authorization_code"
+          },
+          form: true,
+          followRedirect: false
+        }).its("body");
+  })
+  });
+})
+
 Cypress.Commands.add("readConfig", () => {
     cy.log(`Reading Environment Configuration`)
     return cy.request(`${Cypress.config("baseUrl")}/v1/api/configuration`)
