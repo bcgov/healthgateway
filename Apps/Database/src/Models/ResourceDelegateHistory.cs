@@ -18,16 +18,18 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Text.Json;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
-    /// The user delegate history model.
+    /// The resource delegate history model.
     /// </summary>
-    public class UserDelegateHistory : AuditableEntity
+    public class ResourceDelegateHistory : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
-        [Column("UserDelegateHistoryId")]
+        [Column("ResourceDelegateHistoryId")]
         [Key]
         public Guid Id { get; set; }
 
@@ -36,14 +38,34 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string OwnerId { get; set; } = null!;
+        public string ResourceOwnerHdid { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the hdid which has delegated access to the owner Id.
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string DelegateId { get; set; } = null!;
+        public string ProfileHdid { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets reason code for the resource delegate.
+        /// </summary>
+        [Required]
+        [MaxLength(10)]
+        public ResourceDelegateReason ReasonCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ReasonObject type.
+        /// This value is used by code to reconstruct the JSON POCO.
+        /// </summary>
+        [Required]
+        public string ReasonObjectType { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the resource delegation history Reason object.
+        /// </summary>
+        [Required]
+        public JsonDocument? ReasonObject { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the operation that created this history row.

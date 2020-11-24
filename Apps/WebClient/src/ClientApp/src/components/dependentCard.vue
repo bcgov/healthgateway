@@ -187,9 +187,7 @@ export default class DependentCardComponent extends Vue {
             <b-tabs card>
                 <b-tab active data-testid="dependentTab">
                     <template #title>
-                        <strong data-testid="dependentName">{{
-                            dependent.dependentInformation.name
-                        }}</strong>
+                        <div>Profile</div>
                     </template>
                     <div v-if="isExpired">
                         <b-row>
@@ -222,7 +220,7 @@ export default class DependentCardComponent extends Vue {
                                         <b-form-input
                                             v-model="
                                                 dependent.dependentInformation
-                                                    .maskedPHN
+                                                    .PHN
                                             "
                                             data-testid="dependentPHN"
                                             readonly
@@ -374,29 +372,45 @@ export default class DependentCardComponent extends Vue {
                         </ul>
                     </div>
                 </b-tab>
-                <template #tabs-end>
-                    <li
-                        role="presentation"
-                        class="ml-auto nav-item align-self-center"
-                    >
-                        <b-nav-item-dropdown right text="" :no-caret="true">
-                            <template slot="button-content">
-                                <font-awesome-icon
-                                    data-testid="dependentMenuBtn"
-                                    class="dependentMenu"
-                                    :icon="menuIcon"
-                                    size="1x"
-                                ></font-awesome-icon>
-                            </template>
-                            <b-dropdown-item
-                                data-testid="deleteDependentMenuBtn"
-                                class="menuItem"
-                                @click="showConfirmationModal()"
+                <template #tabs-start>
+                    <div class="w-100">
+                        <b-row>
+                            <b-col>
+                                <span
+                                    class="card-title"
+                                    data-testid="dependentName"
+                                >
+                                    {{ dependent.dependentInformation.name }}
+                                </span>
+                            </b-col>
+                            <li
+                                role="presentation"
+                                class="ml-auto mr-1 nav-item align-self-center"
                             >
-                                Delete
-                            </b-dropdown-item>
-                        </b-nav-item-dropdown>
-                    </li>
+                                <b-nav-item-dropdown
+                                    right
+                                    text=""
+                                    :no-caret="true"
+                                >
+                                    <template slot="button-content">
+                                        <font-awesome-icon
+                                            data-testid="dependentMenuBtn"
+                                            class="dependentMenu"
+                                            :icon="menuIcon"
+                                            size="1x"
+                                        ></font-awesome-icon>
+                                    </template>
+                                    <b-dropdown-item
+                                        data-testid="deleteDependentMenuBtn"
+                                        class="menuItem"
+                                        @click="showConfirmationModal()"
+                                    >
+                                        Delete
+                                    </b-dropdown-item>
+                                </b-nav-item-dropdown>
+                            </li>
+                        </b-row>
+                    </div>
                 </template>
             </b-tabs>
         </b-card>
@@ -432,5 +446,9 @@ td.Positive {
 }
 td.Negative {
     color: green;
+}
+.card-title {
+    padding-left: 14px;
+    font-size: 1.2em;
 }
 </style>

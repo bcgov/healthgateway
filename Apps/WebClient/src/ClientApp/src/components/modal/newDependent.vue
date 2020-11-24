@@ -16,13 +16,6 @@ import { ResultError } from "@/models/requestResult";
 import AddDependentRequest from "@/models/addDependentRequest";
 import User from "@/models/user";
 
-export enum GenderType {
-    NotSelected = "",
-    Male = "Male",
-    Female = "Female",
-    Other = "NotSpecified",
-}
-
 @Component({
     components: {
         LoadingComponent,
@@ -42,7 +35,7 @@ export default class NewDependentComponent extends Vue {
         lastName: "",
         dateOfBirth: "",
         PHN: "",
-        gender: GenderType.NotSelected,
+        testDate: "",
     };
     private accepted = false;
     private agreement = `
@@ -53,12 +46,6 @@ export default class NewDependentComponent extends Vue {
         Family and Community Services
         Act.
     `;
-    private genderOptions = [
-        { value: GenderType.NotSelected, text: "Please select an option" },
-        { value: GenderType.Male, text: "Male" },
-        { value: GenderType.Female, text: "Female" },
-        { value: GenderType.Other, text: "Unknown" },
-    ];
 
     private validations() {
         return {
@@ -73,10 +60,13 @@ export default class NewDependentComponent extends Vue {
                     required: required,
                     minLength: minLength(10),
                     minValue: (value: string) =>
-                        new DateWrapper(value).toJSDate() > this.minBirthdate,
+                        new DateWrapper(value).isAfter(this.minBirthdate),
                 },
-                gender: {
+                testDate: {
                     required: required,
+                    minLength: minLength(10),
+                    minValue: (value: string) =>
+                        new DateWrapper(value).isAfter(this.minTestDate),
                 },
                 PHN: {
                     required: required,
@@ -91,11 +81,12 @@ export default class NewDependentComponent extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private get minBirthdate(): Date {
-        let mindate = new DateWrapper()
-            .subtract(Duration.fromObject({ years: 19 }))
-            .toJSDate();
-        return mindate;
+    private get minBirthdate(): DateWrapper {
+        return new DateWrapper().subtract(Duration.fromObject({ years: 19 }));
+    }
+
+    private get minTestDate(): DateWrapper {
+        return new DateWrapper("2019-12-31");
     }
 
     public showModal(): void {
@@ -149,7 +140,7 @@ export default class NewDependentComponent extends Vue {
                     lastName: "",
                     dateOfBirth: "",
                     PHN: "",
-                    gender: GenderType.NotSelected,
+                    testDate: "",
                 };
                 this.accepted = false;
             });
@@ -261,33 +252,21 @@ export default class NewDependentComponent extends Vue {
                                         Valid PHN is required
                                     </b-form-invalid-feedback>
                                 </b-col>
-                                <b-col class="col-12 col-md-6 mb-2">
-                                    <b-row>
-                                        <b-col>
-                                            <label for="gender">Gender</label>
-                                            <b-form-select
-                                                id="gender"
-                                                v-model="dependent.gender"
-                                                data-testid="genderInput"
-                                                :options="genderOptions"
-                                                :state="
-                                                    isValid($v.dependent.gender)
-                                                "
-                                                @blur.native="
-                                                    $v.dependent.gender.$touch()
-                                                "
-                                            >
-                                            </b-form-select>
-                                            <b-form-invalid-feedback
-                                                :state="
-                                                    isValid($v.dependent.gender)
-                                                "
-                                            >
-                                                Please select from one of the
-                                                options
-                                            </b-form-invalid-feedback>
-                                        </b-col>
-                                    </b-row>
+                                <b-col class="col-12 col-lg-4 col-md-6 mb-3">
+                                    <label for="testDate">Test Date</label>
+                                    <b-form-input
+                                        id="testDate"
+                                        v-model="dependent.testDate"
+                                        data-testid="testDateInput"
+                                        required
+                                        type="date"
+                                        :state="isValid($v.dependent.testDate)"
+                                    />
+                                    <b-form-invalid-feedback
+                                        :state="isValid($v.dependent.testDate)"
+                                    >
+                                        Date must be after Jan 1st 2020
+                                    </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
                             <b-row class="mb-2">
@@ -329,7 +308,3 @@ export default class NewDependentComponent extends Vue {
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     </b-modal>
 </template>
-
-<style lang="scss" scoped>
-@import "@/assets/scss/_variables.scss";
-</style>

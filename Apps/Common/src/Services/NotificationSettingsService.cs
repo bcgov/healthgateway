@@ -38,7 +38,7 @@ namespace HealthGateway.Common.Services
         private readonly ILogger<NotificationSettingsService> logger;
         private readonly IBackgroundJobClient jobClient;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
-        private readonly IUserDelegateDelegate userDelegateDelegate;
+        private readonly IResourceDelegateDelegate resourceDelegateDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsService"/> class.
@@ -46,17 +46,17 @@ namespace HealthGateway.Common.Services
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="jobClient">The JobScheduler queue client.</param>
         /// <param name="notificationSettingsDelegate">Notification Settings delegate to be used.</param>
-        /// <param name="userDelegateDelegate">The injected db user delegate delegate.</param>
+        /// <param name="resourceDelegateDelegate">The injected db user delegate delegate.</param>
         public NotificationSettingsService(
             ILogger<NotificationSettingsService> logger,
             IBackgroundJobClient jobClient,
             INotificationSettingsDelegate notificationSettingsDelegate,
-            IUserDelegateDelegate userDelegateDelegate)
+            IResourceDelegateDelegate resourceDelegateDelegate)
         {
             this.logger = logger;
             this.jobClient = jobClient;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
-            this.userDelegateDelegate = userDelegateDelegate;
+            this.resourceDelegateDelegate = resourceDelegateDelegate;
         }
 
         /// <inheritdoc />
@@ -71,12 +71,12 @@ namespace HealthGateway.Common.Services
             };
             string json = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
-            DBResult<IEnumerable<UserDelegate>> dbResult = this.userDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
-            foreach (UserDelegate userDelegate in dbResult.Payload)
+            DBResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
+            foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
             {
                 this.logger.LogDebug($"Queueing Dependent Notification Settings.");
                 NotificationSettingsRequest dependentNotificationSettings = new NotificationSettingsRequest();
-                dependentNotificationSettings.SubjectHdid = userDelegate.OwnerId;
+                dependentNotificationSettings.SubjectHdid = resourceDelegate.ProfileHdid;
                 dependentNotificationSettings.EmailAddress = notificationSettings.EmailAddress;
                 dependentNotificationSettings.EmailEnabled = notificationSettings.EmailEnabled;
                 dependentNotificationSettings.EmailScope = notificationSettings.EmailScope;

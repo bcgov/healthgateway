@@ -109,7 +109,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
-            services.AddTransient<IUserDelegateDelegate, DBUserDelegateDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
 
             // Add Background Services
             services.AddHostedService<BannerListener>();

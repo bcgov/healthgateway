@@ -73,7 +73,7 @@ namespace HealthGateway.Laboratory
             // Add services
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
-            services.AddTransient<IUserDelegateDelegate, DBUserDelegateDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
         }
 
         /// <summary>

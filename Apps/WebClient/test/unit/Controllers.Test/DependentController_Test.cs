@@ -75,7 +75,6 @@ namespace HealthGateway.WebClient.Test.Controllers
                 Version = (uint)1,
                 DependentInformation = new DependentInformation()
                 {
-                    MaskedPHN = $"maskedPHN-1",
                     DateOfBirth = new DateTime(1980, 1, 1),
                     Gender = "Female",
                     Name = $"dependentName"
@@ -150,7 +149,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object
             );
-            
+
             var actualResult = dependentController.Delete("anotherId", "wrongId", dependentModel);
             Assert.IsType<BadRequestResult>(actualResult);
         }
@@ -168,7 +167,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                     Version = (uint)i,
                     DependentInformation = new DependentInformation()
                     {
-                        MaskedPHN = $"{dependentModels}-{i}",
+                        PHN = $"{dependentModels}-{i}",
                         DateOfBirth = new DateTime(1980 + i, 1, 1),
                         Gender = "Female",
                         Name = $"{dependentName}-{i}"
