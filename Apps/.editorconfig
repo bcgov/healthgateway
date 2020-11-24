@@ -649,3 +649,9 @@ dotnet_diagnostic.CA5403.severity = warning
 
 # CA9999: Analyzer version mismatch
 dotnet_diagnostic.CA9999.severity = warning
+
+# CS8604: Possible null reference argument.
+dotnet_diagnostic.CS8604.severity = silent
+
+# CS8602: Dereference of a possibly null reference.
+dotnet_diagnostic.CS8602.severity = none

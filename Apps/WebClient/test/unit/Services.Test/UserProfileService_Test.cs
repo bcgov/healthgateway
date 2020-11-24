@@ -229,7 +229,6 @@ namespace HealthGateway.WebClient.Test.Services
             var expected = result.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
         }
 
         [Fact]
