@@ -8,7 +8,6 @@ import type { Dependent } from "@/models/dependent";
 import { IDependentService, ILogger } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ResultType } from "@/constants/resulttype";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { Action, Getter } from "vuex-class";
 import User from "@/models/user";
@@ -49,20 +48,7 @@ export default class DependentsView extends Vue {
         this.dependentService
             .getAll(this.user.hdid)
             .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.dependents = results.resourcePayload;
-                } else {
-                    this.logger.error(
-                        "Error returned from the fetch dependents call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Dependents Error",
-                            results.resultError
-                        )
-                    );
-                }
+                this.dependents = results;
             })
             .catch((err) => {
                 this.logger.error(err);

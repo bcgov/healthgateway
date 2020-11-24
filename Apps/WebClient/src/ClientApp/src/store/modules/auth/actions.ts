@@ -17,9 +17,9 @@ function routeIsOidcCallback(route: Route): boolean {
     return false;
 }
 
-const authService: IAuthenticationService = container.get<
-    IAuthenticationService
->(SERVICE_IDENTIFIER.AuthenticationService);
+const authService: IAuthenticationService = container.get<IAuthenticationService>(
+    SERVICE_IDENTIFIER.AuthenticationService
+);
 const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
     DELEGATE_IDENTIFIER.HttpDelegate
 );
