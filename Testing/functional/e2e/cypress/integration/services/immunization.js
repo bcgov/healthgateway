@@ -56,7 +56,7 @@ describe("Immunization Service", () => {
 
     it("Verify Immunization Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.fixture("ImmunizationService/Immunization.json").then((ImmunizationResponse) => {
+        cy.fixture("ImmunizationService/immunization.json").then((ImmunizationResponse) => {
             cy.get("@tokens").then((tokens) => {
                 cy.log("Tokens", tokens);
                 cy.get("@config").then((config) => {

@@ -56,7 +56,7 @@ describe("Medication Service", () => {
 
     it("Verify MedicationStatement Authorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        cy.fixture("MedicationService/MedicationStatement.json").then((MedicationStatementResponse) => {
+        cy.fixture("MedicationService/medicationStatement.json").then((MedicationStatementResponse) => {
             cy.get("@tokens").then((tokens) => {
                 cy.log("Tokens", tokens);
                 cy.get("@config").then((config) => {
