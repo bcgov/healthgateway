@@ -15,7 +15,9 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >November 25, 2020 - v1.3.0 - Technical Upgrade, Code Cleanup, Non-Photo Card Access over 19 Years
+                                    >November 25, 2020 - v1.3.0 - Technical
+                                    Upgrade, Code Cleanup, Non-Photo Card Access
+                                    over 19 Years
                                 </strong>
                             </b-col>
                         </b-row>
@@ -23,15 +25,19 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        During this sprint, in preparation for the next Health Gateway 
-                                        release phase, we upgraded components of our technology platform. We 
-                                        improved. We also performed regular code cleanup, and improved test coverage for 
-                                        our code.                                
+                                        During this sprint, in preparation for
+                                        the next Health Gateway release phase,
+                                        we upgraded components of our technology
+                                        platform. We improved. We also performed
+                                        regular code cleanup, and improved test
+                                        coverage for our code.
                                     </li>
                                     <li>
-                                        We enabled non-photo BC Services card access for those over 19. This will support 
-                                        temporary residents and students of BC who need access to their COVID-19 test results 
-                                        through the Health Gateway. 
+                                        We enabled non-photo BC Services card
+                                        access for those over 19. This will
+                                        support temporary residents and students
+                                        of BC who need access to their COVID-19
+                                        test results through the Health Gateway.
                                     </li>
                                 </ul>
                             </b-col>
@@ -43,7 +49,9 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >November 12, 2020 - v1.2.10 - Parent Access to Children's COVID-19 Results, OpenShift Upgrade
+                                    >November 12, 2020 - v1.2.10 - Parent Access
+                                    to Children's COVID-19 Results, OpenShift
+                                    Upgrade
                                 </strong>
                             </b-col>
                         </b-row>
@@ -51,13 +59,19 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We continued development to support parent access to their children's COVID-19 results. 
-                                        This update will also enable parents to receive text notifications when the results are 
-                                        ready. Further work to complete this feature will require 2-4 weeks. 
+                                        We continued development to support
+                                        parent access to their children's
+                                        COVID-19 results. This update will also
+                                        enable parents to receive text
+                                        notifications when the results are
+                                        ready. Further work to complete this
+                                        feature will require 2-4 weeks.
                                     </li>
                                     <li>
-                                        We started to preparation for a migration to the new upgraded OpenShift Container Platform 
-                                        environment where the Health Gateway application is hosted. 
+                                        We started to preparation for a
+                                        migration to the new upgraded OpenShift
+                                        Container Platform environment where the
+                                        Health Gateway application is hosted.
                                     </li>
                                 </ul>
                             </b-col>
