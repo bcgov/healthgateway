@@ -55,15 +55,15 @@ namespace HealthGateway.CommonTests.Services
             var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
             var mockJobClient = new Mock<IBackgroundJobClient>();
             var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
-            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
-            var dbResult = new Database.Wrapper.DBResult<IEnumerable<UserDelegate>>();
-            dbResult.Payload = new List<UserDelegate>();
-            mockUserDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
+            var mockResourceDelegateDelegate = new Mock<IResourceDelegateDelegate>();
+            var dbResult = new Database.Wrapper.DBResult<IEnumerable<ResourceDelegate>>();
+            dbResult.Payload = new List<ResourceDelegate>();
+            mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
             INotificationSettingsService service = new NotificationSettingsService(
                                 mockLogger.Object,
                                 mockJobClient.Object,
                                 mockNSDelegate.Object,
-                                mockUserDelegateDelegate.Object);
+                                mockResourceDelegateDelegate.Object);
 
             var options = new JsonSerializerOptions
             {
@@ -105,13 +105,13 @@ namespace HealthGateway.CommonTests.Services
             var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
             var mockJobClient = new Mock<IBackgroundJobClient>();
             var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
-            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
+            var mockResourceDelegateDelegate = new Mock<IResourceDelegateDelegate>();
             mockNSDelegate.Setup(s => s.SetNotificationSettings(nsRequest, bearerToken)).Returns(Task.FromResult(expectedResult));
             INotificationSettingsService service = new NotificationSettingsService(
                                 mockLogger.Object,
                                 mockJobClient.Object,
                                 mockNSDelegate.Object,
-                                mockUserDelegateDelegate.Object);
+                                mockResourceDelegateDelegate.Object);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await 
                         service.SendNotificationSettings(nsRequest, bearerToken)).Result;
             Assert.True(actualResult.IsDeepEqual(expectedResult));
@@ -133,16 +133,16 @@ namespace HealthGateway.CommonTests.Services
             var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
             var mockJobClient = new Mock<IBackgroundJobClient>();
             var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
-            var mockUserDelegateDelegate = new Mock<IUserDelegateDelegate>();
-            var dbResult = new Database.Wrapper.DBResult<IEnumerable<UserDelegate>>();
-            dbResult.Payload = new List<UserDelegate>();
-            mockUserDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
+            var mockResourceDelegateDelegate = new Mock<IResourceDelegateDelegate>();
+            var dbResult = new Database.Wrapper.DBResult<IEnumerable<ResourceDelegate>>();
+            dbResult.Payload = new List<ResourceDelegate>();
+            mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
 
             INotificationSettingsService service = new NotificationSettingsService(
                                 mockLogger.Object,
                                 mockJobClient.Object,
                                 mockNSDelegate.Object,
-                                mockUserDelegateDelegate.Object);
+                                mockResourceDelegateDelegate.Object);
 
             Assert.True(nsr.SMSVerificationCode == null);
             service.QueueNotificationSettings(nsr);

@@ -9,6 +9,8 @@ import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { DateWrapper } from "@/models/dateWrapper";
+import { Getter } from "vuex-class";
+import User from "@/models/user";
 
 @Component({
     components: {
@@ -18,6 +20,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 })
 export default class CommentSectionComponent extends Vue {
     @Prop() parentEntry!: MedicationTimelineEntry;
+    @Getter("user", { namespace: "user" }) user!: User;
 
     private logger!: ILogger;
     private commentService!: IUserCommentService;
@@ -61,7 +64,7 @@ export default class CommentSectionComponent extends Vue {
     private getComments() {
         this.isLoadingComments = true;
         this.commentService
-            .getCommentsForEntry(this.parentEntry.id)
+            .getCommentsForEntry(this.user.hdid, this.parentEntry.id)
             .then((result) => {
                 if (result) {
                     this.comments = result.resourcePayload;

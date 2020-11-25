@@ -13,6 +13,7 @@ import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
 import { Dictionary } from "vue-router/types/router";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserNoteService implements IUserNoteService {
@@ -29,7 +30,7 @@ export class RestUserNoteService implements IUserNoteService {
         this.isEnabled = config.webClient.modules["Note"];
     }
 
-    public getNotes(): Promise<RequestResult<UserNote[]>> {
+    public getNotes(hdid: string): Promise<RequestResult<UserNote[]>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
@@ -44,7 +45,7 @@ export class RestUserNoteService implements IUserNoteService {
 
             this.http
                 .getWithCors<RequestResult<UserNote[]>>(
-                    `${this.USER_NOTE_BASE_URI}/`
+                    `${this.USER_NOTE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
                     return resolve(requestResult);
@@ -63,22 +64,29 @@ export class RestUserNoteService implements IUserNoteService {
 
     NOT_IMPLENTED = "Method not implemented.";
 
-    public createNote(note: UserNote): Promise<UserNote> {
+    public createNote(
+        hdid: string,
+        note: UserNote
+    ): Promise<UserNote | undefined> {
         this.logger.debug(`createNote: ${JSON.stringify(note)}`);
         note.id = undefined;
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
-                resolve();
+                resolve(undefined);
                 return;
             }
 
             this.http
                 .post<RequestResult<UserNote>>(
-                    `${this.USER_NOTE_BASE_URI}/`,
+                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`createNote error: ${err}`);
@@ -92,15 +100,19 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    public updateNote(note: UserNote): Promise<UserNote> {
+    public updateNote(hdid: string, note: UserNote): Promise<UserNote> {
         return new Promise((resolve, reject) => {
             this.http
                 .put<RequestResult<UserNote>>(
-                    `${this.USER_NOTE_BASE_URI}/`,
+                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`updateNote error: ${err}`);
@@ -114,19 +126,23 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    public deleteNote(note: UserNote): Promise<void> {
+    public deleteNote(hdid: string, note: UserNote): Promise<void> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
 
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.USER_NOTE_BASE_URI}/`,
+                    `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     JSON.stringify(note),
                     headers
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`deleteNote error: ${err}`);
@@ -138,17 +154,5 @@ export class RestUserNoteService implements IUserNoteService {
                     );
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultError);
-        }
     }
 }

@@ -26,17 +26,17 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
-    public class DBUserDelegateDelegate : IUserDelegateDelegate
+    public class DBResourceDelegateDelegate : IResourceDelegateDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DBUserDelegateDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DBResourceDelegateDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DBUserDelegateDelegate(
+        public DBResourceDelegateDelegate(
             ILogger<DBFeedbackDelegate> logger,
             GatewayDbContext dbContext)
         {
@@ -45,16 +45,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserDelegate> Insert(UserDelegate userDelegate, bool commit = true)
+        public DBResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit = true)
         {
-            this.logger.LogTrace($"Inserting user delegate to DB... {JsonSerializer.Serialize(userDelegate)}");
-            DBResult<UserDelegate> result = new DBResult<UserDelegate>()
+            this.logger.LogTrace($"Inserting resource delegate to DB... {JsonSerializer.Serialize(resourceDelegate)}");
+            DBResult<ResourceDelegate> result = new DBResult<ResourceDelegate>()
             {
-                Payload = userDelegate,
+                Payload = resourceDelegate,
                 Status = DBStatusCode.Deferred,
             };
 
-            this.dbContext.Add<UserDelegate>(userDelegate);
+            this.dbContext.Add<ResourceDelegate>(resourceDelegate);
             if (commit)
             {
                 try
@@ -64,38 +64,38 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    this.logger.LogError($"Error inserting user delegate to DB with exception ({e.ToString()})");
+                    this.logger.LogError($"Error inserting resource delegate to DB with exception ({e.ToString()})");
                     result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
 
-            this.logger.LogTrace($"Finished inserting user delegate to DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogTrace($"Finished inserting resource delegate to DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
 
         /// <inheritdoc />
-        public DBResult<IEnumerable<UserDelegate>> Get(string delegateId, int page, int pageSize)
+        public DBResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize)
         {
-            this.logger.LogTrace($"Getting user delegates from DB... {delegateId}");
+            this.logger.LogTrace($"Getting resource delegates from DB... {delegateId}");
             var result = DBDelegateHelper.GetPagedDBResult(
-                this.dbContext.UserDelegate
-                    .Where(dependent => dependent.DelegateId == delegateId),
+                this.dbContext.ResourceDelegate
+                    .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId),
                 page,
                 pageSize);
-            this.logger.LogTrace($"Finished getting user delegates from DB... {JsonSerializer.Serialize(result)}");
+            this.logger.LogTrace($"Finished getting resource delegates from DB... {JsonSerializer.Serialize(result)}");
             return result;
         }
 
         /// <inheritdoc />
-        public DBResult<UserDelegate> Delete(UserDelegate userDelegate, bool commit)
+        public DBResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit)
         {
-            this.logger.LogTrace($"Deleting UserDelegate {JsonSerializer.Serialize(userDelegate)} from DB...");
-            DBResult<UserDelegate> result = new DBResult<UserDelegate>()
+            this.logger.LogTrace($"Deleting resourceDelegate {JsonSerializer.Serialize(resourceDelegate)} from DB...");
+            DBResult<ResourceDelegate> result = new DBResult<ResourceDelegate>()
             {
                 Status = DBStatusCode.Deferred,
             };
-            this.dbContext.UserDelegate.Remove(userDelegate);
+            this.dbContext.ResourceDelegate.Remove(resourceDelegate);
 
             if (commit)
             {
@@ -111,15 +111,15 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            this.logger.LogDebug($"Finished deleting UserDelegate from DB");
+            this.logger.LogDebug($"Finished deleting resourceDelegate from DB");
             return result;
         }
 
         /// <inheritdoc />
         public bool Exists(string ownerId, string delegateId)
         {
-            var userDelegate = this.dbContext.UserDelegate.Find(ownerId, delegateId);
-            if (userDelegate != null)
+            var resourceDelegate = this.dbContext.ResourceDelegate.Find(ownerId, delegateId);
+            if (resourceDelegate != null)
             {
                 return true;
             }

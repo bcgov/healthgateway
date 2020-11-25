@@ -3,7 +3,7 @@ import { IHttpDelegate, ICommunicationService } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
 import RequestResult from "@/models/requestResult";
 import Communication from "@/models/adminCommunication";
-import { ResultType } from "@/constants/resulttype";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {
@@ -14,7 +14,7 @@ export class RestCommunicationService implements ICommunicationService {
         this.http = http;
     }
 
-    public add(communication: Communication): Promise<void> {
+    public add(communication: Communication): Promise<Communication> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers["Content-Type"] = "application/json; charset=utf-8";
@@ -25,11 +25,11 @@ export class RestCommunicationService implements ICommunicationService {
                     headers
                 )
                 .then(requestResult => {
-                    if (requestResult.resultStatus == ResultType.Success) {
-                        return resolve();
-                    } else {
-                        return reject(requestResult.resultMessage);
-                    }
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch(err => {
                     console.log(err);
@@ -43,7 +43,11 @@ export class RestCommunicationService implements ICommunicationService {
             this.http
                 .get<RequestResult<Communication[]>>(`${this.BASE_URI}`)
                 .then(requestResult => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch(err => {
                     console.log(err);
@@ -56,8 +60,12 @@ export class RestCommunicationService implements ICommunicationService {
         return new Promise((resolve, reject) => {
             this.http
                 .put<RequestResult<void>>(`${this.BASE_URI}/`, communication)
-                .then(result => {
-                    return this.handleResult(result, resolve, reject);
+                .then(requestResult => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch(err => {
                     console.log(err);
@@ -70,25 +78,17 @@ export class RestCommunicationService implements ICommunicationService {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<void>>(`${this.BASE_URI}/`, communication)
-                .then(result => {
-                    return this.handleResult(result, resolve, reject);
+                .then(requestResult => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch(err => {
                     console.log(err);
                     return reject(err);
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultMessage);
-        }
     }
 }

@@ -116,7 +116,13 @@ const medicationActions: ActionTree<MedicationState, RootState> = {
                     resourcePayload: medicationStatements,
                 });
             } else if (params.hdid === "hdid_no_results") {
-                resolve();
+                resolve({
+                    totalResultCount: 0,
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resultStatus: ResultType.Success,
+                    resourcePayload: [],
+                });
             } else {
                 reject({
                     error: "User with " + params.hdid + " not found.",

@@ -73,8 +73,7 @@ namespace HealthGateway.Database.Context
         public DbSet<Communication> Communication { get; set; } = null!;
         public DbSet<CommunicationEmail> CommunicationEmail { get; set; } = null!;
         public DbSet<Rating> Rating { get; set; } = null!;
-        public DbSet<UserDelegate> UserDelegate { get; set; } = null!;
-        public DbSet<UserDelegateHistory> UserDelegateHistory { get; set; } = null!;
+        public DbSet<ResourceDelegate> ResourceDelegate { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -263,8 +262,40 @@ namespace HealthGateway.Database.Context
                     v => EnumUtility.ToEnumString<LegalAgreementType>(v, true),
                     v => EnumUtility.ToEnum<LegalAgreementType>(v, true)));
 
-            modelBuilder.Entity<UserDelegate>()
-                .HasKey(userDelegate => new { userDelegate.OwnerId, userDelegate.DelegateId });
+            // Resource Delegate Models
+
+            // Create ResourceDelegate
+            modelBuilder.Entity<ResourceDelegate>()
+                .HasKey(resourceDelegate => new { resourceDelegate.ResourceOwnerHdid, resourceDelegate.ProfileHdid, resourceDelegate.ReasonCode });
+
+            // Create FK keys
+            modelBuilder.Entity<ResourceDelegate>()
+                .HasOne<ResourceDelegateReasonCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.ReasonTypeCode)
+                .HasForeignKey(k => k.ReasonCode);
+
+            modelBuilder.Entity<ResourceDelegate>()
+                    .HasOne<UserProfile>()
+                    .WithMany()
+                    .HasPrincipalKey(k => k.HdId)
+                    .HasForeignKey(k => k.ProfileHdid);
+
+            var resourceDelegateReasonCodeConverter = new ValueConverter<ResourceDelegateReason, string>(
+                v => EnumUtility.ToEnumString<ResourceDelegateReason>(v, false),
+                v => EnumUtility.ToEnum<ResourceDelegateReason>(v, false));
+
+            modelBuilder.Entity<ResourceDelegate>()
+                .Property(e => e.ReasonCode)
+                .HasConversion(resourceDelegateReasonCodeConverter);
+
+            modelBuilder.Entity<ResourceDelegateReasonCode>()
+                .Property(e => e.ReasonTypeCode)
+                .HasConversion(resourceDelegateReasonCodeConverter);
+
+            modelBuilder.Entity<ResourceDelegateHistory>()
+                .Property(e => e.ReasonCode)
+                .HasConversion(resourceDelegateReasonCodeConverter);
 
             // Create HDID index on GenericCache
             modelBuilder!.Entity<GenericCache>()
@@ -279,6 +310,7 @@ namespace HealthGateway.Database.Context
             this.SeedApplicationSettings(modelBuilder);
             this.SeedMessagingVerifications(modelBuilder);
             this.SeedCommunication(modelBuilder);
+            this.SeedResourceDelegateReason(modelBuilder);
         }
 
         /// <summary>
@@ -810,6 +842,24 @@ namespace HealthGateway.Database.Context
                 {
                     StatusCode = CommunicationStatus.Draft,
                     Description = "A draft Communication which has not been published",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the ResourceDelegateReason codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedResourceDelegateReason(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ResourceDelegateReasonCode>().HasData(
+                new ResourceDelegateReasonCode
+                {
+                    ReasonTypeCode = ResourceDelegateReason.COVIDLab,
+                    Description = "Resource Delegation for Covid Laboratory",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,

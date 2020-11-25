@@ -39,7 +39,7 @@ export default class AddCommentComponent extends Vue {
     private addComment(): void {
         this.isSaving = true;
         this.commentService
-            .createComment({
+            .createComment(this.user.hdid, {
                 text: this.commentInput,
                 parentEntryId: this.comment.parentEntryId,
                 userProfileId: this.user.hdid,

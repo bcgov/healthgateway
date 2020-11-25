@@ -38,10 +38,8 @@ namespace HealthGateway.WebClient.Test.Services
         string hdid = "1234567890123456789012345678901234567890123456789012";
         string parentEntryId = "123456789";
 
-        [Fact]
-        public void ShouldGetComments()
+        private Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>> ExecuteGetComments(string encryptionKey = null, Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Read)
         {
-            string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
             {
                 Payload = new UserProfile() { EncryptionKey = encryptionKey }
@@ -77,7 +75,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<IEnumerable<Comment>> commentsDBResult = new DBResult<IEnumerable<Comment>>
             {
                 Payload = commentList,
-                Status = DBStatusCode.Read
+                Status = dbResultStatus
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
@@ -92,12 +90,31 @@ namespace HealthGateway.WebClient.Test.Services
 
             RequestResult<IEnumerable<UserComment>> actualResult = service.GetList(hdid, parentEntryId);
 
+            return new Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>>(actualResult, userCommentList);
+        }
+
+        [Fact]
+        public void ShouldGetComments()
+        {
+            Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>> getNotesResult = ExecuteGetComments("abc", Database.Constants.DBStatusCode.Read);
+            var actualResult = getNotesResult.Item1;
+            var userCommentList = getNotesResult.Item2;
+
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload.IsDeepEqual(userCommentList));
         }
 
         [Fact]
-        public void ShouldInsertComment()
+        public void ShouldGetCommentsWithDbError()
+        {
+            Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>> getNotesResult = ExecuteGetComments("abc", Database.Constants.DBStatusCode.Error);
+            var actualResult = getNotesResult.Item1;
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal("testhostServer-CI-DB", actualResult.ResultError.ErrorCode);
+        }
+
+        private Tuple<RequestResult<UserComment>, UserComment> ExecuteInsertComment(Database.Constants.DBStatusCode dBStatusCode = Database.Constants.DBStatusCode.Created)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -125,7 +142,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Comment> insertResult = new DBResult<Comment>
             {
                 Payload = comment,
-                Status = DBStatusCode.Created
+                Status = dBStatusCode
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
@@ -139,13 +156,31 @@ namespace HealthGateway.WebClient.Test.Services
                 );
 
             RequestResult<UserComment> actualResult = service.Add(userComment);
-
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userComment));
+            return new Tuple<RequestResult<UserComment>, UserComment>(actualResult, userComment);
         }
 
         [Fact]
-        public void ShouldUpdateComment()
+        public void ShouldInsertComment()
+        {
+            Tuple<RequestResult<UserComment>, UserComment> result = ExecuteInsertComment(Database.Constants.DBStatusCode.Created);
+            var actualResult = result.Item1;
+            var createdRecord = result.Item2;
+
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(createdRecord));
+        }
+
+        [Fact]
+        public void ShouldInsertCommentWithDBError()
+        {
+            Tuple<RequestResult<UserComment>, UserComment> result = ExecuteInsertComment(Database.Constants.DBStatusCode.Error);
+            var actualResult = result.Item1;
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+        }
+
+        private Tuple<RequestResult<UserComment>, UserComment> ExecuteUpdateComment(Database.Constants.DBStatusCode dBStatusCode = Database.Constants.DBStatusCode.Updated)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -174,7 +209,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Comment> updateResult = new DBResult<Comment>
             {
                 Payload = comment,
-                Status = DBStatusCode.Updated
+                Status = dBStatusCode
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
@@ -188,13 +223,30 @@ namespace HealthGateway.WebClient.Test.Services
             );
 
             RequestResult<UserComment> actualResult = service.Update(userComment);
-
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userComment));
+            return new Tuple<RequestResult<UserComment>, UserComment>(actualResult, userComment);
         }
 
         [Fact]
-        public void ShouldDeleteComment()
+        public void ShouldUpdateComment()
+        {
+            Tuple<RequestResult<UserComment>, UserComment> result = ExecuteUpdateComment(Database.Constants.DBStatusCode.Updated);
+            var actualResult = result.Item1;
+            var updatedRecord = result.Item2;
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(updatedRecord));
+        }
+
+        [Fact]
+        public void ShouldUpdateCommentWithDBError()
+        {
+            Tuple<RequestResult<UserComment>, UserComment> result = ExecuteUpdateComment(Database.Constants.DBStatusCode.Error);
+            var actualResult = result.Item1;
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
+        }
+
+        private Tuple<RequestResult<UserComment>, UserComment> ExecuteDeleteComment(Database.Constants.DBStatusCode dBStatusCode = Database.Constants.DBStatusCode.Deleted)
         {
             string encryptionKey = "abc";
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -222,7 +274,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Comment> deleteResult = new DBResult<Comment>
             {
                 Payload = comment,
-                Status = DBStatusCode.Deleted
+                Status = dBStatusCode
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
@@ -236,9 +288,27 @@ namespace HealthGateway.WebClient.Test.Services
             );
 
             RequestResult<UserComment> actualResult = service.Delete(userComment);
+            return new Tuple<RequestResult<UserComment>, UserComment>(actualResult, userComment);
+        }
 
+        [Fact]
+        public void ShouldDeleteComment()
+        {
+            Tuple<RequestResult<UserComment>, UserComment> result = ExecuteDeleteComment(Database.Constants.DBStatusCode.Deleted);
+            var actualResult = result.Item1;
+            var deletedRecord = result.Item2;
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(userComment));
+            Assert.True(actualResult.ResourcePayload.IsDeepEqual(deletedRecord));
+        }
+
+        [Fact]
+        public void ShouldDeleteCommentWithDBError()
+        {
+            Tuple<RequestResult<UserComment>, UserComment> result = ExecuteDeleteComment(Database.Constants.DBStatusCode.Error);
+            var actualResult = result.Item1;
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResultError);
         }
 
         [Fact]
