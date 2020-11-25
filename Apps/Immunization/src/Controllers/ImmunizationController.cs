@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 namespace HealthGateway.Immunization.Controllers
 {
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
@@ -83,12 +82,21 @@ namespace HealthGateway.Immunization.Controllers
         public async Task<IActionResult> GetImmunizations(string hdid)
         {
             this.logger.LogDebug($"Getting immunizations from controller... {hdid}");
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string accessToken = await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-            RequestResult<IEnumerable<ImmunizationModel>> result = await this.service.GetImmunizations(accessToken).ConfigureAwait(true);
+            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
+            if (httpContext != null)
+            {
+                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished getting immunizations from controller... {hdid}");
-            return new JsonResult(result);
+                if (accessToken != null)
+                {
+                    RequestResult<IEnumerable<ImmunizationModel>> result = await this.service.GetImmunizations(accessToken).ConfigureAwait(true);
+
+                    this.logger.LogDebug($"Finished getting immunizations from controller... {hdid}");
+                    return new JsonResult(result);
+                }
+            }
+
+            return this.Unauthorized();
         }
     }
 }

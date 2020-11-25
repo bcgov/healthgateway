@@ -20,7 +20,6 @@ extends:
   parameters:
     Application: WebClient
     DotNetTests: true
-    FunctionalTests: false
     NPMInstall: true
     NPMTests: true
 

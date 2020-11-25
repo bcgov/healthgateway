@@ -2736,6 +2736,173 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("Rating");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegate", b =>
+                {
+                    b.Property<string>("ResourceOwnerHdid")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("ProfileHdid")
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("ReasonCode")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<JsonDocument>("ReasonObject")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("ReasonObjectType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("ResourceOwnerHdid", "ProfileHdid", "ReasonCode");
+
+                    b.HasIndex("ProfileHdid");
+
+                    b.HasIndex("ReasonCode");
+
+                    b.ToTable("ResourceDelegate");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegateHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ResourceDelegateHistoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OperationDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ProfileHdid")
+                        .IsRequired()
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("ReasonCode")
+                        .IsRequired()
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<JsonDocument>("ReasonObject")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("ReasonObjectType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ResourceOwnerHdid")
+                        .IsRequired()
+                        .HasColumnType("character varying(52)")
+                        .HasMaxLength(52);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResourceDelegateHistory");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegateReasonCode", b =>
+                {
+                    b.Property<string>("ReasonTypeCode")
+                        .HasColumnType("character varying(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("character varying(60)")
+                        .HasMaxLength(60);
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("xmin")
+                        .HasColumnType("xid");
+
+                    b.HasKey("ReasonTypeCode");
+
+                    b.ToTable("ResourceDelegateReasonCode");
+
+                    b.HasData(
+                        new
+                        {
+                            ReasonTypeCode = "COVIDLab",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Resource Delegation for Covid Laboratory",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
+                        });
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2955,94 +3122,6 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("TherapeuticClass");
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.UserDelegate", b =>
-                {
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("DelegateId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
-
-                    b.HasKey("OwnerId", "DelegateId");
-
-                    b.ToTable("UserDelegate");
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.UserDelegateHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("UserDelegateHistoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("DelegateId")
-                        .IsRequired()
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("Operation")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("OperationDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserDelegateHistory");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>
@@ -3509,6 +3588,21 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", "DrugProduct")
                         .WithOne("PharmaceuticalStd")
                         .HasForeignKey("HealthGateway.Database.Models.PharmaceuticalStd", "DrugProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegate", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.UserProfile", null)
+                        .WithMany()
+                        .HasForeignKey("ProfileHdid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.ResourceDelegateReasonCode", null)
+                        .WithMany()
+                        .HasForeignKey("ReasonCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

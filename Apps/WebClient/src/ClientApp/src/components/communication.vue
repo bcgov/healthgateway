@@ -26,9 +26,9 @@ export default class CommunicationComponent extends Vue {
     }
 
     private fetchCommunication() {
-        const communicationService: ICommunicationService = container.get<
-            ICommunicationService
-        >(SERVICE_IDENTIFIER.CommunicationService);
+        const communicationService: ICommunicationService = container.get<ICommunicationService>(
+            SERVICE_IDENTIFIER.CommunicationService
+        );
 
         communicationService
             .getActive()

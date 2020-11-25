@@ -37,19 +37,19 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 
         private readonly ILogger<FhirResourceAuthorizationHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IUserDelegateDelegate? userDelegateDelegate;
+        private readonly IResourceDelegateDelegate? resourceDelegateDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FhirResourceAuthorizationHandler"/> class.
         /// </summary>
         /// <param name="logger">the injected logger.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
-        /// <param name="userDelegateDelegate">The User Delegate delegate to interact with the DB.</param>
-        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor, IUserDelegateDelegate? userDelegateDelegate = null)
+        /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
+        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor, IResourceDelegateDelegate? resourceDelegateDelegate = null)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
-            this.userDelegateDelegate = userDelegateDelegate;
+            this.resourceDelegateDelegate = resourceDelegateDelegate;
         }
 
         /// <summary>
@@ -122,11 +122,11 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             string? retVal = null;
             if (requirement.Lookup == Constants.FhirResourceLookup.Route)
             {
-                retVal = this.httpContextAccessor.HttpContext.Request.RouteValues[RouteResourceIdentifier] as string;
+                retVal = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
             }
             else if (requirement.Lookup == Constants.FhirResourceLookup.Parameter)
             {
-                retVal = this.httpContextAccessor.HttpContext.Request.Query[RouteResourceIdentifier];
+                retVal = this.httpContextAccessor.HttpContext?.Request.Query[RouteResourceIdentifier];
             }
 
             return retVal;
@@ -140,10 +140,10 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         private bool IsOwner(AuthorizationHandlerContext context, string resourceHDID)
         {
             bool retVal = false;
-            ClaimsPrincipal user = context.User;
-            if (user.HasClaim(c => c.Type == GatewayClaims.HDID))
+            string? userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
+            if (userHDID != null)
             {
-                string userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
+
                 retVal = userHDID == resourceHDID;
                 this.logger.LogDebug($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
             }
@@ -196,13 +196,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         private bool ValidateObservationDelegate(AuthorizationHandlerContext context, string resourceHDID, FhirRequirement requirement)
         {
             bool retVal = false;
-            if (this.userDelegateDelegate != null)
+            if (this.resourceDelegateDelegate != null)
             {
                 this.logger.LogInformation($"Performing user delegation validation for resource {resourceHDID}");
-                if (context.User.HasClaim(c => c.Type == GatewayClaims.HDID))
+                string? userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
+                if (userHDID != null)
                 {
-                    string userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
-                    if (this.userDelegateDelegate.Exists(resourceHDID, userHDID))
+                    if (this.resourceDelegateDelegate.Exists(resourceHDID, userHDID))
                     {
                         this.logger.LogInformation($"Authorized user {userHDID} to have {requirement.AccessType} access to Observation resource {resourceHDID}");
                         retVal = true;
@@ -215,7 +215,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             }
             else
             {
-                this.logger.LogError($"Performing Observation delegation on resource {resourceHDID} failed as userDelegateDelegate is null");
+                this.logger.LogError($"Performing Observation delegation on resource {resourceHDID} failed as resourceDelegateDelegate is null");
             }
 
             return retVal;

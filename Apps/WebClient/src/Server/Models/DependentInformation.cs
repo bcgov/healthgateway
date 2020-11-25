@@ -39,8 +39,8 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the Masked PHN of the dependent.
         /// </summary>
-        [JsonPropertyName("maskedPHN")]
-        public string MaskedPHN { get; set; } = string.Empty;
+        [JsonPropertyName("PHN")]
+        public string PHN { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Date Of Birth.
@@ -63,18 +63,10 @@ namespace HealthGateway.WebClient.Models
             {
                 HdId = patientModel.HdId,
                 Name = $"{patientModel.FirstName} {patientModel.LastName} ",
+                PHN = patientModel.PersonalHealthNumber,
                 Gender = patientModel.Gender,
                 DateOfBirth = patientModel.Birthdate,
             };
-
-            if (patientModel.PersonalHealthNumber.Length > 3)
-            {
-                result.MaskedPHN = patientModel.PersonalHealthNumber.Remove(patientModel.PersonalHealthNumber.Length - 5, 4) + "****";
-            }
-            else
-            {
-                result.MaskedPHN = "****";
-            }
 
             return result;
         }

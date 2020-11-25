@@ -87,9 +87,9 @@ namespace HealthGateway.WebClient.Controllers
         [Route("{hdid}/[controller]")]
         public IActionResult AddDependent([FromBody] AddDependentRequest addDependentRequest)
         {
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            string delegateHdId = user.FindFirst("hdid").Value;
-            RequestResult<DependentModel> result = this.dependentService.AddDependent(delegateHdId, addDependentRequest);
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            string? delegateHdId = user?.FindFirst("hdid")?.Value;
+            RequestResult<DependentModel> result = this.dependentService.AddDependent(delegateHdId ?? string.Empty, addDependentRequest);
             return new JsonResult(result);
         }
 
@@ -114,7 +114,6 @@ namespace HealthGateway.WebClient.Controllers
                 return new BadRequestResult();
             }
 
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
             RequestResult<DependentModel> result = this.dependentService.Remove(dependent);
             return new JsonResult(result);
         }

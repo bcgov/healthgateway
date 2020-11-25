@@ -109,7 +109,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
-            services.AddTransient<IUserDelegateDelegate, DBUserDelegateDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
 
             // Add Background Services
             services.AddHostedService<BannerListener>();
@@ -135,13 +135,13 @@ namespace HealthGateway.WebClient
         /// <param name="env">The hosting environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseSpaStaticFiles();
-
+            this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
             this.startupConfig.UseHttp(app);
-            this.startupConfig.UseContentSecurityPolicy(app);
             this.startupConfig.UseAuth(app);
+
+            app.UseSpaStaticFiles();
 
             if (env.IsDevelopment())
             {

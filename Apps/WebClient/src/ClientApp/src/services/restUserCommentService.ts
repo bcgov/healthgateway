@@ -12,6 +12,7 @@ import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
@@ -29,6 +30,7 @@ export class RestUserCommentService implements IUserCommentService {
     }
 
     public getCommentsForEntry(
+        hdid: string,
         parentEntryId: string
     ): Promise<RequestResult<UserComment[]>> {
         return new Promise((resolve, reject) => {
@@ -44,7 +46,7 @@ export class RestUserCommentService implements IUserCommentService {
             }
             this.http
                 .getWithCors<RequestResult<UserComment[]>>(
-                    `${this.USER_COMMENT_BASE_URI}?parentEntryId=${parentEntryId}`
+                    `${this.USER_COMMENT_BASE_URI}/${hdid}?parentEntryId=${parentEntryId}`
                 )
                 .then((userComments) => {
                     return resolve(userComments);
@@ -61,22 +63,29 @@ export class RestUserCommentService implements IUserCommentService {
         });
     }
 
-    public createComment(comment: UserComment): Promise<UserComment> {
-        return new Promise((resolve, reject) => {
+    public createComment(
+        hdid: string,
+        comment: UserComment
+    ): Promise<UserComment | undefined> {
+        return new Promise<UserComment | undefined>((resolve, reject) => {
             if (!this.isEnabled) {
-                resolve();
+                resolve(undefined);
                 return;
             }
             this.http
                 .post<RequestResult<UserComment>>(
-                    `${this.USER_COMMENT_BASE_URI}/`,
+                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
-                .then((result) => {
+                .then((requestResult) => {
                     this.logger.verbose(
-                        `createComment result: ${JSON.stringify(result)}`
+                        `createComment result: ${JSON.stringify(requestResult)}`
                     );
-                    return this.handleResult(result, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(err);
@@ -90,15 +99,22 @@ export class RestUserCommentService implements IUserCommentService {
         });
     }
 
-    public updateComment(comment: UserComment): Promise<UserComment> {
-        return new Promise((resolve, reject) => {
+    public updateComment(
+        hdid: string,
+        comment: UserComment
+    ): Promise<UserComment> {
+        return new Promise<UserComment>((resolve, reject) => {
             this.http
                 .put<RequestResult<UserComment>>(
-                    `${this.USER_COMMENT_BASE_URI}/`,
+                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(err);
@@ -112,15 +128,19 @@ export class RestUserCommentService implements IUserCommentService {
         });
     }
 
-    public deleteComment(comment: UserComment): Promise<void> {
+    public deleteComment(hdid: string, comment: UserComment): Promise<void> {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.USER_COMMENT_BASE_URI}/`,
+                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
                     comment
                 )
-                .then((result) => {
-                    return this.handleResult(result, resolve, reject);
+                .then((requestResult) => {
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(err);
@@ -132,17 +152,5 @@ export class RestUserCommentService implements IUserCommentService {
                     );
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultError);
-        }
     }
 }

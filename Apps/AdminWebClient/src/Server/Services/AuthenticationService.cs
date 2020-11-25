@@ -61,8 +61,8 @@ namespace HealthGateway.Admin.Services
         public AuthenticationData GetAuthenticationData()
         {
             AuthenticationData authData = new AuthenticationData();
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            authData.IsAuthenticated = user.Identity.IsAuthenticated;
+            ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
+            authData.IsAuthenticated = user?.Identity?.IsAuthenticated ?? false;
             if (authData.IsAuthenticated)
             {
                 this.logger.LogDebug("Getting Authentication data");
@@ -72,7 +72,7 @@ namespace HealthGateway.Admin.Services
                     Name = user.FindFirstValue("name"),
                     Email = user.FindFirstValue(ClaimTypes.Email),
                 };
-                authData.IsAuthorized = user.Claims.Where(c => c.Type == "user_realm_roles" && c.Value == this.validUserRole).Select(c => c.Value == this.validUserRole).FirstOrDefault();
+                authData.IsAuthorized = user?.Claims.Where(c => c.Type == "user_realm_roles" && c.Value == this.validUserRole).Select(c => c.Value == this.validUserRole).FirstOrDefault() ?? false;
             }
 
             return authData;

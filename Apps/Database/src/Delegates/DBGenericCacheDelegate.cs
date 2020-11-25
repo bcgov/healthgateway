@@ -132,7 +132,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = cacheObject,
                 Status = DBStatusCode.Deferred,
             };
-            GenericCache dbCacheItem = this.dbContext.GenericCache
+            GenericCache? dbCacheItem = this.dbContext.GenericCache
                                             .Where(p => p.HdId == cacheObject.HdId && p.Domain == cacheObject.Domain)
                                             .OrderByDescending(o => o.ExpiryDateTime)
                                             .FirstOrDefault();
@@ -241,7 +241,7 @@ namespace HealthGateway.Database.Delegates
                     {
                         try
                         {
-                            retVal = (T)JsonSerializer.Deserialize(cacheObject.Payload.JSON.RootElement.GetRawText(), t);
+                            retVal = JsonSerializer.Deserialize(cacheObject.Payload.JSON.RootElement.GetRawText(), t) as T;
                         }
                         catch (JsonException e)
                         {

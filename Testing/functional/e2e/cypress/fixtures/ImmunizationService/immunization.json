@@ -1,0 +1,24 @@
+{
+    "resourcePayload": [
+        {
+            "id": "3208884_54396880",
+            "name": "Influenza-Inactivated",
+            "dateOfImmunization": "2019-11-20T00:00:00"
+        },
+        {
+            "id": "3208884_54396881",
+            "name": "Tetanus, Diphtheria",
+            "dateOfImmunization": "2019-11-20T00:00:00"
+        },
+        {
+            "id": "3208884_54396882",
+            "name": "Shingles",
+            "dateOfImmunization": "2020-01-22T00:00:00"
+        }
+    ],
+    "totalResultCount": 3,
+    "pageIndex": 0,
+    "pageSize": 25,
+    "resultStatus": 1,
+    "resultError": null
+}

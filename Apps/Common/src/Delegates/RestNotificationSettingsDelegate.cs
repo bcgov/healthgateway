@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -90,7 +90,7 @@ namespace HealthGateway.Common.Delegates
                             IgnoreNullValues = true,
                             WriteIndented = true,
                         };
-                        NotificationSettingsResponse notificationSettings = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
+                        NotificationSettingsResponse? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
                         if (notificationSettings != null)
                         {
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -167,7 +167,7 @@ namespace HealthGateway.Common.Delegates
                 {
                     case HttpStatusCode.Created:
                     case HttpStatusCode.OK:
-                        NotificationSettingsResponse nsResponse = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
+                        NotificationSettingsResponse? nsResponse = JsonSerializer.Deserialize<NotificationSettingsResponse>(payload, options);
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
                         retVal.TotalResultCount = 1;
                         retVal.ResourcePayload = nsResponse;

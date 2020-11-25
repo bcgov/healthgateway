@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,7 +102,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 WriteIndented = true,
                             };
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<LaboratoryOrder> phsaResult = JsonSerializer.Deserialize<PHSAResult<LaboratoryOrder>>(payload, options);
+                            PHSAResult<LaboratoryOrder>? phsaResult = JsonSerializer.Deserialize<PHSAResult<LaboratoryOrder>>(payload, options);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -178,7 +178,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 IgnoreNullValues = true,
                                 WriteIndented = true,
                             };
-                            LaboratoryReport report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);
+                            LaboratoryReport? report = JsonSerializer.Deserialize<LaboratoryReport>(payload, options);
                             if (report != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;

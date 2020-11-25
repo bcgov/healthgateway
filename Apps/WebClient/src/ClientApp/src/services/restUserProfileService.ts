@@ -8,13 +8,13 @@ import {
 } from "@/services/interfaces";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
 import { TermsOfService } from "@/models/termsOfService";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 import { Dictionary } from "vue-router/types/router";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
@@ -34,7 +34,11 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);
@@ -58,7 +62,11 @@ export class RestUserProfileService implements IUserProfileService {
                     createRequest
                 )
                 .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);
@@ -79,7 +87,11 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);
@@ -100,7 +112,11 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
                 )
                 .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);
@@ -116,7 +132,11 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
                 )
                 .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);
@@ -132,7 +152,11 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/termsofservice`
                 )
                 .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);
@@ -217,7 +241,7 @@ export class RestUserProfileService implements IUserProfileService {
                     headers
                 )
                 .then(() => {
-                    return resolve();
+                    return resolve(true);
                 })
                 .catch((err) => {
                     this.logger.error(`updateEmail error: ${err}`);
@@ -238,7 +262,7 @@ export class RestUserProfileService implements IUserProfileService {
                     headers
                 )
                 .then(() => {
-                    return resolve();
+                    return resolve(true);
                 })
                 .catch((err) => {
                     this.logger.error(`updateSMSNumber error: ${err}`);
@@ -274,17 +298,5 @@ export class RestUserProfileService implements IUserProfileService {
                     );
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultError);
-        }
     }
 }

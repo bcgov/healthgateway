@@ -54,10 +54,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public Email GetNewEmail(Guid emailId)
+        public Email? GetNewEmail(Guid emailId)
         {
             this.logger.LogTrace($"Getting new email from DB... {emailId}");
-            Email retVal = this.dbContext.Email.Where(p => p.Id == emailId &&
+            Email? retVal = this.dbContext.Email.Where(p => p.Id == emailId &&
                                               p.EmailStatusCode == EmailStatus.New &&
                                               p.Priority >= EmailPriority.Standard).SingleOrDefault();
             this.logger.LogDebug($"Finished getting new email from DB. {JsonSerializer.Serialize(retVal)}");
@@ -146,7 +146,7 @@ namespace HealthGateway.Database.Delegates
             EmailTemplate retVal = this.dbContext
                 .EmailTemplate
                 .Where(p => p.Name == templateName)
-                .FirstOrDefault<EmailTemplate>();
+                .First<EmailTemplate>();
             this.logger.LogDebug($"Finished getting email template from DB. {JsonSerializer.Serialize(retVal)}");
 
             return retVal;

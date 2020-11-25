@@ -73,23 +73,31 @@ namespace Healthgateway.JobScheduler.Jobs
                     WriteIndented = true,
                 };
 
-                NotificationSettingsRequest notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
-                string? accessToken = this.authDelegate.AuthenticateAsUser().AccessToken;
-
-                if (string.IsNullOrEmpty(accessToken))
+                NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
+                if (notificationSettings != null)
                 {
-                    this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
-                    throw new FormatException($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                    string? accessToken = this.authDelegate.AuthenticateAsUser().AccessToken;
+
+                    if (string.IsNullOrEmpty(accessToken))
+                    {
+                        this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                        throw new FormatException($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                    }
+                    else
+                    {
+                        RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
+                                        this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
+                        if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+                        {
+                            this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                            throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                        }
+                    }
                 }
                 else
                 {
-                    RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
-                                    this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
-                    if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
-                    {
-                        this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
-                        throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
-                    }
+                    this.logger.LogError("Unable to deserialize JSON Notification Settings");
+                    throw new FormatException("Unable to deserialize JSON Notification Settings");
                 }
             }
             else

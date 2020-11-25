@@ -44,9 +44,9 @@ namespace HealthGateway.WebClient.Models
         public string PHN { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the gender.
+        /// Gets or sets the TestDate.
         /// </summary>
-        public string Gender { get; set; } = string.Empty;
+        public DateTime TestDate { get; set; }
 
         /// <summary>
         /// Determines whether two specified System.String objects have the same value.
@@ -82,11 +82,6 @@ namespace HealthGateway.WebClient.Models
             }
 
             if (patientModel.Birthdate.Day != this.DateOfBirth.Day)
-            {
-                return false;
-            }
-
-            if (!patientModel.Gender.Equals(this.Gender, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }

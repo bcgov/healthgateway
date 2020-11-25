@@ -41,15 +41,29 @@ namespace HealthGateway.DrugMaintainer
             IHost host = CreateWebHostBuilder(args).Build();
 
             // Process Federal file
-            FedDrugDBApp fedDrugApp = host.Services.GetService<FedDrugDBApp>();
-            fedDrugApp.Process("FedApprovedDatabase");
-            fedDrugApp.Process("FedMarketedDatabase");
-            fedDrugApp.Process("FedCancelledDatabase");
-            fedDrugApp.Process("FedDormantDatabase");
+            FedDrugDBApp? fedDrugApp = host.Services.GetService<FedDrugDBApp>();
+            if (fedDrugApp != null)
+            {
+                fedDrugApp.Process("FedApprovedDatabase");
+                fedDrugApp.Process("FedMarketedDatabase");
+                fedDrugApp.Process("FedCancelledDatabase");
+                fedDrugApp.Process("FedDormantDatabase");
+            }
+            else
+            {
+                System.Console.WriteLine("Federal Drug App is null");
+            }
 
             // Process Provincial file
-            BCPProvDrugDBApp bcDrugApp = host.Services.GetService<BCPProvDrugDBApp>();
-            bcDrugApp.Process("PharmaCareDrugFile");
+            BCPProvDrugDBApp? bcDrugApp = host.Services.GetService<BCPProvDrugDBApp>();
+            if (bcDrugApp != null)
+            {
+                bcDrugApp.Process("PharmaCareDrugFile");
+            }
+            else
+            {
+                System.Console.WriteLine("Provincial Drug App is null");
+            }
         }
 
         /// <summary>

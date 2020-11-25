@@ -20,7 +20,6 @@ extends:
   parameters:
     Application: Patient
     DotNetTests: true
-    FunctionalTests: false
     NPMInstall: false
     NPMTests: false
 

@@ -18,7 +18,6 @@ extends:
   parameters:
     Application: Database
     DotNetTests: true
-    FunctionalTests: false
     NPMInstall: false
     NPMTests: false
     Library: true
