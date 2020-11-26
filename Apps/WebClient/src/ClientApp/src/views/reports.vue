@@ -232,7 +232,7 @@ export default class ReportsView extends Vue {
                 class="col-12 col-md-10 col-lg-9 column-wrapper"
             >
                 <PageTitleComponent
-                    :title="`Health Gateway Medication History Report`"
+                    :title="`Health Gateway Medication History`"
                 />
                 <div>
                     <p>
