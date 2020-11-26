@@ -345,7 +345,7 @@ export default class FilterComponent extends Vue {
                                 v-model="selectedEntryTypes"
                                 :data-testid="`${filter.type}-filter`"
                                 :name="filter.type + '-filter'"
-                                :value="filter"
+                                :value="filter.type"
                             >
                                 {{ filter.display }}
                             </b-form-checkbox>
