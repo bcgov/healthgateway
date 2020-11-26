@@ -14,6 +14,7 @@ import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
@@ -85,7 +86,11 @@ export class RestMedicationService implements IMedicationService {
                     `${this.baseUri}${this.MEDICATION_BASE_URI}/${drugIdentifier}`
                 )
                 .then((requestResult) => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(
@@ -99,17 +104,5 @@ export class RestMedicationService implements IMedicationService {
                     );
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultError);
-        }
     }
 }

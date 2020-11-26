@@ -73,8 +73,8 @@ namespace HealthGateway.Common.Auditing
         /// <inheritdoc />
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
         {
-            ClaimsIdentity claimsIdentity = (ClaimsIdentity)context.User.Identity;
-            Claim hdidClaim = claimsIdentity.Claims.Where(c => c.Type == "hdid").FirstOrDefault();
+            ClaimsIdentity? claimsIdentity = context.User.Identity as ClaimsIdentity;
+            Claim? hdidClaim = claimsIdentity?.Claims.Where(c => c.Type == "hdid").FirstOrDefault();
             string? hdid = hdidClaim?.Value;
 
             auditEvent.ApplicationType = GetApplicationType();
@@ -85,12 +85,12 @@ namespace HealthGateway.Common.Auditing
             auditEvent.TransactionName = @$"{routeValues["controller"]}\{routeValues["action"]}";
 
             auditEvent.Trace = context.TraceIdentifier;
-            auditEvent.ClientIP = context.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            auditEvent.ClientIP = context.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
             RouteData routeData = context.GetRouteData();
 
             // Some routes might not have the version
             auditEvent.TransactionVersion = routeData?.Values["version"] != null ?
-                routeData.Values["version"].ToString() : string.Empty;
+                routeData.Values["version"]?.ToString() : string.Empty;
         }
 
         /// <summary>

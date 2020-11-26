@@ -10,9 +10,9 @@ export interface DependentInformation {
     hdid: string;
 
     /**
-     * The dependent masked phn.
+     * The dependent phn.
      */
-    maskedPHN: string;
+    PHN: string;
 
     /**
      * The dependent name.
@@ -48,6 +48,11 @@ export interface Dependent {
      * The hdid which has delegated access to the owner Id.
      */
     delegateId: string;
+
+    /**
+     * Code that defines the reason for delegation.
+     */
+    reasonCode: number;
 
     /**
      * The record version.

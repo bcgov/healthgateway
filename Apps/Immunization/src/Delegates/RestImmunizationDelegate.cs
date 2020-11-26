@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,7 +102,7 @@ namespace HealthGateway.Immunization.Delegates
                                 WriteIndented = true,
                             };
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<ImmunizationResponse> phsaResult = JsonSerializer.Deserialize<PHSAResult<ImmunizationResponse>>(payload, options);
+                            PHSAResult<ImmunizationResponse>? phsaResult= JsonSerializer.Deserialize<PHSAResult<ImmunizationResponse>>(payload, options);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;

@@ -2,8 +2,8 @@ import { injectable } from "inversify";
 import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
 import UserFeedback from "@/models/userFeedback";
-import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
@@ -21,7 +21,11 @@ export class RestUserFeedbackService implements IUserFeedbackService {
                     `${this.USER_FEEDBACK_BASE_URI}`
                 )
                 .then(requestResult => {
-                    this.handleResult(requestResult, resolve, reject);
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch(err => {
                     console.log(err);
@@ -52,17 +56,5 @@ export class RestUserFeedbackService implements IUserFeedbackService {
                     return reject(err);
                 });
         });
-    }
-
-    private handleResult<T>(
-        requestResult: RequestResult<T>,
-        resolve: (value?: T | PromiseLike<T> | undefined) => void,
-        reject: (reason?: unknown) => void
-    ) {
-        if (requestResult.resultStatus === ResultType.Success) {
-            resolve(requestResult.resourcePayload);
-        } else {
-            reject(requestResult.resultMessage);
-        }
     }
 }

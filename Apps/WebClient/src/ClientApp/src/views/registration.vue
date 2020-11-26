@@ -56,6 +56,7 @@ export default class RegistrationView extends Vue {
 
     private oidcUser!: OidcUserProfile;
     private userProfileService!: IUserProfileService;
+    private betaRequestVersion = 0;
     private submitStatus = "";
     private loadingUserData = true;
     private loadingTermsOfService = true;
@@ -125,6 +126,8 @@ export default class RegistrationView extends Vue {
                                         if (betaRequest) {
                                             this.email =
                                                 betaRequest.emailAddress;
+                                            this.betaRequestVersion =
+                                                betaRequest.version;
                                             this.emailConfirmation = this.email;
                                             this.waitlistTempEmail = this.email;
                                             this.waitlistEdditable = false;
@@ -328,16 +331,18 @@ export default class RegistrationView extends Vue {
             let newRequest: BetaRequest = {
                 hdid: this.oidcUser.hdid,
                 emailAddress: this.email,
+                version: this.betaRequestVersion,
             };
 
             this.betaRequestService
-                .putRequest(newRequest)
+                .putRequest(this.oidcUser.hdid, newRequest)
                 .then((result) => {
                     this.logger.debug(
                         `Save Beta Request Profile result: ${JSON.stringify(
                             result
                         )}`
                     );
+                    this.betaRequestVersion = result.version;
                     this.waitlistEdditable = false;
                     this.waitlistEmailConfirmation = "";
                     this.waitlistTempEmail = this.email;

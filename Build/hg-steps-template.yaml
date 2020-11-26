@@ -51,7 +51,7 @@ steps:
       reportDirectory: "$(App.Home)/CodeCoverage"
         
   - task: DotNetCoreCLI@2
-    displayName: "Publishing code for $(App.Name)"
+    displayName: "Compiling and Publishing code for $(App.Name)"
     inputs:
       modifyOutputPath: false
       command: "publish"
@@ -70,24 +70,3 @@ steps:
       oc tag $(OpenShift.Name):latest $(OpenShift.Name):$(Build.BuildNumber)
     displayName: "Building OpenShift Image for $(App.Name) and pushing to Image Stream"
     condition: and(succeeded(), eq(variables['RunOpenShift'], true))
-
-  - task: CopyFiles@2
-    displayName: "Copying Functional Tests to Staging for $(App.Name)"
-    condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), eq(variables['PublishFunctionalTests'], true)))
-    inputs:
-      SourceFolder: "$(App.FunctionalTests)"
-      Contents: "**"
-      TargetFolder: "$(Build.ArtifactStagingDirectory)"
-
-  - script: |
-        set -e
-        echo Creating Artifact
-        echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-    displayName: "Create Trigger Build Artifact for $(App.Name)"
-    condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), eq(variables['Library'], true)))
-
-  - task: PublishPipelineArtifact@0
-    displayName: "Publishing Pipeline Artifact for $(App.Name)"
-    condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), or(eq(variables['PublishFunctionalTests'], true), eq(variables['Library'], true))))
-    inputs:
-        targetPath: "$(Build.ArtifactStagingDirectory)"

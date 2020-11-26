@@ -16,6 +16,5 @@ extends:
     Application: JobScheduler
     OpenShiftName: hangfire
     DotNetTests: false
-    FunctionalTests: false
     NPMInstall: false
     NPMTests: false

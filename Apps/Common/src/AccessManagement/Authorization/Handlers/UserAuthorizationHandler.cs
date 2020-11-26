@@ -54,7 +54,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// <returns>The Authorization Result.</returns>
         public Task HandleAsync(AuthorizationHandlerContext context)
         {
-            string? resourceHDID = this.httpContextAccessor.HttpContext.Request.RouteValues[RouteResourceIdentifier] as string;
+            string? resourceHDID = this.httpContextAccessor.HttpContext?.Request.RouteValues[RouteResourceIdentifier] as string;
             foreach (UserRequirement requirement in context.PendingRequirements.OfType<UserRequirement>().ToList())
             {
                 if (this.Authorize(context, resourceHDID, requirement))
@@ -76,9 +76,9 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         {
             bool retVal = false;
             ClaimsPrincipal user = context.User;
-            if (user.HasClaim(c => c.Type == GatewayClaims.HDID))
+            string? userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
+            if (userHDID != null)
             {
-                string userHDID = user.FindFirst(c => c.Type == GatewayClaims.HDID).Value;
                 if (requirement.ValidateOwnership)
                 {
                     retVal = userHDID == resourceHDID;

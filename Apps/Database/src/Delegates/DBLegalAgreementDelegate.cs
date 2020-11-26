@@ -55,7 +55,7 @@ namespace HealthGateway.Database.Delegates
                 .Where(la => la.EffectiveDate <= DateTime.UtcNow)
                 .Where(la => agreementTypeCode.Equals(la.LegalAgreementCode))
                 .OrderByDescending(la => la.EffectiveDate)
-                .FirstOrDefault();
+                .First();
 
             return new DBResult<LegalAgreement>()
             {

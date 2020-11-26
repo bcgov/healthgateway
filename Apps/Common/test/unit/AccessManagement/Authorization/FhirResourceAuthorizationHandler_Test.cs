@@ -531,7 +531,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
-            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            Mock<IResourceDelegateDelegate> mockDependentDelegate = new Mock<IResourceDelegateDelegate>();
             mockDependentDelegate.Setup(s => s.Exists(string.Empty, hdid));
 
             FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);
@@ -673,7 +673,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
-            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            Mock<IResourceDelegateDelegate> mockDependentDelegate = new Mock<IResourceDelegateDelegate>();
             mockDependentDelegate.Setup(s => s.Exists(string.Empty, hdid));
 
             FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);
@@ -769,7 +769,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<FhirResourceAuthorizationHandler> logger = loggerFactory.CreateLogger<FhirResourceAuthorizationHandler>();
 
-            Mock<IUserDelegateDelegate> mockDependentDelegate = new Mock<IUserDelegateDelegate>();
+            Mock<IResourceDelegateDelegate> mockDependentDelegate = new Mock<IResourceDelegateDelegate>();
             mockDependentDelegate.Setup(s => s.Exists(resourceHDID, hdid)).Returns(true);
 
             FhirResourceAuthorizationHandler authHandler = new FhirResourceAuthorizationHandler(logger, httpContextAccessorMock.Object, mockDependentDelegate.Object);

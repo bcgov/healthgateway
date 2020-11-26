@@ -104,7 +104,7 @@ export interface IUserProfileService {
 
 export interface IUserFeedbackService {
     initialize(http: IHttpDelegate): void;
-    submitFeedback(feedback: UserFeedback): Promise<boolean>;
+    submitFeedback(hdid: string, feedback: UserFeedback): Promise<boolean>;
 }
 
 export interface IUserRatingService {
@@ -115,25 +115,29 @@ export interface IUserRatingService {
 export interface IBetaRequestService {
     initialize(http: IHttpDelegate): void;
     getRequested(hdid: string): Promise<BetaRequest>;
-    putRequest(request: BetaRequest): Promise<BetaRequest>;
+    putRequest(hdid: string, request: BetaRequest): Promise<BetaRequest>;
 }
 
 export interface IUserNoteService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getNotes(): Promise<RequestResult<UserNote[]>>;
-    createNote(note: UserNote): Promise<UserNote>;
-    updateNote(note: UserNote): Promise<UserNote>;
-    deleteNote(note: UserNote): Promise<void>;
+    getNotes(hdid: string): Promise<RequestResult<UserNote[]>>;
+    createNote(hdid: string, note: UserNote): Promise<UserNote | undefined>;
+    updateNote(hdid: string, note: UserNote): Promise<UserNote>;
+    deleteNote(hdid: string, note: UserNote): Promise<void>;
 }
 
 export interface IUserCommentService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getCommentsForEntry(
+        hdid: string,
         parentEntryId: string
     ): Promise<RequestResult<UserComment[]>>;
-    createComment(comment: UserComment): Promise<UserComment>;
-    updateComment(comment: UserComment): Promise<UserComment>;
-    deleteComment(comment: UserComment): Promise<void>;
+    createComment(
+        hdid: string,
+        comment: UserComment
+    ): Promise<UserComment | undefined>;
+    updateComment(hdid: string, comment: UserComment): Promise<UserComment>;
+    deleteComment(hdid: string, comment: UserComment): Promise<void>;
 }
 
 export interface ICommunicationService {
@@ -146,8 +150,8 @@ export interface IDependentService {
     addDependent(
         hdid: string,
         dependent: AddDependentRequest
-    ): Promise<AddDependentRequest>;
-    getAll(hdid: string): Promise<RequestResult<Dependent[]>>;
+    ): Promise<AddDependentRequest | undefined>;
+    getAll(hdid: string): Promise<Dependent[]>;
     removeDependent(hdid: string, dependent: Dependent): Promise<void>;
 }
 

@@ -27,7 +27,6 @@ extends:
   parameters:
     Application: Laboratory
     DotNetTests: true
-    FunctionalTests: false
     NPMInstall: false
     NPMTests: false
 

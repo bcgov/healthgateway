@@ -17,34 +17,35 @@
 
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.17" />
-    <PackageReference Include="Hangfire.PostgreSql" Version="1.7.1" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.8.0" />
     <PackageReference Include="Macross.Json.Extensions" Version="1.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.9" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.0" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="3.1.9" />
-    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="0.7.0-beta.1" />
-    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="0.7.0-beta.1" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="0.7.0-beta.1" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="0.7.0-beta.1" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="0.7.0-beta.1" />
-    <PackageReference Include="OpenTelemetry.Api" Version="0.7.0-beta.1" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="5.0.0-rc.2.20475.5" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="0.8.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="0.8.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="0.8.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="0.8.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="0.8.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Api" Version="0.8.0-beta.1" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="5.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Duplex" Version="4.7.0" />
-    <PackageReference Include="System.ServiceModel.Http" Version="4.7.0" />
-    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.7.0" />
-    <PackageReference Include="System.ServiceModel.Security" Version="4.7.0" />
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.8.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.8.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.8.0" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.8.0" />
   </ItemGroup>
 
   <ItemGroup>

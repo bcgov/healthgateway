@@ -54,6 +54,7 @@ namespace HealthGateway.Database.Delegates
             {
                 this.dbContext.SaveChanges();
                 result.Status = DBStatusCode.Created;
+                result.Payload = this.dbContext.Find<BetaRequest>(betaRequest.HdId);
             }
             catch (DbUpdateException e)
             {
@@ -69,21 +70,23 @@ namespace HealthGateway.Database.Delegates
         public DBResult<BetaRequest> UpdateBetaRequest(BetaRequest betaRequest)
         {
             this.logger.LogTrace($"Updating beta request in DB... {JsonSerializer.Serialize(betaRequest)}");
-            DBResult<BetaRequest> result = this.GetBetaRequest(betaRequest.HdId);
-            if (result.Status == DBStatusCode.Read)
+            DBResult<BetaRequest> result = new DBResult<BetaRequest>()
             {
-                // Copy certain attributes into the fetched Beta Request
-                result.Payload.EmailAddress = betaRequest.EmailAddress;
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DBStatusCode.Updated;
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    result.Status = DBStatusCode.Concurrency;
-                    result.Message = e.Message;
-                }
+                Payload = betaRequest,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.BetaRequest.Update(betaRequest);
+            this.dbContext.Entry(betaRequest).Property(p => p.HdId).IsModified = false;
+            try
+            {
+                this.dbContext.SaveChanges();
+                result.Status = DBStatusCode.Updated;
+                result.Payload = this.dbContext.Find<BetaRequest>(betaRequest.HdId);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                result.Status = DBStatusCode.Concurrency;
+                result.Message = e.Message;
             }
 
             this.logger.LogDebug($"Finished updating beta request in DB. {JsonSerializer.Serialize(result)}");
