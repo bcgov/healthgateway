@@ -82,7 +82,7 @@ export default class NewDependentComponent extends Vue {
     }
 
     private get minBirthdate(): DateWrapper {
-        return new DateWrapper().subtract(Duration.fromObject({ years: 19 }));
+        return new DateWrapper().subtract(Duration.fromObject({ years: 12 }));
     }
 
     private get minTestDate(): DateWrapper {
@@ -230,7 +230,7 @@ export default class NewDependentComponent extends Vue {
                                             isValid($v.dependent.dateOfBirth)
                                         "
                                     >
-                                        Dependent must be under the age of 19
+                                        Dependent must be under the age of 12
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
