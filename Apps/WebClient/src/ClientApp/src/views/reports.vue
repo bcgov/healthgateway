@@ -267,7 +267,10 @@ export default class ReportsView extends Vue {
                             </b-col>
                         </b-row>
                     </div>
-                    <div v-if="reportType == 'MED'">
+                    <div
+                        v-if="reportType == 'MED'"
+                        data-testid="medicationReportSample"
+                    >
                         <b-col>
                             <div class="mx-auto sample">
                                 <div class="scale">
