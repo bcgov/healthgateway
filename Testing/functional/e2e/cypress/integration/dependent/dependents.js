@@ -54,7 +54,7 @@ describe('dependents', () => {
             .should('have.class', 'is-invalid')
 
         // Validate tesDate Input
-        cy.get('[data-testid=dependentCovidTestDate]')
+        cy.get('[data-testid=testDateInput]')
             .should('be.enabled')
 
         // Validate Cancel out of the form
@@ -77,7 +77,7 @@ describe('dependents', () => {
             .type(lastName);
         cy.get('[data-testid=dateOfBirthInput]')
             .type(doB);
-        cy.get('[data-testid=dependentCovidTestDate]')
+        cy.get('[data-testid=testDateInput]')
             .type(testDate);
         cy.get('[data-testid=phnInput]')
             .type(phn);
@@ -97,12 +97,7 @@ describe('dependents', () => {
             .then(phnNumber => expect(phnNumber).to.equal(phn));
         cy.get('[data-testid=dependentDOB]')
             .last().invoke('val')
-            .then(dateOfBirth => expect(dateOfBirth).to.equal(doB));
-            cy.get('[data-testid=dependentCovidTestDate]')
-            .type(testDate)
-            .last().invoke('val')
-            .then(dependentCovidTestDate => expect(dependentCovidTestDate).to.equal(testDate));
-          
+            .then(dateOfBirth => expect(dateOfBirth).to.equal(doB));          
     })
 
 
