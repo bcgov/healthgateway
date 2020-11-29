@@ -4,6 +4,7 @@ describe('dependents', () => {
     const firstName = "Sam"
     const lastName = "Testfive"
     const doB = "2014-03-15"
+    const invalidDoB = "2007-08-05"
     const testDate = "2020-03-21"
     const phn = "9874307168"    
    
@@ -63,6 +64,30 @@ describe('dependents', () => {
             .click()
         // Validate the modal is done
         cy.get('[data-testid=newDependentModal]').should('not.exist')
+    })
+
+    it('Validate Maximum Age Check', () => {
+        // Validate that adding a dependent fails when they are over the age of 12
+        cy.get('[data-testid=addNewDependentBtn]')
+            .click();
+        cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
+        cy.get('[data-testid=firstNameInput]')
+            .type(firstName);
+        cy.get('[data-testid=lastNameInput]')
+            .type(lastName);
+        cy.get('[data-testid=dateOfBirthInput]')
+            .type(invalidDoB);
+        cy.get('[data-testid=dependentCovidTestDate]')
+            .type(testDate);
+        cy.get('[data-testid=phnInput]')
+            .type(phn);
+        cy.get('[data-testid=termsCheckbox]')
+            .click({ force: true });
+
+        cy.get('[data-testid=registerDependentBtn]').click(); 
+
+        // Validate the modal has not closed
+        cy.get('[data-testid=newDependentModal]').should('exist')
     })
     
     it('Validate Add', () => {
