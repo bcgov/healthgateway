@@ -24,9 +24,9 @@ const patientService: IPatientService = container.get<IPatientService>(
     SERVICE_IDENTIFIER.PatientService
 );
 
-const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-    SERVICE_IDENTIFIER.UserProfileService
-);
+const userProfileService: IUserProfileService = container.get<
+    IUserProfileService
+>(SERVICE_IDENTIFIER.UserProfileService);
 
 export const actions: ActionTree<UserState, RootState> = {
     getPatientData(context, params: { hdid: string }): Promise<PatientData> {
