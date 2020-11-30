@@ -104,7 +104,7 @@
         "vue-content-placeholders": "^0.2.1",
         "vue-countdown": "^1.0.4",
         "vue-loading-overlay": "^3.4.2",
-        "vue-property-decorator": "^9.0.2",
+        "vue-property-decorator": "^9.1.2",
         "vue-router": "^3.4.9",
         "vue-the-mask": "^0.11.1",
         "vuelidate": "^0.7.6",
