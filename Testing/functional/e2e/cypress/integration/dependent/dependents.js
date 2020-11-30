@@ -77,7 +77,7 @@ describe('dependents', () => {
             .type(lastName);
         cy.get('[data-testid=dateOfBirthInput]')
             .type(invalidDoB);
-        cy.get('[data-testid=dependentCovidTestDate]')
+        cy.get('[data-testid=testDateInput]')
             .type(testDate);
         cy.get('[data-testid=phnInput]')
             .type(phn);
