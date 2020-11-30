@@ -89,7 +89,7 @@
         "bootstrap-vue": "^2.19.0",
         "chart.js": "^2.9.4",
         "cookie-storage": "^6.1.0",
-        "core-js": "^3.7.0",
+        "core-js": "^3.8.0",
         "html2pdf.js": "^0.9.2",
         "idle-vue": "^2.0.5",
         "image-webpack-loader": "^7.0.1",
