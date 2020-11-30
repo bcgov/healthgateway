@@ -19,8 +19,6 @@ namespace HealthGateway.Common.Swagger
     using System;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Reflection;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
@@ -73,14 +71,6 @@ namespace HealthGateway.Common.Swagger
             options.OperationFilter<AuthenticationRequirementsOperationFilter>();
 
             this.AddSwaggerDocumentForEachDiscoveredApiVersion(options);
-            SetCommentsPathForSwaggerJsonAndUi(options);
-        }
-
-        private static void SetCommentsPathForSwaggerJsonAndUi(SwaggerGenOptions options)
-        {
-            var xmlFile = $"{Assembly.GetEntryAssembly() !.GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            options.IncludeXmlComments(xmlPath);
         }
 
         private void AddSwaggerDocumentForEachDiscoveredApiVersion(SwaggerGenOptions options)

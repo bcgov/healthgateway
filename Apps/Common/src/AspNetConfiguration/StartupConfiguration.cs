@@ -18,9 +18,11 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IdentityModel.Tokens.Jwt;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Reflection;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.ServiceModel;
@@ -428,11 +430,15 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
             services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
-
+            var xmlFile = $"{Assembly.GetCallingAssembly() !.GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             services
                 .AddApiVersionWithExplorer()
                 .AddSwaggerOptions()
-                .AddSwaggerGen();
+                .AddSwaggerGen(options =>
+                {
+                    options.IncludeXmlComments(xmlPath);
+                });
         }
 
         /// <summary>
