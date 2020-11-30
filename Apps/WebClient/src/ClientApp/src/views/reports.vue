@@ -235,49 +235,11 @@ export default class ReportsView extends Vue {
 <template>
     <div>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-<<<<<<< HEAD
-        <b-row class="my-3 fluid">
-            <b-col
-                id="healthInsights"
-                class="col-12 col-md-10 col-lg-9 column-wrapper"
-            >
-                <PageTitleComponent
-                    :title="`Health Gateway Medication History`"
-                />
-                <div>
-                    <p>
-                        Download a copy of your PharmaNet record of prescription
-                        medication dispenses. This report will generate your
-                        full history in the PharmaNet system.
-                    </p>
-                </div>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <img
-                    class="mx-auto d-block"
-                    src="@/assets/images/reports/reports.png"
-                    width="200"
-                    height="auto"
-                    alt="..."
-                />
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-button
-                    variant="primary"
-                    class="mx-auto mt-3 d-block"
-                    :disabled="!isDataLoaded"
-                    @click="showConfirmationModal"
-=======
         <div class="my-3 fluid">
             <b-row>
                 <b-col
                     id="healthInsights"
                     class="col-12 col-md-10 col-lg-9 column-wrapper"
->>>>>>> fe67a85896ba7e1b30adc4a24681957d53b3ee05
                 >
                     <PageTitleComponent :title="`Export Records`" />
                     <div class="my-5 p-5 form">
