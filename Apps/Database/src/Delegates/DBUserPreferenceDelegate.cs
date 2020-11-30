@@ -72,7 +72,7 @@ namespace HealthGateway.Database.Delegates
 
             foreach (UserPreference preference in preferences.Payload)
             {
-                if (!newPreferences.Any(p => p.Preference == preference.Preference))
+                if (newPreferences.Any(p => p.Preference == preference.Preference))
                 {
                     this.dbContext.UserPreference.Remove(preference);
                 }

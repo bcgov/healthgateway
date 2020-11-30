@@ -1,14 +1,44 @@
 ﻿<script lang="ts">
 import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import User from "@/models/user";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component
 export default class CovidModalComponent extends Vue {
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        hdid: string;
+        name: string;
+        value: string;
+    }) => void;
+    @Getter("user", { namespace: "user" }) user!: User;
+
     @Prop() error!: boolean;
     @Prop({ default: false }) isLoading!: boolean;
 
+    private logger!: ILogger;
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     public isVisible = false;
     public show = false;
+
+    private actionCovidModal() {
+        this.logger.debug("Actioning Covid Modal...");
+        let now = new DateWrapper();
+        this.updateUserPreference({
+            hdid: this.user.hdid,
+            name: "actionedCovidModalAt",
+            value: now.toISO(),
+        });
+    }
 
     public showModal(): void {
         this.show = true;
@@ -38,6 +68,7 @@ export default class CovidModalComponent extends Vue {
 
     @Emit()
     private cancel() {
+        this.actionCovidModal();
         this.hideModal();
         return;
     }
@@ -45,6 +76,8 @@ export default class CovidModalComponent extends Vue {
     private handleSubmit(bvModalEvt: Event) {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
+
+        this.actionCovidModal();
 
         // Trigger submit handler
         this.submit();
