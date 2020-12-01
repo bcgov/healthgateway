@@ -268,7 +268,7 @@ export default class DependentCardComponent extends Vue {
                     </b-row>
                     <table v-else class="w-100">
                         <tr>
-                            <th>Test Date</th>
+                            <th>COVID-19 Test Date</th>
                             <th class="d-none d-sm-table-cell">Test Type</th>
                             <th class="d-none d-sm-table-cell">
                                 Test Location
