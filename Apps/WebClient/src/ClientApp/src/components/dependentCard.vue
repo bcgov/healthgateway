@@ -114,8 +114,8 @@ export default class DependentCardComponent extends Vue {
 
     private sortEntries() {
         this.labResults.sort((a, b) => {
-            let dateA = new DateWrapper(a.labResult[0].collectedDateTime);
-            let dateB = new DateWrapper(b.labResult[0].collectedDateTime);
+            let dateA = new DateWrapper(a.labResults[0].collectedDateTime);
+            let dateB = new DateWrapper(b.labResults[0].collectedDateTime);
             return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
         });
     }
