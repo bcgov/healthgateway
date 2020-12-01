@@ -106,8 +106,10 @@ export default class DependentsView extends Vue {
                             <b-col>
                                 <h5>
                                     You can add your dependents under the age of
-                                    12 to view their COVID-19 results. Please complete the form with your 
-                                    dependent's information, exactly as it appears on their BC Services Card.
+                                    12 to view their COVID-19 results. Please
+                                    complete the form with your dependent's
+                                    information, exactly as it appears on their
+                                    BC Services Card.
                                 </h5>
                             </b-col>
                         </b-row>
