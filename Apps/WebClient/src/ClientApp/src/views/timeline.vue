@@ -212,8 +212,7 @@ export default class TimelineView extends Vue {
     }
 
     private get hasNewTermsOfService(): boolean {
-        return true;
-        // return this.user.hasTermsOfServiceUpdated;
+        return this.user.hasTermsOfServiceUpdated;
     }
 
     private get searchIcon(): IconDefinition {
