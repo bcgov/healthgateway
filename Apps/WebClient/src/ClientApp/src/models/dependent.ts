@@ -23,11 +23,6 @@ export interface DependentInformation {
      * The dependent birth date.
      */
     dateOfBirth: StringISODate;
-
-    /**
-     * The dependent gender.
-     */
-    gender: string;
 }
 
 /**
