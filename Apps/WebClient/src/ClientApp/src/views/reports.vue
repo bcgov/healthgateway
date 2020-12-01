@@ -320,7 +320,6 @@ export default class ReportsView extends Vue {
         </div>
         <MessageModalComponent
             ref="messageModal"
-            data-testid="sensitiveDocModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="generateMedicationHistoryPdf"

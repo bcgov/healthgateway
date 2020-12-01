@@ -14,7 +14,7 @@ describe('Reports', () => {
             .should('not.be.enabled', 'be.visible')
 
         cy.get('[data-testid=infoText]')
-            .should('have.text', 'Select a service above to create a report')
+            .should('have.text', ' Select a service above to create a report ')
 
         cy.get('[data-testid=infoImage]')
             .should('be.visible')
@@ -38,7 +38,16 @@ describe('Reports', () => {
             .should('be.enabled', 'be.visible')
             .click();
 
-        cy.get('[data-testid=sensitiveDocModal]')
+        cy.get('[data-testid=genericMessageModal]')
             .should('be.visible');
+
+        cy.get('[data-testid=genericMessageText]')
+            .should('have.text', ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ');
+
+        cy.get('[data-testid=genericMessageSubmitBtn]')
+            .click();
+            
+        cy.get('[data-testid=genericMessageModal]')
+            .should('not.be.visible');
     })
 }) 
