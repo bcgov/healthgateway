@@ -10,6 +10,7 @@ import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import container from "@/plugins/inversify.config";
 import {
     ILogger,
@@ -28,6 +29,7 @@ library.add(faFileDownload);
     components: {
         BTabs,
         BTab,
+        MessageModalComponent,
         DeleteModalComponent,
     },
 })
@@ -38,6 +40,9 @@ export default class DependentCardComponent extends Vue {
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
+
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
     @Ref("deleteModal")
     readonly deleteModal!: DeleteModalComponent;
@@ -53,6 +58,12 @@ export default class DependentCardComponent extends Vue {
     private dependentService!: IDependentService;
     private labResults: LaboratoryOrder[] = [];
     private isDataLoaded = false;
+
+    private selectedLabOrder!: LaboratoryOrder;
+    private showSensitiveDocumentDownloadModal(labOrder: LaboratoryOrder) {
+        this.selectedLabOrder = labOrder;
+        this.sensitivedocumentDownloadModal.showModal();
+    }
 
     private get isExpired() {
         let birthDate = new DateWrapper(
@@ -111,10 +122,10 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private getReport(labOrder: LaboratoryOrder) {
-        let labResult = labOrder.labResults[0];
+    private getReport() {
+        let labResult = this.selectedLabOrder.labResults[0];
         this.laboratoryService
-            .getReportDocument(labOrder.id, this.dependent.ownerId)
+            .getReportDocument(this.selectedLabOrder.id, this.dependent.ownerId)
             .then((result) => {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
@@ -154,7 +165,7 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private showConfirmationModal(): void {
+    private showDeleteConfirmationModal(): void {
         this.deleteModal.showModal();
     }
 
@@ -310,7 +321,9 @@ export default class DependentCardComponent extends Vue {
                                     v-if="checkResultReady(item.labResults[0])"
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
-                                    @click="getReport(item)"
+                                    @click="
+                                        showSensitiveDocumentDownloadModal(item)
+                                    "
                                 >
                                     <font-awesome-icon
                                         icon="file-download"
@@ -388,7 +401,7 @@ export default class DependentCardComponent extends Vue {
                                     <b-dropdown-item
                                         data-testid="deleteDependentMenuBtn"
                                         class="menuItem"
-                                        @click="showConfirmationModal()"
+                                        @click="showDeleteConfirmationModal()"
                                     >
                                         Delete
                                     </b-dropdown-item>
@@ -405,6 +418,12 @@ export default class DependentCardComponent extends Vue {
             message="Are you sure you want to delete this dependent?"
             @submit="deleteDependent()"
         ></delete-modal-component>
+        <MessageModalComponent
+            ref="sensitivedocumentDownloadModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="getReport"
+        />
     </div>
 </template>
 
