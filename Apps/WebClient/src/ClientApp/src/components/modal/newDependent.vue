@@ -236,7 +236,8 @@ export default class NewDependentComponent extends Vue {
                                             isValid($v.dependent.dateOfBirth)
                                         "
                                     >
-                                        Dependent must be under the age of {{ webClientConfig.maxDependentAge }}
+                                        Dependent must be under the age of
+                                        {{ webClientConfig.maxDependentAge }}
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
