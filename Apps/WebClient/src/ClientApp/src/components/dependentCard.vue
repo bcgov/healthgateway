@@ -254,21 +254,6 @@ export default class DependentCardComponent extends Vue {
                                     </b-col>
                                 </b-row>
                             </b-col>
-                            <b-col class="col-12 col-sm-4">
-                                <b-row>
-                                    <b-col class="col-12">Gender</b-col>
-                                    <b-col class="col-12">
-                                        <b-form-input
-                                            v-model="
-                                                dependent.dependentInformation
-                                                    .gender
-                                            "
-                                            data-testid="dependentGender"
-                                            readonly
-                                        ></b-form-input>
-                                    </b-col>
-                                </b-row>
-                            </b-col>
                         </b-row>
                     </div>
                 </b-tab>

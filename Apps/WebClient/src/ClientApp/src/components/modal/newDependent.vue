@@ -264,6 +264,7 @@ export default class NewDependentComponent extends Vue {
                                         id="testDate"
                                         v-model="dependent.testDate"
                                         data-testid="testDateInput"
+                                        max="2999-12-31"
                                         required
                                         type="date"
                                         :state="isValid($v.dependent.testDate)"

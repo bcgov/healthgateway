@@ -250,6 +250,7 @@ export default class FilterComponent extends Vue {
                             <b-form-input
                                 id="start-date"
                                 v-model="filter.startDate"
+                                max="2999-12-31"
                                 data-testid="filterStartDateInput"
                                 type="date"
                             />
@@ -260,6 +261,7 @@ export default class FilterComponent extends Vue {
                             <b-form-input
                                 id="end-date"
                                 v-model="filter.endDate"
+                                max="2999-12-31"
                                 data-testid="filterEndDateInput"
                                 type="date"
                             />
@@ -345,7 +347,7 @@ export default class FilterComponent extends Vue {
                                 v-model="selectedEntryTypes"
                                 :data-testid="`${filter.type}-filter`"
                                 :name="filter.type + '-filter'"
-                                :value="filter"
+                                :value="filter.type"
                             >
                                 {{ filter.display }}
                             </b-form-checkbox>
@@ -364,6 +366,7 @@ export default class FilterComponent extends Vue {
                             <b-form-input
                                 id="start-date"
                                 v-model="filter.startDate"
+                                max="2999-12-31"
                                 data-testid="filterStartDateInput"
                                 type="date"
                             />
@@ -374,6 +377,7 @@ export default class FilterComponent extends Vue {
                             <b-form-input
                                 id="end-date"
                                 v-model="filter.endDate"
+                                max="2999-12-31"
                                 data-testid="filterEndDateInput"
                                 type="date"
                             />

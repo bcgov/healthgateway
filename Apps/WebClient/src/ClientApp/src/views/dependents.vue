@@ -106,6 +106,16 @@ export default class DependentsView extends Vue {
                             </b-col>
                         </b-row>
                         <hr />
+                        <b-row id="pageTitle" class="mt-3">
+                            <b-col>
+                                <h5>
+                                    You can add your dependents under the age of
+                                    12 to view their COVID-19 results. Minors
+                                    over the age of 12 can register for their
+                                    own Health Gateway accounts.
+                                </h5>
+                            </b-col>
+                        </b-row>
                     </b-col>
                 </b-row>
                 <b-row
