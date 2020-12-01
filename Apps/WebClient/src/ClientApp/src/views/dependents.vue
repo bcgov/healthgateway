@@ -12,6 +12,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import { Action, Getter } from "vuex-class";
 import User from "@/models/user";
 import BannerError from "@/models/bannerError";
+import { WebClientConfiguration } from "@/models/configData";
 
 @Component({
     components: {
@@ -25,6 +26,9 @@ export default class DependentsView extends Vue {
     readonly newDependentModal!: NewDependentComponent;
 
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
