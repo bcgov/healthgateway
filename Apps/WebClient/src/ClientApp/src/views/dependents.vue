@@ -12,7 +12,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import { Action, Getter } from "vuex-class";
 import User from "@/models/user";
 import BannerError from "@/models/bannerError";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 
 @Component({
     components: {

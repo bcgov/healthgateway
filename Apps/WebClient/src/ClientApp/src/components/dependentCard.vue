@@ -22,7 +22,7 @@ import { BTabs, BTab } from "bootstrap-vue";
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
 import { LaboratoryResult } from "@/models/laboratory";
-import { WebClientConfiguration } from "@/models/configData";
+import type { WebClientConfiguration } from "@/models/configData";
 library.add(faFileDownload);
 
 @Component({
