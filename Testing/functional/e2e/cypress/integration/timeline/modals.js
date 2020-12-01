@@ -5,14 +5,21 @@ describe('Validate Modals Popup', () => {
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
         cy.get('[data-testid=covidModal]').contains('COVID-19')
         cy.get('[data-testid=covidModalText]').contains('Check the status of your COVID-19 test and view your result when it is available')
+        cy.get('[data-testid=covidViewResultBtn]').should('be.visible').contains('View Result')
+        cy.reload()
+        cy.get('[data-testid=covidModal]').contains('COVID-19')
+        cy.get('[data-testid=covidModalText]').contains('Check the status of your COVID-19 test and view your result when it is available')
         cy.get('[data-testid=covidViewResultBtn]').should('be.visible').contains('View Result').click()
         cy.get('[data-testid=covidModal]').should('not.exist')
     })
+ 
 
     it('Dismiss Covid Modal', () => {
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
         cy.get('[data-testid=covidModal] header:first')
           .find('button').should('have.text', '×').click()
+        cy.get('[data-testid=covidModal]').should('not.exist')
+        cy.reload()
         cy.get('[data-testid=covidModal]').should('not.exist')
     })
 
