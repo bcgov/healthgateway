@@ -14,6 +14,7 @@ import BannerError from "@/models/bannerError";
 import { Action, Getter } from "vuex-class";
 import { ResultError } from "@/models/requestResult";
 import AddDependentRequest from "@/models/addDependentRequest";
+import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 
 @Component({
@@ -26,6 +27,9 @@ export default class NewDependentComponent extends Vue {
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
+
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
 
     private dependentService!: IDependentService;
     private isVisible = false;
@@ -82,7 +86,9 @@ export default class NewDependentComponent extends Vue {
     }
 
     private get minBirthdate(): DateWrapper {
-        return new DateWrapper().subtract(Duration.fromObject({ years: 12 }));
+        return new DateWrapper().subtract(
+            Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
+        );
     }
 
     private get minTestDate(): DateWrapper {

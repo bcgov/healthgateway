@@ -58,5 +58,10 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the minimum required patient age allowed for registration.
         /// </summary>
         public int? MinPatientAge { get; set; }
+
+         /// <summary>
+        /// Gets or sets the maximum age of a dependent.
+        /// </summary>
+        public int? MaxDependentAge { get; set; }
     }
 }
