@@ -82,6 +82,7 @@ export default class ReportsView extends Vue {
     private showConfirmationModal() {
         this.messageModal.showModal();
     }
+
     private async generateMedicationHistoryPdf(fileIndex = 0) {
         this.logger.debug("generating Medication History PDF...");
         this.isLoading = true;
@@ -141,7 +142,6 @@ export default class ReportsView extends Vue {
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.loadName();
-        this.fetchMedicationStatements();
     }
 
     private fetchMedicationStatements(protectiveWord?: string) {
@@ -229,6 +229,13 @@ export default class ReportsView extends Vue {
             }
         });
     }
+
+    private onReportTypeChanged() {
+        this.isDataLoaded = false;
+        if (this.reportType == "MED") {
+            this.fetchMedicationStatements();
+        }
+    }
 }
 </script>
 
@@ -251,6 +258,7 @@ export default class ReportsView extends Vue {
                                     v-model="reportType"
                                     data-testid="reportType"
                                     :options="reportTypeOptions"
+                                    @change="onReportTypeChanged"
                                 >
                                 </b-form-select>
                             </b-col>
@@ -268,7 +276,7 @@ export default class ReportsView extends Vue {
                         </b-row>
                     </div>
                     <div
-                        v-if="reportType == 'MED'"
+                        v-if="reportType == 'MED' && isDataLoaded"
                         data-testid="medicationReportSample"
                     >
                         <b-col>
@@ -292,6 +300,7 @@ export default class ReportsView extends Vue {
                                 <img
                                     class="mx-auto d-block"
                                     src="@/assets/images/reports/reports.png"
+                                    data-testid="infoImage"
                                     width="200"
                                     height="auto"
                                     alt="..."
@@ -300,7 +309,7 @@ export default class ReportsView extends Vue {
                         </b-row>
                         <b-row>
                             <b-col class="text-center">
-                                <h5>
+                                <h5 data-testid="infoText">
                                     Select a service above to create a report
                                 </h5>
                             </b-col>
