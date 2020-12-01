@@ -212,7 +212,8 @@ export default class TimelineView extends Vue {
     }
 
     private get hasNewTermsOfService(): boolean {
-        return this.user.hasTermsOfServiceUpdated;
+        return true;
+        // return this.user.hasTermsOfServiceUpdated;
     }
 
     private get searchIcon(): IconDefinition {
@@ -578,7 +579,7 @@ export default class TimelineView extends Vue {
                             variant="primary"
                             to="/termsOfService"
                         >
-                            here </router-link
+                            here</router-link
                         >.
                     </span>
                 </b-alert>
