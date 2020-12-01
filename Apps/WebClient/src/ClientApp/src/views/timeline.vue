@@ -578,7 +578,7 @@ export default class TimelineView extends Vue {
                             variant="primary"
                             to="/termsOfService"
                         >
-                            here </router-link
+                            here</router-link
                         >.
                     </span>
                 </b-alert>
