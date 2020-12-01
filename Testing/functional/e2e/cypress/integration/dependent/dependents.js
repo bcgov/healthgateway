@@ -129,7 +129,7 @@ describe('dependents', () => {
     it('Validate Covid Tab with Results', () => {
         // Validate the tab and elements are present        
         cy.get('[data-testid=covid19TabTitle]').last().parent().click();
-        cy.get('[data-testid=dependentCovidTestDate]').first().should('have.text', ' 2020-08-21 ');
+        cy.get('[data-testid=dependentCovidTestDate]').first().should('have.text', ' 2020-10-03 ');
         cy.get('[data-testid=dependentCovidTestType]').first().should('have.text', ' BAL ');
         cy.get('[data-testid=dependentCovidTestLocation]').first().should('have.text', ' Viha ');
         cy.get('[data-testid=dependentCovidTestLabResult]').first().should('have.text', ' Positive ');
