@@ -86,6 +86,7 @@ export default class DependentCardComponent extends Vue {
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.labResults = results.resourcePayload;
+                    this.sortEntries();
                     this.isDataLoaded = true;
                 } else {
                     this.logger.error(
@@ -109,6 +110,14 @@ export default class DependentCardComponent extends Vue {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    private sortEntries() {
+        this.labResults.sort((a, b) => {
+            let dateA = new DateWrapper(a.labResults[0].collectedDateTime);
+            let dateB = new DateWrapper(b.labResults[0].collectedDateTime);
+            return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
+        });
     }
 
     private getReport(labOrder: LaboratoryOrder) {
