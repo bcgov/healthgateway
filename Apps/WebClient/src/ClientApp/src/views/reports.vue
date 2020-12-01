@@ -300,6 +300,7 @@ export default class ReportsView extends Vue {
                                 <img
                                     class="mx-auto d-block"
                                     src="@/assets/images/reports/reports.png"
+                                    data-testid="infoImage"
                                     width="200"
                                     height="auto"
                                     alt="..."
@@ -308,7 +309,7 @@ export default class ReportsView extends Vue {
                         </b-row>
                         <b-row>
                             <b-col class="text-center">
-                                <h5>
+                                <h5 data-testid="infoText">
                                     Select a service above to create a report
                                 </h5>
                             </b-col>
@@ -319,6 +320,7 @@ export default class ReportsView extends Vue {
         </div>
         <MessageModalComponent
             ref="messageModal"
+            data-testid="sensitiveDocModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="generateMedicationHistoryPdf"
