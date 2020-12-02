@@ -43,7 +43,7 @@ describe("Medication Service", () => {
             }).should((response) => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.not.be.null;
-                cy.log(`response.body: ${JSON.stringify(response.body)}`);                
+                cy.log(`response.body: ${response.body}`);
                 expect(response.body.totalResultCount).to.equal(18);
                 expect(response.body.resourcePayload).to.not.be.null;
                 const drug66999990 = response.body.resourcePayload['66999990'];
@@ -55,7 +55,7 @@ describe("Medication Service", () => {
         });
     });
     
-    it("Verify GetMedication FEDDrug", () => {
+    it("Verify GetMedication ProvincialDrug", () => {
         const drugIdentifier = "02391724";
         cy.get("@config").then((config) => {
             cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
@@ -74,7 +74,7 @@ describe("Medication Service", () => {
         });
     });
     
-    it("Verify GetMedication ProvincialDrug", () => {
+    it("Verify GetMedication FEDDrug", () => {
         const drugIdentifier = "66999990";
         cy.get("@config").then((config) => {
             cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
