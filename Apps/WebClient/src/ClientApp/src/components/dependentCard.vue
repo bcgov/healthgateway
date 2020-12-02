@@ -44,7 +44,9 @@ export default class DependentCardComponent extends Vue {
 
     private message =
         "Are you sure you want to remove " +
-        this.dependent.dependentInformation.name +
+        this.dependent.dependentInformation.firstname +
+        " " +
+        this.dependent.dependentInformation.lastname +
         " from your list of dependents?";
 
     private isLoading = false;
@@ -128,7 +130,7 @@ export default class DependentCardComponent extends Vue {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
                 link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${this.dependent.dependentInformation.name}_${labResult.collectedDateTime}.pdf`;
+                link.download = `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${labResult.collectedDateTime}.pdf`;
                 link.click();
                 URL.revokeObjectURL(link.href);
             })
