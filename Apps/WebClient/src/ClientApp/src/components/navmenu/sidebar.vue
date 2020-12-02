@@ -493,9 +493,9 @@ export default class SidebarComponent extends Vue {
                             ></b-col>
                             <b-col title="Reports" :class="{ 'col-3': isOpen }">
                                 <font-awesome-icon
-                                    icon="umbrella"
+                                    icon="user-friends"
                                     class="button-icon"
-                                    size="3x"
+                                    size="2x"
                                 />
                             </b-col>
                             <b-col

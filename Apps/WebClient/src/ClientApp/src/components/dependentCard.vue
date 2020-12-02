@@ -44,7 +44,9 @@ export default class DependentCardComponent extends Vue {
 
     private message =
         "Are you sure you want to remove " +
-        this.dependent.dependentInformation.name +
+        this.dependent.dependentInformation.firstname +
+        " " +
+        this.dependent.dependentInformation.lastname +
         " from your list of dependents?";
 
     private isLoading = false;
@@ -86,6 +88,7 @@ export default class DependentCardComponent extends Vue {
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.labResults = results.resourcePayload;
+                    this.sortEntries();
                     this.isDataLoaded = true;
                 } else {
                     this.logger.error(
@@ -111,6 +114,14 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
+    private sortEntries() {
+        this.labResults.sort((a, b) => {
+            let dateA = new DateWrapper(a.labResults[0].collectedDateTime);
+            let dateB = new DateWrapper(b.labResults[0].collectedDateTime);
+            return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
+        });
+    }
+
     private getReport(labOrder: LaboratoryOrder) {
         let labResult = labOrder.labResults[0];
         this.laboratoryService
@@ -119,7 +130,7 @@ export default class DependentCardComponent extends Vue {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
                 link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${this.dependent.dependentInformation.name}_${labResult.collectedDateTime}.pdf`;
+                link.download = `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${labResult.collectedDateTime}.pdf`;
                 link.click();
                 URL.revokeObjectURL(link.href);
             })
@@ -246,21 +257,6 @@ export default class DependentCardComponent extends Vue {
                                     </b-col>
                                 </b-row>
                             </b-col>
-                            <b-col class="col-12 col-sm-4">
-                                <b-row>
-                                    <b-col class="col-12">Gender</b-col>
-                                    <b-col class="col-12">
-                                        <b-form-input
-                                            v-model="
-                                                dependent.dependentInformation
-                                                    .gender
-                                            "
-                                            data-testid="dependentGender"
-                                            readonly
-                                        ></b-form-input>
-                                    </b-col>
-                                </b-row>
-                            </b-col>
                         </b-row>
                     </div>
                 </b-tab>
@@ -283,7 +279,7 @@ export default class DependentCardComponent extends Vue {
                     </b-row>
                     <table v-else class="w-100">
                         <tr>
-                            <th>Test Date</th>
+                            <th>COVID-19 Test Date</th>
                             <th class="d-none d-sm-table-cell">Test Type</th>
                             <th class="d-none d-sm-table-cell">
                                 Test Location

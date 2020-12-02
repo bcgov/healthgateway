@@ -253,11 +253,14 @@ export default class NewDependentComponent extends Vue {
                                     </b-form-invalid-feedback>
                                 </b-col>
                                 <b-col class="col-12 col-lg-4 col-md-6 mb-3">
-                                    <label for="testDate">Test Date</label>
+                                    <label for="testDate"
+                                        >COVID-19 Test Date</label
+                                    >
                                     <b-form-input
                                         id="testDate"
                                         v-model="dependent.testDate"
                                         data-testid="testDateInput"
+                                        max="2999-12-31"
                                         required
                                         type="date"
                                         :state="isValid($v.dependent.testDate)"

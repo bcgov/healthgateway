@@ -37,7 +37,8 @@ namespace HealthGateway.WebClient.Test.Controllers
         private const string hdid = "mockedHdId";
         private const string token = "Fake Access Token";
         private const string userId = "mockedUserId";
-        private const string dependentName = "mockedDependentName";
+        private const string firstName = "mocked";
+        private const string lastname = "DependentName";
 
         [Fact]
         public void ShouldGetDependents()
@@ -77,7 +78,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                 {
                     DateOfBirth = new DateTime(1980, 1, 1),
                     Gender = "Female",
-                    Name = $"dependentName"
+                    FirstName = firstName,
+                    LastName = lastname,
                 }
             };
             RequestResult<DependentModel> expectedResult = new RequestResult<DependentModel>()
@@ -170,7 +172,8 @@ namespace HealthGateway.WebClient.Test.Controllers
                         PHN = $"{dependentModels}-{i}",
                         DateOfBirth = new DateTime(1980 + i, 1, 1),
                         Gender = "Female",
-                        Name = $"{dependentName}-{i}"
+                        FirstName = "first",
+                        LastName = "last-{i}"
                     }
                 });
             }
