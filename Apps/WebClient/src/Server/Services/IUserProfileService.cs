@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
 
     /// <summary>
@@ -71,18 +72,23 @@ namespace HealthGateway.WebClient.Services
         /// <summary>
         /// Updates a User Preference in the backend.
         /// </summary>
-        /// <param name="hdid">The hdid of the user.</param>
-        /// <param name="name">The name of the preference.</param>
-        /// <param name="value">The value to set.</param>
+        /// <param name="userPreferenceModel">The user preference to update.</param>
         /// <returns>A userPreference wrapped in a RequestResult.</returns>
-        bool UpdateUserPreference(string hdid, string name, string value);
+        RequestResult<UserPreferenceModel> UpdateUserPreference(UserPreferenceModel userPreferenceModel);
+
+        /// <summary>
+        /// Create a User Preference in the backend.
+        /// </summary>
+        /// <param name="userPreferenceModel">The user preference to create.</param>
+        /// <returns>A userPreference wrapped in a RequestResult.</returns>
+        RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel);
 
         /// <summary>
         /// Gets the user preference model.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <returns>The wrappeed user reference.</returns>
-        RequestResult<Dictionary<string, string>> GetUserPreferences(string hdid);
+        RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid);
 
         /// <summary>
         /// Gets a value indicating if the patient age is valid for registration.

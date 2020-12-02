@@ -12,6 +12,7 @@ import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 import { DateWrapper } from "@/models/dateWrapper";
+import type { UserPreference } from "@/models/userPreference";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -24,9 +25,9 @@ const patientService: IPatientService = container.get<IPatientService>(
     SERVICE_IDENTIFIER.PatientService
 );
 
-const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-    SERVICE_IDENTIFIER.UserProfileService
-);
+const userProfileService: IUserProfileService = container.get<
+    IUserProfileService
+>(SERVICE_IDENTIFIER.UserProfileService);
 
 export const actions: ActionTree<UserState, RootState> = {
     getPatientData(context, params: { hdid: string }): Promise<PatientData> {
@@ -59,10 +60,16 @@ export const actions: ActionTree<UserState, RootState> = {
                         isRegistered = userProfile.acceptedTermsOfService;
                         // If there are no preferences, set the default popover state
                         if (
-                            userProfile.preferences["tutorialPopover"] ===
+                            userProfile.preferences.tutorialPopover ===
                             undefined
                         ) {
-                            userProfile.preferences["tutorialPopover"] = "true";
+                            userProfile.preferences.tutorialPopover = {
+                                hdId: userProfile.hdid,
+                                preference: "tutorialPopover",
+                                value: "true",
+                                version: 0,
+                                createdDateTime: new DateWrapper().toISO(),
+                            };
                         }
                     } else {
                         isRegistered = false;
@@ -168,17 +175,39 @@ export const actions: ActionTree<UserState, RootState> = {
     },
     updateUserPreference(
         context,
-        params: { hdid: string; name: string; value: string }
+        params: { hdid: string; userPreference: UserPreference }
     ): Promise<void> {
         return new Promise((resolve, reject) => {
             userProfileService
-                .updateUserPreference(params.hdid, params.name, params.value)
+                .updateUserPreference(params.hdid, params.userPreference)
                 .then((result) => {
                     if (result) {
-                        context.commit("setUserPreference", {
-                            name: params.name,
-                            value: params.value,
-                        });
+                        context.commit(
+                            "setUserPreference",
+                            params.userPreference
+                        );
+                    }
+                    resolve();
+                })
+                .catch((error) => {
+                    handleError(context.commit, error);
+                    reject(error);
+                });
+        });
+    },
+    createUserPreference(
+        context,
+        params: { hdid: string; userPreference: UserPreference }
+    ): Promise<void> {
+        return new Promise((resolve, reject) => {
+            userProfileService
+                .createUserPreference(params.hdid, params.userPreference)
+                .then((result) => {
+                    if (result) {
+                        context.commit(
+                            "setUserPreference",
+                            params.userPreference
+                        );
                     }
                     resolve();
                 })

@@ -146,8 +146,8 @@ namespace HealthGateway.WebClient.Controllers
 
             if (result.ResourcePayload != null)
             {
-                RequestResult<Dictionary<string, string>> userPreferences = this.userProfileService.GetUserPreferences(hdid);
-                result.ResourcePayload.Preferences = userPreferences.ResourcePayload != null ? userPreferences.ResourcePayload : new Dictionary<string, string>();
+                RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = this.userProfileService.GetUserPreferences(hdid);
+                result.ResourcePayload.Preferences = userPreferences.ResourcePayload != null ? userPreferences.ResourcePayload : new Dictionary<string, UserPreferenceModel>();
             }
 
             return new JsonResult(result);
@@ -412,29 +412,58 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Updates a user preference.
+        /// Puts a UserPreferenceModel json to be updated in the database.
         /// </summary>
         /// <returns>The http status.</returns>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="name">The preference name.</param>
-        /// <param name="value">The preference value.</param>
+        /// <param name="userPreferenceModel">The user preference request model.</param>
         /// <response code="200">The user preference record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Route("{hdid}/preference/{name}")]
+        [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult UpdateUserPreference(string hdid, string name, [FromBody] string value)
+        public IActionResult UpdateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
         {
-            if (name == null)
+            if (userPreferenceModel == null || string.IsNullOrEmpty(userPreferenceModel.Preference))
             {
                 return new BadRequestResult();
             }
-            else
+
+            if (userPreferenceModel.HdId != hdid)
             {
-                bool result = this.userProfileService.UpdateUserPreference(hdid, name, value);
-                return new JsonResult(result);
+                return new ForbidResult();
             }
+
+            userPreferenceModel.UpdatedBy = hdid;
+            RequestResult<UserPreferenceModel> result = this.userProfileService.UpdateUserPreference(userPreferenceModel);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Posts a UserPreference json to be inserted into the database.
+        /// </summary>
+        /// <returns>The http status.</returns>
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="userPreferenceModel">The user preference request model.</param>
+        /// <response code="200">The comment record was saved.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpPost]
+        [Route("{hdid}/preference")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public IActionResult CreateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
+        {
+            if (userPreferenceModel == null)
+            {
+                return new BadRequestResult();
+            }
+
+            userPreferenceModel.HdId = hdid;
+            userPreferenceModel.CreatedBy = hdid;
+            userPreferenceModel.UpdatedBy = hdid;
+            RequestResult<UserPreferenceModel> result = this.userProfileService.CreateUserPreference(userPreferenceModel);
+            return new JsonResult(result);
         }
     }
 }
