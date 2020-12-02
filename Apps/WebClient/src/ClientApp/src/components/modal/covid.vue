@@ -7,14 +7,19 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { DateWrapper } from "@/models/dateWrapper";
+import type { UserPreference } from "@/models/userPreference";
 
 @Component
 export default class CovidModalComponent extends Vue {
     @Action("updateUserPreference", { namespace: "user" })
     updateUserPreference!: (params: {
         hdid: string;
-        name: string;
-        value: string;
+        userPreference: UserPreference;
+    }) => void;
+    @Action("createUserPreference", { namespace: "user" })
+    createUserPreference!: (params: {
+        hdid: string;
+        userPreference: UserPreference;
     }) => void;
     @Getter("user", { namespace: "user" }) user!: User;
 
@@ -32,12 +37,26 @@ export default class CovidModalComponent extends Vue {
 
     private actionCovidModal() {
         this.logger.debug("Actioning Covid Modal...");
-        let now = new DateWrapper();
-        this.updateUserPreference({
-            hdid: this.user.hdid,
-            name: "actionedCovidModalAt",
-            value: now.toISO(),
-        });
+        let isoNow = new DateWrapper().toISO();
+        if (this.user.preferences.actionedCovidModalAt != undefined) {
+            this.user.preferences.actionedCovidModalAt.value = isoNow;
+            this.updateUserPreference({
+                hdid: this.user.hdid,
+                userPreference: this.user.preferences.actionedCovidModalAt,
+            });
+        } else {
+            this.user.preferences.actionedCovidModalAt = {
+                hdId: this.user.hdid,
+                preference: "actionedCovidModalAt",
+                value: isoNow,
+                version: 0,
+                createdDateTime: new DateWrapper().toISO(),
+            };
+            this.createUserPreference({
+                hdid: this.user.hdid,
+                userPreference: this.user.preferences.actionedCovidModalAt,
+            });
+        }
     }
 
     public showModal(): void {

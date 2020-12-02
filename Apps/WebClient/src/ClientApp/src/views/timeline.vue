@@ -362,11 +362,11 @@ export default class TimelineView extends Vue {
                         this.protectiveWordModal.hideModal();
                         let showCovidModal = true;
                         if (
-                            this.user.preferences["actionedCovidModalAt"] !=
+                            this.user.preferences.actionedCovidModalAt !=
                             undefined
                         ) {
                             const actionedCovidModalAt = new DateWrapper(
-                                this.user.preferences["actionedCovidModalAt"]
+                                this.user.preferences.actionedCovidModalAt.value
                             );
                             const mostRecentLabTime = new DateWrapper(
                                 results.resourcePayload[0].messageDateTime

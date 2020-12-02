@@ -64,7 +64,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the user preference.
         /// </summary>
-        public Dictionary<string, string> Preferences { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, UserPreferenceModel> Preferences { get; set; } = new Dictionary<string, UserPreferenceModel>();
 
         /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
