@@ -22,7 +22,7 @@ describe('Validate Modals Popup', () => {
         cy.get('[data-testid=covidModal]').should('not.exist')
         cy.get('[data-testid=sidebarUserName]').should('not.be.visible')
     })
-/*
+
     it('Protective Word Modal', () => {
         cy.readConfig().as("config").then(config => {
             config.webClient.modules.CovidLabResults = false
@@ -82,5 +82,5 @@ describe('Validate Modals Popup', () => {
         cy.get('[data-testid=protectiveWordModal] header:first')
           .find('button').should('have.text', '×').click()
         cy.get('[data-testid=protectiveWordModal]').should('not.exist')
-    })*/
+    })
 })
