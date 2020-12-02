@@ -452,7 +452,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}/preference")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult Create(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
+        public IActionResult CreateUserPreference(string hdid, [FromBody] UserPreferenceModel userPreferenceModel)
         {
             if (userPreferenceModel == null)
             {

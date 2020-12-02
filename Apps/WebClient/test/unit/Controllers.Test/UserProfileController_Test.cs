@@ -142,21 +142,84 @@ namespace HealthGateway.WebClient.Test.Controllers
         }
 
         [Fact]
-        public void ShouldUpdateUserProfile()
+        public void ShouldCreateUserPreference()
         {
-            IActionResult actualResult = UpdateUserProfile("aValidName");
+            var userPref = new UserPreferenceModel()
+            {
+                HdId = hdid,
+                Preference = "actionedCovidModalAt",
+                Value = "Body value",
+            };
+            IActionResult actualResult = CreateUserPreference(userPref);
 
             Assert.IsType<JsonResult>(actualResult);
-            bool reqResult = (bool)((JsonResult)actualResult).Value;
-            Assert.True(reqResult);
+            RequestResult<UserPreferenceModel> reqResult = ((JsonResult)actualResult).Value as RequestResult<UserPreferenceModel>;
+            Assert.NotNull(reqResult);
+            Assert.Equal(ResultType.Success, reqResult.ResultStatus);
+            Assert.Equal(hdid, reqResult.ResourcePayload.HdId);
+            Assert.Equal(hdid, reqResult.ResourcePayload.CreatedBy);
+            Assert.Equal(hdid, reqResult.ResourcePayload.UpdatedBy);
         }
 
         [Fact]
-        public void ShouldUpdateUserProfileWithEmptyNameError()
+        public void ShouldCreateUserPreferenceWithBadRequestResultError()
         {
-            IActionResult actualResult = UpdateUserProfile(null);
+            IActionResult actualResult = CreateUserPreference(null);
 
             Assert.IsType<BadRequestResult>(actualResult);
+        }
+
+        [Fact]
+        public void ShouldUpdateUserPreference()
+        {
+            var userPref = new UserPreferenceModel()
+            {
+                HdId = hdid,
+                Preference = "actionedCovidModalAt",
+                Value = "Body value",
+            };
+            IActionResult actualResult = UpdateUserPreference(userPref);
+
+            Assert.IsType<JsonResult>(actualResult);
+            RequestResult<UserPreferenceModel> reqResult = ((JsonResult)actualResult).Value as RequestResult<UserPreferenceModel>;
+            Assert.NotNull(reqResult);
+            Assert.Equal(ResultType.Success, reqResult.ResultStatus);
+        }
+
+        [Fact]
+        public void ShouldUpdateUserPreferenceWithBadRequestResultError()
+        {
+            IActionResult actualResult = UpdateUserPreference(null);
+
+            Assert.IsType<BadRequestResult>(actualResult);
+        }
+
+        [Fact]
+        public void ShouldUpdateUserPreferenceWithEmtptyReferenceNameError()
+        {
+            var userPref = new UserPreferenceModel()
+            {
+                HdId = hdid,
+                Preference = null,
+                Value = "Body value",
+            };
+            IActionResult actualResult = UpdateUserPreference(userPref);
+
+            Assert.IsType<BadRequestResult>(actualResult);
+        }
+
+        [Fact]
+        public void ShouldUpdateUserPreferenceWithForbidResultError()
+        {
+            var userPref = new UserPreferenceModel()
+            {
+                HdId = hdid + "dif.",
+                Preference = "valid pref name",
+                Value = "Body value",
+            };
+            IActionResult actualResult = UpdateUserPreference(userPref);
+
+            Assert.IsType<ForbidResult>(actualResult);
         }
 
         [Fact]
@@ -433,21 +496,16 @@ namespace HealthGateway.WebClient.Test.Controllers
             return service.GetUserProfile(hdid);
         }
 
-        private IActionResult UpdateUserProfile(string name)
+        private IActionResult UpdateUserPreference(UserPreferenceModel userPref)
         {
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            var userPref = new UserPreferenceModel()
-            {
-                HdId = hdid,
-                Preference = name,
-                Value = "Body Mock",
-            };
             RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
             {
                 ResourcePayload = userPref,
+                ResultStatus = ResultType.Success,
             };
 
             userProfileServiceMock.Setup(s => s.UpdateUserPreference(userPref)).Returns(result);
@@ -463,6 +521,33 @@ namespace HealthGateway.WebClient.Test.Controllers
                 smsServiceMock.Object
             );
             return service.UpdateUserPreference(hdid, userPref);
+        }
+
+        private IActionResult CreateUserPreference(UserPreferenceModel userPref)
+        {
+            // Setup
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
+
+            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
+            RequestResult<UserPreferenceModel> result = new RequestResult<UserPreferenceModel>()
+            {
+                ResourcePayload = userPref,
+                ResultStatus = ResultType.Success,
+            };
+
+            userProfileServiceMock.Setup(s => s.CreateUserPreference(userPref)).Returns(result);
+
+            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
+            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
+
+            UserProfileController service = new UserProfileController(
+                new Mock<ILogger<UserProfileController>>().Object,
+                userProfileServiceMock.Object,
+                httpContextAccessorMock.Object,
+                emailServiceMock.Object,
+                smsServiceMock.Object
+            );
+            return service.CreateUserPreference(hdid, userPref);
         }
 
         private Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
