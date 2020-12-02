@@ -24,6 +24,7 @@ describe("Landing view", () => {
         modules: {},
         hoursForDeletion: 1,
         minPatientAge: 16,
+        maxDependentAge: 12,
     };
 
     const configGetters = {

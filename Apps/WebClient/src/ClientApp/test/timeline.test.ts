@@ -142,6 +142,7 @@ const a: WebClientConfiguration = {
     modules: { Note: true },
     hoursForDeletion: 1,
     minPatientAge: 16,
+    maxDependentAge: 12,
 };
 
 const configGetters = {

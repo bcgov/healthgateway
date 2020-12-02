@@ -22,6 +22,7 @@ import { BTabs, BTab } from "bootstrap-vue";
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
 import { LaboratoryResult } from "@/models/laboratory";
+import type { WebClientConfiguration } from "@/models/configData";
 library.add(faFileDownload);
 
 @Component({
@@ -35,6 +36,9 @@ export default class DependentCardComponent extends Vue {
     @Prop() dependent!: Dependent;
 
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
@@ -61,7 +65,10 @@ export default class DependentCardComponent extends Vue {
             this.dependent.dependentInformation.dateOfBirth
         );
         let now = new DateWrapper();
-        return now.diff(birthDate, "year").years > 19;
+        return (
+            now.diff(birthDate, "year").years >
+            this.webClientConfig.maxDependentAge
+        );
     }
 
     private get menuIcon(): IconDefinition {
@@ -210,7 +217,8 @@ export default class DependentCardComponent extends Vue {
                             <b-col class="d-flex justify-content-center">
                                 <p>
                                     You no longer have access to this dependent
-                                    as they have turned 19
+                                    as they have turned
+                                    {{ webClientConfig.maxDependentAge }}
                                 </p>
                             </b-col>
                         </b-row>
