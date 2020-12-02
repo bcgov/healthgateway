@@ -82,12 +82,14 @@ describe('dependents', () => {
         cy.get('[data-testid=phnInput]')
             .type(phn);
         cy.get('[data-testid=termsCheckbox]')
-            .click({ force: true });
+            .check({ force: true });
 
         cy.get('[data-testid=registerDependentBtn]').click(); 
-
+        
         // Validate the modal has not closed
         cy.get('[data-testid=newDependentModal]').should('exist')
+
+        cy.get('[data-testid=cancelRegistrationBtn]').click(); 
     })
     
     it('Validate Add', () => {
@@ -97,17 +99,22 @@ describe('dependents', () => {
         cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
         
         cy.get('[data-testid=firstNameInput]')
+            .clear()
             .type(firstName);
         cy.get('[data-testid=lastNameInput]')
+            .clear()
             .type(lastName);
         cy.get('[data-testid=dateOfBirthInput]')
+            .clear()
             .type(doB);
         cy.get('[data-testid=testDateInput]')
+            .clear()
             .type(testDate);
         cy.get('[data-testid=phnInput]')
+            .clear()
             .type(phn);
         cy.get('[data-testid=termsCheckbox]')
-            .click({ force: true });
+            .check({ force: true });
 
         cy.get('[data-testid=registerDependentBtn]').click(); 
 
@@ -130,20 +137,63 @@ describe('dependents', () => {
 
 
     it('Validate Covid Tab with Results', () => {
+        let sensitiveDocMessage = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
         // Validate the tab and elements are present        
-        cy.get('[data-testid=covid19TabTitle]').last().parent().click();
-        cy.get('[data-testid=dependentCovidTestDate]').first().should('have.text', ' 2020-10-03 ');
-        cy.get('[data-testid=dependentCovidTestType]').first().should('have.text', ' Nasopharyngeal Swab ');
-        cy.get('[data-testid=dependentCovidTestLocation]').first().should('have.text', ' Fha ');
-        cy.get('[data-testid=dependentCovidTestLabResult]').first().should('have.text', ' Positive ');
-        cy.get('[data-testid=dependentCovidReportDownloadBtn]').first().click();
+        cy.get('[data-testid=covid19TabTitle]')
+            .last()
+            .parent()
+            .click();
+        cy.get('[data-testid=dependentCovidTestDate]')
+            .first()
+            .should('have.text', ' 2020-10-03 ');
+        cy.get('[data-testid=dependentCovidTestType]')
+            .first()
+            .should('have.text', ' Nasopharyngeal Swab ');
+        cy.get('[data-testid=dependentCovidTestLocation]')
+            .first()
+            .should('have.text', ' Fha ');
+        cy.get('[data-testid=dependentCovidTestLabResult]')
+            .first()
+            .should('have.text', ' Positive ');
+        cy.get('[data-testid=dependentCovidReportDownloadBtn]')
+            .first()
+            .click();
+        cy.get('[data-testid=genericMessageModal]')
+            .should('be.visible');
+        cy.get('[data-testid=genericMessageText]')
+            .should('have.text', sensitiveDocMessage);
+        cy.get('[data-testid=genericMessageSubmitBtn]')
+            .click();            
+        cy.get('[data-testid=genericMessageModal]')
+            .should('not.exist');
 
-        cy.get('[data-testid=covid19TabTitle]').last().parent().click();
-        cy.get('[data-testid=dependentCovidTestDate]').last().should('have.text', ' 2020-06-14 ');
-        cy.get('[data-testid=dependentCovidTestType]').last().should('have.text', ' Nasopharyngeal Swab ');
-        cy.get('[data-testid=dependentCovidTestLocation]').last().should('have.text', ' Fha ');
-        cy.get('[data-testid=dependentCovidTestLabResult]').last().should('have.text', ' NotSet ');
-        cy.get('[data-testid=dependentCovidReportDownloadBtn]').last().click();
+        cy.get('[data-testid=covid19TabTitle]')
+            .last()
+            .parent()
+            .click();
+        cy.get('[data-testid=dependentCovidTestDate]')
+            .last()
+            .should('have.text', ' 2020-06-14 ');
+        cy.get('[data-testid=dependentCovidTestType]')
+            .last()
+            .should('have.text', ' Nasopharyngeal Swab ');
+        cy.get('[data-testid=dependentCovidTestLocation]')
+            .last()
+            .should('have.text', ' Fha ');
+        cy.get('[data-testid=dependentCovidTestLabResult]')
+            .last()
+            .should('have.text', ' NotSet ');
+        cy.get('[data-testid=dependentCovidReportDownloadBtn]')
+            .last()
+            .click();
+        cy.get('[data-testid=genericMessageModal]')
+            .should('be.visible');
+        cy.get('[data-testid=genericMessageText]')
+            .should('have.text', sensitiveDocMessage);
+        cy.get('[data-testid=genericMessageSubmitBtn]')
+            .click();            
+        cy.get('[data-testid=genericMessageModal]')
+            .should('not.exist');
     })
     
 
