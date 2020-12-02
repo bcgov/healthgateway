@@ -15,6 +15,7 @@ import { Dictionary } from "vue-router/types/router";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
+import type { UserPreference } from "@/models/userPreference";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {
@@ -273,20 +274,59 @@ export class RestUserProfileService implements IUserProfileService {
 
     public updateUserPreference(
         hdid: string,
-        preference: string,
-        value: string
-    ): Promise<boolean> {
-        const headers: Dictionary<string> = {};
-        headers["Content-Type"] = "application/json; charset=utf-8";
-        return new Promise((resolve, reject) => {
+        userPreference: UserPreference
+    ): Promise<UserPreference> {
+        return new Promise<UserPreference>((resolve, reject) => {
             this.http
-                .put<boolean>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/preference/${preference}`,
-                    JSON.stringify(value),
-                    headers
+                .put<RequestResult<UserPreference>>(
+                    `${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
+                    userPreference
                 )
-                .then((result) => {
-                    resolve(result);
+                .then((requestResult) => {
+                    this.logger.verbose(
+                        `update user preference result: ${JSON.stringify(
+                            requestResult
+                        )}`
+                    );
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
+
+    public createUserPreference(
+        hdid: string,
+        userPreference: UserPreference
+    ): Promise<UserPreference> {
+        return new Promise<UserPreference>((resolve, reject) => {
+            this.http
+                .post<RequestResult<UserPreference>>(
+                    `${this.USER_PROFILE_BASE_URI}/${hdid}/preference`,
+                    userPreference
+                )
+                .then((requestResult) => {
+                    this.logger.verbose(
+                        `create user preference result: ${JSON.stringify(
+                            requestResult
+                        )}`
+                    );
+                    return RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
                 })
                 .catch((err) => {
                     this.logger.error(`${this.FETCH_ERROR}: ${err}`);

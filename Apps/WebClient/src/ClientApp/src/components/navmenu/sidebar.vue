@@ -11,6 +11,8 @@ import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
 import User from "@/models/user";
+import type { UserPreference } from "@/models/userPreference";
+import { DateWrapper } from "@/models/dateWrapper";
 library.add(faStream);
 
 const auth = "auth";
@@ -26,8 +28,12 @@ export default class SidebarComponent extends Vue {
     @Action("updateUserPreference", { namespace: "user" })
     updateUserPreference!: (params: {
         hdid: string;
-        name: string;
-        value: string;
+        userPreference: UserPreference;
+    }) => void;
+    @Action("createUserPreference", { namespace: "user" })
+    createUserPreference!: (params: {
+        hdid: string;
+        userPreference: UserPreference;
     }) => void;
 
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
@@ -167,11 +173,29 @@ export default class SidebarComponent extends Vue {
 
     private dismissTutorial() {
         this.logger.debug("Dismissing tutorial...");
-        this.updateUserPreference({
-            hdid: this.user.hdid,
-            name: "tutorialPopover",
-            value: "false",
-        });
+        debugger;
+        if (
+            this.user.preferences.tutorialPopover != undefined &&
+            this.user.preferences.tutorialPopover.hdId != undefined
+        ) {
+            this.user.preferences.tutorialPopover.value = "false";
+            this.updateUserPreference({
+                hdid: this.user.hdid,
+                userPreference: this.user.preferences.tutorialPopover,
+            });
+        } else {
+            this.user.preferences.tutorialPopover = {
+                hdId: this.user.hdid,
+                preference: "tutorialPopover",
+                value: "true",
+                version: 0,
+                createdDateTime: new DateWrapper().toISO(),
+            };
+            this.createUserPreference({
+                hdid: this.user.hdid,
+                userPreference: this.user.preferences.tutorialPopover,
+            });
+        }
     }
 
     private printView() {
@@ -184,16 +208,18 @@ export default class SidebarComponent extends Vue {
     }
 
     private get showTutorialPopover(): boolean {
+        debugger;
+        //Todo
         if (this.isMobileWidth) {
             return (
                 this.isTutorialEnabled &&
-                this.user.preferences["tutorialPopover"] === "true" &&
+                this.user.preferences.tutorialPopover?.value === "true" &&
                 this.isOpen
             );
         } else {
             return (
                 this.isTutorialEnabled &&
-                this.user.preferences["tutorialPopover"] === "true"
+                this.user.preferences.tutorialPopover?.value === "true"
             );
         }
     }

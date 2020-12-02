@@ -11,6 +11,7 @@ import UserProfile from "@/models/userProfile";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 import { DateWrapper } from "@/models/dateWrapper";
+import type { UserPreference } from "@/models/userPreference";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 export const mutations: MutationTree<UserState> = {
@@ -84,16 +85,13 @@ export const mutations: MutationTree<UserState> = {
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
     },
-    setUserPreference(
-        state: UserState,
-        preference: { name: string; value: string }
-    ) {
+    setUserPreference(state: UserState, userPreference: UserPreference) {
         logger.debug(
             `setUserPreference: preference.name: ${JSON.stringify(
-                preference.name
-            )}, preference.value: ${JSON.stringify(preference.value)}`
+                userPreference.preference
+            )}, preference.value: ${JSON.stringify(userPreference.value)}`
         );
-        state.user.preferences[preference.name] = preference.value;
+        state.user.preferences[userPreference.preference] = userPreference;
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
