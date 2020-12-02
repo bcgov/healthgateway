@@ -31,10 +31,16 @@ namespace HealthGateway.WebClient.Models
         public string HdId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the name of the dependent.
+        /// Gets or sets the patient first name.
         /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        [JsonPropertyName("firstname")]
+        public string FirstName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the patient last name.
+        /// </summary>
+        [JsonPropertyName("lastname")]
+        public string LastName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Masked PHN of the dependent.
@@ -62,7 +68,8 @@ namespace HealthGateway.WebClient.Models
             DependentInformation result = new DependentInformation()
             {
                 HdId = patientModel.HdId,
-                Name = $"{patientModel.FirstName} {patientModel.LastName} ",
+                FirstName = patientModel.FirstName,
+                LastName = patientModel.LastName,
                 PHN = patientModel.PersonalHealthNumber,
                 Gender = patientModel.Gender,
                 DateOfBirth = patientModel.Birthdate,
