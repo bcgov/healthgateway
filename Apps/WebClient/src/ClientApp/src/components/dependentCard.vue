@@ -384,7 +384,12 @@ export default class DependentCardComponent extends Vue {
                                     class="card-title"
                                     data-testid="dependentName"
                                 >
-                                    {{ dependent.dependentInformation.name }}
+                                    {{
+                                        dependent.dependentInformation.firstname
+                                    }}
+                                    {{
+                                        dependent.dependentInformation.lastname
+                                    }}
                                 </span>
                             </b-col>
                             <li

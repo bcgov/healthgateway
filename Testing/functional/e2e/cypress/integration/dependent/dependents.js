@@ -28,8 +28,8 @@ describe('dependents', () => {
     it('Validate Add, Fields and Cancel', () => {         
         //Validate Main Add Button  
         cy.get('[data-testid=addNewDependentBtn]')
-        .should('be.enabled', 'be.visible')
-        .click()
+            .should('be.enabled', 'be.visible')
+            .click()
         
         cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')   
         //Validate First Name  
@@ -116,7 +116,10 @@ describe('dependents', () => {
     });
 
     it('Validate Dependent Tab', () => {
-        // Validate the newly added dependent tab and elements are present        
+        // Validate the newly added dependent tab and elements are present   
+        cy.get('[data-testid=dependentName]')
+            .contains(firstName.toUpperCase())
+            .contains(lastName.toUpperCase())  
         cy.get('[data-testid=dependentPHN]')
             .last().invoke('val')
             .then(phnNumber => expect(phnNumber).to.equal(phn));
