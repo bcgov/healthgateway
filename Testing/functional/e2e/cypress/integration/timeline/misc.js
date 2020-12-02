@@ -1,6 +1,6 @@
 const { AuthMethod } = require("../../support/constants")
 
-describe('Notes', () => {
+describe('Miscellaneous', () => {
     beforeEach(() => {
     })
 
