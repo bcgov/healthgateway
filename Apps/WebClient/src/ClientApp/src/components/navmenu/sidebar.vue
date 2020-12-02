@@ -429,31 +429,27 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                     </div>
-                    <!-- Health Insights button -->
                     <router-link
-                        v-show="isActiveProfile"
-                        id="menuBtnHealthInsights"
-                        data-testid="menuBtnHealthInsightsLink"
-                        to="/healthInsights"
+                        v-show="isDependentEnabled"
+                        id="menuBtnDependents"
+                        data-testid="menuBtnDependentsLink"
+                        to="/dependents"
                         class="my-4"
                     >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isHealthInsights }"
+                            :class="{ selected: isDependents }"
                         >
                             <b-col
                                 v-show="isOpen"
                                 cols="1"
                                 class="button-spacer"
                             ></b-col>
-                            <b-col
-                                title="Health Insights"
-                                :class="{ 'col-3': isOpen }"
-                            >
+                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
                                 <font-awesome-icon
-                                    icon="chart-line"
+                                    icon="user-friends"
                                     class="button-icon"
-                                    size="3x"
+                                    size="2x"
                                 />
                             </b-col>
                             <b-col
@@ -461,7 +457,7 @@ export default class SidebarComponent extends Vue {
                                 cols="7"
                                 class="button-title"
                             >
-                                <span>Health Insights</span>
+                                <span>Dependents</span>
                             </b-col>
                         </b-row>
                     </router-link>
@@ -498,27 +494,31 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                     </router-link>
+                    <!-- Health Insights button -->
                     <router-link
-                        v-show="isDependentEnabled"
-                        id="menuBtnDependents"
-                        data-testid="menuBtnDependentsLink"
-                        to="/dependents"
+                        v-show="isActiveProfile"
+                        id="menuBtnHealthInsights"
+                        data-testid="menuBtnHealthInsightsLink"
+                        to="/healthInsights"
                         class="my-4"
                     >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isDependents }"
+                            :class="{ selected: isHealthInsights }"
                         >
                             <b-col
                                 v-show="isOpen"
                                 cols="1"
                                 class="button-spacer"
                             ></b-col>
-                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
+                            <b-col
+                                title="Health Insights"
+                                :class="{ 'col-3': isOpen }"
+                            >
                                 <font-awesome-icon
-                                    icon="user-friends"
+                                    icon="chart-line"
                                     class="button-icon"
-                                    size="2x"
+                                    size="3x"
                                 />
                             </b-col>
                             <b-col
@@ -526,7 +526,7 @@ export default class SidebarComponent extends Vue {
                                 cols="7"
                                 class="button-title"
                             >
-                                <span>Dependents</span>
+                                <span>Health Insights</span>
                             </b-col>
                         </b-row>
                     </router-link>
