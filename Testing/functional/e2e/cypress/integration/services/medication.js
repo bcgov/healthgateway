@@ -1,10 +1,16 @@
 const { AuthMethod } = require("../../support/constants");
 
-function verifyDrug(drug) {
+function verifyProvincialDrug(drug) {
     expect(drug).to.not.be.null;
     expect(drug.din).to.equal('66999990');
     expect(drug.provincialData.pharmaCareDrug).to.not.be.null;
     expect(drug.provincialData.pharmaCareDrug.dinpin).to.equal('66999990');
+}
+
+function verifyFedDrug(drug) {
+    expect(drug).to.not.be.null;
+    expect(drug.din).to.equal('02391724');
+    expect(drug.federalData.drugProduct.drugIdentificationNumber).to.equal('02391724');
 }
 
 describe("Medication Service", () => {
@@ -37,16 +43,38 @@ describe("Medication Service", () => {
             }).should((response) => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.not.be.null;
-                cy.log(`response.body: ${JSON.stringify(response.body)}`);
+                cy.log(`response.body: ${JSON.stringify(response.body)}`);                
                 expect(response.body.totalResultCount).to.equal(18);
                 expect(response.body.resourcePayload).to.not.be.null;
                 const drug66999990 = response.body.resourcePayload['66999990'];
-                verifyDrug(drug66999990);
+                verifyProvincialDrug(drug66999990);
+                
+                const drugFederal = response.body.resourcePayload['02391724'];
+                verifyFedDrug(drugFederal);
             });
         });
     });
     
-    it("Verify GetMedication", () => {
+    it("Verify GetMedication FEDDrug", () => {
+        const drugIdentifier = "02391724";
+        cy.get("@config").then((config) => {
+            cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+            cy.request({
+                url: `${config.serviceEndpoints.Medication}v1/api/Medication/${drugIdentifier}`,
+                followRedirect: false,
+                headers: {
+                    accept: "application/json",
+                },
+            }).should((response) => {
+                expect(response.status).to.eq(200);
+                expect(response.body).to.not.be.null;
+                cy.log(`response.body: ${response.body}`);
+                verifyFedDrug(response.body.resourcePayload);
+            });
+        });
+    });
+    
+    it("Verify GetMedication ProvincialDrug", () => {
         const drugIdentifier = "66999990";
         cy.get("@config").then((config) => {
             cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
@@ -59,8 +87,8 @@ describe("Medication Service", () => {
             }).should((response) => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.not.be.null;
-                cy.log(`response.body: ${JSON.stringify(response.body)}`);
-                verifyDrug(response.body.resourcePayload);
+                cy.log(`response.body: ${response.body}`);
+                verifyProvincialDrug(response.body.resourcePayload);
             });
         });
     });
@@ -120,7 +148,7 @@ describe("Medication Service", () => {
                 }).should((response) => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
-                    cy.log(`response.body: ${JSON.stringify(response.body)}`);
+                    cy.log(`response.body: ${response.body}`);
                     expect(response.body.resourcePayload.length).to.be.greaterThan(250);
                     expect(response.body.resourcePayload[100].prescriptionIdentifier).to.match(/^\d{7}$/);
                 });
