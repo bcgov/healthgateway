@@ -433,8 +433,8 @@ export default class DependentCardComponent extends Vue {
         </b-card>
         <delete-modal-component
             ref="deleteModal"
-            title="Delete Dependent"
-            message="Are you sure you want to delete this dependent?"
+            title="Remove Dependent"
+            message="Are you sure you want to remove this dependent?"
             @submit="deleteDependent()"
         ></delete-modal-component>
         <MessageModalComponent
