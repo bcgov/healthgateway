@@ -173,7 +173,6 @@ export default class SidebarComponent extends Vue {
 
     private dismissTutorial() {
         this.logger.debug("Dismissing tutorial...");
-        debugger;
         if (
             this.user.preferences.tutorialPopover != undefined &&
             this.user.preferences.tutorialPopover.hdId != undefined
@@ -208,8 +207,6 @@ export default class SidebarComponent extends Vue {
     }
 
     private get showTutorialPopover(): boolean {
-        debugger;
-        //Todo
         if (this.isMobileWidth) {
             return (
                 this.isTutorialEnabled &&
@@ -401,7 +398,10 @@ export default class SidebarComponent extends Vue {
                                     >x</b-button
                                 >
                             </div>
-                            <div class="popover-content">
+                            <div
+                                data-testid="notesPopover"
+                                class="popover-content"
+                            >
                                 Add Notes to track your important health events
                                 e.g. Broke ankle in Cuba
                             </div>
@@ -482,10 +482,7 @@ export default class SidebarComponent extends Vue {
                                 cols="1"
                                 class="button-spacer"
                             ></b-col>
-                            <b-col
-                                title="Export Reports"
-                                :class="{ 'col-3': isOpen }"
-                            >
+                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
                                 <font-awesome-icon
                                     icon="clipboard-list"
                                     class="button-icon"
@@ -497,7 +494,7 @@ export default class SidebarComponent extends Vue {
                                 cols="7"
                                 class="button-title"
                             >
-                                <span>Export Reports</span>
+                                <span>Reports</span>
                             </b-col>
                         </b-row>
                     </router-link>

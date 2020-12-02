@@ -12,7 +12,6 @@ describe('Validate Modals Popup', () => {
         cy.get('[data-testid=covidViewResultBtn]').should('be.visible').contains('View Result').click()
         cy.get('[data-testid=covidModal]').should('not.exist')
     })
- 
 
     it('Dismiss Covid Modal', () => {
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
@@ -21,8 +20,9 @@ describe('Validate Modals Popup', () => {
         cy.get('[data-testid=covidModal]').should('not.exist')
         cy.reload()
         cy.get('[data-testid=covidModal]').should('not.exist')
+        cy.get('[data-testid=sidebarUserName]').should('not.be.visible')
     })
-
+/*
     it('Protective Word Modal', () => {
         cy.readConfig().as("config").then(config => {
             config.webClient.modules.CovidLabResults = false
@@ -82,5 +82,5 @@ describe('Validate Modals Popup', () => {
         cy.get('[data-testid=protectiveWordModal] header:first')
           .find('button').should('have.text', '×').click()
         cy.get('[data-testid=protectiveWordModal]').should('not.exist')
-    })
+    })*/
 })

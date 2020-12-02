@@ -358,19 +358,19 @@ describe('WebClient UserProfile Service', () => {
     it('Verify Put UserProfile Preference Unauthorized', () => {
         cy.request({ 
             method: 'PUT',
-            url: `${BASEURL}${HDID}/preference/test`,
+            url: `${BASEURL}${HDID}/preference`,
             followRedirect: false,
             failOnStatusCode: false
         })
         .should((response) => { expect(response.status).to.eq(401) })
-    })    
+    })
 
     it('Verify Put UserProfile Preference Forbidden', () => {
         cy.get("@tokens").then(tokens => {
             cy.log('Tokens', tokens)
             cy.request({
                 method: 'PUT',
-                url: `${BASEURL}${BOGUSHDID}/preference/test`,
+                url: `${BASEURL}${BOGUSHDID}/preference`,
                 followRedirect: false,
                 failOnStatusCode: false,
                 auth: {
