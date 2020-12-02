@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Text.Json;
@@ -38,6 +39,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IConfigurationService configurationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -47,24 +49,41 @@ namespace HealthGateway.WebClient.Services
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="notificationSettingsService">Notification settings service.</param>
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
+        /// <param name="configuration">The configuration service.</param>
         public DependentService(
             ILogger<DependentService> logger,
             IUserProfileDelegate userProfileDelegate,
             IPatientService patientService,
             INotificationSettingsService notificationSettingsService,
-            IResourceDelegateDelegate resourceDelegateDelegate)
+            IResourceDelegateDelegate resourceDelegateDelegate,
+            IConfigurationService configuration)
         {
             this.logger = logger;
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
+            this.configurationService = configuration;
         }
 
         /// <inheritdoc />
         public RequestResult<DependentModel> AddDependent(string delegateHdId, AddDependentRequest addDependentRequest)
         {
             this.logger.LogTrace($"Dependent hdid: {delegateHdId}");
+
+            int? maxDependentAge = this.configurationService.GetConfiguration().WebClient.MaxDependentAge;
+            if (maxDependentAge.HasValue)
+            {
+                DateTime minimumBirthDate = DateTime.UtcNow.AddYears(maxDependentAge.Value * -1);
+                if (addDependentRequest.DateOfBirth < minimumBirthDate)
+                {
+                    return new RequestResult<DependentModel>()
+                    {
+                        ResultStatus = ResultType.Error,
+                        ResultError = new RequestResultError() { ResultMessage = "Dependent age exceeds the maximum limit", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
+                    };
+                }
+            }
             this.logger.LogDebug("Getting dependent details...");
             RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.PHN, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
             if (patientResult.ResourcePayload == null)

@@ -65,6 +65,8 @@ export interface WebClientConfiguration {
     hoursForDeletion: number;
     // Gets or sets the minimum required patient age allowed for registration.
     minPatientAge: number;
+    // Gets or sets the maximum age of a dependent
+    maxDependentAge: number;
 }
 
 // Various timeout values used by the VUE WebClient application.
