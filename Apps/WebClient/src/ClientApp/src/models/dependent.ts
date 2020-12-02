@@ -15,9 +15,14 @@ export interface DependentInformation {
     PHN: string;
 
     /**
-     * The dependent name.
+     * The dependent first name.
      */
-    name: string;
+    firstname: string;
+
+    /**
+     * The dependent last name.
+     */
+    lastname: string;
 
     /**
      * The dependent birth date.
