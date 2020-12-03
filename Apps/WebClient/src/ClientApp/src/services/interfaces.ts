@@ -24,6 +24,7 @@ import Encounter from "@/models/encounter";
 import { OidcUserProfile } from "@/models/user";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { Dependent } from "@/models/dependent";
+import type { UserPreference } from "@/models/userPreference";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -97,9 +98,12 @@ export interface IUserProfileService {
     updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;
     updateUserPreference(
         hdid: string,
-        preference: string,
-        value: string
-    ): Promise<boolean>;
+        userPreference: UserPreference
+    ): Promise<UserPreference>;
+    createUserPreference(
+        hdid: string,
+        userPreference: UserPreference
+    ): Promise<UserPreference>;
 }
 
 export interface IUserFeedbackService {

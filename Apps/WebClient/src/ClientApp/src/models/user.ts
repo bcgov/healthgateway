@@ -1,5 +1,6 @@
 import { Dictionary } from "vue-router/types/router";
 import { StringISODate } from "@/models/dateWrapper";
+import type { UserPreference } from "@/models/userPreference";
 
 export default class User {
     public hdid = "";
@@ -10,7 +11,7 @@ export default class User {
     public verifiedSMS = false;
     public hasTermsOfServiceUpdated = false;
     public closedDateTime?: StringISODate;
-    public preferences: Dictionary<string> = {};
+    public preferences: Dictionary<UserPreference> = {};
 }
 
 export interface OidcUserProfile {

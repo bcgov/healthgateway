@@ -360,7 +360,26 @@ export default class TimelineView extends Vue {
                     this.laboratoryCount = results.resourcePayload.length;
                     if (results.resourcePayload.length > 0) {
                         this.protectiveWordModal.hideModal();
-                        this.covidModal.showModal();
+                        let showCovidModal = true;
+                        if (
+                            this.user.preferences.actionedCovidModalAt !=
+                            undefined
+                        ) {
+                            const actionedCovidModalAt = new DateWrapper(
+                                this.user.preferences.actionedCovidModalAt.value
+                            );
+                            const mostRecentLabTime = new DateWrapper(
+                                results.resourcePayload[0].messageDateTime
+                            );
+                            if (
+                                actionedCovidModalAt.isAfter(mostRecentLabTime)
+                            ) {
+                                showCovidModal = false;
+                            }
+                        }
+                        if (showCovidModal) {
+                            this.covidModal.showModal();
+                        }
                     }
                 } else {
                     this.logger.error(
@@ -578,7 +597,7 @@ export default class TimelineView extends Vue {
                             variant="primary"
                             to="/termsOfService"
                         >
-                            here </router-link
+                            here</router-link
                         >.
                     </span>
                 </b-alert>

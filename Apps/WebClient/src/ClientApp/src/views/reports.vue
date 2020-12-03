@@ -68,7 +68,11 @@ export default class ReportsView extends Vue {
     private logger!: ILogger;
     private isDataLoaded = false;
     private fileMaxRecords = 1000;
-
+    private reportType = "";
+    private reportTypeOptions = [
+        { value: "", text: "Select a service" },
+        { value: "MED", text: "Medications" },
+    ];
     private get totalFiles(): number {
         return Math.ceil(
             this.medicationStatementHistory.length / this.fileMaxRecords
@@ -78,6 +82,7 @@ export default class ReportsView extends Vue {
     private showConfirmationModal() {
         this.messageModal.showModal();
     }
+
     private async generateMedicationHistoryPdf(fileIndex = 0) {
         this.logger.debug("generating Medication History PDF...");
         this.isLoading = true;
@@ -137,7 +142,6 @@ export default class ReportsView extends Vue {
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.loadName();
-        this.fetchMedicationStatements();
     }
 
     private fetchMedicationStatements(protectiveWord?: string) {
@@ -152,6 +156,11 @@ export default class ReportsView extends Vue {
                 if (results.resultStatus == ResultType.Success) {
                     this.protectiveWordAttempts = 0;
                     this.medicationStatementHistory = results.resourcePayload;
+                    // Required for the sample page
+                    this.medicationStatementHistoryPage = this.medicationStatementHistory.slice(
+                        0,
+                        50
+                    );
                     this.sortEntries();
                     this.isDataLoaded = true;
                 } else if (results.resultStatus == ResultType.Protected) {
@@ -220,52 +229,95 @@ export default class ReportsView extends Vue {
             }
         });
     }
+
+    private onReportTypeChanged() {
+        this.isDataLoaded = false;
+        if (this.reportType == "MED") {
+            this.fetchMedicationStatements();
+        }
+    }
 }
 </script>
 
 <template>
     <div>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row class="my-3 fluid">
-            <b-col
-                id="healthInsights"
-                class="col-12 col-md-10 col-lg-9 column-wrapper"
-            >
-                <PageTitleComponent
-                    :title="`Health Gateway Medication History Report`"
-                />
-                <div>
-                    <p>
-                        Download a copy of your PharmaNet record of prescription
-                        medication dispenses. This report will generate your
-                        full history in the PharmaNet system.
-                    </p>
-                </div>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <img
-                    class="mx-auto d-block"
-                    src="@/assets/images/reports/reports.png"
-                    width="200"
-                    height="auto"
-                    alt="..."
-                />
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-button
-                    variant="primary"
-                    class="mx-auto mt-3 d-block"
-                    :disabled="!isDataLoaded"
-                    @click="showConfirmationModal"
+        <div class="my-3 fluid">
+            <b-row>
+                <b-col
+                    id="healthInsights"
+                    class="col-12 col-md-10 col-lg-9 column-wrapper"
                 >
-                    Download your report
-                </b-button>
-            </b-col>
-        </b-row>
+                    <PageTitleComponent :title="`Export Records`" />
+                    <div class="my-5 p-5 form">
+                        <b-row>
+                            <b-col class="col-md-6 col-12">
+                                <label for="reportType">Report Type</label>
+                                <b-form-select
+                                    id="reportType"
+                                    v-model="reportType"
+                                    data-testid="reportType"
+                                    :options="reportTypeOptions"
+                                    @change="onReportTypeChanged"
+                                >
+                                </b-form-select>
+                            </b-col>
+                            <b-col class="pt-4 col-md-6 col-12">
+                                <b-button
+                                    variant="primary"
+                                    data-testid="exportRecordBtn"
+                                    class="mx-auto mt-1 d-block"
+                                    :disabled="!isDataLoaded"
+                                    @click="showConfirmationModal"
+                                >
+                                    Export Records
+                                </b-button>
+                            </b-col>
+                        </b-row>
+                    </div>
+                    <div
+                        v-if="reportType == 'MED' && isDataLoaded"
+                        data-testid="medicationReportSample"
+                    >
+                        <b-col>
+                            <div class="mx-auto sample">
+                                <div class="scale">
+                                    <div ref="report">
+                                        <MedicationHistoryReportComponent
+                                            :medication-statement-history="
+                                                medicationStatementHistoryPage
+                                            "
+                                            :name="fullName"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </b-col>
+                    </div>
+                    <div v-else>
+                        <b-row>
+                            <b-col>
+                                <img
+                                    class="mx-auto d-block"
+                                    src="@/assets/images/reports/reports.png"
+                                    data-testid="infoImage"
+                                    width="200"
+                                    height="auto"
+                                    alt="..."
+                                />
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col class="text-center">
+                                <h5 data-testid="infoText">
+                                    Select a service above to create a report
+                                </h5>
+                            </b-col>
+                        </b-row>
+                    </div>
+                </b-col>
+            </b-row>
+        </div>
         <MessageModalComponent
             ref="messageModal"
             title="Sensitive Document Download"
@@ -279,16 +331,6 @@ export default class ReportsView extends Vue {
             @submit="onProtectiveWordSubmit"
             @cancel="onProtectiveWordCancel"
         />
-        <div class="d-none">
-            <div ref="report">
-                <MedicationHistoryReportComponent
-                    :medication-statement-history="
-                        medicationStatementHistoryPage
-                    "
-                    :name="fullName"
-                />
-            </div>
-        </div>
     </div>
 </template>
 
@@ -304,5 +346,22 @@ export default class ReportsView extends Vue {
 
 #pageTitle hr {
     border-top: 2px solid $primary;
+}
+
+.sample {
+    border: 2px $lightGrey solid;
+    padding: 15px;
+    width: 300px;
+    height: 400px;
+    overflow: hidden;
+}
+.form {
+    background-color: $soft_background;
+    border: $lightGrey solid 1px;
+    border-radius: 5px 5px 5px 5px;
+}
+.scale {
+    zoom: 0.5;
+    -moz-transform: scale(0.5);
 }
 </style>

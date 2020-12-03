@@ -12,6 +12,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import { Action, Getter } from "vuex-class";
 import User from "@/models/user";
 import BannerError from "@/models/bannerError";
+import type { WebClientConfiguration } from "@/models/configData";
 
 @Component({
     components: {
@@ -25,6 +26,9 @@ export default class DependentsView extends Vue {
     readonly newDependentModal!: NewDependentComponent;
 
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
@@ -102,6 +106,18 @@ export default class DependentsView extends Vue {
                             </b-col>
                         </b-row>
                         <hr />
+                        <b-row id="pageTitle" class="mt-3">
+                            <b-col>
+                                <h5>
+                                    You can add your dependents under the age of
+                                    {{ webClientConfig.maxDependentAge }} to
+                                    view their COVID-19 results. Please complete
+                                    the form with your dependent's information,
+                                    exactly as it appears on their BC Services
+                                    Card.
+                                </h5>
+                            </b-col>
+                        </b-row>
                     </b-col>
                 </b-row>
                 <b-row

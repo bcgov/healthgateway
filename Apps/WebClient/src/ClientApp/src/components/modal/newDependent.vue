@@ -14,6 +14,7 @@ import BannerError from "@/models/bannerError";
 import { Action, Getter } from "vuex-class";
 import { ResultError } from "@/models/requestResult";
 import AddDependentRequest from "@/models/addDependentRequest";
+import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 
 @Component({
@@ -26,6 +27,9 @@ export default class NewDependentComponent extends Vue {
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
+
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
 
     private dependentService!: IDependentService;
     private isVisible = false;
@@ -82,7 +86,9 @@ export default class NewDependentComponent extends Vue {
     }
 
     private get minBirthdate(): DateWrapper {
-        return new DateWrapper().subtract(Duration.fromObject({ years: 19 }));
+        return new DateWrapper().subtract(
+            Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
+        );
     }
 
     private get minTestDate(): DateWrapper {
@@ -230,7 +236,8 @@ export default class NewDependentComponent extends Vue {
                                             isValid($v.dependent.dateOfBirth)
                                         "
                                     >
-                                        Dependent must be under the age of 19
+                                        Dependent must be under the age of
+                                        {{ webClientConfig.maxDependentAge }}
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
@@ -253,11 +260,14 @@ export default class NewDependentComponent extends Vue {
                                     </b-form-invalid-feedback>
                                 </b-col>
                                 <b-col class="col-12 col-lg-4 col-md-6 mb-3">
-                                    <label for="testDate">Test Date</label>
+                                    <label for="testDate"
+                                        >COVID-19 Test Date</label
+                                    >
                                     <b-form-input
                                         id="testDate"
                                         v-model="dependent.testDate"
                                         data-testid="testDateInput"
+                                        max="2999-12-31"
                                         required
                                         type="date"
                                         :state="isValid($v.dependent.testDate)"

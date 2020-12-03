@@ -1,14 +1,63 @@
 ﻿<script lang="ts">
 import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import User from "@/models/user";
+import container from "@/plugins/inversify.config";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
+import { DateWrapper } from "@/models/dateWrapper";
+import type { UserPreference } from "@/models/userPreference";
 
 @Component
 export default class CovidModalComponent extends Vue {
+    @Action("updateUserPreference", { namespace: "user" })
+    updateUserPreference!: (params: {
+        hdid: string;
+        userPreference: UserPreference;
+    }) => void;
+    @Action("createUserPreference", { namespace: "user" })
+    createUserPreference!: (params: {
+        hdid: string;
+        userPreference: UserPreference;
+    }) => void;
+    @Getter("user", { namespace: "user" }) user!: User;
+
     @Prop() error!: boolean;
     @Prop({ default: false }) isLoading!: boolean;
 
+    private logger!: ILogger;
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     public isVisible = false;
     public show = false;
+
+    private actionCovidModal() {
+        this.logger.debug("Actioning Covid Modal...");
+        let isoNow = new DateWrapper().toISO();
+        if (this.user.preferences.actionedCovidModalAt != undefined) {
+            this.user.preferences.actionedCovidModalAt.value = isoNow;
+            this.updateUserPreference({
+                hdid: this.user.hdid,
+                userPreference: this.user.preferences.actionedCovidModalAt,
+            });
+        } else {
+            this.user.preferences.actionedCovidModalAt = {
+                hdId: this.user.hdid,
+                preference: "actionedCovidModalAt",
+                value: isoNow,
+                version: 0,
+                createdDateTime: new DateWrapper().toISO(),
+            };
+            this.createUserPreference({
+                hdid: this.user.hdid,
+                userPreference: this.user.preferences.actionedCovidModalAt,
+            });
+        }
+    }
 
     public showModal(): void {
         this.show = true;
@@ -38,6 +87,7 @@ export default class CovidModalComponent extends Vue {
 
     @Emit()
     private cancel() {
+        this.actionCovidModal();
         this.hideModal();
         return;
     }
@@ -45,6 +95,8 @@ export default class CovidModalComponent extends Vue {
     private handleSubmit(bvModalEvt: Event) {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
+
+        this.actionCovidModal();
 
         // Trigger submit handler
         this.submit();

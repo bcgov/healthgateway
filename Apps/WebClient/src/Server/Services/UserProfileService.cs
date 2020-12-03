@@ -347,26 +347,59 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool UpdateUserPreference(string hdid, string name, string value)
+        public RequestResult<UserPreferenceModel> UpdateUserPreference(UserPreferenceModel userPreferenceModel)
         {
-            this.logger.LogTrace($"Updating user preference... {name}");
+            this.logger.LogTrace($"Updating user preference... {userPreferenceModel.Preference}");
 
-            IEnumerable<UserPreference> userPreferenceDBModel = new List<UserPreference>() { new UserPreference() { HdId = hdid, Preference = name, Value = value } };
+            UserPreference userPreference = userPreferenceModel.ToDbModel();
 
-            DBResult<IEnumerable<UserPreference>> dbUserPreference = this.userPreferenceDelegate.SaveUserPreferences(hdid, userPreferenceDBModel);
-            this.logger.LogDebug($"Finished updating user preference. {JsonSerializer.Serialize(dbUserPreference)}");
-            return dbUserPreference.Status == DBStatusCode.Updated || dbUserPreference.Status == DBStatusCode.Created;
+            DBResult<UserPreference> dbResult = this.userPreferenceDelegate.UpdateUserPreference(userPreference);
+            this.logger.LogDebug($"Finished updating user preference. {JsonSerializer.Serialize(dbResult)}");
+
+            RequestResult<UserPreferenceModel> requestResult = new RequestResult<UserPreferenceModel>()
+            {
+                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbResult.Payload),
+                ResultStatus = dbResult.Status == DBStatusCode.Updated ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DBStatusCode.Updated ? null : new RequestResultError()
+                {
+                    ResultMessage = dbResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
+            return requestResult;
         }
 
         /// <inheritdoc />
-        public RequestResult<Dictionary<string, string>> GetUserPreferences(string hdid)
+        public RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel)
+        {
+            this.logger.LogTrace($"Creating user preference... {userPreferenceModel.Preference}");
+
+            UserPreference userPreference = userPreferenceModel.ToDbModel();
+
+            DBResult<UserPreference> dbResult = this.userPreferenceDelegate.CreateUserPreference(userPreference);
+            this.logger.LogDebug($"Finished creating user preference. {JsonSerializer.Serialize(dbResult)}");
+
+            RequestResult<UserPreferenceModel> requestResult = new RequestResult<UserPreferenceModel>()
+            {
+                ResourcePayload = UserPreferenceModel.CreateFromDbModel(dbResult.Payload),
+                ResultStatus = dbResult.Status == DBStatusCode.Created ? ResultType.Success : ResultType.Error,
+                ResultError = dbResult.Status == DBStatusCode.Created ? null : new RequestResultError()
+                {
+                    ResultMessage = dbResult.Message,
+                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                },
+            };
+            return requestResult;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid)
         {
             this.logger.LogTrace($"Getting user preference... {hdid}");
             DBResult<IEnumerable<UserPreference>> dbResult = this.userPreferenceDelegate.GetUserPreferences(hdid);
-
-            RequestResult<Dictionary<string, string>> requestResult = new RequestResult<Dictionary<string, string>>()
+            RequestResult<Dictionary<string, UserPreferenceModel>> requestResult = new RequestResult<Dictionary<string, UserPreferenceModel>>()
             {
-                ResourcePayload = dbResult.Payload.ToDictionary(x => x.Preference, x => x.Value),
+                ResourcePayload = UserPreferenceModel.CreateListFromDbModel(dbResult.Payload).ToDictionary(x => x.Preference, x => x),
                 ResultStatus = dbResult.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DBStatusCode.Read ? null : new RequestResultError()
                 {

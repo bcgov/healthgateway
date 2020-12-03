@@ -26,13 +26,20 @@ namespace HealthGateway.Database.Delegates
     public interface IUserPreferenceDelegate
     {
         /// <summary>
-        /// Saves a UserPreference object in the database.
+        /// Creates a UserPreference object in the database.
         /// </summary>
-        /// <param name="hdid">The user hdid.</param>
-        /// <param name="newPreferences">The preferences to be saved.</param>
+        /// <param name="userPreference">The preference to be created.</param>
         /// <param name="commit">Indicates whether it should commit to the database or defer.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<IEnumerable<UserPreference>> SaveUserPreferences(string hdid, IEnumerable<UserPreference> newPreferences, bool commit = true);
+        DBResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true);
+
+        /// <summary>
+        /// Saves a UserPreference object in the database.
+        /// </summary>
+        /// <param name="userPreference">The preference to be saved.</param>
+        /// <param name="commit">Indicates whether it should commit to the database or defer.</param>
+        /// <returns>A DB result which encapsulates the return object and status.</returns>
+        DBResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true);
 
         /// <summary>
         /// Fetches the UserPreference from the database.

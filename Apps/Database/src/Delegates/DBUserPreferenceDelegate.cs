@@ -45,38 +45,50 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<IEnumerable<UserPreference>> SaveUserPreferences(string hdid, IEnumerable<UserPreference> newPreferences, bool commit = true)
+        public DBResult<UserPreference> CreateUserPreference(UserPreference userPreference, bool commit = true)
         {
-            DBResult<IEnumerable<UserPreference>> preferences = this.GetUserPreferences(hdid);
-            DBResult<IEnumerable<UserPreference>> result = new DBResult<IEnumerable<UserPreference>>();
-            List<UserPreference> payload = new List<UserPreference>();
-            result.Status = DBStatusCode.Deferred;
-            result.Payload = payload;
-
-            foreach (UserPreference newPreference in newPreferences)
+            this.logger.LogTrace($"Creating new User Preference in DB...");
+            DBResult<UserPreference> result = new DBResult<UserPreference>()
             {
-                UserPreference? preference = preferences.Payload.FirstOrDefault(p => p.Preference == newPreference.Preference);
-                if (preference != null)
+                Payload = userPreference,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.UserPreference.Add(userPreference);
+
+            if (commit)
+            {
+                try
                 {
-                    preference.UpdatedBy = newPreference.UpdatedBy;
-                    preference.UpdatedDateTime = DateTime.UtcNow;
-                    preference.Value = newPreference.Value;
-                    payload.Add(preference);
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Created;
                 }
-                else
+                catch (DbUpdateConcurrencyException e)
                 {
-                    this.dbContext.UserPreference.Add(newPreference);
-                    payload.Add(newPreference);
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+                catch (DbUpdateException e)
+                {
+                    this.logger.LogError($"Unable to create UserPreference to DB {e}");
+                    result.Status = DBStatusCode.Error;
+                    result.Message = e.Message;
                 }
             }
 
-            foreach (UserPreference preference in preferences.Payload)
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<UserPreference> UpdateUserPreference(UserPreference userPreference, bool commit = true)
+        {
+            this.logger.LogTrace($"Updating User Preference in DB...");
+            DBResult<UserPreference> result = new DBResult<UserPreference>()
             {
-                if (!newPreferences.Any(p => p.Preference == preference.Preference))
-                {
-                    this.dbContext.UserPreference.Remove(preference);
-                }
-            }
+                Payload = userPreference,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.UserPreference.Update(userPreference);
+            this.dbContext.Entry(userPreference).Property(p => p.HdId).IsModified = false;
 
             if (commit)
             {

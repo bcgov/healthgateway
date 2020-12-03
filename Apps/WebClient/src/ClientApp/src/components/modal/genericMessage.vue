@@ -69,12 +69,14 @@ export default class MessageModalComponent extends Vue {
         footer-class="modal-footer"
         centered
     >
-        <b-row>
+        <b-row data-testid="genericMessageModal">
             <b-col>
                 <form @submit.stop.prevent="handleSubmit">
                     <b-row>
                         <b-col>
-                            <span>{{ message }}</span>
+                            <span data-testid="genericMessageText">
+                                {{ message }}
+                            </span>
                         </b-col>
                     </b-row>
                 </form>
@@ -86,6 +88,7 @@ export default class MessageModalComponent extends Vue {
                     <b-row>
                         <b-col>
                             <b-button
+                                data-testid="genericMessageSubmitBtn"
                                 class="mr-2"
                                 variant="primary"
                                 @click="handleSubmit($event)"

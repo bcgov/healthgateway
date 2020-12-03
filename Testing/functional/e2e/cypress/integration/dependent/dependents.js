@@ -4,6 +4,7 @@ describe('dependents', () => {
     const firstName = "Sam"
     const lastName = "Testfive"
     const doB = "2014-03-15"
+    const invalidDoB = "2007-08-05"
     const testDate = "2020-03-21"
     const phn = "9874307168"    
    
@@ -27,8 +28,8 @@ describe('dependents', () => {
     it('Validate Add, Fields and Cancel', () => {         
         //Validate Main Add Button  
         cy.get('[data-testid=addNewDependentBtn]')
-        .should('be.enabled', 'be.visible')
-        .click()
+            .should('be.enabled', 'be.visible')
+            .click()
         
         cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')   
         //Validate First Name  
@@ -54,7 +55,7 @@ describe('dependents', () => {
             .should('have.class', 'is-invalid')
 
         // Validate tesDate Input
-        cy.get('[data-testid=dependentCovidTestDate]')
+        cy.get('[data-testid=testDateInput]')
             .should('be.enabled')
 
         // Validate Cancel out of the form
@@ -64,6 +65,32 @@ describe('dependents', () => {
         // Validate the modal is done
         cy.get('[data-testid=newDependentModal]').should('not.exist')
     })
+
+    it('Validate Maximum Age Check', () => {
+        // Validate that adding a dependent fails when they are over the age of 12
+        cy.get('[data-testid=addNewDependentBtn]')
+            .click();
+        cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
+        cy.get('[data-testid=firstNameInput]')
+            .type(firstName);
+        cy.get('[data-testid=lastNameInput]')
+            .type(lastName);
+        cy.get('[data-testid=dateOfBirthInput]')
+            .type(invalidDoB);
+        cy.get('[data-testid=testDateInput]')
+            .type(testDate);
+        cy.get('[data-testid=phnInput]')
+            .type(phn);
+        cy.get('[data-testid=termsCheckbox]')
+            .check({ force: true });
+
+        cy.get('[data-testid=registerDependentBtn]').click(); 
+        
+        // Validate the modal has not closed
+        cy.get('[data-testid=newDependentModal]').should('exist')
+
+        cy.get('[data-testid=cancelRegistrationBtn]').click(); 
+    })
     
     it('Validate Add', () => {
         cy.get('[data-testid=addNewDependentBtn]')
@@ -72,17 +99,22 @@ describe('dependents', () => {
         cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
         
         cy.get('[data-testid=firstNameInput]')
+            .clear()
             .type(firstName);
         cy.get('[data-testid=lastNameInput]')
+            .clear()
             .type(lastName);
         cy.get('[data-testid=dateOfBirthInput]')
+            .clear()
             .type(doB);
-        cy.get('[data-testid=dependentCovidTestDate]')
+        cy.get('[data-testid=testDateInput]')
+            .clear()
             .type(testDate);
         cy.get('[data-testid=phnInput]')
+            .clear()
             .type(phn);
         cy.get('[data-testid=termsCheckbox]')
-            .click({ force: true });
+            .check({ force: true });
 
         cy.get('[data-testid=registerDependentBtn]').click(); 
 
@@ -91,35 +123,77 @@ describe('dependents', () => {
     });
 
     it('Validate Dependent Tab', () => {
-        // Validate the newly added dependent tab and elements are present        
+        // Validate the newly added dependent tab and elements are present   
+        cy.get('[data-testid=dependentName]')
+            .contains(firstName.toUpperCase())
+            .contains(lastName.toUpperCase())  
         cy.get('[data-testid=dependentPHN]')
             .last().invoke('val')
             .then(phnNumber => expect(phnNumber).to.equal(phn));
         cy.get('[data-testid=dependentDOB]')
             .last().invoke('val')
-            .then(dateOfBirth => expect(dateOfBirth).to.equal(doB));
-            cy.get('[data-testid=dependentCovidTestDate]')
-            .type(testDate)
-            .last().invoke('val')
-            .then(dependentCovidTestDate => expect(dependentCovidTestDate).to.equal(testDate));
-          
+            .then(dateOfBirth => expect(dateOfBirth).to.equal(doB));          
     })
 
 
     it('Validate Covid Tab with Results', () => {
+        let sensitiveDocMessage = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
         // Validate the tab and elements are present        
-        cy.get('[data-testid=covid19TabTitle]').last().parent().click();
-        cy.get('[data-testid=dependentCovidTestDate]').first().should('have.text', ' 2020-08-21 ');
-        cy.get('[data-testid=dependentCovidTestType]').first().should('have.text', ' BAL ');
-        cy.get('[data-testid=dependentCovidTestLocation]').first().should('have.text', ' Viha ');
-        cy.get('[data-testid=dependentCovidTestLabResult]').first().should('have.text', ' Positive ');
-        cy.get('[data-testid=dependentCovidReportDownloadBtn]').first().click();
-        cy.get('[data-testid=covid19TabTitle]').last().parent().click();
-        cy.get('[data-testid=dependentCovidTestDate]').last().should('have.text', ' 2020-06-14 ');
-        cy.get('[data-testid=dependentCovidTestType]').last().should('have.text', ' Nasopharyngeal Swab ');
-        cy.get('[data-testid=dependentCovidTestLocation]').last().should('have.text', ' Fha ');
-        cy.get('[data-testid=dependentCovidTestLabResult]').last().should('have.text', ' NotSet ');
-        cy.get('[data-testid=dependentCovidReportDownloadBtn]').last().click();
+        cy.get('[data-testid=covid19TabTitle]')
+            .last()
+            .parent()
+            .click();
+        cy.get('[data-testid=dependentCovidTestDate]')
+            .first()
+            .should('have.text', ' 2020-10-03 ');
+        cy.get('[data-testid=dependentCovidTestType]')
+            .first()
+            .should('have.text', ' Nasopharyngeal Swab ');
+        cy.get('[data-testid=dependentCovidTestLocation]')
+            .first()
+            .should('have.text', ' Fha ');
+        cy.get('[data-testid=dependentCovidTestLabResult]')
+            .first()
+            .should('have.text', ' Positive ');
+        cy.get('[data-testid=dependentCovidReportDownloadBtn]')
+            .first()
+            .click();
+        cy.get('[data-testid=genericMessageModal]')
+            .should('be.visible');
+        cy.get('[data-testid=genericMessageText]')
+            .should('have.text', sensitiveDocMessage);
+        cy.get('[data-testid=genericMessageSubmitBtn]')
+            .click();            
+        cy.get('[data-testid=genericMessageModal]')
+            .should('not.exist');
+
+        cy.get('[data-testid=covid19TabTitle]')
+            .last()
+            .parent()
+            .click();
+        cy.get('[data-testid=dependentCovidTestDate]')
+            .last()
+            .should('have.text', ' 2020-06-14 ');
+        cy.get('[data-testid=dependentCovidTestType]')
+            .last()
+            .should('have.text', ' Nasopharyngeal Swab ');
+        cy.get('[data-testid=dependentCovidTestLocation]')
+            .last()
+            .should('have.text', ' Fha ');
+        cy.get('[data-testid=dependentCovidTestLabResult]')
+            .last()
+            .should('have.text', ' NotSet ');
+        cy.get('[data-testid=dependentCovidReportDownloadBtn]')
+            .last()
+            .click();
+        cy.get('[data-testid=genericMessageModal]')
+            .should('be.visible');
+        cy.get('[data-testid=genericMessageText]')
+            .should('have.text', sensitiveDocMessage);
+        cy.get('[data-testid=genericMessageSubmitBtn]')
+            .click();            
+        cy.get('[data-testid=genericMessageModal]')
+            .should('not.exist');
     })
     
 

@@ -10,6 +10,7 @@ import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import container from "@/plugins/inversify.config";
 import {
     ILogger,
@@ -22,12 +23,14 @@ import { BTabs, BTab } from "bootstrap-vue";
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
 import { LaboratoryResult } from "@/models/laboratory";
+import type { WebClientConfiguration } from "@/models/configData";
 library.add(faFileDownload);
 
 @Component({
     components: {
         BTabs,
         BTab,
+        MessageModalComponent,
         DeleteModalComponent,
     },
 })
@@ -36,15 +39,23 @@ export default class DependentCardComponent extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
+
+    @Ref("sensitivedocumentDownloadModal")
+    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
 
     @Ref("deleteModal")
     readonly deleteModal!: DeleteModalComponent;
 
     private message =
         "Are you sure you want to remove " +
-        this.dependent.dependentInformation.name +
+        this.dependent.dependentInformation.firstname +
+        " " +
+        this.dependent.dependentInformation.lastname +
         " from your list of dependents?";
 
     private isLoading = false;
@@ -54,12 +65,21 @@ export default class DependentCardComponent extends Vue {
     private labResults: LaboratoryOrder[] = [];
     private isDataLoaded = false;
 
+    private selectedLabOrder!: LaboratoryOrder;
+    private showSensitiveDocumentDownloadModal(labOrder: LaboratoryOrder) {
+        this.selectedLabOrder = labOrder;
+        this.sensitivedocumentDownloadModal.showModal();
+    }
+
     private get isExpired() {
         let birthDate = new DateWrapper(
             this.dependent.dependentInformation.dateOfBirth
         );
         let now = new DateWrapper();
-        return now.diff(birthDate, "year").years > 19;
+        return (
+            now.diff(birthDate, "year").years >
+            this.webClientConfig.maxDependentAge
+        );
     }
 
     private get menuIcon(): IconDefinition {
@@ -86,6 +106,7 @@ export default class DependentCardComponent extends Vue {
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.labResults = results.resourcePayload;
+                    this.sortEntries();
                     this.isDataLoaded = true;
                 } else {
                     this.logger.error(
@@ -111,15 +132,23 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private getReport(labOrder: LaboratoryOrder) {
-        let labResult = labOrder.labResults[0];
+    private sortEntries() {
+        this.labResults.sort((a, b) => {
+            let dateA = new DateWrapper(a.labResults[0].collectedDateTime);
+            let dateB = new DateWrapper(b.labResults[0].collectedDateTime);
+            return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
+        });
+    }
+
+    private getReport() {
+        let labResult = this.selectedLabOrder.labResults[0];
         this.laboratoryService
-            .getReportDocument(labOrder.id, this.dependent.ownerId)
+            .getReportDocument(this.selectedLabOrder.id, this.dependent.ownerId)
             .then((result) => {
                 const link = document.createElement("a");
                 let report: LaboratoryReport = result.resourcePayload;
                 link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${this.dependent.dependentInformation.name}_${labResult.collectedDateTime}.pdf`;
+                link.download = `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${labResult.collectedDateTime}.pdf`;
                 link.click();
                 URL.revokeObjectURL(link.href);
             })
@@ -154,7 +183,7 @@ export default class DependentCardComponent extends Vue {
             });
     }
 
-    private showConfirmationModal(): void {
+    private showDeleteConfirmationModal(): void {
         this.deleteModal.showModal();
     }
 
@@ -199,7 +228,8 @@ export default class DependentCardComponent extends Vue {
                             <b-col class="d-flex justify-content-center">
                                 <p>
                                     You no longer have access to this dependent
-                                    as they have turned 19
+                                    as they have turned
+                                    {{ webClientConfig.maxDependentAge }}
                                 </p>
                             </b-col>
                         </b-row>
@@ -246,21 +276,6 @@ export default class DependentCardComponent extends Vue {
                                     </b-col>
                                 </b-row>
                             </b-col>
-                            <b-col class="col-12 col-sm-4">
-                                <b-row>
-                                    <b-col class="col-12">Gender</b-col>
-                                    <b-col class="col-12">
-                                        <b-form-input
-                                            v-model="
-                                                dependent.dependentInformation
-                                                    .gender
-                                            "
-                                            data-testid="dependentGender"
-                                            readonly
-                                        ></b-form-input>
-                                    </b-col>
-                                </b-row>
-                            </b-col>
                         </b-row>
                     </div>
                 </b-tab>
@@ -283,7 +298,7 @@ export default class DependentCardComponent extends Vue {
                     </b-row>
                     <table v-else class="w-100">
                         <tr>
-                            <th>Test Date</th>
+                            <th>COVID-19 Test Date</th>
                             <th class="d-none d-sm-table-cell">Test Type</th>
                             <th class="d-none d-sm-table-cell">
                                 Test Location
@@ -325,7 +340,9 @@ export default class DependentCardComponent extends Vue {
                                     v-if="checkResultReady(item.labResults[0])"
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
-                                    @click="getReport(item)"
+                                    @click="
+                                        showSensitiveDocumentDownloadModal(item)
+                                    "
                                 >
                                     <font-awesome-icon
                                         icon="file-download"
@@ -380,7 +397,12 @@ export default class DependentCardComponent extends Vue {
                                     class="card-title"
                                     data-testid="dependentName"
                                 >
-                                    {{ dependent.dependentInformation.name }}
+                                    {{
+                                        dependent.dependentInformation.firstname
+                                    }}
+                                    {{
+                                        dependent.dependentInformation.lastname
+                                    }}
                                 </span>
                             </b-col>
                             <li
@@ -403,7 +425,7 @@ export default class DependentCardComponent extends Vue {
                                     <b-dropdown-item
                                         data-testid="deleteDependentMenuBtn"
                                         class="menuItem"
-                                        @click="showConfirmationModal()"
+                                        @click="showDeleteConfirmationModal()"
                                     >
                                         Delete
                                     </b-dropdown-item>
@@ -416,10 +438,16 @@ export default class DependentCardComponent extends Vue {
         </b-card>
         <delete-modal-component
             ref="deleteModal"
-            title="Delete Dependent"
-            message="Are you sure you want to delete this dependent?"
+            title="Remove Dependent"
+            message="Are you sure you want to remove this dependent?"
             @submit="deleteDependent()"
         ></delete-modal-component>
+        <MessageModalComponent
+            ref="sensitivedocumentDownloadModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="getReport"
+        />
     </div>
 </template>
 
