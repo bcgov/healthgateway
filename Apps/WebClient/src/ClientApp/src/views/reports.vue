@@ -111,12 +111,10 @@ export default class ReportsView extends Vue {
                         <b-col>
                             <div class="mx-auto sample">
                                 <div class="scale">
-                                    <div ref="report">
-                                        <MedicationHistoryReportComponent
-                                            ref="medicationHistoryReport"
-                                            :name="fullName"
-                                        />
-                                    </div>
+                                    <MedicationHistoryReportComponent
+                                        ref="medicationHistoryReport"
+                                        :name="fullName"
+                                    />
                                 </div>
                             </div>
                         </b-col>
@@ -128,12 +126,10 @@ export default class ReportsView extends Vue {
                         <b-col>
                             <div class="mx-auto sample">
                                 <div class="scale">
-                                    <div ref="report">
-                                        <MSPVisitsReportComponent
-                                            ref="mspVisitsReport"
-                                            :name="fullName"
-                                        />
-                                    </div>
+                                    <MSPVisitsReportComponent
+                                        ref="mspVisitsReport"
+                                        :name="fullName"
+                                    />
                                 </div>
                             </div>
                         </b-col>
