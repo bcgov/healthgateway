@@ -158,7 +158,7 @@ namespace HealthGateway.Laboratory.Delegates
                     ResultStatus = Common.Constants.ResultType.Error,
                 };
 
-                this.logger.LogTrace($"Getting laboratory report...");
+                this.logger.LogTrace($"Getting laboratory report... {id}");
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
@@ -169,6 +169,7 @@ namespace HealthGateway.Laboratory.Delegates
                     Uri endpoint = new Uri($"{this.labConfig.Endpoint}/{id}/LabReportDocument");
                     HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    this.logger.LogTrace($"Get laboratory report response payload: {payload}");
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.OK:
@@ -191,11 +192,8 @@ namespace HealthGateway.Laboratory.Delegates
                             }
 
                             break;
-                        case HttpStatusCode.NoContent: // No Lab exits for this user
-                            retVal.ResultStatus = Common.Constants.ResultType.Success;
-                            retVal.PageIndex = 0;
-                            retVal.TotalResultCount = 0;
-                            retVal.ResourcePayload = new LaboratoryReport();
+                        case HttpStatusCode.NoContent: // No report found.
+                            retVal.ResultError = new RequestResultError() { ResultMessage = "Report not found.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                             break;
                         case HttpStatusCode.Forbidden:
                             retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
