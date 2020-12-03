@@ -1,6 +1,7 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('Reports', () => {
+    let sensitiveDocText = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
     before(() => {
         cy.readConfig().as("config").then(config => {
             cy.server();
@@ -54,7 +55,7 @@ describe('Reports', () => {
             .should('be.visible');
 
         cy.get('[data-testid=genericMessageText]')
-            .should('have.text', ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ');
+            .should('have.text', sensitiveDocText);
 
         cy.get('[data-testid=genericMessageSubmitBtn]')
             .click();
@@ -82,7 +83,7 @@ describe('Reports', () => {
             .should('be.visible');
 
         cy.get('[data-testid=genericMessageText]')
-            .should('have.text', ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ');
+            .should('have.text', sensitiveDocText);
 
         cy.get('[data-testid=genericMessageSubmitBtn]')
             .click();
