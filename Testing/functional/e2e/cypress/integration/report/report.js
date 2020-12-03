@@ -1,6 +1,7 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('Reports', () => {
+    let sensitiveDocText = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
     before(() => {
         cy.readConfig().as("config").then(config => {
             cy.server();
@@ -25,14 +26,26 @@ describe('Reports', () => {
 
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.enabled', 'be.visible')
-    })
+
+        cy.get('[data-testid=reportType]')
+            .should('be.enabled', 'be.visible')
+            .select("")        
+
+        cy.get('[data-testid=exportRecordBtn]')
+            .should('not.be.enabled', 'be.visible')
+
+        })
 
     it('Validate Medication Report', () => {         
+        cy.get('[data-testid=reportType]')
+            .should('be.enabled', 'be.visible')
+            .select("MED")        
+
         cy.get('[data-testid=medicationReportSample]')
             .should('be.visible')
         
         cy.get('[data-testid=medicationReportSample] #subject')
-            .should('have.text', 'Health Gateway Medication History Report');
+            .should('have.text', 'Health Gateway Medication History');
 
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.enabled', 'be.visible')
@@ -42,7 +55,35 @@ describe('Reports', () => {
             .should('be.visible');
 
         cy.get('[data-testid=genericMessageText]')
-            .should('have.text', ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ');
+            .should('have.text', sensitiveDocText);
+
+        cy.get('[data-testid=genericMessageSubmitBtn]')
+            .click();
+            
+        cy.get('[data-testid=genericMessageModal]')
+            .should('not.be.visible');
+    })
+
+    it('Validate MSP Visits Report', () => {         
+        cy.get('[data-testid=reportType]')
+            .should('be.enabled', 'be.visible')
+            .select("MSP")        
+
+        cy.get('[data-testid=mspVisitsReportSample]')
+            .should('be.visible')
+        
+        cy.get('[data-testid=mspVisitsReportSample] #subject')
+            .should('have.text', 'Health Gateway MSP Visit History');
+
+        cy.get('[data-testid=exportRecordBtn]')
+            .should('be.enabled', 'be.visible')
+            .click();
+
+        cy.get('[data-testid=genericMessageModal]')
+            .should('be.visible');
+
+        cy.get('[data-testid=genericMessageText]')
+            .should('have.text', sensitiveDocText);
 
         cy.get('[data-testid=genericMessageSubmitBtn]')
             .click();
