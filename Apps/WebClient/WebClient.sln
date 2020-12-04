@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClient", "src\WebClient.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "..\Common\src\Common.csproj", "{8660083F-F582-47C6-BC98-6DCF0F4AC851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClientTestsFunctional", "test\functional\api\WebClientTestsFunctional.csproj", "{A25A18AB-EA5D-4242-A7B0-AF38B9F296F0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
