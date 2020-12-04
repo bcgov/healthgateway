@@ -110,7 +110,7 @@ VALUES (
 	'System', 
 	current_timestamp, 
 	'actionedCovidModalAt', 
-	'2020-01-01T12:00:00.000-08:00'
+	'2121-01-01T12:00:00.000-08:00'
 );
 
 INSERT INTO gateway."UserPreference"(
