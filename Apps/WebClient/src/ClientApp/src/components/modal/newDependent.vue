@@ -43,12 +43,11 @@ export default class NewDependentComponent extends Vue {
     };
     private accepted = false;
     private agreement = `
-        I confirm that I am the parent or
-        guardian for this child, pursuant to
-        Part 4, Division 3 of the Family Law
-        Act, the Adoption Act, and/or the Child,
-        Family and Community Services
-        Act.
+        By providing the child’s full name, date of birth, personal health number and date of COVID-19 test, I declare that I am the child’s legal guardian as per the Family Law Act, the Adoption Act and/or the Child, Family and Community Services Act, and am attesting that I have the authority to request and receive health information respecting the child from third parties.
+
+If I either: (a) cease to be guardian of this child; (b) or lose the right to request or receive health information from third parties respecting this child, I will remove them as a dependent under my Health Gateway account immediately.
+
+I understand that I will no longer be able to access my child’s COVID-19 test results once they are 12 years of age. I understand it is a legal offence to falsely claim guardianship or access another individual’s personal health information without legal authority or consent.
     `;
 
     private validations() {
