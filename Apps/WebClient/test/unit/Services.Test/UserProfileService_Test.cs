@@ -374,7 +374,7 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(expected.ResourcePayload, actualResult.ResourcePayload);
         }
 
-        private Tuple<RequestResult<Dictionary<string, string>>, List<UserPreference>> ExecuteGetUserPreference(Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Read)
+        private Tuple<RequestResult<Dictionary<string, UserPreferenceModel>>, List<UserPreferenceModel>> ExecuteGetUserPreference(Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Read)
         {
             UserProfile userProfile = new UserProfile
             {
@@ -402,17 +402,22 @@ namespace HealthGateway.WebClient.Test.Services
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
             profileDelegateMock.Setup(s => s.Update(userProfile, true)).Returns(userProfileDBResult);
 
-            UserPreference dbUserPreference = new UserPreference
+            UserPreferenceModel userPreferenceModel = new UserPreferenceModel
             {
                 HdId = hdid,
                 Preference = "TutorialPopover",
                 Value = true.ToString(),
             };
-            List<UserPreference> userPreferences = new List<UserPreference>();
-            userPreferences.Add(dbUserPreference);
+
+            List<UserPreferenceModel> userPreferences = new List<UserPreferenceModel>();
+            userPreferences.Add(userPreferenceModel);
+
+            List<UserPreference> dbUserPreferences = new List<UserPreference>();
+            dbUserPreferences.Add(userPreferenceModel.ToDbModel());
+
             DBResult<IEnumerable<UserPreference>> readResult = new DBResult<IEnumerable<UserPreference>>
             {
-                Payload = userPreferences,
+                Payload = dbUserPreferences,
                 Status = dbResultStatus
             };
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
@@ -448,51 +453,49 @@ namespace HealthGateway.WebClient.Test.Services
                 messageVerificationDelegateMock.Object,
                 new Mock<IPatientService>().Object);
 
-            RequestResult<Dictionary<string, string>> actualResult = service.GetUserPreferences(hdid);
+            RequestResult<Dictionary<string, UserPreferenceModel>> actualResult = service.GetUserPreferences(hdid);
 
-            return new Tuple<RequestResult<Dictionary<string, string>>, List<UserPreference>>(actualResult, userPreferences);
+            return new Tuple<RequestResult<Dictionary<string, UserPreferenceModel>>, List<UserPreferenceModel>>(actualResult, userPreferences);
         }
 
         [Fact]
         public void ShouldGetUserPreference()
         {
-            Tuple<RequestResult<Dictionary<string, string>>, List<UserPreference>> result = ExecuteGetUserPreference(Database.Constants.DBStatusCode.Read);
+            Tuple<RequestResult<Dictionary<string, UserPreferenceModel>>, List<UserPreferenceModel>> result = ExecuteGetUserPreference(Database.Constants.DBStatusCode.Read);
             var actualResult = result.Item1;
             var expectedRecord = result.Item2;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(actualResult.ResourcePayload.Count, expectedRecord.Count);
-            Assert.Equal(actualResult.ResourcePayload["TutorialPopover"], expectedRecord[0].Value);
+            Assert.Equal(actualResult.ResourcePayload["TutorialPopover"].Value, expectedRecord[0].Value);
         }
 
         [Fact]
         public void ShouldGetUserPreferenceWithDBError()
         {
-            Tuple<RequestResult<Dictionary<string, string>>, List<UserPreference>> result = ExecuteGetUserPreference(Database.Constants.DBStatusCode.Error);
+            Tuple<RequestResult<Dictionary<string, UserPreferenceModel>>, List<UserPreferenceModel>> result = ExecuteGetUserPreference(Database.Constants.DBStatusCode.Error);
             var actualResult = result.Item1;
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError.ErrorCode);
         }
 
-        private bool ExecuteUpdateUserPreference(Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Updated)
+        private RequestResult<UserPreferenceModel> ExecuteCreateUserPreference(Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Created)
         {
-            UserPreference dbUserPreference = new UserPreference
+            UserPreferenceModel userPreferenceModel = new UserPreferenceModel
             {
                 HdId = hdid,
                 Preference = "TutorialPopover",
-                Value = true.ToString(),
+                Value = "mocked value",
             };
-            List<UserPreference> userPreferences = new List<UserPreference>();
-            userPreferences.Add(dbUserPreference);
-            DBResult<IEnumerable<UserPreference>> readResult = new DBResult<IEnumerable<UserPreference>>
+            DBResult<UserPreference> readResult = new DBResult<UserPreference>
             {
-                Payload = userPreferences,
+                Payload = userPreferenceModel.ToDbModel(),
                 Status = dbResultStatus
             };
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
 
-            preferenceDelegateMock.Setup(s => s.SaveUserPreferences(It.IsAny<string>(), It.IsAny<IEnumerable<UserPreference>>(), It.IsAny<bool>())).Returns(readResult);
+            preferenceDelegateMock.Setup(s => s.CreateUserPreference(It.IsAny<UserPreference>(), It.IsAny<bool>())).Returns(readResult);
 
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
@@ -519,23 +522,86 @@ namespace HealthGateway.WebClient.Test.Services
                 messageVerificationDelegateMock.Object,
                 new Mock<IPatientService>().Object);
 
-            return service.UpdateUserPreference(hdid, "mocked name", "mocked value");
+            return service.CreateUserPreference(userPreferenceModel);
         }
 
         [Fact]
         public void ShouldCreateUserPreference()
         {
-            bool result = ExecuteUpdateUserPreference(Database.Constants.DBStatusCode.Created);
+            RequestResult<UserPreferenceModel> result = ExecuteCreateUserPreference(Database.Constants.DBStatusCode.Created);
 
-            Assert.True(result);
+            Assert.Equal(ResultType.Success, result.ResultStatus);
+        }
+
+        [Fact]
+        public void ShouldCreateUserPreferenceWithDBError()
+        {
+            RequestResult<UserPreferenceModel> actualResult = ExecuteCreateUserPreference(Database.Constants.DBStatusCode.Error);
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError.ErrorCode);
+        }
+
+        private RequestResult<UserPreferenceModel> ExecuteUpdateUserPreference(Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Updated)
+        {
+            UserPreferenceModel userPreferenceModel = new UserPreferenceModel
+            {
+                HdId = hdid,
+                Preference = "TutorialPopover",
+                Value = "mocked value",
+            };
+            DBResult<UserPreference> readResult = new DBResult<UserPreference>
+            {
+                Payload = userPreferenceModel.ToDbModel(),
+                Status = dbResultStatus
+            };
+            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
+
+            preferenceDelegateMock.Setup(s => s.UpdateUserPreference(It.IsAny<UserPreference>(), It.IsAny<bool>())).Returns(readResult);
+
+            Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
+            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
+            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
+
+            Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new Mock<ILegalAgreementDelegate>();
+            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
+            Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
+            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
+
+            IUserProfileService service = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                profileDelegateMock.Object,
+                preferenceDelegateMock.Object,
+                emailDelegateMock.Object,
+                emailInviteDelegateMock.Object,
+                configServiceMock.Object,
+                emailer.Object,
+                legalAgreementDelegateMock.Object,
+                cryptoDelegateMock.Object,
+                notificationServiceMock.Object,
+                messageVerificationDelegateMock.Object,
+                new Mock<IPatientService>().Object);
+
+            return service.UpdateUserPreference(userPreferenceModel);
         }
 
         [Fact]
         public void ShouldUpdateUserPreference()
         {
-            bool result = ExecuteUpdateUserPreference(Database.Constants.DBStatusCode.Updated);
+            RequestResult<UserPreferenceModel> result = ExecuteUpdateUserPreference(Database.Constants.DBStatusCode.Updated);
 
-            Assert.True(result);
+            Assert.Equal(ResultType.Success, result.ResultStatus);
+        }
+
+        [Fact]
+        public void ShouldUpdateUserPreferenceWithDBError()
+        {
+            RequestResult<UserPreferenceModel> actualResult = ExecuteUpdateUserPreference(Database.Constants.DBStatusCode.Error);
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError.ErrorCode);
         }
 
         private Tuple<RequestResult<UserProfileModel>, UserProfileModel> ExecuteCloseUserProfile(UserProfile userProfile, Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Read)

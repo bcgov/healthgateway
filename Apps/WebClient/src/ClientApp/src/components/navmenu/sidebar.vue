@@ -11,6 +11,8 @@ import FeedbackComponent from "@/components/feedback.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
 import User from "@/models/user";
+import type { UserPreference } from "@/models/userPreference";
+import { DateWrapper } from "@/models/dateWrapper";
 library.add(faStream);
 
 const auth = "auth";
@@ -26,8 +28,12 @@ export default class SidebarComponent extends Vue {
     @Action("updateUserPreference", { namespace: "user" })
     updateUserPreference!: (params: {
         hdid: string;
-        name: string;
-        value: string;
+        userPreference: UserPreference;
+    }) => void;
+    @Action("createUserPreference", { namespace: "user" })
+    createUserPreference!: (params: {
+        hdid: string;
+        userPreference: UserPreference;
     }) => void;
 
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
@@ -167,11 +173,28 @@ export default class SidebarComponent extends Vue {
 
     private dismissTutorial() {
         this.logger.debug("Dismissing tutorial...");
-        this.updateUserPreference({
-            hdid: this.user.hdid,
-            name: "tutorialPopover",
-            value: "false",
-        });
+        if (
+            this.user.preferences.tutorialPopover != undefined &&
+            this.user.preferences.tutorialPopover.hdId != undefined
+        ) {
+            this.user.preferences.tutorialPopover.value = "false";
+            this.updateUserPreference({
+                hdid: this.user.hdid,
+                userPreference: this.user.preferences.tutorialPopover,
+            });
+        } else {
+            this.user.preferences.tutorialPopover = {
+                hdId: this.user.hdid,
+                preference: "tutorialPopover",
+                value: "true",
+                version: 0,
+                createdDateTime: new DateWrapper().toISO(),
+            };
+            this.createUserPreference({
+                hdid: this.user.hdid,
+                userPreference: this.user.preferences.tutorialPopover,
+            });
+        }
     }
 
     private printView() {
@@ -187,13 +210,13 @@ export default class SidebarComponent extends Vue {
         if (this.isMobileWidth) {
             return (
                 this.isTutorialEnabled &&
-                this.user.preferences["tutorialPopover"] === "true" &&
+                this.user.preferences.tutorialPopover?.value === "true" &&
                 this.isOpen
             );
         } else {
             return (
                 this.isTutorialEnabled &&
-                this.user.preferences["tutorialPopover"] === "true"
+                this.user.preferences.tutorialPopover?.value === "true"
             );
         }
     }
@@ -375,7 +398,10 @@ export default class SidebarComponent extends Vue {
                                     >x</b-button
                                 >
                             </div>
-                            <div class="popover-content">
+                            <div
+                                data-testid="notesPopover"
+                                class="popover-content"
+                            >
                                 Add Notes to track your important health events
                                 e.g. Broke ankle in Cuba
                             </div>
@@ -403,31 +429,27 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                     </div>
-                    <!-- Health Insights button -->
                     <router-link
-                        v-show="isActiveProfile"
-                        id="menuBtnHealthInsights"
-                        data-testid="menuBtnHealthInsightsLink"
-                        to="/healthInsights"
+                        v-show="isDependentEnabled"
+                        id="menuBtnDependents"
+                        data-testid="menuBtnDependentsLink"
+                        to="/dependents"
                         class="my-4"
                     >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isHealthInsights }"
+                            :class="{ selected: isDependents }"
                         >
                             <b-col
                                 v-show="isOpen"
                                 cols="1"
                                 class="button-spacer"
                             ></b-col>
-                            <b-col
-                                title="Health Insights"
-                                :class="{ 'col-3': isOpen }"
-                            >
+                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
                                 <font-awesome-icon
-                                    icon="chart-line"
+                                    icon="user-friends"
                                     class="button-icon"
-                                    size="3x"
+                                    size="2x"
                                 />
                             </b-col>
                             <b-col
@@ -435,7 +457,7 @@ export default class SidebarComponent extends Vue {
                                 cols="7"
                                 class="button-title"
                             >
-                                <span>Health Insights</span>
+                                <span>Dependents</span>
                             </b-col>
                         </b-row>
                     </router-link>
@@ -472,25 +494,29 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                     </router-link>
+                    <!-- Health Insights button -->
                     <router-link
-                        v-show="isDependentEnabled"
-                        id="menuBtnDependents"
-                        data-testid="menuBtnDependentsLink"
-                        to="/dependents"
+                        v-show="isActiveProfile"
+                        id="menuBtnHealthInsights"
+                        data-testid="menuBtnHealthInsightsLink"
+                        to="/healthInsights"
                         class="my-4"
                     >
                         <b-row
                             class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isDependents }"
+                            :class="{ selected: isHealthInsights }"
                         >
                             <b-col
                                 v-show="isOpen"
                                 cols="1"
                                 class="button-spacer"
                             ></b-col>
-                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
+                            <b-col
+                                title="Health Insights"
+                                :class="{ 'col-3': isOpen }"
+                            >
                                 <font-awesome-icon
-                                    icon="umbrella"
+                                    icon="chart-line"
                                     class="button-icon"
                                     size="3x"
                                 />
@@ -500,7 +526,7 @@ export default class SidebarComponent extends Vue {
                                 cols="7"
                                 class="button-title"
                             >
-                                <span>Dependents</span>
+                                <span>Health Insights</span>
                             </b-col>
                         </b-row>
                     </router-link>

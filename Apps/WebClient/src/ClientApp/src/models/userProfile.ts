@@ -1,5 +1,6 @@
 import { Dictionary } from "vue-router/types/router";
 import { StringISODate } from "@/models/dateWrapper";
+import type { UserPreference } from "@/models/userPreference";
 
 export default interface UserProfile {
     // The user hdid.
@@ -24,7 +25,7 @@ export default interface UserProfile {
     closedDateTime?: StringISODate;
 
     // The User Preference
-    preferences: Dictionary<string>;
+    preferences: Dictionary<UserPreference>;
 }
 
 export interface CreateUserRequest {

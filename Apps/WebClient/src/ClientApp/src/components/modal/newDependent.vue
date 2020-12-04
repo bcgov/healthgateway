@@ -14,6 +14,7 @@ import BannerError from "@/models/bannerError";
 import { Action, Getter } from "vuex-class";
 import { ResultError } from "@/models/requestResult";
 import AddDependentRequest from "@/models/addDependentRequest";
+import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 
 @Component({
@@ -27,6 +28,9 @@ export default class NewDependentComponent extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
+    @Getter("webClient", { namespace: "config" })
+    webClientConfig!: WebClientConfiguration;
+
     private dependentService!: IDependentService;
     private isVisible = false;
     private isLoading = true;
@@ -38,14 +42,6 @@ export default class NewDependentComponent extends Vue {
         testDate: "",
     };
     private accepted = false;
-    private agreement = `
-        I confirm that I am the parent or
-        guardian for this child, pursuant to
-        Part 4, Division 3 of the Family Law
-        Act, the Adoption Act, and/or the Child,
-        Family and Community Services
-        Act.
-    `;
 
     private validations() {
         return {
@@ -82,7 +78,9 @@ export default class NewDependentComponent extends Vue {
     }
 
     private get minBirthdate(): DateWrapper {
-        return new DateWrapper().subtract(Duration.fromObject({ years: 19 }));
+        return new DateWrapper().subtract(
+            Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
+        );
     }
 
     private get minTestDate(): DateWrapper {
@@ -230,7 +228,8 @@ export default class NewDependentComponent extends Vue {
                                             isValid($v.dependent.dateOfBirth)
                                         "
                                     >
-                                        Dependent must be under the age of 19
+                                        Dependent must be under the age of
+                                        {{ webClientConfig.maxDependentAge }}
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>
@@ -253,11 +252,14 @@ export default class NewDependentComponent extends Vue {
                                     </b-form-invalid-feedback>
                                 </b-col>
                                 <b-col class="col-12 col-lg-4 col-md-6 mb-3">
-                                    <label for="testDate">Test Date</label>
+                                    <label for="testDate"
+                                        >COVID-19 Test Date</label
+                                    >
                                     <b-form-input
                                         id="testDate"
                                         v-model="dependent.testDate"
                                         data-testid="testDateInput"
+                                        max="2999-12-31"
                                         required
                                         type="date"
                                         :state="isValid($v.dependent.testDate)"
@@ -276,9 +278,43 @@ export default class NewDependentComponent extends Vue {
                                         v-model="accepted"
                                         data-testid="termsCheckbox"
                                         :state="isValid($v.accepted)"
-                                        >{{ agreement }}</b-checkbox
-                                    ></b-col
-                                >
+                                    >
+                                        <p>
+                                            By providing the child’s name, date
+                                            of birth, personal health number and
+                                            date of COVID-19 test, I declare
+                                            that I am the child’s legal guardian
+                                            as per the Family Law Act, the
+                                            Adoption Act and/or the Child,
+                                            Family and Community Services Act,
+                                            and am attesting that I have the
+                                            authority to request and receive
+                                            health information respecting the
+                                            child from third parties.
+                                        </p>
+                                        <p>
+                                            If I either: (a) cease to be
+                                            guardian of this child; (b) or lose
+                                            the right to request or receive
+                                            health information from third
+                                            parties respecting this child, I
+                                            will remove them as a dependent
+                                            under my Health Gateway account
+                                            immediately.
+                                        </p>
+                                        <p>
+                                            I understand that I will no longer
+                                            be able to access my child’s
+                                            COVID-19 test results once they are
+                                            12 years of age. I understand it is
+                                            a legal offence to falsely claim
+                                            guardianship or access another
+                                            individual’s personal health
+                                            information without legal authority
+                                            or consent.
+                                        </p>
+                                    </b-checkbox>
+                                </b-col>
                             </b-row>
                         </b-col>
                     </b-row>
