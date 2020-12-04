@@ -34,7 +34,7 @@ export default class ReportsView extends Vue {
     private fullName = "";
     private logger!: ILogger;
     private reportType = "";
-    private reportTypeOptions = [{ value: "", text: "Select a service" }];
+    private reportTypeOptions = [{ value: "", text: "Select" }];
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -86,10 +86,14 @@ export default class ReportsView extends Vue {
                     class="col-12 col-md-10 col-lg-9 column-wrapper"
                 >
                     <PageTitleComponent :title="`Export Records`" />
-                    <div class="my-5 p-5 form">
+                    <div class="my-3 px-5 py-4 form">
                         <b-row>
-                            <b-col class="col-md-6 col-12">
+                            <b-col>
                                 <label for="reportType">Report Type</label>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
                                 <b-form-select
                                     id="reportType"
                                     v-model="reportType"
@@ -98,15 +102,15 @@ export default class ReportsView extends Vue {
                                 >
                                 </b-form-select>
                             </b-col>
-                            <b-col class="pt-4 col-md-6 col-12">
+                            <b-col>
                                 <b-button
                                     variant="primary"
                                     data-testid="exportRecordBtn"
-                                    class="mx-auto mt-1 d-block"
+                                    class="ml-auto d-block"
                                     :disabled="!reportType"
                                     @click="showConfirmationModal"
                                 >
-                                    Export Records
+                                    Download PDF
                                 </b-button>
                             </b-col>
                         </b-row>
@@ -114,32 +118,22 @@ export default class ReportsView extends Vue {
                     <div
                         v-if="reportType == 'MED'"
                         data-testid="medicationReportSample"
+                        class="sample"
                     >
-                        <b-col>
-                            <div class="mx-auto sample">
-                                <div class="scale">
-                                    <MedicationHistoryReportComponent
-                                        ref="medicationHistoryReport"
-                                        :name="fullName"
-                                    />
-                                </div>
-                            </div>
-                        </b-col>
+                        <MedicationHistoryReportComponent
+                            ref="medicationHistoryReport"
+                            :name="fullName"
+                        />
                     </div>
                     <div
                         v-else-if="reportType == 'MSP'"
                         data-testid="mspVisitsReportSample"
+                        class="sample"
                     >
-                        <b-col>
-                            <div class="mx-auto sample">
-                                <div class="scale">
-                                    <MSPVisitsReportComponent
-                                        ref="mspVisitsReport"
-                                        :name="fullName"
-                                    />
-                                </div>
-                            </div>
-                        </b-col>
+                        <MSPVisitsReportComponent
+                            ref="mspVisitsReport"
+                            :name="fullName"
+                        />
                     </div>
                     <div v-else>
                         <b-row>
@@ -189,19 +183,14 @@ export default class ReportsView extends Vue {
 }
 
 .sample {
-    border: 2px $lightGrey solid;
-    padding: 15px;
-    width: 300px;
+    padding: 0px 10px;
+    width: 100%;
     height: 400px;
-    overflow: hidden;
+    overflow: scroll;
 }
 .form {
     background-color: $soft_background;
     border: $lightGrey solid 1px;
     border-radius: 5px 5px 5px 5px;
-}
-.scale {
-    zoom: 0.5;
-    -moz-transform: scale(0.5);
 }
 </style>
