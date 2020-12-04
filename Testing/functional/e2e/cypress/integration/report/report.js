@@ -4,6 +4,7 @@ describe('Reports', () => {
     let sensitiveDocText = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
     before(() => {
         cy.readConfig().as("config").then(config => {
+            config.webClient.modules.Encounter = true
             cy.server();
             cy.route('GET', '/v1/api/configuration/', config);
             cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak, "/reports");
