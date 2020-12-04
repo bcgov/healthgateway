@@ -46,7 +46,7 @@ describe('Reports', () => {
             .should('be.visible')
         
         cy.get('[data-testid=medicationReportSample] #subject')
-            .should('have.text', 'Health Gateway Medication History');
+            .should('have.text', 'Health Gateway Medication History Report');
 
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.enabled', 'be.visible')
