@@ -9,6 +9,8 @@ import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
 import { IAuthenticationService } from "@/services/interfaces";
+import type { WebClientConfiguration } from "@/models/configData";
+import { Getter } from "vuex-class";
 
 @Component({
     components: {
@@ -19,6 +21,9 @@ import { IAuthenticationService } from "@/services/interfaces";
     },
 })
 export default class ReportsView extends Vue {
+    @Getter("webClient", { namespace: "config" })
+    config!: WebClientConfiguration;
+
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
     @Ref("medicationHistoryReport")
@@ -29,11 +34,18 @@ export default class ReportsView extends Vue {
     private fullName = "";
     private logger!: ILogger;
     private reportType = "";
-    private reportTypeOptions = [
-        { value: "", text: "Select a service" },
-        { value: "MED", text: "Medications" },
-        { value: "MSP", text: "MSP Visits" },
-    ];
+    private reportTypeOptions = [{ value: "", text: "Select a service" }];
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        if (this.config.modules["Medication"]) {
+            this.reportTypeOptions.push({ value: "MED", text: "Medications" });
+        }
+        if (this.config.modules["Encounter"]) {
+            this.reportTypeOptions.push({ value: "MSP", text: "MSP Visits" });
+        }
+        this.loadName();
+    }
 
     private showConfirmationModal() {
         this.messageModal.showModal();
@@ -48,11 +60,6 @@ export default class ReportsView extends Vue {
                 this.mspVisitsReport.generatePdf();
                 break;
         }
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.loadName();
     }
 
     private loadName(): void {
