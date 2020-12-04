@@ -65,31 +65,31 @@ describe('Reports', () => {
             .should('not.be.visible');
     })
 
-    it('Validate MSP Visits Report', () => {         
-        cy.get('[data-testid=reportType]')
-            .should('be.enabled', 'be.visible')
-            .select("MSP")        
+    // it('Validate MSP Visits Report', () => {         
+    //     cy.get('[data-testid=reportType]')
+    //         .should('be.enabled', 'be.visible')
+    //         .select("MSP")        
 
-        cy.get('[data-testid=mspVisitsReportSample]')
-            .should('be.visible')
+    //     cy.get('[data-testid=mspVisitsReportSample]')
+    //         .should('be.visible')
         
-        cy.get('[data-testid=mspVisitsReportSample] #subject')
-            .should('have.text', 'Health Gateway MSP Visit History');
+    //     cy.get('[data-testid=mspVisitsReportSample] #subject')
+    //         .should('have.text', 'Health Gateway MSP Visit History');
 
-        cy.get('[data-testid=exportRecordBtn]')
-            .should('be.enabled', 'be.visible')
-            .click();
+    //     cy.get('[data-testid=exportRecordBtn]')
+    //         .should('be.enabled', 'be.visible')
+    //         .click();
 
-        cy.get('[data-testid=genericMessageModal]')
-            .should('be.visible');
+    //     cy.get('[data-testid=genericMessageModal]')
+    //         .should('be.visible');
 
-        cy.get('[data-testid=genericMessageText]')
-            .should('have.text', sensitiveDocText);
+    //     cy.get('[data-testid=genericMessageText]')
+    //         .should('have.text', sensitiveDocText);
 
-        cy.get('[data-testid=genericMessageSubmitBtn]')
-            .click();
+    //     cy.get('[data-testid=genericMessageSubmitBtn]')
+    //         .click();
             
-        cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
-    })
+    //     cy.get('[data-testid=genericMessageModal]')
+    //         .should('not.be.visible');
+    // })
 }) 
