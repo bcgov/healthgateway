@@ -8,6 +8,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import COVID19ReportComponent from "@/components/report/covid19.vue";
 import { IAuthenticationService } from "@/services/interfaces";
 import type { WebClientConfiguration } from "@/models/configData";
 import { Getter } from "vuex-class";
@@ -18,6 +19,7 @@ import { Getter } from "vuex-class";
         MessageModalComponent,
         MedicationHistoryReportComponent,
         MSPVisitsReportComponent,
+        COVID19ReportComponent,
     },
 })
 export default class ReportsView extends Vue {
@@ -30,6 +32,8 @@ export default class ReportsView extends Vue {
     readonly medicationHistoryReport!: MedicationHistoryReportComponent;
     @Ref("mspVisitsReport")
     readonly mspVisitsReport!: MSPVisitsReportComponent;
+    @Ref("covid19Report")
+    readonly covid19Report!: COVID19ReportComponent;
 
     private fullName = "";
     private logger!: ILogger;
@@ -43,6 +47,12 @@ export default class ReportsView extends Vue {
         }
         if (this.config.modules["Encounter"]) {
             this.reportTypeOptions.push({ value: "MSP", text: "MSP Visits" });
+        }
+        if (this.config.modules["Laboratory"]) {
+            this.reportTypeOptions.push({
+                value: "COVID-19",
+                text: "COVID-19",
+            });
         }
         this.loadName();
     }
@@ -58,6 +68,9 @@ export default class ReportsView extends Vue {
                 break;
             case "MSP":
                 this.mspVisitsReport.generatePdf();
+                break;
+            case "COVID-19":
+                this.covid19Report.generatePdf();
                 break;
         }
     }
@@ -135,6 +148,21 @@ export default class ReportsView extends Vue {
                                 <div class="scale">
                                     <MSPVisitsReportComponent
                                         ref="mspVisitsReport"
+                                        :name="fullName"
+                                    />
+                                </div>
+                            </div>
+                        </b-col>
+                    </div>
+                    <div
+                        v-else-if="reportType == 'COVID-19'"
+                        data-testid="covid19ReportSample"
+                    >
+                        <b-col>
+                            <div class="mx-auto sample">
+                                <div class="scale">
+                                    <COVID19ReportComponent
+                                        ref="covid19Report"
                                         :name="fullName"
                                     />
                                 </div>
