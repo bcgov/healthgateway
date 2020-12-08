@@ -53,12 +53,6 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetUnregisteredInvitedUserCount()
-        {
-            return this.userProfileDelegate.GeUnregisteredInvitedUsersCount();
-        }
-
-        /// <inheritdoc />
         public int GetTodayLoggedInUsersCount(int offset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
