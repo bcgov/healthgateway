@@ -63,7 +63,6 @@ namespace HealthGateway.Database.Context
         public DbSet<UserProfile> UserProfile { get; set; } = null!;
         public DbSet<UserPreference> UserPreference { get; set; } = null!;
         public DbSet<UserFeedback> UserFeedback { get; set; } = null!;
-        public DbSet<BetaRequest> BetaRequest { get; set; } = null!;
         public DbSet<LegalAgreement> LegalAgreement { get; set; } = null!;
         public DbSet<ApplicationSetting> ApplicationSetting { get; set; } = null!;
         public DbSet<UserProfileHistory> UserProfileHistory { get; set; } = null!;
