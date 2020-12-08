@@ -478,7 +478,10 @@ export default class SidebarComponent extends Vue {
                                 cols="1"
                                 class="button-spacer"
                             ></b-col>
-                            <b-col title="Reports" :class="{ 'col-3': isOpen }">
+                            <b-col
+                                title="Export Records"
+                                :class="{ 'col-3': isOpen }"
+                            >
                                 <font-awesome-icon
                                     icon="clipboard-list"
                                     class="button-icon"
@@ -490,7 +493,7 @@ export default class SidebarComponent extends Vue {
                                 cols="7"
                                 class="button-title"
                             >
-                                <span>Reports</span>
+                                <span>Export Records</span>
                             </b-col>
                         </b-row>
                     </router-link>
