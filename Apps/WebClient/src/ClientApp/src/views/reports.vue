@@ -151,17 +151,12 @@ export default class ReportsView extends Vue {
                     <div
                         v-else-if="reportType == 'COVID-19'"
                         data-testid="covid19ReportSample"
+                        class="sample"
                     >
-                        <b-col>
-                            <div class="mx-auto sample">
-                                <div class="scale">
-                                    <COVID19ReportComponent
-                                        ref="covid19Report"
-                                        :name="fullName"
-                                    />
-                                </div>
-                            </div>
-                        </b-col>
+                        <COVID19ReportComponent
+                            ref="covid19Report"
+                            :name="fullName"
+                        />
                     </div>
                     <div v-else>
                         <b-row>
