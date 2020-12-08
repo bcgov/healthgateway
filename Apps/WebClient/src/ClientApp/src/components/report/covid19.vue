@@ -76,9 +76,11 @@ export default class COVID19ReportComponent extends Vue {
 
     private sortEntries() {
         this.records.sort((a, b) =>
-            a.messageDateTime > b.messageDateTime
+            a.labResults[0].collectedDateTime >
+            b.labResults[0].collectedDateTime
                 ? -1
-                : a.messageDateTime < b.messageDateTime
+                : a.labResults[0].collectedDateTime <
+                  b.labResults[0].collectedDateTime
                 ? 1
                 : 0
         );
