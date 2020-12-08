@@ -191,7 +191,7 @@ export default class COVID19ReportComponent extends Vue {
                         data-testid="covid19ItemDate"
                         class="col my-auto text-nowrap"
                     >
-                        {{ formatDate(item.collectedDateTime) }}
+                        {{ formatDate(item.labResults[0].collectedDateTime) }}
                     </b-col>
                     <b-col
                         data-testid="covid19ItemTestType"
