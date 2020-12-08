@@ -24,20 +24,6 @@ export class DashboardService implements IDashboardService {
         });
     }
 
-    public getWaitlistedUsersCount(): Promise<number> {
-        return new Promise((resolve, reject) => {
-            this.http
-                .get<number>(`${this.BASE_URI}/WaitlistCount`)
-                .then(requestResult => {
-                    resolve(requestResult);
-                })
-                .catch(err => {
-                    console.log(err);
-                    return reject(err);
-                });
-        });
-    }
-
     public getLoggedInUsersCount(): Promise<number> {
         return new Promise((resolve, reject) => {
             this.http

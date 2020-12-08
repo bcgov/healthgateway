@@ -35,7 +35,6 @@ export interface IDashboardService {
     getRegisteredUsersCount(): Promise<number>;
     getUnregisteredInvitedUsersCount(): Promise<number>;
     getLoggedInUsersCount(): Promise<number>;
-    getWaitlistedUsersCount(): Promise<number>;
     getUsersWithNotesCount(): Promise<number>;
 }
 
