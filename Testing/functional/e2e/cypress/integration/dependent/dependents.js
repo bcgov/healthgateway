@@ -145,16 +145,7 @@ describe('dependents', () => {
             .click();
         cy.get('[data-testid=dependentCovidTestDate]')
             .first()
-            .should('have.text', ' 2020-10-03 ');
-        cy.get('[data-testid=dependentCovidTestType]')
-            .first()
-            .should('have.text', ' Nasopharyngeal Swab ');
-        cy.get('[data-testid=dependentCovidTestLocation]')
-            .first()
-            .should('have.text', ' Fha ');
-        cy.get('[data-testid=dependentCovidTestLabResult]')
-            .first()
-            .should('have.text', ' Positive ');
+            .contains(/\d{4}-\d{2}-\d{2}/);
         cy.get('[data-testid=dependentCovidReportDownloadBtn]')
             .first()
             .click();
@@ -173,10 +164,7 @@ describe('dependents', () => {
             .click();
         cy.get('[data-testid=dependentCovidTestDate]')
             .last()
-            .should('have.text', ' 2020-06-14 ');
-        cy.get('[data-testid=dependentCovidTestType]')
-            .last()
-            .should('have.text', ' Nasopharyngeal Swab ');
+            .contains(/\d{4}-\d{2}-\d{2}/);
         cy.get('[data-testid=dependentCovidTestLocation]')
             .last()
             .should('have.text', ' Fha ');
