@@ -5,7 +5,6 @@ import { Component, Prop, Ref } from "vue-property-decorator";
 import {
     ILogger,
     IAuthenticationService,
-    IBetaRequestService,
     IUserProfileService,
 } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -16,7 +15,6 @@ import { RegistrationStatus } from "@/constants/registrationStatus";
 import LoadingComponent from "@/components/loading.vue";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import BetaRequest from "@/models/betaRequest";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import type { OidcUserProfile } from "@/models/user";
@@ -56,7 +54,6 @@ export default class RegistrationView extends Vue {
 
     private oidcUser!: OidcUserProfile;
     private userProfileService!: IUserProfileService;
-    private betaRequestVersion = 0;
     private submitStatus = "";
     private loadingUserData = true;
     private loadingTermsOfService = true;
@@ -64,14 +61,6 @@ export default class RegistrationView extends Vue {
     private errorMessage = "";
 
     private logger!: ILogger;
-    private betaRequestService!: IBetaRequestService;
-    private waitlistEdditable = true;
-    private waitlistTempEmail = "";
-    private waitlistEmail = "";
-    private waitlistEmailConfirmation = "";
-
-    private waitlistedSuccessfully = false;
-
     private isValidAge = false;
     private minimumAge!: number;
 
@@ -79,10 +68,6 @@ export default class RegistrationView extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.betaRequestService = container.get(
-            SERVICE_IDENTIFIER.BetaRequestService
-        );
-
         this.minimumAge = this.webClientConfig.minPatientAge;
 
         if (
@@ -114,42 +99,7 @@ export default class RegistrationView extends Vue {
                         .validateAge(oidcUser.hdid)
                         .then((isValid) => {
                             this.isValidAge = isValid;
-                            if (isValid) {
-                                return this.betaRequestService
-                                    .getRequested(this.oidcUser.hdid)
-                                    .then((betaRequest) => {
-                                        this.logger.debug(
-                                            `getOidcUserProfile result: ${JSON.stringify(
-                                                betaRequest
-                                            )}`
-                                        );
-                                        if (betaRequest) {
-                                            this.email =
-                                                betaRequest.emailAddress;
-                                            this.betaRequestVersion =
-                                                betaRequest.version;
-                                            this.emailConfirmation = this.email;
-                                            this.waitlistTempEmail = this.email;
-                                            this.waitlistEdditable = false;
-                                        } else {
-                                            this.makeWaitlistEdditable();
-                                        }
-                                    })
-                                    .catch((err) => {
-                                        console.log(err);
-                                        this.addError(
-                                            ErrorTranslator.toBannerError(
-                                                "Retrieving Beta requests",
-                                                err
-                                            )
-                                        );
-                                    })
-                                    .finally(() => {
-                                        this.loadingUserData = false;
-                                    });
-                            } else {
-                                this.loadingUserData = false;
-                            }
+                            this.loadingUserData = false;
                         })
                         .catch((err) => {
                             this.loadingUserData = false;
@@ -307,59 +257,6 @@ export default class RegistrationView extends Vue {
         }
 
         event.preventDefault();
-    }
-
-    private makeWaitlistEdditable(): void {
-        this.waitlistEdditable = true;
-        this.waitlistTempEmail = this.email || "";
-    }
-
-    private saveWaitlistEdit(): void {
-        this.$v.$touch();
-        this.loadingUserData = true;
-        if (this.$v.email.$invalid || this.$v.emailConfirmation.$invalid) {
-            this.submitStatus = "ERROR";
-        } else {
-            this.submitStatus = "PENDING";
-
-            let newRequest: BetaRequest = {
-                hdid: this.oidcUser.hdid,
-                emailAddress: this.email,
-                version: this.betaRequestVersion,
-            };
-
-            this.betaRequestService
-                .putRequest(this.oidcUser.hdid, newRequest)
-                .then((result) => {
-                    this.logger.debug(
-                        `Save Beta Request Profile result: ${JSON.stringify(
-                            result
-                        )}`
-                    );
-                    this.betaRequestVersion = result.version;
-                    this.waitlistEdditable = false;
-                    this.waitlistEmailConfirmation = "";
-                    this.waitlistTempEmail = this.email;
-                    this.waitlistedSuccessfully = true;
-                    this.$v.$reset();
-                })
-                .catch((err) => {
-                    this.addError(
-                        ErrorTranslator.toBannerError("Saving Waitlist", err)
-                    );
-                    this.logger.error(`Error saving new beta request. ${err}`);
-                })
-                .finally(() => {
-                    this.loadingUserData = false;
-                });
-        }
-    }
-
-    private cancelWaitlistEdit(): void {
-        this.waitlistEdditable = false;
-        this.email = this.waitlistTempEmail;
-        this.waitlistEmailConfirmation = "";
-        this.$v.$reset();
     }
 
     private onEmailOptout(isChecked: boolean): void {
