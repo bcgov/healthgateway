@@ -64,7 +64,7 @@ describe('Reports', () => {
         cy.get('[data-testid=genericMessageModal]')
             .should('not.be.visible');
     })
-/*
+    
     it('Validate Medication Report', () => {         
         cy.get('[data-testid=reportType]')
             .should('be.enabled', 'be.visible')
@@ -113,5 +113,5 @@ describe('Reports', () => {
             
         cy.get('[data-testid=genericMessageModal]')
             .should('not.be.visible');
-    }) */
+    })
 }) 
