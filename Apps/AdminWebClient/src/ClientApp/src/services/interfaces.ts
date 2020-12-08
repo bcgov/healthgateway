@@ -1,6 +1,5 @@
 import { Dictionary } from "vue-router/types/router";
 import AuthenticationData from "@/models/authenticationData";
-import UserBetaRequest from "@/models/userBetaRequest";
 import UserFeedback from "@/models/userFeedback";
 import ExternalConfiguration from "@/models/externalConfiguration";
 import Email from "@/models/email";
@@ -17,12 +16,6 @@ export interface IAuthenticationService {
     getAuthentication(): Promise<AuthenticationData>;
     refreshToken(): Promise<AuthenticationData>;
     destroyToken(): Promise<void>;
-}
-
-export interface IBetaRequestService {
-    initialize(http: IHttpDelegate): void;
-    getPendingRequests(): Promise<UserBetaRequest[]>;
-    sendBetaInvites(requestsIds: string[]): Promise<string[]>;
 }
 
 export interface IEmailAdminService {
@@ -42,7 +35,6 @@ export interface IDashboardService {
     getRegisteredUsersCount(): Promise<number>;
     getUnregisteredInvitedUsersCount(): Promise<number>;
     getLoggedInUsersCount(): Promise<number>;
-    getWaitlistedUsersCount(): Promise<number>;
     getUsersWithNotesCount(): Promise<number>;
 }
 

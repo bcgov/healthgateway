@@ -29,10 +29,5 @@ namespace HealthGateway.WebClient.Constant
         /// Registration is closed.
         /// </summary>
         public const string Closed = "closed";
-
-        /// <summary>
-        /// Registration is on Invite only mode.
-        /// </summary>
-        public const string InviteOnly = "invite_only";
     }
 }

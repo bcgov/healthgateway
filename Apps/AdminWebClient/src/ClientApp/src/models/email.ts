@@ -1,4 +1,4 @@
-// Model that provides a user representation of a BetaRequest.
+// Model that provides a user representation of a Email.
 export default interface Email {
     // Gets or sets the primary key of this Email entity.
     id: string;
