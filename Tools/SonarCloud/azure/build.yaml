@@ -111,7 +111,7 @@ jobs:
             /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" \
             /d:sonar.test.inclusions="**/*.test.ts"
           dotnet build    
-          dotnet sonarscanner end
+          dotnet sonarscanner end /d:sonar.login="$(webclient.login)"
           echo "$@" >&2
         displayName: 'WebClient - Perform Static Code Analysis'
         workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
