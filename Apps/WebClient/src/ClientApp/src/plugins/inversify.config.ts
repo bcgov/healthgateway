@@ -5,7 +5,6 @@ import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     ILogger,
     IAuthenticationService,
-    IBetaRequestService,
     ICommunicationService,
     IConfigService,
     IHttpDelegate,
@@ -32,7 +31,6 @@ import { RestEncounterService } from "@/services/restEncounterService";
 import { RestLaboratoryService } from "@/services/restLaboratoryService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
-import { RestBetaRequestService } from "@/services/restBetaRequestService";
 import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestUserCommentService } from "@/services/restUserCommentService";
@@ -79,10 +77,6 @@ container
 container
     .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)
     .to(RestUserFeedbackService)
-    .inSingletonScope();
-container
-    .bind<IBetaRequestService>(SERVICE_IDENTIFIER.BetaRequestService)
-    .to(RestBetaRequestService)
     .inSingletonScope();
 container
     .bind<IUserNoteService>(SERVICE_IDENTIFIER.UserNoteService)
