@@ -40,8 +40,9 @@ namespace HealthGateway.Laboratory.Services
         /// Gets the Lab report for the supplied id belonging to the authenticated user.
         /// </summary>
         /// <param name="id">The ID of the lab report to get.</param>
+        /// <param name="hdid">The requested HDID which owns the reportId.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken);
+        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken);
     }
 }

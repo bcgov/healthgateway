@@ -75,9 +75,9 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken)
         {
-            return await this.laboratoryDelegate.GetLabReport(id, bearerToken).ConfigureAwait(true);
+            return await this.laboratoryDelegate.GetLabReport(id, hdid, bearerToken).ConfigureAwait(true);
         }
     }
 }

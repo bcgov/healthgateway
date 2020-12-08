@@ -91,7 +91,7 @@ namespace HealthGateway.LaboratoryTests
             };
 
             var mockLaboratoryDelegate = new Mock<ILaboratoryDelegate>();
-            mockLaboratoryDelegate.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockLaboratoryDelegate.Setup(s => s.GetLabReport(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             var mockLaboratoryDelegateFactory = new Mock<ILaboratoryDelegateFactory>();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);
@@ -111,7 +111,7 @@ namespace HealthGateway.LaboratoryTests
                 new Mock<ILogger<LaboratoryService>>().Object,
                 mockHttpContextAccessor.Object,
                 mockLaboratoryDelegateFactory.Object);
-            var actualResult = service.GetLabReport(Guid.NewGuid(), BearerToken);
+            var actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
 
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
             Assert.True(actualResult.Result!.ResourcePayload!.Report == MockedReportContent);

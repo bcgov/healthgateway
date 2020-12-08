@@ -227,7 +227,7 @@ namespace HealthGateway.LaboratoryTests
             Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
             Guid guid = Guid.NewGuid();
             MockLaboratoryDelegate laboratoryDelegate = new MockLaboratoryDelegate();
-            svcMock.Setup(s => s.GetLabReport(guid, token)).ReturnsAsync(await laboratoryDelegate.GetLabReport(guid, token).ConfigureAwait(true));
+            svcMock.Setup(s => s.GetLabReport(guid, hdid, token)).ReturnsAsync(await laboratoryDelegate.GetLabReport(guid, hdid, token).ConfigureAwait(true));
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -294,7 +294,7 @@ namespace HealthGateway.LaboratoryTests
 
             Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
             Guid guid = Guid.NewGuid();
-            svcMock.Setup(s => s.GetLabReport(guid, token)).ReturnsAsync(new RequestResult<LaboratoryReport>()
+            svcMock.Setup(s => s.GetLabReport(guid, hdid, token)).ReturnsAsync(new RequestResult<LaboratoryReport>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },
