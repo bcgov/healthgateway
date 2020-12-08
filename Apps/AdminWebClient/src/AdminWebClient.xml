@@ -201,15 +201,6 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetUnregisteredInvitedUserCount">
-            <summary>
-            Retrieves the count of unregistered users that received an invite.
-            </summary>
-            <returns>The count of unregistered users that received an invite.</returns>
-            <response code="200">Returns the count of unregistered users.</response>
-            <response code="401">The client must authenticate itself to get the requested response.</response>
-            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        </member>
         <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetTodayLoggedinUsersCount(System.Int32)">
             <summary>
             Retrieves the count of logged in user in the last day.
@@ -217,15 +208,6 @@
             <param name="offset">The offset from the client browser to UTC.</param>
             <returns>The count of logged in users in the current day.</returns>
             <response code="200">Returns the list of user feedbacks.</response>
-            <response code="401">The client must authenticate itself to get the requested response.</response>
-            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        </member>
-        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetWaitlistUserCount">
-            <summary>
-            Retrieves the count of waitlisted users.
-            </summary>
-            <returns>The count of waitlisted users.</returns>
-            <response code="200">Returns the count of waitlisted users.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
@@ -408,7 +390,7 @@
             </summary>
             <param name="model">A database email model.</param>
             <param name="inviteStatus">The user invite status.</param>
-            <returns>A new UserBetaRequest.</returns>
+            <returns>A new AdminEmail.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.Communication">
             <summary>
@@ -822,25 +804,18 @@
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Database.Delegates.IBetaRequestDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.DashboardService"/> class.
             </summary>
             <param name="noteDelegate">The note delegate to interact with the DB.</param>
             <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-            <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
             <param name="config">The configuration provider.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetRegisteredUserCount">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.GetUnregisteredInvitedUserCount">
-            <inheritdoc />
-        </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetTodayLoggedInUsersCount(System.Int32)">
-            <inheritdoc />
-        </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.GetWaitlistUserCount">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetUsersWithNotesCount">
@@ -978,24 +953,12 @@
             </summary>
             <returns>The count of user profiles that accepted the terms of service.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetUnregisteredInvitedUserCount">
-            <summary>
-            Retrieves the count of unregistered users that received an invite.
-            </summary>
-            <returns>The count of user profiles that received an invite but have not accepted the terms of service.</returns>
-        </member>
         <member name="M:HealthGateway.Admin.Services.IDashboardService.GetTodayLoggedInUsersCount(System.Int32)">
             <summary>
             Retrieves the count of logged in users in the current day.
             </summary>
             <param name="offset">The offset from the client browser to UTC.</param>
             <returns>The count of logged in user.</returns>
-        </member>
-        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetWaitlistUserCount">
-            <summary>
-            Retrieves the count of waitlisted users.
-            </summary>
-            <returns>The count of users waiting for an invite.</returns>
         </member>
         <member name="M:HealthGateway.Admin.Services.IDashboardService.GetUsersWithNotesCount">
             <summary>
