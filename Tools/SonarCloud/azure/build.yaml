@@ -101,10 +101,10 @@ jobs:
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
             /k:hg-webclient \
-            /d:sonar.verbose=false \
-            /n:"Azure WebClient" \
+            /n:"HealthGateway WebClient" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.login="$(webclient.login)" \
+            /d:sonar.verbose=false \
             /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts, **/Common/**, **/Startup.cs, **/Program.cs" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" \
@@ -122,36 +122,37 @@ jobs:
         displayName: 'WebClient - On Fail'
         condition: failed()
 
-      # - script: |
-      #     set -e
-      #     dotnet test \
-      #       test/unit/AdminWebClientTests.csproj \
-      #       /p:CollectCoverage=true \
-      #       /p:CoverletOutputFormat=opencover \
-      #       --logger:"xunit;LogFileName=results.xml" \
-      #       -r ./xUnitResults 
-      #     dotnet sonarscanner begin \
-      #       /d:sonar.verbose=false \
-      #       /k:"adminwebclient_dev" \
-      #       /n:"Azure Admin WebClient" \
-      #       /d:sonar.host.url="https://sonarqube-gateway.pathfinder.gov.bc.ca" \
-      #       /d:sonar.login="$(sonar.login)" \
-      #       /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts, **/Common/**, **/Startup.cs, **/Program.cs" \
-      #       /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-      #       /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" \
-      #       /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" \
-      #       /d:sonar.test.inclusions="**/*.test.ts"
-      #     dotnet build    
-      #     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
-      #     echo "$@" >&2
-      #   displayName: 'AdminWebClient - Perform Static Code Analysis'
-      #   workingDirectory: $(Build.SourcesDirectory)/Apps/AdminWebClient
-      #   continueOnError: true
+      - script: |
+          set -e
+          dotnet test \
+            test/unit/AdminWebClientTests.csproj \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            --logger:"xunit;LogFileName=results.xml" \
+            -r ./xUnitResults 
+          dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
+            /k:hg-adminwebclient \
+            /n:"HealthGateway Admin WebClient" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="$(adminwebclient.login)" \
+            /d:sonar.verbose=false \
+            /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts, **/Common/**, **/Startup.cs, **/Program.cs" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" \
+            /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" \
+            /d:sonar.test.inclusions="**/*.test.ts"
+          dotnet build    
+          dotnet sonarscanner end /d:sonar.login="$(adminwebclient.login)"
+          echo "$@" >&2
+        displayName: 'AdminWebClient - Perform Static Code Analysis'
+        workingDirectory: $(Build.SourcesDirectory)/Apps/AdminWebClient
+        continueOnError: true
 
-      # - script: |
-      #     curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"AdminWebClient Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-      #   displayName: 'AdminWebClient - On Fail'
-      #   condition: failed()
+      - script: |
+          curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"AdminWebClient Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
+        displayName: 'AdminWebClient - On Fail'
+        condition: failed()
 
 
       # # - task: DotNetCoreCLI@2
