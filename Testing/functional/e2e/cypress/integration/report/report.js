@@ -16,7 +16,7 @@ describe('Reports', () => {
             .should('not.be.enabled', 'be.visible')
 
         cy.get('[data-testid=infoText]')
-            .should('have.text', ' Select a service above to create a report ')
+            .should('have.text', ' Select a record type above to create a report ')
 
         cy.get('[data-testid=infoImage]')
             .should('be.visible')

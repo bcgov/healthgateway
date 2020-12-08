@@ -89,7 +89,7 @@ export default class ReportsView extends Vue {
                     <div class="my-3 px-5 py-4 form">
                         <b-row>
                             <b-col>
-                                <label for="reportType">Report Type</label>
+                                <label for="reportType">Record Type</label>
                             </b-col>
                         </b-row>
                         <b-row>
@@ -151,7 +151,8 @@ export default class ReportsView extends Vue {
                         <b-row>
                             <b-col class="text-center">
                                 <h5 data-testid="infoText">
-                                    Select a service above to create a report
+                                    Select a record type above to create a
+                                    report
                                 </h5>
                             </b-col>
                         </b-row>
