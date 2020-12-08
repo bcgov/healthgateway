@@ -31,16 +31,18 @@ namespace HealthGateway.Laboratory.Delegates
         /// It has a collection of one or more Lab Results depending on the tests ordered.
         /// </summary>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <param name="hdid">The requested hdid.</param>
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>The list of Lab Reports available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0);
+        Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0);
 
         /// <summary>
         /// Gets the Lab report in binary format for the supplied id belonging to the authenticated user.
         /// </summary>
         /// <param name="id">The ID of the lab report to get.</param>
+        /// <param name="hdid">The requested HDID which owns the reportId.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken);
+        Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken);
     }
 }

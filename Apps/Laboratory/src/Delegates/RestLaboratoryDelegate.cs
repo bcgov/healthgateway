@@ -66,7 +66,7 @@ namespace HealthGateway.Laboratory.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestLaboratoryDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0)
         {
             using (Source.StartActivity("GetLaboratoryOrders"))
             {
@@ -85,6 +85,7 @@ namespace HealthGateway.Laboratory.Delegates
                 var query = new Dictionary<string, string>
                 {
                     ["limit"] = this.labConfig.FetchSize,
+                    ["subjectHdid"] = hdid,
                 };
                 try
                 {
@@ -149,7 +150,7 @@ namespace HealthGateway.Laboratory.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string bearerToken)
+        public async Task<RequestResult<LaboratoryReport>> GetLabReport(Guid id, string hdid, string bearerToken)
         {
             using (Source.StartActivity("GetLaboratoryOrders"))
             {
@@ -164,9 +165,13 @@ namespace HealthGateway.Laboratory.Delegates
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                var query = new Dictionary<string, string>
+                {
+                    ["subjectHdid"] = hdid,
+                };
                 try
                 {
-                    Uri endpoint = new Uri($"{this.labConfig.Endpoint}/{id}/LabReportDocument");
+                    Uri endpoint = new Uri(QueryHelpers.AddQueryString($"{this.labConfig.Endpoint}/{id}/LabReportDocument", query));
                     HttpResponseMessage response = await client.GetAsync(endpoint).ConfigureAwait(true);
                     string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                     this.logger.LogTrace($"Get laboratory report response payload: {payload}");
