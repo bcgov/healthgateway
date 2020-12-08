@@ -3,6 +3,7 @@ TRUNCATE gateway."UserProfile" CASCADE;
 TRUNCATE gateway."Communication" CASCADE;
 TRUNCATE gateway."ResourceDelegate" CASCADE;
 TRUNCATE gateway."ResourceDelegateHistory" CASCADE;
+TRUNCATE gateway."UserPreference" CASCADE;
 
 /* Registered HealthGateway User */
 INSERT INTO gateway."UserProfile"(
@@ -63,7 +64,6 @@ VALUES (
 );
 
 /* Communication Banner */
-
 INSERT INTO gateway."Communication"(
 	"CommunicationId", 
 	"CreatedBy", 
@@ -92,4 +92,41 @@ INSERT INTO gateway."Communication"(
 	'Banner',
 	10,
 	null
+);
+
+/* User Preferences */
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'actionedCovidModalAt', 
+	'2121-01-01T12:00:00.000-08:00'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialPopover', 
+	'false'
 );

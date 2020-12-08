@@ -55,7 +55,7 @@ RUN npm i -g npm@latest yarn@latest nsp@latest nodemon@latest && \
     npm -v
 
 # Install .Net tooling for SonarQube and Test Results
-RUN dotnet tool install --global dotnet-sonarscanner --version 4.8.0 && \
+RUN dotnet tool install --global dotnet-sonarscanner && \
     dotnet tool install -g dotnet-reportgenerator-globaltool && \
     chmod -R 777 $HOME && \
     rm -rf /tmp/NuGetScratch/lock/* && \

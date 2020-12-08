@@ -173,12 +173,12 @@ export default class NewDependentComponent extends Vue {
                         <b-col>
                             <b-row>
                                 <b-col class="col-12 col-md-4 mb-2">
-                                    <label for="firstName">First Name</label>
+                                    <label for="firstName">Given Names</label>
                                     <b-form-input
                                         id="firstName"
                                         v-model="dependent.firstName"
                                         data-testid="firstNameInput"
-                                        placeholder="John"
+                                        placeholder="John Alexander"
                                         :state="isValid($v.dependent.firstName)"
                                         @blur.native="
                                             $v.dependent.firstName.$touch()
@@ -187,7 +187,7 @@ export default class NewDependentComponent extends Vue {
                                     <b-form-invalid-feedback
                                         :state="isValid($v.dependent.firstName)"
                                     >
-                                        First name is required
+                                        Given names are required
                                     </b-form-invalid-feedback>
                                 </b-col>
                                 <b-col class="col-12 col-md-4 mb-2">
