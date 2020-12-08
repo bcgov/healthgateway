@@ -90,7 +90,7 @@ namespace HealthGateway.Laboratory.Controllers
 
                 if (accessToken != null)
                 {
-                    RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
+                    RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken, hdid).ConfigureAwait(true);
                     this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
 
                     return new JsonResult(result);

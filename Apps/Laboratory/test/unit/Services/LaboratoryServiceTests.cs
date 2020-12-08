@@ -34,6 +34,7 @@ namespace HealthGateway.LaboratoryTests
     /// </summary>
     public class LaboratoryServiceTests
     {
+        private const string HdId = "123";
         private const string BearerToken = "mockBearerToken123";
         private const string IpAddress = "127.0.0.1";
         private const string MockedMessageID = "mockedMessageID";
@@ -46,7 +47,7 @@ namespace HealthGateway.LaboratoryTests
         public void GetLabOrders()
         {
             var service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Success);
-            var actualResult = service.GetLaboratoryOrders(BearerToken, 0);
+            var actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
 
             List<LaboratoryOrder>? resultLabOrders = actualResult!.Result!.ResourcePayload! as List<LaboratoryOrder>;
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
@@ -65,7 +66,7 @@ namespace HealthGateway.LaboratoryTests
         public void GetLabOrdersWithError()
         {
             var service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Error);
-            var actualResult = service.GetLaboratoryOrders(BearerToken, 0);
+            var actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Error);
         }
 
@@ -148,7 +149,7 @@ namespace HealthGateway.LaboratoryTests
             };
 
             var mockLaboratoryDelegate = new Mock<ILaboratoryDelegate>();
-            mockLaboratoryDelegate.Setup(s => s.GetLaboratoryOrders(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
+            mockLaboratoryDelegate.Setup(s => s.GetLaboratoryOrders(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
 
             var mockLaboratoryDelegateFactory = new Mock<ILaboratoryDelegateFactory>();
             mockLaboratoryDelegateFactory.Setup(s => s.CreateInstance()).Returns(mockLaboratoryDelegate.Object);

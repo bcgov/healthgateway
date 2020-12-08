@@ -66,7 +66,7 @@ namespace HealthGateway.Laboratory.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestLaboratoryDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0)
         {
             using (Source.StartActivity("GetLaboratoryOrders"))
             {
@@ -85,6 +85,7 @@ namespace HealthGateway.Laboratory.Delegates
                 var query = new Dictionary<string, string>
                 {
                     ["limit"] = this.labConfig.FetchSize,
+                    ["subjectHdid"] = hdid,
                 };
                 try
                 {

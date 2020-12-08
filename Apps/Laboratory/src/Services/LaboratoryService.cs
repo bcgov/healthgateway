@@ -50,9 +50,9 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryModel>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryModel>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<LaboratoryOrder>> delegateResult = await this.laboratoryDelegate.GetLaboratoryOrders(bearerToken, pageIndex).ConfigureAwait(true);
+            RequestResult<IEnumerable<LaboratoryOrder>> delegateResult = await this.laboratoryDelegate.GetLaboratoryOrders(bearerToken, hdid, pageIndex).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
                 return new RequestResult<IEnumerable<LaboratoryModel>>()

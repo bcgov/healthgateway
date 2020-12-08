@@ -84,7 +84,7 @@ namespace HealthGateway.LaboratoryTests
                 .ReturnsAsync(authResult);
 
             Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
-            svcMock.Setup(s => s.GetLaboratoryOrders(token, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryModel>>()
+            svcMock.Setup(s => s.GetLaboratoryOrders(token, hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryModel>>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 TotalResultCount = 0,
@@ -154,7 +154,7 @@ namespace HealthGateway.LaboratoryTests
                 .ReturnsAsync(authResult);
 
             Mock<ILaboratoryService> svcMock = new Mock<ILaboratoryService>();
-            svcMock.Setup(s => s.GetLaboratoryOrders(token, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryModel>>()
+            svcMock.Setup(s => s.GetLaboratoryOrders(token, hdid, 0)).ReturnsAsync(new RequestResult<IEnumerable<LaboratoryModel>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 ResultError = new RequestResultError() { ResultMessage = "Test Error" },

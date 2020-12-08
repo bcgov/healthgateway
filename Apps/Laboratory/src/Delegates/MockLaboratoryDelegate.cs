@@ -31,7 +31,7 @@ namespace HealthGateway.Laboratory.Delegates
     public class MockLaboratoryDelegate : ILaboratoryDelegate
     {
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<IEnumerable<LaboratoryOrder>>> GetLaboratoryOrders(string bearerToken, string hdid, int pageIndex = 0)
         {
             RequestResult<IEnumerable<LaboratoryOrder>> retVal = new RequestResult<IEnumerable<LaboratoryOrder>>()
             {
