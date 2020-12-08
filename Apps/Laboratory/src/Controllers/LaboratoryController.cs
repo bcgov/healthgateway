@@ -90,7 +90,7 @@ namespace HealthGateway.Laboratory.Controllers
 
                 if (accessToken != null)
                 {
-                    RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken).ConfigureAwait(true);
+                    RequestResult<IEnumerable<LaboratoryModel>> result = await this.service.GetLaboratoryOrders(accessToken, hdid).ConfigureAwait(true);
                     this.logger.LogDebug($"Finished getting lab orders from controller... {hdid}");
 
                     return new JsonResult(result);
@@ -125,8 +125,7 @@ namespace HealthGateway.Laboratory.Controllers
 
                 if (accessToken != null)
                 {
-
-                    RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, accessToken).ConfigureAwait(true);
+                    RequestResult<LaboratoryReport> result = await this.service.GetLabReport(reportId, hdid, accessToken).ConfigureAwait(true);
                     this.logger.LogDebug($"Finished getting pdf report from controller... {hdid}");
 
                     return new JsonResult(result);
