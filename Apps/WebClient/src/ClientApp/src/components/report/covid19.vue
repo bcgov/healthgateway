@@ -185,16 +185,25 @@ export default class COVID19ReportComponent extends Vue {
                     <b-col class="col">Result</b-col>
                 </b-row>
                 <b-row v-for="item in records" :key="item.id" class="item py-1">
-                    <b-col class="col my-auto text-nowrap">
+                    <b-col
+                        data-testid="covid19ItemDate"
+                        class="col my-auto text-nowrap"
+                    >
                         {{ formatDate(item.collectedDateTime) }}
                     </b-col>
-                    <b-col class="col my-auto">
+                    <b-col
+                        data-testid="covid19ItemTestType"
+                        class="col my-auto"
+                    >
                         {{ item.labResults[0].testType }}
                     </b-col>
-                    <b-col class="col my-auto">
+                    <b-col
+                        data-testid="covid19ItemLocation"
+                        class="col my-auto"
+                    >
                         {{ item.location }}
                     </b-col>
-                    <b-col class="col my-auto">
+                    <b-col data-testid="covid19ItemResult" class="col my-auto">
                         {{ item.labResults[0].labResultOutcome }}
                     </b-col>
                 </b-row>
