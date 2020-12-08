@@ -35,7 +35,6 @@ export default class ImmunizationTimelineComponent extends Vue {
                 {{ entry.immunization.name }}
             </b-col>
         </b-row>
-        <CommentSection :parent-entry="entry"></CommentSection>
     </b-col>
 </template>
 
@@ -57,7 +56,7 @@ $radius: 15px;
     padding: 13px 15px;
     font-weight: bold;
     margin-right: -1px;
-    border-radius: 0px $radius 0px 0px;
+    border-radius: 0px $radius $radius 0px;
 }
 
 .icon {
@@ -65,7 +64,7 @@ $radius: 15px;
     color: white;
     text-align: center;
     padding: 10px 0;
-    border-radius: $radius 0px 0px 0px;
+    border-radius: $radius 0px 0px $radius;
 }
 
 .leftPane {
