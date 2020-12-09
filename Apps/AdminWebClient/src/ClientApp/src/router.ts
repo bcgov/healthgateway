@@ -3,7 +3,6 @@ import store from "@/store/store";
 import LoginView from "@/views/Login.vue";
 import LogoutView from "@/views/Logout.vue";
 import DashboardView from "@/views/Dashboard.vue";
-import BetaQueueView from "@/views/BetaQueue.vue";
 import ResendEmailView from "@/views/ResendEmail.vue";
 import VueRouter from "vue-router";
 import FeedbackView from "@/views/Feedback.vue";
@@ -40,12 +39,6 @@ const routes = [
             location.href =
                 store.getters["config/serviceEndpoints"]["JobScheduler"];
         }
-    },
-    {
-        path: "/beta-invites",
-        name: "Beta user list",
-        component: BetaQueueView,
-        meta: { requiresAuth: true }
     },
     {
         path: "/admin-email",
