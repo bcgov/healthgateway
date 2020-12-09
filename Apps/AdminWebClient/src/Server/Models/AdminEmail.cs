@@ -61,7 +61,7 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         /// <param name="model">A database email model.</param>
         /// <param name="inviteStatus">The user invite status.</param>
-        /// <returns>A new UserBetaRequest.</returns>
+        /// <returns>A new AdminEmail.</returns>
         public static AdminEmail CreateFromDbModel(Email model, string inviteStatus)
         {
             return new AdminEmail()

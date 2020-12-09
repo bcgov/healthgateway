@@ -11,7 +11,6 @@ import DatetimePicker from "vuetify-datetime-picker";
 
 import {
     IHttpDelegate,
-    IBetaRequestService,
     IConfigService,
     IAuthenticationService,
     IUserFeedbackService,
@@ -54,9 +53,6 @@ configService.initialize(httpDelegate);
 // Initialize the store only then start the app
 store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     // Retrieve service interfaces
-    const betaRequestService: IBetaRequestService = container.get(
-        SERVICE_IDENTIFIER.BetaRequestService
-    );
     const userFeedbackService: IUserFeedbackService = container.get(
         SERVICE_IDENTIFIER.UserFeedbackService
     );
@@ -69,7 +65,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
 
     // Initialize services
     authenticationService.initialize(httpDelegate, config);
-    betaRequestService.initialize(httpDelegate);
     userFeedbackService.initialize(httpDelegate);
     dashboardService.initialize(httpDelegate);
     emailAdminService.initialize(httpDelegate);

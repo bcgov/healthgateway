@@ -26,10 +26,5 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the user profile.
         /// </summary>
         public UserProfile Profile { get; set; } = new UserProfile();
-
-        /// <summary>
-        /// Gets or sets the code used to validate if the user has an invite.
-        /// </summary>
-        public string InviteCode { get; set; } = string.Empty;
     }
 }
