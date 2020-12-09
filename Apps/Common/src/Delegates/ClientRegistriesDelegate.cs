@@ -184,18 +184,20 @@ namespace HealthGateway.Common.Delegates
                     };
                 }
 
+                PN nameSection = retrievedPerson.identifiedPerson.name.Where(x => x.use.Any(u => u == cs_EntityNameUse.C)).First();
+
                 // Extract the subject names
                 List<string> givenNameList = new List<string>();
                 List<string> lastNameList = new List<string>();
-                for (int i = 0; i < retrievedPerson.identifiedPerson.name[0].Items.Length; i++)
+                for (int i = 0; i < nameSection.Items.Length; i++)
                 {
-                    ENXP name = retrievedPerson.identifiedPerson.name[0].Items[i];
+                    ENXP name = nameSection.Items[i];
 
-                    if (name.GetType() == typeof(engiven))
+                    if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
                     {
                         givenNameList.Add(name.Text[0]);
                     }
-                    else if (name.GetType() == typeof(enfamily))
+                    else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
                     {
                         lastNameList.Add(name.Text[0]);
                     }
@@ -219,8 +221,8 @@ namespace HealthGateway.Common.Delegates
 
                 PatientModel patient = new PatientModel() { FirstName = givenNames, LastName = lastNames, Birthdate = dob, Gender = gender, EmailAddress = string.Empty };
 
-                string personIdentifierType = ((II)retrievedPerson.identifiedPerson.id.GetValue(0) !).root;
-                string personIdentifier = ((II)retrievedPerson.identifiedPerson.id.GetValue(0) !).extension;
+                string personIdentifierType = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).root;
+                string personIdentifier = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).extension;
                 if (personIdentifierType == OIDType.HDID.ToString())
                 {
                     patient.HdId = personIdentifier;
@@ -241,8 +243,8 @@ namespace HealthGateway.Common.Delegates
                     };
                 }
 
-                string subjectIdentifierType = ((II)retrievedPerson.id.GetValue(0) !).root;
-                string subjectIdentifier = ((II)retrievedPerson.id.GetValue(0) !).extension;
+                string subjectIdentifierType = ((II)retrievedPerson.id.GetValue(0)!).root;
+                string subjectIdentifier = ((II)retrievedPerson.id.GetValue(0)!).extension;
                 if (subjectIdentifierType == OIDType.HDID.ToString())
                 {
                     patient.HdId = subjectIdentifier;
