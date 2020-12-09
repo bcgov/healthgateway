@@ -30,6 +30,9 @@ namespace HealthGateway.Patient.Test
 
     public class PatientService_Test
     {
+        //this.config = new ConfigurationBuilder()
+                // .AddJsonFile("UnitTest.json").Build();
+
         [Fact]
         public void ShouldGetPatient()
         {
