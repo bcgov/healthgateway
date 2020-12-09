@@ -5,7 +5,12 @@
     <!-- SonarQube needs this -->
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.WebClientTests</RootNamespace>
+    <nowarn>SA0001</nowarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\..\stylecop.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Mock\**" />

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Services
 {
+    using System;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -22,7 +23,6 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.WebClient.Services;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using System;
     using Xunit;
 
     /// <summary>
