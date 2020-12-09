@@ -51,7 +51,7 @@ export default class ReportsView extends Vue {
         if (this.config.modules["Laboratory"]) {
             this.reportTypeOptions.push({
                 value: "COVID-19",
-                text: "COVID-19",
+                text: "COVID-19 Test Results",
             });
         }
         this.loadName();
