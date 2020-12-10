@@ -40,5 +40,36 @@ namespace HealthGateway.Patient.Test
             Assert.False(message.IsEmpty);
             Assert.False(message.IsFault);
         }
+
+        [Fact]
+        public void ShouldProcessBeforeSendRequest()
+        {
+            IClientMessageInspector service = new LoggingMessageInspector(
+                new Mock<ILogger<LoggingMessageInspector>>().Object
+            );
+
+            Message message = Message.CreateMessage(MessageVersion.None, "test", "<Test></Test>");
+            // Act
+            service.BeforeSendRequest(ref message, null);
+            // Verify
+            Assert.False(message.IsEmpty);
+            Assert.False(message.IsFault);
+        }
+
+        [Fact]
+        public void ShouldThrowErrorIfNullParam()
+        {
+            try
+            {
+                IClientMessageInspector service = new LoggingMessageInspector(
+                       null
+                   );
+                Assert.Equal("Failed", "");
+            }
+            catch(System.ArgumentNullException argumentNullException)
+            {
+                Assert.Equal("Value cannot be null. (Parameter 'logger')", argumentNullException.Message);
+            }
+        }
     }
 }

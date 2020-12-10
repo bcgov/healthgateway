@@ -27,17 +27,69 @@ namespace HealthGateway.Patient.Test
     using HealthGateway.Database.Delegates;
     using System.Collections.Generic;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
 
     public class PatientService_Test
     {
-        //this.config = new ConfigurationBuilder()
-                // .AddJsonFile("UnitTest.json").Build();
+        private const string hdid = "abc123";
+
+        private void GetPatientPHN(PatientIdentifierType identifierType, Dictionary<string, string> configDictionary, Database.Constants.DBStatusCode mockDBStatusCode, bool returnNullPatientResult)
+        {
+            RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 1,
+                PageSize = 1,
+                ResourcePayload = new PatientModel()
+                {
+                    FirstName = "John",
+                    LastName = "Doe",
+                    HdId = hdid,
+                },
+            };
+            Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(configDictionary)
+                .Build();
+
+            patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+
+            DBResult<GenericCache> dbResult = new DBResult<GenericCache>()
+            {
+                Status = mockDBStatusCode,
+            };
+            Mock<IGenericCacheDelegate> genericCacheDelegateMock = new Mock<IGenericCacheDelegate>();
+            genericCacheDelegateMock.Setup(p => p.CacheObject(It.IsAny<object>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), true)).Returns(dbResult);
+
+            genericCacheDelegateMock.Setup(p => p.GetCacheObject<PatientModel>(It.IsAny<string>(), It.IsAny<string>())).Returns(returnNullPatientResult ? null : requestResult.ResourcePayload);
+
+            IPatientService service = new PatientService(
+                new Mock<ILogger<PatientService>>().Object,
+                config,
+                patientDelegateMock.Object,
+                genericCacheDelegateMock.Object);
+
+            // Act
+            RequestResult<string> actual = Task.Run(async () => await service.GetPatientPHN(hdid).ConfigureAwait(true)).Result;
+
+        }
 
         [Fact]
-        public void ShouldGetPatient()
+        public void ShouldGetPatientPHN()
         {
-            string hdid = "abc123";
+            GetPatientPHN(PatientIdentifierType.HDID, new Dictionary<string, string>(), Database.Constants.DBStatusCode.Created, false);
+        }
 
+        [Fact]
+        public void ShouldGetPatientPHNWitEmptyResult()
+        {
+            GetPatientPHN(PatientIdentifierType.HDID, new Dictionary<string, string>(), Database.Constants.DBStatusCode.Created, true);
+        }
+
+        private void GetPatient(PatientIdentifierType identifierType, Dictionary<string, string> configDictionary, Database.Constants.DBStatusCode mockDBStatusCode, bool returnValidCache = false)
+        {
             RequestResult<PatientModel> requestResult = new RequestResult<PatientModel>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
@@ -52,24 +104,66 @@ namespace HealthGateway.Patient.Test
             };
 
             Mock<IClientRegistriesDelegate> patientDelegateMock = new Mock<IClientRegistriesDelegate>();
-            var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>())
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(configDictionary)
                 .Build();
 
             patientDelegateMock.Setup(p => p.GetDemographicsByHDIDAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsByPHNAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
+
+            DBResult<GenericCache> dbResult = new DBResult<GenericCache>()
+            {
+                Status = mockDBStatusCode,
+            };
+            Mock <IGenericCacheDelegate> genericCacheDelegateMock = new Mock<IGenericCacheDelegate>();
+            genericCacheDelegateMock.Setup(p => p.CacheObject(It.IsAny<object>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), true)).Returns(dbResult);
+            if (returnValidCache)
+            {
+                genericCacheDelegateMock.Setup(p => p.GetCacheObject<PatientModel>(It.IsAny<string>(), It.IsAny<string>())).Returns(requestResult.ResourcePayload);
+            }
 
             IPatientService service = new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
-                configuration,
+                config,
                 patientDelegateMock.Object,
-                new Mock<IGenericCacheDelegate>().Object);
+                genericCacheDelegateMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(hdid).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(hdid, identifierType).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Success, actual.ResultStatus);
             Assert.Equal(hdid, actual.ResourcePayload.HdId);
+        }
+
+        [Fact]
+        public void ShouldGetPatient()
+        {
+            GetPatient(PatientIdentifierType.HDID, new Dictionary<string, string>(), Database.Constants.DBStatusCode.Created);
+        }
+
+        [Fact]
+        public void ShouldGetPatientFromCache()
+        {
+            var configDictionary = new Dictionary<string, string>();
+            configDictionary.Add("PatientService:CacheTTL", "90");
+            GetPatient(PatientIdentifierType.HDID, configDictionary, Database.Constants.DBStatusCode.Created, true);
+        }
+
+        [Fact]
+        public void ShouldGetPatientFromCacheWithPHN()
+        {
+            var configDictionary = new Dictionary<string, string>();
+            configDictionary.Add("PatientService:CacheTTL", "90");
+            GetPatient(PatientIdentifierType.PHN, configDictionary, Database.Constants.DBStatusCode.Created);
+        }
+
+        [Fact]
+        public void ShouldGetPatientFromCacheWithDBError()
+        {
+            var configDictionary = new Dictionary<string, string>();
+            configDictionary.Add("PatientService:CacheTTL", "90");
+            GetPatient(PatientIdentifierType.HDID, configDictionary, Database.Constants.DBStatusCode.Error);
         }
 
         [Fact]
