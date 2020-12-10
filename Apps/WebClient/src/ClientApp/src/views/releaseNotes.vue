@@ -10,6 +10,87 @@
                         </div>
                     </b-col>
                 </b-row>
+                    <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >December 9, 2020 - v1.3.1.3 - Fix for Dependent Name Validation, COVID-19 Test Result Export
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We fixed a bug on dependent name validation and implemented the COVID-19 Test Result record export. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>                
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >December 8, 2020 - v1.3.1.2 - Updated Add Dependent Form
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        Updated field name to reflect Given Names needed when entering dependent's name. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>                
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >December 7, 2020 - v1.3.1.1 - Launched Parent Access to Children's COVID-19 Results
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We launched the feature enabling parent access to their children's COVID-19 results. This will allow parents to view results for their 
+                                        children under the age of 12. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>                
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >December 3, 2020 - v1.3.0.4 - Code cleanup, Package Updates, Test Coverage 
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        Following this team prep sprint, we planned for our upcoming release phase. We also cleaned up code, added test coverage and updated technical packages. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
