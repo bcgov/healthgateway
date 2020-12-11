@@ -11,7 +11,7 @@
     },
     "devDependencies": {
         "@types/chart.js": "^2.9.28",
-        "@types/jest": "^26.0.18",
+        "@types/jest": "^26.0.19",
         "@types/luxon": "^1.25.0",
         "@types/vuelidate": "^0.7.13",
         "@types/webpack-env": "^1.16.0",
