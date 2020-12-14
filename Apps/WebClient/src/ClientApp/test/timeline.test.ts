@@ -13,6 +13,7 @@ import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
 import { LaboratoryOrder } from "@/models/laboratory";
 import {
+    CommentState,
     LaboratoryState,
     MedicationState,
     RootState,
@@ -22,6 +23,8 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { DateWrapper } from "@/models/dateWrapper";
+import { Dictionary } from "@/models/baseTypes";
+import { UserComment } from "@/models/userComment";
 
 const today = new DateWrapper();
 const yesterday = today.subtract({ day: 1 });
@@ -134,6 +137,25 @@ const medicationActions: ActionTree<MedicationState, RootState> = {
 
 const medicationGetters = {};
 
+const commentActions: ActionTree<CommentState, RootState> = {
+    retrieveProfileComments(
+        context,
+        params: { hdid: string }
+    ): Promise<RequestResult<Dictionary<UserComment[]>>> {
+        return new Promise((resolve) => {
+            resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: {},
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        });
+    },
+};
+
+const commentGetters = {};
+
 const a: WebClientConfiguration = {
     logLevel: "",
     timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
@@ -177,6 +199,11 @@ function createWrapper(): Wrapper<TimelineComponent> {
                 namespaced: true,
                 getters: medicationGetters,
                 actions: medicationActions,
+            },
+            comment: {
+                namespaced: true,
+                getters: commentGetters,
+                actions: commentActions,
             },
         },
     });
