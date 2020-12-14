@@ -111,6 +111,7 @@ const medicationActions: ActionTree<MedicationState, RootState> = {
     ): Promise<RequestResult<MedicationStatementHistory[]>> {
         return new Promise((resolve, reject) => {
             if (params.hdid === "hdid_with_results") {
+                context.state.medicationStatements = medicationStatements;
                 resolve({
                     totalResultCount: medicationStatements.length,
                     pageIndex: 0,
@@ -138,10 +139,9 @@ const medicationActions: ActionTree<MedicationState, RootState> = {
 const medicationGetters = {};
 
 const commentActions: ActionTree<CommentState, RootState> = {
-    retrieveProfileComments(
-        context,
-        params: { hdid: string }
-    ): Promise<RequestResult<Dictionary<UserComment[]>>> {
+    retrieveProfileComments(): Promise<
+        RequestResult<Dictionary<UserComment[]>>
+    > {
         return new Promise((resolve) => {
             resolve({
                 pageIndex: 0,
