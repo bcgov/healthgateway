@@ -66,7 +66,6 @@ export let PatientServiceUrl = baseUrl + "/api/PatientService/v1/api/Patient";
 // console.log("Running tests against baseUrl := " + baseUrl);
 
 // Health Gateway WebClient app APIs:
-export let BetaRequestUrl = baseUrl + "/v1/api/BetaRequest";
 export let CommentUrl = baseUrl + "/v1/api/Comment";
 export let CommunicationUrl = baseUrl + "/v1/api/Communication";
 export let ConfigurationUrl = baseUrl + "/v1/api/Configuration";
@@ -271,11 +270,6 @@ export function webClientRequests(user) {
         'patient': {
             method: 'GET',
             url: common.PatientServiceUrl + "/" + user.hdid,
-            params: params(user)
-        },
-        'beta': {
-            method: 'GET',
-            url: common.BetaRequestUrl + "/" + user.hdid,
             params: params(user)
         },
         'communication': {

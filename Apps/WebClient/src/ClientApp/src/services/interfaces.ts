@@ -12,7 +12,6 @@ import { Dictionary } from "vue-router/types/router";
 import MedicationResult from "@/models/medicationResult";
 import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
-import BetaRequest from "@/models/betaRequest";
 import { TermsOfService } from "@/models/termsOfService";
 import UserNote from "@/models/userNote";
 import Communication from "@/models/communication";
@@ -114,12 +113,6 @@ export interface IUserFeedbackService {
 export interface IUserRatingService {
     initialize(http: IHttpDelegate): void;
     submitRating(rating: UserRating): Promise<boolean>;
-}
-
-export interface IBetaRequestService {
-    initialize(http: IHttpDelegate): void;
-    getRequested(hdid: string): Promise<BetaRequest>;
-    putRequest(hdid: string, request: BetaRequest): Promise<BetaRequest>;
 }
 
 export interface IUserNoteService {

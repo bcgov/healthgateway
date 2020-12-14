@@ -13,20 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+[assembly: System.CLSCompliant(false)]
 
-import http from 'k6/http';
-import { sleep } from 'k6';
-import * as common from '../inc/common.js';
-
-export let options = common.OptionConfig();
-
-export default function () {
-
-  let user = common.users[__VU % common.users.length];
-
-  common.authorizeUser(user);
-  let response = http.get(common.BetaRequestUrl + "/" + user.hdid, common.params(user));
-  common.checkResponse(response);
-  sleep(1);
+namespace HealthGateway.Common
+{
 }
-

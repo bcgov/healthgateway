@@ -25,7 +25,6 @@ namespace HealthGateway.Admin.Services
     {
         private readonly INoteDelegate noteDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IBetaRequestDelegate betaRequestDelegate;
         private readonly IConfiguration configuration;
         private readonly AdminConfiguration adminConfiguration;
 
@@ -34,17 +33,14 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="betaRequestDelegate">The beta request delegate to interact with the DB.</param>
         /// <param name="config">The configuration provider.</param>
         public DashboardService(
             INoteDelegate noteDelegate,
             IUserProfileDelegate userProfileDelegate,
-            IBetaRequestDelegate betaRequestDelegate,
             IConfiguration config)
         {
             this.noteDelegate = noteDelegate;
             this.userProfileDelegate = userProfileDelegate;
-            this.betaRequestDelegate = betaRequestDelegate;
             this.configuration = config;
             this.adminConfiguration = new AdminConfiguration();
             this.configuration.GetSection("Admin").Bind(this.adminConfiguration);
@@ -57,23 +53,11 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetUnregisteredInvitedUserCount()
-        {
-            return this.userProfileDelegate.GeUnregisteredInvitedUsersCount();
-        }
-
-        /// <inheritdoc />
         public int GetTodayLoggedInUsersCount(int offset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
             TimeSpan ts = new TimeSpan(0, -1 * offset, 0);
             return this.userProfileDelegate.GetLoggedInUsersCount(ts);
-        }
-
-        /// <inheritdoc />
-        public int GetWaitlistUserCount()
-        {
-            return this.betaRequestDelegate.GetWaitlistCount();
         }
 
         /// <inheritdoc />

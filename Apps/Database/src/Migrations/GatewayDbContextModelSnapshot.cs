@@ -17,88 +17,92 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.9")
+                .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("Relational:Sequence:.gateway.trace_seq", "'gateway.trace_seq', '', '1', '1', '1', '999999', 'Int64', 'True'");
+                .HasAnnotation("ProductVersion", "5.0.0");
+
+            modelBuilder.HasSequence("gateway.trace_seq")
+                .HasMin(1L)
+                .HasMax(999999L)
+                .IsCyclic();
 
             modelBuilder.Entity("HealthGateway.Database.Models.ActiveIngredient", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("ActiveIngredientId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("ActiveIngredientId");
 
                     b.Property<int>("ActiveIngredientCode")
                         .HasColumnType("integer");
 
                     b.Property<string>("Base")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("DosageUnit")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("DosageUnitFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("DosageValue")
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Ingredient")
-                        .HasColumnType("character varying(240)")
-                        .HasMaxLength(240);
+                        .HasMaxLength(240)
+                        .HasColumnType("character varying(240)");
 
                     b.Property<string>("IngredientFrench")
-                        .HasColumnType("character varying(400)")
-                        .HasMaxLength(400);
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
 
                     b.Property<string>("IngredientSuppliedInd")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("character varying(2000)")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Strength")
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("StrengthType")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("StrengthTypeFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("StrengthUnit")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("StrengthUnitFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -106,8 +110,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -121,36 +125,36 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("ApplicationSettingsId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("ApplicationSettingsId");
 
                     b.Property<string>("Application")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("Component")
                         .IsRequired()
-                        .HasColumnType("character varying(50)")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasColumnType("character varying(250)")
-                        .HasMaxLength(250);
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -161,8 +165,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -191,59 +195,59 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("AuditEventId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("AuditEventId");
 
                     b.Property<string>("ApplicationSubject")
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("ApplicationType")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("AuditEventDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("ClientIP")
                         .IsRequired()
-                        .HasColumnType("character varying(15)")
-                        .HasMaxLength(15);
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Trace")
-                        .HasColumnType("character varying(200)")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<long?>("TransactionDuration")
                         .HasColumnType("bigint");
 
                     b.Property<string>("TransactionName")
                         .IsRequired()
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("TransactionResultCode")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("TransactionVersion")
-                        .HasColumnType("character varying(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -251,8 +255,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -266,26 +270,26 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.AuditTransactionResultCode", b =>
                 {
                     b.Property<string>("ResultCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(30)")
-                        .HasMaxLength(30);
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -293,8 +297,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ResultCode");
 
@@ -343,92 +347,53 @@ namespace HealthGateway.Database.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.BetaRequest", b =>
-                {
-                    b.Property<string>("HdId")
-                        .HasColumnName("BetaRequestId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("EmailAddress")
-                        .IsRequired()
-                        .HasColumnType("character varying(254)")
-                        .HasMaxLength(254);
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
-
-                    b.HasKey("HdId");
-
-                    b.ToTable("BetaRequest");
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.Comment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("CommentId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("CommentId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("EntryTypeCode")
                         .IsRequired()
-                        .HasColumnType("character varying(3)")
-                        .HasMaxLength(3);
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
 
                     b.Property<string>("ParentEntryId")
                         .IsRequired()
-                        .HasColumnType("character varying(36)")
-                        .HasMaxLength(36);
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Text")
-                        .HasColumnType("character varying(1344)")
-                        .HasMaxLength(1344);
+                        .HasMaxLength(1344)
+                        .HasColumnType("character varying(1344)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserProfileId")
                         .IsRequired()
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -441,23 +406,23 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("CommunicationId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("CommunicationId");
 
                     b.Property<string>("CommunicationStatusCode")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CommunicationTypeCode")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -476,18 +441,18 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("Subject")
                         .IsRequired()
-                        .HasColumnType("character varying(1000)")
-                        .HasMaxLength(1000);
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("character varying(1000)")
-                        .HasMaxLength(1000);
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -495,8 +460,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -511,16 +476,16 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("CommunicationEmailId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("CommunicationEmailId");
 
                     b.Property<Guid>("CommunicationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -530,22 +495,22 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserProfileHdId")
                         .IsRequired()
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -561,26 +526,26 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.CommunicationStatusCode", b =>
                 {
                     b.Property<string>("StatusCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(50)")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -588,8 +553,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("StatusCode");
 
@@ -661,26 +626,26 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.CommunicationTypeCode", b =>
                 {
                     b.Property<string>("StatusCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(30)")
-                        .HasMaxLength(30);
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -688,8 +653,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("StatusCode");
 
@@ -722,52 +687,52 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("CompanyId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("CompanyId");
 
                     b.Property<string>("AddressBillingFlag")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("AddressMailingFlag")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("AddressNotificationFlag")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("AddressOther")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("CityName")
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<int>("CompanyCode")
                         .HasColumnType("integer");
 
                     b.Property<string>("CompanyName")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("CompanyType")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("Country")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("CountryFrench")
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -776,37 +741,37 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ManufacturerCode")
-                        .HasColumnType("character varying(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("PostOfficeBox")
-                        .HasColumnType("character varying(15)")
-                        .HasMaxLength(15);
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
 
                     b.Property<string>("PostalCode")
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Province")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("ProvinceFrench")
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("StreetName")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("SuiteNumber")
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -814,8 +779,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -829,59 +794,59 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("DrugProductId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("DrugProductId");
 
                     b.Property<string>("AccessionNumber")
-                        .HasColumnType("character varying(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("AiGroupNumber")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("BrandName")
                         .IsRequired()
-                        .HasColumnType("character varying(200)")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("BrandNameFrench")
-                        .HasColumnType("character varying(300)")
-                        .HasMaxLength(300);
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Descriptor")
-                        .HasColumnType("character varying(150)")
-                        .HasMaxLength(150);
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("DescriptorFrench")
-                        .HasColumnType("character varying(200)")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("DrugClass")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("DrugClassFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("DrugCode")
                         .IsRequired()
-                        .HasColumnType("character varying(8)")
-                        .HasMaxLength(8);
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("DrugIdentificationNumber")
                         .IsRequired()
-                        .HasColumnType("character varying(29)")
-                        .HasMaxLength(29);
+                        .HasMaxLength(29)
+                        .HasColumnType("character varying(29)");
 
                     b.Property<Guid>("FileDownloadId")
                         .HasColumnType("uuid");
@@ -890,21 +855,21 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NumberOfAis")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("PediatricFlag")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("ProductCategorization")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -912,8 +877,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -926,8 +891,8 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("EmailId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("EmailId");
 
                     b.Property<int>("Attempts")
                         .HasColumnType("integer");
@@ -938,26 +903,26 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("EmailStatusCode")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("FormatCode")
                         .IsRequired()
-                        .HasColumnType("character varying(4)")
-                        .HasMaxLength(4);
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
 
                     b.Property<string>("From")
                         .IsRequired()
-                        .HasColumnType("character varying(254)")
-                        .HasMaxLength(254);
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
 
                     b.Property<DateTime?>("LastRetryDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -973,18 +938,18 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("Subject")
                         .IsRequired()
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("To")
                         .IsRequired()
-                        .HasColumnType("character varying(254)")
-                        .HasMaxLength(254);
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -992,8 +957,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -1007,21 +972,21 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.EmailFormatCode", b =>
                 {
                     b.Property<string>("FormatCode")
-                        .HasColumnType("character varying(4)")
-                        .HasMaxLength(4);
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1029,8 +994,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("FormatCode");
 
@@ -1060,26 +1025,26 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.EmailStatusCode", b =>
                 {
                     b.Property<string>("StatusCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(30)")
-                        .HasMaxLength(30);
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1087,8 +1052,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("StatusCode");
 
@@ -1141,8 +1106,8 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("EmailTemplateId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("EmailTemplateId");
 
                     b.Property<string>("Body")
                         .IsRequired()
@@ -1150,8 +1115,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1164,31 +1129,31 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("FormatCode")
                         .IsRequired()
-                        .HasColumnType("character varying(4)")
-                        .HasMaxLength(4);
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
 
                     b.Property<string>("From")
                         .IsRequired()
-                        .HasColumnType("character varying(254)")
-                        .HasMaxLength(254);
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("character varying(30)")
-                        .HasMaxLength(30);
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
 
                     b.Property<string>("Subject")
                         .IsRequired()
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1196,8 +1161,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -1209,36 +1174,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("040c2ec3-d6c0-4199-9e4b-ebe6da48d52a"),
-                            Body = @"<!doctype html>
-<html lang=""en"">
-<head></head>
-<body style = ""margin:0"">
-    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
-        <tr style = ""background:#003366;"">
-            <th width=""45"" ></th>
-            <th width=""350"" align=""left"" style=""text-align:left;"">
-                <div role=""img"" aria - label=""Health Gateway Logo"">
-                    <img src=""${ActivationHost}/Logo.png"" alt=""Health Gateway Logo""/>
-                </div>
-            </th>
-            <th width=""""></th>
-        </tr>
-        <tr>
-            <td colspan=""3"" height=""20""></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <h1 style = ""font-size:18px;"">Almost there!</h1>
-                <p>We've received a request to register your email address for a Health Gateway account.</p>
-                <p>To activate your account, please verify your email by clicking the link:</p>
-                <a style = ""color:#1292c5;font-weight:600;"" href = ""${ActivationHost}/ValidateEmail/${InviteKey}""> Health Gateway Account Verification </a>
-            </td>
-            <td></td>
-        </tr>
-    </table>
-</body>
-</html>",
+                            Body = "<!doctype html>\n<html lang=\"en\">\n<head></head>\n<body style = \"margin:0\">\n    <table cellspacing=\"0\" align=\"left\" width=\"100%\" style=\"margin:0;color:#707070;font-family:Helvetica;font-size:12px;\">\n        <tr style = \"background:#003366;\">\n            <th width=\"45\" ></th>\n            <th width=\"350\" align=\"left\" style=\"text-align:left;\">\n                <div role=\"img\" aria - label=\"Health Gateway Logo\">\n                    <img src=\"${ActivationHost}/Logo.png\" alt=\"Health Gateway Logo\"/>\n                </div>\n            </th>\n            <th width=\"\"></th>\n        </tr>\n        <tr>\n            <td colspan=\"3\" height=\"20\"></td>\n        </tr>\n        <tr>\n            <td></td>\n            <td>\n                <h1 style = \"font-size:18px;\">Almost there!</h1>\n                <p>We've received a request to register your email address for a Health Gateway account.</p>\n                <p>To activate your account, please verify your email by clicking the link:</p>\n                <a style = \"color:#1292c5;font-weight:600;\" href = \"${ActivationHost}/ValidateEmail/${InviteKey}\"> Health Gateway Account Verification </a>\n            </td>\n            <td></td>\n        </tr>\n    </table>\n</body>\n</html>",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1254,37 +1190,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("896f8f2e-3bed-400b-acaf-51dd6082b4bd"),
-                            Body = @"<!doctype html>
-    <html lang=""en"">
-    <head></head>
-    <body style=""margin:0"">
-    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
-        <tr style=""background:#036;"">
-            <th width=""45""></th>
-            <th width=""350"" align=""left"" style=""text-align:left;"">
-                <div role=""img"" aria-label=""Health Gateway Logo"">
-                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo""/>
-                </div>
-            </th>
-            <th width=""""></th>
-        </tr>
-        <tr>
-            <td colspan=""3"" height=""20""></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <h1 style=""font-size:18px;"">Good day,</h1>
-                <p>You are receiving this email as a Health Gateway patient partner. We welcome your feedback and suggestions as one of the first users of the application.</p>
-                <p>Please click on the link below which will take you to your registration for the Health Gateway service. This registration link is valid for your one-time use only. We kindly ask that you do not share your link with anyone else.</p>
-                <a style = ""font-weight:600;"" href=""${host}/registrationInfo?inviteKey=${inviteKey}&email=${emailTo}"">Register Now</a>
-                <p>If you have any questions about the registration process, including signing up to use your BC Services Card for authentication, please contact Nino Samson at nino.samson@gov.bc.ca.</p>
-            </td>
-            <td></td>
-        </tr>
-    </table>
-</body>
-</html>",
+                            Body = "<!doctype html>\n    <html lang=\"en\">\n    <head></head>\n    <body style=\"margin:0\">\n    <table cellspacing=\"0\" align=\"left\" width=\"100%\" style=\"margin:0;color:#707070;font-family:Helvetica;font-size:12px;\">\n        <tr style=\"background:#036;\">\n            <th width=\"45\"></th>\n            <th width=\"350\" align=\"left\" style=\"text-align:left;\">\n                <div role=\"img\" aria-label=\"Health Gateway Logo\">\n                    <img src=\"${host}/Logo.png\" alt=\"Health Gateway Logo\"/>\n                </div>\n            </th>\n            <th width=\"\"></th>\n        </tr>\n        <tr>\n            <td colspan=\"3\" height=\"20\"></td>\n        </tr>\n        <tr>\n            <td></td>\n            <td>\n                <h1 style=\"font-size:18px;\">Good day,</h1>\n                <p>You are receiving this email as a Health Gateway patient partner. We welcome your feedback and suggestions as one of the first users of the application.</p>\n                <p>Please click on the link below which will take you to your registration for the Health Gateway service. This registration link is valid for your one-time use only. We kindly ask that you do not share your link with anyone else.</p>\n                <a style = \"font-weight:600;\" href=\"${host}/registrationInfo?inviteKey=${inviteKey}&email=${emailTo}\">Register Now</a>\n                <p>If you have any questions about the registration process, including signing up to use your BC Services Card for authentication, please contact Nino Samson at nino.samson@gov.bc.ca.</p>\n            </td>\n            <td></td>\n        </tr>\n    </table>\n</body>\n</html>",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1300,35 +1206,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("2ab5d4aa-c4c9-4324-a753-cde4e21e7612"),
-                            Body = @"<!doctype html>
-    <html lang=""en"">
-    <head></head>
-    <body style=""margin:0"">
-    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
-        <tr style=""background:#036;"">
-            <th width=""45""></th>
-            <th width=""350"" align=""left"" style=""text-align:left;"">
-                <div role=""img"" aria-label=""Health Gateway Logo"">
-                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo""/>
-                </div>
-            </th>
-            <th width=""""></th>
-        </tr>
-        <tr>
-            <td colspan=""3"" height=""20""></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <h1 style=""font-size:18px;"">Good day,</h1>
-                <p>Thank you for joining the wait list to be an early user of the Health Gateway.</p>
-                <p>You will receive an email in the near future with a registration link.</p>
-            </td>
-            <td></td>
-        </tr>
-    </table>
-</body>
-</html>",
+                            Body = "<!doctype html>\n    <html lang=\"en\">\n    <head></head>\n    <body style=\"margin:0\">\n    <table cellspacing=\"0\" align=\"left\" width=\"100%\" style=\"margin:0;color:#707070;font-family:Helvetica;font-size:12px;\">\n        <tr style=\"background:#036;\">\n            <th width=\"45\"></th>\n            <th width=\"350\" align=\"left\" style=\"text-align:left;\">\n                <div role=\"img\" aria-label=\"Health Gateway Logo\">\n                    <img src=\"${host}/Logo.png\" alt=\"Health Gateway Logo\"/>\n                </div>\n            </th>\n            <th width=\"\"></th>\n        </tr>\n        <tr>\n            <td colspan=\"3\" height=\"20\"></td>\n        </tr>\n        <tr>\n            <td></td>\n            <td>\n                <h1 style=\"font-size:18px;\">Good day,</h1>\n                <p>Thank you for joining the wait list to be an early user of the Health Gateway.</p>\n                <p>You will receive an email in the near future with a registration link.</p>\n            </td>\n            <td></td>\n        </tr>\n    </table>\n</body>\n</html>",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1344,41 +1222,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("eb695050-e2fb-4933-8815-3d4656e4541d"),
-                            Body = @"<!doctype html>
-<html lang=""en"">
-<head>
-</head>
-<body style=""margin:0"">
-    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
-        <tr style=""background:#036;"">
-            <th width=""45""></th>
-            <th width=""350"" align=""left"" style=""text-align:left;"">
-                <div role=""img"" aria-label=""Health Gateway Logo"">
-                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo"" />
-                </div>
-            </th>
-            <th width=""""></th>
-        </tr>
-        <tr>
-            <td colspan=""3"" height=""20""></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <h1 style=""font-size:18px;"">Hi,</h1>
-                <p>
-                    You are receiving this email as a user of the Health Gateway. We have updated our Terms of Service, effective ${effectivedate}.
-                </p>
-                <p>For more information, we encourage you to review the full <a href=""${host}/${path}"">Terms of Service</a> and check out the <a href=""https://github.com/bcgov/healthgateway/wiki"">release notes</a> for a summary of new features.</p>
-                <p>If you have any questions or wish to provide any feedback, please contact <a href=""mailto:${contactemail}"">${contactemail}</a>.</p>
-                <p>Regards,</p>
-                <p>Health Gateway Team</p>
-            </td>
-            <td></td>
-        </tr>
-    </table>
-</body>
-</html>",
+                            Body = "<!doctype html>\n<html lang=\"en\">\n<head>\n</head>\n<body style=\"margin:0\">\n    <table cellspacing=\"0\" align=\"left\" width=\"100%\" style=\"margin:0;color:#707070;font-family:Helvetica;font-size:12px;\">\n        <tr style=\"background:#036;\">\n            <th width=\"45\"></th>\n            <th width=\"350\" align=\"left\" style=\"text-align:left;\">\n                <div role=\"img\" aria-label=\"Health Gateway Logo\">\n                    <img src=\"${host}/Logo.png\" alt=\"Health Gateway Logo\" />\n                </div>\n            </th>\n            <th width=\"\"></th>\n        </tr>\n        <tr>\n            <td colspan=\"3\" height=\"20\"></td>\n        </tr>\n        <tr>\n            <td></td>\n            <td>\n                <h1 style=\"font-size:18px;\">Hi,</h1>\n                <p>\n                    You are receiving this email as a user of the Health Gateway. We have updated our Terms of Service, effective ${effectivedate}.\n                </p>\n                <p>For more information, we encourage you to review the full <a href=\"${host}/${path}\">Terms of Service</a> and check out the <a href=\"https://github.com/bcgov/healthgateway/wiki\">release notes</a> for a summary of new features.</p>\n                <p>If you have any questions or wish to provide any feedback, please contact <a href=\"mailto:${contactemail}\">${contactemail}</a>.</p>\n                <p>Regards,</p>\n                <p>Health Gateway Team</p>\n            </td>\n            <td></td>\n        </tr>\n    </table>\n</body>\n</html>",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1394,39 +1238,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("79503a38-c14a-4992-b2fe-5586629f552e"),
-                            Body = @"<!doctype html>
-<html lang=""en"">
-<head>
-</head>
-<body style=""margin:0"">
-    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
-        <tr style=""background:#036;"">
-            <th width=""45""></th>
-            <th width=""350"" align=""left"" style=""text-align:left;"">
-                <div role=""img"" aria-label=""Health Gateway Logo"">
-                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo"" />
-                </div>
-            </th>
-            <th width=""""></th>
-        </tr>
-        <tr>
-            <td colspan=""3"" height=""20""></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <h1 style=""font-size:18px;"">Hi,</h1>
-                <p>
-                    You have closed your Health Gateway account. If you would like to recover your account, please login to Health Gateway within the next 30 days and click “Recover Account”. No further action is required if you want your account and personally entered information to be removed from the Health Gateway after this time period.
-                </p>
-                <p>Thanks,</p>
-                <p>Health Gateway Team</p>
-            </td>
-            <td></td>
-        </tr>
-    </table>
-</body>
-</html>",
+                            Body = "<!doctype html>\n<html lang=\"en\">\n<head>\n</head>\n<body style=\"margin:0\">\n    <table cellspacing=\"0\" align=\"left\" width=\"100%\" style=\"margin:0;color:#707070;font-family:Helvetica;font-size:12px;\">\n        <tr style=\"background:#036;\">\n            <th width=\"45\"></th>\n            <th width=\"350\" align=\"left\" style=\"text-align:left;\">\n                <div role=\"img\" aria-label=\"Health Gateway Logo\">\n                    <img src=\"${host}/Logo.png\" alt=\"Health Gateway Logo\" />\n                </div>\n            </th>\n            <th width=\"\"></th>\n        </tr>\n        <tr>\n            <td colspan=\"3\" height=\"20\"></td>\n        </tr>\n        <tr>\n            <td></td>\n            <td>\n                <h1 style=\"font-size:18px;\">Hi,</h1>\n                <p>\n                    You have closed your Health Gateway account. If you would like to recover your account, please login to Health Gateway within the next 30 days and click “Recover Account”. No further action is required if you want your account and personally entered information to be removed from the Health Gateway after this time period.\n                </p>\n                <p>Thanks,</p>\n                <p>Health Gateway Team</p>\n            </td>\n            <td></td>\n        </tr>\n    </table>\n</body>\n</html>",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1442,39 +1254,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("2fe8c825-d4de-4884-be6a-01a97b466425"),
-                            Body = @"<!doctype html>
-<html lang=""en"">
-<head>
-</head>
-<body style=""margin:0"">
-    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
-        <tr style=""background:#036;"">
-            <th width=""45""></th>
-            <th width=""350"" align=""left"" style=""text-align:left;"">
-                <div role=""img"" aria-label=""Health Gateway Logo"">
-                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo"" />
-                </div>
-            </th>
-            <th width=""""></th>
-        </tr>
-        <tr>
-            <td colspan=""3"" height=""20""></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <h1 style=""font-size:18px;"">Hi,</h1>
-                <p>
-                    You have successfully recovered your Health Gateway account. You may continue to use the service as you did before.
-                </p>
-                <p>Thanks,</p>
-                <p>Health Gateway Team</p>
-            </td>
-            <td></td>
-        </tr>
-    </table>
-</body>
-</html>",
+                            Body = "<!doctype html>\n<html lang=\"en\">\n<head>\n</head>\n<body style=\"margin:0\">\n    <table cellspacing=\"0\" align=\"left\" width=\"100%\" style=\"margin:0;color:#707070;font-family:Helvetica;font-size:12px;\">\n        <tr style=\"background:#036;\">\n            <th width=\"45\"></th>\n            <th width=\"350\" align=\"left\" style=\"text-align:left;\">\n                <div role=\"img\" aria-label=\"Health Gateway Logo\">\n                    <img src=\"${host}/Logo.png\" alt=\"Health Gateway Logo\" />\n                </div>\n            </th>\n            <th width=\"\"></th>\n        </tr>\n        <tr>\n            <td colspan=\"3\" height=\"20\"></td>\n        </tr>\n        <tr>\n            <td></td>\n            <td>\n                <h1 style=\"font-size:18px;\">Hi,</h1>\n                <p>\n                    You have successfully recovered your Health Gateway account. You may continue to use the service as you did before.\n                </p>\n                <p>Thanks,</p>\n                <p>Health Gateway Team</p>\n            </td>\n            <td></td>\n        </tr>\n    </table>\n</body>\n</html>",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1490,39 +1270,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("d9898318-4e53-4074-9979-5d24bd370055"),
-                            Body = @"<!doctype html>
-<html lang=""en"">
-<head>
-</head>
-<body style=""margin:0"">
-    <table cellspacing=""0"" align=""left"" width=""100%"" style=""margin:0;color:#707070;font-family:Helvetica;font-size:12px;"">
-        <tr style=""background:#036;"">
-            <th width=""45""></th>
-            <th width=""350"" align=""left"" style=""text-align:left;"">
-                <div role=""img"" aria-label=""Health Gateway Logo"">
-                    <img src=""${host}/Logo.png"" alt=""Health Gateway Logo"" />
-                </div>
-            </th>
-            <th width=""""></th>
-        </tr>
-        <tr>
-            <td colspan=""3"" height=""20""></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <h1 style=""font-size:18px;"">Hi,</h1>
-                <p>
-                    Your Health Gateway account closure has been completed. Your account and personally entered information have been removed from the application. You are welcome to register again for the Health Gateway in the future.
-                </p>
-                <p>Thanks,</p>
-                <p>Health Gateway Team</p>
-            </td>
-            <td></td>
-        </tr>
-    </table>
-</body>
-</html>",
+                            Body = "<!doctype html>\n<html lang=\"en\">\n<head>\n</head>\n<body style=\"margin:0\">\n    <table cellspacing=\"0\" align=\"left\" width=\"100%\" style=\"margin:0;color:#707070;font-family:Helvetica;font-size:12px;\">\n        <tr style=\"background:#036;\">\n            <th width=\"45\"></th>\n            <th width=\"350\" align=\"left\" style=\"text-align:left;\">\n                <div role=\"img\" aria-label=\"Health Gateway Logo\">\n                    <img src=\"${host}/Logo.png\" alt=\"Health Gateway Logo\" />\n                </div>\n            </th>\n            <th width=\"\"></th>\n        </tr>\n        <tr>\n            <td colspan=\"3\" height=\"20\"></td>\n        </tr>\n        <tr>\n            <td></td>\n            <td>\n                <h1 style=\"font-size:18px;\">Hi,</h1>\n                <p>\n                    Your Health Gateway account closure has been completed. Your account and personally entered information have been removed from the application. You are welcome to register again for the Health Gateway in the future.\n                </p>\n                <p>Thanks,</p>\n                <p>Health Gateway Team</p>\n            </td>\n            <td></td>\n        </tr>\n    </table>\n</body>\n</html>",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1541,36 +1289,36 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("FileDownloadId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("FileDownloadId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Hash")
                         .IsRequired()
-                        .HasColumnType("character varying(44)")
-                        .HasMaxLength(44);
+                        .HasMaxLength(44)
+                        .HasColumnType("character varying(44)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("character varying(35)")
-                        .HasMaxLength(35);
+                        .HasMaxLength(35)
+                        .HasColumnType("character varying(35)");
 
                     b.Property<string>("ProgramCode")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1578,8 +1326,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -1596,13 +1344,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("FormId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("FormId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1611,20 +1359,20 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("PharmaceuticalForm")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<int>("PharmaceuticalFormCode")
                         .HasColumnType("integer");
 
                     b.Property<string>("PharmaceuticalFormFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1632,8 +1380,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -1647,21 +1395,21 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("GenericCacheId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("GenericCacheId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Domain")
                         .IsRequired()
-                        .HasColumnType("character varying(250)")
-                        .HasMaxLength(250);
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
 
                     b.Property<DateTime?>("ExpiryDateTime")
                         .IsRequired()
@@ -1669,8 +1417,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("HdId")
                         .IsRequired()
-                        .HasColumnType("character varying(54)")
-                        .HasMaxLength(54);
+                        .HasMaxLength(54)
+                        .HasColumnType("character varying(54)");
 
                     b.Property<JsonDocument>("JSON")
                         .IsRequired()
@@ -1682,8 +1430,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1691,8 +1439,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -1706,13 +1454,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("LegalAgreementsId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("LegalAgreementsId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1723,8 +1471,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("LegalAgreementCode")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("LegalText")
                         .IsRequired()
@@ -1732,8 +1480,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -1741,8 +1489,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -1758,54 +1506,7 @@ namespace HealthGateway.Database.Migrations
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LegalAgreementCode = "ToS",
-                            LegalText = @"<p><strong>HealthGateway Terms of Service</strong></p>
-<p>
-    Use of this service is governed by the following terms and conditions. Please read these terms and conditions
-    carefully, as by using this website you will be deemed to have agreed to them. If you do not agree with these terms
-    and conditions, do not use this service.
-</p>
-<p>
-    The Health Gateway provides BC residents with access to their health information empowering patients and their
-    families to manage their health care. In accessing your health information through this service, you acknowledge
-    that the information within does not represent a comprehensive record of your health care in BC. No personal health
-    information will be stored within the Health Gateway application. Each time you login, your health information will
-    be fetched from information systems within BC and purged upon logout. If you choose to share your health information
-    accessed through the website with a family member or caregiver, you are responsible for all the actions they take
-    with respect to the use of your information.
-</p>
-<p>
-    This service is not intended to provide you with medical advice nor replace the care provided by qualified health
-    care professionals. If you have questions or concerns about your health, please contact your care provider.
-</p>
-<p>
-    The personal information you provide (Name and Email) will be used for the purpose of connecting your Health Gateway
-    account to your BC Services Card account under the authority of section 33(a) of the Freedom of Information and
-    Protection of Privacy Act. This will be done through the BC Services Identity Assurance Service. Once your identity
-    is verified using your BC Services Card, you will be able to view your health records from various health
-    information systems in one place. Health Gateway’s collection of your personal information is under the authority of
-    section 26(c) of the Freedom of Information and Protection of Privacy Act.
-</p>
-<p>
-    If you have any questions about our collection or use of personal information, please direct your inquiries to the
-    Health Gateway team:
-</p>
-<p>
-    <i
-        ><div>Nino Samson</div>
-        <div>Product Owner, Health Gateway</div>
-        <div>Telephone: 778-974-2712</div>
-        <div>Email: nino.samson@gov.bc.ca</div>
-    </i>
-</p>
-
-<p><strong>Limitation of Liabilities</strong></p>
-<p>
-    Under no circumstances will the Government of British Columbia be liable to any person or business entity for any
-    direct, indirect, special, incidental, consequential, or other damages based on any use of this website or any other
-    website to which this site is linked, including, without limitation, any lost profits, business interruption, or
-    loss of programs or information, even if the Government of British Columbia has been specifically advised of the
-    possibility of such damages.
-</p>",
+                            LegalText = "<p><strong>HealthGateway Terms of Service</strong></p>\n<p>\n    Use of this service is governed by the following terms and conditions. Please read these terms and conditions\n    carefully, as by using this website you will be deemed to have agreed to them. If you do not agree with these terms\n    and conditions, do not use this service.\n</p>\n<p>\n    The Health Gateway provides BC residents with access to their health information empowering patients and their\n    families to manage their health care. In accessing your health information through this service, you acknowledge\n    that the information within does not represent a comprehensive record of your health care in BC. No personal health\n    information will be stored within the Health Gateway application. Each time you login, your health information will\n    be fetched from information systems within BC and purged upon logout. If you choose to share your health information\n    accessed through the website with a family member or caregiver, you are responsible for all the actions they take\n    with respect to the use of your information.\n</p>\n<p>\n    This service is not intended to provide you with medical advice nor replace the care provided by qualified health\n    care professionals. If you have questions or concerns about your health, please contact your care provider.\n</p>\n<p>\n    The personal information you provide (Name and Email) will be used for the purpose of connecting your Health Gateway\n    account to your BC Services Card account under the authority of section 33(a) of the Freedom of Information and\n    Protection of Privacy Act. This will be done through the BC Services Identity Assurance Service. Once your identity\n    is verified using your BC Services Card, you will be able to view your health records from various health\n    information systems in one place. Health Gateway’s collection of your personal information is under the authority of\n    section 26(c) of the Freedom of Information and Protection of Privacy Act.\n</p>\n<p>\n    If you have any questions about our collection or use of personal information, please direct your inquiries to the\n    Health Gateway team:\n</p>\n<p>\n    <i\n        ><div>Nino Samson</div>\n        <div>Product Owner, Health Gateway</div>\n        <div>Telephone: 778-974-2712</div>\n        <div>Email: nino.samson@gov.bc.ca</div>\n    </i>\n</p>\n\n<p><strong>Limitation of Liabilities</strong></p>\n<p>\n    Under no circumstances will the Government of British Columbia be liable to any person or business entity for any\n    direct, indirect, special, incidental, consequential, or other damages based on any use of this website or any other\n    website to which this site is linked, including, without limitation, any lost profits, business interruption, or\n    loss of programs or information, even if the Government of British Columbia has been specifically advised of the\n    possibility of such damages.\n</p>",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -1817,102 +1518,7 @@ namespace HealthGateway.Database.Migrations
                             CreatedDateTime = new DateTime(2020, 3, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2020, 3, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LegalAgreementCode = "ToS",
-                            LegalText = @"<p><strong>HealthGateway Terms of Service</strong></p>
-<p>
-    Use of the Health Gateway service (the “Service”) is governed by the following terms and conditions. Please read
-    these terms and conditions carefully, as by using the Service you will be deemed to have agreed to them. If you do
-    not agree with these terms and conditions, please do not use the Service.
-</p>
-<p>
-    <p><strong>1. The Health Gateway Service</strong></p>
-    The Service provides residents of British Columbia with access to their health information (<strong>""Health
-        Information""</strong>). It allows users to, in one place, view their Health Information from various Provincial
-    health information systems, empowering patients and their families to manage their health care.
-</p>
-<p><strong>2. Your use of the Service </strong></p>
-<p>
-    You may only access your own Health Information using the Service.
-</p>
-<p>
-    If you choose to share the Health Information accessed through this Service with others (e.g. with a family member
-    or caregiver), you are responsible for all the actions they take with respect to the use of your Health Information.
-</p>
-<p>
-    You must follow any additional terms and conditions made available to you in relation to the Service.
-</p>
-<p>
-    Do not misuse the Service, for example by trying to access or use it using a method other than the interface and
-    instructions we provide. You may use the Service only as permitted by law. We may suspend or stop providing the
-    Service to you if you do not comply with these terms and conditions, or if we are investigating a suspected misuse
-    of the Service.
-</p>
-<p>
-    Using the Service does not give you ownership of any intellectual property rights in the Service or the content you
-    access. Don’t remove, obscure, or alter any legal notices displayed in connection with the Service.
-</p>
-<p>
-    We may stop providing the Service to you, or may add or create new limits on the Service, for any reason and at any
-    time.
-</p>
-<p><strong>3. Service is not a comprehensive health record or medical advice</strong></p>
-<p>
-    The Health Information accessed through this Service is not a comprehensive record of your health care in BC.
-</p>
-<p>
-    This Service is not intended to provide you with medical advice or replace the care provided by qualified health
-    care professionals. If you have questions or concerns about your health, please contact your care provider.
-</p>
-<p><strong>4. Privacy Notice</strong></p>
-<p>
-    The personal information you provide the Service (Name and Email) will be used for the purpose of connecting your
-    Health Gateway account to your BC Services Card account under the authority of section 26(c) of the Freedom of
-    Information and Protection of Privacy Act. Once your BC Services Card is verified by the Service, you will be able
-    to view your Health Information using the Service. The Service’s collection of your personal information is under
-    the authority of section 26(c) of the Freedom of Information and Protection of Privacy Act.
-</p>
-<p>
-    The Service’s notes feature allows you to enter your own notes to provide more information related to your health
-    care. Use of this feature is entirely voluntary. Any notes will be stored in the Health Gateway in perpetuity, or
-    until you choose to delete your account or remove specific notes. Any notes that you create can only be accessed by
-    you securely using your BC Services Card.
-</p>
-<p>
-    If you have any questions about our collection or use of personal information, please direct your inquiries to the
-    Health Gateway team:
-</p>
-<p>
-    <i>
-        <div>Nino Samson</div>
-        <div>Product Owner, Health Gateway</div>
-        <div>Telephone: <a href=""tel:778-974-2712"">778-974-2712</a></div>
-        <div>Email: <a href=""mailto:nino.samson@gov.bc.ca"">nino.samson@gov.bc.ca</a></div>
-    </i>
-</p>
-<p><strong>5. Warranty Disclaimer</strong></p>
-<p>
-    The Service and all of the information it contains are provided "" as is"" without warranty of any kind, whether
-    express or implied. All implied warranties, including, without limitation, implied warranties of
-    merchantability, fitness for a particular purpose, and non-infringement, are hereby expressly
-    disclaimed. </p>
-<p><strong>6. Limitation of Liabilities</strong></p>
-<p>
-    Under no circumstances will the Government of British Columbia be liable to any person or business entity for any
-    direct, indirect, special, incidental, consequential, or other damages based on any use of the Service or any
-    website or system to which this Service may be linked, including, without limitation, any lost profits, business
-    interruption, or loss of programs or information, even if the Government of British Columbia has been specifically
-    advised of the possibility of such damages.
-</p>
-<p><strong>7. About these Terms and Conditions</strong></p>
-<p>
-    We may modify these terms and conditions, or any additional terms and conditions that apply to the Service, at any
-    time, for example to reflect changes to the law or changes to the Service. You should review these terms and
-    conditions regularly. Changes to these terms and conditions will be effective immediately after they are posted. If
-    you do not agree to any changes to these terms, you should discontinue your use of the Service immediately.
-    If there is any conflict between these terms and conditions and any additional terms and conditions, the additional
-    terms and conditions will prevail.
-    These terms and conditions are governed by and to be construed in accordance with the laws of British Columbia and
-    the federal laws of Canada applicable therein.
-</p>",
+                            LegalText = "<p><strong>HealthGateway Terms of Service</strong></p>\n<p>\n    Use of the Health Gateway service (the “Service”) is governed by the following terms and conditions. Please read\n    these terms and conditions carefully, as by using the Service you will be deemed to have agreed to them. If you do\n    not agree with these terms and conditions, please do not use the Service.\n</p>\n<p>\n    <p><strong>1. The Health Gateway Service</strong></p>\n    The Service provides residents of British Columbia with access to their health information (<strong>\"Health\n        Information\"</strong>). It allows users to, in one place, view their Health Information from various Provincial\n    health information systems, empowering patients and their families to manage their health care.\n</p>\n<p><strong>2. Your use of the Service </strong></p>\n<p>\n    You may only access your own Health Information using the Service.\n</p>\n<p>\n    If you choose to share the Health Information accessed through this Service with others (e.g. with a family member\n    or caregiver), you are responsible for all the actions they take with respect to the use of your Health Information.\n</p>\n<p>\n    You must follow any additional terms and conditions made available to you in relation to the Service.\n</p>\n<p>\n    Do not misuse the Service, for example by trying to access or use it using a method other than the interface and\n    instructions we provide. You may use the Service only as permitted by law. We may suspend or stop providing the\n    Service to you if you do not comply with these terms and conditions, or if we are investigating a suspected misuse\n    of the Service.\n</p>\n<p>\n    Using the Service does not give you ownership of any intellectual property rights in the Service or the content you\n    access. Don’t remove, obscure, or alter any legal notices displayed in connection with the Service.\n</p>\n<p>\n    We may stop providing the Service to you, or may add or create new limits on the Service, for any reason and at any\n    time.\n</p>\n<p><strong>3. Service is not a comprehensive health record or medical advice</strong></p>\n<p>\n    The Health Information accessed through this Service is not a comprehensive record of your health care in BC.\n</p>\n<p>\n    This Service is not intended to provide you with medical advice or replace the care provided by qualified health\n    care professionals. If you have questions or concerns about your health, please contact your care provider.\n</p>\n<p><strong>4. Privacy Notice</strong></p>\n<p>\n    The personal information you provide the Service (Name and Email) will be used for the purpose of connecting your\n    Health Gateway account to your BC Services Card account under the authority of section 26(c) of the Freedom of\n    Information and Protection of Privacy Act. Once your BC Services Card is verified by the Service, you will be able\n    to view your Health Information using the Service. The Service’s collection of your personal information is under\n    the authority of section 26(c) of the Freedom of Information and Protection of Privacy Act.\n</p>\n<p>\n    The Service’s notes feature allows you to enter your own notes to provide more information related to your health\n    care. Use of this feature is entirely voluntary. Any notes will be stored in the Health Gateway in perpetuity, or\n    until you choose to delete your account or remove specific notes. Any notes that you create can only be accessed by\n    you securely using your BC Services Card.\n</p>\n<p>\n    If you have any questions about our collection or use of personal information, please direct your inquiries to the\n    Health Gateway team:\n</p>\n<p>\n    <i>\n        <div>Nino Samson</div>\n        <div>Product Owner, Health Gateway</div>\n        <div>Telephone: <a href=\"tel:778-974-2712\">778-974-2712</a></div>\n        <div>Email: <a href=\"mailto:nino.samson@gov.bc.ca\">nino.samson@gov.bc.ca</a></div>\n    </i>\n</p>\n<p><strong>5. Warranty Disclaimer</strong></p>\n<p>\n    The Service and all of the information it contains are provided \" as is\" without warranty of any kind, whether\n    express or implied. All implied warranties, including, without limitation, implied warranties of\n    merchantability, fitness for a particular purpose, and non-infringement, are hereby expressly\n    disclaimed. </p>\n<p><strong>6. Limitation of Liabilities</strong></p>\n<p>\n    Under no circumstances will the Government of British Columbia be liable to any person or business entity for any\n    direct, indirect, special, incidental, consequential, or other damages based on any use of the Service or any\n    website or system to which this Service may be linked, including, without limitation, any lost profits, business\n    interruption, or loss of programs or information, even if the Government of British Columbia has been specifically\n    advised of the possibility of such damages.\n</p>\n<p><strong>7. About these Terms and Conditions</strong></p>\n<p>\n    We may modify these terms and conditions, or any additional terms and conditions that apply to the Service, at any\n    time, for example to reflect changes to the law or changes to the Service. You should review these terms and\n    conditions regularly. Changes to these terms and conditions will be effective immediately after they are posted. If\n    you do not agree to any changes to these terms, you should discontinue your use of the Service immediately.\n    If there is any conflict between these terms and conditions and any additional terms and conditions, the additional\n    terms and conditions will prevail.\n    These terms and conditions are governed by and to be construed in accordance with the laws of British Columbia and\n    the federal laws of Canada applicable therein.\n</p>",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2020, 3, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -1924,118 +1530,7 @@ namespace HealthGateway.Database.Migrations
                             CreatedDateTime = new DateTime(2020, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2020, 7, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LegalAgreementCode = "ToS",
-                            LegalText = @"<p><strong>HealthGateway Terms of Service</strong></p>
-<p>
-    Use of the Health Gateway service (the <strong>""Service""</strong>) is governed by the following terms and
-    conditions. Please read these terms and conditions carefully, as by using the Service you will
-    be deemed to have agreed to them. If you do not agree with these terms and conditions,
-    please do not use the Service.
-</p>
-<p>
-<p><strong>1. The Health Gateway Service</strong></p>
-<p>
-    The Service provides residents of British Columbia with access to their health information
-    (<strong>""Health Information""</strong>).  It allows users to, in one place, view their Health Information from
-    various Provincial health information systems, empowering patients and their families to manage their health care.
-</p>
-<p><strong>2. Your use of the Service</strong></p>
-<p>
-    You may only access your own Health Information using the Service.
-</p>
-<p>
-    If you choose to share the Health Information accessed through this Service with others (e.g.
-    with a family member or caregiver), you are responsible for all the actions they take with
-    respect to the use of your Health Information.
-</p>
-<p>
-    You must follow any additional terms and conditions made available to you in relation to the
-    Service.
-</p>
-<p>
-    Do not misuse the Service, for example by trying to access or use it using a method other
-    than the interface and instructions we provide.  You may use the Service only as permitted
-    by law.  We may suspend or stop providing the Service to you if you do not comply with
-    these terms and conditions, or if we are investigating a suspected misuse of the Service.
-</p>
-<p>
-    Using the Service does not give you ownership of any intellectual property rights in the
-    Service or the content you access.  Don’t remove, obscure, or alter any legal notices
-    displayed in connection with the Service.
-</p>
-<p>
-    We may stop providing the Service to you, or may add or create new limits on the Service,
-    for any reason and at any time.
-</p>
-<p><strong>3. Service is not a comprehensive health record or medical advice</strong></p>
-<p>
-    The Health Information accessed through this Service is not a comprehensive record of your health care in BC.
-</p>
-<p>
-    This Service is not intended to provide you with medical advice or replace the care provided 
-    by qualified health care professionals. If you have questions or concerns about your health, 
-    please contact your care provider.
-</p>
-<p><strong>4. Privacy Notice</strong></p>
-<p>
-    Your personal information will be collected by the Health Gateway (Ministry of Health) and 
-    Service BC under the authority of section 26(c) of the Freedom of Information and Protection 
-    of Privacy Act for the purpose of providing access to your health records. Your personal 
-    information such as name, email and cell phone number will be shared with other public 
-    health service agencies to query your health information and notify you of updates. Your 
-    personal information will not be used or disclosed for any other purposes.
-</p>
-<p>
-    The Service’s notes and comments features allow you to enter your own notes to provide 
-    more information related to your health care. Use of these features is entirely voluntary. Any 
-    notes will be stored in the Health Gateway until you choose to delete your account or 
-    remove specific notes. Any notes that you create can only be accessed by you securely using 
-    your BC Services Card.
-</p>
-<p>
-    If you have any questions about our collection or use of personal information, please direct 
-    your inquiries to the Health Gateway team:
-</p>
-<p>
-    <i>
-        Nino Samson<br />
-        Product Owner, Health Gateway<br />
-        Telephone: <a href=""tel:778-974-2712"">778-974-2712</a><br />
-        Email: <a href=""mailto:nino.samson@gov.bc.ca"">nino.samson@gov.bc.ca</a><br />
-        Address: 1483 Douglas Street; PO BOX 9635 STN PROV GOVT, Victoria BC<br />
-    </i>
-</p>
-<p><strong>5. Warranty Disclaimer</strong></p>
-<p>
-    The Service and all of the information it contains are provided ""as is"" without warranty of 
-    any kind, whether express or implied. All implied warranties, including, without limitation, 
-    implied warranties of merchantability, fitness for a particular purpose, and non-infringement, 
-    are hereby expressly disclaimed.
-</p>
-<p><strong>6. Limitation of Liabilities</strong></p>
-<p>
-    Under no circumstances will the Government of British Columbia be liable to any person or 
-    business entity for any direct, indirect, special, incidental, consequential, or other damages 
-    based on any use of the Service or any website or system to which this Service may be linked, 
-    including, without limitation, any lost profits, business interruption, or loss of programs or 
-    information, even if the Government of British Columbia has been specifically advised of the 
-    possibility of such damages.
-</p>
-<p><strong>7. About these Terms and Conditions</strong></p>
-<p>
-    We may modify these terms of service, or any additional terms that apply to the Service, at 
-    any time, for example to reflect changes to the law or changes to the Service.  You should 
-    review these terms of service regularly.  Changes to these terms of service will be effective 
-    immediately after they are posted.  If you do not agree to any changes to these terms, you 
-    should discontinue your use of the Service immediately.
-</p>
-<p>
-    If there is any conflict between these terms of service and any additional terms of service, 
-    the additional terms of service will prevail.
-</p>
-<p>
-    These terms of service are governed by and to be construed in accordance with the laws of 
-    British Columbia and the federal laws of Canada applicable therein.
-</p>",
+                            LegalText = "<p><strong>HealthGateway Terms of Service</strong></p>\n<p>\n    Use of the Health Gateway service (the <strong>\"Service\"</strong>) is governed by the following terms and\n    conditions. Please read these terms and conditions carefully, as by using the Service you will\n    be deemed to have agreed to them. If you do not agree with these terms and conditions,\n    please do not use the Service.\n</p>\n<p>\n<p><strong>1. The Health Gateway Service</strong></p>\n<p>\n    The Service provides residents of British Columbia with access to their health information\n    (<strong>\"Health Information\"</strong>).  It allows users to, in one place, view their Health Information from\n    various Provincial health information systems, empowering patients and their families to manage their health care.\n</p>\n<p><strong>2. Your use of the Service</strong></p>\n<p>\n    You may only access your own Health Information using the Service.\n</p>\n<p>\n    If you choose to share the Health Information accessed through this Service with others (e.g.\n    with a family member or caregiver), you are responsible for all the actions they take with\n    respect to the use of your Health Information.\n</p>\n<p>\n    You must follow any additional terms and conditions made available to you in relation to the\n    Service.\n</p>\n<p>\n    Do not misuse the Service, for example by trying to access or use it using a method other\n    than the interface and instructions we provide.  You may use the Service only as permitted\n    by law.  We may suspend or stop providing the Service to you if you do not comply with\n    these terms and conditions, or if we are investigating a suspected misuse of the Service.\n</p>\n<p>\n    Using the Service does not give you ownership of any intellectual property rights in the\n    Service or the content you access.  Don’t remove, obscure, or alter any legal notices\n    displayed in connection with the Service.\n</p>\n<p>\n    We may stop providing the Service to you, or may add or create new limits on the Service,\n    for any reason and at any time.\n</p>\n<p><strong>3. Service is not a comprehensive health record or medical advice</strong></p>\n<p>\n    The Health Information accessed through this Service is not a comprehensive record of your health care in BC.\n</p>\n<p>\n    This Service is not intended to provide you with medical advice or replace the care provided \n    by qualified health care professionals. If you have questions or concerns about your health, \n    please contact your care provider.\n</p>\n<p><strong>4. Privacy Notice</strong></p>\n<p>\n    Your personal information will be collected by the Health Gateway (Ministry of Health) and \n    Service BC under the authority of section 26(c) of the Freedom of Information and Protection \n    of Privacy Act for the purpose of providing access to your health records. Your personal \n    information such as name, email and cell phone number will be shared with other public \n    health service agencies to query your health information and notify you of updates. Your \n    personal information will not be used or disclosed for any other purposes.\n</p>\n<p>\n    The Service’s notes and comments features allow you to enter your own notes to provide \n    more information related to your health care. Use of these features is entirely voluntary. Any \n    notes will be stored in the Health Gateway until you choose to delete your account or \n    remove specific notes. Any notes that you create can only be accessed by you securely using \n    your BC Services Card.\n</p>\n<p>\n    If you have any questions about our collection or use of personal information, please direct \n    your inquiries to the Health Gateway team:\n</p>\n<p>\n    <i>\n        Nino Samson<br />\n        Product Owner, Health Gateway<br />\n        Telephone: <a href=\"tel:778-974-2712\">778-974-2712</a><br />\n        Email: <a href=\"mailto:nino.samson@gov.bc.ca\">nino.samson@gov.bc.ca</a><br />\n        Address: 1483 Douglas Street; PO BOX 9635 STN PROV GOVT, Victoria BC<br />\n    </i>\n</p>\n<p><strong>5. Warranty Disclaimer</strong></p>\n<p>\n    The Service and all of the information it contains are provided \"as is\" without warranty of \n    any kind, whether express or implied. All implied warranties, including, without limitation, \n    implied warranties of merchantability, fitness for a particular purpose, and non-infringement, \n    are hereby expressly disclaimed.\n</p>\n<p><strong>6. Limitation of Liabilities</strong></p>\n<p>\n    Under no circumstances will the Government of British Columbia be liable to any person or \n    business entity for any direct, indirect, special, incidental, consequential, or other damages \n    based on any use of the Service or any website or system to which this Service may be linked, \n    including, without limitation, any lost profits, business interruption, or loss of programs or \n    information, even if the Government of British Columbia has been specifically advised of the \n    possibility of such damages.\n</p>\n<p><strong>7. About these Terms and Conditions</strong></p>\n<p>\n    We may modify these terms of service, or any additional terms that apply to the Service, at \n    any time, for example to reflect changes to the law or changes to the Service.  You should \n    review these terms of service regularly.  Changes to these terms of service will be effective \n    immediately after they are posted.  If you do not agree to any changes to these terms, you \n    should discontinue your use of the Service immediately.\n</p>\n<p>\n    If there is any conflict between these terms of service and any additional terms of service, \n    the additional terms of service will prevail.\n</p>\n<p>\n    These terms of service are governed by and to be construed in accordance with the laws of \n    British Columbia and the federal laws of Canada applicable therein.\n</p>",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2020, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -2045,26 +1540,26 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.LegalAgreementTypeCode", b =>
                 {
                     b.Property<string>("LegalAgreementCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(50)")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2072,8 +1567,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("LegalAgreementCode");
 
@@ -2096,13 +1591,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("MessagingVerificationId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("MessagingVerificationId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2117,8 +1612,8 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("HdId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
 
                     b.Property<Guid>("InviteKey")
                         .HasColumnType("uuid");
@@ -2127,13 +1622,13 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SMSValidationCode")
-                        .HasColumnType("character varying(6)")
-                        .HasMaxLength(6);
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2146,14 +1641,14 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("VerificationType")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -2167,26 +1662,26 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.MessagingVerificationTypeCode", b =>
                 {
                     b.Property<string>("MessagingVerificationCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(50)")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2194,8 +1689,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("MessagingVerificationCode");
 
@@ -2228,18 +1723,18 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("NoteId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("NoteId");
 
                     b.Property<string>("HdId")
-                        .HasColumnName("UserProfileId")
+                        .HasMaxLength(52)
                         .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasColumnName("UserProfileId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2248,17 +1743,17 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Text")
-                        .HasColumnType("character varying(1344)")
-                        .HasMaxLength(1344);
+                        .HasMaxLength(1344)
+                        .HasColumnType("character varying(1344)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("character varying(152)")
-                        .HasMaxLength(152);
+                        .HasMaxLength(152)
+                        .HasColumnType("character varying(152)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2266,8 +1761,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id", "HdId");
 
@@ -2280,13 +1775,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("PackagingId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("PackagingId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2295,37 +1790,37 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("PackageSize")
-                        .HasColumnType("character varying(5)")
-                        .HasMaxLength(5);
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("PackageSizeUnit")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("PackageSizeUnitFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("PackageType")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("PackageTypeFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("ProductInformation")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UPC")
-                        .HasColumnType("character varying(12)")
-                        .HasMaxLength(12);
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2333,8 +1828,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -2348,38 +1843,38 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("PharmaCareDrugId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("PharmaCareDrugId");
 
                     b.Property<string>("BenefitGroupList")
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<string>("BrandName")
                         .IsRequired()
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("CFRCode")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("DINPIN")
                         .IsRequired()
-                        .HasColumnType("character varying(8)")
-                        .HasMaxLength(8);
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("DosageForm")
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime>("EffectiveDate")
                         .HasColumnType("Date");
@@ -2394,23 +1889,23 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("Date");
 
                     b.Property<string>("GenericName")
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<string>("LCAIndicator")
-                        .HasColumnType("character varying(2)")
-                        .HasMaxLength(2);
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<decimal?>("LCAPrice")
                         .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("LimitedUseFlag")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("Manufacturer")
-                        .HasColumnType("character varying(6)")
-                        .HasMaxLength(6);
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)");
 
                     b.Property<int?>("MaximumDaysSupply")
                         .HasColumnType("integer");
@@ -2419,43 +1914,43 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("PayGenericIndicator")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("PharmaCarePlanDescription")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("Plan")
-                        .HasColumnType("character varying(2)")
-                        .HasMaxLength(2);
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<int?>("QuantityLimit")
                         .HasColumnType("integer");
 
                     b.Property<string>("RDPCategory")
-                        .HasColumnType("character varying(4)")
-                        .HasMaxLength(4);
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
 
                     b.Property<string>("RDPExcludedPlans")
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<decimal?>("RDPPrice")
                         .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("RDPSubCategory")
-                        .HasColumnType("character varying(4)")
-                        .HasMaxLength(4);
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)");
 
                     b.Property<string>("TrialFlag")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2463,8 +1958,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -2477,13 +1972,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("PharmaceuticalStdId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("PharmaceuticalStdId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2496,8 +1991,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2505,8 +2000,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -2519,26 +2014,26 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.ProgramTypeCode", b =>
                 {
                     b.Property<string>("ProgramCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(50)")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2546,8 +2041,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ProgramCode");
 
@@ -2700,13 +2195,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("RatingId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("RatingId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2719,8 +2214,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2728,8 +2223,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -2739,21 +2234,21 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegate", b =>
                 {
                     b.Property<string>("ResourceOwnerHdid")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
 
                     b.Property<string>("ProfileHdid")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
 
                     b.Property<string>("ReasonCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2768,8 +2263,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2777,8 +2272,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ResourceOwnerHdid", "ProfileHdid", "ReasonCode");
 
@@ -2793,13 +2288,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("ResourceDelegateHistoryId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("ResourceDelegateHistoryId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2813,13 +2308,13 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("ProfileHdid")
                         .IsRequired()
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
 
                     b.Property<string>("ReasonCode")
                         .IsRequired()
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<JsonDocument>("ReasonObject")
                         .IsRequired()
@@ -2831,13 +2326,13 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("ResourceOwnerHdid")
                         .IsRequired()
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2845,8 +2340,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -2856,26 +2351,26 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegateReasonCode", b =>
                 {
                     b.Property<string>("ReasonTypeCode")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("character varying(50)")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2883,8 +2378,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("ReasonTypeCode");
 
@@ -2907,24 +2402,24 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("RouteId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("RouteId");
 
                     b.Property<string>("Administration")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<int>("AdministrationCode")
                         .HasColumnType("integer");
 
                     b.Property<string>("AdministrationFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2934,8 +2429,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2943,8 +2438,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -2958,13 +2453,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("ScheduleId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("ScheduleId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2973,17 +2468,17 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ScheduleDesc")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("ScheduleDescFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -2991,8 +2486,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -3003,20 +2498,20 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("StatusId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("StatusId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("CurrentStatusFlag")
-                        .HasColumnType("character varying(1)")
-                        .HasMaxLength(1);
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
 
                     b.Property<Guid>("DrugProductId")
                         .HasColumnType("uuid");
@@ -3028,21 +2523,21 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("LotNumber")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("StatusDesc")
-                        .HasColumnType("character varying(40)")
-                        .HasMaxLength(40);
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("StatusDescFrench")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3050,8 +2545,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -3064,37 +2559,37 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("TherapeuticClassId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("TherapeuticClassId");
 
                     b.Property<string>("Ahfs")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("AhfsFrench")
-                        .HasColumnType("character varying(160)")
-                        .HasMaxLength(160);
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)");
 
                     b.Property<string>("AhfsNumber")
-                        .HasColumnType("character varying(20)")
-                        .HasMaxLength(20);
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Atc")
-                        .HasColumnType("character varying(120)")
-                        .HasMaxLength(120);
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
 
                     b.Property<string>("AtcFrench")
-                        .HasColumnType("character varying(240)")
-                        .HasMaxLength(240);
+                        .HasMaxLength(240)
+                        .HasColumnType("character varying(240)");
 
                     b.Property<string>("AtcNumber")
-                        .HasColumnType("character varying(8)")
-                        .HasMaxLength(8);
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3104,8 +2599,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3113,8 +2608,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -3128,17 +2623,17 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("UserFeedbackId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("UserFeedbackId");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("character varying(500)")
-                        .HasMaxLength(500);
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3151,21 +2646,21 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UserProfileId")
-                        .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -3177,25 +2672,25 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.UserPreference", b =>
                 {
                     b.Property<string>("HdId")
-                        .HasColumnName("UserProfileId")
+                        .HasMaxLength(52)
                         .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasColumnName("UserProfileId");
 
                     b.Property<string>("Preference")
                         .HasColumnType("text");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3207,8 +2702,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("HdId", "Preference");
 
@@ -3218,9 +2713,9 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.UserProfile", b =>
                 {
                     b.Property<string>("HdId")
-                        .HasColumnName("UserProfileId")
+                        .HasMaxLength(52)
                         .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasColumnName("UserProfileId");
 
                     b.Property<bool>("AcceptedTermsOfService")
                         .HasColumnType("boolean");
@@ -3230,19 +2725,19 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
-                        .HasColumnType("character varying(254)")
-                        .HasMaxLength(254);
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
 
                     b.Property<string>("EncryptionKey")
-                        .HasColumnType("character varying(44)")
-                        .HasMaxLength(44);
+                        .HasMaxLength(44)
+                        .HasColumnType("character varying(44)");
 
                     b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
@@ -3251,13 +2746,13 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SMSNumber")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3265,8 +2760,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("HdId");
 
@@ -3277,8 +2772,8 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("UserProfileHistoryId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("UserProfileHistoryId");
 
                     b.Property<bool>("AcceptedTermsOfService")
                         .HasColumnType("boolean");
@@ -3288,25 +2783,25 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
-                        .HasColumnType("character varying(254)")
-                        .HasMaxLength(254);
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
 
                     b.Property<string>("EncryptionKey")
-                        .HasColumnType("character varying(44)")
-                        .HasMaxLength(44);
+                        .HasMaxLength(44)
+                        .HasColumnType("character varying(44)");
 
                     b.Property<string>("HdId")
                         .IsRequired()
-                        .HasColumnName("UserProfileId")
+                        .HasMaxLength(52)
                         .HasColumnType("character varying(52)")
-                        .HasMaxLength(52);
+                        .HasColumnName("UserProfileId");
 
                     b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
@@ -3322,13 +2817,13 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SMSNumber")
-                        .HasColumnType("character varying(10)")
-                        .HasMaxLength(10);
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3336,8 +2831,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -3348,13 +2843,13 @@ namespace HealthGateway.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("VeterinarySpeciesId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("VeterinarySpeciesId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3363,21 +2858,21 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Species")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("SpeciesFrench")
-                        .HasColumnType("character varying(160)")
-                        .HasMaxLength(160);
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)");
 
                     b.Property<string>("SubSpecies")
-                        .HasColumnType("character varying(80)")
-                        .HasMaxLength(80);
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
-                        .HasColumnType("character varying(60)")
-                        .HasMaxLength(60);
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<DateTime>("UpdatedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -3385,8 +2880,8 @@ namespace HealthGateway.Database.Migrations
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("xmin")
-                        .HasColumnType("xid");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -3436,6 +2931,8 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Communication", b =>
@@ -3472,6 +2969,12 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("UserProfileHdId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Communication");
+
+                    b.Navigation("Email");
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Company", b =>
@@ -3490,6 +2993,8 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("FileDownloadId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("FileDownload");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Email", b =>
@@ -3554,6 +3059,8 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("VerificationType")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Email");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Note", b =>
@@ -3581,6 +3088,8 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("FileDownloadId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("FileDownload");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.PharmaceuticalStd", b =>
@@ -3590,6 +3099,8 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("HealthGateway.Database.Models.PharmaceuticalStd", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DrugProduct");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegate", b =>
@@ -3639,6 +3150,8 @@ namespace HealthGateway.Database.Migrations
                     b.HasOne("HealthGateway.Database.Models.UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("UserProfileId");
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
@@ -3648,6 +3161,27 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("HealthGateway.Database.Models.VeterinarySpecies", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
+                {
+                    b.Navigation("ActiveIngredient");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Form");
+
+                    b.Navigation("Packaging");
+
+                    b.Navigation("PharmaceuticalStd");
+
+                    b.Navigation("Route");
+
+                    b.Navigation("Statuses");
+
+                    b.Navigation("TherapeuticClass");
+
+                    b.Navigation("VeterinarySpecies");
                 });
 #pragma warning restore 612, 618
         }

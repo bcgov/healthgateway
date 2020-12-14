@@ -125,8 +125,8 @@ describe('dependents', () => {
     it('Validate Dependent Tab', () => {
         // Validate the newly added dependent tab and elements are present   
         cy.get('[data-testid=dependentName]')
-            .contains(firstName.toUpperCase())
-            .contains(lastName.toUpperCase())  
+            .contains(firstName)
+            .contains(lastName)  
         cy.get('[data-testid=dependentPHN]')
             .last().invoke('val')
             .then(phnNumber => expect(phnNumber).to.equal(phn));

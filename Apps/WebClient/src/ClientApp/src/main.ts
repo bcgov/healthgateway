@@ -18,7 +18,6 @@ import store from "@/store/store";
 import {
     ILogger,
     IAuthenticationService,
-    IBetaRequestService,
     ICommunicationService,
     IConfigService,
     IHttpDelegate,
@@ -82,9 +81,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const userFeedbackService: IUserFeedbackService = container.get(
         SERVICE_IDENTIFIER.UserFeedbackService
     );
-    const betaRequestService: IBetaRequestService = container.get(
-        SERVICE_IDENTIFIER.BetaRequestService
-    );
     const userNoteService: IUserNoteService = container.get(
         SERVICE_IDENTIFIER.UserNoteService
     );
@@ -111,7 +107,6 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     encounterService.initialize(config, httpDelegate);
     userProfileService.initialize(httpDelegate);
     userFeedbackService.initialize(httpDelegate);
-    betaRequestService.initialize(httpDelegate);
     userNoteService.initialize(config, httpDelegate);
     communicationService.initialize(httpDelegate);
     userCommentService.initialize(config, httpDelegate);

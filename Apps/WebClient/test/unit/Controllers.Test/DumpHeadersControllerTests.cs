@@ -35,10 +35,10 @@ namespace HealthGateway.WebClient.Test.Controllers
     public class DumpHeadersControllerTests
     {
         /// <summary>
-        /// CreateBetaRequest - Happy path scenario.
+        /// CreateDumpHeadersController - Happy path scenario.
         /// </summary>
         [Fact]
-        public void ShouldCreateBetaRequest()
+        public void ShouldCreateDumpHeadersController()
         {
             using var controller = new DumpHeadersController();
             var actualResult = controller.Index();
