@@ -13,24 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Services
+namespace HealthGateway.Immunization.Models
 {
     using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Immunization.Models;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The Immunization data service.
+    /// Represents Immunization Result.
     /// </summary>
-    public interface IImmunizationService
+    public class ImmunizationResult
     {
         /// <summary>
-        /// Gets the ImmunizationResult inluding load state and a list of immunization records.
+        /// Gets or sets the Immunization id.
         /// </summary>
-        /// <param name="bearerToken">The security token representing the authenticated user.</param>
-        /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationResult>> GetImmunizations(string bearerToken, int pageIndex = 0);
+        [JsonPropertyName("loadState")]
+        public LoadStateModel? LoadState { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of Immunizations.
+        /// </summary>
+        [JsonPropertyName("immunizations")]
+        public IEnumerable<ImmunizationModel> Immunizations { get; set; } = new List<ImmunizationModel>();
     }
 }
