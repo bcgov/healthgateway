@@ -8,6 +8,7 @@ import { medication } from "./modules/medication/medication";
 import { laboratory } from "./modules/laboratory/laboratory";
 import { sidebar } from "./modules/sidebar/sidebar";
 import { errorBanner } from "./modules/error/errorBanner";
+import { comment } from "./modules/comment/comment";
 
 Vue.use(Vuex);
 
@@ -21,6 +22,7 @@ const storeOptions: StoreOptions<RootState> = {
         user,
         medication,
         laboratory,
+        comment,
         sidebar,
         errorBanner,
     },

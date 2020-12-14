@@ -2,30 +2,34 @@
 import Vue from "vue";
 import type { UserComment } from "@/models/userComment";
 import User from "@/models/user";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 import { Component, Emit, Prop } from "vue-property-decorator";
 import { IconDefinition, faLock } from "@fortawesome/free-solid-svg-icons";
-import { ILogger, IUserCommentService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { DateWrapper } from "@/models/dateWrapper";
 
 @Component
 export default class AddCommentComponent extends Vue {
-    @Getter("user", { namespace: "user" }) user!: User;
     @Prop() comment!: UserComment;
+
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    @Action("createComment", { namespace: "comment" })
+    createComment!: (params: {
+        hdid: string;
+        comment: UserComment;
+    }) => Promise<UserComment | undefined>;
+
     private commentInput = "";
 
     private logger!: ILogger;
-    private commentService!: IUserCommentService;
 
     private isSaving = false;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.commentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
     }
 
     private get lockIcon(): IconDefinition {
@@ -38,17 +42,22 @@ export default class AddCommentComponent extends Vue {
 
     private addComment(): void {
         this.isSaving = true;
-        this.commentService
-            .createComment(this.user.hdid, {
+        this.createComment({
+            hdid: this.user.hdid,
+            comment: {
+                id: "00000000-0000-0000-0000-000000000000",
                 text: this.commentInput,
                 parentEntryId: this.comment.parentEntryId,
                 userProfileId: this.user.hdid,
                 version: 0,
                 createdDateTime: new DateWrapper().toISO(),
-            })
-            .then(() => {
-                this.commentInput = "";
-                this.onCommentAdded(this.comment);
+            },
+        })
+            .then((newComment) => {
+                if (newComment !== undefined) {
+                    this.commentInput = "";
+                    this.onCommentAdded(newComment);
+                }
             })
             .catch((err) => {
                 this.logger.error(

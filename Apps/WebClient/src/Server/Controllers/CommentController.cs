@@ -31,7 +31,7 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     [Authorize]
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/api/[controller]")]
+    [Route("v{version:apiVersion}/api/UserProfile/")]
     [ApiController]
     public class CommentController
     {
@@ -61,7 +61,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        [Route("{hdid}")]
+        [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult Create(string hdid, [FromBody] UserComment comment)
         {
@@ -87,7 +87,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
-        [Route("{hdid}")]
+        [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult Update(string hdid, [FromBody] UserComment comment)
         {
@@ -116,7 +116,7 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
-        [Route("{hdid}")]
+        [Route("{hdid}/[controller]")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult Delete(string hdid, [FromBody] UserComment comment)
         {
@@ -139,11 +139,28 @@ namespace HealthGateway.WebClient.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
-        [Route("{hdid}")]
+        [Route("{hdid}/[controller]/Entry")]
         [Authorize(Policy = UserProfilePolicy.Read)]
         public IActionResult GetAllForEntry(string hdid, [FromQuery] string parentEntryId)
         {
-            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetList(hdid, parentEntryId);
+            RequestResult<IEnumerable<UserComment>> result = this.commentService.GetEntryComments(hdid, parentEntryId);
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Gets all comments for the authorized user.
+        /// </summary>
+        /// <param name="hdid">The user hdid.</param>
+        /// <returns>The list of comments wrapped in a request result.</returns>
+        /// <response code="200">Returns the list of comments.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("{hdid}/[controller]")]
+        [Authorize(Policy = UserProfilePolicy.Read)]
+        public IActionResult GetAll(string hdid)
+        {
+            RequestResult<IDictionary<string, IEnumerable<UserComment>>> result = this.commentService.GetProfileComments(hdid);
             return new JsonResult(result);
         }
     }
