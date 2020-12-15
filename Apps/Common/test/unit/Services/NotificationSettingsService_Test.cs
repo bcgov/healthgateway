@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,10 @@
 namespace HealthGateway.CommonTests.Services
 {
     using System.Collections.Generic;
-    using System.Net.Http;
-    using Microsoft.Extensions.Configuration;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -38,6 +34,8 @@ namespace HealthGateway.CommonTests.Services
 
     public class NotificationSettingsService_Test
     {
+        private const string hdid = "unit test hidid";
+
         [Fact]
         public void ShouldQueue()
         {
@@ -127,7 +125,7 @@ namespace HealthGateway.CommonTests.Services
                 SMSEnabled = true,
                 SMSNumber = "2505555555",
                 SubjectHdid = "hdid",
-                SMSVerified = false,
+                SMSVerified = true,
             };
 
             var mockLogger = new Mock<ILogger<NotificationSettingsService>>();
@@ -135,7 +133,12 @@ namespace HealthGateway.CommonTests.Services
             var mockNSDelegate = new Mock<INotificationSettingsDelegate>();
             var mockResourceDelegateDelegate = new Mock<IResourceDelegateDelegate>();
             var dbResult = new Database.Wrapper.DBResult<IEnumerable<ResourceDelegate>>();
-            dbResult.Payload = new List<ResourceDelegate>();
+            dbResult.Payload = new List<ResourceDelegate>()
+            {
+                new ResourceDelegate() {
+                    ProfileHdid = hdid
+                },
+            };
             mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
 
             INotificationSettingsService service = new NotificationSettingsService(
