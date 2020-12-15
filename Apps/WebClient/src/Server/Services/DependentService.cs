@@ -84,9 +84,9 @@ namespace HealthGateway.WebClient.Services
                     };
                 }
             }
-            this.logger.LogDebug("Getting dependent details...");
+            this.logger.LogTrace("Getting dependent details...");
             RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.PHN, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
-            if (patientResult.ResourcePayload == null)
+            if (patientResult.ResultStatus == ResultType.Error)
             {
                 return new RequestResult<DependentModel>()
                 {
@@ -95,53 +95,70 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
-            this.logger.LogError($"Getting dependent details...{JsonSerializer.Serialize(patientResult)}");
-            // Verify dependent's details entered by user
-            if (!addDependentRequest.Equals(patientResult.ResourcePayload))
+            if (patientResult.ResultStatus == ResultType.ActionRequired)
             {
+                return new RequestResult<DependentModel>()
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = patientResult.ResultError,
+                };
+            }
+
+            this.logger.LogDebug($"Finished getting dependent details...{JsonSerializer.Serialize(patientResult)}");
+            // Verify dependent's details entered by user
+            if (patientResult.ResourcePayload == null || !this.ValidateDependent(addDependentRequest, patientResult.ResourcePayload))
+            {
+                this.logger.LogDebug($"Dependent information does not match request: {JsonSerializer.Serialize(addDependentRequest)} response: {JsonSerializer.Serialize(patientResult.ResourcePayload)}");
+                return new RequestResult<DependentModel>()
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch),
+                };
+            }
+
+            // Verify dependent has HDID
+            if (string.IsNullOrEmpty(patientResult.ResourcePayload.HdId))
+            {
+                return new RequestResult<DependentModel>()
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId),
+                };
+            }
+
+            string json = JsonSerializer.Serialize(addDependentRequest.TestDate, addDependentRequest.TestDate.GetType());
+            JsonDocument jsonDoc = JsonDocument.Parse(json);
+            // Insert Dependent to database
+            var dependent = new ResourceDelegate()
+            {
+                ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
+                ProfileHdid = delegateHdId,
+                ReasonCode = ResourceDelegateReason.COVIDLab,
+                ReasonObjectType = addDependentRequest.TestDate.GetType().AssemblyQualifiedName,
+                ReasonObject = jsonDoc
+            };
+            DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
+
+            if (dbDependent.Status == DBStatusCode.Created)
+            {
+                this.logger.LogTrace("Finished adding dependent");
+                this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
 
                 return new RequestResult<DependentModel>()
                 {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "The information you entered did not match. Please try again.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
+                    ResourcePayload = DependentModel.CreateFromModels(dbDependent.Payload, patientResult.ResourcePayload),
+                    ResultStatus = ResultType.Success,
                 };
             }
             else
             {
-                string json = JsonSerializer.Serialize(addDependentRequest.TestDate, addDependentRequest.TestDate.GetType());
-                JsonDocument jsonDoc = JsonDocument.Parse(json);
-                // Insert Dependent to database
-                var dependent = new ResourceDelegate()
+                this.logger.LogError("Error adding dependent");
+                return new RequestResult<DependentModel>()
                 {
-                    ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
-                    ProfileHdid = delegateHdId,
-                    ReasonCode = ResourceDelegateReason.COVIDLab,
-                    ReasonObjectType = addDependentRequest.TestDate.GetType().AssemblyQualifiedName,
-                    ReasonObject = jsonDoc
+                    ResourcePayload = new DependentModel(),
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
                 };
-                DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
-
-                if (dbDependent.Status == DBStatusCode.Created)
-                {
-                    this.logger.LogDebug("Finished adding dependent");
-                    this.UpdateNotificationSettings(dependent.ResourceOwnerHdid, delegateHdId);
-
-                    return new RequestResult<DependentModel>()
-                    {
-                        ResourcePayload = DependentModel.CreateFromModels(dbDependent.Payload, patientResult.ResourcePayload),
-                        ResultStatus = ResultType.Success,
-                    };
-                }
-                else
-                {
-                    this.logger.LogError("Error adding dependent");
-                    return new RequestResult<DependentModel>()
-                    {
-                        ResourcePayload = new DependentModel(),
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
-                    };
-                }
             }
         }
 
@@ -214,6 +231,36 @@ namespace HealthGateway.WebClient.Services
                 ResultError = dbDependent.Status == DBStatusCode.Deleted ? null : new RequestResultError() { ResultMessage = dbDependent.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
             };
             return result;
+        }
+
+        private bool ValidateDependent(AddDependentRequest dependent, PatientModel patientModel)
+        {
+            if (patientModel is null)
+            {
+                return false;
+            }
+
+            if (!patientModel.LastName.Equals(dependent.LastName, StringComparison.OrdinalIgnoreCase))
+            {
+                this.logger.LogInformation("Validate Dependent: LastName mismatch.");
+                return false;
+            }
+
+            if (!patientModel.FirstName.Equals(dependent.FirstName, StringComparison.OrdinalIgnoreCase))
+            {
+                this.logger.LogInformation("Validate Dependent: FirstName mismatch.");
+                return false;
+            }
+
+            if (patientModel.Birthdate.Year != dependent.DateOfBirth.Year || 
+                patientModel.Birthdate.Month != dependent.DateOfBirth.Month || 
+                patientModel.Birthdate.Day != dependent.DateOfBirth.Day)
+            {
+                this.logger.LogInformation("Validate Dependent: DateOfBirth mismatch.");
+                return false;
+            }
+
+            return true;
         }
 
         private NotificationSettingsRequest UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)

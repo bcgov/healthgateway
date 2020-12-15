@@ -43,7 +43,8 @@ namespace HealthGateway.WebClient.Test.Services
         private DateTime mockDateOfBirth = new DateTime(2010, 10, 10);
         private const string mockGender = "Male";
         private const string mockHdId = "MockHdId";
-        private const string mismatchedError = "The information you entered did not match. Please try again.";
+        private const string mismatchedError = "The information you entered does not match our records. Please try again.";
+        private const string noHdIdError = "Please ensure you are using a current BC Services Card.";
 
         private IDependentService SetupCommonMocks(Mock<IResourceDelegateDelegate> mockDependentDelegate, Mock<IPatientService> mockPatientService)
         {
@@ -198,9 +199,9 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
@@ -212,10 +213,9 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
-
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
@@ -227,11 +227,34 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
-
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
+        }
+
+        [Fact]
+        public void ValidateDependentWithNoHdId()
+        {
+            RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>();
+            patientResult.ResultStatus = Common.Constants.ResultType.Success;
+            patientResult.ResourcePayload = new PatientModel()
+            {
+                HdId = string.Empty,
+                PersonalHealthNumber = mockPHN,
+                FirstName = mockFirstName,
+                LastName = mockLastName,
+                Birthdate = mockDateOfBirth,
+                Gender = mockGender,
+            };
+            AddDependentRequest addDependentRequest = SetupMockInput();
+            IDependentService service = SetupMockDependentService(addDependentRequest, patientResult: patientResult);
+            RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
+
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId);
+            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
+            Assert.Equal(noHdIdError, actualResult.ResultError.ResultMessage);
         }
 
         [Fact]

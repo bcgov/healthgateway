@@ -1,3 +1,4 @@
+import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
 
 export default interface RequestResult<T> {
@@ -16,8 +17,10 @@ export default interface RequestResult<T> {
 }
 
 export interface ResultError {
-    // The error code  associated to the request
+    // The error code associated to the request
     errorCode: string;
+    // The action code associated to the request
+    actionCode?: ActionType;
     // The message associated to the error request
     resultMessage: string;
 }

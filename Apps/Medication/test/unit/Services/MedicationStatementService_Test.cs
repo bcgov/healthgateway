@@ -21,9 +21,11 @@ namespace HealthGateway.Medication.Services.Test
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using HealthGateway.Medication.Delegates;
@@ -104,43 +106,51 @@ namespace HealthGateway.Medication.Services.Test
 
             // Run and Verify protective word too long
             RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, "TOOLONG4U");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordTooLong, actual.ResultError.ResultMessage);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatementsHistory(hdid, "SHORT");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordTooShort, actual.ResultError.ResultMessage);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatementsHistory(hdid, "SHORT|");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordInvalidChars, actual.ResultError.ResultMessage);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatementsHistory(hdid, "SHORT~");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordInvalidChars, actual.ResultError.ResultMessage);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatementsHistory(hdid, "SHORT^");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordInvalidChars, actual.ResultError.ResultMessage);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatementsHistory(hdid, "SHORT\\");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordInvalidChars, actual.ResultError.ResultMessage);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatementsHistory(hdid, "SHORT&");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
-
-            // Run and Verify invalid char
-            actual = await service.GetMedicationStatementsHistory(hdid, "Test|");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordInvalidChars, actual.ResultError.ResultMessage);
 
             // Run and Verify invalid char
             actual = await service.GetMedicationStatementsHistory(hdid, "      ");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
-
-            // Run and Verify invalid char
-            actual = await service.GetMedicationStatementsHistory(hdid, "Test|string");
-            Assert.True(actual.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordInvalidChars, actual.ResultError.ResultMessage);
         }
 
         [Fact]

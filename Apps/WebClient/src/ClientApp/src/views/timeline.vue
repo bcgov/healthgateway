@@ -39,6 +39,7 @@ import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import FilterComponent from "@/components/timeline/filters.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter from "@/models/timelineFilter";
+import { ActionType } from "@/constants/actionType";
 
 const namespace = "user";
 
@@ -269,7 +270,10 @@ export default class TimelineView extends Vue {
                     }
                     this.sortEntries();
                     this.medicationCount = results.resourcePayload.length;
-                } else if (results.resultStatus == ResultType.Protected) {
+                } else if (
+                    results.resultStatus == ResultType.ActionRequired &&
+                    results.resultError?.actionCode == ActionType.Protected
+                ) {
                     if (!this.covidModal.show) {
                         this.protectiveWordModal.showModal();
                     }

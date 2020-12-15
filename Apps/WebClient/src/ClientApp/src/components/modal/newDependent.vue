@@ -9,13 +9,11 @@ import { Duration } from "luxon";
 import { IDependentService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import ErrorTranslator from "@/utility/errorTranslator";
-import BannerError from "@/models/bannerError";
-import { Action, Getter } from "vuex-class";
-import { ResultError } from "@/models/requestResult";
+import { Getter } from "vuex-class";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
+import { ResultError } from "@/models/requestResult";
 
 @Component({
     components: {
@@ -25,15 +23,13 @@ import User from "@/models/user";
 export default class NewDependentComponent extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
-
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
 
     private dependentService!: IDependentService;
     private isVisible = false;
     private isLoading = true;
+    private errorMessage = "";
     private dependent: AddDependentRequest = {
         firstName: "",
         lastName: "",
@@ -121,35 +117,32 @@ export default class NewDependentComponent extends Vue {
                 PHN: this.dependent.PHN.replace(/\D/g, ""),
             })
             .then(() => {
+                this.errorMessage = "";
                 this.handleSubmit();
             })
             .catch((err: ResultError) => {
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Error adding dependent. Please review fields and try again.",
-                        err
-                    )
-                );
-                this.handleSubmit();
-            })
-            .finally(() => {
-                this.dependent = {
-                    firstName: "",
-                    lastName: "",
-                    dateOfBirth: "",
-                    PHN: "",
-                    testDate: "",
-                };
-                this.accepted = false;
+                this.errorMessage = err.resultMessage;
             });
     }
 
     @Emit()
     private handleSubmit() {
+        this.clear();
         // Hide the modal manually
         this.$nextTick(() => {
             this.hideModal();
         });
+    }
+
+    private clear() {
+        this.dependent = {
+            firstName: "",
+            lastName: "",
+            dateOfBirth: "",
+            PHN: "",
+            testDate: "",
+        };
+        this.accepted = false;
     }
 }
 </script>
@@ -166,6 +159,19 @@ export default class NewDependentComponent extends Vue {
         header-text-variant="light"
         centered
     >
+        <b-alert
+            data-testid="dependentErrorBanner"
+            variant="danger"
+            dismissible
+            class="no-print"
+            :show="!!errorMessage"
+        >
+            <p data-testid="dependentErrorText">{{ errorMessage }}</p>
+            <span>
+                If you continue to have issues, please contact
+                HealthGateway@gov.bc.ca.
+            </span>
+        </b-alert>
         <b-row>
             <b-col>
                 <form>
