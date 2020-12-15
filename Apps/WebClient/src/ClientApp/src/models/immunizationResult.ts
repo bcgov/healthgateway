@@ -1,5 +1,8 @@
 import ImmunizationModel from "@/models/immunizationModel";
-import PhsaLoadState from "@/models/phsaLoadState";
+
+export default interface PhsaLoadState {
+    refreshInProgress: boolean;
+}
 
 export default interface ImmunizationResult {
     loadState: PhsaLoadState;
