@@ -311,13 +311,14 @@ export default class TimelineView extends Vue {
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     // Add the immunization entries to the timeline list
-                    for (let result of results.resourcePayload) {
+                    for (let result of results.resourcePayload.immunizations) {
                         this.timelineEntries.push(
                             new ImmunizationTimelineEntry(result)
                         );
                     }
                     this.sortEntries();
-                    this.immunizationCount = results.resourcePayload.length;
+                    this.immunizationCount =
+                        results.resourcePayload.immunizations.length;
                 } else {
                     this.logger.error(
                         "Error returned from the immunization call: " +
