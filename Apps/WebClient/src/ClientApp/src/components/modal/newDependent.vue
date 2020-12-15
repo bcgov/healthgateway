@@ -122,25 +122,27 @@ export default class NewDependentComponent extends Vue {
             })
             .catch((err: ResultError) => {
                 this.errorMessage = err.resultMessage;
-            })
-            .finally(() => {
-                this.dependent = {
-                    firstName: "",
-                    lastName: "",
-                    dateOfBirth: "",
-                    PHN: "",
-                    testDate: "",
-                };
-                this.accepted = false;
             });
     }
 
     @Emit()
     private handleSubmit() {
+        this.clear();
         // Hide the modal manually
         this.$nextTick(() => {
             this.hideModal();
         });
+    }
+
+    private clear() {
+        this.dependent = {
+            firstName: "",
+            lastName: "",
+            dateOfBirth: "",
+            PHN: "",
+            testDate: "",
+        };
+        this.accepted = false;
     }
 }
 </script>

@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -31,8 +32,6 @@ namespace HealthGateway.Medication.Delegates
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models.Cacheable;
-    using HealthGateway.Medication.Constants;
-    using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.ODR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -170,8 +169,8 @@ namespace HealthGateway.Medication.Delegates
                 else
                 {
                     this.logger.LogInformation($"Invalid protected word");
-                    retVal.ResultStatus = Common.Constants.ResultType.Protected;
-                    retVal.ResultError = new RequestResultError() { ResultMessage = ErrorMessages.ProtectiveWordErrorMessage, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                    retVal.ResultStatus = ResultType.ActionRequired;
+                    retVal.ResultError = ErrorTranslator.ActionRequired(ErrorMessages.ProtectiveWordErrorMessage, ActionType.Protected);
                 }
 
                 return retVal;

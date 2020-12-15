@@ -199,9 +199,9 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
@@ -213,10 +213,9 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
-
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
@@ -228,10 +227,9 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = SetupMockDependentService(addDependentRequest);
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
-
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
+            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
             Assert.Equal(mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
@@ -253,9 +251,9 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = SetupMockDependentService(addDependentRequest, patientResult: patientResult);
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            var serviceError = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient);
-            Assert.Equal(serviceError, actualResult.ResultError.ErrorCode);
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId);
+            Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
+            Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
             Assert.Equal(noHdIdError, actualResult.ResultError.ResultMessage);
         }
 

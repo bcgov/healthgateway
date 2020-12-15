@@ -43,5 +43,20 @@ namespace HealthGateway.Common.ErrorHandling
             var applicationName = System.AppDomain.CurrentDomain.FriendlyName.ToString();
             return applicationName + "Server-" + errorType.Value;
         }
+
+        /// <summary>
+        /// Formats the error from the given error type.
+        /// </summary>
+        /// <param name="message">The user friendly message.</param>
+        /// <param name="actionType">Action type that caused the issue.</param>
+        /// <returns>A RequestResultError encapsulating the action required.</returns>
+        public static HealthGateway.Common.Models.RequestResultError ActionRequired(string message, ActionType actionType)
+        {
+            return new Models.RequestResultError() { 
+                ResultMessage = message,
+                ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                ActionCode = actionType,
+            };
+        }
     }
 }

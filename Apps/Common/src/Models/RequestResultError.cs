@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Models
 {
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.ErrorHandling;
 
     /// <summary>
     /// The RequestResultError model.
@@ -35,5 +36,25 @@ namespace HealthGateway.Common.Models
         /// </summary>
         [JsonPropertyName("errorCode")]
         public string ErrorCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the action code.
+        /// Will always be set when ResultType is ActionRequired.
+        /// </summary>
+        [JsonIgnore]
+        public ActionType? ActionCode { get; set; }
+
+        /// <summary>
+        /// Gets action code.
+        /// Will always be set when ResultType is ActionRequired.
+        /// </summary>
+        [JsonPropertyName("actionCode")]
+        public string? ActionCodeValue
+        {
+            get
+            {
+                return this.ActionCode?.Value;
+            }
+        }
     }
 }

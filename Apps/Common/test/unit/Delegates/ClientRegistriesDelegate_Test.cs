@@ -138,7 +138,7 @@ namespace HealthGateway.CommonTests.Delegates
         }
 
         [Fact]
-        public async Task ShouldNotErrorIfInvalidIdentifier()
+        public async Task ShouldErrorIfInvalidIdentifier()
         {
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
@@ -233,9 +233,8 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHDIDAsync(hdid);
 
             // Verify
-            Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Empty(actual.ResourcePayload.PersonalHealthNumber);
-            Assert.NotEmpty(actual.ResourcePayload.HdId);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ErrorMessages.HdIdNotFound, actual.ResultError.ResultMessage);
         }
 
         [Fact]

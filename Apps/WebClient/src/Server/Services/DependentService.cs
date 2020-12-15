@@ -95,6 +95,15 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
+            if (patientResult.ResultStatus == ResultType.ActionRequired)
+            {
+                return new RequestResult<DependentModel>()
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = patientResult.ResultError,
+                };
+            }
+
             this.logger.LogDebug($"Finished getting dependent details...{JsonSerializer.Serialize(patientResult)}");
             // Verify dependent's details entered by user
             if (patientResult.ResourcePayload == null || !this.ValidateDependent(addDependentRequest, patientResult.ResourcePayload))
@@ -102,8 +111,8 @@ namespace HealthGateway.WebClient.Services
                 this.logger.LogDebug($"Dependent information does not match request: {JsonSerializer.Serialize(addDependentRequest)} response: {JsonSerializer.Serialize(patientResult.ResourcePayload)}");
                 return new RequestResult<DependentModel>()
                 {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "The information you entered does not match our records. Please try again.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch),
                 };
             }
 
@@ -112,8 +121,8 @@ namespace HealthGateway.WebClient.Services
             {
                 return new RequestResult<DependentModel>()
                 {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError() { ResultMessage = "Please ensure you are using a current BC Services Card.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.InvalidState, ServiceType.Patient) },
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId),
                 };
             }
 

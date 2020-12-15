@@ -235,6 +235,11 @@ namespace HealthGateway.Common.Delegates
                 else
                 {
                     this.logger.LogWarning($"Client Registry returned a person with a person identifier not recognized. No PHN or HDID was populated.");
+                    return new RequestResult<PatientModel>()
+                    {
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId),
+                    };
                 }
 
                 II? subjectId = (II?)retrievedPerson.id.GetValue(0);
@@ -251,6 +256,11 @@ namespace HealthGateway.Common.Delegates
                 else
                 {
                     this.logger.LogWarning($"Client Registry returned a person with a subject identifier not recognized. No PHN or HDID was populated.");
+                    return new RequestResult<PatientModel>()
+                    {
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId),
+                    };
                 }
 
                 return new RequestResult<PatientModel>()
