@@ -184,6 +184,7 @@ export default class NewDependentComponent extends Vue {
                                         id="firstName"
                                         v-model="dependent.firstName"
                                         data-testid="firstNameInput"
+                                        class="dependentCardInput"
                                         placeholder="John Alexander"
                                         :state="isValid($v.dependent.firstName)"
                                         @blur.native="
@@ -202,6 +203,7 @@ export default class NewDependentComponent extends Vue {
                                         id="lastName"
                                         v-model="dependent.lastName"
                                         data-testid="lastNameInput"
+                                        class="dependentCardInput"
                                         placeholder="Doe"
                                         :state="isValid($v.dependent.lastName)"
                                         @blur.native="
@@ -223,6 +225,10 @@ export default class NewDependentComponent extends Vue {
                                         v-model="dependent.dateOfBirth"
                                         max="2999-12-31"
                                         data-testid="dateOfBirthInput"
+                                        :class="{
+                                            dependentCardDateInput:
+                                                dependent.dateOfBirth == '',
+                                        }"
                                         required
                                         type="date"
                                         :state="
@@ -247,6 +253,7 @@ export default class NewDependentComponent extends Vue {
                                         v-model="dependent.PHN"
                                         v-mask="'#### ### ###'"
                                         data-testid="phnInput"
+                                        class="dependentCardInput"
                                         placeholder="1234 567 890"
                                         :state="isValid($v.dependent.PHN)"
                                         @blur.native="$v.dependent.PHN.$touch()"
@@ -265,6 +272,10 @@ export default class NewDependentComponent extends Vue {
                                         id="testDate"
                                         v-model="dependent.testDate"
                                         data-testid="testDateInput"
+                                        :class="{
+                                            dependentCardDateInput:
+                                                dependent.testDate == '',
+                                        }"
                                         max="2999-12-31"
                                         required
                                         type="date"
@@ -350,3 +361,13 @@ export default class NewDependentComponent extends Vue {
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
     </b-modal>
 </template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+.dependentCardDateInput {
+    color: #e0e0e0;
+}
+::placeholder {
+    color: #e0e0e0;
+}
+</style>

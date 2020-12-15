@@ -235,7 +235,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
-            commentServiceMock.Setup(s => s.GetList(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
+            commentServiceMock.Setup(s => s.GetEntryComments(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
             CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
             var actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");

@@ -430,7 +430,7 @@ export default class SidebarComponent extends Vue {
                         </b-row>
                     </div>
                     <router-link
-                        v-show="isDependentEnabled"
+                        v-show="isDependentEnabled && isActiveProfile"
                         id="menuBtnDependents"
                         data-testid="menuBtnDependentsLink"
                         to="/dependents"

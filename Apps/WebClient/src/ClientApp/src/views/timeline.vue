@@ -40,6 +40,8 @@ import FilterComponent from "@/components/timeline/filters.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter from "@/models/timelineFilter";
 import { ActionType } from "@/constants/actionType";
+import { UserComment } from "@/models/userComment";
+import { Dictionary } from "vue-router/types/router";
 
 const namespace = "user";
 
@@ -73,6 +75,11 @@ export default class TimelineView extends Vue {
         protectiveWord?: string;
     }) => Promise<RequestResult<MedicationStatementHistory[]>>;
 
+    @Action("retrieveProfileComments", { namespace: "comment" })
+    retrieveProfileComments!: (params: {
+        hdid: string;
+    }) => Promise<RequestResult<Dictionary<UserComment[]>>>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
@@ -87,6 +94,7 @@ export default class TimelineView extends Vue {
     private isLaboratoryLoading = false;
     private isEncounterLoading = false;
     private isNoteLoading = false;
+    private isCommentLoading = false;
     private idleLogoutWarning = false;
     private medicationCount = 0;
     private immunizationCount = 0;
@@ -119,6 +127,7 @@ export default class TimelineView extends Vue {
         this.fetchLaboratoryResults();
         this.fetchEncounters();
         this.fetchNotes();
+        this.fetchComments();
         window.addEventListener("beforeunload", this.onBrowserClose);
         this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
             this.isAddingNote = true;
@@ -226,7 +235,8 @@ export default class TimelineView extends Vue {
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
             this.isEncounterLoading ||
-            this.isNoteLoading
+            this.isNoteLoading ||
+            this.isCommentLoading
         );
     }
 
@@ -489,6 +499,39 @@ export default class TimelineView extends Vue {
             })
             .finally(() => {
                 this.isNoteLoading = false;
+            });
+    }
+
+    private fetchComments() {
+        this.isCommentLoading = true;
+
+        this.retrieveProfileComments({
+            hdid: this.user.hdid,
+        })
+            .then((results) => {
+                if (results.resultStatus == ResultType.Success) {
+                    this.logger.debug("Profile Comments Loaded");
+                } else {
+                    this.logger.error(
+                        "Error returned from the retrieve comments call: " +
+                            JSON.stringify(results.resultError)
+                    );
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Profile Comments Error",
+                            results.resultError
+                        )
+                    );
+                }
+            })
+            .catch((err) => {
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile Comments Error", err)
+                );
+            })
+            .finally(() => {
+                this.isCommentLoading = false;
             });
     }
 

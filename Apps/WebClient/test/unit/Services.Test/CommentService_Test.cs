@@ -79,7 +79,7 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new Mock<ICommentDelegate>();
-            commentDelegateMock.Setup(s => s.GetList(hdid, parentEntryId)).Returns(commentsDBResult);
+            commentDelegateMock.Setup(s => s.GetByParentEntry(hdid, parentEntryId)).Returns(commentsDBResult);
 
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
@@ -88,7 +88,7 @@ namespace HealthGateway.WebClient.Test.Services
                 cryptoDelegateMock.Object
             );
 
-            RequestResult<IEnumerable<UserComment>> actualResult = service.GetList(hdid, parentEntryId);
+            RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(hdid, parentEntryId);
 
             return new Tuple<RequestResult<IEnumerable<UserComment>>, List<UserComment>>(actualResult, userCommentList);
         }
@@ -339,7 +339,7 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<ICryptoDelegate>().Object
             );
 
-            RequestResult<IEnumerable<UserComment>> actualResult = service.GetList(hdid, parentEntryId);
+            RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(hdid, parentEntryId);
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
