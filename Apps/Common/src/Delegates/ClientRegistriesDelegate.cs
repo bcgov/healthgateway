@@ -184,7 +184,17 @@ namespace HealthGateway.Common.Delegates
                     };
                 }
 
-                PN nameSection = retrievedPerson.identifiedPerson.name.Where(x => x.use.Any(u => u == cs_EntityNameUse.C)).First();
+                PN? nameSection = retrievedPerson.identifiedPerson.name.Where(x => x.use.Any(u => u == cs_EntityNameUse.C)).FirstOrDefault();
+
+                if (nameSection == null)
+                {
+                    this.logger.LogWarning($"Client Registry returned a person with an invalid name.");
+                    return new RequestResult<PatientModel>()
+                    {
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
+                    };
+                }
 
                 // Extract the subject names
                 List<string> givenNameList = new List<string>();
@@ -238,7 +248,7 @@ namespace HealthGateway.Common.Delegates
                     return new RequestResult<PatientModel>()
                     {
                         ResultStatus = ResultType.ActionRequired,
-                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId),
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
                     };
                 }
 
@@ -259,7 +269,7 @@ namespace HealthGateway.Common.Delegates
                     return new RequestResult<PatientModel>()
                     {
                         ResultStatus = ResultType.ActionRequired,
-                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId),
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
                     };
                 }
 

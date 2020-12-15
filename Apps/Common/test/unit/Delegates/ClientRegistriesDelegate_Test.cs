@@ -234,7 +234,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             // Verify
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
-            Assert.Equal(ErrorMessages.HdIdNotFound, actual.ResultError.ResultMessage);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, actual.ResultError.ResultMessage);
         }
 
         [Fact]

@@ -43,6 +43,14 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
+        /// Gets the missing name user error.
+        /// </summary>
+        public static ActionType InvalidName
+        {
+            get { return new ActionType("INVALIDNAME"); }
+        }
+
+        /// <summary>
         /// Gets the data mismatch user error.
         /// </summary>
         public static ActionType DataMismatch

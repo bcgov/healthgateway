@@ -21,15 +21,15 @@ namespace HealthGateway.Common.Constants
     public static class ErrorMessages
     {
         /// <summary>
-        /// Error message to return when patient has no hdid.
+        /// Error message to return when patient has no an invalid services card.
         /// </summary>
-        public const string HdIdNotFound = "Please ensure you are using a current BC Services Card.";
+        public const string InvalidServicesCard = "Please ensure you are using a current BC Services Card.";
 
         /// <summary>
         /// Error message to return patient data does not match request.
         /// </summary>
         public const string DataMismatch = "The information you entered does not match our records. Please try again.";
-    
+
         /// <summary>
         /// Error message to return when a Pharmanet record is protected.
         /// </summary>

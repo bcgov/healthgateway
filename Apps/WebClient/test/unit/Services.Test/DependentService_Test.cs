@@ -251,7 +251,7 @@ namespace HealthGateway.WebClient.Test.Services
             IDependentService service = SetupMockDependentService(addDependentRequest, patientResult: patientResult);
             RequestResult<DependentModel> actualResult = service.AddDependent(mockParentHdId, addDependentRequest);
 
-            var userError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId);
+            var userError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId);
             Assert.Equal(Common.Constants.ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(userError.ErrorCode, actualResult.ResultError.ErrorCode);
             Assert.Equal(noHdIdError, actualResult.ResultError.ResultMessage);

@@ -122,7 +122,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<DependentModel>()
                 {
                     ResultStatus = ResultType.ActionRequired,
-                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.HdIdNotFound, ActionType.NoHdId),
+                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
                 };
             }
 
