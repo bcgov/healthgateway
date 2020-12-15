@@ -9,6 +9,7 @@ import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
 import COVID19ReportComponent from "@/components/report/covid19.vue";
+import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import { IAuthenticationService } from "@/services/interfaces";
 import type { WebClientConfiguration } from "@/models/configData";
 import { Getter } from "vuex-class";
@@ -20,6 +21,7 @@ import { Getter } from "vuex-class";
         MedicationHistoryReportComponent,
         MSPVisitsReportComponent,
         COVID19ReportComponent,
+        ImmunizationHistoryReportComponent,
     },
 })
 export default class ReportsView extends Vue {
@@ -34,6 +36,8 @@ export default class ReportsView extends Vue {
     readonly mspVisitsReport!: MSPVisitsReportComponent;
     @Ref("covid19Report")
     readonly covid19Report!: COVID19ReportComponent;
+    @Ref("immunizationHistoryReport")
+    readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
 
     private fullName = "";
     private logger!: ILogger;
@@ -54,6 +58,12 @@ export default class ReportsView extends Vue {
                 text: "COVID-19 Test Results",
             });
         }
+        if (this.config.modules["Immunization"]) {
+            this.reportTypeOptions.push({
+                value: "Immunization",
+                text: "Immunizations",
+            });
+        }
         this.loadName();
     }
 
@@ -71,6 +81,9 @@ export default class ReportsView extends Vue {
                 break;
             case "COVID-19":
                 this.covid19Report.generatePdf();
+                break;
+            case "Immunization":
+                this.immunizationHistoryReport.generatePdf();
                 break;
         }
     }
@@ -155,6 +168,16 @@ export default class ReportsView extends Vue {
                     >
                         <COVID19ReportComponent
                             ref="covid19Report"
+                            :name="fullName"
+                        />
+                    </div>
+                    <div
+                        v-else-if="reportType == 'Immunization'"
+                        data-testid="immunizationHistoryReportSample"
+                        class="sample"
+                    >
+                        <ImmunizationHistoryReportComponent
+                            ref="immunizationHistoryReport"
                             :name="fullName"
                         />
                     </div>
