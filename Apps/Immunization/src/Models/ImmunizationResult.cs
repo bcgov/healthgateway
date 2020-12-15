@@ -24,7 +24,7 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationResult
     {
         /// <summary>
-        /// Gets or sets the Immunization id.
+        /// Gets or sets the Load State.
         /// </summary>
         [JsonPropertyName("loadState")]
         public LoadStateModel? LoadState { get; set; }
