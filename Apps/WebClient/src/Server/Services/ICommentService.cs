@@ -37,7 +37,14 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hdId">The users HDID.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
         /// <returns>A List of UserComment wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<UserComment>> GetList(string hdId, string parentEntryId);
+        RequestResult<IEnumerable<UserComment>> GetEntryComments(string hdId, string parentEntryId);
+
+        /// <summary>
+        /// Gets a list of UserComment for the given hdId.
+        /// </summary>
+        /// <param name="hdId">The users HDID.</param>
+        /// <returns>A List of UserComment wrapped in a RequestResult.</returns>
+        RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetProfileComments(string hdId);
 
         /// <summary>
         /// Updates the given UserComment in the backend.
