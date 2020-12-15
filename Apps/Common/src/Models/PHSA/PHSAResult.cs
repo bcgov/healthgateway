@@ -28,7 +28,7 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the LoadState.
         /// </summary>
         [JsonPropertyName("loadState")]
-        public PHSALoadState? LoadState { get; set; }
+        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
 
         /// <summary>
         /// Gets or sets the result section.

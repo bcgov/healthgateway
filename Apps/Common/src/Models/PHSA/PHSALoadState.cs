@@ -24,20 +24,6 @@ namespace HealthGateway.Common.Models.PHSA
     public class PHSALoadState
     {
         /// <summary>
-        /// Gets or sets the Signal-R Url.
-        /// </summary>
-        [JsonPropertyName("signalRUrl")]
-#pragma warning disable CA1056 // URI-like properties should not be strings
-        public string SignalRUrl { get; set; } = string.Empty;
-#pragma warning restore CA1056 // URI-like properties should not be strings
-
-        /// <summary>
-        /// Gets or sets the Signal-R Method.
-        /// </summary>
-        [JsonPropertyName("signalRMethod")]
-        public string SignalRMethod { get; set; } = string.Empty;
-
-        /// <summary>
         /// Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
         /// </summary>
         [JsonPropertyName("refreshInProgress")]
