@@ -86,7 +86,9 @@ namespace HealthGateway.Immunization.Test.Delegate
             IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), httpClientService, this.configuration);
             var actualResult = immsDelegate.GetImmunizations("token", 0).Result;
 
-            Assert.True(expectedResult.IsDeepEqual(actualResult));
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+            Assert.Equal(1, actualResult.ResourcePayload.Result.Count);
         }
 
         [Fact]
@@ -129,7 +131,8 @@ namespace HealthGateway.Immunization.Test.Delegate
             IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(loggerFactory.CreateLogger<RestImmunizationDelegate>(), httpClientService, this.configuration);
             var actualResult = immsDelegate.GetImmunizations("token", pageIndex).Result;
 
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success && actualResult.ResourcePayload.Count() == 0);
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success && actualResult.ResourcePayload.Result == null);
+            Assert.Null(actualResult.ResourcePayload.Result);
         }
 
         [Fact]

@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Delegates
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Models;
 
     /// <summary>
@@ -26,12 +27,12 @@ namespace HealthGateway.Immunization.Delegates
     public interface IImmunizationDelegate
     {
         /// <summary>
-        /// Returns a List of Immunizations for the authenticated user.
+        /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
         /// It has a collection of one or more Immunizations.
         /// </summary>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>The list of Immunizations available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<IEnumerable<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0);
+        /// <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
+        Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0);
     }
 }
