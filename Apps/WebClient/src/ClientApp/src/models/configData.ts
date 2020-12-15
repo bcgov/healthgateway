@@ -1,4 +1,5 @@
 import { RegistrationStatus } from "@/constants/registrationStatus";
+import { Dictionary } from "@/models/baseTypes";
 
 // A collection of configuration items for use by Health Gateway and approved applications.
 export class ExternalConfiguration {
@@ -12,7 +13,7 @@ export class ExternalConfiguration {
     public webClient!: WebClientConfiguration;
 
     // Gets or sets the Service Endpoints.
-    public serviceEndpoints!: { [id: string]: string };
+    public serviceEndpoints!: Dictionary<string>;
 }
 
 // An object representing a configured Health Gateway IdentityProvider.
@@ -46,7 +47,7 @@ export class OpenIdConnectConfiguration {
     // Gets or sets the OpenIDConnect Scopes.
     public scope!: string;
     // Gets or sets the Callback URIs.
-    public callbacks!: { [id: string]: string };
+    public callbacks!: Dictionary<string>;
 }
 
 // Configuration data to be used by the Health Gateway Webclient.
@@ -58,9 +59,9 @@ export interface WebClientConfiguration {
     // Gets or sets the Webclient timeout values.
     registrationStatus: RegistrationStatus;
     // Gets or sets the ExternalURLs used by the Webclient.
-    externalURLs?: { [id: string]: string };
+    externalURLs?: Dictionary<string>;
     // Gets or sets the Module state.
-    modules: { [id: string]: boolean };
+    modules: Dictionary<boolean>;
     // Gets or sets the hours for deletion.
     hoursForDeletion: number;
     // Gets or sets the minimum required patient age allowed for registration.

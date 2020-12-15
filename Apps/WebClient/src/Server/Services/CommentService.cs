@@ -15,7 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System;
+    using System.Linq;
     using System.Collections.Generic;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
@@ -79,7 +79,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<UserComment>> GetList(string hdId, string parentEntryId)
+        public RequestResult<IEnumerable<UserComment>> GetEntryComments(string hdId, string parentEntryId)
         {
             UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
             string? key = profile.EncryptionKey;
@@ -95,10 +95,47 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
-            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetList(hdId, parentEntryId);
+            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetByParentEntry(hdId, parentEntryId);
             RequestResult<IEnumerable<UserComment>> result = new RequestResult<IEnumerable<UserComment>>()
             {
                 ResourcePayload = UserComment.CreateListFromDbModel(dbComments.Payload, this.cryptoDelegate, key),
+                TotalResultCount = dbComments.Payload.Count(),
+                PageIndex = 0,
+                PageSize = dbComments.Payload.Count(),
+                ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
+                ResultError = dbComments.Status != DBStatusCode.Read ? new RequestResultError() { ResultMessage = dbComments.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
+            };
+            return result;
+        }
+
+        /// <inheritdoc />
+        public RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetProfileComments(string hdId)
+        {
+            UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
+            string? key = profile.EncryptionKey;
+
+            // Check that the key has been set
+            if (key == null)
+            {
+                this.logger.LogError($"User does not have a key: ${hdId}");
+                return new RequestResult<IDictionary<string, IEnumerable<UserComment>>>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Profile Key not set", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) },
+                };
+            }
+
+            DBResult<IEnumerable<Comment>> dbComments = this.commentDelegate.GetAll(hdId);
+            IEnumerable<UserComment> comments = UserComment.CreateListFromDbModel(dbComments.Payload, this.cryptoDelegate, key);
+
+            IDictionary<string, IEnumerable<UserComment>> userCommentsByEntry = comments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
+
+            RequestResult<IDictionary<string, IEnumerable<UserComment>>> result = new RequestResult<IDictionary<string, IEnumerable<UserComment>>>()
+            {
+                ResourcePayload = userCommentsByEntry,
+                TotalResultCount = userCommentsByEntry.Count,
+                PageIndex = 0,
+                PageSize = userCommentsByEntry.Count,
                 ResultStatus = dbComments.Status == DBStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultError = dbComments.Status != DBStatusCode.Read ? new RequestResultError() { ResultMessage = dbComments.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) } : null,
             };
