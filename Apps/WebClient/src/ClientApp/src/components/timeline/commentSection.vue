@@ -5,7 +5,7 @@ import CommentComponent from "@/components/timeline/comment.vue";
 import AddCommentComponent from "@/components/timeline/addComment.vue";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Component, Prop } from "vue-property-decorator";
-import { ILogger, IUserCommentService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -21,13 +21,14 @@ import User from "@/models/user";
 export default class CommentSectionComponent extends Vue {
     @Prop() parentEntry!: MedicationTimelineEntry;
     @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("getEntryComments", { namespace: "comment" })
+    entryComments!: (entyId: string) => UserComment[];
 
     private logger!: ILogger;
-    private commentService!: IUserCommentService;
     private showComments = false;
     private showInput = false;
     private isLoadingComments = false;
-    private comments: UserComment[] = [];
+
     private newComment: UserComment = {
         id: "",
         text: "",
@@ -39,59 +40,18 @@ export default class CommentSectionComponent extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.commentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
-        this.getComments();
+    }
+
+    private get comments(): UserComment[] {
+        return this.entryComments(this.parentEntry.id) || [];
     }
 
     private get hasComments(): boolean {
-        return this.comments.length > 0;
-    }
-
-    private sortComments() {
-        this.comments.sort((a, b) => {
-            if (a.createdDateTime > b.createdDateTime) {
-                return -1;
-            } else if (a.createdDateTime < b.createdDateTime) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-    }
-
-    private getComments() {
-        this.isLoadingComments = true;
-        this.commentService
-            .getCommentsForEntry(this.user.hdid, this.parentEntry.id)
-            .then((result) => {
-                if (result) {
-                    this.comments = result.resourcePayload;
-                    this.sortComments();
-                }
-            })
-            .catch((err) => {
-                this.logger.error(
-                    `Error loading comments for entry  ${
-                        this.parentEntry.id
-                    }: ${JSON.stringify(err)}`
-                );
-            })
-            .finally(() => {
-                this.isLoadingComments = false;
-            });
-    }
-
-    private needsUpdate() {
-        this.getComments();
+        return this.comments !== undefined ? this.comments.length > 0 : false;
     }
 
     private onAdd() {
-        if (!this.showComments) {
-            this.showComments = true;
-        }
-        this.getComments();
+        this.showComments = true;
     }
 }
 </script>
@@ -138,10 +98,7 @@ export default class CommentSectionComponent extends Vue {
                                     v-for="comment in comments"
                                     :key="comment.id"
                                 >
-                                    <Comment
-                                        :comment="comment"
-                                        @needs-update="needsUpdate"
-                                    ></Comment>
+                                    <Comment :comment="comment"></Comment>
                                 </div>
                             </div>
                             <div v-else>

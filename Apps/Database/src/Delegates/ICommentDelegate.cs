@@ -30,7 +30,14 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdId">The users health identifier id.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
         /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Comment>> GetList(string hdId, string parentEntryId);
+        DBResult<IEnumerable<Comment>> GetByParentEntry(string hdId, string parentEntryId);
+
+        /// <summary>
+        /// Gets a list of comments ordered by the created datetime for the given HdId.
+        /// </summary>
+        /// <param name="hdId">The users health identifier id.</param>
+        /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<Comment>> GetAll(string hdId);
 
         /// <summary>
         /// Add the given note.

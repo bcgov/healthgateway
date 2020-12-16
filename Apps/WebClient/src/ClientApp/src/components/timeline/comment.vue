@@ -2,10 +2,10 @@
 import Vue from "vue";
 import type { UserComment } from "@/models/userComment";
 import User from "@/models/user";
-import { Getter } from "vuex-class";
-import { Component, Emit, Prop } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+import { Component, Prop } from "vue-property-decorator";
 import { IconDefinition, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import { ILogger, IUserCommentService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -13,24 +13,28 @@ import { DateWrapper } from "@/models/dateWrapper";
 @Component
 export default class CommentComponent extends Vue {
     @Prop() comment!: UserComment;
+
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Action("updateComment", { namespace: "comment" })
+    updateComment!: (params: {
+        hdid: string;
+        comment: UserComment;
+    }) => Promise<UserComment>;
+
+    @Action("deleteComment", { namespace: "comment" })
+    deleteComment!: (params: {
+        hdid: string;
+        comment: UserComment;
+    }) => Promise<void>;
 
     private commentInput = "";
     private logger!: ILogger;
-    private commentService!: IUserCommentService;
     private isEditMode = false;
     private isLoading = false;
 
-    @Emit()
-    private needsUpdate(comment: UserComment) {
-        return comment;
-    }
-
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.commentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
     }
 
     private formatDate(date: string): string {
@@ -42,7 +46,7 @@ export default class CommentComponent extends Vue {
     }
 
     private onSubmit(): void {
-        this.updateComment();
+        this.confirmUpdate();
     }
 
     private onCancel(): void {
@@ -54,19 +58,21 @@ export default class CommentComponent extends Vue {
         this.isEditMode = true;
     }
 
-    private updateComment(): void {
+    private confirmUpdate(): void {
         this.isLoading = true;
-        this.commentService
-            .updateComment(this.user.hdid, {
+        this.updateComment({
+            hdid: this.user.hdid,
+            comment: {
                 id: this.comment.id,
                 text: this.commentInput,
                 userProfileId: this.comment.userProfileId,
                 parentEntryId: this.comment.parentEntryId,
                 createdDateTime: this.comment.createdDateTime,
                 version: this.comment.version,
-            })
+            },
+        })
             .then(() => {
-                this.needsUpdate(this.comment);
+                this.logger.info("Comment Updated");
             })
             .catch((err) => {
                 this.logger.error(JSON.stringify(err));
@@ -77,13 +83,12 @@ export default class CommentComponent extends Vue {
             });
     }
 
-    private deleteComment(): void {
+    private removeComment(): void {
         if (confirm("Are you sure you want to delete this comment?")) {
             this.isLoading = true;
-            this.commentService
-                .deleteComment(this.user.hdid, this.comment)
+            this.deleteComment({ hdid: this.user.hdid, comment: this.comment })
                 .then(() => {
-                    this.needsUpdate(this.comment);
+                    this.logger.info("Comment removed");
                 })
                 .catch((err) => {
                     this.logger.error(JSON.stringify(err));
@@ -135,7 +140,7 @@ export default class CommentComponent extends Vue {
                         <b-dropdown-item
                             class="menuItem"
                             data-testid="commentMenuDeleteBtn"
-                            @click="deleteComment()"
+                            @click="removeComment()"
                         >
                             Delete
                         </b-dropdown-item>

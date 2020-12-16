@@ -129,6 +129,9 @@ export interface IUserCommentService {
         hdid: string,
         parentEntryId: string
     ): Promise<RequestResult<UserComment[]>>;
+    getCommentsForProfile(
+        hdid: string
+    ): Promise<RequestResult<Dictionary<UserComment[]>>>;
     createComment(
         hdid: string,
         comment: UserComment
