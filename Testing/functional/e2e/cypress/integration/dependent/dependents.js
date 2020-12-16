@@ -1,13 +1,23 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('dependents', () => {
-    const firstName = "Sam"
-    const lastName = "Testfive"
-    const doB = "2014-03-15"
-    const invalidDoB = "2007-08-05"
-    const testDate = "2020-03-21"
-    const phn = "9874307168"    
+    const validDependent = {
+        firstName: "Sam",
+        lastName: "Testfive",
+        wrongLastName: "Testfive2",
+        invalidDoB: "2007-08-05",
+        doB: "2014-03-15",
+        testDate: "2020-03-21",
+        phn: "9874307168"
+    }
    
+    const noHdidDependent = {
+        firstName: "Baby Girl",
+        lastName: "Reid",
+        doB: "2018-02-04",
+        testDate: "2020-03-21",
+        phn: "9879187222"
+    }
 
     before(() => {
         cy.readConfig().as("config").then(config => {
@@ -72,15 +82,15 @@ describe('dependents', () => {
             .click();
         cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
         cy.get('[data-testid=firstNameInput]')
-            .type(firstName);
+            .type(validDependent.firstName);
         cy.get('[data-testid=lastNameInput]')
-            .type(lastName);
+            .type(validDependent.lastName);
         cy.get('[data-testid=dateOfBirthInput]')
-            .type(invalidDoB);
+            .type(validDependent.invalidDoB);
         cy.get('[data-testid=testDateInput]')
-            .type(testDate);
+            .type(validDependent.testDate);
         cy.get('[data-testid=phnInput]')
-            .type(phn);
+            .type(validDependent.phn);
         cy.get('[data-testid=termsCheckbox]')
             .check({ force: true });
 
@@ -91,7 +101,77 @@ describe('dependents', () => {
 
         cy.get('[data-testid=cancelRegistrationBtn]').click(); 
     })
-    
+
+    it('Validate Data Mismatch', () => {
+        cy.get('[data-testid=addNewDependentBtn]')
+            .click();
+        
+        cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
+        
+        cy.get('[data-testid=firstNameInput]')
+            .clear()
+            .type(validDependent.firstName);
+        cy.get('[data-testid=lastNameInput]')
+            .clear()
+            .type(validDependent.wrongLastName);
+        cy.get('[data-testid=dateOfBirthInput]')
+            .clear()
+            .type(validDependent.doB);
+        cy.get('[data-testid=testDateInput]')
+            .clear()
+            .type(validDependent.testDate);
+        cy.get('[data-testid=phnInput]')
+            .clear()
+            .type(validDependent.phn);
+        cy.get('[data-testid=termsCheckbox]')
+            .check({ force: true });
+
+        cy.get('[data-testid=registerDependentBtn]').click(); 
+
+        // Validate the modal is not done 
+        cy.get('[data-testid=newDependentModal]')
+            .should('exist')
+        cy.get('[data-testid=dependentErrorText]')
+            .should('exist', 'be.visible', 'not.be.empty')
+        cy.get('[data-testid=cancelRegistrationBtn]')
+            .click(); 
+    });
+
+    it('Validate No HDID', () => {
+        cy.get('[data-testid=addNewDependentBtn]')
+            .click();
+        
+        cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
+        
+        cy.get('[data-testid=firstNameInput]')
+            .clear()
+            .type(noHdidDependent.firstName);
+        cy.get('[data-testid=lastNameInput]')
+            .clear()
+            .type(noHdidDependent.lastName);
+        cy.get('[data-testid=dateOfBirthInput]')
+            .clear()
+            .type(noHdidDependent.doB);
+        cy.get('[data-testid=testDateInput]')
+            .clear()
+            .type(noHdidDependent.testDate);
+        cy.get('[data-testid=phnInput]')
+            .clear()
+            .type(noHdidDependent.phn);
+        cy.get('[data-testid=termsCheckbox]')
+            .check({ force: true });
+
+        cy.get('[data-testid=registerDependentBtn]').click(); 
+
+        // Validate the modal is not done 
+        cy.get('[data-testid=newDependentModal]')
+            .should('exist')
+        cy.get('[data-testid=dependentErrorText]')
+            .should('exist', 'be.visible', 'not.be.empty')
+        cy.get('[data-testid=cancelRegistrationBtn]')
+            .click(); 
+    });
+
     it('Validate Add', () => {
         cy.get('[data-testid=addNewDependentBtn]')
             .click();
@@ -100,19 +180,19 @@ describe('dependents', () => {
         
         cy.get('[data-testid=firstNameInput]')
             .clear()
-            .type(firstName);
+            .type(validDependent.firstName);
         cy.get('[data-testid=lastNameInput]')
             .clear()
-            .type(lastName);
+            .type(validDependent.lastName);
         cy.get('[data-testid=dateOfBirthInput]')
             .clear()
-            .type(doB);
+            .type(validDependent.doB);
         cy.get('[data-testid=testDateInput]')
             .clear()
-            .type(testDate);
+            .type(validDependent.testDate);
         cy.get('[data-testid=phnInput]')
             .clear()
-            .type(phn);
+            .type(validDependent.phn);
         cy.get('[data-testid=termsCheckbox]')
             .check({ force: true });
 
@@ -125,14 +205,14 @@ describe('dependents', () => {
     it('Validate Dependent Tab', () => {
         // Validate the newly added dependent tab and elements are present   
         cy.get('[data-testid=dependentName]')
-            .contains(firstName)
-            .contains(lastName)  
+            .contains(validDependent.firstName)
+            .contains(validDependent.lastName)  
         cy.get('[data-testid=dependentPHN]')
             .last().invoke('val')
-            .then(phnNumber => expect(phnNumber).to.equal(phn));
+            .then(phnNumber => expect(phnNumber).to.equal(validDependent.phn));
         cy.get('[data-testid=dependentDOB]')
             .last().invoke('val')
-            .then(dateOfBirth => expect(dateOfBirth).to.equal(doB));          
+            .then(dateOfBirth => expect(dateOfBirth).to.equal(validDependent.doB));          
     })
 
 

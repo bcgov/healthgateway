@@ -184,7 +184,17 @@ namespace HealthGateway.Common.Delegates
                     };
                 }
 
-                PN nameSection = retrievedPerson.identifiedPerson.name.Where(x => x.use.Any(u => u == cs_EntityNameUse.C)).First();
+                PN? nameSection = retrievedPerson.identifiedPerson.name.Where(x => x.use.Any(u => u == cs_EntityNameUse.C)).FirstOrDefault();
+
+                if (nameSection == null)
+                {
+                    this.logger.LogWarning($"Client Registry returned a person with an invalid name.");
+                    return new RequestResult<PatientModel>()
+                    {
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.InvalidName),
+                    };
+                }
 
                 // Extract the subject names
                 List<string> givenNameList = new List<string>();
@@ -221,8 +231,9 @@ namespace HealthGateway.Common.Delegates
 
                 PatientModel patient = new PatientModel() { FirstName = givenNames, LastName = lastNames, Birthdate = dob, Gender = gender, EmailAddress = string.Empty };
 
-                string personIdentifierType = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).root;
-                string personIdentifier = ((II)retrievedPerson.identifiedPerson.id.GetValue(0)!).extension;
+                II? identifiedPersonId = (II?)retrievedPerson.identifiedPerson.id.GetValue(0);
+                string? personIdentifierType = identifiedPersonId?.root;
+                string personIdentifier = identifiedPersonId?.extension ?? string.Empty;
                 if (personIdentifierType == OIDType.HDID.ToString())
                 {
                     patient.HdId = personIdentifier;
@@ -233,18 +244,17 @@ namespace HealthGateway.Common.Delegates
                 }
                 else
                 {
-                    PatientModel emptyPatient = new PatientModel();
-                    this.logger.LogWarning($"Client Registry returned a person with a person identifier not recognized. No PHN was populated. {personIdentifier}");
-                    this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(emptyPatient)}");
+                    this.logger.LogWarning($"Client Registry returned a person with a person identifier not recognized. No PHN or HDID was populated.");
                     return new RequestResult<PatientModel>()
                     {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError() { ResultMessage = "Client Registry returned a person with a person identifier not recognized.", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
                     };
                 }
 
-                string subjectIdentifierType = ((II)retrievedPerson.id.GetValue(0)!).root;
-                string subjectIdentifier = ((II)retrievedPerson.id.GetValue(0)!).extension;
+                II? subjectId = (II?)retrievedPerson.id.GetValue(0);
+                string? subjectIdentifierType = subjectId?.root;
+                string subjectIdentifier = subjectId?.extension ?? string.Empty;
                 if (subjectIdentifierType == OIDType.HDID.ToString())
                 {
                     patient.HdId = subjectIdentifier;
@@ -255,13 +265,11 @@ namespace HealthGateway.Common.Delegates
                 }
                 else
                 {
-                    PatientModel emptyPatient = new PatientModel();
-                    this.logger.LogWarning($"Client Registry returned a person with a subject identifier not recognized. No PHN was populated. {subjectIdentifier}");
-                    this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(emptyPatient)}");
+                    this.logger.LogWarning($"Client Registry returned a person with a subject identifier not recognized. No PHN or HDID was populated.");
                     return new RequestResult<PatientModel>()
                     {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError() { ResultMessage = "Client Registry returned a person with a subject identifier not recognized. No PHN was populated", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId),
                     };
                 }
 
