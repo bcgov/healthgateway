@@ -166,8 +166,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <hr />
                     <b-row align-h="end">
                         <b-col class="datePrintedCol" cols="4">
-                            <label>Date Printed:&nbsp;</label>
-                            <span>{{ currentDate }}</span>
+                            <label>Date Printed:</label>&nbsp;
+                            <span>{{ currentDate }}&nbsp;</span>
                         </b-col>
                     </b-row>
                     <b-row class="pt-2">
