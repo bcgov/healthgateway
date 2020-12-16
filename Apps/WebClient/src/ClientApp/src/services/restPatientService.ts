@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 import { IHttpDelegate, IPatientService } from "@/services/interfaces";
+import RequestResult from "@/models/requestResult";
 import PatientData from "@/models/patientData";
 import { ExternalConfiguration } from "@/models/configData";
 
@@ -17,8 +18,8 @@ export class RestPatientService implements IPatientService {
         this.http = http;
     }
 
-    public getPatientData(hdid: string): Promise<PatientData> {
-        return this.http.get<PatientData>(
+    public getPatientData(hdid: string): Promise<RequestResult<PatientData>> {
+        return this.http.get<RequestResult<PatientData>>(
             `${this.baseUri}${this.PATIENT_BASE_URI}/${hdid}`
         );
     }

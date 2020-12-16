@@ -7,6 +7,9 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ResultType } from "@/constants/resulttype";
 import { Action, Getter } from "vuex-class";
 import ImmunizationModel from "@/models/immunizationModel";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import RequestResult from "@/models/requestResult";
+import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { ILogger, IImmunizationService } from "@/services/interfaces";
 import BannerError from "@/models/bannerError";
@@ -15,6 +18,8 @@ import LoadingComponent from "@/components/loading.vue";
 import html2pdf from "html2pdf.js";
 import PDFDefinition from "@/plugins/pdfDefinition";
 
+const userNamespace = "user";
+
 @Component({
     components: {
         LoadingComponent,
@@ -22,10 +27,14 @@ import PDFDefinition from "@/plugins/pdfDefinition";
 })
 export default class ImmunizationHistoryReportComponent extends Vue {
     @Prop() private name!: string;
-    @Getter("user", { namespace: "user" })
+    @Getter("user", { namespace: userNamespace })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
+    @Action("getPatientData", { namespace: userNamespace })
+    getPatientData!: (params: {
+        hdid: string;
+    }) => Promise<RequestResult<PatientData>>;
     @Ref("report")
     readonly report!: HTMLElement;
 
@@ -34,6 +43,33 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private notFoundText = "Not Found";
     private records: ImmunizationModel[] = [];
     private isPreview = true;
+    private phn = "";
+    private dateOfBirth = "";
+
+    private fetchPatientData() {
+        var patientDataPromise = this.getPatientData({
+            hdid: this.user.hdid,
+        });
+        Promise.all([patientDataPromise])
+            .then((results) => {
+                // Load patient data
+                if (results[0]) {
+                    this.phn = results[0].resourcePayload.personalhealthnumber;
+                    if (results[0].resourcePayload.birthdate != null) {
+                        this.dateOfBirth = this.formatStringISODate(
+                            results[0].resourcePayload.birthdate
+                        );
+                    }
+                }
+            })
+            .catch((err) => {
+                this.logger.error(`Error fetching Patient Data: ${err}`);
+                this.addError(
+                    ErrorTranslator.toBannerError("Patient Data loading", err)
+                );
+                this.isLoading = false;
+            });
+    }
 
     private fetchPatientImmunizations() {
         const immunizationService: IImmunizationService = container.get(
@@ -46,6 +82,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 if (results.resultStatus == ResultType.Success) {
                     this.records = results.resourcePayload;
                     this.sortEntries();
+                    this.fetchPatientData();
                 } else {
                     this.logger.error(
                         "Error returned from the Patient Immunizations call: " +
@@ -83,10 +120,13 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         );
     }
 
+    private formatStringISODate(date: StringISODate): string {
+        return new DateWrapper(date).format("yyyy-MM-dd");
+    }
+
     private get currentDate() {
         return moment(new Date()).format("ll");
     }
-
     private get isEmpty() {
         return this.records.length == 0;
     }
@@ -175,12 +215,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             <label>Name:&nbsp;</label> <span>{{ name }}</span>
                         </b-col>
                         <b-col>
-                            <label>PHN:&nbsp;</label>
-                            <span>{{ phn }}</span>
+                            <label>PHN:</label>
+                            <span>&nbsp;{{ phn }}</span>
                         </b-col>
                         <b-col>
-                            <label>Date of Birth:&nbsp;</label>
-                            <span>{{ dateOfBirth }}</span>
+                            <label>Date of Birth:</label>
+                            <span>&nbsp;{{ dateOfBirth }}</span>
                         </b-col>
                     </b-row>
                     <hr />
