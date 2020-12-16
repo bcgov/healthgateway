@@ -1,6 +1,6 @@
 import { StringISODate } from "@/models/dateWrapper";
 
-export default interface ImmunizationAgent {
+export interface ImmunizationAgent {
     code: string;
     name: string;
     lotNumber: string;
