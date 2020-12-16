@@ -35,6 +35,38 @@ export default class ImmunizationTimelineComponent extends Vue {
                 {{ entry.immunization.name }}
             </b-col>
         </b-row>
+        <b-row class="my-2">
+            <b-col class="leftPane"></b-col>
+            <b-col>
+                <b-row>
+                    <b-col>
+                        <strong> Product </strong>
+                    </b-col>
+                    <b-col>
+                        <strong> Provider/Clinic </strong>
+                    </b-col>
+                    <b-col>
+                        <strong> Lot Number </strong>
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
+        <b-row class="my-2">
+            <b-col class="leftPane"></b-col>
+            <b-col>
+                <b-row>
+                    <b-col>
+                        {{ entry.immunization.productName }}
+                    </b-col>
+                    <b-col>
+                        {{ entry.immunization.providerOrClinic }}
+                    </b-col>
+                    <b-col>
+                        {{ entry.immunization.lotNumber }}
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
     </b-col>
 </template>
 
