@@ -41,7 +41,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private logger!: ILogger;
     private isLoading = false;
     private notFoundText = "Not Found";
-    private records: ImmunizationModel[] = [];
+    private immunizationRecords: ImmunizationModel[] = [];
     private isPreview = true;
     private phn = "";
     private dateOfBirth = "";
@@ -50,14 +50,14 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         var patientDataPromise = this.getPatientData({
             hdid: this.user.hdid,
         });
-        Promise.all([patientDataPromise])
-            .then((results) => {
+        Promise.resolve(patientDataPromise)
+            .then((result) => {
                 // Load patient data
-                if (results[0]) {
-                    this.phn = results[0].resourcePayload.personalhealthnumber;
-                    if (results[0].resourcePayload.birthdate != null) {
+                if (result) {
+                    this.phn = result.resourcePayload.personalhealthnumber;
+                    if (result.resourcePayload.birthdate != null) {
                         this.dateOfBirth = this.formatStringISODate(
-                            results[0].resourcePayload.birthdate
+                            result.resourcePayload.birthdate
                         );
                     }
                 }
@@ -80,7 +80,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             .getPatientImmunizations(this.user.hdid)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
-                    this.records = results.resourcePayload;
+                    this.immunizationRecords = results.resourcePayload;
                     this.sortEntries();
                     this.fetchPatientData();
                 } else {
@@ -111,7 +111,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private sortEntries() {
-        this.records.sort((a, b) =>
+        this.immunizationRecords.sort((a, b) =>
             a.dateOfImmunization > b.dateOfImmunization
                 ? -1
                 : a.dateOfImmunization < b.dateOfImmunization
@@ -128,7 +128,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         return moment(new Date()).format("ll");
     }
     private get isEmpty() {
-        return this.records.length == 0;
+        return this.immunizationRecords.length == 0;
     }
 
     private formatDate(date: Date): string {
@@ -240,7 +240,11 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <b-col class="col">Product</b-col>
                     <b-col class="col">Lot Number</b-col>
                 </b-row>
-                <b-row v-for="item in records" :key="item.id" class="item py-1">
+                <b-row
+                    v-for="item in immunizationRecords"
+                    :key="item.id"
+                    class="item py-1"
+                >
                     <b-col
                         data-testid="immunizationItemDate"
                         class="col my-auto text-nowrap"
