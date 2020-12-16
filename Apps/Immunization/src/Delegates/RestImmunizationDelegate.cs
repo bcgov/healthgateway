@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -82,7 +83,7 @@ namespace HealthGateway.Immunization.Delegates
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                var query = new Dictionary<string, string>
+                Dictionary<string, string?> query = new Dictionary<string, string?>
                 {
                     ["limit"] = this.immunizationConfig.FetchSize,
                 };
@@ -102,15 +103,13 @@ namespace HealthGateway.Immunization.Delegates
                                 WriteIndented = true,
                             };
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<ImmunizationResponse>? phsaResult= JsonSerializer.Deserialize<PHSAResult<ImmunizationResponse>>(payload, options);
+                            PHSAResult<ImmunizationResponse>? phsaResult = JsonSerializer.Deserialize<PHSAResult<ImmunizationResponse>>(payload, options);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;
                                 retVal.ResourcePayload = phsaResult.Result;
                                 retVal.TotalResultCount = phsaResult.Result.Count;
-#pragma warning disable CA1305 // Specify IFormatProvider
-                                retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize);
-#pragma warning restore CA1305 // Specify IFormatProvider
+                                retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
                             }
                             else
                             {
@@ -122,9 +121,7 @@ namespace HealthGateway.Immunization.Delegates
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
                             retVal.ResourcePayload = new List<ImmunizationResponse>();
                             retVal.TotalResultCount = 0;
-#pragma warning disable CA1305 // Specify IFormatProvider
-                            retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize);
-#pragma warning restore CA1305 // Specify IFormatProvider
+                            retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
                             break;
                         case HttpStatusCode.Forbidden:
                             retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
