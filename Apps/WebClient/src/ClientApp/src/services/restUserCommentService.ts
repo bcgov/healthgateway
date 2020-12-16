@@ -13,11 +13,12 @@ import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
+import { Dictionary } from "@/models/baseTypes";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly USER_COMMENT_BASE_URI: string = "/v1/api/Comment";
+    private readonly USER_COMMENT_BASE_URI: string = "/v1/api";
     private http!: IHttpDelegate;
     private isEnabled = false;
 
@@ -46,7 +47,40 @@ export class RestUserCommentService implements IUserCommentService {
             }
             this.http
                 .getWithCors<RequestResult<UserComment[]>>(
-                    `${this.USER_COMMENT_BASE_URI}/${hdid}?parentEntryId=${parentEntryId}`
+                    `${this.USER_COMMENT_BASE_URI}/UserProfile/${hdid}/Comment/Entry?parentEntryId=${parentEntryId}`
+                )
+                .then((entryComments) => {
+                    return resolve(entryComments);
+                })
+                .catch((err) => {
+                    this.logger.error(err);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
+
+    public getCommentsForProfile(
+        hdid: string
+    ): Promise<RequestResult<Dictionary<UserComment[]>>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: {},
+                    resultStatus: ResultType.Success,
+                    totalResultCount: 0,
+                });
+                return;
+            }
+            this.http
+                .getWithCors<RequestResult<Dictionary<UserComment[]>>>(
+                    `${this.USER_COMMENT_BASE_URI}/UserProfile/${hdid}/Comment`
                 )
                 .then((userComments) => {
                     return resolve(userComments);
@@ -74,7 +108,7 @@ export class RestUserCommentService implements IUserCommentService {
             }
             this.http
                 .post<RequestResult<UserComment>>(
-                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
+                    `${this.USER_COMMENT_BASE_URI}/UserProfile/${hdid}/Comment`,
                     comment
                 )
                 .then((requestResult) => {
@@ -106,7 +140,7 @@ export class RestUserCommentService implements IUserCommentService {
         return new Promise<UserComment>((resolve, reject) => {
             this.http
                 .put<RequestResult<UserComment>>(
-                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
+                    `${this.USER_COMMENT_BASE_URI}/UserProfile/${hdid}/Comment`,
                     comment
                 )
                 .then((requestResult) => {
@@ -132,7 +166,7 @@ export class RestUserCommentService implements IUserCommentService {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<void>>(
-                    `${this.USER_COMMENT_BASE_URI}/${hdid}`,
+                    `${this.USER_COMMENT_BASE_URI}/UserProfile/${hdid}/Comment`,
                     comment
                 )
                 .then((requestResult) => {

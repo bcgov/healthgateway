@@ -10,13 +10,13 @@
         "vue-help": "vue-cli-service help"
     },
     "devDependencies": {
-        "@types/chart.js": "^2.9.28",
+        "@types/chart.js": "^2.9.29",
         "@types/jest": "^26.0.19",
         "@types/luxon": "^1.25.0",
         "@types/vuelidate": "^0.7.13",
         "@types/webpack-env": "^1.16.0",
-        "@typescript-eslint/eslint-plugin": "^4.9.1",
-        "@typescript-eslint/parser": "^4.9.1",
+        "@typescript-eslint/eslint-plugin": "^4.10.0",
+        "@typescript-eslint/parser": "^4.10.0",
         "@vue/cli-plugin-eslint": "^4.5.9",
         "@vue/cli-plugin-typescript": "^4.5.9",
         "@vue/cli-plugin-unit-jest": "^4.5.9",

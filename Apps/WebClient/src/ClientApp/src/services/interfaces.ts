@@ -3,7 +3,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import ImmunizationResult from "@/models/immunizationResult";
+import type ImmunizationResult from "@/models/immunizationResult";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import type { UserComment } from "@/models/userComment";
@@ -129,6 +129,9 @@ export interface IUserCommentService {
         hdid: string,
         parentEntryId: string
     ): Promise<RequestResult<UserComment[]>>;
+    getCommentsForProfile(
+        hdid: string
+    ): Promise<RequestResult<Dictionary<UserComment[]>>>;
     createComment(
         hdid: string,
         comment: UserComment
