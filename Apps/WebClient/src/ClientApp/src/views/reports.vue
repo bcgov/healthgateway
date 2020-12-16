@@ -40,6 +40,8 @@ export default class ReportsView extends Vue {
     readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
 
     private fullName = "";
+    private phn = "";
+    private dateOfBirth = "";
     private logger!: ILogger;
     private reportType = "";
     private reportTypeOptions = [{ value: "", text: "Select" }];
