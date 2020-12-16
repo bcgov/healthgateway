@@ -47,10 +47,9 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private dateOfBirth = "";
 
     private fetchPatientData() {
-        var patientDataPromise = this.getPatientData({
+        this.getPatientData({
             hdid: this.user.hdid,
-        });
-        Promise.resolve(patientDataPromise)
+        })
             .then((result) => {
                 // Load patient data
                 if (result) {
