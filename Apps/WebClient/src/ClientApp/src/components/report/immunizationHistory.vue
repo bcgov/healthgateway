@@ -235,7 +235,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 </b-row>
                 <b-row v-else class="py-3 mt-4 header">
                     <b-col class="col">Date</b-col>
-                    <b-col class="col">Provider or Clinic</b-col>
+                    <b-col class="col">Provider/Clinic</b-col>
                     <b-col class="col">Immunization</b-col>
                     <b-col class="col">Product</b-col>
                     <b-col class="col">Lot Number</b-col>
