@@ -7,6 +7,8 @@ import { LaboratoryOrder } from "@/models//laboratory";
 import BannerError from "@/models/bannerError";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { DateWrapper } from "@/models/dateWrapper";
+import { UserComment } from "@/models/userComment";
+import { Dictionary } from "@/models/baseTypes";
 
 export enum StateType {
     NONE,
@@ -59,6 +61,13 @@ export interface PharmacyState {
 
 export interface LaboratoryState {
     laboratoryOrders: LaboratoryOrder[];
+    statusMessage: string;
+    error: boolean;
+    stateType: StateType;
+}
+
+export interface CommentState {
+    profileComments: Dictionary<UserComment[]>;
     statusMessage: string;
     error: boolean;
     stateType: StateType;
