@@ -108,7 +108,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         let opt = {
             margin: [25, 15],
             filename: `HealthGateway_ImmunizationHistory.pdf`,
-            image: { type: "jpeg", quality: 1 },
+            image: { type: "jpeg", quality: 0.98 },
             html2canvas: { dpi: 192, scale: 1.1, letterRendering: true },
             jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
