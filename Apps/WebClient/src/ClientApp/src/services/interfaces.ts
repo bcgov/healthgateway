@@ -3,7 +3,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import ImmunizationModel from "@/models/immunizationModel";
+import type ImmunizationResult from "@/models/immunizationResult";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import type { UserComment } from "@/models/userComment";
@@ -45,7 +45,7 @@ export interface IImmunizationService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientImmunizations(
         hdid: string
-    ): Promise<RequestResult<ImmunizationModel[]>>;
+    ): Promise<RequestResult<ImmunizationResult>>;
 }
 
 export interface IPatientService {

@@ -14,6 +14,9 @@ describe("MonthYearPickerComponent", () => {
                 currentMonth: new DateWrapper(),
                 availableMonths: [new DateWrapper()],
             },
+            stubs: {
+                "font-awesome-icon": true,
+            },
         });
 
         expect(wrapper.find("#currentDate").text()).toBe(

@@ -89,7 +89,7 @@ namespace HealthGateway.Immunization.Controllers
 
                 if (accessToken != null)
                 {
-                    RequestResult<IEnumerable<ImmunizationModel>> result = await this.service.GetImmunizations(accessToken).ConfigureAwait(true);
+                    RequestResult<ImmunizationResult> result = await this.service.GetImmunizations(accessToken).ConfigureAwait(true);
 
                     this.logger.LogDebug($"Finished getting immunizations from controller... {hdid}");
                     return new JsonResult(result);
