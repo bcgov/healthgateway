@@ -1,7 +1,5 @@
 import { Wrapper, createLocalVue, mount } from "@vue/test-utils";
-import BootstrapVue from "bootstrap-vue";
 import TimelineComponent from "@/views/timeline.vue";
-import VueRouter from "vue-router";
 import VueContentPlaceholders from "vue-content-placeholders";
 import Vuex, { ActionTree } from "vuex";
 import { RegistrationStatus } from "@/constants/registrationStatus";
@@ -14,17 +12,20 @@ import { ResultType } from "@/constants/resulttype";
 import { LaboratoryOrder } from "@/models/laboratory";
 import {
     CommentState,
+    ImmunizationState,
     LaboratoryState,
     MedicationState,
     RootState,
+    SidebarState,
 } from "@/models/storeState";
-import Router from "vue-router";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { DateWrapper } from "@/models/dateWrapper";
 import { Dictionary } from "@/models/baseTypes";
 import { UserComment } from "@/models/userComment";
+import ImmunizationModel from "@/models/immunizationModel";
+import VueRouter from "vue-router";
 
 const today = new DateWrapper();
 const yesterday = today.subtract({ day: 1 });
@@ -40,7 +41,7 @@ const medicationStatements: MedicationStatementHistory[] = [
             isPin: false,
         },
         prescriptionIdentifier: "abcmed1",
-        dispensedDate: today.format("YYYY-MM-DDTHH:mm:ss"),
+        dispensedDate: today.toISODate(),
         dispensingPharmacy: {},
     },
     {
@@ -51,7 +52,7 @@ const medicationStatements: MedicationStatementHistory[] = [
             isPin: false,
         },
         prescriptionIdentifier: "abcmed2",
-        dispensedDate: today.format("YYYY-MM-DDTHH:mm:ss"),
+        dispensedDate: today.toISODate(),
         dispensingPharmacy: {},
     },
     {
@@ -62,7 +63,7 @@ const medicationStatements: MedicationStatementHistory[] = [
             isPin: true,
         },
         prescriptionIdentifier: "abcmed3",
-        dispensedDate: yesterday.format("YYYY-MM-DDTHH:mm:ss"),
+        dispensedDate: yesterday.toISODate(),
         dispensingPharmacy: {},
     },
 ];
@@ -138,6 +139,17 @@ const medicationActions: ActionTree<MedicationState, RootState> = {
 
 const medicationGetters = {};
 
+const sidebarActions: ActionTree<SidebarState, RootState> = {
+    toggleSidebar(context) {},
+    setSidebarState(context, isOpen: boolean) {},
+};
+
+const sidebarGetters = {
+    isOpen(state: SidebarState): boolean {
+        return true;
+    },
+};
+
 const commentActions: ActionTree<CommentState, RootState> = {
     retrieveProfileComments(): Promise<
         RequestResult<Dictionary<UserComment[]>>
@@ -154,7 +166,36 @@ const commentActions: ActionTree<CommentState, RootState> = {
     },
 };
 
-const commentGetters = {};
+const immunizationGetters = {
+    getStoredImmunizations(state: ImmunizationState): ImmunizationModel[] {
+        return [];
+    },
+    isDeferredLoad(state: ImmunizationState): boolean {
+        return false;
+    },
+};
+
+const immunizationActions: ActionTree<ImmunizationState, RootState> = {
+    retrieve(): Promise<RequestResult<ImmunizationModel[]>> {
+        return new Promise((resolve) => {
+            resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: [],
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        });
+    },
+};
+
+const commentGetters = {
+    getEntryComments: (state: CommentState) => (
+        entryId: string
+    ): UserComment[] | undefined => {
+        return [];
+    },
+};
 
 const a: WebClientConfiguration = {
     logLevel: "",
@@ -176,8 +217,7 @@ const configGetters = {
 function createWrapper(): Wrapper<TimelineComponent> {
     const localVue = createLocalVue();
     localVue.use(Vuex);
-    localVue.use(BootstrapVue);
-    localVue.use(Router);
+    localVue.use(VueRouter);
     localVue.use(VueContentPlaceholders);
     const customStore = new Vuex.Store({
         modules: {
@@ -200,10 +240,20 @@ function createWrapper(): Wrapper<TimelineComponent> {
                 getters: medicationGetters,
                 actions: medicationActions,
             },
+            immunization: {
+                namespaced: true,
+                getters: immunizationGetters,
+                actions: immunizationActions,
+            },
             comment: {
                 namespaced: true,
                 getters: commentGetters,
                 actions: commentActions,
+            },
+            sidebar: {
+                namespaced: true,
+                getters: sidebarGetters,
+                actions: sidebarActions,
             },
         },
     });
@@ -211,10 +261,6 @@ function createWrapper(): Wrapper<TimelineComponent> {
     return mount(TimelineComponent, {
         localVue,
         store: customStore,
-        mocks: {
-            $route,
-            $router,
-        },
         stubs: {
             "font-awesome-icon": true,
         },
@@ -224,11 +270,6 @@ function createWrapper(): Wrapper<TimelineComponent> {
 describe("Timeline view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
-    const localVue = createLocalVue();
-    localVue.use(BootstrapVue);
-    localVue.use(VueRouter);
-    localVue.use(VueContentPlaceholders);
-    localVue.use(Vuex);
 
     test("is a Vue instance", () => {
         const wrapper = createWrapper();

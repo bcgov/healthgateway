@@ -57,8 +57,6 @@ const ContactUsView = () =>
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 
-Vue.use(VueRouter);
-
 enum UserState {
     unauthenticated = "unauthenticated",
     notRegistered = "notRegistered",
