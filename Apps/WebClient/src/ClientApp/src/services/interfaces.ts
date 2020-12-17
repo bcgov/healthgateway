@@ -3,7 +3,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import ImmunizationResult from "@/models/immunizationResult";
+import type ImmunizationResult from "@/models/immunizationResult";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import type { UserComment } from "@/models/userComment";

@@ -7,7 +7,6 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import {
     ILogger,
-    IImmunizationService,
     IEncounterService,
     IUserNoteService,
 } from "@/services/interfaces";
@@ -40,6 +39,7 @@ import FilterComponent from "@/components/timeline/filters.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter from "@/models/timelineFilter";
 import { UserComment } from "@/models/userComment";
+import ImmunizationModel from "@/models/immunizationModel";
 import { Dictionary } from "vue-router/types/router";
 
 const namespace = "user";
@@ -84,6 +84,34 @@ export default class TimelineView extends Vue {
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
+
+    @Action("retrieve", { namespace: "immunization" })
+    retrieveImmunizations!: (params: {
+        hdid: string;
+    }) => Promise<ImmunizationModel[]>;
+
+    @Getter("getStoredImmunizations", { namespace: "immunization" })
+    patientImmunizations!: ImmunizationModel[];
+
+    @Getter("isDeferredLoad", { namespace: "immunization" })
+    immunizationIsDeferred!: boolean;
+
+    @Watch("immunizationIsDeferred")
+    private whenImmunizationIsDeferred(newVal: boolean, oldVal: boolean) {
+        if (newVal) {
+            this.immunizationLoadDeferred = true;
+        }
+
+        if (!newVal && oldVal) {
+            this.immunizationLoadReady = true;
+            if (this.patientImmunizations.length === 0) {
+                this.loadImmunizationEntries();
+            }
+        }
+    }
+
+    private immunizationLoadDeferred = false;
+    private immunizationLoadReady = false;
 
     private filterText = "";
     private filter: TimelineFilter = new TimelineFilter();
@@ -312,35 +340,10 @@ export default class TimelineView extends Vue {
     }
 
     private fetchImmunizations() {
-        const immunizationService: IImmunizationService = container.get(
-            SERVICE_IDENTIFIER.ImmunizationService
-        );
         this.isImmunizationLoading = true;
-        immunizationService
-            .getPatientImmunizations(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the immunization entries to the timeline list
-                    for (let result of results.resourcePayload.immunizations) {
-                        this.timelineEntries.push(
-                            new ImmunizationTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.immunizationCount =
-                        results.resourcePayload.immunizations.length;
-                } else {
-                    this.logger.error(
-                        "Error returned from the immunization call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Immunizations Error",
-                            results.resultError
-                        )
-                    );
-                }
+        this.retrieveImmunizations({ hdid: this.user.hdid })
+            .then(() => {
+                this.loadImmunizationEntries();
             })
             .catch((err) => {
                 this.logger.error(err);
@@ -532,6 +535,21 @@ export default class TimelineView extends Vue {
             });
     }
 
+    private loadImmunizationEntries() {
+        if (this.immunizationLoadReady) {
+            this.immunizationLoadDeferred = false;
+            this.immunizationLoadReady = false;
+        }
+        // Add the immunization entries to the timeline list
+        for (let immunization of this.patientImmunizations) {
+            this.timelineEntries.push(
+                new ImmunizationTimelineEntry(immunization)
+            );
+        }
+        this.sortEntries();
+        this.immunizationCount = this.patientImmunizations.length;
+    }
+
     private onEntryAdded(entry: TimelineEntry) {
         this.logger.debug(`Timeline Entry added: ${JSON.stringify(entry)}`);
         this.isAddingNote = false;
@@ -676,6 +694,25 @@ export default class TimelineView extends Vue {
                         Heads up: your health records are recorded and displayed
                         in Pacific Time.
                     </span>
+                </b-alert>
+                <b-alert
+                    :show="immunizationLoadDeferred"
+                    variant="info"
+                    class="no-print"
+                >
+                    <span v-if="!immunizationLoadReady">
+                        <h4>Still loading your immunization records</h4>
+                    </span>
+                    <span v-else>
+                        <h4>Your immunization records are ready</h4>
+                        <b-btn
+                            variant="link"
+                            class="detailsButton px-0"
+                            @click="loadImmunizationEntries()"
+                        >
+                            Load to timeline.
+                        </b-btn></span
+                    >
                 </b-alert>
 
                 <div id="pageTitle">
