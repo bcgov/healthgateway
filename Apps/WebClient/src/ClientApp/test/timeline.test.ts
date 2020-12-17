@@ -70,14 +70,6 @@ const medicationStatements: MedicationStatementHistory[] = [
     },
 ];
 
-const $router = {};
-const $route = {
-    path: "",
-    query: {
-        redirect: "",
-    },
-};
-
 let userGetters = {
     user: (): User => {
         return new User();
@@ -142,12 +134,17 @@ const medicationActions: ActionTree<MedicationState, RootState> = {
 const medicationGetters = {};
 
 const sidebarActions: ActionTree<SidebarState, RootState> = {
-    toggleSidebar(context) {},
-    setSidebarState(context, isOpen: boolean) {},
+    toggleSidebar(context) {
+        console.log("toggleSidebar called", context);
+    },
+    setSidebarState(context, isOpen: boolean) {
+        console.log(context, "toggleSidebar called", isOpen);
+    },
 };
 
 const sidebarGetters = {
     isOpen(state: SidebarState): boolean {
+        console.log("isOpen called", state);
         return true;
     },
 };
@@ -170,9 +167,11 @@ const commentActions: ActionTree<CommentState, RootState> = {
 
 const immunizationGetters = {
     getStoredImmunizations(state: ImmunizationState): ImmunizationModel[] {
+        console.log("getStoredImmunizations called", state);
         return [];
     },
     isDeferredLoad(state: ImmunizationState): boolean {
+        console.log("isDeferredLoad called", state);
         return false;
     },
 };
@@ -195,6 +194,7 @@ const commentGetters = {
     getEntryComments: (state: CommentState) => (
         entryId: string
     ): UserComment[] | undefined => {
+        console.log(state, "getEntryComments called", entryId);
         return [];
     },
 };
@@ -226,10 +226,18 @@ const errorBannerGetters = {
 };
 
 const errorBannerActions: ActionTree<ErrorBannerState, RootState> = {
-    dismiss(context) {},
-    show(context) {},
-    setError(context, error: BannerError) {},
-    addError(context, error: BannerError) {},
+    dismiss(context) {
+        console.log(context, "dismiss Called");
+    },
+    show(context) {
+        console.log(context, "show Called");
+    },
+    setError(context, error: BannerError) {
+        console.log(context, "setError Called", error);
+    },
+    addError(context, error: BannerError) {
+        console.log(context, "addError Called", error);
+    },
 };
 
 function createWrapper(): Wrapper<TimelineComponent> {

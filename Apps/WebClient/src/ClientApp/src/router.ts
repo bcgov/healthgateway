@@ -1,4 +1,3 @@
-import Vue from "vue";
 import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
