@@ -705,11 +705,16 @@ export default class TimelineView extends Vue {
                     class="no-print"
                 >
                     <span v-if="!immunizationLoadReady">
-                        <h4>Still loading your immunization records</h4>
+                        <h4 data-testid="immunizationLoading">
+                            Still loading your immunization records
+                        </h4>
                     </span>
-                    <span v-else>
-                        <h4>Your immunization records are ready</h4>
+                    <span v-else data-testid="immunizationReady">
+                        <h4 data-testid="immunizationReadyHeader">
+                            Your immunization records are ready
+                        </h4>
                         <b-btn
+                            data-testid="immunizationBtnReady"
                             variant="link"
                             class="detailsButton px-0"
                             @click="loadImmunizationEntries()"
