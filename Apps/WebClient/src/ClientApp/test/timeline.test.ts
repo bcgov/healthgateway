@@ -12,6 +12,7 @@ import { ResultType } from "@/constants/resulttype";
 import { LaboratoryOrder } from "@/models/laboratory";
 import {
     CommentState,
+    ErrorBannerState,
     ImmunizationState,
     LaboratoryState,
     MedicationState,
@@ -26,6 +27,7 @@ import { Dictionary } from "@/models/baseTypes";
 import { UserComment } from "@/models/userComment";
 import ImmunizationModel from "@/models/immunizationModel";
 import VueRouter from "vue-router";
+import BannerError from "@/models/bannerError";
 
 const today = new DateWrapper();
 const yesterday = today.subtract({ day: 1 });
@@ -214,6 +216,22 @@ const configGetters = {
     },
 };
 
+const errorBannerGetters = {
+    isShowing(state: ErrorBannerState): boolean {
+        return state.isShowing;
+    },
+    errors(state: ErrorBannerState): BannerError[] {
+        return state.errors;
+    },
+};
+
+const errorBannerActions: ActionTree<ErrorBannerState, RootState> = {
+    dismiss(context) {},
+    show(context) {},
+    setError(context, error: BannerError) {},
+    addError(context, error: BannerError) {},
+};
+
 function createWrapper(): Wrapper<TimelineComponent> {
     const localVue = createLocalVue();
     localVue.use(Vuex);
@@ -254,6 +272,11 @@ function createWrapper(): Wrapper<TimelineComponent> {
                 namespaced: true,
                 getters: sidebarGetters,
                 actions: sidebarActions,
+            },
+            errorBanner: {
+                namespaced: true,
+                getters: errorBannerGetters,
+                actions: errorBannerActions,
             },
         },
     });
