@@ -452,13 +452,13 @@
       "id": "3208884_54396880",
       "name": "Influenza-Inactivated",
       "dateOfImmunization": "2019-11-20T00:00:00",
-      "providerOrClinic": "Provider A",
+      "providerOrClinic": "Gateway",
       "immunizationAgents": [
         {
           "code": "BCYSCT_AG077",
           "name": "Influenza-Inactivated",
-          "lotNumber": "LOT A",
-          "productName": "Product A"
+          "lotNumber": "299837",
+          "productName": "Pfizer"
         }
       ]
     },
