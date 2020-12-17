@@ -1,9 +1,9 @@
-const { AuthMethod } = require("../../support/constants");
+const { AuthMethod, localDevUri } = require("../../support/constants");
 
 describe("Immunization Service", () => {
     beforeEach(() => {
-        cy.readConfig().as("config");
-        cy.getTokens(Cypress.env("keycloak.username"), Cypress.env("keycloak.password")).as("tokens");
+      cy.readConfig().as("config");
+      cy.getTokens(Cypress.env("keycloak.username"), Cypress.env("keycloak.password")).as("tokens");
     });
 
     it("Verify Swagger", () => {
