@@ -16,25 +16,18 @@
 namespace HealthGateway.Immunization.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The Immunization record data model.
+    /// The Immunization Agents response model.
     /// </summary>
-    public class ImmunizationResponse
+    public class ImmunizationAgentsResponse
     {
         /// <summary>
         /// Gets or sets the Immunization id.
         /// </summary>
-        [JsonPropertyName("id")]
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the SourceSystemId.
-        /// </summary>
-        [JsonPropertyName("sourceSystemId")]
-        public string SourceSystemId { get; set; } = string.Empty;
+        [JsonPropertyName("code")]
+        public string Code { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Immunization Name.
@@ -43,26 +36,15 @@ namespace HealthGateway.Immunization.Models
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization Status.
+        /// Gets or sets the Immunization Lot Number.
         /// </summary>
-        [JsonPropertyName("status")]
-        public string Status { get; set; } = string.Empty;
+        [JsonPropertyName("lotNumber")]
+        public string LotNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Provider or Clinic providing the Immunization.
+        /// Gets or sets the Immunization Product Name.
         /// </summary>
-        [JsonPropertyName("providerOrClinic")]
-        public string ProviderOrClinic { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization occurence date time.
-        /// </summary>
-        [JsonPropertyName("occurrenceDateTime")]
-        public DateTime OccurrenceDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Immunization Agents.
-        /// </summary>
-        public IEnumerable<ImmunizationAgentsResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentsResponse>();
+        [JsonPropertyName("productName")]
+        public string ProductName { get; set; } = string.Empty;
     }
 }
