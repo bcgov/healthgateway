@@ -13,6 +13,7 @@ describe('Immunization', () => {
             config.webClient.modules.Note = false
             cy.server();
             cy.route('GET', '/v1/api/configuration/', config);
+            cy.log("Configuration", config);
         })
         cy.login(Cypress.env('keycloak.username'),
             Cypress.env('keycloak.password'),
@@ -21,12 +22,19 @@ describe('Immunization', () => {
     })
 
     it('Validate Card Details', () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.get('[data-testid=immunizationTitle]')
-                .should('be.visible');
-        }
-        else {
-            cy.log("Skipped Filter Immunization as running locally")
-        }
+      cy.get('[data-testid=immunizationTitle]')
+        .should('be.visible')
+      cy.get('[data-testid=immunizationProductTitle]')
+        .should('be.visible')
+      cy.get('[data-testid=immunizationProviderTitle]')
+        .should('be.visible')
+      cy.get('[data-testid=immunizationLotTitle]')
+        .should('be.visible')
+      cy.get('[data-testid=immunizationProductName]')
+        .should('be.visible')
+      cy.get('[data-testid=immunizationProviderName]')
+        .should('be.visible')
+      cy.get('[data-testid=immunizationLotNumber]')
+        .should('be.visible')
     })
 })

@@ -43,6 +43,17 @@ namespace HealthGateway.Immunization.Models
         public DateTime DateOfImmunization { get; set; }
 
         /// <summary>
+        /// Gets or sets the Provider or Clinic providing the Immunization.
+        /// </summary>
+        [JsonPropertyName("providerOrClinic")]
+        public string ProviderOrClinic { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Immunization Agents.
+        /// </summary>
+        public IEnumerable<ImmunizationAgentsResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentsResponse>();
+
+        /// <summary>
         /// Creates a Immunization Model object from a PHSA model.
         /// </summary>
         /// <param name="model">The immunization object to convert.</param>
@@ -54,26 +65,28 @@ namespace HealthGateway.Immunization.Models
                 Id = model.SourceSystemId,
                 Name = model.Name,
                 DateOfImmunization = model.OccurrenceDateTime,
+                ProviderOrClinic = model.ProviderOrClinic,
+                ImmunizationAgents = model.ImmunizationAgents,
             };
         }
 
         /// <summary>
         /// Creates a Immunization Model object from a PHSA model.
         /// </summary>
-        /// <param name="models">The list of PHSA models to convert.</param>
+        /// <param name="immunizationResponse">The list of PHSA models to convert.</param>
         /// <returns>A list of ImmunizationModel objects.</returns>
-        public static IEnumerable<ImmunizationModel> FromPHSAModelList(IEnumerable<ImmunizationResponse>? models)
+        public static IEnumerable<ImmunizationModel> FromPHSAModelList(IEnumerable<ImmunizationResponse>? immunizationResponse)
         {
-            List<ImmunizationModel> objects = new List<ImmunizationModel>();
-            if (models != null)
+            List<ImmunizationModel> immunizations = new List<ImmunizationModel>();
+            if (immunizationResponse != null)
             {
-                foreach (ImmunizationResponse immunizationModel in models)
+                foreach (ImmunizationResponse immunizationModel in immunizationResponse)
                 {
-                    objects.Add(ImmunizationModel.FromPHSAModel(immunizationModel));
+                    immunizations.Add(ImmunizationModel.FromPHSAModel(immunizationModel));
                 }
             }
 
-            return objects;
+            return immunizations;
         }
     }
 }

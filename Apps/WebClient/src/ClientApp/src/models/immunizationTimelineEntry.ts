@@ -30,6 +30,9 @@ class ImmunizationViewModel {
     public location: string;
     public name: string;
     public dateOfImmunization: DateWrapper;
+    public providerOrClinic: string;
+    public productName: string;
+    public lotNumber: string;
 
     constructor(model: ImmunizationModel) {
         this.id = model.id;
@@ -37,5 +40,8 @@ class ImmunizationViewModel {
         this.location = model.location;
         this.name = model.name;
         this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
+        this.providerOrClinic = model.providerOrClinic;
+        this.productName = model.immunizationAgents[0].productName;
+        this.lotNumber = model.immunizationAgents[0].lotNumber;
     }
 }
