@@ -68,11 +68,11 @@ namespace HealthGateway.Immunization.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0)
         {
             using (Source.StartActivity("GetDemographicsByHDIDAsync"))
             {
-                RequestResult<IEnumerable<ImmunizationResponse>> retVal = new RequestResult<IEnumerable<ImmunizationResponse>>()
+                RequestResult<PHSAResult<ImmunizationResponse>> retVal = new RequestResult<PHSAResult<ImmunizationResponse>>()
                 {
                     ResultStatus = Common.Constants.ResultType.Error,
                     PageIndex = pageIndex,
@@ -107,7 +107,7 @@ namespace HealthGateway.Immunization.Delegates
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;
-                                retVal.ResourcePayload = phsaResult.Result;
+                                retVal.ResourcePayload = phsaResult;
                                 retVal.TotalResultCount = phsaResult.Result.Count;
                                 retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
                             }
@@ -119,7 +119,7 @@ namespace HealthGateway.Immunization.Delegates
                             break;
                         case HttpStatusCode.NoContent: // No Immunizations exits for this user
                             retVal.ResultStatus = Common.Constants.ResultType.Success;
-                            retVal.ResourcePayload = new List<ImmunizationResponse>();
+                            retVal.ResourcePayload = new PHSAResult<ImmunizationResponse>();
                             retVal.TotalResultCount = 0;
                             retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
                             break;

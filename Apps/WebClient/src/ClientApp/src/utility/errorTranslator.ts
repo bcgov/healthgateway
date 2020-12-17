@@ -36,28 +36,31 @@ export default class ErrorTranslator {
     }
 
     public static getDisplayMessage(errorCode: string): string {
-        const sections = errorCode.split("-");
-        if (sections.length === 1) {
-            return sections[0];
-        } else if (sections.length === 2) {
-            return (
-                sections[0] +
-                " got a " +
-                this.getErrorType(sections[1]) +
-                " Error."
-            );
-        } else if (sections.length === 3) {
-            return (
-                sections[0] +
-                " got a " +
-                this.getErrorType(sections[1]) +
-                " error while processing a " +
-                this.getServiceName(sections[2]) +
-                " request."
-            );
-        } else {
-            return errorCode;
+        if (errorCode !== undefined && errorCode.length > 0) {
+            const sections = errorCode.split("-");
+            if (sections.length === 1) {
+                return sections[0];
+            } else if (sections.length === 2) {
+                return (
+                    sections[0] +
+                    " got a " +
+                    this.getErrorType(sections[1]) +
+                    " Error."
+                );
+            } else if (sections.length === 3) {
+                return (
+                    sections[0] +
+                    " got a " +
+                    this.getErrorType(sections[1]) +
+                    " error while processing a " +
+                    this.getServiceName(sections[2]) +
+                    " request."
+                );
+            } else {
+                return errorCode;
+            }
         }
+        return "Unknown Errror";
     }
 
     private static getErrorType(errorType: string): string {

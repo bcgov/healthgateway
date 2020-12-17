@@ -264,7 +264,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         data-testid="immunizationItemProviderClinic"
                         class="col my-auto"
                     >
-                        {{ "pending" }}
+                        {{ item.providerOrClinic }}
                     </b-col>
                     <b-col
                         data-testid="immunizationItemName"
@@ -276,13 +276,13 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         data-testid="immunizationItemProduct"
                         class="col my-auto"
                     >
-                        {{ "pending" }}
+                        {{ item.immunizationAgents[0].productName }}
                     </b-col>
                     <b-col
                         data-testid="immunizationItemLotNumber"
                         class="col my-auto"
                     >
-                        {{ "pending" }}
+                        {{ item.immunizationAgents[0].lotNumber }}
                     </b-col>
                 </b-row>
             </section>

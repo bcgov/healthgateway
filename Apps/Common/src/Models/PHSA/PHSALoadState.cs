@@ -19,22 +19,14 @@ namespace HealthGateway.Common.Models.PHSA
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// Representation of the load state sent by PHSA.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class PHSALoadState
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
-
-        /// <summary>
-        /// Gets or sets the result section.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public List<T>? Result { get; set; }
+        [JsonPropertyName("refreshInProgress")]
+        public bool RefreshInProgress { get; set; }
     }
 }

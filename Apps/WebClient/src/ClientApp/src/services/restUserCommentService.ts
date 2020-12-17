@@ -106,7 +106,6 @@ export class RestUserCommentService implements IUserCommentService {
                 resolve(undefined);
                 return;
             }
-            console.log(comment);
             this.http
                 .post<RequestResult<UserComment>>(
                     `${this.USER_COMMENT_BASE_URI}/UserProfile/${hdid}/Comment`,

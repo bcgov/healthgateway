@@ -15,6 +15,30 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
+                                    >December 17, 2020 - v1.3.1.4 - Immunization
+                                    Records
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We launched the feature which will allow
+                                        Health Gateway users to view their
+                                        immunization records, including COVID-19
+                                        immunizations.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
                                     >December 9, 2020 - v1.3.1.3 - Fix for
                                     Dependent Name Validation, COVID-19 Test
                                     Result Export
