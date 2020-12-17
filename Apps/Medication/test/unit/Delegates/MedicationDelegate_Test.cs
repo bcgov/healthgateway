@@ -22,10 +22,13 @@ namespace HealthGateway.Medication.Delegates.Test
     using Xunit;
     using System.Text.Json;
     using HealthGateway.Medication.Delegates;
+    using HealthGateway.Medication.Constants;
     using HealthGateway.Common.Services;
     using System.Net.Http;
     using Moq;
     using Microsoft.Extensions.Logging;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Database.Delegates;
@@ -366,7 +369,9 @@ namespace HealthGateway.Medication.Delegates.Test
                                                                                 string.Empty,
                                                                                 string.Empty,
                                                                                 string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(response.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
+            Assert.Equal(ActionType.Protected, response.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError.ResultMessage);
         }
 
         [Fact]
@@ -593,7 +598,9 @@ namespace HealthGateway.Medication.Delegates.Test
                                                                                 string.Empty,
                                                                                 string.Empty,
                                                                                 string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(response.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
+            Assert.Equal(ActionType.Protected, response.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError.ResultMessage);
         }
 
         [Fact]
@@ -652,7 +659,9 @@ namespace HealthGateway.Medication.Delegates.Test
                                                                                 string.Empty,
                                                                                 string.Empty,
                                                                                 string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(response.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
+            Assert.Equal(ActionType.Protected, response.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError.ResultMessage);
         }
 
         [Fact]
@@ -711,7 +720,9 @@ namespace HealthGateway.Medication.Delegates.Test
                                                                                 string.Empty,
                                                                                 string.Empty,
                                                                                 string.Empty).ConfigureAwait(true)).Result;
-            Assert.True(response.ResultStatus == Common.Constants.ResultType.Protected);
+            Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
+            Assert.Equal(ActionType.Protected, response.ResultError.ActionCode);
+            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError.ResultMessage);
         }
 
         [Fact]

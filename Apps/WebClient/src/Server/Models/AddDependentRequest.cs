@@ -47,46 +47,5 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the TestDate.
         /// </summary>
         public DateTime TestDate { get; set; }
-
-        /// <summary>
-        /// Determines whether two specified System.String objects have the same value.
-        /// </summary>
-        /// <param name="patientModel">The Patient Model to compare, or null.</param>
-        /// <returns>true if the value of the AddDependentRequest is the same as the value of PatientModel; otherwise, false. If the
-        ///     PatientModel is null, the method returns false.</returns>
-        public bool Equals(PatientModel patientModel)
-        {
-            if (patientModel is null)
-            {
-                return false;
-            }
-
-            if (!patientModel.LastName.Equals(this.LastName, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            if (!patientModel.FirstName.Equals(this.FirstName, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            if (patientModel.Birthdate.Year != this.DateOfBirth.Year)
-            {
-                return false;
-            }
-
-            if (patientModel.Birthdate.Month != this.DateOfBirth.Month)
-            {
-                return false;
-            }
-
-            if (patientModel.Birthdate.Day != this.DateOfBirth.Day)
-            {
-                return false;
-            }
-
-            return true;
-        }
     }
 }

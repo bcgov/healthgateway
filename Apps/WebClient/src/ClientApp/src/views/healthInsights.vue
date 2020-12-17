@@ -22,6 +22,7 @@ import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ActionType } from "@/constants/actionType";
 
 const namespace = "user";
 
@@ -107,7 +108,10 @@ export default class HealthInsightsView extends Vue {
                     ].date;
 
                     this.prepareMonthlyChart();
-                } else if (results.resultStatus == ResultType.Protected) {
+                } else if (
+                    results.resultStatus == ResultType.ActionRequired &&
+                    results.resultError?.actionCode == ActionType.Protected
+                ) {
                     this.protectiveWordModal.showModal();
                     this.protectiveWordAttempts++;
                 } else {

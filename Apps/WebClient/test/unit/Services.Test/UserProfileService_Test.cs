@@ -29,7 +29,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Constant;
+    using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.Extensions.Logging;
