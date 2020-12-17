@@ -13,28 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Immunization.Models
 {
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// The Load State record data model.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class LoadStateModel
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
+        [JsonPropertyName("refreshInProgress")]
+        public bool RefreshInProgress { get; set; }
 
         /// <summary>
-        /// Gets or sets the result section.
+        /// Creates a Load State Model object from a PHSA model.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public List<T>? Result { get; set; }
+        /// <param name="model">The Load State to convert.</param>
+        /// <returns>A LoadStateModel object.</returns>
+        public static LoadStateModel FromPHSAModel(PHSALoadState model)
+        {
+            LoadStateModel returnValue = new LoadStateModel();
+            returnValue.RefreshInProgress = model.RefreshInProgress;
+            return returnValue;
+        }
     }
 }

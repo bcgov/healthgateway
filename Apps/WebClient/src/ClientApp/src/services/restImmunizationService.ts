@@ -6,7 +6,7 @@ import {
     IHttpDelegate,
     IImmunizationService,
 } from "@/services/interfaces";
-import ImmunizationModel from "@/models/immunizationModel";
+import ImmunizationResult from "@/models/immunizationResult";
 import { ExternalConfiguration } from "@/models/configData";
 import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
@@ -32,21 +32,23 @@ export class RestImmunizationService implements IImmunizationService {
 
     public getPatientImmunizations(
         hdid: string
-    ): Promise<RequestResult<ImmunizationModel[]>> {
+    ): Promise<RequestResult<ImmunizationResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: [],
+                    resourcePayload: {
+                        loadState: { refreshInProgress: false },
+                        immunizations: [],
+                    },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
                 return;
             }
-
             this.http
-                .getWithCors<RequestResult<ImmunizationModel[]>>(
+                .getWithCors<RequestResult<ImmunizationResult>>(
                     `${this.baseUri}${this.IMMS_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {

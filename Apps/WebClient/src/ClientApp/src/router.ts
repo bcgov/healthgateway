@@ -1,4 +1,3 @@
-import Vue from "vue";
 import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -56,8 +55,6 @@ const ContactUsView = () =>
     import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
-
-Vue.use(VueRouter);
 
 enum UserState {
     unauthenticated = "unauthenticated",

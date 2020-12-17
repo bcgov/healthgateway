@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using Microsoft.AspNetCore.Http;
@@ -47,15 +48,19 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<ImmunizationModel>>> GetImmunizations(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<ImmunizationResult>> GetImmunizations(string bearerToken, int pageIndex = 0)
         {
-            RequestResult<IEnumerable<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(bearerToken, pageIndex).ConfigureAwait(true);
+            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(bearerToken, pageIndex).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
-                return new RequestResult<IEnumerable<ImmunizationModel>>()
+                return new RequestResult<ImmunizationResult>()
                 {
                     ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = ImmunizationModel.FromPHSAModelList(delegateResult.ResourcePayload),
+                    ResourcePayload = new ImmunizationResult()
+                    {
+                        LoadState = LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload.LoadState),
+                        Immunizations = ImmunizationModel.FromPHSAModelList(delegateResult.ResourcePayload.Result),
+                    },
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,
@@ -63,7 +68,7 @@ namespace HealthGateway.Immunization.Services
             }
             else
             {
-                return new RequestResult<IEnumerable<ImmunizationModel>>()
+                return new RequestResult<ImmunizationResult>()
                 {
                     ResultStatus = delegateResult.ResultStatus,
                     ResultError = delegateResult.ResultError,
