@@ -16,6 +16,7 @@ import { ResultType } from "@/constants/resulttype";
 import ErrorTranslator from "@/utility/errorTranslator";
 import PDFDefinition from "@/plugins/pdfDefinition";
 import LoadingComponent from "@/components/loading.vue";
+import { ActionType } from "@/constants/actionType";
 
 @Component({
     components: {
@@ -106,7 +107,10 @@ export default class MedicationHistoryReportComponent extends Vue {
                     // Required for the sample page
                     this.recordsPage = this.records.slice(0, 50);
                     this.sortEntries();
-                } else if (results.resultStatus == ResultType.Protected) {
+                } else if (
+                    results.resultStatus == ResultType.ActionRequired &&
+                    results.resultError?.actionCode == ActionType.Protected
+                ) {
                     this.protectiveWordModal.showModal();
                     this.protectiveWordAttempts++;
                 } else {

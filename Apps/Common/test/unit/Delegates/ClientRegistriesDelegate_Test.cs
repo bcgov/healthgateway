@@ -233,7 +233,8 @@ namespace HealthGateway.CommonTests.Delegates
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHDIDAsync(hdid);
 
             // Verify
-            Assert.Equal(ResultType.Error, actual.ResultStatus);
+            Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, actual.ResultError.ResultMessage);
         }
 
         [Fact]

@@ -13,13 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Medication.Constants
+namespace HealthGateway.Common.Constants
 {
     /// <summary>
     /// Common area for error messages.
     /// </summary>
     public static class ErrorMessages
     {
+        /// <summary>
+        /// Error message to return when patient has no an invalid services card.
+        /// </summary>
+        public const string InvalidServicesCard = "Please ensure you are using a current BC Services Card.";
+
+        /// <summary>
+        /// Error message to return patient data does not match request.
+        /// </summary>
+        public const string DataMismatch = "The information you entered does not match our records. Please try again.";
+
         /// <summary>
         /// Error message to return when a Pharmanet record is protected.
         /// </summary>
@@ -43,6 +53,5 @@ namespace HealthGateway.Medication.Constants
         /// <summary>
         /// Error message to return when a patient phn was not found.
         /// </summary>
-        public const string PhnNotFoundErrorMessage = "PHN could not be retrieved";
-    }
+        public const string PhnNotFoundErrorMessage = "PHN could not be retrieved";}
 }
