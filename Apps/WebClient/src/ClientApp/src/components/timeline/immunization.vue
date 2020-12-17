@@ -39,13 +39,13 @@ export default class ImmunizationTimelineComponent extends Vue {
             <b-col class="leftPane"></b-col>
             <b-col>
                 <b-row>
-                    <b-col>
+                    <b-col data-testid="immunizationProductTitle">
                         <strong> Product </strong>
                     </b-col>
-                    <b-col>
+                    <b-col data-testid="immunizationProviderTitle">
                         <strong> Provider/Clinic </strong>
                     </b-col>
-                    <b-col>
+                    <b-col data-testid="immunizationLotTitle">
                         <strong> Lot Number </strong>
                     </b-col>
                 </b-row>
@@ -55,13 +55,13 @@ export default class ImmunizationTimelineComponent extends Vue {
             <b-col class="leftPane"></b-col>
             <b-col>
                 <b-row>
-                    <b-col>
+                    <b-col data-testid="immunizationProductName">
                         {{ entry.immunization.productName }}
                     </b-col>
-                    <b-col>
+                    <b-col data-testid="immunizationProviderName">
                         {{ entry.immunization.providerOrClinic }}
                     </b-col>
-                    <b-col>
+                    <b-col data-testid="immunizationLotNumber">
                         {{ entry.immunization.lotNumber }}
                     </b-col>
                 </b-row>
