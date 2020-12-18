@@ -10,7 +10,7 @@ describe('Reports', () => {
             cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak, "/reports");
         })
     })
-/*
+
     it('Validate Service Selection', () => {       
         cy.get('[data-testid=exportRecordBtn]')
             .should('not.be.enabled', 'be.visible')
@@ -97,50 +97,6 @@ describe('Reports', () => {
         cy.get('[data-testid=covid19ItemDate]')
             .last()
             .contains(/\d{4}-\d{2}-\d{2}/);
-
-        cy.get('[data-testid=exportRecordBtn]')
-            .should('be.enabled', 'be.visible')
-            .click();
-
-        cy.get('[data-testid=genericMessageModal]')
-            .should('be.visible');
-
-        cy.get('[data-testid=genericMessageText]')
-            .should('have.text', sensitiveDocText);
-
-        cy.get('[data-testid=genericMessageSubmitBtn]')
-            .click();
-            
-        cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
-    })
-    */
-    it('Validate Immunization History Report', () => {         
-        cy.get('[data-testid=reportType]')
-            .should('be.enabled', 'be.visible')
-            .select("Immunization")
-
-        cy.get('[data-testid=immunizationHistoryReportSample]')
-            .should('be.visible')
-        
-        cy.get('[data-testid=immunizationDateTitle]')
-        .should('be.visible')
-        cy.get('[data-testid=immunizationProviderTitle]')
-        .should('be.visible')
-        cy.get('[data-testid=immunizationProductTitle]')
-        .should('be.visible')
-        cy.get('[data-testid=immunizationLotTitle]')
-        .should('be.visible')
-
-        cy.get('[data-testid=immunizationItemDate]')
-            .last()
-            .contains(/\d{4}-\d{2}-\d{2}/);
-        cy.get('[data-testid=immunizationItemProduct]')
-            .should('be.visible')
-        cy.get('[data-testid=immunizationItemProviderClinic]')
-            .should('be.visible')
-        cy.get('[data-testid=immunizationItemLotNumber]')
-            .should('be.visible')
 
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.enabled', 'be.visible')
