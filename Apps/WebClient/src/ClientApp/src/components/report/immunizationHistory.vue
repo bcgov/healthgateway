@@ -10,7 +10,7 @@ import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import RequestResult from "@/models/requestResult";
 import PatientData from "@/models/patientData";
 import User from "@/models/user";
-import { ILogger } from "@/services/interfaces";
+import { ILogger, IPatientService } from "@/services/interfaces";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import LoadingComponent from "@/components/loading.vue";
@@ -63,13 +63,17 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private fetchPatientData() {
-        this.getPatientData({
-            hdid: this.user.hdid,
-        })
+        const patientService: IPatientService = container.get<IPatientService>(
+            SERVICE_IDENTIFIER.PatientService
+        );
+
+        patientService
+            .getPatientData(this.user.hdid)
             .then((result) => {
                 // Load patient data
                 if (result) {
                     this.phn = result.resourcePayload.personalhealthnumber;
+                    console.log(result);
                     if (result.resourcePayload.birthdate != null) {
                         this.dateOfBirth = this.formatStringISODate(
                             result.resourcePayload.birthdate
