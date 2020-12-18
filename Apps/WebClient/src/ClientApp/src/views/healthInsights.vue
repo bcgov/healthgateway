@@ -14,7 +14,7 @@ import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 
-import TimelineLoadingComponent from "@/components/timelineLoading.vue";
+import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 
@@ -22,12 +22,13 @@ import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ActionType } from "@/constants/actionType";
 
 const namespace = "user";
 
 @Component({
     components: {
-        TimelineLoadingComponent,
+        LoadingComponent,
         ProtectiveWordComponent,
         ErrorCard: ErrorCardComponent,
         LineChart: LineChartComponent,
@@ -107,7 +108,10 @@ export default class HealthInsightsView extends Vue {
                     ].date;
 
                     this.prepareMonthlyChart();
-                } else if (results.resultStatus == ResultType.Protected) {
+                } else if (
+                    results.resultStatus == ResultType.ActionRequired &&
+                    results.resultError?.actionCode == ActionType.Protected
+                ) {
                     this.protectiveWordModal.showModal();
                     this.protectiveWordAttempts++;
                 } else {
@@ -221,7 +225,7 @@ export default class HealthInsightsView extends Vue {
 
 <template>
     <div>
-        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
+        <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
         <b-row class="my-3 fluid">
             <b-col
                 id="healthInsights"

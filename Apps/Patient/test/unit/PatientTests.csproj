@@ -4,7 +4,12 @@
     <IsPackable>false</IsPackable>
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.PatientTests</RootNamespace>
+    <nowarn>SA0001</nowarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\..\stylecop.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.9.0">

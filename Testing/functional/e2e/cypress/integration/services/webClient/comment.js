@@ -1,5 +1,5 @@
 describe('WebClient Comment Service', () => {
-    const BASEURL = "/v1/api/Comment/"
+    const BASEURL = "/v1/api/UserProfile/"
     const HDID='P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
     const BOGUSHDID='BOGUSHDID'
     beforeEach(() => {
@@ -9,7 +9,7 @@ describe('WebClient Comment Service', () => {
 
     it('Verify Get Comment Unauthorized', () => {
         cy.request({ 
-            url: `${BASEURL}${HDID}`,
+            url: `${BASEURL}${HDID}/Comment/`,
             followRedirect: false,
             failOnStatusCode: false
         })
@@ -20,7 +20,7 @@ describe('WebClient Comment Service', () => {
         cy.get("@tokens").then(tokens => {
             cy.log('Tokens', tokens)
             cy.request({
-                url: `${BASEURL}${BOGUSHDID}`,
+                url: `${BASEURL}${BOGUSHDID}/Comment/`,
                 followRedirect: false,
                 failOnStatusCode: false,
                 auth: {
@@ -39,7 +39,7 @@ describe('WebClient Comment Service', () => {
             cy.get("@tokens").then(tokens => {
                 cy.log('Tokens', tokens)
                 cy.request({
-                    url: `${BASEURL}${HDID}`,
+                    url: `${BASEURL}${HDID}/Comment/`,
                     followRedirect: false,
                     auth: {
                         bearer: tokens.access_token
@@ -60,7 +60,7 @@ describe('WebClient Comment Service', () => {
     it('Verify Post Comment Unauthorized', () => {
         cy.request({ 
             method: 'POST',
-            url: `${BASEURL}${HDID}`,
+            url: `${BASEURL}${HDID}/Comment/`,
             followRedirect: false,
             failOnStatusCode: false
         })
@@ -72,7 +72,7 @@ describe('WebClient Comment Service', () => {
             cy.log('Tokens', tokens)
             cy.request({
                 method: 'POST',
-                url: `${BASEURL}${BOGUSHDID}`,
+                url: `${BASEURL}${BOGUSHDID}/Comment/`,
                 followRedirect: false,
                 failOnStatusCode: false,
                 auth: {
@@ -90,7 +90,7 @@ describe('WebClient Comment Service', () => {
     it('Verify Put Comment Unauthorized', () => {
         cy.request({ 
             method: 'PUT',
-            url: `${BASEURL}${HDID}`,
+            url: `${BASEURL}${HDID}/Comment/`,
             followRedirect: false,
             failOnStatusCode: false
         })
@@ -102,7 +102,7 @@ describe('WebClient Comment Service', () => {
             cy.log('Tokens', tokens)
             cy.request({
                 method: 'PUT',
-                url: `${BASEURL}${BOGUSHDID}`,
+                url: `${BASEURL}${BOGUSHDID}/Comment/`,
                 followRedirect: false,
                 failOnStatusCode: false,
                 auth: {
@@ -120,7 +120,7 @@ describe('WebClient Comment Service', () => {
     it('Verify Delete Comment Unauthorized', () => {
         cy.request({ 
             method: 'DELETE',
-            url: `${BASEURL}${HDID}`,
+            url: `${BASEURL}${HDID}/Comment/`,
             followRedirect: false,
             failOnStatusCode: false
         })
@@ -132,7 +132,7 @@ describe('WebClient Comment Service', () => {
             cy.log('Tokens', tokens)
             cy.request({
                 method: 'DELETE',
-                url: `${BASEURL}${BOGUSHDID}`,
+                url: `${BASEURL}${BOGUSHDID}/Comment/`,
                 followRedirect: false,
                 failOnStatusCode: false,
                 auth: {

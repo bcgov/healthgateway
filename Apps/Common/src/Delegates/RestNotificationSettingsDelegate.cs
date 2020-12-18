@@ -114,7 +114,7 @@ namespace HealthGateway.Common.Delegates
                         retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Notfiication Settings Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                         break;
                 }
@@ -181,7 +181,7 @@ namespace HealthGateway.Common.Delegates
                         retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Notfiication Settings Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                         break;
                 }

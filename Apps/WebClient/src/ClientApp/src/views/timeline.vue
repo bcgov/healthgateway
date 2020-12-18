@@ -7,7 +7,6 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import {
     ILogger,
-    IImmunizationService,
     IEncounterService,
     IUserNoteService,
 } from "@/services/interfaces";
@@ -24,7 +23,7 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import TimelineLoadingComponent from "@/components/timelineLoading.vue";
+import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
@@ -39,6 +38,10 @@ import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import FilterComponent from "@/components/timeline/filters.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter from "@/models/timelineFilter";
+import { ActionType } from "@/constants/actionType";
+import { UserComment } from "@/models/userComment";
+import ImmunizationModel from "@/models/immunizationModel";
+import { Dictionary } from "vue-router/types/router";
 
 const namespace = "user";
 
@@ -47,7 +50,7 @@ Component.registerHooks(["beforeRouteLeave"]);
 
 @Component({
     components: {
-        TimelineLoadingComponent,
+        LoadingComponent,
         ProtectiveWordComponent,
         CovidModalComponent,
         EntryCardComponent: EntryCardTimelineComponent,
@@ -72,11 +75,44 @@ export default class TimelineView extends Vue {
         protectiveWord?: string;
     }) => Promise<RequestResult<MedicationStatementHistory[]>>;
 
+    @Action("retrieveProfileComments", { namespace: "comment" })
+    retrieveProfileComments!: (params: {
+        hdid: string;
+    }) => Promise<RequestResult<Dictionary<UserComment[]>>>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
+
+    @Action("retrieve", { namespace: "immunization" })
+    retrieveImmunizations!: (params: {
+        hdid: string;
+    }) => Promise<ImmunizationModel[]>;
+
+    @Getter("getStoredImmunizations", { namespace: "immunization" })
+    patientImmunizations!: ImmunizationModel[];
+
+    @Getter("isDeferredLoad", { namespace: "immunization" })
+    immunizationIsDeferred!: boolean;
+
+    @Watch("immunizationIsDeferred")
+    private whenImmunizationIsDeferred(newVal: boolean, oldVal: boolean) {
+        if (newVal) {
+            this.immunizationLoadDeferred = true;
+        }
+
+        if (!newVal && oldVal) {
+            this.immunizationLoadReady = true;
+            if (this.patientImmunizations.length === 0) {
+                this.loadImmunizationEntries();
+            }
+        }
+    }
+
+    private immunizationLoadDeferred = false;
+    private immunizationLoadReady = false;
 
     private filterText = "";
     private filter: TimelineFilter = new TimelineFilter();
@@ -86,6 +122,7 @@ export default class TimelineView extends Vue {
     private isLaboratoryLoading = false;
     private isEncounterLoading = false;
     private isNoteLoading = false;
+    private isCommentLoading = false;
     private idleLogoutWarning = false;
     private medicationCount = 0;
     private immunizationCount = 0;
@@ -118,6 +155,7 @@ export default class TimelineView extends Vue {
         this.fetchLaboratoryResults();
         this.fetchEncounters();
         this.fetchNotes();
+        this.fetchComments();
         window.addEventListener("beforeunload", this.onBrowserClose);
         this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
             this.isAddingNote = true;
@@ -225,7 +263,8 @@ export default class TimelineView extends Vue {
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
             this.isEncounterLoading ||
-            this.isNoteLoading
+            this.isNoteLoading ||
+            this.isCommentLoading
         );
     }
 
@@ -269,7 +308,10 @@ export default class TimelineView extends Vue {
                     }
                     this.sortEntries();
                     this.medicationCount = results.resourcePayload.length;
-                } else if (results.resultStatus == ResultType.Protected) {
+                } else if (
+                    results.resultStatus == ResultType.ActionRequired &&
+                    results.resultError?.actionCode == ActionType.Protected
+                ) {
                     if (!this.covidModal.show) {
                         this.protectiveWordModal.showModal();
                     }
@@ -302,34 +344,10 @@ export default class TimelineView extends Vue {
     }
 
     private fetchImmunizations() {
-        const immunizationService: IImmunizationService = container.get(
-            SERVICE_IDENTIFIER.ImmunizationService
-        );
         this.isImmunizationLoading = true;
-        immunizationService
-            .getPatientImmunizations(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the immunization entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new ImmunizationTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.immunizationCount = results.resourcePayload.length;
-                } else {
-                    this.logger.error(
-                        "Error returned from the immunization call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Immunizations Error",
-                            results.resultError
-                        )
-                    );
-                }
+        this.retrieveImmunizations({ hdid: this.user.hdid })
+            .then(() => {
+                this.loadImmunizationEntries();
             })
             .catch((err) => {
                 this.logger.error(err);
@@ -488,6 +506,54 @@ export default class TimelineView extends Vue {
             });
     }
 
+    private fetchComments() {
+        this.isCommentLoading = true;
+
+        this.retrieveProfileComments({
+            hdid: this.user.hdid,
+        })
+            .then((results) => {
+                if (results.resultStatus == ResultType.Success) {
+                    this.logger.debug("Profile Comments Loaded");
+                } else {
+                    this.logger.error(
+                        "Error returned from the retrieve comments call: " +
+                            JSON.stringify(results.resultError)
+                    );
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Profile Comments Error",
+                            results.resultError
+                        )
+                    );
+                }
+            })
+            .catch((err) => {
+                this.logger.error(err);
+                this.addError(
+                    ErrorTranslator.toBannerError("Profile Comments Error", err)
+                );
+            })
+            .finally(() => {
+                this.isCommentLoading = false;
+            });
+    }
+
+    private loadImmunizationEntries() {
+        if (this.immunizationLoadReady) {
+            this.immunizationLoadDeferred = false;
+            this.immunizationLoadReady = false;
+        }
+        // Add the immunization entries to the timeline list
+        for (let immunization of this.patientImmunizations) {
+            this.timelineEntries.push(
+                new ImmunizationTimelineEntry(immunization)
+            );
+        }
+        this.sortEntries();
+        this.immunizationCount = this.patientImmunizations.length;
+    }
+
     private onEntryAdded(entry: TimelineEntry) {
         this.logger.debug(`Timeline Entry added: ${JSON.stringify(entry)}`);
         this.isAddingNote = false;
@@ -579,7 +645,7 @@ export default class TimelineView extends Vue {
 
 <template>
     <div>
-        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
+        <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
         <b-row class="my-3 fluid">
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <b-alert
@@ -632,6 +698,30 @@ export default class TimelineView extends Vue {
                         Heads up: your health records are recorded and displayed
                         in Pacific Time.
                     </span>
+                </b-alert>
+                <b-alert
+                    :show="immunizationLoadDeferred"
+                    variant="info"
+                    class="no-print"
+                >
+                    <span v-if="!immunizationLoadReady">
+                        <h4 data-testid="immunizationLoading">
+                            Still loading your immunization records
+                        </h4>
+                    </span>
+                    <span v-else data-testid="immunizationReady">
+                        <h4 data-testid="immunizationReadyHeader">
+                            Your immunization records are ready
+                        </h4>
+                        <b-btn
+                            data-testid="immunizationBtnReady"
+                            variant="link"
+                            class="detailsButton px-0"
+                            @click="loadImmunizationEntries()"
+                        >
+                            Load to timeline.
+                        </b-btn></span
+                    >
                 </b-alert>
 
                 <div id="pageTitle">
@@ -693,7 +783,7 @@ export default class TimelineView extends Vue {
                                 :class="{ active: false }"
                                 @click.stop="toggleMonthView"
                             >
-                                Month
+                                Date
                             </b-btn>
                         </b-col>
                         <b-col cols="auto" class="pl-0">

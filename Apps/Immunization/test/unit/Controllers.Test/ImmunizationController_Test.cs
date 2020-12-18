@@ -76,11 +76,11 @@ namespace HealthGateway.Immunization.Test.Controller
                 .ReturnsAsync(authResult);
 
             Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
-            svcMock.Setup(s => s.GetImmunizations(token, 0)).ReturnsAsync(new RequestResult<IEnumerable<ImmunizationModel>>()
+            svcMock.Setup(s => s.GetImmunizations(token, 0)).ReturnsAsync(new RequestResult<ImmunizationResult>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 TotalResultCount = 0,
-                ResourcePayload = new List<ImmunizationModel>()
+                ResourcePayload = new ImmunizationResult(),
             });
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -93,9 +93,9 @@ namespace HealthGateway.Immunization.Test.Controller
             Assert.IsType<JsonResult>(actual);
 
             JsonResult jsonResult = (JsonResult)actual;
-            Assert.IsType<RequestResult<IEnumerable<ImmunizationModel>>>(jsonResult.Value);
+            Assert.IsType<RequestResult<ImmunizationResult>>(jsonResult.Value);
 
-            RequestResult<IEnumerable<ImmunizationModel>> result = (RequestResult<IEnumerable<ImmunizationModel>>)jsonResult.Value;
+            RequestResult<ImmunizationResult> result = (RequestResult<ImmunizationResult>)jsonResult.Value;
             Assert.Equal(Common.Constants.ResultType.Success, result.ResultStatus);
         }
     }

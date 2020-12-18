@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Test.Service
 {
     using DeepEqual.Syntax;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
@@ -43,27 +44,35 @@ namespace HealthGateway.Immunization.Test.Service
         {
 
             var mockDelegate = new Mock<IImmunizationDelegate>();
-            RequestResult<IEnumerable<ImmunizationResponse>> delegateResult = new RequestResult<IEnumerable<ImmunizationResponse>>()
+            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new List<ImmunizationResponse>()
+                ResourcePayload = new PHSAResult<ImmunizationResponse>()
                 {
-                    new ImmunizationResponse()
+                    LoadState = new PHSALoadState() { RefreshInProgress = false, },
+                    Result = new List<ImmunizationResponse>()
                     {
-                        Id = Guid.NewGuid(),
-                        Name = "MockImmunization",
-                        OccurrenceDateTime = DateTime.Now,
-                        SourceSystemId = "MockSourceID"
+                        new ImmunizationResponse()
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = "MockImmunization",
+                            OccurrenceDateTime = DateTime.Now,
+                            SourceSystemId = "MockSourceID"
+                        },
                     },
                 },
                 PageIndex = 0,
                 PageSize = 5,
                 TotalResultCount = 1,
             };
-            RequestResult<IEnumerable<ImmunizationModel>> expectedResult = new RequestResult<IEnumerable<ImmunizationModel>>()
+            RequestResult<ImmunizationResult> expectedResult = new RequestResult<ImmunizationResult>()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = ImmunizationModel.FromPHSAModelList(delegateResult.ResourcePayload),
+                ResourcePayload = new ImmunizationResult()
+                {
+                    LoadState = LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload.LoadState),
+                    Immunizations = ImmunizationModel.FromPHSAModelList(delegateResult.ResourcePayload.Result),
+                },
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -81,7 +90,7 @@ namespace HealthGateway.Immunization.Test.Service
         {
 
             var mockDelegate = new Mock<IImmunizationDelegate>();
-            RequestResult<IEnumerable<ImmunizationResponse>> delegateResult = new RequestResult<IEnumerable<ImmunizationResponse>>()
+            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 ResultError = new RequestResultError()

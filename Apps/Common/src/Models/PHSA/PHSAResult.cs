@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,12 @@ namespace HealthGateway.Common.Models.PHSA
     /// <typeparam name="T">The result object type.</typeparam>
     public class PHSAResult<T>
     {
+        /// <summary>
+        /// Gets or sets the LoadState.
+        /// </summary>
+        [JsonPropertyName("loadState")]
+        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
+
         /// <summary>
         /// Gets or sets the result section.
         /// </summary>

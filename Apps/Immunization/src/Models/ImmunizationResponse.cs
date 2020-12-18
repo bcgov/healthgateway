@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -42,9 +43,26 @@ namespace HealthGateway.Immunization.Models
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the Immunization Status.
+        /// </summary>
+        [JsonPropertyName("status")]
+        public string Status { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Provider or Clinic providing the Immunization.
+        /// </summary>
+        [JsonPropertyName("providerOrClinic")]
+        public string ProviderOrClinic { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the Immunization occurence date time.
         /// </summary>
         [JsonPropertyName("occurrenceDateTime")]
         public DateTime OccurrenceDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Immunization Agents.
+        /// </summary>
+        public IEnumerable<ImmunizationAgentsResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentsResponse>();
     }
 }

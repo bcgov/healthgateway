@@ -29,7 +29,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Constant;
+    using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
     using Microsoft.Extensions.Logging;
 
@@ -151,38 +151,7 @@ namespace HealthGateway.WebClient.Services
                 return requestResult;
             }
 
-            string hdid = createProfileRequest.Profile.HdId;
-            MessagingVerification? emailInvite = null;
-            if (registrationStatus == RegistrationStatus.InviteOnly)
-            {
-                if (!Guid.TryParse(createProfileRequest.InviteCode, out Guid inviteKey))
-                {
-                    requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultError = new RequestResultError() { ResultMessage = "Invalid email invite", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
-                    this.logger.LogWarning($"Invalid email invite code. {JsonSerializer.Serialize(createProfileRequest)}");
-                    return requestResult;
-                }
-
-                emailInvite = this.emailInviteDelegate.GetByInviteKey(inviteKey);
-                bool hdidIsValid = string.IsNullOrEmpty(emailInvite?.HdId) || (emailInvite?.HdId == createProfileRequest.Profile.HdId);
-
-                // Fails if...
-                // Email invite not found or
-                // Email invite was already validated or
-                // Email's recipient is not found
-                // Email invite must have a blank/null HDID or be the same as the one in the request
-                // Email address doesn't match the invite
-                if (emailInvite == null || (emailInvite.Email == null || emailInvite.Email.To == null ||
-                         emailInvite.Validated || !hdidIsValid ||
-                         !emailInvite.Email.To.Equals(createProfileRequest.Profile.Email, StringComparison.OrdinalIgnoreCase)))
-                {
-                    requestResult.ResultStatus = ResultType.Error;
-                    requestResult.ResultError = new RequestResultError() { ResultMessage = "Invalid email invite", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
-                    this.logger.LogWarning($"Invalid email invite. {JsonSerializer.Serialize(createProfileRequest)}");
-                    return requestResult;
-                }
-            }
-
+            string hdid = createProfileRequest.Profile.HdId;            
             PrimitiveRequestResult<bool> isMimimunAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
 
             if (isMimimunAgeResult.ResultStatus != ResultType.Success)
@@ -214,14 +183,6 @@ namespace HealthGateway.WebClient.Services
             {
                 // Update the notification settings
                 NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(newProfile, requestedSMSNumber);
-
-                if (emailInvite != null)
-                {
-                    // Validates the invite email
-                    emailInvite.Validated = true;
-                    emailInvite.HdId = hdid;
-                    this.emailInviteDelegate.Update(emailInvite);
-                }
 
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
@@ -334,9 +295,8 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public RequestResult<TermsOfServiceModel> GetActiveTermsOfService()
         {
-            this.logger.LogTrace($"Getting active terms of service...");
+            this.logger.LogDebug($"Getting active terms of service...");
             DBResult<LegalAgreement> retVal = this.legalAgreementDelegate.GetActiveByAgreementType(LegalAgreementType.TermsofService);
-            this.logger.LogDebug($"Finished getting terms of service. {JsonSerializer.Serialize(retVal)}");
 
             return new RequestResult<TermsOfServiceModel>()
             {

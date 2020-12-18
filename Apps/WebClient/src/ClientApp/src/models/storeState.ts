@@ -2,16 +2,20 @@ import AuthenticationData from "@/models/authenticationData";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import MedicationResult from "@/models/medicationResult";
-import Pharmacy from "@/models/pharmacy";
 import { LaboratoryOrder } from "@/models//laboratory";
 import BannerError from "@/models/bannerError";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { DateWrapper } from "@/models/dateWrapper";
 
+import { UserComment } from "@/models/userComment";
+import { Dictionary } from "@/models/baseTypes";
+import ImmunizationModel from "@/models/immunizationModel";
+
 export enum StateType {
     NONE,
     INITIALIZED,
     REQUESTED,
+    DEFERRED,
     ERROR,
 }
 
@@ -50,15 +54,22 @@ export interface MedicationState {
     stateType: StateType;
 }
 
-export interface PharmacyState {
-    pharmacies: Pharmacy[];
+export interface LaboratoryState {
+    laboratoryOrders: LaboratoryOrder[];
     statusMessage: string;
     error: boolean;
     stateType: StateType;
 }
 
-export interface LaboratoryState {
-    laboratoryOrders: LaboratoryOrder[];
+export interface ImmunizationState {
+    immunizations: ImmunizationModel[];
+    statusMessage: string;
+    error: boolean;
+    stateType: StateType;
+}
+
+export interface CommentState {
+    profileComments: Dictionary<UserComment[]>;
     statusMessage: string;
     error: boolean;
     stateType: StateType;

@@ -1,14 +1,9 @@
 import { ActionTree, Commit } from "vuex";
 
-import {
-    ILogger,
-    IPatientService,
-    IUserProfileService,
-} from "@/services/interfaces";
+import { ILogger, IUserProfileService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { RootState, UserState } from "@/models/storeState";
-import PatientData from "@/models/patientData";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -21,32 +16,11 @@ function handleError(commit: Commit, error: Error) {
     commit("userError");
 }
 
-const patientService: IPatientService = container.get<IPatientService>(
-    SERVICE_IDENTIFIER.PatientService
-);
-
 const userProfileService: IUserProfileService = container.get<IUserProfileService>(
     SERVICE_IDENTIFIER.UserProfileService
 );
 
 export const actions: ActionTree<UserState, RootState> = {
-    getPatientData(context, params: { hdid: string }): Promise<PatientData> {
-        return new Promise((resolve, reject) => {
-            patientService
-                .getPatientData(params.hdid)
-                .then((patientData) => {
-                    logger.debug(
-                        `Patient Data: ${JSON.stringify(patientData)}`
-                    );
-                    context.commit("setPatientData", patientData);
-                    resolve(patientData);
-                })
-                .catch((error) => {
-                    handleError(context.commit, error);
-                    reject(error);
-                });
-        });
-    },
     checkRegistration(context, params: { hdid: string }): Promise<boolean> {
         return new Promise((resolve, reject) => {
             return userProfileService

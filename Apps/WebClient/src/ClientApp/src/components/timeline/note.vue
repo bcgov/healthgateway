@@ -298,7 +298,7 @@ export default class NoteTimelineComponent extends Vue {
                                 id="text"
                                 v-model="text"
                                 data-testid="noteTextInput"
-                                placeholder="Your note here"
+                                placeholder="Enter your note here. Your notes are only available for your own viewing."
                                 rows="3"
                                 max-rows="6"
                                 maxlength="1000"

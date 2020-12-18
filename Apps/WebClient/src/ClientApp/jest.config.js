@@ -29,4 +29,5 @@ module.exports = {
     globals: {
         _NODE_ENV: "development",
     },
+    setupFilesAfterEnv: ["<rootDir>/test/vueSetup.ts"],
 };

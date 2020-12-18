@@ -35,7 +35,38 @@ export default class ImmunizationTimelineComponent extends Vue {
                 {{ entry.immunization.name }}
             </b-col>
         </b-row>
-        <CommentSection :parent-entry="entry"></CommentSection>
+        <b-row class="my-2">
+            <b-col class="leftPane"></b-col>
+            <b-col>
+                <b-row>
+                    <b-col data-testid="immunizationProductTitle">
+                        <strong> Product </strong>
+                    </b-col>
+                    <b-col data-testid="immunizationProviderTitle">
+                        <strong> Provider/Clinic </strong>
+                    </b-col>
+                    <b-col data-testid="immunizationLotTitle">
+                        <strong> Lot Number </strong>
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
+        <b-row class="my-2">
+            <b-col class="leftPane"></b-col>
+            <b-col>
+                <b-row>
+                    <b-col data-testid="immunizationProductName">
+                        {{ entry.immunization.productName }}
+                    </b-col>
+                    <b-col data-testid="immunizationProviderName">
+                        {{ entry.immunization.providerOrClinic }}
+                    </b-col>
+                    <b-col data-testid="immunizationLotNumber">
+                        {{ entry.immunization.lotNumber }}
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
     </b-col>
 </template>
 
@@ -57,7 +88,7 @@ $radius: 15px;
     padding: 13px 15px;
     font-weight: bold;
     margin-right: -1px;
-    border-radius: 0px $radius 0px 0px;
+    border-radius: 0px $radius $radius 0px;
 }
 
 .icon {
@@ -65,7 +96,7 @@ $radius: 15px;
     color: white;
     text-align: center;
     padding: 10px 0;
-    border-radius: $radius 0px 0px 0px;
+    border-radius: $radius 0px 0px $radius;
 }
 
 .leftPane {

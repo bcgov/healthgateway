@@ -16,11 +16,14 @@
 namespace HealthGateway.Common.Filters
 {
     using System;
+    using System.Linq;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.AspNetCore.Mvc.Filters;
+    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// The audit middleware class.
@@ -52,6 +55,17 @@ namespace HealthGateway.Common.Filters
             if (context.Controller.GetType().GetCustomAttributes(typeof(IgnoreAuditAttribute), true).Length > 0)
             {
                 return;
+            }
+
+            // Check for controller or method authorization attribute
+            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
+            {
+                bool isControllerAuthorization = context.Controller.GetType().GetCustomAttributes(inherit: true).OfType<AuthorizeAttribute>().Any();
+                bool isMethodAuthorization = controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true).OfType<AuthorizeAttribute>().Any();
+                if (!(isControllerAuthorization || isMethodAuthorization))
+                {
+                    return;
+                }
             }
 
             auditEvent.TransactionDuration = Convert.ToInt64(DateTime.UtcNow.Subtract(auditEvent.AuditEventDateTime).TotalMilliseconds);

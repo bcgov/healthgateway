@@ -12,7 +12,6 @@ export const mutations: MutationTree<LaboratoryState> = {
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;
     },
-
     laboratoryError(state: LaboratoryState, errorMessage: string) {
         state.error = true;
         state.statusMessage = errorMessage;

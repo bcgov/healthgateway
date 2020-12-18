@@ -1,4 +1,3 @@
-import Vue from "vue";
 import { ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -6,6 +5,7 @@ import container from "@/plugins/inversify.config";
 import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
 import { SnowplowWindow } from "@/plugins/extensions";
+import { Dictionary } from "@/models/baseTypes";
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 declare let window: SnowplowWindow;
 
@@ -56,8 +56,6 @@ const ContactUsView = () =>
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 
-Vue.use(VueRouter);
-
 enum UserState {
     unauthenticated = "unauthenticated",
     notRegistered = "notRegistered",
@@ -98,7 +96,7 @@ enum ClientModule {
 
 function getAvailableModules() {
     const availableModules: string[] = [];
-    const configModules: { [id: string]: boolean } =
+    const configModules: Dictionary<boolean> =
         store.getters["config/webClient"].modules;
 
     for (const moduleName in configModules) {

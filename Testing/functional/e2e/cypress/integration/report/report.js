@@ -16,7 +16,7 @@ describe('Reports', () => {
             .should('not.be.enabled', 'be.visible')
 
         cy.get('[data-testid=infoText]')
-            .should('have.text', ' Select a service above to create a report ')
+            .should('have.text', ' Select a record type above to create a report ')
 
         cy.get('[data-testid=infoImage]')
             .should('be.visible')
@@ -36,7 +36,7 @@ describe('Reports', () => {
             .should('not.be.enabled', 'be.visible')
 
         })
-
+    
     it('Validate Medication Report', () => {         
         cy.get('[data-testid=reportType]')
             .should('be.enabled', 'be.visible')
@@ -70,6 +70,34 @@ describe('Reports', () => {
         cy.get('[data-testid=mspVisitsReportSample]')
             .should('be.visible')
         
+        cy.get('[data-testid=exportRecordBtn]')
+            .should('be.enabled', 'be.visible')
+            .click();
+
+        cy.get('[data-testid=genericMessageModal]')
+            .should('be.visible');
+
+        cy.get('[data-testid=genericMessageText]')
+            .should('have.text', sensitiveDocText);
+
+        cy.get('[data-testid=genericMessageSubmitBtn]')
+            .click();
+            
+        cy.get('[data-testid=genericMessageModal]')
+            .should('not.be.visible');
+    })
+
+    it('Validate COVID-19 Report', () => {         
+        cy.get('[data-testid=reportType]')
+            .should('be.enabled', 'be.visible')
+            .select("COVID-19")        
+
+        cy.get('[data-testid=covid19ReportSample]')
+            .should('be.visible')
+        cy.get('[data-testid=covid19ItemDate]')
+            .last()
+            .contains(/\d{4}-\d{2}-\d{2}/);
+
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.enabled', 'be.visible')
             .click();

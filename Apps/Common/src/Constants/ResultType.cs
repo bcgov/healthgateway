@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Constants
     public enum ResultType
     {
         /// <summary>
-        /// Represents an error condition.
+        /// Represents a system error condition.
         /// </summary>
         Error = 0,
 
@@ -31,8 +31,8 @@ namespace HealthGateway.Common.Constants
         Success = 1,
 
         /// <summary>
-        /// Represents that the transactions requires a protective word.
+        /// Represents that the request needs an user action.
         /// </summary>
-        Protected = 99,
+        ActionRequired = 2,
     }
 }

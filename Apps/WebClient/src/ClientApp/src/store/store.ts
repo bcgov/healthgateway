@@ -6,8 +6,10 @@ import { config } from "./modules/config/config";
 import { user } from "./modules/user/user";
 import { medication } from "./modules/medication/medication";
 import { laboratory } from "./modules/laboratory/laboratory";
+import { immunization } from "./modules/immunization/immunization";
 import { sidebar } from "./modules/sidebar/sidebar";
 import { errorBanner } from "./modules/error/errorBanner";
+import { comment } from "./modules/comment/comment";
 
 Vue.use(Vuex);
 
@@ -21,6 +23,8 @@ const storeOptions: StoreOptions<RootState> = {
         user,
         medication,
         laboratory,
+        comment,
+        immunization,
         sidebar,
         errorBanner,
     },

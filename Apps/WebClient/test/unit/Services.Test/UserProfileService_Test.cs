@@ -29,7 +29,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Constant;
+    using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.Extensions.Logging;
@@ -164,7 +164,7 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Null(actualResult.ResourcePayload.HdId);
         }
 
-        private async Task<Tuple<RequestResult<UserProfileModel>, UserProfileModel>> ExecuteInsertUserProfile(Database.Constants.DBStatusCode dbResultStatus, string registrationStatus, string inviteCode, MessagingVerification messagingVerification = null)
+        private async Task<Tuple<RequestResult<UserProfileModel>, UserProfileModel>> ExecuteInsertUserProfile(Database.Constants.DBStatusCode dbResultStatus, string registrationStatus, MessagingVerification messagingVerification = null)
         {
             UserProfile userProfile = new UserProfile
             {
@@ -216,7 +216,7 @@ namespace HealthGateway.WebClient.Test.Services
                 messageVerificationDelegateMock.Object,
                 new Mock<IPatientService>().Object);
 
-            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile, InviteCode = inviteCode }, new Uri("http://localhost/"), "bearer_token");
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
 
             return new Tuple<RequestResult<UserProfileModel>, UserProfileModel>(actualResult, expected);
         }
@@ -240,46 +240,6 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.InternalError(ErrorType.InvalidState), actualResult.ResultError.ErrorCode);
             Assert.Equal("Registration is closed", actualResult.ResultError.ResultMessage);
-        }
-
-        [Fact]
-        public async void ShouldInsertUserProfileWithValidInviteEmail()
-        {
-            var inviteCode = Guid.NewGuid().ToString();
-            var messagingVerification = new MessagingVerification()
-            {
-                Email = new Email() {
-                    To = "unit.test@hgw.ca",
-                },
-                Validated = false,
-            };
-            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = await ExecuteInsertUserProfile(DBStatusCode.Created, RegistrationStatus.InviteOnly, inviteCode, messagingVerification);
-            var actualResult = result.Item1;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-        }
-
-        [Fact]
-        public async void ShouldInsertUserProfileWithInvalidInviteEmail()
-        {
-            var inviteCode = Guid.NewGuid().ToString();
-            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = await ExecuteInsertUserProfile(DBStatusCode.Created, RegistrationStatus.InviteOnly, inviteCode);
-            var actualResult = result.Item1;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(ErrorTranslator.InternalError(ErrorType.InvalidState), actualResult.ResultError.ErrorCode);
-            Assert.Equal("Invalid email invite", actualResult.ResultError.ResultMessage);
-        }
-
-        [Fact]
-        public async void ShouldInsertUserProfileWithInvalidInviteCode()
-        {
-            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = await ExecuteInsertUserProfile(DBStatusCode.Created, RegistrationStatus.InviteOnly, null);
-            var actualResult = result.Item1;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(ErrorTranslator.InternalError(ErrorType.InvalidState), actualResult.ResultError.ErrorCode);
-            Assert.Equal("Invalid email invite", actualResult.ResultError.ResultMessage);
         }
 
         [Fact]

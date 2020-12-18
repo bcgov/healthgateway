@@ -430,7 +430,7 @@ export default class SidebarComponent extends Vue {
                         </b-row>
                     </div>
                     <router-link
-                        v-show="isDependentEnabled"
+                        v-show="isDependentEnabled && isActiveProfile"
                         id="menuBtnDependents"
                         data-testid="menuBtnDependentsLink"
                         to="/dependents"
@@ -540,13 +540,14 @@ export default class SidebarComponent extends Vue {
             <b-row class="sidebar-footer m-0 p-0">
                 <b-col class="m-0 p-0">
                     <!-- Collapse Button -->
+                    <hr />
                     <b-row
                         class="align-items-center my-4 d-sm-block"
                         :class="[isOpen ? 'mx-4' : 'button-container']"
                     >
                         <b-col
                             :title="`${isOpen ? 'Collapse' : 'Expand'} Menu`"
-                            :class="{ 'ml-auto col-4': isOpen }"
+                            :class="{ 'ml-auto col-2': isOpen }"
                         >
                             <font-awesome-icon
                                 data-testid="sidebarToggle"
@@ -575,6 +576,11 @@ export default class SidebarComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
+.sidebarDivider {
+    border-top: 10px solid;
+    color: white;
+}
 
 .wrapper {
     display: flex;
@@ -705,7 +711,9 @@ export default class SidebarComponent extends Vue {
 }
 
 #sidebar hr {
-    border-top: 1px solid $soft_text;
+    border-top: 2px solid white;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #sidebar.collapsed .arrow-icon {
@@ -755,6 +763,7 @@ export default class SidebarComponent extends Vue {
     position: sticky;
     bottom: 0rem;
     align-self: flex-end;
+    background-color: $primary;
 }
 
 .popover-body {

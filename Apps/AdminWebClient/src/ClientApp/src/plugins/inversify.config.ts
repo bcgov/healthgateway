@@ -4,7 +4,6 @@ import { Container } from "inversify";
 import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
-    IBetaRequestService,
     IConfigService,
     IAuthenticationService,
     IUserFeedbackService,
@@ -14,7 +13,6 @@ import {
 } from "@/services/interfaces";
 import HttpDelegate from "@/services/httpDelegate";
 import { RestConfigService } from "@/services/restConfigService";
-import { RestBetaRequestService } from "@/services/restBetaRequestService";
 import { RestAuthenticationService } from "@/services/restAuthenticationService";
 import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 import { DashboardService } from "@/services/dashboardService";
@@ -29,10 +27,6 @@ container
 container
     .bind<IAuthenticationService>(SERVICE_IDENTIFIER.AuthenticationService)
     .to(RestAuthenticationService)
-    .inSingletonScope();
-container
-    .bind<IBetaRequestService>(SERVICE_IDENTIFIER.BetaRequestService)
-    .to(RestBetaRequestService)
     .inSingletonScope();
 container
     .bind<IUserFeedbackService>(SERVICE_IDENTIFIER.UserFeedbackService)

@@ -8,6 +8,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import COVID19ReportComponent from "@/components/report/covid19.vue";
+import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import { IAuthenticationService } from "@/services/interfaces";
 import type { WebClientConfiguration } from "@/models/configData";
 import { Getter } from "vuex-class";
@@ -18,6 +20,8 @@ import { Getter } from "vuex-class";
         MessageModalComponent,
         MedicationHistoryReportComponent,
         MSPVisitsReportComponent,
+        COVID19ReportComponent,
+        ImmunizationHistoryReportComponent,
     },
 })
 export default class ReportsView extends Vue {
@@ -30,8 +34,14 @@ export default class ReportsView extends Vue {
     readonly medicationHistoryReport!: MedicationHistoryReportComponent;
     @Ref("mspVisitsReport")
     readonly mspVisitsReport!: MSPVisitsReportComponent;
+    @Ref("covid19Report")
+    readonly covid19Report!: COVID19ReportComponent;
+    @Ref("immunizationHistoryReport")
+    readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
 
     private fullName = "";
+    private phn = "";
+    private dateOfBirth = "";
     private logger!: ILogger;
     private reportType = "";
     private reportTypeOptions = [{ value: "", text: "Select" }];
@@ -43,6 +53,18 @@ export default class ReportsView extends Vue {
         }
         if (this.config.modules["Encounter"]) {
             this.reportTypeOptions.push({ value: "MSP", text: "MSP Visits" });
+        }
+        if (this.config.modules["Laboratory"]) {
+            this.reportTypeOptions.push({
+                value: "COVID-19",
+                text: "COVID-19 Test Results",
+            });
+        }
+        if (this.config.modules["Immunization"]) {
+            this.reportTypeOptions.push({
+                value: "Immunization",
+                text: "Immunizations",
+            });
         }
         this.loadName();
     }
@@ -58,6 +80,12 @@ export default class ReportsView extends Vue {
                 break;
             case "MSP":
                 this.mspVisitsReport.generatePdf();
+                break;
+            case "COVID-19":
+                this.covid19Report.generatePdf();
+                break;
+            case "Immunization":
+                this.immunizationHistoryReport.generatePdf();
                 break;
         }
     }
@@ -89,7 +117,7 @@ export default class ReportsView extends Vue {
                     <div class="my-3 px-5 py-4 form">
                         <b-row>
                             <b-col>
-                                <label for="reportType">Report Type</label>
+                                <label for="reportType">Record Type</label>
                             </b-col>
                         </b-row>
                         <b-row>
@@ -135,6 +163,26 @@ export default class ReportsView extends Vue {
                             :name="fullName"
                         />
                     </div>
+                    <div
+                        v-else-if="reportType == 'COVID-19'"
+                        data-testid="covid19ReportSample"
+                        class="sample"
+                    >
+                        <COVID19ReportComponent
+                            ref="covid19Report"
+                            :name="fullName"
+                        />
+                    </div>
+                    <div
+                        v-else-if="reportType == 'Immunization'"
+                        data-testid="immunizationHistoryReportSample"
+                        class="sample"
+                    >
+                        <ImmunizationHistoryReportComponent
+                            ref="immunizationHistoryReport"
+                            :name="fullName"
+                        />
+                    </div>
                     <div v-else>
                         <b-row>
                             <b-col>
@@ -151,7 +199,8 @@ export default class ReportsView extends Vue {
                         <b-row>
                             <b-col class="text-center">
                                 <h5 data-testid="infoText">
-                                    Select a service above to create a report
+                                    Select a record type above to create a
+                                    report
                                 </h5>
                             </b-col>
                         </b-row>

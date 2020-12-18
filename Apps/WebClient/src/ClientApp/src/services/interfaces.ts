@@ -3,7 +3,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import ImmunizationModel from "@/models/immunizationModel";
+import type ImmunizationResult from "@/models/immunizationResult";
 import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import type { UserComment } from "@/models/userComment";
@@ -12,7 +12,6 @@ import { Dictionary } from "vue-router/types/router";
 import MedicationResult from "@/models/medicationResult";
 import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";
-import BetaRequest from "@/models/betaRequest";
 import { TermsOfService } from "@/models/termsOfService";
 import UserNote from "@/models/userNote";
 import Communication from "@/models/communication";
@@ -46,12 +45,12 @@ export interface IImmunizationService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientImmunizations(
         hdid: string
-    ): Promise<RequestResult<ImmunizationModel[]>>;
+    ): Promise<RequestResult<ImmunizationResult>>;
 }
 
 export interface IPatientService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getPatientData(hdid: string): Promise<PatientData>;
+    getPatientData(hdid: string): Promise<RequestResult<PatientData>>;
 }
 
 export interface IMedicationService {
@@ -116,12 +115,6 @@ export interface IUserRatingService {
     submitRating(rating: UserRating): Promise<boolean>;
 }
 
-export interface IBetaRequestService {
-    initialize(http: IHttpDelegate): void;
-    getRequested(hdid: string): Promise<BetaRequest>;
-    putRequest(hdid: string, request: BetaRequest): Promise<BetaRequest>;
-}
-
 export interface IUserNoteService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getNotes(hdid: string): Promise<RequestResult<UserNote[]>>;
@@ -136,6 +129,9 @@ export interface IUserCommentService {
         hdid: string,
         parentEntryId: string
     ): Promise<RequestResult<UserComment[]>>;
+    getCommentsForProfile(
+        hdid: string
+    ): Promise<RequestResult<Dictionary<UserComment[]>>>;
     createComment(
         hdid: string,
         comment: UserComment

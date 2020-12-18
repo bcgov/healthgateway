@@ -59,20 +59,6 @@ namespace HealthGateway.Admin.Controllers
         }
 
         /// <summary>
-        /// Retrieves the count of unregistered users that received an invite.
-        /// </summary>
-        /// <returns>The count of unregistered users that received an invite.</returns>
-        /// <response code="200">Returns the count of unregistered users.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("UnregisteredInvitedCount")]
-        public IActionResult GetUnregisteredInvitedUserCount()
-        {
-            return new JsonResult(this.dashboardService.GetUnregisteredInvitedUserCount());
-        }
-
-        /// <summary>
         /// Retrieves the count of logged in user in the last day.
         /// </summary>
         /// <param name="offset">The offset from the client browser to UTC.</param>
@@ -85,20 +71,6 @@ namespace HealthGateway.Admin.Controllers
         public IActionResult GetTodayLoggedinUsersCount(int offset)
         {
             return new JsonResult(this.dashboardService.GetTodayLoggedInUsersCount(offset));
-        }
-
-        /// <summary>
-        /// Retrieves the count of waitlisted users.
-        /// </summary>
-        /// <returns>The count of waitlisted users.</returns>
-        /// <response code="200">Returns the count of waitlisted users.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("WaitlistCount")]
-        public IActionResult GetWaitlistUserCount()
-        {
-            return new JsonResult(this.dashboardService.GetWaitlistUserCount());
         }
 
         /// <summary>

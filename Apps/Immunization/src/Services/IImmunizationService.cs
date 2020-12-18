@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,11 +26,11 @@ namespace HealthGateway.Immunization.Services
     public interface IImmunizationService
     {
         /// <summary>
-        /// Gets a list of immunization records.
+        /// Gets the ImmunizationResult inluding load state and a list of immunization records.
         /// </summary>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<IEnumerable<ImmunizationModel>>> GetImmunizations(string bearerToken, int pageIndex = 0);
+        Task<RequestResult<ImmunizationResult>> GetImmunizations(string bearerToken, int pageIndex = 0);
     }
 }

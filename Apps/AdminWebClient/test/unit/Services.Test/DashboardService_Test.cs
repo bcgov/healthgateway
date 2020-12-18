@@ -46,7 +46,6 @@ namespace HealthGateway.Admin.Test.Services
             IDashboardService service = new DashboardService(
                 noteDelegateMock.Object,
                 null,
-                null,
                 new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build()
             );
 

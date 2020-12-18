@@ -83,11 +83,9 @@ namespace HealthGateway.WebClient
             services.AddTransient<IUserEmailService, UserEmailService>();
             services.AddTransient<IEmailQueueService, EmailQueueService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
-            services.AddTransient<IBetaRequestService, BetaRequestService>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<INoteService, NoteService>();
             services.AddTransient<ICommentService, CommentService>();
-            services.AddTransient<IDependentService, DependentService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IUserSMSService, UserSMSService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
@@ -101,7 +99,6 @@ namespace HealthGateway.WebClient
             services.AddTransient<IMessagingVerificationDelegate, DBMessagingVerificationDelegate>();
             services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
             services.AddTransient<IRatingDelegate, DBRatingDelegate>();
-            services.AddTransient<IBetaRequestDelegate, DBBetaRequestDelegate>();
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<INoteDelegate, DBNoteDelegate>();
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();

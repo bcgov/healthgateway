@@ -33,6 +33,7 @@ namespace HealthGateway.CommonTests.Delegates
     using Moq;
     using Moq.Protected;
     using Xunit;
+    using System;
 
     public class NotificationSettingsDelegate_Test
     {
@@ -44,8 +45,13 @@ namespace HealthGateway.CommonTests.Delegates
             this.configuration = GetIConfigurationRoot(string.Empty);
         }
 
-        [Fact]
-        public void ValidateGetNotificationSettings200()
+        /// <summary>
+        /// Get Notification Settings.
+        /// </summary>
+        /// <param name="expectedResponseStatusCode">expectedResponseStatusCode</param>
+        /// <param name="expectedRequestResult">expectedRequestResult</param>
+        /// <returns></returns>
+        private Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> GetNotificationSettings(HttpStatusCode expectedResponseStatusCode, RequestResult<NotificationSettingsResponse> expectedRequestResult, bool throwException = false)
         {
             string json = @"{""smsEnabled"": true, ""smsCellNumber"": ""5551231234"", ""smsVerified"": true, ""smsScope"": [""COVID19""], ""emailEnabled"": true, ""emailAddress"": ""email@email.blah"", ""emailScope"": [""COVID19""]}";
             var options = new JsonSerializerOptions
@@ -54,12 +60,8 @@ namespace HealthGateway.CommonTests.Delegates
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
-            {
-                ResourcePayload = JsonSerializer.Deserialize<NotificationSettingsResponse>(json, options),
-                ResultStatus = Common.Constants.ResultType.Success,
-                TotalResultCount = 1,
-            };
+
+            expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<NotificationSettingsResponse>(json, options);
             var handlerMock = new Mock<HttpMessageHandler>();
             handlerMock
                .Protected()
@@ -70,8 +72,8 @@ namespace HealthGateway.CommonTests.Delegates
                )
                .ReturnsAsync(new HttpResponseMessage()
                {
-                   StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent(json),
+                   StatusCode = expectedResponseStatusCode,
+                   Content = throwException ? null : new StringContent(json),
                })
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -79,7 +81,49 @@ namespace HealthGateway.CommonTests.Delegates
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.GetNotificationSettings(string.Empty)).Result;
-            Assert.True(actualResult.IsDeepEqual(expected));
+            return new Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>>(actualResult, expectedRequestResult);
+        }
+
+        [Fact]
+        public void ValidateGetNotificationSettings200()
+        {
+            var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 1,
+            };
+            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
+            var actualResult = response.Item1;
+            var expectedResult = response.Item2;
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
+        }
+
+        [Fact]
+        public void ValidateGetNotificationSettingsCatchException()
+        {
+            var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = GetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
+            var actualResult = response.Item1;
+            var expectedResult = response.Item2;
+
+            Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
+            Assert.Contains("Exception getting Notification Settings:", actualResult.ResultError.ResultMessage);
+        }
+
+        [Fact]
+        public void ValidateGetNotificationSettingsUnableToConnect()
+        {
+            var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = GetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
+            var actualResult = response.Item1;
+            var expectedResult = response.Item2;
+            Assert.Equal($"Unable to connect to Notification Settings Endpoint, HTTP Error {HttpStatusCode.BadRequest}", actualResult.ResultError.ResultMessage);
         }
 
         [Fact]
@@ -143,36 +187,37 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.True(actualResult.IsDeepEqual(expected));
         }
 
-        [Fact]
-        public void ValidateSetNotificationSettings200()
+        /// <summary>
+        /// Get Notification Settings.
+        /// </summary>
+        /// <param name="expectedResponseStatusCode">expectedResponseStatusCode</param>
+        /// <param name="expectedRequestResult">expectedRequestResult</param>
+        /// <returns></returns>
+        private Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> SetNotificationSettings(HttpStatusCode expectedResponseStatusCode, RequestResult<NotificationSettingsResponse> expectedRequestResult, bool throwException = false)
         {
-            RequestResult<NotificationSettingsResponse> expected = new RequestResult<NotificationSettingsResponse>()
+            expectedRequestResult.ResourcePayload = new NotificationSettingsResponse()
             {
-                ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new NotificationSettingsResponse()
-                {
-                    SMSEnabled = true,
-                    SMSNumber = "5551231234",
-                    SMSScope = new List<NotificationTarget>
+                SMSEnabled = true,
+                SMSNumber = "5551231234",
+                SMSScope = new List<NotificationTarget>
                     {
                         NotificationTarget.Covid19,
                     },
-                    EmailEnabled = true,
-                    EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
-                    EmailScope = new List<NotificationTarget>
+                EmailEnabled = true,
+                EmailAddress = "DrGateway@HealthGateway.gov.bc.ca",
+                EmailScope = new List<NotificationTarget>
                     {
                         NotificationTarget.Covid19,
                     },
-                },
-                TotalResultCount = 1,
             };
+
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            NotificationSettingsRequest request = new NotificationSettingsRequest(expected.ResourcePayload);
+            NotificationSettingsRequest request = new NotificationSettingsRequest(expectedRequestResult.ResourcePayload);
             request.SMSVerificationCode = "1234";
             string json = JsonSerializer.Serialize(request, options);
             var handlerMock = new Mock<HttpMessageHandler>();
@@ -185,8 +230,8 @@ namespace HealthGateway.CommonTests.Delegates
                )
                .ReturnsAsync(new HttpResponseMessage()
                {
-                   StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent(json),
+                   StatusCode = expectedResponseStatusCode,
+                   Content = throwException ? null : new StringContent(json),
                })
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -194,8 +239,51 @@ namespace HealthGateway.CommonTests.Delegates
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             INotificationSettingsDelegate nsDelegate = new RestNotificationSettingsDelegate(loggerFactory.CreateLogger<RestNotificationSettingsDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<NotificationSettingsResponse> actualResult = Task.Run(async () => await nsDelegate.SetNotificationSettings(request, string.Empty)).Result;
-            Assert.True(actualResult.IsDeepEqual(expected));
+            return new Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>>(actualResult, expectedRequestResult);
         }
+
+        [Fact]
+        public void ValidateSetNotificationSettings200()
+        {
+            var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 1,
+            };
+            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult);
+            var actualResult = response.Item1;
+            var expectedResult = response.Item2;
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
+        }
+
+        [Fact]
+        public void ValidateSetNotificationSettingsCatchException()
+        {
+            var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = SetNotificationSettings(HttpStatusCode.OK, expectedRequestResult, true);
+            var actualResult = response.Item1;
+            var expectedResult = response.Item2;
+
+            Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
+            Assert.Contains("Exception getting Notification Settings:", actualResult.ResultError.ResultMessage);
+        }
+
+        [Fact]
+        public void ValidateSetNotificationSettingsUnableToConnect()
+        {
+            var expectedRequestResult = new RequestResult<NotificationSettingsResponse>()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+            Tuple<RequestResult<NotificationSettingsResponse>, RequestResult<NotificationSettingsResponse>> response = SetNotificationSettings(HttpStatusCode.BadRequest, expectedRequestResult);
+            var actualResult = response.Item1;
+            var expectedResult = response.Item2;
+            Assert.Contains("Bad Request, HTTP Error BadRequest", actualResult.ResultError.ResultMessage);
+        }
+
 
         [Fact]
         public void ValidateSetNotificationSettings201()

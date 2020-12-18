@@ -1,6 +1,5 @@
 import { Wrapper, createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
-import BootstrapVue from "bootstrap-vue";
 import LoginComponent from "@/views/login.vue";
 import { auth as authModule } from "@/store/modules/auth/auth";
 import { user as userModule } from "@/store/modules/user/user";
@@ -34,7 +33,6 @@ let configGetters = {
 function createWrapper(): Wrapper<LoginComponent> {
     const localVue = createLocalVue();
     localVue.use(Vuex);
-    localVue.use(BootstrapVue);
 
     const customStore = new Vuex.Store({
         modules: {
