@@ -783,7 +783,7 @@ export default class TimelineView extends Vue {
                                 :class="{ active: false }"
                                 @click.stop="toggleMonthView"
                             >
-                                Month
+                                Date
                             </b-btn>
                         </b-col>
                         <b-col cols="auto" class="pl-0">
