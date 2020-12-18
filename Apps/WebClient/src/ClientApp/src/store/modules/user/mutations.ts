@@ -5,7 +5,6 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { StateType, UserState } from "@/models/storeState";
-import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import UserEmailInvite from "@/models/userEmailInvite";
@@ -17,12 +16,6 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 export const mutations: MutationTree<UserState> = {
     setOidcUserData(state: UserState, oidcUser: OidcUser) {
         Vue.set(state.user, "hdid", oidcUser.profile.hdid);
-        state.error = false;
-        state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
-    },
-    setPatientData(state: UserState, patientData: PatientData) {
-        Vue.set(state.user, "phn", patientData.personalHealthNumber);
         state.error = false;
         state.statusMessage = "success";
         state.stateType = StateType.INITIALIZED;

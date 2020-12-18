@@ -14,7 +14,7 @@ import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 
-import TimelineLoadingComponent from "@/components/timelineLoading.vue";
+import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ErrorCardComponent from "@/components/errorCard.vue";
 
@@ -28,7 +28,7 @@ const namespace = "user";
 
 @Component({
     components: {
-        TimelineLoadingComponent,
+        LoadingComponent,
         ProtectiveWordComponent,
         ErrorCard: ErrorCardComponent,
         LineChart: LineChartComponent,
@@ -225,7 +225,7 @@ export default class HealthInsightsView extends Vue {
 
 <template>
     <div>
-        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
+        <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
         <b-row class="my-3 fluid">
             <b-col
                 id="healthInsights"
