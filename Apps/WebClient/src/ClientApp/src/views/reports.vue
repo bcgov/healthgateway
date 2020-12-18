@@ -13,9 +13,11 @@ import ImmunizationHistoryReportComponent from "@/components/report/immunization
 import { IAuthenticationService } from "@/services/interfaces";
 import type { WebClientConfiguration } from "@/models/configData";
 import { Getter } from "vuex-class";
+import LoadingComponent from "@/components/loading.vue";
 
 @Component({
     components: {
+        LoadingComponent,
         PageTitleComponent,
         MessageModalComponent,
         MedicationHistoryReportComponent,
@@ -39,6 +41,8 @@ export default class ReportsView extends Vue {
     @Ref("immunizationHistoryReport")
     readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
 
+    private isLoading = false;
+    private isGeneratingReport = false;
     private fullName = "";
     private phn = "";
     private dateOfBirth = "";
@@ -74,20 +78,25 @@ export default class ReportsView extends Vue {
     }
 
     private downloadPdf() {
+        this.isGeneratingReport = true;
+        let generatePromise: Promise<void>;
         switch (this.reportType) {
             case "MED":
-                this.medicationHistoryReport.generatePdf();
+                generatePromise = this.medicationHistoryReport.generatePdf();
                 break;
             case "MSP":
-                this.mspVisitsReport.generatePdf();
+                generatePromise = this.mspVisitsReport.generatePdf();
                 break;
             case "COVID-19":
-                this.covid19Report.generatePdf();
+                generatePromise = this.covid19Report.generatePdf();
                 break;
             case "Immunization":
-                this.immunizationHistoryReport.generatePdf();
+                generatePromise = this.immunizationHistoryReport.generatePdf();
                 break;
         }
+        generatePromise.then(() => {
+            this.isGeneratingReport = false;
+        });
     }
 
     private loadName(): void {
@@ -135,7 +144,7 @@ export default class ReportsView extends Vue {
                                     variant="primary"
                                     data-testid="exportRecordBtn"
                                     class="ml-auto d-block"
-                                    :disabled="!reportType"
+                                    :disabled="!reportType || isLoading"
                                     @click="showConfirmationModal"
                                 >
                                     Download PDF
@@ -143,6 +152,12 @@ export default class ReportsView extends Vue {
                             </b-col>
                         </b-row>
                     </div>
+                    <LoadingComponent
+                        v-if="isLoading || isGeneratingReport"
+                        :is-loading="isLoading || isGeneratingReport"
+                        :is-custom="!isGeneratingReport"
+                        :backdrop="false"
+                    ></LoadingComponent>
                     <div
                         v-if="reportType == 'MED'"
                         data-testid="medicationReportSample"
@@ -151,6 +166,7 @@ export default class ReportsView extends Vue {
                         <MedicationHistoryReportComponent
                             ref="medicationHistoryReport"
                             :name="fullName"
+                            @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
                     <div
@@ -161,6 +177,7 @@ export default class ReportsView extends Vue {
                         <MSPVisitsReportComponent
                             ref="mspVisitsReport"
                             :name="fullName"
+                            @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
                     <div
@@ -171,6 +188,7 @@ export default class ReportsView extends Vue {
                         <COVID19ReportComponent
                             ref="covid19Report"
                             :name="fullName"
+                            @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
                     <div
@@ -181,6 +199,7 @@ export default class ReportsView extends Vue {
                         <ImmunizationHistoryReportComponent
                             ref="immunizationHistoryReport"
                             :name="fullName"
+                            @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
                     <div v-else>

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
+import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
 import moment from "moment";
 import Encounter from "@/models/encounter";
 import { IEncounterService } from "@/services/interfaces";
@@ -12,15 +12,10 @@ import User from "@/models/user";
 import { ILogger } from "@/services/interfaces";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
-import LoadingComponent from "@/components/loading.vue";
 import html2pdf from "html2pdf.js";
 import PDFDefinition from "@/plugins/pdfDefinition";
 
-@Component({
-    components: {
-        LoadingComponent,
-    },
-})
+@Component
 export default class MSPVisitsReportComponent extends Vue {
     @Prop() private name!: string;
     @Getter("user", { namespace: "user" })
@@ -31,10 +26,16 @@ export default class MSPVisitsReportComponent extends Vue {
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
-    private isLoading = false;
     private notFoundText = "Not Found";
     private records: Encounter[] = [];
     private isPreview = true;
+    private isLoading = false;
+
+    @Watch("isLoading")
+    @Emit()
+    private onIsLoadingChanged() {
+        return this.isLoading;
+    }
 
     private fetchEncounters() {
         this.isLoading = true;
@@ -100,7 +101,6 @@ export default class MSPVisitsReportComponent extends Vue {
 
     public async generatePdf(): Promise<void> {
         this.logger.debug("generating MSP Visits PDF...");
-        this.isLoading = true;
         this.isPreview = false;
         let opt = {
             margin: [25, 15],
@@ -110,7 +110,7 @@ export default class MSPVisitsReportComponent extends Vue {
             jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
         };
-        html2pdf()
+        return html2pdf()
             .set(opt)
             .from(this.report)
             .toPdf()
@@ -134,7 +134,6 @@ export default class MSPVisitsReportComponent extends Vue {
             .then((pdfBlobUrl: RequestInfo) => {
                 fetch(pdfBlobUrl).then((res) => {
                     res.blob().then(() => {
-                        this.isLoading = false;
                         this.isPreview = true;
                     });
                 });
@@ -145,12 +144,6 @@ export default class MSPVisitsReportComponent extends Vue {
 
 <template>
     <div>
-        <LoadingComponent
-            v-if="isLoading"
-            :is-loading="isLoading"
-            :is-custom="isPreview"
-            :backdrop="false"
-        ></LoadingComponent>
         <div ref="report">
             <section class="pdf-item">
                 <div v-show="!isPreview">
