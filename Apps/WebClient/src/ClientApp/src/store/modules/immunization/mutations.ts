@@ -7,12 +7,16 @@ export const mutations: MutationTree<ImmunizationState> = {
         state: ImmunizationState,
         immunizationResult: ImmunizationResult
     ) {
-        state.immunizations = immunizationResult.immunizations;
+        if (immunizationResult.loadState.refreshInProgress) {
+            state.immunizations = [];
+            state.stateType = StateType.DEFERRED;
+        } else {
+            state.immunizations = immunizationResult.immunizations;
+            state.stateType = StateType.INITIALIZED;
+        }
+
         state.error = false;
         state.statusMessage = "success";
-        state.stateType = immunizationResult.loadState.refreshInProgress
-            ? StateType.DEFERRED
-            : StateType.INITIALIZED;
     },
     immunizationError(state: ImmunizationState, errorMessage: string) {
         state.error = true;
