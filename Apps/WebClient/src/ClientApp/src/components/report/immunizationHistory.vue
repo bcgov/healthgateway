@@ -1,17 +1,16 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
+import { Component, Prop, Ref, Watch } from "vue-property-decorator";
 import moment from "moment";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ResultType } from "@/constants/resulttype";
 import { Action, Getter } from "vuex-class";
 import ImmunizationModel from "@/models/immunizationModel";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import RequestResult from "@/models/requestResult";
 import PatientData from "@/models/patientData";
 import User from "@/models/user";
-import { ILogger, IImmunizationService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import LoadingComponent from "@/components/loading.vue";
@@ -29,8 +28,16 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     @Prop() private name!: string;
     @Getter("user", { namespace: userNamespace })
     private user!: User;
+    @Getter("isDeferredLoad", { namespace: "immunization" })
+    immunizationIsDeferred!: boolean;
+    @Getter("getStoredImmunizations", { namespace: "immunization" })
+    patientImmunizations!: ImmunizationModel[];
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
+    @Action("retrieve", { namespace: "immunization" })
+    retrieveImmunizations!: (params: {
+        hdid: string;
+    }) => Promise<ImmunizationModel[]>;
     @Action("getPatientData", { namespace: userNamespace })
     getPatientData!: (params: {
         hdid: string;
@@ -45,6 +52,15 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private isPreview = true;
     private phn = "";
     private dateOfBirth = "";
+
+    @Watch("immunizationIsDeferred")
+    private onImmunizationIsDeferredChanged(newVal: boolean) {
+        if (newVal) {
+            this.isLoading = true;
+        } else {
+            this.loadRecords();
+        }
+    }
 
     private fetchPatientData() {
         this.getPatientData({
@@ -66,33 +82,21 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 this.addError(
                     ErrorTranslator.toBannerError("Patient Data loading", err)
                 );
-                this.isLoading = false;
             });
     }
 
+    private loadRecords() {
+        this.immunizationRecords = this.patientImmunizations;
+        this.sortEntries();
+        this.isLoading = false;
+    }
+
     private fetchPatientImmunizations() {
-        const immunizationService: IImmunizationService = container.get(
-            SERVICE_IDENTIFIER.ImmunizationService
-        );
         this.isLoading = true;
-        immunizationService
-            .getPatientImmunizations(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.immunizationRecords = results.resourcePayload;
-                    this.sortEntries();
-                    this.fetchPatientData();
-                } else {
-                    this.logger.error(
-                        "Error returned from the Patient Immunizations call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Patient Immunizations Error",
-                            results.resultError
-                        )
-                    );
+        this.retrieveImmunizations({ hdid: this.user.hdid })
+            .then(() => {
+                if (!this.immunizationIsDeferred) {
+                    this.loadRecords();
                 }
             })
             .catch((err) => {
@@ -103,8 +107,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         err
                     )
                 );
-            })
-            .finally(() => {
                 this.isLoading = false;
             });
     }
@@ -136,6 +138,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.fetchPatientData();
         this.fetchPatientImmunizations();
     }
 
@@ -187,7 +190,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
 <template>
     <div>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent
+            v-if="isLoading"
+            :is-loading="isLoading"
+            :is-custom="isPreview"
+            :backdrop="false"
+        ></LoadingComponent>
         <div ref="report">
             <section class="pdf-item">
                 <div v-show="!isPreview">
@@ -228,11 +236,13 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         </b-col>
                     </b-row>
                 </div>
-
-                <b-row v-if="isEmpty" class="mt-2">
+                <b-row
+                    v-if="isEmpty && (!isLoading || !isPreview)"
+                    class="mt-2"
+                >
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else class="py-3 mt-4 header">
+                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
                     <b-col class="col">Date</b-col>
                     <b-col class="col">Provider/Clinic</b-col>
                     <b-col class="col">Immunization</b-col>

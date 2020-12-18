@@ -151,7 +151,12 @@ export default class COVID19ReportComponent extends Vue {
 
 <template>
     <div>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <LoadingComponent
+            v-if="isLoading"
+            :is-loading="isLoading"
+            :is-custom="isPreview"
+            :backdrop="false"
+        ></LoadingComponent>
         <div ref="report">
             <section class="pdf-item">
                 <div v-show="!isPreview">
@@ -178,11 +183,13 @@ export default class COVID19ReportComponent extends Vue {
                         </b-col>
                     </b-row>
                 </div>
-
-                <b-row v-if="isEmpty" class="mt-2">
+                <b-row
+                    v-if="isEmpty && (!isLoading || !isPreview)"
+                    class="mt-2"
+                >
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else class="py-3 mt-4 header">
+                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
                     <b-col class="col">Date</b-col>
                     <b-col class="col">Test Type</b-col>
                     <b-col class="col">Test Location</b-col>
