@@ -285,20 +285,6 @@
         ]
       },
       {
-        "id": "3208887_54397119",
-        "name": "BCG",
-        "dateOfImmunization": "1994-08-14T00:00:00",
-        "providerOrClinic": "Provider A",
-        "immunizationAgents": [
-          {
-            "code": "420538001",
-            "name": "BCG",
-            "lotNumber": "LOT A",
-            "productName": "Product A"
-          }
-        ]
-      },
-      {
         "id": "3208887_54397120",
         "name": "Hepatitis B",
         "dateOfImmunization": "1994-06-09T00:00:00",
@@ -496,7 +482,7 @@
       }
     ]
   },
-  "totalResultCount": 35,
+  "totalResultCount": 34,
   "pageIndex": 0,
   "pageSize": 25,
   "resultStatus": 1,
