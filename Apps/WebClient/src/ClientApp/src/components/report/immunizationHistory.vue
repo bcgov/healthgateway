@@ -243,11 +243,21 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
-                    <b-col class="col">Date</b-col>
-                    <b-col class="col">Provider/Clinic</b-col>
-                    <b-col class="col">Immunization</b-col>
-                    <b-col class="col">Product</b-col>
-                    <b-col class="col">Lot Number</b-col>
+                    <b-col data-testid="immunizationDateTitle" class="col"
+                        >Date</b-col
+                    >
+                    <b-col data-testid="immunizationProviderTitle" class="col"
+                        >Provider/Clinic</b-col
+                    >
+                    <b-col data-testid="immunizationItemDate" class="col"
+                        >Immunization</b-col
+                    >
+                    <b-col data-testid="immunizationProductTitle" class="col"
+                        >Product</b-col
+                    >
+                    <b-col data-testid="immunizationLotTitle" class="col"
+                        >Lot Number</b-col
+                    >
                 </b-row>
                 <b-row
                     v-for="item in immunizationRecords"
