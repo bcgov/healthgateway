@@ -23,7 +23,7 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import RequestResult from "@/models/requestResult";
 import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import TimelineLoadingComponent from "@/components/timelineLoading.vue";
+import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
@@ -50,7 +50,7 @@ Component.registerHooks(["beforeRouteLeave"]);
 
 @Component({
     components: {
-        TimelineLoadingComponent,
+        LoadingComponent,
         ProtectiveWordComponent,
         CovidModalComponent,
         EntryCardComponent: EntryCardTimelineComponent,
@@ -645,7 +645,7 @@ export default class TimelineView extends Vue {
 
 <template>
     <div>
-        <TimelineLoadingComponent v-if="isLoading"></TimelineLoadingComponent>
+        <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
         <b-row class="my-3 fluid">
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <b-alert
