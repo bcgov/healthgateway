@@ -199,6 +199,7 @@ export default class FilterComponent extends Vue {
                 data-testid="filterDropdown"
                 text="Filter"
                 class="w-100"
+                no-flip
                 :toggle-class="{ 'filter-selected': hasFilterSelected }"
                 menu-class="z-index-large w-100"
                 variant="outline-primary"
