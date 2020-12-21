@@ -79,7 +79,7 @@ export default class ReportsView extends Vue {
 
     private downloadPdf() {
         this.isGeneratingReport = true;
-        let generatePromise: Promise<void>;
+        let generatePromise: Promise<void> = null;
         switch (this.reportType) {
             case "MED":
                 generatePromise = this.medicationHistoryReport.generatePdf();
