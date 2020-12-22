@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,5 +38,11 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <returns>The count of users with notes.</returns>
         int GetUsersWithNotesCount();
+
+        /// <summary>
+        /// Retrieves the count of dependents.
+        /// </summary>
+        /// <returns>The count of dependents.</returns>
+        int GetDependentCount();
     }
 }

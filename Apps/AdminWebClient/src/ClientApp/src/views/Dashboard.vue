@@ -8,6 +8,7 @@ export default class Dashboard extends Vue {
     private registeredUserCount = 0;
     private loggedInUsersCount = 0;
     private usersWithNotesCount = 0;
+    private dependentCount = 0;
     private dashboardService!: IDashboardService;
 
     private mounted() {
@@ -17,6 +18,7 @@ export default class Dashboard extends Vue {
         this.getRegisteredUserCount();
         this.getLoggedInUsersCount();
         this.getUsersWithNotesCount();
+        this.getDependentCount();
     }
 
     private getRegisteredUserCount() {
@@ -34,6 +36,12 @@ export default class Dashboard extends Vue {
     private getUsersWithNotesCount() {
         this.dashboardService.getUsersWithNotesCount().then(count => {
             this.usersWithNotesCount = count;
+        });
+    }
+
+    private getDependentCount() {
+        this.dashboardService.getDependentCount().then(count => {
+            this.dependentCount = count;
         });
     }
 }
@@ -63,6 +71,14 @@ export default class Dashboard extends Vue {
                     <h3>Users With Notes</h3>
                     <h1>
                         {{ usersWithNotesCount }}
+                    </h1>
+                </v-card>
+            </v-col>
+            <v-col class="col-lg-3 col-md-6 col-sm-12">
+                <v-card class="text-center">
+                    <h3>Dependents</h3>
+                    <h1>
+                        {{ dependentCount }}
                     </h1>
                 </v-card>
             </v-col>

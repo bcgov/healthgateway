@@ -88,6 +88,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public int GetDependentCount()
+        {
+            this.logger.LogTrace($"Counting resource delegates from DB...");
+            var count = this.dbContext.ResourceDelegate
+                    .Count();
+            this.logger.LogTrace($"Finished counting resource delegates from DB... (Total number of resource delegates: {count})");
+            return count;
+        }
+
+        /// <inheritdoc />
         public DBResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit)
         {
             this.logger.LogTrace($"Deleting resourceDelegate {JsonSerializer.Serialize(resourceDelegate)} from DB...");
@@ -117,7 +127,7 @@ namespace HealthGateway.Database.Delegates
 
         /// <inheritdoc />
         public bool Exists(string ownerId, string delegateId)
-        {            
+        {
             if (this.dbContext.ResourceDelegate.Any(rd => rd.ResourceOwnerHdid == ownerId && rd.ProfileHdid == delegateId))
             {
                 return true;
