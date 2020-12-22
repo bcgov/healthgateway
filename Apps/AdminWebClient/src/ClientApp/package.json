@@ -44,7 +44,7 @@
     "@vue/cli-service": "^4.5.9",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "babel": "^6.23.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-imports": "^2.0.0",
