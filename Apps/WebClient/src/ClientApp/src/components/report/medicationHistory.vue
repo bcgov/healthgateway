@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
+import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import moment from "moment";
 import { Action, Getter } from "vuex-class";
@@ -15,12 +15,10 @@ import User from "@/models/user";
 import { ResultType } from "@/constants/resulttype";
 import ErrorTranslator from "@/utility/errorTranslator";
 import PDFDefinition from "@/plugins/pdfDefinition";
-import LoadingComponent from "@/components/loading.vue";
 import { ActionType } from "@/constants/actionType";
 
 @Component({
     components: {
-        LoadingComponent,
         ProtectiveWordComponent,
     },
 })
@@ -42,12 +40,19 @@ export default class MedicationHistoryReportComponent extends Vue {
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
-    private isLoading = false;
     private fileMaxRecords = 1000;
     private protectiveWordAttempts = 0;
     private recordsPage: MedicationStatementHistory[] = [];
     private records: MedicationStatementHistory[] = [];
     private isPreview = true;
+    private isLoading = false;
+
+    @Watch("isLoading")
+    @Emit()
+    private onIsLoadingChanged() {
+        return this.isLoading;
+    }
+
     private get totalFiles(): number {
         return Math.ceil(this.records.length / this.fileMaxRecords);
     }
@@ -142,7 +147,6 @@ export default class MedicationHistoryReportComponent extends Vue {
 
     public async generatePdf(fileIndex = 0): Promise<void> {
         this.logger.debug("generating Medication History PDF...");
-        this.isLoading = true;
         this.isPreview = false;
         // Breaks records into chunks for multiple files.
         this.recordsPage = this.records.slice(
@@ -160,7 +164,7 @@ export default class MedicationHistoryReportComponent extends Vue {
             jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
         };
-        html2pdf()
+        return html2pdf()
             .set(opt)
             .from(this.report)
             .toPdf()
@@ -189,7 +193,6 @@ export default class MedicationHistoryReportComponent extends Vue {
                         if (fileIndex + 1 < this.totalFiles) {
                             this.generatePdf(fileIndex + 1);
                         } else {
-                            this.isLoading = false;
                             this.isPreview = true;
                         }
                     });
@@ -201,12 +204,6 @@ export default class MedicationHistoryReportComponent extends Vue {
 
 <template>
     <div>
-        <LoadingComponent
-            v-if="isLoading"
-            :is-loading="isLoading"
-            :is-custom="isPreview"
-            :backdrop="false"
-        ></LoadingComponent>
         <div ref="report">
             <section class="pdf-item">
                 <div v-show="!isPreview">
