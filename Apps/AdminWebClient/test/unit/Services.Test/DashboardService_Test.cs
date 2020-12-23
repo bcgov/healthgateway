@@ -46,11 +46,33 @@ namespace HealthGateway.Admin.Test.Services
             IDashboardService service = new DashboardService(
                 noteDelegateMock.Object,
                 null,
+                null,
                 new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build()
             );
 
             int actualResult = service.GetUsersWithNotesCount();
             
+            // Check result
+            Assert.Equal(expected, actualResult);
+        }
+
+        [Fact]
+        public void ShouldGetDependentCount()
+        {
+            int expected = 10;
+            Mock<IResourceDelegateDelegate> dependentDelegateMock = new Mock<IResourceDelegateDelegate>();
+            dependentDelegateMock.Setup(s => s.GetDependentCount()).Returns(expected);
+
+            // Set up service
+            IDashboardService service = new DashboardService(
+                null,
+                dependentDelegateMock.Object,
+                null,
+                new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build()
+            );
+
+            int actualResult = service.GetDependentCount();
+
             // Check result
             Assert.Equal(expected, actualResult);
         }
