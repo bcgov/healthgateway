@@ -35,12 +35,18 @@ export default class ImmunizationTimelineComponent extends Vue {
                 {{ entry.immunization.name }}
             </b-col>
         </b-row>
-        <b-row class="my-2">
+        <b-row
+            v-if="entry.immunization.immunizationAgents.lenght > 0"
+            class="my-2"
+        >
             <b-col class="leftPane"></b-col>
             <b-col>
                 <b-row>
                     <b-col data-testid="immunizationProductTitle">
                         <strong> Product </strong>
+                    </b-col>
+                    <b-col data-testid="immunizationAgentName">
+                        <strong> Immunizing agent </strong>
                     </b-col>
                     <b-col data-testid="immunizationProviderTitle">
                         <strong> Provider/Clinic </strong>
@@ -48,21 +54,34 @@ export default class ImmunizationTimelineComponent extends Vue {
                     <b-col data-testid="immunizationLotTitle">
                         <strong> Lot Number </strong>
                     </b-col>
+                    <b-col data-testid="immunizationStatus">
+                        <strong> Status </strong>
+                    </b-col>
                 </b-row>
             </b-col>
         </b-row>
-        <b-row class="my-2">
+        <b-row
+            v-for="agent in entry.immunization.immunizationAgents"
+            :key="agent.code"
+            class="my-2"
+        >
             <b-col class="leftPane"></b-col>
             <b-col>
                 <b-row>
                     <b-col data-testid="immunizationProductName">
-                        {{ entry.immunization.productName }}
+                        {{ agent.productName }}
+                    </b-col>
+                    <b-col data-testid="immunizationAgentName">
+                        {{ agent.name }}
                     </b-col>
                     <b-col data-testid="immunizationProviderName">
                         {{ entry.immunization.providerOrClinic }}
                     </b-col>
                     <b-col data-testid="immunizationLotNumber">
-                        {{ entry.immunization.lotNumber }}
+                        {{ agent.lotNumber }}
+                    </b-col>
+                    <b-col data-testid="immunizationStatus">
+                        {{ entry.immunization.status }}
                     </b-col>
                 </b-row>
             </b-col>

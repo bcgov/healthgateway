@@ -30,6 +30,7 @@ namespace HealthGateway.Immunization.Test.Controller
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
+    using System;
 
     public class ImmunizationController_Test
     {
@@ -40,6 +41,41 @@ namespace HealthGateway.Immunization.Test.Controller
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string token = "Fake Access Token";
             string userId = "1001";
+            var expectedAgents = new List<ImmunizationAgentsResponse>();
+            expectedAgents.Add(new ImmunizationAgentsResponse()
+            {
+                Name = "mocked agent",
+                Code = "mocked code",
+                LotNumber = "mocekd lot number",
+                ProductName = "mocked product",
+            });
+            var expectedImmunizations = new List<ImmunizationModel>();
+            expectedImmunizations.Add(new ImmunizationModel()
+            {
+                DateOfImmunization = DateTime.Today,
+                Name = "Mocked Name",
+                ProviderOrClinic = "Mocked Clinic",
+                ImmunizationAgents = expectedAgents,
+            });
+            // Add a blank agent
+            expectedImmunizations.Add(new ImmunizationModel()
+            {
+                DateOfImmunization = DateTime.Today,
+                Name = "Mocked Name",
+                ImmunizationAgents = new List<ImmunizationAgentsResponse>(),
+            });
+            var expectedImmzResult = new ImmunizationResult()
+            {
+                Immunizations = expectedImmunizations,
+                LoadState = new LoadStateModel() { RefreshInProgress = false },
+            };
+            
+            RequestResult<ImmunizationResult> expectedRequestResult = new RequestResult<ImmunizationResult>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 2,
+                ResourcePayload = expectedImmzResult,
+            };
 
             IHeaderDictionary headerDictionary = new HeaderDictionary();
             headerDictionary.Add("Authorization", token);
@@ -76,12 +112,7 @@ namespace HealthGateway.Immunization.Test.Controller
                 .ReturnsAsync(authResult);
 
             Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
-            svcMock.Setup(s => s.GetImmunizations(token, 0)).ReturnsAsync(new RequestResult<ImmunizationResult>()
-            {
-                ResultStatus = Common.Constants.ResultType.Success,
-                TotalResultCount = 0,
-                ResourcePayload = new ImmunizationResult(),
-            });
+            svcMock.Setup(s => s.GetImmunizations(token, 0)).ReturnsAsync(expectedRequestResult);
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             ImmunizationController controller = new ImmunizationController(loggerFactory.CreateLogger<ImmunizationController>(), svcMock.Object, httpContextAccessorMock.Object);
@@ -97,6 +128,12 @@ namespace HealthGateway.Immunization.Test.Controller
 
             RequestResult<ImmunizationResult> result = (RequestResult<ImmunizationResult>)jsonResult.Value;
             Assert.Equal(Common.Constants.ResultType.Success, result.ResultStatus);
+            int count = 0;
+            foreach (var immz in result.ResourcePayload.Immunizations)
+            {
+                count++;
+            }
+            Assert.Equal(2, count);
         }
     }
 }
