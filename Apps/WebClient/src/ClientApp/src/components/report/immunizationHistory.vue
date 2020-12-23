@@ -247,56 +247,69 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
-                    <b-col data-testid="immunizationDateTitle" class="col"
+                    <b-col data-testid="immunizationItemDate" class="col-1"
                         >Date</b-col
                     >
-                    <b-col data-testid="immunizationProviderTitle" class="col"
+                    <b-col data-testid="immunizationProviderTitle" class="col-2"
                         >Provider/Clinic</b-col
                     >
-                    <b-col data-testid="immunizationItemDate" class="col"
+                    <b-col data-testid="immunizationItemTitle" class="col-2"
                         >Immunization</b-col
                     >
-                    <b-col data-testid="immunizationProductTitle" class="col"
+                    <b-col data-testid="immunizationItemAgent" class="col-2"
+                        >Immunizing Agent</b-col
+                    >
+                    <b-col data-testid="immunizationItemAgent" class="col-2"
                         >Product</b-col
                     >
-                    <b-col data-testid="immunizationLotTitle" class="col"
+                    <b-col data-testid="immunizationItemAgent" class="col-1"
                         >Lot Number</b-col
+                    >
+                    <b-col data-testid="immunizationLotTitle" class="col-2"
+                        >Status</b-col
                     >
                 </b-row>
                 <b-row
-                    v-for="item in immunizationRecords"
-                    :key="item.id"
+                    v-for="immzRecord in immunizationRecords"
+                    :key="immzRecord.id"
                     class="item py-1"
                 >
                     <b-col
                         data-testid="immunizationItemDate"
-                        class="col my-auto text-nowrap"
+                        class="col-1 text-nowrap"
                     >
-                        {{ formatDate(item.dateOfImmunization) }}
+                        {{ formatDate(immzRecord.dateOfImmunization) }}
                     </b-col>
                     <b-col
                         data-testid="immunizationItemProviderClinic"
-                        class="col my-auto"
+                        class="col-2"
                     >
-                        {{ item.providerOrClinic }}
+                        {{ immzRecord.providerOrClinic }}
                     </b-col>
-                    <b-col
-                        data-testid="immunizationItemName"
-                        class="col my-auto"
-                    >
-                        {{ item.name }}
-                    </b-col>
-                    <b-col
-                        data-testid="immunizationItemProduct"
-                        class="col my-auto"
-                    >
-                        {{ item.immunizationAgents[0].productName }}
+                    <b-col data-testid="immunizationItemName" class="col-2">
+                        {{ immzRecord.name }}
                     </b-col>
                     <b-col
                         data-testid="immunizationItemLotNumber"
-                        class="col my-auto"
+                        class="col-5"
                     >
-                        {{ item.immunizationAgents[0].lotNumber }}
+                        <b-row
+                            v-for="agent in immzRecord.immunizationAgents"
+                            :key="agent.code"
+                        >
+                            <b-col>
+                                {{ agent.name }}
+                            </b-col>
+                            <b-col>
+                                {{ agent.lotNumber }}
+                            </b-col>
+                            <b-col>
+                                {{ agent.productName }}
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                    <b-col data-testid="immunizationItemStatus" class="col-2">
+                        {{ immzRecord.status }}
                     </b-col>
                 </b-row>
             </section>
