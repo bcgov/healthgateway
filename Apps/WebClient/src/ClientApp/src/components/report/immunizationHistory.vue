@@ -11,7 +11,7 @@ import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import html2pdf from "html2pdf.js";
 import PDFDefinition from "@/plugins/pdfDefinition";
-import ReportHeaderComponent from "./header";
+import ReportHeaderComponent from "@/components/report/header.vue";
 import User from "@/models/user";
 
 @Component({
@@ -20,8 +20,8 @@ import User from "@/models/user";
     },
 })
 export default class ImmunizationHistoryReportComponent extends Vue {
-    @Prop() private startDate?: Date;
-    @Prop() private endDate?: Date;
+    @Prop() private startDate?: StringISODate;
+    @Prop() private endDate?: StringISODate;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Getter("isDeferredLoad", { namespace: "immunization" })
@@ -94,8 +94,13 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         this.immunizationRecords = this.immunizationRecords.filter((record) => {
             return (
                 (!this.startDate ||
-                    record.dateOfImmunization >= this.startDate) &&
-                (!this.endDate || record.dateOfImmunization <= this.endDate)
+                    new DateWrapper(record.dateOfImmunization).isAfterOrSame(
+                        new DateWrapper(this.startDate)
+                    )) &&
+                (!this.endDate ||
+                    new DateWrapper(record.dateOfImmunization).isBeforeOrSame(
+                        new DateWrapper(this.endDate)
+                    ))
             );
         });
         this.immunizationRecords.sort((a, b) =>

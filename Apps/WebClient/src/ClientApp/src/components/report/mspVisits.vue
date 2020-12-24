@@ -13,7 +13,7 @@ import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import html2pdf from "html2pdf.js";
 import PDFDefinition from "@/plugins/pdfDefinition";
-import ReportHeaderComponent from "./header";
+import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 
 @Component({
@@ -22,8 +22,8 @@ import { DateWrapper, StringISODate } from "@/models/dateWrapper";
     },
 })
 export default class MSPVisitsReportComponent extends Vue {
-    @Prop() private startDate?: Date;
-    @Prop() private endDate?: Date;
+    @Prop() private startDate?: StringISODate;
+    @Prop() private endDate?: StringISODate;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
@@ -87,8 +87,14 @@ export default class MSPVisitsReportComponent extends Vue {
     private filterAndSortEntries() {
         this.records = this.records.filter((record) => {
             return (
-                (!this.startDate || record.encounterDate >= this.startDate) &&
-                (!this.endDate || record.encounterDate <= this.endDate)
+                (!this.startDate ||
+                    new DateWrapper(record.encounterDate).isAfterOrSame(
+                        new DateWrapper(this.startDate)
+                    )) &&
+                (!this.endDate ||
+                    new DateWrapper(record.encounterDate).isBeforeOrSame(
+                        new DateWrapper(this.endDate)
+                    ))
             );
         });
         this.records.sort((a, b) =>

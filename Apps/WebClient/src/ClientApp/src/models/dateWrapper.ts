@@ -168,7 +168,7 @@ export class DateWrapper {
      * Formats the date to abbreviated date (MMM dd, YYYY)
      * @returns the formated string representation
      */
-    public toMediumDate(): StringISODate {
+    public toMediumDate(): string {
         return this.internalDate.toLocaleString(DateTime.DATE_MED);
     }
 

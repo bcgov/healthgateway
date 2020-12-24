@@ -50,7 +50,7 @@ export interface IImmunizationService {
 
 export interface IPatientService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getPatientData(hdid: string): Promise<PatientData>;
+    getPatientData(hdid: string): Promise<RequestResult<PatientData>>;
 }
 
 export interface IMedicationService {

@@ -15,7 +15,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import PDFDefinition from "@/plugins/pdfDefinition";
 import { ActionType } from "@/constants/actionType";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import ReportHeaderComponent from "./header";
+import ReportHeaderComponent from "@/components/report/header.vue";
 import User from "@/models/user";
 
 @Component({
@@ -25,8 +25,8 @@ import User from "@/models/user";
     },
 })
 export default class MedicationHistoryReportComponent extends Vue {
-    @Prop() private startDate?: Date;
-    @Prop() private endDate?: Date;
+    @Prop() private startDate?: StringISODate;
+    @Prop() private endDate?: StringISODate;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("getMedicationStatements", { namespace: "medication" })
@@ -87,8 +87,14 @@ export default class MedicationHistoryReportComponent extends Vue {
     private filterAndSortEntries() {
         this.records = this.records.filter((record) => {
             return (
-                (!this.startDate || record.dispensedDate >= this.startDate) &&
-                (!this.endDate || record.dispensedDate <= this.endDate)
+                (!this.startDate ||
+                    new DateWrapper(record.dispensedDate).isAfterOrSame(
+                        new DateWrapper(this.startDate)
+                    )) &&
+                (!this.endDate ||
+                    new DateWrapper(record.dispensedDate).isBeforeOrSame(
+                        new DateWrapper(this.endDate)
+                    ))
             );
         });
         this.records.sort((a, b) =>

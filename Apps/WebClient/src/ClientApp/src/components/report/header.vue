@@ -10,14 +10,12 @@ import { ILogger, IPatientService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import BannerError from "@/models/bannerError";
 
-const userNamespace = "user";
-
 @Component
 export default class ReportHeaderComponent extends Vue {
-    @Prop() private title!: Date;
-    @Prop() private startDate?: Date;
-    @Prop() private endDate?: Date;
-    @Getter("user", { namespace: userNamespace })
+    @Prop() private title!: string;
+    @Prop() private startDate?: StringISODate;
+    @Prop() private endDate?: StringISODate;
+    @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
@@ -60,12 +58,12 @@ export default class ReportHeaderComponent extends Vue {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 
-    private formatDateLong(date: Date): string {
+    private formatDateLong(date: StringISODate): string {
         return new DateWrapper(date).toMediumDate();
     }
 
     private get currentDate() {
-        return this.formatDateLong(new DateWrapper());
+        return this.formatDateLong(new DateWrapper().toISO());
     }
 
     private mounted() {
@@ -90,13 +88,13 @@ export default class ReportHeaderComponent extends Vue {
         <hr />
         <b-row align-h="end">
             <b-col class="datePrintedCol" cols="4">
-                <label>Date Printed:</label>&nbsp;
-                <span>{{ currentDate }}&nbsp;</span>
+                <label>Date Printed:</label>
+                <span class="px-1">{{ currentDate }}</span>
             </b-col>
         </b-row>
         <b-row class="pt-2">
             <b-col>
-                <label>Name:&nbsp;</label>
+                <label>Name:</label>
                 <span class="px-1">{{ firstName }} {{ lastName }}</span>
             </b-col>
             <b-col>

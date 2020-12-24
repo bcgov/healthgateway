@@ -44,8 +44,8 @@ export default class ReportsView extends Vue {
     private isGeneratingReport = false;
     private logger!: ILogger;
     private reportType = "";
-    private startDate?: Date = null;
-    private endDate?: Date = null;
+    private startDate?: Date = undefined;
+    private endDate?: Date = undefined;
     private reportTypeOptions = [{ value: "", text: "Select" }];
 
     private mounted() {
@@ -114,9 +114,9 @@ export default class ReportsView extends Vue {
                             <b-col class="col-6 col-md-3 pr-0">
                                 <b-row>
                                     <b-col>
-                                        <label for="reportType"
-                                            >Record Type</label
-                                        >
+                                        <label for="reportType">
+                                            Record Type
+                                        </label>
                                     </b-col>
                                 </b-row>
                                 <b-row>
