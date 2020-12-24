@@ -44,6 +44,12 @@ namespace HealthGateway.Database.Delegates
         DBResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize);
 
         /// <summary>
+        /// Gets the count of dependents from the database.
+        /// </summary>
+        /// <returns>Total number of dependents.</returns>
+        int GetDependentCount();
+
+        /// <summary>
         /// Deletes a Resource Delegate record in the database.
         /// </summary>
         /// <param name="resourceDelegate">The model to be deleted.</param>
