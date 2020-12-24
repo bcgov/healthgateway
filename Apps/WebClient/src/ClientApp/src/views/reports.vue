@@ -44,8 +44,8 @@ export default class ReportsView extends Vue {
     private isGeneratingReport = false;
     private logger!: ILogger;
     private reportType = "";
-    private startDate?: Date = undefined;
-    private endDate?: Date = undefined;
+    private startDate?: Date | null = null;
+    private endDate?: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
 
     private mounted() {
