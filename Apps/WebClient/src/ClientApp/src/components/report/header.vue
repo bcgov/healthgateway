@@ -4,7 +4,7 @@ import { Component, Prop } from "vue-property-decorator";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { Action, Getter } from "vuex-class";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
 import { ILogger, IPatientService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
@@ -13,8 +13,8 @@ import BannerError from "@/models/bannerError";
 @Component
 export default class ReportHeaderComponent extends Vue {
     @Prop() private title!: string;
-    @Prop() private startDate?: StringISODate;
-    @Prop() private endDate?: StringISODate;
+    @Prop() private startDate?: string;
+    @Prop() private endDate?: string;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
@@ -54,11 +54,11 @@ export default class ReportHeaderComponent extends Vue {
             });
     }
 
-    private formatDate(date: StringISODate): string {
+    private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 
-    private formatDateLong(date: StringISODate): string {
+    private formatDateLong(date: string): string {
         return new DateWrapper(date).toMediumDate();
     }
 
