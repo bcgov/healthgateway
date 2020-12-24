@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Services
     public class DashboardService : IDashboardService
     {
         private readonly INoteDelegate noteDelegate;
+        private readonly IResourceDelegateDelegate dependentDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IConfiguration configuration;
         private readonly AdminConfiguration adminConfiguration;
@@ -32,14 +33,17 @@ namespace HealthGateway.Admin.Services
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
         /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
+        /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="config">The configuration provider.</param>
         public DashboardService(
             INoteDelegate noteDelegate,
+            IResourceDelegateDelegate dependentDelegate,
             IUserProfileDelegate userProfileDelegate,
             IConfiguration config)
         {
             this.noteDelegate = noteDelegate;
+            this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.configuration = config;
             this.adminConfiguration = new AdminConfiguration();
@@ -64,6 +68,12 @@ namespace HealthGateway.Admin.Services
         public int GetUsersWithNotesCount()
         {
             return this.noteDelegate.GetUsersWithNotesCount(this.adminConfiguration.MinimumNotesCount);
+        }
+
+        /// <inheritdoc />
+        public int GetDependentCount()
+        {
+            return this.dependentDelegate.GetDependentCount();
         }
     }
 }

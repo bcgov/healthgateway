@@ -129,8 +129,7 @@ export class DateWrapper {
      * @returns a string representation of the datetime with the given format.
      */
     public format(formatString: string): string {
-        const formated = this.internalDate.toFormat(formatString);
-        return formated;
+        return this.internalDate.toFormat(formatString);
     }
 
     /**
@@ -163,6 +162,14 @@ export class DateWrapper {
      */
     public fromEpoch(): string {
         return this.internalDate.valueOf().toString();
+    }
+
+    /**
+     * Formats the date to abbreviated date (MMM dd, YYYY)
+     * @returns the formated string representation
+     */
+    public toMediumDate(): string {
+        return this.internalDate.toLocaleString(DateTime.DATE_MED);
     }
 
     /**

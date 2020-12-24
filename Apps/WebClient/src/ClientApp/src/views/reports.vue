@@ -10,7 +10,6 @@ import MedicationHistoryReportComponent from "@/components/report/medicationHist
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
 import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
-import { IAuthenticationService } from "@/services/interfaces";
 import type { WebClientConfiguration } from "@/models/configData";
 import { Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
@@ -43,11 +42,10 @@ export default class ReportsView extends Vue {
 
     private isLoading = false;
     private isGeneratingReport = false;
-    private fullName = "";
-    private phn = "";
-    private dateOfBirth = "";
     private logger!: ILogger;
     private reportType = "";
+    private startDate?: Date | null = null;
+    private endDate?: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
 
     private mounted() {
@@ -70,7 +68,6 @@ export default class ReportsView extends Vue {
                 text: "Immunizations",
             });
         }
-        this.loadName();
     }
 
     private showConfirmationModal() {
@@ -100,19 +97,6 @@ export default class ReportsView extends Vue {
             this.isGeneratingReport = false;
         });
     }
-
-    private loadName(): void {
-        // Load the user name and current email
-        let authenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-        authenticationService.getOidcUserProfile().then((oidcUser) => {
-            if (oidcUser) {
-                this.fullName =
-                    oidcUser.given_name + " " + oidcUser.family_name;
-            }
-        });
-    }
 }
 </script>
 
@@ -125,32 +109,69 @@ export default class ReportsView extends Vue {
                     class="col-12 col-md-10 col-lg-9 column-wrapper"
                 >
                     <PageTitleComponent :title="`Export Records`" />
-                    <div class="my-3 px-5 py-4 form">
+                    <div class="my-3 px-3 py-4 form">
                         <b-row>
-                            <b-col>
-                                <label for="reportType">Record Type</label>
+                            <b-col class="col-6 col-md-3 pr-0">
+                                <b-row>
+                                    <b-col>
+                                        <label for="reportType">
+                                            Record Type
+                                        </label>
+                                    </b-col>
+                                </b-row>
+                                <b-row>
+                                    <b-col>
+                                        <b-row>
+                                            <b-col>
+                                                <b-form-select
+                                                    id="reportType"
+                                                    v-model="reportType"
+                                                    data-testid="reportType"
+                                                    :options="reportTypeOptions"
+                                                >
+                                                </b-form-select>
+                                            </b-col>
+                                        </b-row>
+                                    </b-col>
+                                </b-row>
                             </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col>
-                                <b-form-select
-                                    id="reportType"
-                                    v-model="reportType"
-                                    data-testid="reportType"
-                                    :options="reportTypeOptions"
-                                >
-                                </b-form-select>
-                            </b-col>
-                            <b-col>
-                                <b-button
-                                    variant="primary"
-                                    data-testid="exportRecordBtn"
-                                    class="ml-auto d-block"
-                                    :disabled="!reportType || isLoading"
-                                    @click="showConfirmationModal"
-                                >
-                                    Download PDF
-                                </b-button>
+                            <b-col class="col-6 col-md-9">
+                                <b-row>
+                                    <b-col>
+                                        <label for="start-date">Dates</label>
+                                    </b-col>
+                                </b-row>
+                                <b-row>
+                                    <b-col class="col-12 col-md-4">
+                                        <b-form-input
+                                            id="start-date"
+                                            v-model="startDate"
+                                            max="2999-12-31"
+                                            data-testid="startDateInput"
+                                            type="date"
+                                        />
+                                    </b-col>
+                                    <b-col class="col-12 col-md-4 mb-2">
+                                        <b-form-input
+                                            id="end-date"
+                                            v-model="endDate"
+                                            max="2999-12-31"
+                                            data-testid="endDateInput"
+                                            type="date"
+                                        />
+                                    </b-col>
+                                    <b-col class="col-12 col-md-4">
+                                        <b-button
+                                            variant="primary"
+                                            data-testid="exportRecordBtn"
+                                            class="ml-auto d-block"
+                                            :disabled="!reportType || isLoading"
+                                            @click="showConfirmationModal"
+                                        >
+                                            Download PDF
+                                        </b-button>
+                                    </b-col>
+                                </b-row>
                             </b-col>
                         </b-row>
                     </div>
@@ -167,7 +188,8 @@ export default class ReportsView extends Vue {
                     >
                         <MedicationHistoryReportComponent
                             ref="medicationHistoryReport"
-                            :name="fullName"
+                            :start-date="startDate"
+                            :end-date="endDate"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -178,7 +200,8 @@ export default class ReportsView extends Vue {
                     >
                         <MSPVisitsReportComponent
                             ref="mspVisitsReport"
-                            :name="fullName"
+                            :start-date="startDate"
+                            :end-date="endDate"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -189,7 +212,8 @@ export default class ReportsView extends Vue {
                     >
                         <COVID19ReportComponent
                             ref="covid19Report"
-                            :name="fullName"
+                            :start-date="startDate"
+                            :end-date="endDate"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -200,7 +224,8 @@ export default class ReportsView extends Vue {
                     >
                         <ImmunizationHistoryReportComponent
                             ref="immunizationHistoryReport"
-                            :name="fullName"
+                            :start-date="startDate"
+                            :end-date="endDate"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>

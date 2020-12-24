@@ -49,10 +49,12 @@
     <EmbeddedResource Include="Assets\docs\EmailAccountClosed.html" />
     <EmbeddedResource Include="Assets\docs\EmailAccountRecovered.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20200317.html" />
+    <EmbeddedResource Include="Assets\Legal\TermsOfService.20201224.html" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Legal\TermsOfService.20191206.html" />
     <None Remove="Assets\Legal\TermsOfService.20200317.html" />
     <None Remove="Assets\Legal\TermsOfService.20200511.html" />
+    <None Remove="Assets\Legal\TermsOfService.20201224.html" />
   </ItemGroup>
 </Project>

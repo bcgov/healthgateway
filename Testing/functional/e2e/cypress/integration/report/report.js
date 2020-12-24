@@ -11,6 +11,14 @@ describe('Reports', () => {
         })
     })
 
+    it('Validate Date Filter Exists', () => {       
+        cy.get('[data-testid=startDateInput]')
+            .should('be.enabled', 'be.visible')
+
+            cy.get('[data-testid=endDateInput]')
+            .should('be.enabled', 'be.visible')
+    })
+
     it('Validate Service Selection', () => {       
         cy.get('[data-testid=exportRecordBtn]')
             .should('not.be.enabled', 'be.visible')
@@ -35,8 +43,8 @@ describe('Reports', () => {
         cy.get('[data-testid=exportRecordBtn]')
             .should('not.be.enabled', 'be.visible')
 
-        })
-    
+    })
+
     it('Validate Medication Report', () => {         
         cy.get('[data-testid=reportType]')
             .should('be.enabled', 'be.visible')

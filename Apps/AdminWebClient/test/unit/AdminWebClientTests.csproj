@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers.Test\" />
     <Folder Include="Services.Test\" />
   </ItemGroup>
 

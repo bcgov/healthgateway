@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,6 +85,20 @@ namespace HealthGateway.Admin.Controllers
         public IActionResult GetUsersWithNotesCount()
         {
             return new JsonResult(this.dashboardService.GetUsersWithNotesCount());
+        }
+
+        /// <summary>
+        /// Retrieves the count of dependents.
+        /// </summary>
+        /// <returns>The count of logged in users in the current day.</returns>
+        /// <response code="200">Returns the list of user feedbacks.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        [HttpGet]
+        [Route("DependentCount")]
+        public IActionResult GetDependentCount()
+        {
+            return new JsonResult(this.dashboardService.GetDependentCount());
         }
     }
 }
