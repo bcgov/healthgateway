@@ -1,27 +1,28 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
-import moment from "moment";
 import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { Action, Getter } from "vuex-class";
 import ImmunizationModel from "@/models/immunizationModel";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import RequestResult from "@/models/requestResult";
-import PatientData from "@/models/patientData";
-import User from "@/models/user";
-import { ILogger, IPatientService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
 import html2pdf from "html2pdf.js";
 import PDFDefinition from "@/plugins/pdfDefinition";
+import ReportHeaderComponent from "./header";
+import User from "@/models/user";
 
-const userNamespace = "user";
-
-@Component
+@Component({
+    components: {
+        ReportHeaderComponent,
+    },
+})
 export default class ImmunizationHistoryReportComponent extends Vue {
-    @Prop() private name!: string;
-    @Getter("user", { namespace: userNamespace })
+    @Prop() private startDate?: Date;
+    @Prop() private endDate?: Date;
+    @Getter("user", { namespace: "user" })
     private user!: User;
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;
@@ -33,10 +34,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     retrieveImmunizations!: (params: {
         hdid: string;
     }) => Promise<ImmunizationModel[]>;
-    @Action("getPatientData", { namespace: userNamespace })
-    getPatientData!: (params: {
-        hdid: string;
-    }) => Promise<RequestResult<PatientData>>;
     @Ref("report")
     readonly report!: HTMLElement;
 
@@ -45,8 +42,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private immunizationRecords: ImmunizationModel[] = [];
     private isPreview = true;
     private isLoading = false;
-    private phn = "";
-    private dateOfBirth = "";
 
     @Watch("immunizationIsDeferred")
     private onImmunizationIsDeferredChanged(newVal: boolean) {
@@ -63,36 +58,15 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         return this.isLoading;
     }
 
-    private fetchPatientData() {
-        const patientService: IPatientService = container.get<IPatientService>(
-            SERVICE_IDENTIFIER.PatientService
-        );
-
-        patientService
-            .getPatientData(this.user.hdid)
-            .then((result) => {
-                // Load patient data
-                if (result) {
-                    this.phn = result.resourcePayload.personalhealthnumber;
-                    console.log(result);
-                    if (result.resourcePayload.birthdate != null) {
-                        this.dateOfBirth = this.formatStringISODate(
-                            result.resourcePayload.birthdate
-                        );
-                    }
-                }
-            })
-            .catch((err) => {
-                this.logger.error(`Error fetching Patient Data: ${err}`);
-                this.addError(
-                    ErrorTranslator.toBannerError("Patient Data loading", err)
-                );
-            });
+    @Watch("startDate")
+    @Watch("endDate")
+    private onDateChanged() {
+        this.fetchPatientImmunizations();
     }
 
     private loadRecords() {
         this.immunizationRecords = this.patientImmunizations;
-        this.sortEntries();
+        this.filterAndSortEntries();
         this.isLoading = false;
     }
 
@@ -116,7 +90,14 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             });
     }
 
-    private sortEntries() {
+    private filterAndSortEntries() {
+        this.immunizationRecords = this.immunizationRecords.filter((record) => {
+            return (
+                (!this.startDate ||
+                    record.dateOfImmunization >= this.startDate) &&
+                (!this.endDate || record.dateOfImmunization <= this.endDate)
+            );
+        });
         this.immunizationRecords.sort((a, b) =>
             a.dateOfImmunization > b.dateOfImmunization
                 ? -1
@@ -126,24 +107,16 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         );
     }
 
-    private formatStringISODate(date: StringISODate): string {
+    private formatDate(date: StringISODate): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 
-    private get currentDate() {
-        return moment(new Date()).format("ll");
-    }
     private get isEmpty() {
         return this.immunizationRecords.length == 0;
     }
 
-    private formatDate(date: Date): string {
-        return moment(date).format("yyyy-MM-DD");
-    }
-
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchPatientData();
         this.fetchPatientImmunizations();
     }
 
@@ -196,36 +169,11 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         <div ref="report">
             <section class="pdf-item">
                 <div v-show="!isPreview">
-                    <div id="pageTitle">
-                        <h3 id="subject">
-                            Health Gateway Immunization History
-                        </h3>
-                    </div>
-                    <div id="disclaimer" class="mr-1">
-                        <span>Disclaimer:</span> This record was generated by
-                        Provincial Health Gateway application. For any
-                        questions, please contact HealthGateway@gov.bc.ca
-                    </div>
-                    <hr />
-                    <b-row align-h="end">
-                        <b-col class="datePrintedCol" cols="4">
-                            <label>Date Printed:</label>&nbsp;
-                            <span>{{ currentDate }}&nbsp;</span>
-                        </b-col>
-                    </b-row>
-                    <b-row class="pt-2">
-                        <b-col>
-                            <label>Name:&nbsp;</label> <span>{{ name }}</span>
-                        </b-col>
-                        <b-col>
-                            <label>PHN:</label>
-                            <span>&nbsp;{{ phn }}</span>
-                        </b-col>
-                        <b-col>
-                            <label>Date of Birth:</label>
-                            <span>&nbsp;{{ dateOfBirth }}</span>
-                        </b-col>
-                    </b-row>
+                    <ReportHeaderComponent
+                        :start-date="startDate"
+                        :end-date="endDate"
+                        title="Health Gateway Immunization History"
+                    />
                     <hr />
                     <b-row>
                         <b-col>
@@ -299,40 +247,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-#pageTitle,
-#disclaimer,
-label,
-span {
-    color: $primary;
-}
-
-#disclaimer {
-    font-size: 0.7em;
-    span {
-        font-weight: bold !important;
-    }
-}
-
-.datePrintedCol {
-    label,
-    span {
-        color: #808080 !important;
-    }
-}
-
-#disclaimer,
-span {
-    font-weight: bold;
-}
-
-label,
-#disclaimer {
-    font-size: 0.9em;
-}
-hr {
-    border-top: 2px solid $primary;
-}
 
 .header {
     color: $primary;
