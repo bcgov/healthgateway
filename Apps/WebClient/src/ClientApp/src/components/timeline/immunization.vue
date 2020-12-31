@@ -31,60 +31,93 @@ export default class ImmunizationTimelineComponent extends Vue {
                     size="2x"
                 ></font-awesome-icon>
             </b-col>
-            <b-col class="entryTitle" data-testid="immunizationTitle">
-                {{ entry.immunization.name }}
+            <b-col class="entryTitle">
+                <b-row class="justify-content-between">
+                    <b-col cols="auto" data-testid="immunizationTitle">
+                        <strong>{{ entry.immunization.name }}</strong>
+                    </b-col>
+                    <b-col cols="auto" class="text-muted">
+                        <strong>
+                            Status:
+                            <span data-testid="immunizationStatus">
+                                {{ entry.immunization.status }}
+                            </span></strong
+                        >
+                    </b-col>
+                </b-row>
             </b-col>
         </b-row>
-        <div v-if="entry.immunization.immunizationAgents.length > 0">
-            <b-row class="my-2">
-                <b-col class="leftPane"></b-col>
-                <b-col>
-                    <b-row>
-                        <b-col data-testid="immunizationProductTitle">
-                            <strong> Product </strong>
-                        </b-col>
-                        <b-col data-testid="immunizationAgentName">
-                            <strong> Immunizing agent </strong>
-                        </b-col>
-                        <b-col data-testid="immunizationProviderTitle">
-                            <strong> Provider/Clinic </strong>
-                        </b-col>
-                        <b-col data-testid="immunizationLotTitle">
-                            <strong> Lot Number </strong>
-                        </b-col>
-                        <b-col data-testid="immunizationStatus">
-                            <strong> Status </strong>
-                        </b-col>
-                    </b-row>
-                </b-col>
-            </b-row>
-            <b-row
-                v-for="agent in entry.immunization.immunizationAgents"
-                :key="agent.code"
-                class="my-2"
-            >
-                <b-col class="leftPane"></b-col>
-                <b-col>
-                    <b-row>
-                        <b-col data-testid="immunizationProductName">
-                            {{ agent.productName }}
-                        </b-col>
-                        <b-col data-testid="immunizationAgentName">
-                            {{ agent.name }}
-                        </b-col>
-                        <b-col data-testid="immunizationProviderName">
-                            {{ entry.immunization.providerOrClinic }}
-                        </b-col>
-                        <b-col data-testid="immunizationLotNumber">
-                            {{ agent.lotNumber }}
-                        </b-col>
-                        <b-col data-testid="immunizationStatus">
-                            {{ entry.immunization.status }}
-                        </b-col>
-                    </b-row>
-                </b-col>
-            </b-row>
-        </div>
+        <b-row
+            v-if="entry.immunization.immunizationAgents.length > 0"
+            class="entryDetails mt-3"
+        >
+            <b-col>
+                <b-row>
+                    <b-col>
+                        <b-row>
+                            <b-col
+                                class="pl-2 pr-1"
+                                data-testid="immunizationProductTitle"
+                            >
+                                <strong> Product </strong>
+                            </b-col>
+                            <b-col
+                                class="px-1"
+                                data-testid="immunizationAgentNameTitle"
+                            >
+                                <strong> Immunizing agent </strong>
+                            </b-col>
+                            <b-col
+                                class="px-1"
+                                data-testid="immunizationProviderTitle"
+                            >
+                                <strong> Provider / Clinic </strong>
+                            </b-col>
+                            <b-col
+                                class="px-1"
+                                data-testid="immunizationLotTitle"
+                            >
+                                <strong> Lot Number </strong>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row
+                    v-for="agent in entry.immunization.immunizationAgents"
+                    :key="agent.code"
+                    class="my-2"
+                >
+                    <b-col>
+                        <b-row>
+                            <b-col
+                                class="pl-2 pr-1"
+                                data-testid="immunizationProductName"
+                            >
+                                {{ agent.productName }}
+                            </b-col>
+                            <b-col
+                                class="px-1"
+                                data-testid="immunizationAgentName"
+                            >
+                                {{ agent.name }}
+                            </b-col>
+                            <b-col
+                                class="px-1"
+                                data-testid="immunizationProviderName"
+                            >
+                                {{ entry.immunization.providerOrClinic }}
+                            </b-col>
+                            <b-col
+                                class="px-1"
+                                data-testid="immunizationLotNumber"
+                            >
+                                {{ agent.lotNumber }}
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
     </b-col>
 </template>
 
@@ -106,7 +139,7 @@ $radius: 15px;
     padding: 13px 15px;
     font-weight: bold;
     margin-right: -1px;
-    border-radius: 0px $radius $radius 0px;
+    border-radius: 0px $radius 0px 0px;
 }
 
 .icon {
@@ -114,7 +147,7 @@ $radius: 15px;
     color: white;
     text-align: center;
     padding: 10px 0;
-    border-radius: $radius 0px 0px $radius;
+    border-radius: $radius 0px 0px 0px;
 }
 
 .leftPane {
@@ -122,16 +155,13 @@ $radius: 15px;
     max-width: 60px;
 }
 
-.detailsButton {
-    padding: 0px;
+.entryDetails {
+    padding-left: 60px;
 }
 
-.detailSection {
-    margin-top: 15px;
-}
-
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-    display: none;
+@media screen and (max-width: 600px) {
+    .entryDetails {
+        padding-left: 0px;
+    }
 }
 </style>
