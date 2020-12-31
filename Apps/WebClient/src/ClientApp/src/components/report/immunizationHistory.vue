@@ -5,7 +5,7 @@ import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { Action, Getter } from "vuex-class";
 import ImmunizationModel from "@/models/immunizationModel";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 import { ILogger } from "@/services/interfaces";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
@@ -20,8 +20,8 @@ import User from "@/models/user";
     },
 })
 export default class ImmunizationHistoryReportComponent extends Vue {
-    @Prop() private startDate?: StringISODate;
-    @Prop() private endDate?: StringISODate;
+    @Prop() private startDate?: string;
+    @Prop() private endDate?: string;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Getter("isDeferredLoad", { namespace: "immunization" })
@@ -112,7 +112,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         );
     }
 
-    private formatDate(date: StringISODate): string {
+    private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 

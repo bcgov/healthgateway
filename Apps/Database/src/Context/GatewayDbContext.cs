@@ -717,7 +717,7 @@ namespace HealthGateway.Database.Context
                 },
                 new LegalAgreement // Updated Terms of Service for Dependents
                 {
-                    Id = Guid.Parse("2947456b-2b67-42b9-b239-13c4ed86060b"),
+                    Id = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
                     LegalAgreementCode = LegalAgreementType.TermsofService,
                     LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20201224.html"),
                     EffectiveDate = DateTime.ParseExact("12/24/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),

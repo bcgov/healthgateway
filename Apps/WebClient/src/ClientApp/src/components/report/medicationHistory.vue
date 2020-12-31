@@ -14,7 +14,7 @@ import { ResultType } from "@/constants/resulttype";
 import ErrorTranslator from "@/utility/errorTranslator";
 import PDFDefinition from "@/plugins/pdfDefinition";
 import { ActionType } from "@/constants/actionType";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import User from "@/models/user";
 
@@ -25,8 +25,8 @@ import User from "@/models/user";
     },
 })
 export default class MedicationHistoryReportComponent extends Vue {
-    @Prop() private startDate?: StringISODate;
-    @Prop() private endDate?: StringISODate;
+    @Prop() private startDate?: string;
+    @Prop() private endDate?: string;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("getMedicationStatements", { namespace: "medication" })
@@ -75,7 +75,7 @@ export default class MedicationHistoryReportComponent extends Vue {
         this.fetchMedicationStatements();
     }
 
-    private formatDate(date: StringISODate): string {
+    private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 

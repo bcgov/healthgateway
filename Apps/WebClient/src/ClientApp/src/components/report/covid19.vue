@@ -14,7 +14,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import html2pdf from "html2pdf.js";
 import PDFDefinition from "@/plugins/pdfDefinition";
 import ReportHeaderComponent from "@/components/report/header.vue";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
     components: {
@@ -22,8 +22,8 @@ import { DateWrapper, StringISODate } from "@/models/dateWrapper";
     },
 })
 export default class COVID19ReportComponent extends Vue {
-    @Prop() private startDate?: StringISODate;
-    @Prop() private endDate?: StringISODate;
+    @Prop() private startDate?: string;
+    @Prop() private endDate?: string;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
@@ -115,7 +115,7 @@ export default class COVID19ReportComponent extends Vue {
         return this.records.length == 0;
     }
 
-    private formatDate(date: StringISODate): string {
+    private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 
