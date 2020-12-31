@@ -39,6 +39,11 @@ namespace HealthGateway.WebClient.Models
         public DateTime? EffectiveDate { get; set; }
 
         /// <summary>
+        /// Gets record creation date time.
+        /// </summary>
+        public DateTime CreatedDateTime { get; internal set; }
+
+        /// <summary>
         /// Constructs a TermsOfService model from a LegalAgreement database model.
         /// </summary>
         /// <param name="model">The legal agreement database model.</param>
@@ -47,9 +52,10 @@ namespace HealthGateway.WebClient.Models
         {
             return new TermsOfServiceModel()
             {
-                Id = model?.Id,
-                EffectiveDate = model?.EffectiveDate!.Value,
-                Content = model?.LegalText,
+                Id = model.Id,
+                EffectiveDate = model.EffectiveDate!.Value,
+                Content = model.LegalText,
+                CreatedDateTime = model.CreatedDateTime
             };
         }
     }

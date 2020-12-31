@@ -119,12 +119,20 @@ namespace HealthGateway.WebClient.Services
                 this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
             }
 
-            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
-            userProfile.HasTermsOfServiceUpdated =
-                previousLastLogin.HasValue &&
-                termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin.Value;
+
+            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
+            if (termsOfServiceResult.ResultStatus == ResultType.Success)
+            {
+                TermsOfServiceModel agreement = termsOfServiceResult.ResourcePayload!;
+                DateTime tosEffectiveDate = agreement.EffectiveDate.HasValue ? agreement.EffectiveDate.Value : agreement.CreatedDateTime;
+                if (agreement.CreatedDateTime > tosEffectiveDate){
+                    tosEffectiveDate = agreement.CreatedDateTime;
+                }
+                userProfile.HasTermsOfServiceUpdated =
+                    previousLastLogin.HasValue &&
+                    tosEffectiveDate > previousLastLogin.Value;
+            }
 
             return new RequestResult<UserProfileModel>()
             {

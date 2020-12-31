@@ -128,7 +128,11 @@ namespace Healthgateway.JobScheduler.Jobs
             }
 
             DateTime lastChecked = System.DateTime.Parse(lastCheckedSetting.Value!, CultureInfo.InvariantCulture);
-            if (agreement.EffectiveDate > lastChecked)
+            DateTime effectiveDate = agreement.EffectiveDate.HasValue ? agreement.EffectiveDate.Value : agreement.CreatedDateTime;
+            if (agreement.CreatedDateTime > effectiveDate){
+                effectiveDate = agreement.CreatedDateTime;
+            }
+            if (effectiveDate > lastChecked)
             {
                 Dictionary<string, string> keyValues = new Dictionary<string, string>();
                 keyValues.Add("host", this.host);
