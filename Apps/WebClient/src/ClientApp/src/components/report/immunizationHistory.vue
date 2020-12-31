@@ -193,25 +193,23 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
-                    <b-col data-testid="immunizationItemDate" class="col-1"
+                    <b-col data-testid="immunizationDateTitle" class="col-1"
                         >Date</b-col
                     >
                     <b-col data-testid="immunizationProviderTitle" class="col-2"
-                        >Provider/Clinic</b-col
+                        >Provider / Clinic</b-col
                     >
                     <b-col data-testid="immunizationItemTitle" class="col-2"
                         >Immunization</b-col
                     >
-                    <b-col data-testid="immunizationItemAgent" class="col-2"
-                        >Immunizing Agent</b-col
-                    >
-                    <b-col data-testid="immunizationItemAgent" class="col-2"
-                        >Product</b-col
-                    >
-                    <b-col data-testid="immunizationItemAgent" class="col-1"
-                        >Lot Number</b-col
-                    >
-                    <b-col data-testid="immunizationLotTitle" class="col-2"
+                    <b-col data-testid="immunizationAgentTitle" class="col-5">
+                        <b-row>
+                            <b-col>Agent</b-col>
+                            <b-col>Product</b-col>
+                            <b-col>Lot Number</b-col>
+                        </b-row>
+                    </b-col>
+                    <b-col data-testid="immunizationStatusTitle" class="col-2"
                         >Status</b-col
                     >
                 </b-row>
@@ -235,10 +233,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <b-col data-testid="immunizationItemName" class="col-2">
                         {{ immzRecord.name }}
                     </b-col>
-                    <b-col
-                        data-testid="immunizationItemLotNumber"
-                        class="col-5"
-                    >
+                    <b-col data-testid="immunizationItemAgent" class="col-5">
                         <b-row
                             v-for="agent in immzRecord.immunizationAgents"
                             :key="agent.code"
@@ -247,10 +242,10 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                                 {{ agent.name }}
                             </b-col>
                             <b-col>
-                                {{ agent.lotNumber }}
+                                {{ agent.productName }}
                             </b-col>
                             <b-col>
-                                {{ agent.productName }}
+                                {{ agent.lotNumber }}
                             </b-col>
                         </b-row>
                     </b-col>
