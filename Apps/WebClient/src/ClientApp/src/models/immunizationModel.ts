@@ -12,6 +12,7 @@ export default interface ImmunizationModel {
     isSelfReported: boolean;
     location: string;
     name: string;
+    status: string;
     dateOfImmunization: StringISODate;
     providerOrClinic: string;
     immunizationAgents: ImmunizationAgent[];
