@@ -43,6 +43,12 @@ namespace HealthGateway.Immunization.Models
         public DateTime DateOfImmunization { get; set; }
 
         /// <summary>
+        /// Gets or sets the Immunization Status.
+        /// </summary>
+        [JsonPropertyName("status")]
+        public string Status { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the Provider or Clinic providing the Immunization.
         /// </summary>
         [JsonPropertyName("providerOrClinic")]
@@ -67,6 +73,7 @@ namespace HealthGateway.Immunization.Models
                 DateOfImmunization = model.OccurrenceDateTime,
                 ProviderOrClinic = model.ProviderOrClinic,
                 ImmunizationAgents = model.ImmunizationAgents,
+                Status = model.Status,
             };
         }
 
