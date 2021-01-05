@@ -15,7 +15,8 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >January 5, 2020 - v1.3.1.7 - Export Records Date Picker, Immunization Display
+                                    >January 5, 2020 - v1.3.1.7 - Export Records
+                                    Date Picker, Immunization Display
                                 </strong>
                             </b-col>
                         </b-row>
@@ -23,7 +24,9 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We updated the export records date picker and display of immunization records to show additional data. 
+                                        We updated the export records date
+                                        picker and display of immunization
+                                        records to show additional data.
                                     </li>
                                 </ul>
                             </b-col>
