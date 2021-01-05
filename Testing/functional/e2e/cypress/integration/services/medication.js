@@ -44,7 +44,7 @@ describe("Medication Service", () => {
                 expect(response.status).to.eq(200);
                 expect(response.body).to.not.be.null;
                 cy.log(`response.body: ${response.body}`);
-                expect(response.body.totalResultCount).to.equal(19);
+                expect(response.body.totalResultCount).to.equal(18);
                 expect(response.body.resourcePayload).to.not.be.null;
                 const drug66999990 = response.body.resourcePayload['66999990'];
                 verifyProvincialDrug(drug66999990);
