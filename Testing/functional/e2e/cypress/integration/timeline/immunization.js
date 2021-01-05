@@ -14,7 +14,7 @@ describe('Immunization', () => {
           immunizationAPIPath=config.serviceEndpoints.Immunization
           cy.fixture("ImmunizationService/immunizationrefresh.json").then((ImmunizationResponse) => {
             cy.server();
-            cy.route('GET', '/v1/api/configuration/', config);
+            cy.route('GET', '/v1/api/configuration/', config);            
             cy.route('GET', `${immunizationAPIPath}v1/api/Immunization/*`, ImmunizationResponse);
             cy.log("Configuration", config);
             cy.log("ImmunizationResponse", ImmunizationResponse)
@@ -34,7 +34,7 @@ describe('Immunization', () => {
             cy.route('GET', `${immunizationAPIPath}v1/api/Immunization/*`, ImmunizationResponse);
             cy.log("ImmunizationResponse", ImmunizationResponse);
             cy.get('[data-testid=immunizationLoading]')
-              .should('not.be.visible')
+              .should('not.exist')
             cy.get('[data-testid=immunizationReady]')
               .should('be.visible')
               .find('[data-testid=immunizationBtnReady]')

@@ -9,13 +9,13 @@
         "name": "Diphtheria, Tetanus, Pertussis, Polio",
         "dateOfImmunization": "2013-09-20T00:00:00",
         "status": "Completed",
-        "providerOrClinic": "Provider A",
+        "providerOrClinic": "",
         "immunizationAgents": [
           {
             "code": "414003004",
             "name": "DTaP-IPV",
-            "lotNumber": "LOT A",
-            "productName": "Product A"
+            "lotNumber": "",
+            "productName": ""
           }
         ]
       },
