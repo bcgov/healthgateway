@@ -67,7 +67,7 @@ describe('Reports', () => {
             .click();
             
         cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
+            .should('not.exist');
     })
 
     it('Validate MSP Visits Report', () => {         
@@ -92,7 +92,7 @@ describe('Reports', () => {
             .click();
             
         cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
+            .should('not.exist');
     })
 
     it('Validate COVID-19 Report', () => {         
@@ -120,6 +120,6 @@ describe('Reports', () => {
             .click();
             
         cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
+            .should('not.exist');
     })
 }) 

@@ -84,6 +84,6 @@ describe('Immunization History Report', () => {
             .click();
             
         cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
+            .should('not.exist');
     })
 }) 
