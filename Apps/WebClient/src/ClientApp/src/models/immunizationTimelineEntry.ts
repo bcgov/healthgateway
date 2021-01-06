@@ -24,6 +24,11 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         text = text.toUpperCase();
         return text.includes(filter.keyword.toUpperCase());
     }
+
+    public getDisplayFormat(value: string): string {
+        if (value === "") return "N/A";
+        else return value;
+    }
 }
 
 class ImmunizationAgentViewModel {
@@ -59,10 +64,5 @@ class ImmunizationViewModel {
         this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
         this.providerOrClinic = model.providerOrClinic;
         this.immunizationAgents = model.immunizationAgents;
-    }
-
-    getDisplayFormat(value: string): string {
-        if (value === "") return "N/A";
-        else return value;
     }
 }
