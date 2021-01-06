@@ -20,7 +20,7 @@ export default class ImmunizationTimelineComponent extends Vue {
     }
 
     private getDisplayFormat(value: string): string {
-        if (value === "") return "na";
+        if (value === "") return "N/A";
         else return value;
     }
 }
