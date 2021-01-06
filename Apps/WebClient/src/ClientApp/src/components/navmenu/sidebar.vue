@@ -540,25 +540,29 @@ export default class SidebarComponent extends Vue {
             <b-row class="sidebar-footer m-0 p-0">
                 <b-col class="m-0 p-0">
                     <!-- Collapse Button -->
-                    <hr />
-                    <b-row
-                        class="align-items-center my-4 d-sm-block"
-                        :class="[isOpen ? 'mx-4' : 'button-container']"
-                    >
-                        <b-col
-                            :title="`${isOpen ? 'Collapse' : 'Expand'} Menu`"
-                            :class="{ 'ml-auto col-2': isOpen }"
+                    <span v-show="!isMobileWidth">
+                        <hr />
+                        <b-row
+                            class="align-items-center my-4"
+                            :class="[isOpen ? 'mx-4' : 'button-container']"
                         >
-                            <font-awesome-icon
-                                data-testid="sidebarToggle"
-                                class="arrow-icon p-2"
-                                icon="angle-double-left"
-                                aria-hidden="true"
-                                size="3x"
-                                @click="toggleOpen"
-                            />
-                        </b-col>
-                    </b-row>
+                            <b-col
+                                :title="`${
+                                    isOpen ? 'Collapse' : 'Expand'
+                                } Menu`"
+                                :class="{ 'ml-auto col-2': isOpen }"
+                            >
+                                <font-awesome-icon
+                                    data-testid="sidebarToggle"
+                                    class="arrow-icon p-2"
+                                    icon="angle-double-left"
+                                    aria-hidden="true"
+                                    size="3x"
+                                    @click="toggleOpen"
+                                />
+                            </b-col>
+                        </b-row>
+                    </span>
                     <!-- Feedback section -->
                     <FeedbackComponent />
                 </b-col>
