@@ -24,11 +24,6 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         text = text.toUpperCase();
         return text.includes(filter.keyword.toUpperCase());
     }
-
-    public getDisplayFormat(value: string): string {
-        if (value === "") return "N/A";
-        else return value;
-    }
 }
 
 class ImmunizationAgentViewModel {
