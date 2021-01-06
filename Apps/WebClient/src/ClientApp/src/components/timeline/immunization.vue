@@ -1,7 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import { ImmunizationAgent } from "@/models/immunizationModel";
 import { Component, Prop } from "vue-property-decorator";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { IconDefinition, faSyringe } from "@fortawesome/free-solid-svg-icons";
@@ -20,36 +19,9 @@ export default class ImmunizationTimelineComponent extends Vue {
         return faSyringe;
     }
 
-    private displayProductList(
-        immzAgents: ImmunizationAgent[],
-        providerOrClinic: string
-    ): boolean {
-        if (immzAgents.length > 0) {
-            let countEmpty = 0;
-            immzAgents.forEach((agent) => {
-                if (
-                    agent.productName == "" &&
-                    agent.lotNumber == "" &&
-                    providerOrClinic == ""
-                ) {
-                    countEmpty++;
-                }
-            });
-            if (countEmpty == immzAgents.length) return false;
-        } else return false;
-        return true;
-    }
-    private displayProduct(
-        agent: ImmunizationAgent,
-        providerOrClinic: string
-    ): boolean {
-        if (
-            agent.productName == "" &&
-            agent.lotNumber == "" &&
-            providerOrClinic == ""
-        ) {
-            return false;
-        } else return true;
+    private getDisplayFormat(value: string): string {
+        if (value === "") return "na";
+        else return value;
     }
 }
 </script>
@@ -80,12 +52,7 @@ export default class ImmunizationTimelineComponent extends Vue {
             </b-col>
         </b-row>
         <b-row
-            v-if="
-                displayProductList(
-                    entry.immunization.immunizationAgents,
-                    entry.immunization.providerOrClinic
-                )
-            "
+            v-if="entry.immunization.immunizationAgents.length > 0"
             class="entryDetails mt-3"
         >
             <b-col>
@@ -124,20 +91,13 @@ export default class ImmunizationTimelineComponent extends Vue {
                     :key="agent.code"
                     class="my-2"
                 >
-                    <b-col
-                        v-if="
-                            displayProduct(
-                                agent,
-                                entry.immunization.providerOrClinic
-                            )
-                        "
-                    >
+                    <b-col>
                         <b-row>
                             <b-col
                                 class="pl-2 pr-1"
                                 data-testid="immunizationProductName"
                             >
-                                {{ agent.productName }}
+                                {{ getDisplayFormat(agent.productName) }}
                             </b-col>
                             <b-col
                                 class="px-1"
@@ -149,13 +109,17 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="px-1"
                                 data-testid="immunizationProviderName"
                             >
-                                {{ entry.immunization.providerOrClinic }}
+                                {{
+                                    getDisplayFormat(
+                                        entry.immunization.providerOrClinic
+                                    )
+                                }}
                             </b-col>
                             <b-col
                                 class="px-1"
                                 data-testid="immunizationLotNumber"
                             >
-                                {{ agent.lotNumber }}
+                                {{ getDisplayFormat(agent.lotNumber) }}
                             </b-col>
                         </b-row>
                     </b-col>
