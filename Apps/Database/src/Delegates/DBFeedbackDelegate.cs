@@ -106,10 +106,21 @@ namespace HealthGateway.Database.Delegates
                     CreatedDateTime = x.CreatedDateTime,
                     UserProfileId = x.UserProfileId,
                     UpdatedDateTime = x.UpdatedDateTime,
-                    Version = x.Version,
-                    Email = x.UserProfile != null && x.UserProfile.Email != null ? x.UserProfile.Email : string.Empty,
+                    Version = x.Version
                 })
                 .OrderByDescending(f => f.CreatedDateTime).ToList();
+
+            Dictionary<string, string?> profileEmails = this.dbContext.UserProfile.Where(u => feedback.Select(f => f.UserProfileId).Contains(u.HdId)).ToDictionary(x => x.HdId, x => x.Email);
+
+            foreach (UserFeedbackAdmin feedbackAdmin in feedback)
+            {
+                string? email;
+                if (profileEmails.TryGetValue(feedbackAdmin.UserProfileId, out email))
+                {
+                    feedbackAdmin.Email = email != null ? email : string.Empty;
+                }
+            }
+
             DBResult<List<UserFeedbackAdmin>> result = new DBResult<List<UserFeedbackAdmin>>();
             result.Payload = feedback;
             result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
