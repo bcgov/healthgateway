@@ -215,7 +215,6 @@ describe('dependents', () => {
             .then(dateOfBirth => expect(dateOfBirth).to.equal(validDependent.doB));          
     })
 
-
     it('Validate Covid Tab with Results', () => {
         let sensitiveDocMessage = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
         // Validate the tab and elements are present        
@@ -262,8 +261,45 @@ describe('dependents', () => {
             .should('not.exist');
     })
     
+    it('Validate Add for another user', () => {
+        cy.login(Cypress.env('keycloak.protected.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak, "/dependents");
+        cy.get('[data-testid=addNewDependentBtn]')
+            .click();
+        
+        cy.get('[data-testid=newDependentModalText]').should('exist', 'be.visible')
+        
+        cy.get('[data-testid=firstNameInput]')
+            .clear()
+            .type(validDependent.firstName);
+        cy.get('[data-testid=lastNameInput]')
+            .clear()
+            .type(validDependent.lastName);
+        cy.get('[data-testid=dateOfBirthInput]')
+            .clear()
+            .type(validDependent.doB);
+        cy.get('[data-testid=testDateInput]')
+            .clear()
+            .type(validDependent.testDate);
+        cy.get('[data-testid=phnInput]')
+            .clear()
+            .type(validDependent.phn);
+        cy.get('[data-testid=termsCheckbox]')
+            .check({ force: true });
 
-    it('Validate Remove Dependent', () => {       
+        cy.get('[data-testid=registerDependentBtn]').click(); 
+
+        // Validate the modal is done 
+        cy.get('[data-testid=newDependentModal]').should('not.exist') 
+
+        // Now click the "Yes, I'm sure" to confirm deletion
+        cy.get('[data-testid=dependentMenuBtn]').last().click();
+        cy.get('[data-testid=deleteDependentMenuBtn]').last().click();
+        cy.get('[data-testid=confirmDeleteBtn]').click();
+    });
+
+    it('Validate Remove Dependent', () => {
+        cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak, "/dependents");
+
         cy.get('[data-testid=dependentMenuBtn]').last().click();
         cy.get('[data-testid=deleteDependentMenuBtn]').last().click();
         cy.get('[data-testid=confirmDeleteBtn]').should('be.visible');

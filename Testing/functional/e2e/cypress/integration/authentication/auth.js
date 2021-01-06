@@ -20,6 +20,7 @@ describe('Authentication', () => {
     it('BCSC UI Login', () => {
         if (Cypress.config().baseUrl != localDevUri ) {
             cy.login(Cypress.env('bcsc.username'), Cypress.env('bcsc.password'), AuthMethod.BCSC)
+            cy.checkTimelineHasLoaded();
             cy.get('[data-testid=logoutBtn]')
                 .should('be.visible')
                 .should('not.be.disabled');
@@ -32,6 +33,7 @@ describe('Authentication', () => {
     it('KeyCloak UI Login', () => {
         if (Cypress.config().baseUrl != localDevUri) {
             cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloakUI)
+            cy.checkTimelineHasLoaded();
             cy.get('[data-testid=logoutBtn]')
                 .should('be.visible')
                 .should('not.be.disabled');
@@ -44,6 +46,7 @@ describe('Authentication', () => {
     it('Logout', () => {
         if (Cypress.config().baseUrl != localDevUri) {
             cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
+            cy.checkTimelineHasLoaded();
             cy.get('[data-testid=logoutBtn]')
                 .click();
             cy.get('[data-testid=ratingModalSkipBtn]')
