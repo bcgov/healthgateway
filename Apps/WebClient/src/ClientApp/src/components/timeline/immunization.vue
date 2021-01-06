@@ -18,11 +18,6 @@ export default class ImmunizationTimelineComponent extends Vue {
     private get entryIcon(): IconDefinition {
         return faSyringe;
     }
-
-    private getDisplayFormat(value: string): string {
-        if (value === "") return "N/A";
-        else return value;
-    }
 }
 </script>
 
@@ -97,7 +92,11 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="pl-2 pr-1"
                                 data-testid="immunizationProductName"
                             >
-                                {{ getDisplayFormat(agent.productName) }}
+                                {{
+                                    entry.immunization.getDisplayFormat(
+                                        agent.productName
+                                    )
+                                }}
                             </b-col>
                             <b-col
                                 class="px-1"
@@ -110,7 +109,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 data-testid="immunizationProviderName"
                             >
                                 {{
-                                    getDisplayFormat(
+                                    entry.immunization.getDisplayFormat(
                                         entry.immunization.providerOrClinic
                                     )
                                 }}
@@ -119,7 +118,11 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="px-1"
                                 data-testid="immunizationLotNumber"
                             >
-                                {{ getDisplayFormat(agent.lotNumber) }}
+                                {{
+                                    entry.immunization.getDisplayFormat(
+                                        agent.lotNumber
+                                    )
+                                }}
                             </b-col>
                         </b-row>
                     </b-col>

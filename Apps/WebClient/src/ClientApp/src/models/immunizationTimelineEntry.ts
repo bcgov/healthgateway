@@ -60,4 +60,9 @@ class ImmunizationViewModel {
         this.providerOrClinic = model.providerOrClinic;
         this.immunizationAgents = model.immunizationAgents;
     }
+
+    getDisplayFormat(value: string): string {
+        if (value === "") return "N/A";
+        else return value;
+    }
 }
