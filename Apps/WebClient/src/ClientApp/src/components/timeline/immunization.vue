@@ -92,7 +92,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="pl-2 pr-1"
                                 data-testid="immunizationProductName"
                             >
-                                {{ entry.getDisplayFormat(agent.productName) }}
+                                {{ agent.productName }}
                             </b-col>
                             <b-col
                                 class="px-1"
@@ -104,17 +104,13 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="px-1"
                                 data-testid="immunizationProviderName"
                             >
-                                {{
-                                    entry.getDisplayFormat(
-                                        entry.immunization.providerOrClinic
-                                    )
-                                }}
+                                {{ entry.immunization.providerOrClinic }}
                             </b-col>
                             <b-col
                                 class="px-1"
                                 data-testid="immunizationLotNumber"
                             >
-                                {{ entry.getDisplayFormat(agent.lotNumber) }}
+                                {{ agent.lotNumber }}
                             </b-col>
                         </b-row>
                     </b-col>
