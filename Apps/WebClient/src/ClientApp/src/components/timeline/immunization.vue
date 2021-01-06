@@ -3,7 +3,6 @@ import Vue from "vue";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { Component, Prop } from "vue-property-decorator";
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-
 import { IconDefinition, faSyringe } from "@fortawesome/free-solid-svg-icons";
 
 @Component({

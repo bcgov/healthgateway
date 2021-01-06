@@ -35,8 +35,8 @@ class ImmunizationAgentViewModel {
     constructor(model: ImmunizationAgent) {
         this.code = model.code;
         this.name = model.name;
-        this.lotNumber = model.lotNumber;
-        this.productName = model.productName;
+        this.lotNumber = model.lotNumber === "" ? "N/A" : model.lotNumber;
+        this.productName = model.productName === "" ? "N/A" : model.productName;
     }
 }
 
@@ -57,7 +57,11 @@ class ImmunizationViewModel {
         this.name = model.name;
         this.status = model.status;
         this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
-        this.providerOrClinic = model.providerOrClinic;
-        this.immunizationAgents = model.immunizationAgents;
+        this.providerOrClinic =
+            model.providerOrClinic === "" ? "N/A" : model.providerOrClinic;
+        this.immunizationAgents = [];
+        model.immunizationAgents.forEach((agent) => {
+            this.immunizationAgents.push(new ImmunizationAgentViewModel(agent));
+        });
     }
 }
