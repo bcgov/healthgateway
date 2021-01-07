@@ -2754,7 +2754,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<Guid?>("IdentityManagementId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("LastLoginDateTime")
+                    b.Property<DateTime>("LastLoginDateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SMSNumber")

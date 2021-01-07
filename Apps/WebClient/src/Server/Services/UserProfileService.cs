@@ -95,7 +95,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime? lastLogin = null)
+        public RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime)
         {
             this.logger.LogTrace($"Getting user profile... {hdid}");
             DBResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
@@ -110,11 +110,11 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
-            DateTime? previousLastLogin = retVal.Payload.LastLoginDateTime;
-            if (lastLogin.HasValue)
+            DateTime previousLastLogin = retVal.Payload.LastLoginDateTime;
+            if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
             {
                 this.logger.LogTrace($"Updating user last login... {hdid}");
-                retVal.Payload.LastLoginDateTime = lastLogin;
+                retVal.Payload.LastLoginDateTime = jwtAuthTime;
                 DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(retVal.Payload);
                 this.logger.LogDebug($"Finished updating user last login. {JsonSerializer.Serialize(updateResult)}");
             }
@@ -122,9 +122,7 @@ namespace HealthGateway.WebClient.Services
             RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
 
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
-            userProfile.HasTermsOfServiceUpdated =
-                previousLastLogin.HasValue &&
-                termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin.Value;
+            userProfile.HasTermsOfServiceUpdated = termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin;
 
             return new RequestResult<UserProfileModel>()
             {
@@ -135,7 +133,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken, DateTime lastLogin)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
@@ -151,7 +149,7 @@ namespace HealthGateway.WebClient.Services
                 return requestResult;
             }
 
-            string hdid = createProfileRequest.Profile.HdId;            
+            string hdid = createProfileRequest.Profile.HdId;
             PrimitiveRequestResult<bool> isMimimunAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
 
             if (isMimimunAgeResult.ResultStatus != ResultType.Success)
@@ -175,6 +173,7 @@ namespace HealthGateway.WebClient.Services
             newProfile.SMSNumber = null;
             newProfile.CreatedBy = hdid;
             newProfile.UpdatedBy = hdid;
+            newProfile.LastLoginDateTime = lastLogin;
             newProfile.EncryptionKey = this.cryptoDelegate.GenerateKey();
 
             DBResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);

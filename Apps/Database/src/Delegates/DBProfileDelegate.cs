@@ -125,8 +125,7 @@ namespace HealthGateway.Database.Delegates
             DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
-                                .Where(p => (p.LastLoginDateTime == null ||
-                                                (p.LastLoginDateTime != null && p.LastLoginDateTime < filterDateTime)) &&
+                                .Where(p => (p.LastLoginDateTime < filterDateTime) &&
                                              p.ClosedDateTime == null &&
                                              !string.IsNullOrWhiteSpace(p.Email))
                                 .OrderBy(o => o.CreatedDateTime)
@@ -169,9 +168,7 @@ namespace HealthGateway.Database.Delegates
             DateTime queryStartTime = clientStartDate.UtcDateTime;
             DateTime queryEndTime = now;
             int result = this.dbContext.UserProfile
-                .Count(u => u.LastLoginDateTime.HasValue &&
-               u.LastLoginDateTime.Value >= queryStartTime &&
-               u.LastLoginDateTime.Value < queryEndTime);
+                .Count(u => u.LastLoginDateTime >= queryStartTime && u.LastLoginDateTime < queryEndTime);
             return result;
         }
 
