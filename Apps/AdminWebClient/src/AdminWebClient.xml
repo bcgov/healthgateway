@@ -220,6 +220,15 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetDependentCount">
+            <summary>
+            Retrieves the count of dependents.
+            </summary>
+            <returns>The count of logged in users in the current day.</returns>
+            <response code="200">Returns the list of user feedbacks.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.EmailAdminController">
             <summary>
             Web API to handle user email interactions.
@@ -804,11 +813,12 @@
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IResourceDelegateDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.DashboardService"/> class.
             </summary>
             <param name="noteDelegate">The note delegate to interact with the DB.</param>
+            <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
             <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
             <param name="config">The configuration provider.</param>
         </member>
@@ -819,6 +829,9 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetUsersWithNotesCount">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetDependentCount">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Admin.Services.EmailAdminService">
@@ -965,6 +978,12 @@
             Retrieves the count of users with notes on their timeline.
             </summary>
             <returns>The count of users with notes.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetDependentCount">
+            <summary>
+            Retrieves the count of dependents.
+            </summary>
+            <returns>The count of dependents.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IEmailAdminService">
             <summary>
