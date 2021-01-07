@@ -79,13 +79,13 @@ To update Hangfire
 
 ```console
 oc process -f ./hangfireSecrets.yaml --parameters
-oc process -f ./hangfireSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret] -p ADMIN_SECRET=[Admin OIDC Secret] -p ADMIN_USER=[Admin Username] -p ADMIN_PASSWORD=[Admin Password]
+oc process -f ./hangfireSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret] -p ADMIN_SECRET=[Admin OIDC Secret] -p ADMIN_USER=[Admin Username] -p ADMIN_PASSWORD=[Admin Password] | oc apply -f -
 oc set env --from=secret/hangfire-secrets dc/hangfire
 
 and Admin WebClient
 ```console
 oc process -f ./adminWebClientSecrets.yaml --parameters
-oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret]
+oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret] | oc apply -f -
 oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
 ```
 
