@@ -35,6 +35,7 @@ export interface IDashboardService {
     getRegisteredUsersCount(): Promise<number>;
     getLoggedInUsersCount(): Promise<number>;
     getUsersWithNotesCount(): Promise<number>;
+    getDependentCount(): Promise<number>;
 }
 
 export interface ICommunicationService {

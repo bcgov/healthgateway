@@ -1,6 +1,7 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('Reports', () => {
+    const downloadsFolder = 'cypress/downloads'
     let sensitiveDocText = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
     before(() => {
         cy.readConfig().as("config").then(config => {
@@ -9,6 +10,29 @@ describe('Reports', () => {
             cy.route('GET', '/v1/api/configuration/', config);
             cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak, "/reports");
         })
+
+        // The next command allow downloads in Electron, Chrome, and Edge
+        // without any users popups or file save dialogs.
+        if (!Cypress.isBrowser('firefox')) {
+          // since this call returns a promise, must tell Cypress to wait for it to be resolved
+          cy.log('Page.setDownloadBehavior')
+          cy.wrap(
+            Cypress.automation('remote:debugger:protocol',
+              {
+                command: 'Page.setDownloadBehavior',
+                params: { behavior: 'allow', downloadPath: downloadsFolder },
+              }),
+            { log: false }
+          )
+        }
+    })
+
+    it('Validate Date Filter Exists', () => {       
+        cy.get('[data-testid=startDateInput]')
+            .should('be.enabled', 'be.visible')
+
+            cy.get('[data-testid=endDateInput]')
+            .should('be.enabled', 'be.visible')
     })
 
     it('Validate Service Selection', () => {       
@@ -35,8 +59,8 @@ describe('Reports', () => {
         cy.get('[data-testid=exportRecordBtn]')
             .should('not.be.enabled', 'be.visible')
 
-        })
-    
+    })
+
     it('Validate Medication Report', () => {         
         cy.get('[data-testid=reportType]')
             .should('be.enabled', 'be.visible')
@@ -59,7 +83,7 @@ describe('Reports', () => {
             .click();
             
         cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
+            .should('not.exist');
     })
 
     it('Validate MSP Visits Report', () => {         
@@ -84,7 +108,7 @@ describe('Reports', () => {
             .click();
             
         cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
+            .should('not.exist');
     })
 
     it('Validate COVID-19 Report', () => {         
@@ -112,6 +136,6 @@ describe('Reports', () => {
             .click();
             
         cy.get('[data-testid=genericMessageModal]')
-            .should('not.be.visible');
+            .should('not.exist');
     })
 }) 

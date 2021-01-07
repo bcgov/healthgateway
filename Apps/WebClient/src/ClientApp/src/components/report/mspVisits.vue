@@ -1,7 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import moment from "moment";
+import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
 import Encounter from "@/models/encounter";
 import { IEncounterService } from "@/services/interfaces";
 import container from "@/plugins/inversify.config";
@@ -12,17 +11,19 @@ import User from "@/models/user";
 import { ILogger } from "@/services/interfaces";
 import BannerError from "@/models/bannerError";
 import ErrorTranslator from "@/utility/errorTranslator";
-import LoadingComponent from "@/components/loading.vue";
 import html2pdf from "html2pdf.js";
 import PDFDefinition from "@/plugins/pdfDefinition";
+import ReportHeaderComponent from "@/components/report/header.vue";
+import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({
     components: {
-        LoadingComponent,
+        ReportHeaderComponent,
     },
 })
 export default class MSPVisitsReportComponent extends Vue {
-    @Prop() private name!: string;
+    @Prop() private startDate?: string;
+    @Prop() private endDate?: string;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
@@ -31,10 +32,22 @@ export default class MSPVisitsReportComponent extends Vue {
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
-    private isLoading = false;
     private notFoundText = "Not Found";
     private records: Encounter[] = [];
     private isPreview = true;
+    private isLoading = false;
+
+    @Watch("isLoading")
+    @Emit()
+    private onIsLoadingChanged() {
+        return this.isLoading;
+    }
+
+    @Watch("startDate")
+    @Watch("endDate")
+    private onDateChanged() {
+        this.fetchEncounters();
+    }
 
     private fetchEncounters() {
         this.isLoading = true;
@@ -46,7 +59,7 @@ export default class MSPVisitsReportComponent extends Vue {
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.records = results.resourcePayload;
-                    this.sortEntries();
+                    this.filterAndSortEntries();
                 } else {
                     this.logger.error(
                         "Error returned from the encounter call: " +
@@ -71,7 +84,19 @@ export default class MSPVisitsReportComponent extends Vue {
             });
     }
 
-    private sortEntries() {
+    private filterAndSortEntries() {
+        this.records = this.records.filter((record) => {
+            return (
+                (!this.startDate ||
+                    new DateWrapper(record.encounterDate).isAfterOrSame(
+                        new DateWrapper(this.startDate)
+                    )) &&
+                (!this.endDate ||
+                    new DateWrapper(record.encounterDate).isBeforeOrSame(
+                        new DateWrapper(this.endDate)
+                    ))
+            );
+        });
         this.records.sort((a, b) =>
             a.encounterDate > b.encounterDate
                 ? -1
@@ -81,16 +106,12 @@ export default class MSPVisitsReportComponent extends Vue {
         );
     }
 
-    private get currentDate() {
-        return moment(new Date()).format("ll");
-    }
-
     private get isEmpty() {
         return this.records.length == 0;
     }
 
-    private formatDate(date: Date): string {
-        return moment(date).format("yyyy-MM-DD");
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format("yyyy-MM-dd");
     }
 
     private mounted() {
@@ -100,17 +121,16 @@ export default class MSPVisitsReportComponent extends Vue {
 
     public async generatePdf(): Promise<void> {
         this.logger.debug("generating MSP Visits PDF...");
-        this.isLoading = true;
         this.isPreview = false;
         let opt = {
             margin: [25, 15],
             filename: `HealthGateway_MSPVisits.pdf`,
             image: { type: "jpeg", quality: 1 },
-            html2canvas: { dpi: 192, scale: 1.1, letterRendering: true },
+            html2canvas: { dpi: 96, scale: 2, letterRendering: true },
             jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
         };
-        html2pdf()
+        return html2pdf()
             .set(opt)
             .from(this.report)
             .toPdf()
@@ -134,7 +154,6 @@ export default class MSPVisitsReportComponent extends Vue {
             .then((pdfBlobUrl: RequestInfo) => {
                 fetch(pdfBlobUrl).then((res) => {
                     res.blob().then(() => {
-                        this.isLoading = false;
                         this.isPreview = true;
                     });
                 });
@@ -145,36 +164,14 @@ export default class MSPVisitsReportComponent extends Vue {
 
 <template>
     <div>
-        <LoadingComponent
-            v-if="isLoading"
-            :is-loading="isLoading"
-            :is-custom="isPreview"
-            :backdrop="false"
-        ></LoadingComponent>
         <div ref="report">
             <section class="pdf-item">
-                <div v-show="!isPreview">
-                    <div id="pageTitle">
-                        <h3 id="subject">Health Gateway MSP Visit History</h3>
-                    </div>
-                    <div id="disclaimer" class="mr-1">
-                        This record was generated by the BC Provincial Health
-                        Gateway application. For any questions, please contact
-                        HealthGateway@gov.bc.ca
-                    </div>
-                    <hr class="mb-0" />
-                    <b-row class="pt-2">
-                        <b-col>
-                            <label>Name:</label> <span>{{ name }}</span>
-                        </b-col>
-                    </b-row>
-                    <b-row class="pt-2">
-                        <b-col>
-                            <label>Date Reported:</label>
-                            <span>{{ currentDate }}</span>
-                        </b-col>
-                    </b-row>
-                </div>
+                <ReportHeaderComponent
+                    v-show="!isPreview"
+                    :start-date="startDate"
+                    :end-date="endDate"
+                    title="Health Gateway MSP Visit History"
+                />
                 <b-row
                     v-if="isEmpty && (!isLoading || !isPreview)"
                     class="mt-2"
@@ -209,30 +206,6 @@ export default class MSPVisitsReportComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-#pageTitle,
-#disclaimer,
-label,
-span {
-    color: $primary;
-}
-
-#disclaimer {
-    font-size: 0.7em;
-}
-
-#disclaimer,
-span {
-    font-weight: bold;
-}
-
-label,
-#disclaimer {
-    font-size: 0.9em;
-}
-hr {
-    border-top: 2px solid $primary;
-}
 
 .header {
     color: $primary;

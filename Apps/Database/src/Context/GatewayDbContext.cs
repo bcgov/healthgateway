@@ -714,6 +714,17 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = DateTime.ParseExact("06/22/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = DateTime.ParseExact("06/22/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                },
+                new LegalAgreement // Updated Terms of Service for Dependents
+                {
+                    Id = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
+                    LegalAgreementCode = LegalAgreementType.TermsofService,
+                    LegalText = ReadResource("HealthGateway.Database.Assets.Legal.TermsOfService.20201224.html"),
+                    EffectiveDate = DateTime.ParseExact("01/07/2021", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = DateTime.ParseExact("12/24/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = DateTime.ParseExact("01/06/2021", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                 });
         }
 
