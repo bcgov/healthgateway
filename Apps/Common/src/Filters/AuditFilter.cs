@@ -62,7 +62,8 @@ namespace HealthGateway.Common.Filters
             {
                 bool isControllerAuthorization = context.Controller.GetType().GetCustomAttributes(inherit: true).OfType<AuthorizeAttribute>().Any();
                 bool isMethodAuthorization = controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true).OfType<AuthorizeAttribute>().Any();
-                if (!(isControllerAuthorization || isMethodAuthorization))
+                bool isAllowAnonymous = controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true).OfType<AllowAnonymousAttribute>().Any();
+                if (!(isControllerAuthorization || isMethodAuthorization) || isAllowAnonymous)
                 {
                     return;
                 }
