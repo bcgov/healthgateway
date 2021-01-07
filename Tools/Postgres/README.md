@@ -22,7 +22,7 @@ Via the command line this looks like
 
 ```console
 oc project 0bd5ad-dev
-oc process -f ./openshift/deployment-prereq.yaml -p PATRONI_SUPERUSER_PASSWORD=[The Password] -p PATRONI_REPLICATION_PASSWORD=[The Password] | oc apply -f -
+oc process -f ./openshift/deployment-prereq.yaml -p PATRONI_SUPERUSER_PASSWORD=[The Password] -p PATRONI_REPLICATION_PASSWORD=[The Password] APP_DB_PASSWORD=[The Password] | oc apply -f -
 oc process -f ./openshift/rb-pullers.yaml | oc apply -f -
 oc process -f ./openshift/deployment.yaml | oc apply -f -
 ```
