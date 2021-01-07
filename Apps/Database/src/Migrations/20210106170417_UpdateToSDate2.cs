@@ -30,7 +30,7 @@ namespace HealthGateway.Database.Migrations
                 keyColumn: "LegalAgreementsId",
                 keyValue: new Guid("c99fd839-b4a2-40f9-b103-529efccd0dcd"),
                 columns: new[] { "EffectiveDate", "UpdatedDateTime" },
-                values: new object[] { new DateTime(2020, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2020, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { new DateTime(2021, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2021, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified) });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
