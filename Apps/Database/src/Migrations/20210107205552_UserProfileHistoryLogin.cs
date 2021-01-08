@@ -63,7 +63,7 @@ BEGIN
         INSERT INTO {schema}.""UserProfileHistory""(""UserProfileHistoryId"", ""Operation"", ""OperationDateTime"",
                     ""UserProfileId"", ""AcceptedTermsOfService"", ""Email"", ""ClosedDateTime"", ""IdentityManagementId"",
                     ""EncryptionKey"", ""LastLoginDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"", ""SMSNumber"") 
-		VALUES(uuid_generate_v4(), TG_OP + ""_LOGIN"", now(),
+		VALUES(uuid_generate_v4(), TG_OP || '_LOGIN', now(),
                old.""UserProfileId"", old.""AcceptedTermsOfService"", old.""Email"", old.""ClosedDateTime"", old.""IdentityManagementId"",
                old.""EncryptionKey"", old.""LastLoginDateTime"", old.""CreatedBy"", old.""CreatedDateTime"", old.""UpdatedBy"", old.""UpdatedDateTime"", old.""SMSNumber"");
         RETURN old;

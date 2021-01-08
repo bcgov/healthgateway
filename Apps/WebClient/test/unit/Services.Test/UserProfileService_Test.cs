@@ -296,7 +296,9 @@ namespace HealthGateway.WebClient.Test.Services
             RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token", DateTime.Today);
             notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
+            Assert.Equal(expected.HdId, actualResult.ResourcePayload.HdId);
+            Assert.Equal(expected.AcceptedTermsOfService, actualResult.ResourcePayload.AcceptedTermsOfService);
+            Assert.Equal(expected.Email, actualResult.ResourcePayload.Email);
         }
 
         [Fact]

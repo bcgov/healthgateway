@@ -231,7 +231,7 @@ namespace HealthGateway.WebClient.Services
                     return requestResult;
                 }
 
-                profile.ClosedDateTime = DateTime.Now;
+                profile.ClosedDateTime = DateTime.UtcNow;
                 profile.IdentityManagementId = userId;
                 DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
