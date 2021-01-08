@@ -25,6 +25,7 @@ interface Icon {
 interface Tile {
     title: string;
     description: string;
+    bullets?: string[];
     imageSrc: string;
 }
 
@@ -92,11 +93,17 @@ export default class LandingView extends Vue {
             title: "All in one place",
             description:
                 "Conveniently access your data on a computer, tablet or smartphone",
+            bullets: [
+                "Dispensed Medications from community pharmacies",
+                "COVID-19 Test Results and Immunizations",
+                "Public Health Immunizations",
+            ],
             imageSrc: Image03,
         },
         {
             title: "Take control of your health",
             description: "Look at historical information captured over time.",
+
             imageSrc: Image04,
         },
         {
@@ -217,15 +224,6 @@ export default class LandingView extends Vue {
             </b-col>
         </b-row>
         <b-row class="tile-section my-0 my-md-1">
-            <div class="w-100 p-3">
-                <b-row
-                    class="d-flex justify-content-center align-content-around tile-row my-md-5 my-0"
-                >
-                    <b-col class="col-12 col-md-6">
-                        <h1 class="text-center">Future Goals</h1>
-                    </b-col>
-                </b-row>
-            </div>
             <div>
                 <b-row
                     v-for="(tile, index) in tiles"
@@ -245,9 +243,18 @@ export default class LandingView extends Vue {
                             alt="B.C. Government Logo"
                     /></b-col>
                     <b-col class="col-12 col-md-5" :class="getTileClass(index)">
-                        <div class="text-wrapper m-4 position-absolute">
+                        <div class="text-wrapper mx-4 position-absolute">
                             <div class="title">{{ tile.title }}</div>
                             <div class="small-text">{{ tile.description }}</div>
+                            <ul>
+                                <li
+                                    v-for="bullet in tile.bullets"
+                                    :key="bullet"
+                                    class="small-text"
+                                >
+                                    {{ bullet }}
+                                </li>
+                            </ul>
                         </div>
                     </b-col>
                 </b-row>
@@ -368,11 +375,11 @@ export default class LandingView extends Vue {
                 color: white;
                 bottom: 0;
                 .title {
-                    font-size: 2rem;
+                    font-size: 1.8rem;
                     color: white;
                 }
                 .small-text {
-                    font-size: 1.2rem;
+                    font-size: 1rem;
                 }
             }
 
