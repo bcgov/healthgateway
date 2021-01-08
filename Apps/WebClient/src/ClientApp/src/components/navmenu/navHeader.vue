@@ -104,13 +104,13 @@ export default class HeaderComponent extends Vue {
 
         <!-- Brand -->
         <b-navbar-brand class="mx-0">
-            <router-link to="/timeline">
+            <router-link to="/">
                 <img
                     class="img-fluid d-none d-md-block mx-1"
                     src="@/assets/images/gov/bcid-logo-rev-en.svg"
                     width="181"
                     height="44"
-                    alt="Go to healthgateway timeline"
+                    alt="Go to healthgateway home page"
                 />
 
                 <img
@@ -118,15 +118,12 @@ export default class HeaderComponent extends Vue {
                     src="@/assets/images/gov/bcid-symbol-rev.svg"
                     width="30"
                     height="44"
-                    alt="Go to healthgateway timeline"
+                    alt="Go to healthgateway home page"
                 />
             </router-link>
         </b-navbar-brand>
         <b-navbar-brand class="px-0 pr-md-5 px-lg-5 mx-0">
-            <router-link
-                to="/timeline"
-                class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0"
-            >
+            <router-link to="/" class="nav-link my-0 px-0 pr-md-5 pr-lg-5 mx-0">
                 <h4 class="my-0 px-0 pr-md-5 pr-lg-5 mx-0">Health Gateway</h4>
             </router-link>
         </b-navbar-brand>

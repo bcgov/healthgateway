@@ -37,6 +37,10 @@ interface Tile {
 export default class LandingView extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
+    @Getter("oidcIsAuthenticated", {
+        namespace: "auth",
+    })
+    oidcIsAuthenticated!: boolean;
 
     private logo: string = Image00;
     private devices: string = Image02;
@@ -198,6 +202,7 @@ export default class LandingView extends Vue {
                     </b-col>
                 </b-row>
                 <b-row
+                    v-if="!oidcIsAuthenticated"
                     class="py-1 justify-content-center justify-content-lg-start"
                 >
                     <b-button
