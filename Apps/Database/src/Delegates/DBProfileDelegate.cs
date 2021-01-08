@@ -160,7 +160,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount(TimeSpan offset)
+        public IEnumerable<int> GetDailyLoggedInUsersCount(TimeSpan offset)
         {
             DateTime now = DateTime.UtcNow;
             DateTime clientTime = DateTime.SpecifyKind(now.Add(offset), DateTimeKind.Unspecified);
