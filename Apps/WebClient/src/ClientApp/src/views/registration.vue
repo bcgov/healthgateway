@@ -235,7 +235,8 @@ export default class RegistrationView extends Vue {
                                     this.$router.push({ path: "/timeline" });
                                 else
                                     this.$router.push({
-                                        path: "/profile?toVerifyPhone=true",
+                                        path: "/profile",
+                                        query: { toVerifyPhone: "true" },
                                     });
                             } else {
                                 this.addError({
