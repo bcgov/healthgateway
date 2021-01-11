@@ -196,6 +196,18 @@ export default class ProfileView extends Vue {
         this.intervalHandler = window.setInterval(() => {
             this.calculateTimeForDeletion();
         }, 1000);
+        this.checkToVerifyPhone();
+    }
+
+    private checkToVerifyPhone() {
+        let toVerifyPhone = this.$route.query.toVerifyPhone;
+        this.logger.debug(
+            `toVerifyPhone: ${toVerifyPhone}; smsVerified: ${this.smsVerified}`
+        );
+        if (toVerifyPhone && !this.smsVerified) {
+            this.logger.debug(`display Verifying SMS popup`);
+            this.verifySMS();
+        }
     }
 
     private validations() {
@@ -663,8 +675,9 @@ export default class ProfileView extends Vue {
                                     <b-form-input
                                         id="smsNumber"
                                         v-model="$v.smsNumber.$model"
+                                        v-mask="'(###) ###-####'"
+                                        type="tel"
                                         data-testid="smsNumberInput"
-                                        type="text"
                                         class="mb-1"
                                         :placeholder="
                                             isSMSEditable
