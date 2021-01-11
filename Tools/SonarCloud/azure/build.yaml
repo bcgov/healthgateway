@@ -13,14 +13,6 @@ jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
     steps:
-      - task: DotNetCoreCLI@2
-        displayName: 'Common - Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/Common/test/unit/CommonTests.csproj'
-          testRunTitle: 'Common Library Tests'
-        continueOnError: true
-
       - script: |
           set -e
           dotnet test \
@@ -30,6 +22,7 @@ jobs:
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
           dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
             /d:sonar.verbose=false \
             /k:hg-common \
             /n:"HealthGateway Common Library" \
@@ -52,14 +45,6 @@ jobs:
         displayName: 'Common - On Fail'
         condition: failed()
 
-      - task: DotNetCoreCLI@2
-        displayName: 'Database - Run dotnet Tests'
-        inputs:
-          command: 'test'
-          projects: '$(Build.SourcesDirectory)/Apps/Database/test/unit/DatabaseTests.csproj'
-          testRunTitle: 'Database Library Tests'
-        continueOnError: true
-
       - script: |
           set -e
           dotnet test \
@@ -69,6 +54,7 @@ jobs:
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
           dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
             /d:sonar.verbose=false \
             /k:hg-database \
             /n:"HealthGateway Database Library" \
@@ -165,6 +151,7 @@ jobs:
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
           dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
             /d:sonar.verbose=false \
             /k:hg-medication \
             /n:"HealthGateway Medication Service" \
@@ -195,6 +182,7 @@ jobs:
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
           dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
             /d:sonar.verbose=false \
             /k:hg-encounter \
             /n:"HealthGateway Encounter Service" \
@@ -225,6 +213,7 @@ jobs:
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
           dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
             /d:sonar.verbose=false \
             /k:hg-patient \
             /n:"HealthGateway Patient Service" \
@@ -247,79 +236,65 @@ jobs:
         displayName: 'Patient - On Fail'
         condition: failed()
 
-      # # - task: DotNetCoreCLI@2
-      # #   displayName: 'Immunization - Run dotnet Tests'
-      # #   inputs:
-      # #     command: 'test'
-      # #     projects: '$(Build.SourcesDirectory)/Apps/Immunization/test/unit/ImmunizationTests.csproj'
-      # #     testRunTitle: 'Immunization Service Tests'
-      # #   continueOnError: true
+      - script: |
+          set -e
+          dotnet test \
+            test/unit/ImmunizationTests.csproj \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            --logger:"xunit;LogFileName=results.xml" \
+            -r ./xUnitResults 
+          dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
+            /d:sonar.verbose=false \
+            /k:hg-immunization \
+            /n:"HealthGateway Immunization Service" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="$(immunization.login)" \
+            /d:sonar.scm.disabled="true" \
+            /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**, **/Startup.cs, **/Program.cs" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+          dotnet build    
+          dotnet sonarscanner end /d:sonar.login="$(immunization.login)"
+          echo "$@" >&2
+        displayName: 'Immunization - Perform Static Code Analysis'
+        workingDirectory: $(Build.SourcesDirectory)/Apps/Immunization
+        continueOnError: true
 
-      # - script: |
-      #     set -e
-      #     dotnet test \
-      #       test/unit/ImmunizationTests.csproj \
-      #       /p:CollectCoverage=true \
-      #       /p:CoverletOutputFormat=opencover \
-      #       --logger:"xunit;LogFileName=results.xml" \
-      #       -r ./xUnitResults 
-      #     dotnet sonarscanner begin \
-      #       /d:sonar.verbose=false \
-      #       /k:"immsservice_dev" \
-      #       /n:"Azure Immunization Service" \
-      #       /d:sonar.host.url="https://sonarcloud.io" \
-      #       /d:sonar.login="$(sonar.login)" \
-      #       /d:sonar.scm.disabled="true" \
-      #       /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**, **/Startup.cs, **/Program.cs" \
-      #       /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-      #       /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
-      #     dotnet build    
-      #     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
-      #     echo "$@" >&2
-      #   displayName: 'Immunization - Perform Static Code Analysis'
-      #   workingDirectory: $(Build.SourcesDirectory)/Apps/Immunization
-      #   continueOnError: true
-
-      # - script: |
-      #     curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Immunization Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-      #   displayName: 'Immunization - On Fail'
-      #   condition: failed()
+      - script: |
+          curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Immunization Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
+        displayName: 'Immunization - On Fail'
+        condition: failed()
 
 
-      # # - task: DotNetCoreCLI@2
-      # #   displayName: 'Laboratory - Run dotnet Tests'
-      # #   inputs:
-      # #     command: 'test'
-      # #     projects: '$(Build.SourcesDirectory)/Apps/Laboratory/test/unit/LaboratoryTests.csproj'
-      # #     testRunTitle: 'Laboratory Service Tests'
-      # #   continueOnError: true
+      - script: |
+          set -e
+          dotnet test \
+            test/unit/LaboratoryTests.csproj \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            --logger:"xunit;LogFileName=results.xml" \
+            -r ./xUnitResults 
+          dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
+            /d:sonar.verbose=false \
+            /k:hg-laboratory \
+            /n:"HealthGateway Laboratory Service" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="$(laboratory.login)" \
+            /d:sonar.scm.disabled="true" \
+            /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**, **/Startup.cs, **/Program.cs" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
+          dotnet build    
+          dotnet sonarscanner end /d:sonar.login="$(laboratory.login)"
+          echo "$@" >&2
+        displayName: 'Laboratory - Perform Static Code Analysis'
+        workingDirectory: $(Build.SourcesDirectory)/Apps/Laboratory
+        continueOnError: true
 
-      # - script: |
-      #     set -e
-      #     dotnet test \
-      #       test/unit/LaboratoryTests.csproj \
-      #       /p:CollectCoverage=true \
-      #       /p:CoverletOutputFormat=opencover \
-      #       --logger:"xunit;LogFileName=results.xml" \
-      #       -r ./xUnitResults 
-      #     dotnet sonarscanner begin \
-      #       /d:sonar.verbose=false \
-      #       /k:"laboratoryservice_dev" \
-      #       /n:"Azure Laboratory Service" \
-      #       /d:sonar.host.url="https://sonarcloud.io" \
-      #       /d:sonar.login="$(sonar.login)" \
-      #       /d:sonar.scm.disabled="true" \
-      #       /d:sonar.coverage.exclusions="**Tests*.cs, **/Common/**, **/Startup.cs, **/Program.cs" \
-      #       /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-      #       /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
-      #     dotnet build    
-      #     dotnet sonarscanner end /d:sonar.login="$(sonar.login)"
-      #     echo "$@" >&2
-      #   displayName: 'Laboratory - Perform Static Code Analysis'
-      #   workingDirectory: $(Build.SourcesDirectory)/Apps/Laboratory
-      #   continueOnError: true
-
-      # - script: |
-      #     curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Laboratory Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-      #   displayName: 'Laboratory - On Fail'
-      #   condition: failed()
+      - script: |
+          curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Laboratory Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
+        displayName: 'Laboratory - On Fail'
+        condition: failed()
