@@ -16,38 +16,6 @@ jobs:
       - script: |
           set -e
           dotnet test \
-            test/unit/CommonTests.csproj \
-            /p:CollectCoverage=true \
-            /p:CoverletOutputFormat=opencover \
-            --logger:"xunit;LogFileName=results.xml" \
-            -r ./xUnitResults 
-          dotnet sonarscanner begin \
-            /o:bcgov-sonarcloud \
-            /d:sonar.verbose=false \
-            /k:hg-common \
-            /n:"HealthGateway Common Library" \
-            /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.login="$(common.login)" \
-            /d:sonar.scm.disabled="true" \
-            /d:sonar.coverage.exclusions="**Tests*.cs, **/Database/**" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-            /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
-          dotnet build    
-          dotnet sonarscanner end /d:sonar.login="$(common.login)"
-          echo "$@" >&2
-        displayName: 'Common - Perform Static Code Analysis'
-        continueOnError: true
-        workingDirectory: $(Build.SourcesDirectory)/Apps/Common
-        enabled: 'true'
-
-      - script: |
-          curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Common Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'Common - On Fail'
-        condition: failed()
-
-      - script: |
-          set -e
-          dotnet test \
             test/unit/DatabaseTests.csproj \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
@@ -80,34 +48,33 @@ jobs:
       - script: |
           set -e
           dotnet test \
-            test/unit/WebClientTests.csproj \
+            test/unit/CommonTests.csproj \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
-          npm --prefix src/ClientApp test
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
-            /k:hg-webclient \
-            /n:"HealthGateway WebClient" \
-            /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.login="$(webclient.login)" \
             /d:sonar.verbose=false \
-            /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts, **/Common/**, **/Startup.cs, **/Program.cs" \
+            /k:hg-common \
+            /n:"HealthGateway Common Library" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="$(common.login)" \
+            /d:sonar.scm.disabled="true" \
+            /d:sonar.coverage.exclusions="**Tests*.cs, **/Database/**" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-            /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" \
-            /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" \
-            /d:sonar.test.inclusions="**/*.test.ts"
+            /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
           dotnet build    
-          dotnet sonarscanner end /d:sonar.login="$(webclient.login)"
+          dotnet sonarscanner end /d:sonar.login="$(common.login)"
           echo "$@" >&2
-        displayName: 'WebClient - Perform Static Code Analysis'
-        workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
+        displayName: 'Common - Perform Static Code Analysis'
         continueOnError: true
+        workingDirectory: $(Build.SourcesDirectory)/Apps/Common
+        enabled: 'true'
 
       - script: |
-          curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"WebClient Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'WebClient - On Fail'
+          curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Common Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
+        displayName: 'Common - On Fail'
         condition: failed()
 
       - script: |
@@ -298,3 +265,36 @@ jobs:
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Laboratory Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
         displayName: 'Laboratory - On Fail'
         condition: failed()
+
+      - script: |
+          set -e
+          dotnet test \
+            test/unit/WebClientTests.csproj \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            --logger:"xunit;LogFileName=results.xml" \
+            -r ./xUnitResults 
+          npm --prefix src/ClientApp test
+          dotnet sonarscanner begin \
+            /o:bcgov-sonarcloud \
+            /k:hg-webclient \
+            /n:"HealthGateway WebClient" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="$(webclient.login)" \
+            /d:sonar.verbose=false \
+            /d:sonar.coverage.exclusions="**Tests*.cs, **test*.ts, **/Common/**, **/Startup.cs, **/Program.cs" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.typescript.lcov.reportPaths="../sonar_reports/jest.out/lcov.info" \
+            /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" \
+            /d:sonar.test.inclusions="**/*.test.ts"
+          dotnet build    
+          dotnet sonarscanner end /d:sonar.login="$(webclient.login)"
+          echo "$@" >&2
+        displayName: 'WebClient - Perform Static Code Analysis'
+        workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
+        continueOnError: true
+
+      - script: |
+          curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"WebClient Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
+        displayName: 'WebClient - On Fail'
+        condition: failed()        
