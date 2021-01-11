@@ -15,6 +15,7 @@ jobs:
     steps:
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx1024m"
           dotnet test \
             test/unit/DatabaseTests.csproj \
             /p:CollectCoverage=true \
