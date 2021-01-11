@@ -231,7 +231,13 @@ export default class RegistrationView extends Vue {
                     this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
                         (isRegistered: boolean) => {
                             if (isRegistered) {
-                                this.$router.push({ path: "/timeline" });
+                                if (this.smsNumber === "")
+                                    this.$router.push({ path: "/timeline" });
+                                else
+                                    this.$router.push({
+                                        path: "/profile",
+                                        query: { toVerifyPhone: "true" },
+                                    });
                             } else {
                                 this.addError({
                                     title: "User profile creation",
@@ -377,9 +383,10 @@ export default class RegistrationView extends Vue {
                             <b-form-input
                                 id="smsNumberInput"
                                 v-model="$v.smsNumber.$model"
+                                v-mask="'(###) ###-####'"
+                                type="tel"
                                 data-testid="smsNumberInput"
                                 class="d-flex"
-                                type="text"
                                 placeholder="Your phone number"
                                 :state="isValid($v.smsNumber)"
                                 :disabled="!isSMSNumberChecked"
