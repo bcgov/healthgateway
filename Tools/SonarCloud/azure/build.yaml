@@ -15,7 +15,7 @@ jobs:
     steps:
       - script: |
           set -e
-          export SONAR_SCANNER_OPTS="-Xmx1024m"
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/DatabaseTests.csproj \
             /p:CollectCoverage=true \
@@ -28,18 +28,19 @@ jobs:
             /k:hg-database \
             /n:"HealthGateway Database Library" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.login="$(database.login)" \
+            /d:sonar.login="b81603b305c3bb5e36a5fda4f09e4a010a0b7ec7" \
             /d:sonar.scm.disabled="true" \
             /d:sonar.coverage.exclusions="**Tests*.cs" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
           dotnet build    
-          dotnet sonarscanner end /d:sonar.login="$(database.login)"
+          dotnet sonarscanner end /d:sonar.login="b81603b305c3bb5e36a5fda4f09e4a010a0b7ec7"
           echo "$@" >&2
         displayName: 'Database - Perform Static Code Analysis'
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/Database
         enabled: 'true'
+
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Database Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
@@ -48,6 +49,7 @@ jobs:
 
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/CommonTests.csproj \
             /p:CollectCoverage=true \
@@ -78,8 +80,10 @@ jobs:
         displayName: 'Common - On Fail'
         condition: failed()
 
+
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/AdminWebClientTests.csproj \
             /p:CollectCoverage=true \
@@ -110,8 +114,10 @@ jobs:
         displayName: 'AdminWebClient - On Fail'
         condition: failed()
 
+
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/MedicationTests.csproj \
             /p:CollectCoverage=true \
@@ -141,8 +147,10 @@ jobs:
         displayName: 'Medication - On Fail'
         condition: failed()
 
+
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/EncounterTests.csproj \
             /p:CollectCoverage=true \
@@ -172,8 +180,10 @@ jobs:
         displayName: 'Encounter - On Fail'
         condition: failed()
 
+
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/PatientTests.csproj \
             /p:CollectCoverage=true \
@@ -204,8 +214,10 @@ jobs:
         displayName: 'Patient - On Fail'
         condition: failed()
 
+
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/ImmunizationTests.csproj \
             /p:CollectCoverage=true \
@@ -238,6 +250,7 @@ jobs:
 
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/LaboratoryTests.csproj \
             /p:CollectCoverage=true \
@@ -267,8 +280,10 @@ jobs:
         displayName: 'Laboratory - On Fail'
         condition: failed()
 
+
       - script: |
           set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet test \
             test/unit/WebClientTests.csproj \
             /p:CollectCoverage=true \
