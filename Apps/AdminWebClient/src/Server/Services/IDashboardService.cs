@@ -13,10 +13,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-using System.Collections.Generic;
-
 namespace HealthGateway.Admin.Services
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Service that provides functionality to the admin dashboard.
     /// </summary>
@@ -33,7 +34,7 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of logged in user.</returns>
-        IEnumerable<int> GetDailyLoggedInUsersCount(int timeOffset);
+        IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset);
 
         /// <summary>
         /// Retrieves the count of users with notes on their timeline.

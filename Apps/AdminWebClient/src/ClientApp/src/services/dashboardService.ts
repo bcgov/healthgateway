@@ -30,7 +30,7 @@ export class DashboardService implements IDashboardService {
                 .get<number>(
                     `${
                         this.BASE_URI
-                    }/LoggedInCount?offset=${new Date().getTimezoneOffset()}`
+                    }/LoggedInCount?timeOffset=${new Date().getTimezoneOffset()}`
                 )
                 .then(requestResult => {
                     resolve(requestResult);

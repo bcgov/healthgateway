@@ -58,10 +58,10 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public IEnumerable<int> GetDailyLoggedInUsersCount(int timeOffset)
+        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new TimeSpan(0, -1 * timeOffset, 0);
+            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
         }
 
