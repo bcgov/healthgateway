@@ -188,6 +188,20 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=timelineLoading]").should("not.exist");
 });
 
-Cypress.Commands.add("closeCovidModal", () => {
-    cy.get("[data-testid=covidModal] .close").click();
+Cypress.Commands.add("enableModule", (module) => {
+    return cy.readConfig().as("config").then(config => {
+        config.webClient.modules.CovidLabResults = false
+        config.webClient.modules.Comment = false
+        config.webClient.modules.Encounter = false
+        config.webClient.modules.Immunization = false
+        config.webClient.modules.Laboratory = false
+        config.webClient.modules.Medication = false
+        config.webClient.modules.MedicationHistory = false
+        config.webClient.modules.Note = false
+
+        config.webClient.modules[module] = true;
+        cy.server();
+        cy.route('GET', '/v1/api/configuration/', config);
+    });
 });
+

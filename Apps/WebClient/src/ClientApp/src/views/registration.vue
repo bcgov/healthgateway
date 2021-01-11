@@ -319,6 +319,7 @@ export default class RegistrationView extends Vue {
                                     <b-form-checkbox
                                         id="emailCheckbox"
                                         v-model="isEmailChecked"
+                                        data-testid="emailCheckbox"
                                         @change="onEmailOptout($event)"
                                     >
                                     </b-form-checkbox>
