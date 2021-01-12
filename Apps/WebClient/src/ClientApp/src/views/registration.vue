@@ -325,6 +325,7 @@ export default class RegistrationView extends Vue {
                                     <b-form-checkbox
                                         id="emailCheckbox"
                                         v-model="isEmailChecked"
+                                        data-testid="emailCheckbox"
                                         @change="onEmailOptout($event)"
                                     >
                                     </b-form-checkbox>
@@ -425,6 +426,7 @@ export default class RegistrationView extends Vue {
                             <b-form-checkbox
                                 id="accept"
                                 v-model="accepted"
+                                data-testid="acceptCheckbox"
                                 class="accept"
                                 :state="isValid($v.accepted)"
                             >
@@ -442,6 +444,7 @@ export default class RegistrationView extends Vue {
                             <b-button
                                 class="px-5 float-right"
                                 type="submit"
+                                data-testid="registerButton"
                                 size="lg"
                                 variant="primary"
                                 :class="{ disabled: !accepted }"
