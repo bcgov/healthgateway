@@ -1,5 +1,6 @@
 const { AuthMethod } = require("../../support/constants");
 const registrationPage = "/registration"
+const profilePage = "/profile"
 
 describe("Registration Page", () => {
     beforeEach(() => {
@@ -32,7 +33,7 @@ describe("Registration Page", () => {
         cy.get('[data-testid="sidebar"]').should('not.be.visible');
     });
 
-    it("Verify Phone", () => {
+    it("Registration goes to Verify Phone", () => {
         cy.enableModule("Medication").then(() => {
             cy.login(Cypress.env('keycloak.unregistered.username'), 
                      Cypress.env('keycloak.password'), 
@@ -42,5 +43,17 @@ describe("Registration Page", () => {
         cy.get('[data-testid="emailCheckbox"]')
             .should('be.visible')
             .click();
+        cy.get('[data-testid="smsNumberInput"]')
+            .should('be.visible', 'be.enabled')
+            .type(Cypress.env('phoneNumber'));
+        cy.get('[data-testid="acceptCheckbox"]')
+            .should('be.visible')
+            .click();
+        cy.get('[data-testid="registerButton"]')
+            .should('be.visible', 'be.enabled')
+            .click();
+        cy.url().should("include", profilePage);
+        cy.get('[data-testid="verifySMSModal"]')
+            .should('be.visible');
     });
 });
