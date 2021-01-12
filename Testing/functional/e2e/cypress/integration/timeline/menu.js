@@ -1,24 +1,14 @@
 const { AuthMethod } = require("../../support/constants")
 
 function login(isMobile) {
-    cy.readConfig().as("config").then(config => {
-            config.webClient.modules.CovidLabResults = false
-            config.webClient.modules.Comment = false
-            config.webClient.modules.Encounter = false
-            config.webClient.modules.Immunization = false
-            config.webClient.modules.Laboratory = false
-            config.webClient.modules.Medication = false
-            config.webClient.modules.MedicationHistory = false
-            config.webClient.modules.Note = true
-            cy.server();
-            cy.route('GET', '/v1/api/configuration/', config);
-            if (isMobile)
-                cy.viewport('iphone-6')  // Set viewport to 375px x 667px
-            cy.login(Cypress.env('keycloak.username'),
-                Cypress.env('keycloak.password'),
-                AuthMethod.KeyCloak);
-            cy.checkTimelineHasLoaded();
-        })
+    cy.enableModules("Note");
+    if (isMobile) {
+        cy.viewport('iphone-6')  // Set viewport to 375px x 667px
+    }
+    cy.login(Cypress.env('keycloak.username'),
+        Cypress.env('keycloak.password'),
+        AuthMethod.KeyCloak);
+    cy.checkTimelineHasLoaded();
 }
 
 describe('Menu System', () => {

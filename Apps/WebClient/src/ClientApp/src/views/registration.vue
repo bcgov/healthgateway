@@ -231,7 +231,13 @@ export default class RegistrationView extends Vue {
                     this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
                         (isRegistered: boolean) => {
                             if (isRegistered) {
-                                this.$router.push({ path: "/timeline" });
+                                if (this.smsNumber === "")
+                                    this.$router.push({ path: "/timeline" });
+                                else
+                                    this.$router.push({
+                                        path: "/profile",
+                                        query: { toVerifyPhone: "true" },
+                                    });
                             } else {
                                 this.addError({
                                     title: "User profile creation",
@@ -319,6 +325,7 @@ export default class RegistrationView extends Vue {
                                     <b-form-checkbox
                                         id="emailCheckbox"
                                         v-model="isEmailChecked"
+                                        data-testid="emailCheckbox"
                                         @change="onEmailOptout($event)"
                                     >
                                     </b-form-checkbox>
@@ -377,9 +384,10 @@ export default class RegistrationView extends Vue {
                             <b-form-input
                                 id="smsNumberInput"
                                 v-model="$v.smsNumber.$model"
+                                v-mask="'(###) ###-####'"
+                                type="tel"
                                 data-testid="smsNumberInput"
                                 class="d-flex"
-                                type="text"
                                 placeholder="Your phone number"
                                 :state="isValid($v.smsNumber)"
                                 :disabled="!isSMSNumberChecked"
@@ -418,6 +426,7 @@ export default class RegistrationView extends Vue {
                             <b-form-checkbox
                                 id="accept"
                                 v-model="accepted"
+                                data-testid="acceptCheckbox"
                                 class="accept"
                                 :state="isValid($v.accepted)"
                             >
@@ -435,6 +444,7 @@ export default class RegistrationView extends Vue {
                             <b-button
                                 class="px-5 float-right"
                                 type="submit"
+                                data-testid="registerButton"
                                 size="lg"
                                 variant="primary"
                                 :class="{ disabled: !accepted }"
