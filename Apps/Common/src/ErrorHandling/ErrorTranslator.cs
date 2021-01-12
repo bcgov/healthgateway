@@ -52,7 +52,8 @@ namespace HealthGateway.Common.ErrorHandling
         /// <returns>A RequestResultError encapsulating the action required.</returns>
         public static HealthGateway.Common.Models.RequestResultError ActionRequired(string message, ActionType actionType)
         {
-            return new Models.RequestResultError() { 
+            return new Models.RequestResultError()
+            {
                 ResultMessage = message,
                 ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                 ActionCode = actionType,
