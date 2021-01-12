@@ -3,7 +3,7 @@ describe('Immunization', () => {
     before(() => {
       let isLoading = false;  
       cy.enableModules("Immunization");
-      cy.intercept('GET', "v1/api/Immunization/*", (req) => { 
+      cy.intercept('GET', "**/v1/api/Immunization/*", (req) => { 
         req.reply(res => {     
           if (!isLoading) {
             res.send({ fixture: "ImmunizationService/immunizationrefresh.json" })
@@ -22,7 +22,6 @@ describe('Immunization', () => {
     it('Validate Immunization Loading', () => {
       cy.get('[data-testid=immunizationLoading]')
         .should('be.visible')
-      cy.intercept('GET', "v1/api/Immunization/*", );
       cy.get('[data-testid=immunizationLoading]')
         .should('not.exist')
       cy.get('[data-testid=immunizationReady]')
