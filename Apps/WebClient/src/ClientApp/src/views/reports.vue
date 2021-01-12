@@ -111,7 +111,7 @@ export default class ReportsView extends Vue {
                     <PageTitleComponent :title="`Export Records`" />
                     <div class="my-3 px-3 py-4 form">
                         <b-row>
-                            <b-col class="col-6 col-md-3 pr-0">
+                            <b-col class="col-12 col-md-3 mb-2">
                                 <b-row>
                                     <b-col>
                                         <label for="reportType">
@@ -121,28 +121,24 @@ export default class ReportsView extends Vue {
                                 </b-row>
                                 <b-row>
                                     <b-col>
-                                        <b-row>
-                                            <b-col>
-                                                <b-form-select
-                                                    id="reportType"
-                                                    v-model="reportType"
-                                                    data-testid="reportType"
-                                                    :options="reportTypeOptions"
-                                                >
-                                                </b-form-select>
-                                            </b-col>
-                                        </b-row>
+                                        <b-form-select
+                                            id="reportType"
+                                            v-model="reportType"
+                                            data-testid="reportType"
+                                            :options="reportTypeOptions"
+                                        >
+                                        </b-form-select>
                                     </b-col>
                                 </b-row>
                             </b-col>
-                            <b-col class="col-6 col-md-9">
+                            <b-col class="col-12 col-md-3 mb-2">
                                 <b-row>
                                     <b-col>
-                                        <label for="start-date">Dates</label>
+                                        <label for="start-date">From</label>
                                     </b-col>
                                 </b-row>
                                 <b-row>
-                                    <b-col class="col-12 col-md-4">
+                                    <b-col>
                                         <b-form-input
                                             id="start-date"
                                             v-model="startDate"
@@ -151,7 +147,16 @@ export default class ReportsView extends Vue {
                                             type="date"
                                         />
                                     </b-col>
-                                    <b-col class="col-12 col-md-4 mb-2">
+                                </b-row>
+                            </b-col>
+                            <b-col class="col-12 col-md-6">
+                                <b-row>
+                                    <b-col>
+                                        <label for="end-date">To</label>
+                                    </b-col>
+                                </b-row>
+                                <b-row>
+                                    <b-col class="col-12 col-md-6 mb-2">
                                         <b-form-input
                                             id="end-date"
                                             v-model="endDate"
@@ -160,7 +165,7 @@ export default class ReportsView extends Vue {
                                             type="date"
                                         />
                                     </b-col>
-                                    <b-col class="col-12 col-md-4">
+                                    <b-col class="col-12 col-md-6">
                                         <b-button
                                             variant="primary"
                                             data-testid="exportRecordBtn"
