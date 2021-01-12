@@ -24,13 +24,13 @@ export class DashboardService implements IDashboardService {
         });
     }
 
-    public getLoggedInUsersCount(): Promise<number> {
+    public getLoggedInUsersCount(): Promise<{ [key: string]: number }> {
         return new Promise((resolve, reject) => {
             this.http
-                .get<number>(
+                .get<{ [key: string]: number }>(
                     `${
                         this.BASE_URI
-                    }/LoggedInCount?offset=${new Date().getTimezoneOffset()}`
+                    }/LoggedInCount?timeOffset=${new Date().getTimezoneOffset()}`
                 )
                 .then(requestResult => {
                     resolve(requestResult);

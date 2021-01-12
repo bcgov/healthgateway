@@ -205,7 +205,7 @@
             <summary>
             Retrieves the count of logged in user in the last day.
             </summary>
-            <param name="offset">The offset from the client browser to UTC.</param>
+            <param name="timeOffset">The offset from the client browser to UTC.</param>
             <returns>The count of logged in users in the current day.</returns>
             <response code="200">Returns the list of user feedbacks.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -825,7 +825,7 @@
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetRegisteredUserCount">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.GetTodayLoggedInUsersCount(System.Int32)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetDailyLoggedInUsersCount(System.Int32)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetUsersWithNotesCount">
@@ -966,11 +966,11 @@
             </summary>
             <returns>The count of user profiles that accepted the terms of service.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetTodayLoggedInUsersCount(System.Int32)">
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetDailyLoggedInUsersCount(System.Int32)">
             <summary>
             Retrieves the count of logged in users in the current day.
             </summary>
-            <param name="offset">The offset from the client browser to UTC.</param>
+            <param name="timeOffset">The time offset from the client browser to UTC.</param>
             <returns>The count of logged in user.</returns>
         </member>
         <member name="M:HealthGateway.Admin.Services.IDashboardService.GetUsersWithNotesCount">

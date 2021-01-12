@@ -125,8 +125,7 @@ namespace HealthGateway.Database.Delegates
             DBResult<List<UserProfile>> result = new DBResult<List<UserProfile>>();
             int offset = page * pagesize;
             result.Payload = this.dbContext.UserProfile
-                                .Where(p => (p.LastLoginDateTime == null ||
-                                                (p.LastLoginDateTime != null && p.LastLoginDateTime < filterDateTime)) &&
+                                .Where(p => (p.LastLoginDateTime < filterDateTime) &&
                                              p.ClosedDateTime == null &&
                                              !string.IsNullOrWhiteSpace(p.Email))
                                 .OrderBy(o => o.CreatedDateTime)
@@ -161,18 +160,19 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetLoggedInUsersCount(TimeSpan offset)
+        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(TimeSpan offset)
         {
-            DateTime now = DateTime.UtcNow;
-            DateTime clientTime = DateTime.SpecifyKind(now.Add(offset), DateTimeKind.Unspecified);
-            DateTimeOffset clientStartDate = new DateTimeOffset(clientTime.Date, offset);
-            DateTime queryStartTime = clientStartDate.UtcDateTime;
-            DateTime queryEndTime = now;
-            int result = this.dbContext.UserProfile
-                .Count(u => u.LastLoginDateTime.HasValue &&
-               u.LastLoginDateTime.Value >= queryStartTime &&
-               u.LastLoginDateTime.Value < queryEndTime);
-            return result;
+            Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime })
+                .Union(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
+                .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
+                .Distinct()
+                .GroupBy(x => x.lastLoginDate).Select(x => new { lastLoginDate = x.Key, count = x.Count() })
+                .OrderBy(x => x.lastLoginDate)
+                .ToDictionary(x => x.lastLoginDate, x => x.count);
+
+            return dateCount;
         }
 
         /// <inheritdoc />

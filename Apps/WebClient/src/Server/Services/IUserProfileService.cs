@@ -19,7 +19,6 @@ namespace HealthGateway.WebClient.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
 
     /// <summary>
@@ -31,9 +30,9 @@ namespace HealthGateway.WebClient.Services
         /// Gets the user profile model.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="lastLogin">The date of last login performed by the user.</param>
+        /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
         /// <returns>The wrappeed user profile.</returns>
-        RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime? lastLogin = null);
+        RequestResult<UserProfileModel> GetUserProfile(string hdid, DateTime jwtAuthTime);
 
         /// <summary>
         /// Saves the user profile to the database.
@@ -41,8 +40,9 @@ namespace HealthGateway.WebClient.Services
         /// <param name="createProfileRequest">The request to create a user profile model.</param>
         /// <param name="hostUri">The host of the email validation endpoint.</param>
         /// <param name="bearerToken">The access token of the authenticated user.</param>
+        /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
         /// <returns>The wrapped user profile.</returns>
-        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken);
+        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken, DateTime jwtAuthTime);
 
         /// <summary>
         /// Closed the user profile.

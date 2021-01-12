@@ -33,7 +33,7 @@ export interface IUserFeedbackService {
 export interface IDashboardService {
     initialize(http: IHttpDelegate): void;
     getRegisteredUsersCount(): Promise<number>;
-    getLoggedInUsersCount(): Promise<number>;
+    getLoggedInUsersCount(): Promise<{ [key: string]: number }>;
     getUsersWithNotesCount(): Promise<number>;
     getDependentCount(): Promise<number>;
 }
