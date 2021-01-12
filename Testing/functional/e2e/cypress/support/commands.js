@@ -188,20 +188,14 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=timelineLoading]").should("not.exist");
 });
 
-Cypress.Commands.add("enableModule", (module) => {
+Cypress.Commands.add("enableModules", (modules) => {
     return cy.readConfig().as("config").then(config => {
-        config.webClient.modules.CovidLabResults = false
-        config.webClient.modules.Comment = false
-        config.webClient.modules.Encounter = false
-        config.webClient.modules.Immunization = false
-        config.webClient.modules.Laboratory = false
-        config.webClient.modules.Medication = false
-        config.webClient.modules.MedicationHistory = false
-        config.webClient.modules.Note = false
-
-        config.webClient.modules[module] = true;
-        cy.server();
-        cy.route('GET', '/v1/api/configuration/', config);
+        Object.keys(config.webClient.modules).forEach(key => {
+            config.webClient.modules[key] = modules.includes(key);
+        });
+        cy.intercept('GET', '/v1/api/configuration/', {
+            statusCode: 200,
+            body: config
+        });
     });
 });
-

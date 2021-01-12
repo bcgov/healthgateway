@@ -7,53 +7,58 @@ describe("Registration Page", () => {
     })
     
     it("Minimum Age error", () => {
-        cy.enableModule("Medication").then(() => {
-            cy.login(Cypress.env('keycloak.hlthgw401.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloakUI, registrationPage);
-        });
+        cy.enableModules("Medication");
+        cy.login(
+            Cypress.env('keycloak.hlthgw401.username'), 
+            Cypress.env('keycloak.password'), 
+            AuthMethod.KeyCloak
+        );
         cy.url().should("include", registrationPage);
         cy.get('[data-testid="minimumAgeErrorText"]').should('be.visible');
     });
 
     it("Client Registration error", () => {
-        cy.enableModule("Medication").then(() => {
-            cy.login(Cypress.env('keycloak.healthgateway12.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloakUI, registrationPage);   
-        });
+        cy.enableModules("Medication");
+        cy.login(
+            Cypress.env('keycloak.healthgateway12.username'), 
+            Cypress.env('keycloak.password'), 
+            AuthMethod.KeyCloak
+        );   
         cy.url().should("include", registrationPage);
         cy.get('[data-testid="clientRegistryErrorText"]').should('be.visible');
     });
 
     it("No sidebar or footer", () => {
-        cy.enableModule("Medication").then(() => {
-            cy.login(Cypress.env('keycloak.unregistered.username'), 
-                     Cypress.env('keycloak.password'), 
-                     AuthMethod.KeyCloakUI);
-        });
+        cy.enableModules("Medication");
+        cy.login(
+            Cypress.env('keycloak.unregistered.username'), 
+            Cypress.env('keycloak.password'), 
+                    AuthMethod.KeyCloak);
         cy.url().should("include", registrationPage);
         cy.contains("footer").should("not.exist");
         cy.get('[data-testid="sidebar"]').should('not.be.visible');
     });
 
     it("Registration goes to Verify Phone", () => {
-        cy.enableModule("Medication").then(() => {
-            cy.login(Cypress.env('keycloak.unregistered.username'), 
-                     Cypress.env('keycloak.password'), 
-                     AuthMethod.KeyCloakUI);
-        });
+        cy.enableModules("Medication");
+        cy.login(Cypress.env('keycloak.unregistered.username'), 
+                    Cypress.env('keycloak.password'), 
+                    AuthMethod.KeyCloak);
         cy.url().should("include", registrationPage);
         cy.get('[data-testid="emailCheckbox"]')
-            .should('be.visible')
-            .click();
+            .should('be.enabled')
+            .uncheck({ force: true });
         cy.get('[data-testid="smsNumberInput"]')
             .should('be.visible', 'be.enabled')
             .type(Cypress.env('phoneNumber'));
         cy.get('[data-testid="acceptCheckbox"]')
-            .should('be.visible')
-            .click();
+            .should('be.enabled')
+            .check({ force: true });
         cy.get('[data-testid="registerButton"]')
             .should('be.visible', 'be.enabled')
             .click();
         cy.url().should("include", profilePage);
-        cy.get('[data-testid="verifySMSModal"]')
+        cy.get('[data-testid="verifySMSModalText"]')
             .should('be.visible');
     });
 });
