@@ -605,11 +605,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                 app.UseDeveloperExceptionPage();
             }
 
-            if (!this.environment.IsDevelopment())
-            {
-                app.UseHttpsRedirection();
-            }
-
             app.UseStaticFiles();
             app.UseRouting();
 
