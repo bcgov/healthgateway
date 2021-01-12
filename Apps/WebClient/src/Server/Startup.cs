@@ -28,7 +28,6 @@ namespace HealthGateway.WebClient
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Rewrite;
     using Microsoft.AspNetCore.SpaServices;
@@ -119,19 +118,6 @@ namespace HealthGateway.WebClient
             // Configure SPA
             services.AddControllersWithViews();
 
-            services.AddHsts(options =>
-            {
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(365);
-                options.Preload = true;
-            });
-            // Configure HTTPS redirection
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status301MovedPermanently;
-                options.HttpsPort = 443;
-            });
-
             // In production, the Vue files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -164,9 +150,6 @@ namespace HealthGateway.WebClient
 
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-
-                // Redirect http to https
-                app.UseHttpsRedirection();
             }
 
             if (!env.IsDevelopment())
