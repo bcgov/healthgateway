@@ -108,7 +108,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddResponseCompression(options =>
             {
                 options.Providers.Add<GzipCompressionProvider>();
-                options.EnableForHttps = true;
             });
 
             services.AddHttpClient<IHttpClientService, HttpClientService>();
