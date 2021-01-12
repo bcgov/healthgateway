@@ -19,13 +19,7 @@ namespace HealthGateway.CommonTests.Services
     using System.Collections.Generic;
     using System.Net.Http;
     using Microsoft.Extensions.Configuration;
-    using DeepEqual.Syntax;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
-    using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -49,9 +43,6 @@ namespace HealthGateway.CommonTests.Services
             using HttpClient client = service.CreateDefaultHttpClient();
 
             Assert.True(client is HttpClient && client.Timeout.TotalSeconds == timeout);
-
-            using HttpClient untrustedClient = service.CreateUntrustedHttpClient();
-            Assert.True(untrustedClient is HttpClient && client.Timeout.TotalSeconds == timeout);
         }
     }
 }
