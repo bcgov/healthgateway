@@ -16,14 +16,14 @@
 namespace HealthGateway.Common.Filters
 {
     using System;
-    using System.Linq;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.AspNetCore.Mvc.Filters;
-    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// The audit middleware class.

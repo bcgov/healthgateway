@@ -143,7 +143,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             string? userHDID = context.User.FindFirst(c => c.Type == GatewayClaims.HDID)?.Value;
             if (userHDID != null)
             {
-
                 retVal = userHDID == resourceHDID;
                 this.logger.LogDebug($"{userHDID} is {(!retVal ? "not " : string.Empty)}the resource owner");
             }

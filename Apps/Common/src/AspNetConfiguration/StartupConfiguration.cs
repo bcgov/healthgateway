@@ -117,16 +117,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHealthChecks()
                     .AddDbContextCheck<GatewayDbContext>();
 
-            services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                ClientCertificateOptions = ClientCertificateOption.Manual,
-                ServerCertificateCustomValidationCallback =
-                    (httpRequestMessage, cert, cetChain, policyErrors) =>
-                    {
-                        return true;
-                    },
-            });
-
             services
                 .AddRazorPages()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)

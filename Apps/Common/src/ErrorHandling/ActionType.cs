@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.ErrorHandling
 {
-
     /// <summary>
     /// Enumerator that defines the different types of required actions.
     /// </summary>
