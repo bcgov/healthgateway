@@ -162,16 +162,15 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(TimeSpan offset)
         {
-            var unionResult = this.dbContext.UserProfile
-                .Select(x => new { HdId = x.HdId, lastLoginDate = x.LastLoginDateTime })
-                .Union(this.dbContext.UserProfileHistory
-                .Select(x => new { HdId = x.HdId, lastLoginDate = x.LastLoginDateTime })).ToList();
-
-            Dictionary<DateTime, int> dateCount = unionResult.Select(x => new
-            {
-                HdId = x.HdId,
-                lastLoginDate = x.lastLoginDate.Add(offset).Date,
-            }).Distinct().GroupBy(x => x.lastLoginDate).OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Count());
+            Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime })
+                .Union(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
+                .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.AddMinutes(offset.TotalMinutes).Date })
+                .Distinct()
+                .GroupBy(x => x.lastLoginDate).Select(x => new { lastLoginDate = x.Key, count = x.Count() })
+                .OrderBy(x => x.lastLoginDate)
+                .ToDictionary(x => x.lastLoginDate, x => x.count);
 
             return dateCount;
         }
