@@ -29,7 +29,7 @@ VALUES (
 	null,
 	null,
 	null,
-	null,
+	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null
 );
@@ -58,7 +58,7 @@ VALUES (
 	null,
 	null,
 	null,
-	null,
+	current_timestamp, 
 	'iHa5atSWqppGzWsR1Z8nbL9OHJamPHLMwYqdKmsf4jU=',
 	null
 );
