@@ -1,7 +1,7 @@
 # High-Level HealthGateway Architecture
 
-<img src="diagrams/out/2019-09-10-HealthGatewayArchitecture.png"
-     alt="High-Leve HealthGateway Architecture"
+<img src="diagrams/out/HealthGatewayArchitecture-v2.jpg"
+     alt="High-Level HealthGateway Architecture"
      style="float: left; margin-right: 5000px; border: 1px solid #ccc; padding: 10px; border-radius: 5px;" />
 
 ## Accessing Existing Health Services
@@ -12,18 +12,18 @@
 
 * PharmaNet is accessed over Health Network Interface, a secure encrypted interface to the PharmaNet network allowing the HealthGateway to access a role-based set of HL7v2 Medications queries for medications history and contraindications and drug monographs.
 
-* Panorama is the public health databank managing immunizations for British Columbians. Access to Panorama to return a patient's immunizaiton record is an important capability of the HealthGateway.  The API is HL7 FHIR with OAuth 2 authentication to access the APIs.  
+* Panorama is the public health data bank managing immunizations for British Columbians. Access to Panorama to return a patient's immunization record is an important capability of the HealthGateway.  The API is HL7 FHIR with OAuth 2 authentication to access the APIs.  
 
 ## Notable Features
 
 * Standards-based Authentication and Authorization using OAuth 2 specifications, including OIDC, UMA 2.0
 
-* User-Managed Access Protected APIs (microservices running in scalable OpenShift)
+* User-Managed Access Protected APIs (micro services running in scalable OpenShift)
   * Users manage who can access their data using UMA 2.0 permission ticket issuance/revocation,including fine-grained access to their protected resources such as for masking lab result records, etc, without needing to recall pass phrases.
 
 * APIs are self-documented using OpenAPI documentation specification (aka Swagger)
 
-* APIs facade existing Health Services, but oriented towards HL7 FHIR RESTful API specificatioins, and are citizen-protected, and require citizen permission granted to third-party client applications and persons, which can also be revoked by the citizen at any time.
+* APIs facade existing Health Services, but oriented towards HL7 FHIR RESTful API specifications, and are citizen-protected, and require citizen permission granted to third-party client applications and persons, which can also be revoked by the citizen at any time.
 
 * Baseline Level-3 Identity Assured authentication is done with BC Services Card and OIDC.
 
