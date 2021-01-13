@@ -34,7 +34,7 @@ Review the common config parameters
 Create the common config
 
 ```console
-oc process -f ./commonConfig.yaml -p DB_STR="Server=patroni-postgres-master;Port=5432;Database=gateway;User ID=gateway;Password=[THE PASSWORD];Integrated Security=true;Pooling=true;Minimum Pool Size=2;Maximum Pool Size=30;Connection Idle Lifetime=300;Connection Pruning Interval=10;" | oc apply -f -
+oc process -f ./commonConfig.yaml -p DB_STR="Server=patroni-postgres-master;Port=5432;Database=gateway;User ID=gateway;Password=[THE PASSWORD];Integrated Security=true;Pooling=true;Minimum Pool Size=2;Maximum Pool Size=100;Connection Idle Lifetime=300;Connection Pruning Interval=10;" | oc apply -f -
 ```
 
 ### Common Secrets
