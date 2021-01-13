@@ -10,6 +10,30 @@
                         </div>
                     </b-col>
                 </b-row>
+                 <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >January 13, 2020 - v1.3.2 - Phone Verification, Platform Migration Prep, Updated Statistics 
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We improved the phone verification flow from registration, so it is more obvious where to enter the verification code. 
+                                    </li>
+                                    <li>
+                                        We are moving the application to an upgraded platform and have started preparing for the migration. 
+                                    </li>
+                                    <li>
+                                        We enhanced our statistics so we can better understand usage of our application and continue improving the product.  
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
