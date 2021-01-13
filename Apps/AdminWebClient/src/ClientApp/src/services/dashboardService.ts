@@ -10,10 +10,15 @@ export class DashboardService implements IDashboardService {
         this.http = http;
     }
 
-    public getRegisteredUsersCount(): Promise<number> {
+    public getRegisteredUsersCount(): Promise<{ [key: string]: number }> {
         return new Promise((resolve, reject) => {
             this.http
-                .get<number>(`${this.BASE_URI}/RegisteredCount`)
+                .get<{ [key: string]: number }>(
+                    `${
+                        this.BASE_URI
+                    }/RegisteredCount?timeOffset=${new Date().getTimezoneOffset() *
+                        -1}`
+                )
                 .then(requestResult => {
                     resolve(requestResult);
                 })
@@ -57,10 +62,15 @@ export class DashboardService implements IDashboardService {
         });
     }
 
-    public getDependentCount(): Promise<number> {
+    public getDependentCount(): Promise<{ [key: string]: number }> {
         return new Promise((resolve, reject) => {
             this.http
-                .get<number>(`${this.BASE_URI}/DependentCount`)
+                .get<{ [key: string]: number }>(
+                    `${
+                        this.BASE_URI
+                    }/DependentCount?timeOffset=${new Date().getTimezoneOffset() *
+                        -1}`
+                )
                 .then(requestResult => {
                     resolve(requestResult);
                 })

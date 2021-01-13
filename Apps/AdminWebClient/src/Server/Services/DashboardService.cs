@@ -52,9 +52,11 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetRegisteredUserCount()
+        public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
         {
-            return this.userProfileDelegate.GetRegisteredUsersCount();
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
+            return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
         }
 
         /// <inheritdoc />
@@ -72,9 +74,11 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetDependentCount()
+        public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
-            return this.dependentDelegate.GetDependentCount();
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
+            return this.dependentDelegate.GetDailyDependentCount(ts);
         }
     }
 }

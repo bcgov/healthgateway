@@ -69,10 +69,11 @@ namespace HealthGateway.Database.Delegates
         DBResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pagesize = 500);
 
         /// <summary>
-        /// Returns the count of registered users from the database.
+        /// Returns the daily count of registered users from the database.
         /// </summary>
+        /// <param name="offset">The clients offset to get to UTC.</param>
         /// <returns>The count of user profiles that accepted the terms of service.</returns>
-        int GetRegisteredUsersCount();
+        IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset);
 
         /// <summary>
         /// Returns the daily count of logged in users with the given offset .

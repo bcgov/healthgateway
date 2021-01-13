@@ -24,13 +24,14 @@ namespace HealthGateway.Admin.Services
     public interface IDashboardService
     {
         /// <summary>
-        /// Retrieves the count of registered users.
+        /// Retrieves the daily count of registered users.
         /// </summary>
+        /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of user profiles that accepted the terms of service.</returns>
-        int GetRegisteredUserCount();
+        IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset);
 
         /// <summary>
-        /// Retrieves the count of logged in users in the current day.
+        /// Retrieves the daily count of logged in users in the current day.
         /// </summary>
         /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of logged in user.</returns>
@@ -45,7 +46,8 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Retrieves the count of dependents.
         /// </summary>
+        /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of dependents.</returns>
-        int GetDependentCount();
+        IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset);
     }
 }

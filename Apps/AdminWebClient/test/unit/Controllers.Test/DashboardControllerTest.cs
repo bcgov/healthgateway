@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Test.Services
 {
+    using System;
+    using System.Collections.Generic;
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Controllers;
     using HealthGateway.Admin.Services;
@@ -53,13 +55,13 @@ namespace HealthGateway.Admin.Test.Services
         [Fact]
         public void ShouldGetDependentCount()
         {
-            int expected = 10;
+            Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { new DateTime(), 3 } };
             Mock<IDashboardService> mockService = new Mock<IDashboardService>();
-            mockService.Setup(s => s.GetDependentCount()).Returns(expected);
+            mockService.Setup(s => s.GetDailyDependentCount(It.IsAny<int>())).Returns(expected);
             DashboardController controller = new DashboardController(
                 mockService.Object);
 
-            IActionResult actualResult = controller.GetDependentCount();
+            IActionResult actualResult = controller.GetDependentCount(-480);
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
         }

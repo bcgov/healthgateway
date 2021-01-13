@@ -17,6 +17,7 @@
 #pragma warning disable CS1591
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -46,8 +47,9 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Gets the count of dependents from the database.
         /// </summary>
+        /// <param name="offset">The clients offset to get to UTC.</param>
         /// <returns>Total number of dependents.</returns>
-        int GetDependentCount();
+        IDictionary<DateTime, int> GetDailyDependentCount(TimeSpan offset);
 
         /// <summary>
         /// Deletes a Resource Delegate record in the database.
