@@ -48,17 +48,17 @@ Process the template patroni.yaml in Openshift, the parameters are self explanat
 
 The objects created include:
     1) Stateful Set Patroni-postgres containing 3 pods.
-    2) Master service (eg patroni-postgres-master)
+    1) Master service (eg patroni-postgres-master)
         Points to the elected master pod, which contains the transactional 
         database (selector is application=patroni-postgres, cluster-name=patroni-postgres, role=master).
-    3) Replica service (eg patroni-postgres-replica)
+    1) Replica service (eg patroni-postgres-replica)
         Points to the replica pods, which contains the read-only database, 
         we are currently configured for 2 replica pods (selector is application=patroni-postgres, cluster-name=patroni-postgres, role=replica).
-    4) Service account "patroni" with a role binding to the "patroni" role.
-    5) Volumes for each of the pods (5gb default).
-    6) Config map that stores the current master pod (patroni-postgres-leader).
-    7) Config map that stores the database configuration like "max_connections" (patroni-postgres-config).
-    8) Secret containing username and password.
+    1) Service account "patroni" with a role binding to the "patroni" role.
+    1) Volumes for each of the pods (5gb default).
+    1) Config map that stores the current master pod (patroni-postgres-leader).
+    1) Config map that stores the database configuration like "max_connections" (patroni-postgres-config).
+    1) Secret containing username and password.
 
 #### Initial Configuration
 
@@ -196,18 +196,18 @@ To restore the backup follow these steps:
 
     ?
 
-1) Edit Patroni configuration using Rest API
+## Edit Patroni configuration using Rest API
 
-    Connect the terminal to any of the patroni pods running using remote shell:
+1) Connect the terminal to any of the patroni pods running using remote shell:
 
     ``` bash
     oc rsh patroni-postgres-1
     ```
 
-1) Update config (e.g. postgresql.parameters.max_connections to 100):
+1) Update config (e.g. postgresql.parameters.max_connections to 500):
 
     ``` bash
-    curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_connections":100}}}' http://localhost:8008/config | jq .
+    curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_prepared_transactions":500, "max_connections":500}}}' http://localhost:8008/config | jq .
     ```
 
 1) Restart Cluster:

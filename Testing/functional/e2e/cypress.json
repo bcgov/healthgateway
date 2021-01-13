@@ -24,7 +24,8 @@
     "keycloak.unregistered.username": "unregistered",
     "keycloak.protected.username": "protected",
     "idir.username": "hgateway",
-    "idir.password": ""
+    "idir.password": "",
+    "phoneNumber": ""
   },
   "projectId": "ofnepc"
 }

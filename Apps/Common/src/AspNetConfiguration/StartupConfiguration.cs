@@ -108,7 +108,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddResponseCompression(options =>
             {
                 options.Providers.Add<GzipCompressionProvider>();
-                options.EnableForHttps = true;
             });
 
             services.AddHttpClient<IHttpClientService, HttpClientService>();
@@ -117,16 +116,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             services.AddHealthChecks()
                     .AddDbContextCheck<GatewayDbContext>();
 
-            services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                ClientCertificateOptions = ClientCertificateOption.Manual,
-                ServerCertificateCustomValidationCallback =
-                    (httpRequestMessage, cert, cetChain, policyErrors) =>
-                    {
-                        return true;
-                    },
-            });
-
             services
                 .AddRazorPages()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
@@ -134,13 +123,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
                 });
-
-            services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(180);
-            });
         }
 
         /// <summary>
@@ -610,17 +592,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             if (this.environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                this.Logger.LogInformation("Using HSTS, which sets Strict-Transport-Security Header");
-                app.UseHsts();
-            }
-
-            if (!this.environment.IsDevelopment())
-            {
-                app.UseHttpsRedirection();
             }
 
             app.UseStaticFiles();

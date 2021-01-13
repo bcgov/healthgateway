@@ -40,7 +40,7 @@ namespace HealthGateway.WebClient.Test.Services
     {
         readonly string hdid = "1234567890123456789012345678901234567890123456789012";
 
-        private Tuple<RequestResult<UserProfileModel>, UserProfileModel> ExecuteGetUserProfile(Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Read, DateTime? lastLoginDateTime = null)
+        private Tuple<RequestResult<UserProfileModel>, UserProfileModel> ExecuteGetUserProfile(Database.Constants.DBStatusCode dbResultStatus, DateTime lastLoginDateTime)
         {
             UserProfile userProfile = new UserProfile
             {
@@ -56,8 +56,7 @@ namespace HealthGateway.WebClient.Test.Services
             };
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
-            if(lastLoginDateTime != null)
-                expected.HasTermsOfServiceUpdated = true;
+            expected.HasTermsOfServiceUpdated = true;
 
             LegalAgreement termsOfService = new LegalAgreement()
             {
@@ -125,7 +124,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetUserProfile()
         {
-            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = ExecuteGetUserProfile(Database.Constants.DBStatusCode.Read);
+            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = ExecuteGetUserProfile(Database.Constants.DBStatusCode.Read, DateTime.Today);
             var actualResult = result.Item1;
             var expectedRecord = result.Item2;
 
@@ -147,7 +146,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetUserProfileWithDBError()
         {
-            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = ExecuteGetUserProfile(Database.Constants.DBStatusCode.Error);
+            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = ExecuteGetUserProfile(Database.Constants.DBStatusCode.Error, DateTime.Today);
             var actualResult = result.Item1;
 
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
@@ -157,7 +156,7 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ShouldGetUserProfileWithProfileNotFoundError()
         {
-            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = ExecuteGetUserProfile(Database.Constants.DBStatusCode.NotFound);
+            Tuple<RequestResult<UserProfileModel>, UserProfileModel> result = ExecuteGetUserProfile(Database.Constants.DBStatusCode.NotFound, DateTime.Today);
             var actualResult = result.Item1;
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
@@ -216,7 +215,7 @@ namespace HealthGateway.WebClient.Test.Services
                 messageVerificationDelegateMock.Object,
                 new Mock<IPatientService>().Object);
 
-            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token", DateTime.Today);
 
             return new Tuple<RequestResult<UserProfileModel>, UserProfileModel>(actualResult, expected);
         }
@@ -294,10 +293,12 @@ namespace HealthGateway.WebClient.Test.Services
                 messageVerificationDelegateMock.Object,
                 new Mock<IPatientService>().Object);
 
-            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token");
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token", DateTime.Today);
             notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(expected));
+            Assert.Equal(expected.HdId, actualResult.ResourcePayload.HdId);
+            Assert.Equal(expected.AcceptedTermsOfService, actualResult.ResourcePayload.AcceptedTermsOfService);
+            Assert.Equal(expected.Email, actualResult.ResourcePayload.Email);
         }
 
         [Fact]

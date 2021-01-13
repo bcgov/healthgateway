@@ -1,15 +1,88 @@
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { IDashboardService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import { DateTime } from "luxon";
+
+interface DailyData {
+    date: DateTime;
+    registered?: number;
+    loggedIn?: number;
+    notes?: number;
+    dependents?: number;
+}
+
 @Component
 export default class Dashboard extends Vue {
-    private registeredUserCount = 0;
-    private loggedInUsersCount = 0;
     private usersWithNotesCount = 0;
-    private dependentCount = 0;
+
+    private totalRegisteredUserCount = 0;
+    private totalDependentCount = 0;
+
+    private isLoadingRegistered = true;
+    private isLoadingLoggedIn = true;
+    private isLoadingNotes = true;
+    private isLoadingDependent = true;
+
+    private datePickerModal = false;
+
+    private today = DateTime.local();
+
     private dashboardService!: IDashboardService;
+
+    private selectedDates: string[] = [
+        DateTime.local()
+            .minus({ days: 10 })
+            .toISO()
+            .substr(0, 10),
+        DateTime.local()
+            .toISO()
+            .substr(0, 10)
+    ];
+
+    private tableData: DailyData[] = [];
+
+    @Watch("isLoading")
+    private onIsLoading(newVal: boolean, oldVal: boolean) {
+        if (oldVal && !newVal) {
+            this.tableData.sort((a, b) => {
+                return a.date > b.date ? 1 : a.date < b.date ? -1 : 0;
+            });
+        }
+    }
+
+    private get visibleTableData(): DailyData[] {
+        let visible: DailyData[] = [];
+        let startDate = DateTime.fromISO(this.selectedDates[0]);
+        let endDate = DateTime.fromISO(this.selectedDates[1]);
+        this.tableData.forEach(element => {
+            if (startDate <= element.date && element.date <= endDate) {
+                visible.push(element);
+            }
+        });
+        return visible;
+    }
+
+    private get isLoading(): boolean {
+        return (
+            this.isLoadingRegistered ||
+            this.isLoadingLoggedIn ||
+            this.isLoadingNotes ||
+            this.isLoadingDependent
+        );
+    }
+
+    private tableHeaders = [
+        {
+            text: "Date",
+            value: "date"
+        },
+        { text: "Registered", value: "registered" },
+        { text: "Logged In", value: "loggedIn" },
+        { text: "Notes", value: "notes" },
+        { text: "Dependents", value: "dependents" }
+    ];
 
     private mounted() {
         this.dashboardService = container.get(
@@ -22,47 +95,113 @@ export default class Dashboard extends Vue {
     }
 
     private getRegisteredUserCount() {
-        this.dashboardService.getRegisteredUsersCount().then(count => {
-            this.registeredUserCount = count;
-        });
+        this.isLoadingRegistered = true;
+        this.dashboardService
+            .getRegisteredUsersCount()
+            .then(count => {
+                for (let key in count) {
+                    var countDate = DateTime.fromISO(key);
+                    var dateValue = count[key];
+                    var index = this.tableData.findIndex(
+                        x => x.date.toMillis() === countDate.toMillis()
+                    );
+                    if (index > 0) {
+                        this.tableData[index].registered = dateValue;
+                    } else {
+                        this.tableData.push({
+                            date: countDate,
+                            registered: dateValue
+                        });
+                    }
+                    this.totalRegisteredUserCount += dateValue;
+                }
+            })
+            .finally(() => {
+                this.isLoadingRegistered = false;
+            });
     }
 
     private getLoggedInUsersCount() {
-        this.dashboardService.getLoggedInUsersCount().then(count => {
-            this.loggedInUsersCount = count;
-        });
+        this.isLoadingLoggedIn = true;
+        this.dashboardService
+            .getLoggedInUsersCount()
+            .then(count => {
+                for (let key in count) {
+                    var countDate = DateTime.fromISO(key);
+                    var dateValue = count[key];
+                    var index = this.tableData.findIndex(
+                        x => x.date.toMillis() === countDate.toMillis()
+                    );
+                    if (index > 0) {
+                        this.tableData[index].loggedIn = dateValue;
+                    } else {
+                        this.tableData.push({
+                            date: countDate,
+                            loggedIn: dateValue
+                        });
+                    }
+                }
+            })
+            .finally(() => {
+                this.isLoadingLoggedIn = false;
+            });
     }
 
     private getUsersWithNotesCount() {
-        this.dashboardService.getUsersWithNotesCount().then(count => {
-            this.usersWithNotesCount = count;
-        });
+        this.isLoadingNotes = true;
+        this.dashboardService
+            .getUsersWithNotesCount()
+            .then(count => {
+                this.usersWithNotesCount = count;
+            })
+            .finally(() => {
+                this.isLoadingNotes = false;
+            });
     }
 
     private getDependentCount() {
-        this.dashboardService.getDependentCount().then(count => {
-            this.dependentCount = count;
-        });
+        this.isLoadingDependent = true;
+        this.dashboardService
+            .getDependentCount()
+            .then(count => {
+                for (let key in count) {
+                    var countDate = DateTime.fromISO(key);
+                    var dateValue = count[key];
+                    var index = this.tableData.findIndex(
+                        x => x.date.toMillis() === countDate.toMillis()
+                    );
+                    if (index > 0) {
+                        this.tableData[index].dependents = dateValue;
+                    } else {
+                        this.tableData.push({
+                            date: countDate,
+                            dependents: dateValue
+                        });
+                    }
+
+                    this.totalDependentCount += dateValue;
+                }
+            })
+            .finally(() => {
+                this.isLoadingDependent = false;
+            });
+    }
+
+    private formatDate(date: DateTime): string {
+        return date.toFormat("dd/MM/yyyy");
     }
 }
 </script>
 
 <template>
-    <v-layout>
-        <v-row class="px-2">
+    <v-container>
+        <h2>Totals</h2>
+        <v-row class="px-2" v-if="!isLoading">
             <v-col class="col-lg-3 col-md-6 col-sm-12">
                 <v-card class="text-center">
                     <h3>Registered Users</h3>
                     <h1>
-                        {{ registeredUserCount }}
-                    </h1>
-                </v-card>
-            </v-col>
-            <v-col class="col-lg-3 col-md-6 col-sm-12">
-                <v-card class="text-center">
-                    <h3>Users Logged In Today</h3>
-                    <h1>
-                        {{ loggedInUsersCount }}
+                        {{ totalRegisteredUserCount }}
                     </h1>
                 </v-card>
             </v-col>
@@ -78,25 +217,92 @@ export default class Dashboard extends Vue {
                 <v-card class="text-center">
                     <h3>Dependents</h3>
                     <h1>
-                        {{ dependentCount }}
+                        {{ totalDependentCount }}
                     </h1>
                 </v-card>
             </v-col>
         </v-row>
-    </v-layout>
+        <v-row v-else>
+            <v-col>
+                <v-skeleton-loader
+                    max-width="200"
+                    type="card"
+                ></v-skeleton-loader></v-col
+        ></v-row>
+        <br />
+        <h2>Daily Data</h2>
+        <v-row>
+            <v-col cols="12" sm="6" md="4">
+                <v-dialog
+                    ref="dialog"
+                    v-model="datePickerModal"
+                    :return-value.sync="selectedDates"
+                    persistent
+                    :disabled="isLoading"
+                    width="290px"
+                >
+                    <template #activator="{ on, attrs }">
+                        <v-row>
+                            <v-col>
+                                <v-text-field
+                                    v-model="selectedDates[0]"
+                                    label="Start Date"
+                                    prepend-icon="mdi-calendar"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col>
+                                <v-text-field
+                                    v-model="selectedDates[1]"
+                                    label="End Date"
+                                    readonly
+                                    v-bind="attrs"
+                                    v-on="on"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </template>
+                    <v-date-picker
+                        v-model="selectedDates"
+                        :max="today.toISO()"
+                        min="2019-06-01"
+                        range
+                        scrollable
+                        no-title
+                    >
+                        <v-spacer></v-spacer>
+                        <v-btn text color="primary" @click="modal = false">
+                            Cancel
+                        </v-btn>
+                        <v-btn
+                            text
+                            color="primary"
+                            @click="$refs.dialog.save(selectedDates)"
+                        >
+                            OK
+                        </v-btn>
+                    </v-date-picker>
+                </v-dialog>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <v-data-table
+                    :headers="tableHeaders"
+                    :items="visibleTableData"
+                    :items-per-page="50"
+                    :loading="isLoading"
+                    loading-text="Loading... Please wait"
+                >
+                    <template #[`item.date`]="{ item }">
+                        <span>{{ formatDate(item.date) }}</span>
+                    </template>
+                </v-data-table>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
-<style scoped>
-.v-btn {
-    background-size: 100%;
-    width: 386px;
-    height: 96px;
-    display: block;
-    margin: 10px auto 50px;
-    border: none;
-}
-.v-card {
-    height: 100px;
-    padding: 15px;
-}
-</style>
+<style scoped></style>

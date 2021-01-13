@@ -2,6 +2,7 @@ FROM ubuntu:20.04
 ARG NODE_VERSION=v14.15.0
 ARG DOTNET_VERSION=5.0
 ARG OPENSHIFT_VERSION=v3.11.0-0cbc58b
+ARG SONARSCANNER_VERSION=5.0.4
 
 ENV SUMMARY="Azure DevOps agent with .NET"  \
     DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI ${OPENSHIFT_VERSION}"
@@ -55,7 +56,7 @@ RUN npm i -g npm@latest yarn@latest nsp@latest nodemon@latest && \
     npm -v
 
 # Install .Net tooling for SonarQube and Test Results
-RUN dotnet tool install --global dotnet-sonarscanner && \
+RUN dotnet tool install --global dotnet-sonarscanner --version ${SONARSCANNER_VERSION}&& \
     dotnet tool install -g dotnet-reportgenerator-globaltool && \
     chmod -R 777 $HOME && \
     rm -rf /tmp/NuGetScratch/lock/* && \

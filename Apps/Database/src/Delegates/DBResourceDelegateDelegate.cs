@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json;
@@ -88,13 +89,17 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetDependentCount()
+        public IDictionary<DateTime, int> GetDailyDependentCount(TimeSpan offset)
         {
             this.logger.LogTrace($"Counting resource delegates from DB...");
-            var count = this.dbContext.ResourceDelegate
-                    .Count();
-            this.logger.LogTrace($"Finished counting resource delegates from DB... (Total number of resource delegates: {count})");
-            return count;
+            Dictionary<DateTime, int> dateCount = this.dbContext.ResourceDelegate
+                                .Select(x => new { x.ProfileHdid, x.ResourceOwnerHdid, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
+                                .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
+                                .OrderBy(x => x.createdDate)
+                                .ToDictionary(x => x.createdDate, x => x.count);
+            this.logger.LogTrace($"Finished counting resource delegates from DB...");
+
+            return dateCount;
         }
 
         /// <inheritdoc />

@@ -53,5 +53,6 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Error message to return when a patient phn was not found.
         /// </summary>
-        public const string PhnNotFoundErrorMessage = "PHN could not be retrieved";}
+        public const string PhnNotFoundErrorMessage = "PHN could not be retrieved";
+    }
 }

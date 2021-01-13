@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Services
 {
     using System;
+    using System.Collections.Generic;
     using HealthGateway.Admin.Models;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
@@ -51,17 +52,19 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetRegisteredUserCount()
+        public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
         {
-            return this.userProfileDelegate.GetRegisteredUsersCount();
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
+            return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
         }
 
         /// <inheritdoc />
-        public int GetTodayLoggedInUsersCount(int offset)
+        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new TimeSpan(0, -1 * offset, 0);
-            return this.userProfileDelegate.GetLoggedInUsersCount(ts);
+            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
+            return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
         }
 
         /// <inheritdoc />
@@ -71,9 +74,11 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetDependentCount()
+        public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
-            return this.dependentDelegate.GetDependentCount();
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
+            return this.dependentDelegate.GetDailyDependentCount(ts);
         }
     }
 }

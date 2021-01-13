@@ -3,23 +3,9 @@ const { AuthMethod } = require("../../../support/constants")
 describe('Validate Modals Popup', () => {
 
     it('Protective Word Modal', () => {
-        cy.readConfig().as("config").then(config => {
-            config.webClient.modules.CovidLabResults = false
-            config.webClient.modules.Comment = false
-            config.webClient.modules.Encounter = false
-            config.webClient.modules.Immunization = false
-            config.webClient.modules.Laboratory = false
-            config.webClient.modules.Medication = true
-            config.webClient.modules.MedicationHistory = false
-            config.webClient.modules.Note = false
-            cy.server();
-            cy.route('GET', '/v1/api/configuration/', config);
-            cy.login(Cypress.env('keycloak.username'),
-                Cypress.env('keycloak.password'),
-                AuthMethod.KeyCloak);
-            cy.checkTimelineHasLoaded();
-        })
+        cy.enableModules("Medication");
         cy.login(Cypress.env('keycloak.protected.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
+        cy.checkTimelineHasLoaded();
         cy.get('[data-testid=protectiveWordModal]').contains('Restricted PharmaNet Records')
         cy.get('[data-testid=protectiveWordModalText]')
             .contains('Please enter the protective word required to access these restricted PharmaNet records.')
@@ -41,23 +27,9 @@ describe('Validate Modals Popup', () => {
     })
 
     it('Dismiss Protective Word', () => {
-        cy.readConfig().as("config").then(config => {
-            config.webClient.modules.CovidLabResults = false
-            config.webClient.modules.Comment = false
-            config.webClient.modules.Encounter = false
-            config.webClient.modules.Immunization = false
-            config.webClient.modules.Laboratory = false
-            config.webClient.modules.Medication = true
-            config.webClient.modules.MedicationHistory = false
-            config.webClient.modules.Note = false
-            cy.server();
-            cy.route('GET', '/v1/api/configuration/', config);
-            cy.login(Cypress.env('keycloak.username'),
-                Cypress.env('keycloak.password'),
-                AuthMethod.KeyCloak);
-            cy.checkTimelineHasLoaded();
-        })
+        cy.enableModules("Medication");
         cy.login(Cypress.env('keycloak.protected.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
+        cy.checkTimelineHasLoaded();
         cy.get('[data-testid=protectiveWordModal] header:first')
           .find('button').should('have.text', '×').click()
         cy.get('[data-testid=protectiveWordModal]').should('not.exist')

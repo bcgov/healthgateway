@@ -188,6 +188,14 @@ Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.get("[data-testid=timelineLoading]").should("not.exist");
 });
 
-Cypress.Commands.add("closeCovidModal", () => {
-    cy.get("[data-testid=covidModal] .close").click();
+Cypress.Commands.add("enableModules", (modules) => {
+    return cy.readConfig().as("config").then(config => {
+        Object.keys(config.webClient.modules).forEach(key => {
+            config.webClient.modules[key] = modules.includes(key);
+        });
+        cy.intercept('GET', '/v1/api/configuration/', {
+            statusCode: 200,
+            body: config
+        });
+    });
 });

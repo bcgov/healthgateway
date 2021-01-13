@@ -15,23 +15,27 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Service that provides functionality to the admin dashboard.
     /// </summary>
     public interface IDashboardService
     {
         /// <summary>
-        /// Retrieves the count of registered users.
+        /// Retrieves the daily count of registered users.
         /// </summary>
+        /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of user profiles that accepted the terms of service.</returns>
-        int GetRegisteredUserCount();
+        IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset);
 
         /// <summary>
-        /// Retrieves the count of logged in users in the current day.
+        /// Retrieves the daily count of logged in users in the current day.
         /// </summary>
-        /// <param name="offset">The offset from the client browser to UTC.</param>
+        /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of logged in user.</returns>
-        int GetTodayLoggedInUsersCount(int offset);
+        IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset);
 
         /// <summary>
         /// Retrieves the count of users with notes on their timeline.
@@ -42,7 +46,8 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Retrieves the count of dependents.
         /// </summary>
+        /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of dependents.</returns>
-        int GetDependentCount();
+        IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset);
     }
 }

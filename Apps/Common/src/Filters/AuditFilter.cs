@@ -16,14 +16,14 @@
 namespace HealthGateway.Common.Filters
 {
     using System;
-    using System.Linq;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Auditing;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.AspNetCore.Mvc.Filters;
-    using Microsoft.AspNetCore.Authorization;
 
     /// <summary>
     /// The audit middleware class.
@@ -62,7 +62,8 @@ namespace HealthGateway.Common.Filters
             {
                 bool isControllerAuthorization = context.Controller.GetType().GetCustomAttributes(inherit: true).OfType<AuthorizeAttribute>().Any();
                 bool isMethodAuthorization = controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true).OfType<AuthorizeAttribute>().Any();
-                if (!(isControllerAuthorization || isMethodAuthorization))
+                bool isAllowAnonymous = controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true).OfType<AllowAnonymousAttribute>().Any();
+                if (!(isControllerAuthorization || isMethodAuthorization) || isAllowAnonymous)
                 {
                     return;
                 }
