@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { IDashboardService } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -15,11 +15,17 @@ interface DailyData {
 
 @Component
 export default class Dashboard extends Vue {
-    private registeredUserCount = 0;
-    private loggedInUsersCount: { [key: string]: number } = {};
     private usersWithNotesCount = 0;
-    private dependentCount = 0;
-    private modal = false;
+
+    private totalRegisteredUserCount = 0;
+    private totalDependentCount = 0;
+
+    private isLoadingRegistered = true;
+    private isLoadingLoggedIn = true;
+    private isLoadingNotes = true;
+    private isLoadingDependent = true;
+
+    private datePickerModal = false;
 
     private today = DateTime.local();
 
@@ -37,8 +43,16 @@ export default class Dashboard extends Vue {
 
     private tableData: DailyData[] = [];
 
+    @Watch("isLoading")
+    private onIsLoading(newVal: boolean, oldVal: boolean) {
+        if (oldVal && !newVal) {
+            this.tableData.sort((a, b) => {
+                return a.date > b.date ? 1 : a.date < b.date ? -1 : 0;
+            });
+        }
+    }
+
     private get visibleTableData(): DailyData[] {
-        console.log("efsefsfd");
         let visible: DailyData[] = [];
         let startDate = DateTime.fromISO(this.selectedDates[0]);
         let endDate = DateTime.fromISO(this.selectedDates[1]);
@@ -48,6 +62,15 @@ export default class Dashboard extends Vue {
             }
         });
         return visible;
+    }
+
+    private get isLoading(): boolean {
+        return (
+            this.isLoadingRegistered ||
+            this.isLoadingLoggedIn ||
+            this.isLoadingNotes ||
+            this.isLoadingDependent
+        );
     }
 
     private tableHeaders = [
@@ -72,38 +95,96 @@ export default class Dashboard extends Vue {
     }
 
     private getRegisteredUserCount() {
-        this.dashboardService.getRegisteredUsersCount().then(count => {
-            this.registeredUserCount = count;
-        });
+        this.isLoadingRegistered = true;
+        this.dashboardService
+            .getRegisteredUsersCount()
+            .then(count => {
+                for (let key in count) {
+                    var countDate = DateTime.fromISO(key);
+                    var dateValue = count[key];
+                    var index = this.tableData.findIndex(
+                        x => x.date.toMillis() === countDate.toMillis()
+                    );
+                    if (index > 0) {
+                        this.tableData[index].registered = dateValue;
+                    } else {
+                        this.tableData.push({
+                            date: countDate,
+                            registered: dateValue
+                        });
+                    }
+                    this.totalRegisteredUserCount += dateValue;
+                }
+            })
+            .finally(() => {
+                this.isLoadingRegistered = false;
+            });
     }
 
     private getLoggedInUsersCount() {
-        this.dashboardService.getLoggedInUsersCount().then(count => {
-            this.loggedInUsersCount = count;
-            for (let key in count) {
-                var leDate = DateTime.fromISO(key);
-                var leValue = count[key];
-                console.log(leDate);
-                var index = this.tableData.findIndex(x => x.date === leDate);
-                if (index > 0) {
-                    this.tableData[index].loggedIn = leValue;
-                } else {
-                    this.tableData.push({ date: leDate, loggedIn: leValue });
+        this.isLoadingLoggedIn = true;
+        this.dashboardService
+            .getLoggedInUsersCount()
+            .then(count => {
+                for (let key in count) {
+                    var countDate = DateTime.fromISO(key);
+                    var dateValue = count[key];
+                    var index = this.tableData.findIndex(
+                        x => x.date.toMillis() === countDate.toMillis()
+                    );
+                    if (index > 0) {
+                        this.tableData[index].loggedIn = dateValue;
+                    } else {
+                        this.tableData.push({
+                            date: countDate,
+                            loggedIn: dateValue
+                        });
+                    }
                 }
-            }
-        });
+            })
+            .finally(() => {
+                this.isLoadingLoggedIn = false;
+            });
     }
 
     private getUsersWithNotesCount() {
-        this.dashboardService.getUsersWithNotesCount().then(count => {
-            this.usersWithNotesCount = count;
-        });
+        this.isLoadingNotes = true;
+        this.dashboardService
+            .getUsersWithNotesCount()
+            .then(count => {
+                this.usersWithNotesCount = count;
+            })
+            .finally(() => {
+                this.isLoadingNotes = false;
+            });
     }
 
     private getDependentCount() {
-        this.dashboardService.getDependentCount().then(count => {
-            this.dependentCount = count;
-        });
+        this.isLoadingDependent = true;
+        this.dashboardService
+            .getDependentCount()
+            .then(count => {
+                for (let key in count) {
+                    var countDate = DateTime.fromISO(key);
+                    var dateValue = count[key];
+                    var index = this.tableData.findIndex(
+                        x => x.date.toMillis() === countDate.toMillis()
+                    );
+                    if (index > 0) {
+                        this.tableData[index].dependents = dateValue;
+                    } else {
+                        this.tableData.push({
+                            date: countDate,
+                            dependents: dateValue
+                        });
+                    }
+
+                    this.totalDependentCount += dateValue;
+                }
+            })
+            .finally(() => {
+                this.isLoadingDependent = false;
+            });
     }
 
     private formatDate(date: DateTime): string {
@@ -115,12 +196,12 @@ export default class Dashboard extends Vue {
 <template>
     <v-container>
         <h2>Totals</h2>
-        <v-row class="px-2">
+        <v-row class="px-2" v-if="!isLoading">
             <v-col class="col-lg-3 col-md-6 col-sm-12">
                 <v-card class="text-center">
                     <h3>Registered Users</h3>
                     <h1>
-                        {{ registeredUserCount }}
+                        {{ totalRegisteredUserCount }}
                     </h1>
                 </v-card>
             </v-col>
@@ -136,20 +217,28 @@ export default class Dashboard extends Vue {
                 <v-card class="text-center">
                     <h3>Dependents</h3>
                     <h1>
-                        {{ dependentCount }}
+                        {{ totalDependentCount }}
                     </h1>
                 </v-card>
             </v-col>
         </v-row>
+        <v-row v-else>
+            <v-col>
+                <v-skeleton-loader
+                    max-width="200"
+                    type="card"
+                ></v-skeleton-loader></v-col
+        ></v-row>
         <br />
         <h2>Daily Data</h2>
         <v-row>
             <v-col cols="12" sm="6" md="4">
                 <v-dialog
                     ref="dialog"
-                    v-model="modal"
+                    v-model="datePickerModal"
                     :return-value.sync="selectedDates"
                     persistent
+                    :disabled="isLoading"
                     width="290px"
                 >
                     <template #activator="{ on, attrs }">
@@ -204,6 +293,8 @@ export default class Dashboard extends Vue {
                     :headers="tableHeaders"
                     :items="visibleTableData"
                     :items-per-page="50"
+                    :loading="isLoading"
+                    loading-text="Loading... Please wait"
                 >
                     <template #[`item.date`]="{ item }">
                         <span>{{ formatDate(item.date) }}</span>

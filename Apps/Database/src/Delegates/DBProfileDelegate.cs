@@ -152,11 +152,19 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetRegisteredUsersCount()
+        public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset)
         {
-            int result = this.dbContext.UserProfile
-                .Count(w => w.AcceptedTermsOfService);
-            return result;
+            /*int result = this.dbContext.UserProfile
+                .Count(w => w.AcceptedTermsOfService);*/
+
+            Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
+                            .Where(x => x.AcceptedTermsOfService == true)
+                            .Select(x => new { x.HdId, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
+                            .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
+                            .OrderBy(x => x.createdDate)
+                            .ToDictionary(x => x.createdDate, x => x.count);
+
+            return dateCount;
         }
 
         /// <inheritdoc />

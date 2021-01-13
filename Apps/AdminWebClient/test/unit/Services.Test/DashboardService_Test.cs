@@ -51,7 +51,7 @@ namespace HealthGateway.Admin.Test.Services
             );
 
             int actualResult = service.GetUsersWithNotesCount();
-            
+
             // Check result
             Assert.Equal(expected, actualResult);
         }
@@ -59,9 +59,9 @@ namespace HealthGateway.Admin.Test.Services
         [Fact]
         public void ShouldGetDependentCount()
         {
-            int expected = 10;
+            Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { new DateTime(), 10 } };
             Mock<IResourceDelegateDelegate> dependentDelegateMock = new Mock<IResourceDelegateDelegate>();
-            dependentDelegateMock.Setup(s => s.GetDependentCount()).Returns(expected);
+            dependentDelegateMock.Setup(s => s.GetDailyDependentCount(It.IsAny<TimeSpan>())).Returns(expected);
 
             // Set up service
             IDashboardService service = new DashboardService(
@@ -71,7 +71,7 @@ namespace HealthGateway.Admin.Test.Services
                 new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build()
             );
 
-            int actualResult = service.GetDependentCount();
+            IDictionary<DateTime, int> actualResult = service.GetDailyDependentCount(5);
 
             // Check result
             Assert.Equal(expected, actualResult);

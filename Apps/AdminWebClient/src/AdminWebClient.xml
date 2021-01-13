@@ -192,16 +192,17 @@
             </summary>
             <param name="dashboardService">The injected dashboard service.</param>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetRegisteredUserCount">
+        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetRegisteredUserCount(System.Int32)">
             <summary>
             Retrieves the count of registered users.
             </summary>
+            <param name="timeOffset">The offset from the client browser to UTC.</param>
             <returns>The count of registered users.</returns>
             <response code="200">Returns the count of registered users.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetTodayLoggedinUsersCount(System.Int32)">
+        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetLoggedinUsersCount(System.Int32)">
             <summary>
             Retrieves the count of logged in user in the last day.
             </summary>
@@ -220,10 +221,11 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetDependentCount">
+        <member name="M:HealthGateway.Admin.Controllers.DashboardController.GetDependentCount(System.Int32)">
             <summary>
             Retrieves the count of dependents.
             </summary>
+            <param name="timeOffset">The offset from the client browser to UTC.</param>
             <returns>The count of logged in users in the current day.</returns>
             <response code="200">Returns the list of user feedbacks.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -822,7 +824,7 @@
             <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
             <param name="config">The configuration provider.</param>
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.GetRegisteredUserCount">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetDailyRegisteredUsersCount(System.Int32)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetDailyLoggedInUsersCount(System.Int32)">
@@ -831,7 +833,7 @@
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetUsersWithNotesCount">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.GetDependentCount">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.GetDailyDependentCount(System.Int32)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Admin.Services.EmailAdminService">
@@ -960,15 +962,16 @@
             Service that provides functionality to the admin dashboard.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetRegisteredUserCount">
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetDailyRegisteredUsersCount(System.Int32)">
             <summary>
-            Retrieves the count of registered users.
+            Retrieves the daily count of registered users.
             </summary>
+            <param name="timeOffset">The time offset from the client browser to UTC.</param>
             <returns>The count of user profiles that accepted the terms of service.</returns>
         </member>
         <member name="M:HealthGateway.Admin.Services.IDashboardService.GetDailyLoggedInUsersCount(System.Int32)">
             <summary>
-            Retrieves the count of logged in users in the current day.
+            Retrieves the daily count of logged in users in the current day.
             </summary>
             <param name="timeOffset">The time offset from the client browser to UTC.</param>
             <returns>The count of logged in user.</returns>
@@ -979,10 +982,11 @@
             </summary>
             <returns>The count of users with notes.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetDependentCount">
+        <member name="M:HealthGateway.Admin.Services.IDashboardService.GetDailyDependentCount(System.Int32)">
             <summary>
             Retrieves the count of dependents.
             </summary>
+            <param name="timeOffset">The time offset from the client browser to UTC.</param>
             <returns>The count of dependents.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Services.IEmailAdminService">
