@@ -144,7 +144,7 @@ Backups are generated daily by the dc "backup" in the production realm and are c
 To restore the backup follow these steps:
 
 1) Connect to openshift using the terminal/bash and set the project to the production one.
-1) Download the backup file to your local computer using the command below:
+2) Download the backup file to your local computer using the command below:
 
     ``` bash
     oc rsync <backup-pod-name>:/backups/daily/<date> <local-folder>
@@ -152,21 +152,21 @@ To restore the backup follow these steps:
 
     This copies the folder from the pod to the local folder.
 
-1) Extract backup script using gzip:
+3) Extract backup script using gzip:
 
     ``` bash
     gzip -d <file-name>
     ```
 
-1) Connect to the master database pod using port-forward (See 'Connection to the Database').
+4) Connect to the master database pod using port-forward (See 'Connection to the Database').
 
-1) Manually create the database:
+5) Manually create the database:
 
     ``` bash
     psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
     ```
 
-1) Execute the script to restore the database:
+6) Execute the script to restore the database:
 
     ``` bash
     psql -h localhost -d gateway -U postgres -p 5432 -a -q -f <path-to-file>
@@ -180,43 +180,43 @@ To restore the backup follow these steps:
     psql -h localhost -p 5432 -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='gateway';"
     ```
 
-1) Drop Database:
+2) Drop Database:
 
     ``` bash
     psql -h localhost -p 5432 -U postgres -c 'drop database gateway;'
     ```
 
-1) Create Database:
+3) Create Database:
 
     ``` bash
     psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
     ```
 
-1) Run Migrations Scripts
+4) Run Migrations Scripts
 
     ?
 
-1) Edit Patroni configuration using Rest API
+## Edit Patroni configuration using Rest API
 
-    Connect the terminal to any of the patroni pods running using remote shell:
+1) Connect the terminal to any of the patroni pods running using remote shell:
 
     ``` bash
     oc rsh patroni-postgres-1
     ```
 
-1) Update config (e.g. postgresql.parameters.max_connections to 100):
+2) Update config (e.g. postgresql.parameters.max_connections to 500):
 
     ``` bash
-    curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_connections":100}}}' http://localhost:8008/config | jq .
+    curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_prepared_transactions":500, "max_connections":500}}}' http://localhost:8008/config | jq .
     ```
 
-1) Restart Cluster:
+3) Restart Cluster:
 
     ``` bash
     patronictl restart patroni-postgres
     ```
 
-1) Get/View the current config:
+4) Get/View the current config:
 
     ``` bash
     curl -s localhost:8008/config | jq .
