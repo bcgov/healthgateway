@@ -152,7 +152,7 @@ export default class Dashboard extends Vue {
                     persistent
                     width="290px"
                 >
-                    <template v-slot:activator="{ on, attrs }">
+                    <template #activator="{ on, attrs }">
                         <v-row>
                             <v-col>
                                 <v-text-field
@@ -205,7 +205,7 @@ export default class Dashboard extends Vue {
                     :items="visibleTableData"
                     :items-per-page="50"
                 >
-                    <template v-slot:[`item.date`]="{ item }">
+                    <template #[`item.date`]="{ item }">
                         <span>{{ formatDate(item.date) }}</span>
                     </template>
                 </v-data-table>
