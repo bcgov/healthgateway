@@ -37,7 +37,7 @@
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc1.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc1.1" />
     <PackageReference Include="OpenTelemetry.Api" Version="1.0.0-rc1.1" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="5.0.0" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="5.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
   </ItemGroup>
 
