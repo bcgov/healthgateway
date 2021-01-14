@@ -21,7 +21,6 @@ describe('dependents', () => {
     }
 
     before(() => {
-
         cy.setupDownloads();
         cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
         cy.login(
