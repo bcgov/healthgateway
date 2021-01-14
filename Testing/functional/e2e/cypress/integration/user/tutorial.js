@@ -5,6 +5,7 @@ describe('Tutorial', () => {
         cy.intercept("GET", "/v1/api/UserProfile/*", (req) => {
             req.reply((res) => {
                 res.body.resourcePayload.preferences.tutorialPopover.value = "true";
+                res.body.resourcePayload.preferences.tutorialPopoverExportRecords.value = "true";                
             })
         })
         cy.enableModules("Note");
@@ -29,7 +30,7 @@ describe('Tutorial', () => {
             .should('be.visible')
             .click();
         
-        cy.get('[data-testid=reportsPopover]')
+        cy.get('[data-testid=exportRecordsPopover]')
             .should('be.visible');
     });
 })
