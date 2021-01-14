@@ -25,11 +25,7 @@ describe('Tutorial', () => {
             .should('be.visible');
     });
 
-    it('Validate Reports Popover', () => {
-        cy.get('[data-testid=sidebarToggle]')
-            .should('be.visible')
-            .click();
-        
+    it('Validate Export Records Popover', () => {
         cy.get('[data-testid=exportRecordsPopover]')
             .should('be.visible');
     });
