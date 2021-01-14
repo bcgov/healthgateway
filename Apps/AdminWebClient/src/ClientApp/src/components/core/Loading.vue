@@ -1,3 +1,12 @@
+<script lang="ts">
+import { Component, Vue, Prop } from "vue-property-decorator";
+
+@Component
+export default class LoadingComponent extends Vue {
+    @Prop() isLoading!: boolean;
+}
+</script>
+
 <template>
     <v-dialog v-model="isLoading" fullscreen dark transition="fade-transition">
         <v-container
@@ -11,13 +20,3 @@
         </v-container>
     </v-dialog>
 </template>
-
-<script lang="ts">
-import { Action, Getter } from "vuex-class";
-import { Component, Vue, Prop } from "vue-property-decorator";
-
-@Component
-export default class LoadingComponent extends Vue {
-    @Prop() isLoading!: boolean;
-}
-</script>

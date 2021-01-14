@@ -37,7 +37,7 @@ export default class LoginView extends Vue {
 
         console.log("path", this.redirectPath);
 
-        this.login({ redirectPath: this.redirectPath }).then(result => {
+        this.login({ redirectPath: this.redirectPath }).then(() => {
             if (this.isAuthenticated) {
                 this.routeHandler.push({ path: this.redirectPath });
             }

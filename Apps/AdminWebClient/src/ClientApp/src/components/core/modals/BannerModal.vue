@@ -140,6 +140,7 @@ extend("dateValid", {
     },
     params: ["effective", "expiry"]
 });
+
 @Component({
     components: {
         ValidationProvider,
@@ -148,7 +149,7 @@ extend("dateValid", {
 })
 export default class BannerModal extends Vue {
     private dialog = false;
-    private extensions: any = [
+    private extensions = [
         History,
         Blockquote,
         Link,
@@ -209,8 +210,8 @@ export default class BannerModal extends Vue {
     }
 
     @Watch("dialog")
-    private onDialogChange(val: any) {
-        val || this.close();
+    private onDialogChange(dialogIsOpen: boolean) {
+        dialogIsOpen || this.close();
     }
 
     private save() {
