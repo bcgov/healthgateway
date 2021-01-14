@@ -40,7 +40,7 @@ namespace HealthGateway.Database.Models
         public string UserProfileId { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the UerProfile associated to this comment.
+        /// Gets or sets the UserProfile associated to this comment.
         /// </summary>
         public virtual UserProfile? UserProfile { get; set; }
 
