@@ -527,6 +527,7 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                             <b-col
                                 v-show="isOpen"
+                                id="export-records-col"
                                 cols="7"
                                 class="button-title"
                             >
@@ -534,7 +535,7 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                         </b-row>
                         <b-popover
-                            ref="popover"
+                            ref="popover-export-records"
                             triggers="manual"
                             :show.sync="showTutorialPopoverExportRecords"
                             target="export-records-row"
@@ -849,14 +850,10 @@ export default class SidebarComponent extends Vue {
     max-width: 20rem;
     color: black;
 }
-
 /* Small Devices*/
 @media (max-width: 470px) {
     .popover-content {
         max-width: 8rem;
-    }
-    .bs-popover-right {
-        margin-left: 220px !important;
     }
 }
 </style>
