@@ -1,9 +1,10 @@
 <script lang="ts">
+import { DateTime } from "luxon";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { IDashboardService } from "@/services/interfaces";
+
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { DateTime } from "luxon";
+import { IDashboardService } from "@/services/interfaces";
 
 interface DailyData {
     date: DateTime;

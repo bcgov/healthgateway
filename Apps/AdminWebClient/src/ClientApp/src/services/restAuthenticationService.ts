@@ -1,8 +1,10 @@
-import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
-import { injectable } from "inversify";
 import "reflect-metadata";
+
+import { injectable } from "inversify";
+
 import AuthenticationData from "@/models/authenticationData";
 import ExternalConfiguration from "@/models/externalConfiguration";
+import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {

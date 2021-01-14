@@ -1,18 +1,19 @@
 <script lang="ts">
-import { Component, Vue, Watch, Emit } from "vue-property-decorator";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import BannerFeedback from "@/models/bannerFeedback";
-import Communication, {
-    CommunicationType,
-    CommunicationStatus
-} from "@/models/adminCommunication";
+import moment from "moment";
+import { Component, Emit, Vue, Watch } from "vue-property-decorator";
+import { DataTableHeader } from "vuetify";
+
 import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
+import Communication, {
+    CommunicationStatus,
+    CommunicationType
+} from "@/models/adminCommunication";
+import BannerFeedback from "@/models/bannerFeedback";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { ICommunicationService } from "@/services/interfaces";
-import moment from "moment";
-import { DataTableHeader } from "vuetify";
 
 @Component({
     components: {

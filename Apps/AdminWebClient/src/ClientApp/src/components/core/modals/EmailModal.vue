@@ -94,27 +94,28 @@
     </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
+import {
+    Blockquote,
+    Bold,
+    BulletList,
+    Code,
+    HardBreak,
+    Heading,
+    History,
+    Italic,
+    Link,
+    ListItem,
+    OrderedList,
+    Paragraph,
+    Strike,
+    TiptapVuetify,
+    Underline
+} from "tiptap-vuetify";
+import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
+
 import Communication, {
     CommunicationStatus
 } from "@/models/adminCommunication";
-import {
-    TiptapVuetify,
-    Heading,
-    Bold,
-    Italic,
-    Strike,
-    Underline,
-    Code,
-    Paragraph,
-    BulletList,
-    OrderedList,
-    ListItem,
-    Link,
-    Blockquote,
-    HardBreak,
-    History
-} from "tiptap-vuetify";
 
 @Component({
     components: {

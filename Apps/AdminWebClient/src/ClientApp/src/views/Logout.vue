@@ -11,6 +11,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
+
 import LoadingComponent from "@/components/core/Loading.vue";
 
 const namespace = "auth";

@@ -5,8 +5,8 @@
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
-        "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 5",
-        "lintfix": "vue-cli-service lint --fix"
+        "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 0",
+        "lintfix": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --fix"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^1.2.34",
@@ -54,6 +54,7 @@
         "eslint-config-prettier": "^7.1.0",
         "eslint-plugin-prettier": "^3.3.1",
         "eslint-plugin-prettier-vue": "^2.1.1",
+        "eslint-plugin-simple-import-sort": "^7.0.0",
         "eslint-plugin-sonarjs": "^0.5.0",
         "eslint-plugin-vue": "^7.4.1",
         "font-awesome": "^4.7.0",

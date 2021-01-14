@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, IDashboardService } from "@/services/interfaces";
+
+import { IDashboardService, IHttpDelegate } from "@/services/interfaces";
 
 @injectable()
 export class DashboardService implements IDashboardService {

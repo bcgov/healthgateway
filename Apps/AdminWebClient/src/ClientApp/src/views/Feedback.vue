@@ -56,14 +56,15 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { IUserFeedbackService } from "@/services/interfaces";
+
+import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
+import LoadingComponent from "@/components/core/Loading.vue";
+import { ResultType } from "@/constants/resulttype";
+import BannerFeedback from "@/models/bannerFeedback";
 import UserFeedback from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import LoadingComponent from "@/components/core/Loading.vue";
-import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
-import BannerFeedback from "@/models/bannerFeedback";
-import { ResultType } from "@/constants/resulttype";
+import { IUserFeedbackService } from "@/services/interfaces";
 
 @Component({
     components: {

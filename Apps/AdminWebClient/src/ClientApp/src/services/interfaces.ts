@@ -1,9 +1,10 @@
 import { Dictionary } from "vue-router/types/router";
-import AuthenticationData from "@/models/authenticationData";
-import UserFeedback from "@/models/userFeedback";
-import ExternalConfiguration from "@/models/externalConfiguration";
-import Email from "@/models/email";
+
 import Communication from "@/models/adminCommunication";
+import AuthenticationData from "@/models/authenticationData";
+import Email from "@/models/email";
+import ExternalConfiguration from "@/models/externalConfiguration";
+import UserFeedback from "@/models/userFeedback";
 
 export interface IConfigService {
     initialize(http: IHttpDelegate): void;

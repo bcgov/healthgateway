@@ -1,6 +1,6 @@
 <script lang="ts">
-import { Action, Getter } from "vuex-class";
 import { Component, Vue, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
 @Component
 export default class MainNavbar extends Vue {

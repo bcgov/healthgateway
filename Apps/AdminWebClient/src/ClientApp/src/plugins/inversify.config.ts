@@ -1,23 +1,24 @@
 import "reflect-metadata";
+
 import { Container } from "inversify";
 
-import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { DashboardService } from "@/services/dashboardService";
+import HttpDelegate from "@/services/httpDelegate";
 import {
-    IHttpDelegate,
-    IConfigService,
     IAuthenticationService,
-    IUserFeedbackService,
+    ICommunicationService,
+    IConfigService,
     IDashboardService,
     IEmailAdminService,
-    ICommunicationService
+    IHttpDelegate,
+    IUserFeedbackService
 } from "@/services/interfaces";
-import HttpDelegate from "@/services/httpDelegate";
-import { RestConfigService } from "@/services/restConfigService";
 import { RestAuthenticationService } from "@/services/restAuthenticationService";
-import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
-import { DashboardService } from "@/services/dashboardService";
-import { RestEmailAdminService } from "@/services/restEmailAdminService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
+import { RestConfigService } from "@/services/restConfigService";
+import { RestEmailAdminService } from "@/services/restEmailAdminService";
+import { RestUserFeedbackService } from "@/services/restUserFeedbackService";
 
 const container = new Container();
 container
