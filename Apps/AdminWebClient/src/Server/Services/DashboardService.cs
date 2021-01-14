@@ -68,12 +68,6 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public int GetUsersWithNotesCount()
-        {
-            return this.noteDelegate.GetUsersWithNotesCount(this.adminConfiguration.MinimumNotesCount);
-        }
-
-        /// <inheritdoc />
         public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.

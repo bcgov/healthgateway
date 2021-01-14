@@ -34,7 +34,6 @@ export interface IDashboardService {
     initialize(http: IHttpDelegate): void;
     getRegisteredUsersCount(): Promise<{ [key: string]: number }>;
     getLoggedInUsersCount(): Promise<{ [key: string]: number }>;
-    getUsersWithNotesCount(): Promise<number>;
     getDependentCount(): Promise<{ [key: string]: number }>;
 }
 

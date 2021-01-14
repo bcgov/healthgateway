@@ -108,7 +108,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
-import container from "@/plugins/inversify.config";
 import Communication, {
     CommunicationStatus
 } from "@/models/adminCommunication";
@@ -241,7 +240,7 @@ export default class BannerModal extends Vue {
     private close() {
         this.$nextTick(() => {
             (this.$refs.form as Vue & {
-                resetValidation: () => any;
+                resetValidation: () => void;
             }).resetValidation();
             this.dialog = false;
             this.emitClose();

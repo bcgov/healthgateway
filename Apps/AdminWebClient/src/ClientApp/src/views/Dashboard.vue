@@ -9,20 +9,16 @@ interface DailyData {
     date: DateTime;
     registered?: number;
     loggedIn?: number;
-    notes?: number;
     dependents?: number;
 }
 
 @Component
 export default class Dashboard extends Vue {
-    private usersWithNotesCount = 0;
-
     private totalRegisteredUserCount = 0;
     private totalDependentCount = 0;
 
     private isLoadingRegistered = true;
     private isLoadingLoggedIn = true;
-    private isLoadingNotes = true;
     private isLoadingDependent = true;
 
     private datePickerModal = false;
@@ -68,7 +64,6 @@ export default class Dashboard extends Vue {
         return (
             this.isLoadingRegistered ||
             this.isLoadingLoggedIn ||
-            this.isLoadingNotes ||
             this.isLoadingDependent
         );
     }
@@ -80,7 +75,6 @@ export default class Dashboard extends Vue {
         },
         { text: "Registered", value: "registered" },
         { text: "Logged In", value: "loggedIn" },
-        { text: "Notes", value: "notes" },
         { text: "Dependents", value: "dependents" }
     ];
 
@@ -90,7 +84,6 @@ export default class Dashboard extends Vue {
         );
         this.getRegisteredUserCount();
         this.getLoggedInUsersCount();
-        this.getUsersWithNotesCount();
         this.getDependentCount();
     }
 
@@ -102,11 +95,11 @@ export default class Dashboard extends Vue {
                 for (let key in count) {
                     var countDate = DateTime.fromISO(key);
                     var dateValue = count[key];
-                    var index = this.tableData.findIndex(
+                    var dayData = this.tableData.find(
                         x => x.date.toMillis() === countDate.toMillis()
                     );
-                    if (index > 0) {
-                        this.tableData[index].registered = dateValue;
+                    if (dayData !== undefined) {
+                        dayData.registered = dateValue;
                     } else {
                         this.tableData.push({
                             date: countDate,
@@ -129,11 +122,11 @@ export default class Dashboard extends Vue {
                 for (let key in count) {
                     var countDate = DateTime.fromISO(key);
                     var dateValue = count[key];
-                    var index = this.tableData.findIndex(
+                    var dayData = this.tableData.find(
                         x => x.date.toMillis() === countDate.toMillis()
                     );
-                    if (index > 0) {
-                        this.tableData[index].loggedIn = dateValue;
+                    if (dayData !== undefined) {
+                        dayData.loggedIn = dateValue;
                     } else {
                         this.tableData.push({
                             date: countDate,
@@ -147,18 +140,6 @@ export default class Dashboard extends Vue {
             });
     }
 
-    private getUsersWithNotesCount() {
-        this.isLoadingNotes = true;
-        this.dashboardService
-            .getUsersWithNotesCount()
-            .then(count => {
-                this.usersWithNotesCount = count;
-            })
-            .finally(() => {
-                this.isLoadingNotes = false;
-            });
-    }
-
     private getDependentCount() {
         this.isLoadingDependent = true;
         this.dashboardService
@@ -167,11 +148,11 @@ export default class Dashboard extends Vue {
                 for (let key in count) {
                     var countDate = DateTime.fromISO(key);
                     var dateValue = count[key];
-                    var index = this.tableData.findIndex(
+                    var dayData = this.tableData.find(
                         x => x.date.toMillis() === countDate.toMillis()
                     );
-                    if (index > 0) {
-                        this.tableData[index].dependents = dateValue;
+                    if (dayData !== undefined) {
+                        dayData.dependents = dateValue;
                     } else {
                         this.tableData.push({
                             date: countDate,
@@ -196,20 +177,12 @@ export default class Dashboard extends Vue {
 <template>
     <v-container>
         <h2>Totals</h2>
-        <v-row class="px-2" v-if="!isLoading">
+        <v-row v-if="!isLoading" class="px-2">
             <v-col class="col-lg-3 col-md-6 col-sm-12">
                 <v-card class="text-center">
                     <h3>Registered Users</h3>
                     <h1>
                         {{ totalRegisteredUserCount }}
-                    </h1>
-                </v-card>
-            </v-col>
-            <v-col class="col-lg-3 col-md-6 col-sm-12">
-                <v-card class="text-center">
-                    <h3>Users With Notes</h3>
-                    <h1>
-                        {{ usersWithNotesCount }}
                     </h1>
                 </v-card>
             </v-col>
@@ -292,9 +265,12 @@ export default class Dashboard extends Vue {
                 <v-data-table
                     :headers="tableHeaders"
                     :items="visibleTableData"
-                    :items-per-page="50"
+                    :items-per-page="30"
                     :loading="isLoading"
                     loading-text="Loading... Please wait"
+                    :footer-props="{
+                        itemsPerPageOptions: [30, 60, 90, -1]
+                    }"
                 >
                     <template #[`item.date`]="{ item }">
                         <span>{{ formatDate(item.date) }}</span>

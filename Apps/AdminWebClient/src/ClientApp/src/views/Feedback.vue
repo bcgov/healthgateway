@@ -56,7 +56,6 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Vuetify from "vuetify/lib";
 import { IUserFeedbackService } from "@/services/interfaces";
 import UserFeedback from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -81,7 +80,7 @@ export default class FeedbackView extends Vue {
         message: ""
     };
 
-    private tableHeaders: any[] = [
+    private tableHeaders = [
         {
             text: "Date",
             value: "createdDateTime",
@@ -130,6 +129,7 @@ export default class FeedbackView extends Vue {
                     title: "Error",
                     message: "Error loading user feedbacks"
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;
@@ -145,7 +145,7 @@ export default class FeedbackView extends Vue {
         feedback.isReviewed = !feedback.isReviewed;
         this.userFeedbackService
             .toggleReviewed(feedback)
-            .then(sucessfulInvites => {
+            .then(() => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Success,
@@ -161,6 +161,7 @@ export default class FeedbackView extends Vue {
                     title: "Error",
                     message: "Reviewing feedback failed, please try again."
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;

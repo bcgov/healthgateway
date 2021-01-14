@@ -33,26 +33,6 @@ namespace HealthGateway.Admin.Test.Services
         /// GetUsersWithNotesCount should return the note count.
         /// </summary>
         [Fact]
-        public void ShouldGetUsersWithNotesCount()
-        {
-            int expected = 10;
-            Mock<IDashboardService> mockService = new Mock<IDashboardService>();
-            mockService.Setup(s => s.GetUsersWithNotesCount()).Returns(expected);
-
-            // Initialize controller
-            DashboardController controller = new DashboardController(
-                mockService.Object);
-
-            // Test if controller adds communication properly
-            IActionResult actualResult = controller.GetUsersWithNotesCount();
-            Assert.IsType<JsonResult>(actualResult);
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expected));
-        }
-
-        /// <summary>
-        /// GetUsersWithNotesCount should return the note count.
-        /// </summary>
-        [Fact]
         public void ShouldGetDependentCount()
         {
             Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { new DateTime(), 3 } };

@@ -13,9 +13,10 @@ const namespace = "auth";
 })
 export default class LoginView extends Vue {
     public name = "Dashboard";
-    @Action("login", { namespace }) private login!: ({
-        redirectPath
-    }: any) => Promise<void>;
+    @Action("login", { namespace }) private login!: (params: {
+        redirectPath: string;
+    }) => Promise<void>;
+
     @Getter("isAuthenticated", { namespace }) private isAuthenticated!: boolean;
 
     private isLoading = true;

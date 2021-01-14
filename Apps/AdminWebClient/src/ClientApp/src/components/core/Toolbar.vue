@@ -58,17 +58,14 @@ a {
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch, Ref } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { Route } from "vue-router";
-import { State, Action, Getter } from "vuex-class";
-
-import { mapMutations } from "vuex";
+import { Action, Getter } from "vuex-class";
 
 @Component
 export default class ToolbarComponent extends Vue {
-    @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
-        isDrawerOpen
-    }: any) => void;
+    @Action("setState", { namespace: "drawer" })
+    private setDrawerState!: (params: { isDrawerOpen: boolean }) => void;
     @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
     @Getter("isAuthenticated", { namespace: "auth" })
     private isLoggedIn!: boolean;
@@ -76,17 +73,17 @@ export default class ToolbarComponent extends Vue {
     private title = "";
     private responsive = false;
 
-    mounted() {
+    private mounted() {
         this.onResponsiveInverted();
         window.addEventListener("resize", this.onResponsiveInverted);
     }
 
-    beforeDestroy() {
+    private beforeDestroy() {
         window.removeEventListener("resize", this.onResponsiveInverted);
     }
 
     @Watch("$route")
-    public onIsAppIdleChanged(idle: boolean) {
+    private onIsAppIdleChanged() {
         this.title = this.$route.name || "";
     }
 

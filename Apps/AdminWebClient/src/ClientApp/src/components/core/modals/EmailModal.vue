@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="1000px">
+    <v-dialog v-model="dialogState" persistent max-width="1000px">
         <template #activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on"
                 >New Email Communication</v-btn
@@ -95,11 +95,9 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
-import container from "@/plugins/inversify.config";
 import Communication, {
     CommunicationStatus
 } from "@/models/adminCommunication";
-import moment from "moment";
 import {
     TiptapVuetify,
     Heading,
@@ -127,14 +125,14 @@ export default class EmailModal extends Vue {
     @Prop() editedItem!: Communication;
     @Prop() isNew!: number;
 
-    private dialog = false;
+    private dialogState = false;
     private priorityItems = [
         { text: "Urgent", number: 1000 },
         { text: "High", number: 100 },
         { text: "Standard", number: 10 },
         { text: "Low", number: 1 }
     ];
-    private extensions: any = [
+    private extensions = [
         History,
         Blockquote,
         Link,
@@ -162,7 +160,7 @@ export default class EmailModal extends Vue {
     @Watch("editedItem")
     private onPropChange() {
         if (!this.isNew) {
-            this.dialog = true;
+            this.dialogState = true;
         }
     }
 
@@ -170,17 +168,17 @@ export default class EmailModal extends Vue {
         return this.isNew ? "New Email" : "Edit Email";
     }
 
-    @Watch("dialog")
-    private onDialogChange(val: any) {
-        val || this.close();
+    @Watch("dialogState")
+    private onDialogChange(dialogIsOpen: boolean) {
+        dialogIsOpen || this.close();
     }
 
     private close() {
         this.$nextTick(() => {
             (this.$refs.form as Vue & {
-                resetValidation: () => any;
+                resetValidation: () => void;
             }).resetValidation();
-            this.dialog = false;
+            this.dialogState = false;
             this.emitClose();
         });
     }
@@ -203,7 +201,7 @@ export default class EmailModal extends Vue {
             }
             this.close();
             (this.$refs.form as Vue & {
-                resetValidation: () => any;
+                resetValidation: () => void;
             }).resetValidation();
         }
     }

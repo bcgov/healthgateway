@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { State, Action, Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 import LoadingComponent from "@/components/core/Loading.vue";
 
 const namespace = "auth";
@@ -21,12 +21,13 @@ const namespace = "auth";
     }
 })
 export default class LoginView extends Vue {
-    public name = "Dashboard";
     @Action("logout", { namespace }) private logout!: () => Promise<void>;
     @Getter("isAuthenticated", { namespace }) private isAuthenticated!: boolean;
+
+    public name = "Dashboard";
     private isLoading = true;
 
-    mounted() {
+    private mounted() {
         this.isLoading = true;
         if (this.isAuthenticated) {
             this.logout().then(() => {

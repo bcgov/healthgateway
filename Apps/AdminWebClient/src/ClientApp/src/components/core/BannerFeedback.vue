@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Prop, Component, Watch } from "vue-property-decorator";
+import { Prop, Component } from "vue-property-decorator";
 import BannerFeedback from "@/models/bannerFeedback";
 import { ResultType } from "@/constants/resulttype";
 

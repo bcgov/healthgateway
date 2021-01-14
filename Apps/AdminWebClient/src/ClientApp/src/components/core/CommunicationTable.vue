@@ -112,7 +112,7 @@ export default class CommunicationTable extends Vue {
         }
     }
 
-    private bannerHeaders: any[] = [
+    private bannerHeaders = [
         {
             text: "Subject",
             value: "subject",
@@ -278,13 +278,14 @@ export default class CommunicationTable extends Vue {
             .then((banners: Communication[]) => {
                 this.parseComms(banners);
             })
-            .catch((err: any) => {
+            .catch(err => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
                     message: "Error loading banners"
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;
@@ -377,6 +378,7 @@ export default class CommunicationTable extends Vue {
                     title: "Error",
                     message: "Error updating communication. Please try again."
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;

@@ -48,20 +48,6 @@ export class DashboardService implements IDashboardService {
         });
     }
 
-    public getUsersWithNotesCount(): Promise<number> {
-        return new Promise((resolve, reject) => {
-            this.http
-                .get<number>(`${this.BASE_URI}/UsersWithNotesCount`)
-                .then(requestResult => {
-                    resolve(requestResult);
-                })
-                .catch(err => {
-                    console.log(err);
-                    return reject(err);
-                });
-        });
-    }
-
     public getDependentCount(): Promise<{ [key: string]: number }> {
         return new Promise((resolve, reject) => {
             this.http

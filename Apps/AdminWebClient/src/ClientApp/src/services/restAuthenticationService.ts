@@ -60,7 +60,7 @@ export class RestAuthenticationService implements IAuthenticationService {
     }
 
     public destroyToken(): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise(() => {
             console.log("Starting Logout flow....");
 
             const authPathUrl = new URL(
