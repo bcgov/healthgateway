@@ -1,0 +1,35 @@
+const { AuthMethod } = require("../../support/constants")
+
+describe('Tutorial', () => {
+    before(() => {
+        cy.intercept("GET", "/v1/api/UserProfile/*", (req) => {
+            req.reply((res) => {
+                res.body.resourcePayload.preferences.tutorialPopover.value = "true";
+            })
+        })
+        cy.enableModules("Note");
+
+        cy.login(Cypress.env('keycloak.username'),
+            Cypress.env('keycloak.password'),
+            AuthMethod.KeyCloak);
+        cy.checkTimelineHasLoaded();
+    })
+
+    it('Validate Add Note Popover', () => {
+        cy.get('[data-testid=sidebarToggle]')
+            .should('be.visible')
+            .click();
+        
+        cy.get('[data-testid=notesPopover]')
+            .should('be.visible');
+    });
+
+    it('Validate Reports Popover', () => {
+        cy.get('[data-testid=sidebarToggle]')
+            .should('be.visible')
+            .click();
+        
+        cy.get('[data-testid=reportsPopover]')
+            .should('be.visible');
+    });
+})
