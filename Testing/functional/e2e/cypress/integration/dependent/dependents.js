@@ -1,6 +1,7 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('dependents', () => {
+
     const validDependent = {
         firstName: "Sam",
         lastName: "Testfive",
@@ -20,6 +21,8 @@ describe('dependents', () => {
     }
 
     before(() => {
+
+        cy.setupDownloads();
         cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
         cy.login(
             Cypress.env('keycloak.username'), 
