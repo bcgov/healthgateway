@@ -74,7 +74,8 @@ export default class SidebarComponent extends Vue {
     private name = "";
     private windowWidth = 0;
 
-    private isTutorialEnabled = false;
+    private isTutorialEnabledForNotes = false;
+    private isTutorialEnabledForExportRecords = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
@@ -91,7 +92,8 @@ export default class SidebarComponent extends Vue {
 
     @Watch("isOpen")
     private onIsOpen() {
-        this.isTutorialEnabled = false;
+        this.isTutorialEnabledForNotes = false;
+        this.isTutorialEnabledForExportRecords = false;
     }
 
     private mounted() {
@@ -114,7 +116,8 @@ export default class SidebarComponent extends Vue {
                 return;
             }
 
-            this.isTutorialEnabled = true;
+            this.isTutorialEnabledForNotes = true;
+            this.isTutorialEnabledForExportRecords = true;
 
             document.querySelectorAll(".button-title").forEach((button) => {
                 if (transition?.classList.contains("collapsed")) {
@@ -152,7 +155,8 @@ export default class SidebarComponent extends Vue {
                     oidcUser.family_name
                 );
             }
-            this.isTutorialEnabled = true;
+            this.isTutorialEnabledForNotes = true;
+            this.isTutorialEnabledForExportRecords = true;
         });
     }
 
@@ -171,30 +175,44 @@ export default class SidebarComponent extends Vue {
         this.eventBus.$emit(EventMessageName.TimelineCreateNote);
     }
 
-    private dismissTutorial() {
-        this.logger.debug("Dismissing tutorial...");
-        if (
-            this.user.preferences.tutorialPopover != undefined &&
-            this.user.preferences.tutorialPopover.hdId != undefined
-        ) {
-            this.user.preferences.tutorialPopover.value = "false";
+    private dismissTutorial(
+        preference: string,
+        userPreference: UserPreference
+    ) {
+        this.logger.debug(`Dismissing tutorial ${preference}...`);
+        if (userPreference != undefined && userPreference.hdId != undefined) {
+            userPreference.value = "false";
             this.updateUserPreference({
                 hdid: this.user.hdid,
-                userPreference: this.user.preferences.tutorialPopover,
+                userPreference: userPreference,
             });
         } else {
-            this.user.preferences.tutorialPopover = {
+            userPreference = {
                 hdId: this.user.hdid,
-                preference: "tutorialPopover",
-                value: "true",
+                preference: preference,
+                value: "false",
                 version: 0,
                 createdDateTime: new DateWrapper().toISO(),
             };
             this.createUserPreference({
                 hdid: this.user.hdid,
-                userPreference: this.user.preferences.tutorialPopover,
+                userPreference: userPreference,
             });
         }
+    }
+
+    private dismissTutorialForNotes() {
+        this.dismissTutorial(
+            "tutorialPopover",
+            this.user.preferences.tutorialPopover
+        );
+    }
+
+    private dismissTutorialForExportRecords() {
+        this.dismissTutorial(
+            "tutorialPopoverExportRecords",
+            this.user.preferences.tutorialPopoverExportRecords
+        );
     }
 
     private printView() {
@@ -206,23 +224,41 @@ export default class SidebarComponent extends Vue {
         this.windowWidth = window.innerWidth;
     }
 
-    private get showTutorialPopover(): boolean {
+    private showTutorialPopover(
+        tutorialPopover: UserPreference,
+        isTutorialEnabled: boolean
+    ): boolean {
         if (this.isMobileWidth) {
             return (
-                this.isTutorialEnabled &&
-                this.user.preferences.tutorialPopover?.value === "true" &&
+                isTutorialEnabled &&
+                tutorialPopover?.value === "true" &&
                 this.isOpen
             );
         } else {
-            return (
-                this.isTutorialEnabled &&
-                this.user.preferences.tutorialPopover?.value === "true"
-            );
+            return isTutorialEnabled && tutorialPopover?.value === "true";
         }
     }
 
-    private set showTutorialPopover(value: boolean) {
-        this.isTutorialEnabled = value;
+    private get showTutorialPopoverNotes(): boolean {
+        return this.showTutorialPopover(
+            this.user.preferences.tutorialPopover,
+            this.isTutorialEnabledForNotes
+        );
+    }
+
+    private set showTutorialPopoverNotes(value: boolean) {
+        this.isTutorialEnabledForNotes = value;
+    }
+
+    private get showTutorialPopoverExportRecords(): boolean {
+        return this.showTutorialPopover(
+            this.user.preferences.tutorialPopoverExportRecords,
+            this.isTutorialEnabledForExportRecords
+        );
+    }
+
+    private set showTutorialPopoverExportRecords(value: boolean) {
+        this.isTutorialEnabledForExportRecords = value;
     }
 
     private get isOverlayVisible() {
@@ -383,7 +419,7 @@ export default class SidebarComponent extends Vue {
                         <b-popover
                             ref="popover"
                             triggers="manual"
-                            :show.sync="showTutorialPopover"
+                            :show.sync="showTutorialPopoverNotes"
                             target="add-a-note-row"
                             class="popover"
                             fallback-placement="clockwise"
@@ -394,7 +430,7 @@ export default class SidebarComponent extends Vue {
                             <div>
                                 <b-button
                                     class="pop-over-close"
-                                    @click="dismissTutorial"
+                                    @click="dismissTutorialForNotes"
                                     >x</b-button
                                 >
                             </div>
@@ -470,6 +506,7 @@ export default class SidebarComponent extends Vue {
                         class="my-4"
                     >
                         <b-row
+                            id="export-records-row"
                             class="align-items-center name-wrapper my-4 button-container"
                             :class="{ selected: isReports }"
                         >
@@ -496,6 +533,32 @@ export default class SidebarComponent extends Vue {
                                 <span>Export Records</span>
                             </b-col>
                         </b-row>
+                        <b-popover
+                            ref="popover"
+                            triggers="manual"
+                            :show.sync="showTutorialPopoverExportRecords"
+                            target="export-records-row"
+                            class="popover"
+                            fallback-placement="clockwise"
+                            placement="right"
+                            variant="dark"
+                            boundary="viewport"
+                        >
+                            <div>
+                                <b-button
+                                    class="pop-over-close"
+                                    @click="dismissTutorialForExportRecords"
+                                    >x</b-button
+                                >
+                            </div>
+                            <div
+                                data-testid="exportRecordsPopover"
+                                class="popover-content"
+                            >
+                                Download a pdf of your records. e.g. COVID-19
+                                test proof for employers.
+                            </div>
+                        </b-popover>
                     </router-link>
                     <!-- Health Insights button -->
                     <router-link
@@ -791,6 +854,9 @@ export default class SidebarComponent extends Vue {
 @media (max-width: 470px) {
     .popover-content {
         max-width: 8rem;
+    }
+    .bs-popover-right {
+        margin-left: 220px !important;
     }
 }
 </style>
