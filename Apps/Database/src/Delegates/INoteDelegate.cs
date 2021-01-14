@@ -75,13 +75,6 @@ namespace HealthGateway.Database.Delegates
         DBResult<Note> DeleteNote(Note note, bool commit = true);
 
         /// <summary>
-        /// Returns the count of users that have notes on their timeline.
-        /// </summary>
-        /// <param name="minNotes">The minimum number of notes to count.</param>
-        /// <returns>The count of users.</returns>
-        int GetUsersWithNotesCount(int minNotes);
-
-        /// <summary>
         /// Gets a list of all the notes ordered by the CreatedDateTime in assending order.
         /// </summary>
         /// <param name="page">The starting offset for the query.</param>

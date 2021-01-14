@@ -1,3 +1,10 @@
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+
+@Component
+export default class Footer extends Vue {}
+</script>
+
 <template>
     <v-footer app dark paddless>
         <v-row no-gutters>
@@ -10,11 +17,3 @@
         </v-row>
     </v-footer>
 </template>
-
-<script lang="ts">
-import { Action, Getter } from "vuex-class";
-import { Component, Vue } from "vue-property-decorator";
-
-@Component
-export default class Footer extends Vue {}
-</script>

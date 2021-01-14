@@ -1,8 +1,10 @@
 import { Module } from "vuex";
-import { getters } from "./getters";
+
+import { AuthState, RootState, StateType } from "@/models/storeState";
+
 import { actions } from "./actions";
+import { getters } from "./getters";
 import { mutations } from "./mutations";
-import { RootState, AuthState, StateType } from "@/models/storeState";
 
 export const state: AuthState = {
     statusMessage: "",

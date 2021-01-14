@@ -193,16 +193,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public int GetUsersWithNotesCount(int minNotes)
-        {
-            return this.dbContext.Note
-                .Select(n => n.HdId)
-                    .GroupBy(key => key)
-                    .Where(w => w.Count() >= minNotes)
-                    .Count();
-        }
-
-        /// <inheritdoc />
         public DBResult<IEnumerable<Note>> GetAll(int page, int pageSize)
         {
             this.logger.LogTrace($"Retrieving all the notes for the page #{page} with pageSize: {pageSize}...");

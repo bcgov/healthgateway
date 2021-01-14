@@ -1,10 +1,11 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import LoadingComponent from "@/components/core/Loading.vue";
+
 import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
-import BannerFeedback from "@/models/bannerFeedback";
-import CommunicationTable from "../components/core/CommunicationTable.vue";
+import CommunicationTable from "@/components/core/CommunicationTable.vue";
+import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
+import BannerFeedback from "@/models/bannerFeedback";
 
 @Component({
     components: {

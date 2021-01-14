@@ -1,12 +1,11 @@
 <script lang="ts">
-import { Action, Getter } from "vuex-class";
 import { Component, Vue, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
 @Component
 export default class MainNavbar extends Vue {
-    @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
-        isDrawerOpen
-    }: any) => void;
+    @Action("setState", { namespace: "drawer" })
+    private setDrawerState!: (params: { isDrawerOpen: boolean }) => void;
     @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
     @Getter("isAuthorized", { namespace: "auth" })
     private isAuthorized!: boolean;

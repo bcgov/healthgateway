@@ -1,16 +1,44 @@
-<style scoped>
-#core-toolbar a {
-    text-decoration: none;
-}
-.toolbar-items {
-    text-decoration: none;
-}
+<script lang="ts">
+import { Component, Vue, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
-a {
-    color: #e5e9ec !important;
-    caret-color: #f4f4f4 !important;
+@Component
+export default class ToolbarComponent extends Vue {
+    @Action("setState", { namespace: "drawer" })
+    private setDrawerState!: (params: { isDrawerOpen: boolean }) => void;
+    @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
+    @Getter("isAuthenticated", { namespace: "auth" })
+    private isLoggedIn!: boolean;
+
+    private title = "";
+    private responsive = false;
+
+    private mounted() {
+        this.onResponsiveInverted();
+        window.addEventListener("resize", this.onResponsiveInverted);
+    }
+
+    private beforeDestroy() {
+        window.removeEventListener("resize", this.onResponsiveInverted);
+    }
+
+    @Watch("$route")
+    private onIsAppIdleChanged() {
+        this.title = this.$route.name || "";
+    }
+
+    private toggleDrawer() {
+        this.setDrawerState({ isDrawerOpen: !this.isDrawerOpen });
+    }
+    private onResponsiveInverted() {
+        if (window.innerWidth < 959) {
+            this.responsive = true;
+        } else {
+            this.responsive = false;
+        }
+    }
 }
-</style>
+</script>
 
 <template>
     <v-app-bar id="core-toolbar" app flat>
@@ -57,48 +85,16 @@ a {
     </v-app-bar>
 </template>
 
-<script lang="ts">
-import { Component, Vue, Watch, Ref } from "vue-property-decorator";
-import { Route } from "vue-router";
-import { State, Action, Getter } from "vuex-class";
-
-import { mapMutations } from "vuex";
-
-@Component
-export default class ToolbarComponent extends Vue {
-    @Action("setState", { namespace: "drawer" }) private setDrawerState!: ({
-        isDrawerOpen
-    }: any) => void;
-    @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
-    @Getter("isAuthenticated", { namespace: "auth" })
-    private isLoggedIn!: boolean;
-
-    private title = "";
-    private responsive = false;
-
-    mounted() {
-        this.onResponsiveInverted();
-        window.addEventListener("resize", this.onResponsiveInverted);
-    }
-
-    beforeDestroy() {
-        window.removeEventListener("resize", this.onResponsiveInverted);
-    }
-
-    @Watch("$route")
-    public onIsAppIdleChanged(idle: boolean) {
-        this.title = this.$route.name || "";
-    }
-
-    private toggleDrawer() {
-        this.setDrawerState({ isDrawerOpen: !this.isDrawerOpen });
-    }
-    private onResponsiveInverted() {
-        if (window.innerWidth < 959) {
-            this.responsive = true;
-        } else {
-            this.responsive = false;
-        }
-    }
+<style scoped>
+#core-toolbar a {
+    text-decoration: none;
 }
-</script>
+.toolbar-items {
+    text-decoration: none;
+}
+
+a {
+    color: #e5e9ec !important;
+    caret-color: #f4f4f4 !important;
+}
+</style>
