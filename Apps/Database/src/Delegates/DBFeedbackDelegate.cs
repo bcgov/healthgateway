@@ -114,10 +114,13 @@ namespace HealthGateway.Database.Delegates
 
             foreach (UserFeedbackAdmin feedbackAdmin in feedback)
             {
-                string? email;
-                if (profileEmails.TryGetValue(feedbackAdmin.UserProfileId, out email))
+                if (!string.IsNullOrWhiteSpace(feedbackAdmin.UserProfileId))
                 {
-                    feedbackAdmin.Email = email != null ? email : string.Empty;
+                    string? email;
+                    if (profileEmails.TryGetValue(feedbackAdmin.UserProfileId, out email))
+                    {
+                        feedbackAdmin.Email = email != null ? email : string.Empty;
+                    }
                 }
             }
 
