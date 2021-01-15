@@ -73,6 +73,6 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the client IP address.
         /// This value is populated at runtime with the client invoking the web service.
         /// </summary>
-        public string? ClientIPAddress { get; set; }
+        public string? ClientIP { get; set; }
     }
 }

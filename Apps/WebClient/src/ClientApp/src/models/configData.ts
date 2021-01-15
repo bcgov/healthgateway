@@ -69,7 +69,7 @@ export interface WebClientConfiguration {
     minPatientAge: number;
     // Gets or sets the maximum age of a dependent
     maxDependentAge: number;
-    // Gets or sets the client IP as reported by the server
+    // Gets or sets the client IP as reported by the server.
     clientIP?: string;
     // Gets or sets the sets the offline configuration.
     OfflineModeConfiguration?: OfflineModeConfiguration;
@@ -90,9 +90,9 @@ export interface OfflineModeConfiguration {
     // The start datetime for offline mode.
     StartDateTime: StringISODate;
     // The end datetime for offline mode.
-    EndDateTime: StringISODate;
+    EndDateTime?: StringISODate;
     //The message to display if in offline mode
-    Message: StringISODate;
+    Message: string;
     //The list of IPs that can connect during offline mode.
-    IPWhitelist: Array<string>;
+    Whitelist: string[];
 }
