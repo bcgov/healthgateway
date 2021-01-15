@@ -45,7 +45,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         public Models.ExternalConfiguration Index()
         {
-            return this.configservice.GetConfiguration();
+            Models.ExternalConfiguration config = this.configservice.GetConfiguration();
+            config.WebClient.ClientIPAddress = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            return config;
         }
     }
 }
