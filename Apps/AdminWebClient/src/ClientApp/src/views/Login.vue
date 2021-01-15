@@ -2,6 +2,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import VueRouter from "vue-router";
 import { Action, Getter } from "vuex-class";
+
 import LoadingComponent from "@/components/core/Loading.vue";
 
 const namespace = "auth";
@@ -13,9 +14,10 @@ const namespace = "auth";
 })
 export default class LoginView extends Vue {
     public name = "Dashboard";
-    @Action("login", { namespace }) private login!: ({
-        redirectPath
-    }: any) => Promise<void>;
+    @Action("login", { namespace }) private login!: (params: {
+        redirectPath: string;
+    }) => Promise<void>;
+
     @Getter("isAuthenticated", { namespace }) private isAuthenticated!: boolean;
 
     private isLoading = true;
@@ -36,7 +38,7 @@ export default class LoginView extends Vue {
 
         console.log("path", this.redirectPath);
 
-        this.login({ redirectPath: this.redirectPath }).then(result => {
+        this.login({ redirectPath: this.redirectPath }).then(() => {
             if (this.isAuthenticated) {
                 this.routeHandler.push({ path: this.redirectPath });
             }

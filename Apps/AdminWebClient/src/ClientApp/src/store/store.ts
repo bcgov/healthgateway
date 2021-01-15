@@ -1,8 +1,10 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
+
 import { RootState } from "@/models/storeState";
-import { config } from "./modules/config/config";
+
 import { auth } from "./modules/auth/auth";
+import { config } from "./modules/config/config";
 import { drawer } from "./modules/drawer/drawer";
 
 Vue.use(Vuex);

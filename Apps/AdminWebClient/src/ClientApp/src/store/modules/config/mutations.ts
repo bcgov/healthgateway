@@ -1,6 +1,7 @@
 import { MutationTree } from "vuex";
-import { StateType, ConfigState } from "@/models/storeState";
+
 import ExternalConfiguration from "@/models/externalConfiguration";
+import { ConfigState, StateType } from "@/models/storeState";
 
 export const mutations: MutationTree<ConfigState> = {
     configurationRequest(state: ConfigState) {

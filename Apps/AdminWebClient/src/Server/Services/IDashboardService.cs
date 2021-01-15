@@ -38,12 +38,6 @@ namespace HealthGateway.Admin.Services
         IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset);
 
         /// <summary>
-        /// Retrieves the count of users with notes on their timeline.
-        /// </summary>
-        /// <returns>The count of users with notes.</returns>
-        int GetUsersWithNotesCount();
-
-        /// <summary>
         /// Retrieves the count of dependents.
         /// </summary>
         /// <param name="timeOffset">The time offset from the client browser to UTC.</param>

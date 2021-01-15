@@ -1,5 +1,5 @@
-import ExternalConfiguration from "@/models/externalConfiguration";
 import AuthenticationData from "@/models/authenticationData";
+import ExternalConfiguration from "@/models/externalConfiguration";
 
 export enum StateType {
     NONE,

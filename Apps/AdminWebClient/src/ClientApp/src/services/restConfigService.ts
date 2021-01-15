@@ -1,6 +1,7 @@
-import { IConfigService, IHttpDelegate } from "@/services/interfaces";
 import { injectable } from "inversify";
+
 import ExternalConfiguration from "@/models/externalConfiguration";
+import { IConfigService, IHttpDelegate } from "@/services/interfaces";
 
 @injectable()
 export class RestConfigService implements IConfigService {

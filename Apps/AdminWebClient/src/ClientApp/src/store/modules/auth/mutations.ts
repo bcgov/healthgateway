@@ -1,4 +1,5 @@
 import { MutationTree } from "vuex";
+
 import AuthenticationData from "@/models/authenticationData";
 import { AuthState, StateType } from "@/models/storeState";
 

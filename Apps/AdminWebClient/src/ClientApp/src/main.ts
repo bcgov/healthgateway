@@ -1,30 +1,30 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
-import Vue from "vue";
-import vuetify from "./plugins/vuetify";
-import App from "./App.vue";
-import router from "./router";
-import store from "@/store/store";
-import "./registerServiceWorker";
-import dateFilter from "@/filters/date.filter";
-import DatetimePicker from "vuetify-datetime-picker";
-
-import {
-    IHttpDelegate,
-    IConfigService,
-    IAuthenticationService,
-    IUserFeedbackService,
-    IDashboardService,
-    IEmailAdminService,
-    ICommunicationService
-} from "@/services/interfaces";
-import { SERVICE_IDENTIFIER, DELEGATE_IDENTIFIER } from "@/plugins/inversify";
+import "@/registerServiceWorker";
+import "tiptap-vuetify/dist/main.css";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import container from "@/plugins/inversify.config";
-import ExternalConfiguration from "@/models/externalConfiguration";
 import { TiptapVuetifyPlugin } from "tiptap-vuetify";
-import "tiptap-vuetify/dist/main.css";
+import Vue from "vue";
+import DatetimePicker from "vuetify-datetime-picker";
+
+import App from "@/App.vue";
+import dateFilter from "@/filters/date.filter";
+import ExternalConfiguration from "@/models/externalConfiguration";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import vuetify from "@/plugins/vuetify";
+import router from "@/router";
+import {
+    IAuthenticationService,
+    ICommunicationService,
+    IConfigService,
+    IDashboardService,
+    IEmailAdminService,
+    IHttpDelegate,
+    IUserFeedbackService
+} from "@/services/interfaces";
+import store from "@/store/store";
 
 Vue.config.productionTip = false;
 
