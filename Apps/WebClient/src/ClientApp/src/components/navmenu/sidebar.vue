@@ -193,16 +193,6 @@ export default class SidebarComponent extends Vue {
         }
     }
 
-    private dismissTutorialForNotes() {
-        this.dismissTutorial(this.user.preferences.tutorialPopover);
-    }
-
-    private dismissTutorialForExportRecords() {
-        this.dismissTutorial(
-            this.user.preferences.tutorialPopoverExportRecords
-        );
-    }
-
     private printView() {
         this.clearOverlay();
         this.eventBus.$emit(EventMessageName.TimelinePrintView);
@@ -418,7 +408,11 @@ export default class SidebarComponent extends Vue {
                             <div>
                                 <b-button
                                     class="pop-over-close"
-                                    @click="dismissTutorialForNotes"
+                                    @click="
+                                        dismissTutorial(
+                                            user.preferences.tutorialPopover
+                                        )
+                                    "
                                     >x</b-button
                                 >
                             </div>
@@ -536,7 +530,12 @@ export default class SidebarComponent extends Vue {
                             <div>
                                 <b-button
                                     class="pop-over-close"
-                                    @click="dismissTutorialForExportRecords"
+                                    @click="
+                                        dismissTutorial(
+                                            user.preferences
+                                                .tutorialPopoverExportRecords
+                                        )
+                                    "
                                     >x</b-button
                                 >
                             </div>
