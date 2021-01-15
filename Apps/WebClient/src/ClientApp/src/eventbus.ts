@@ -15,7 +15,6 @@ export class EventMessageName {
     public static readonly TimelineEntryEditClose = "timeline-entry-edit-close";
     public static readonly TimelineEntryUpdated = "timeline-entry-updated";
     public static readonly TimelinePageUpdate = "timeline-page-update";
-    public static readonly TimelinePrintView = "timeline-print-view";
     public static readonly SelectedFilter = "filter-selected";
     public static readonly IsNoteBlank = "note-blank";
 }

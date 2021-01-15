@@ -197,11 +197,6 @@ export default class SidebarComponent extends Vue {
         }
     }
 
-    private printView() {
-        this.clearOverlay();
-        this.eventBus.$emit(EventMessageName.TimelinePrintView);
-    }
-
     private onResize() {
         this.windowWidth = window.innerWidth;
     }
@@ -406,28 +401,6 @@ export default class SidebarComponent extends Vue {
                                 e.g. Broke ankle in Cuba
                             </div>
                         </b-popover>
-                        <!-- Print Button -->
-                        <b-row
-                            data-testid="printViewBtn"
-                            class="align-items-center border rounded-pill py-2 button-container my-4"
-                            :class="{ 'sub-menu': isOpen }"
-                            @click="printView"
-                        >
-                            <b-col title="Print" :class="{ 'col-4': isOpen }">
-                                <font-awesome-icon
-                                    icon="print"
-                                    class="button-icon sub-menu m-auto"
-                                    size="2x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-show="isOpen"
-                                cols="8"
-                                class="button-title sub-menu"
-                            >
-                                <span>Print</span>
-                            </b-col>
-                        </b-row>
                     </div>
                     <router-link
                         v-show="isDependentEnabled && isActiveProfile"
