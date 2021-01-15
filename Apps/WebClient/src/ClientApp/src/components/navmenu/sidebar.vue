@@ -12,7 +12,6 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
-import { DateWrapper } from "@/models/dateWrapper";
 library.add(faStream);
 
 const auth = "auth";
@@ -175,25 +174,18 @@ export default class SidebarComponent extends Vue {
         this.eventBus.$emit(EventMessageName.TimelineCreateNote);
     }
 
-    private dismissTutorial(
-        preference: string,
-        userPreference: UserPreference
-    ) {
-        this.logger.debug(`Dismissing tutorial ${preference}...`);
-        if (userPreference != undefined && userPreference.hdId != undefined) {
-            userPreference.value = "false";
+    private dismissTutorial(userPreference: UserPreference) {
+        this.logger.debug(
+            `Dismissing tutorial ${userPreference.preference}...`
+        );
+        userPreference.value = "false";
+        if (userPreference.hdId != undefined) {
             this.updateUserPreference({
                 hdid: this.user.hdid,
                 userPreference: userPreference,
             });
         } else {
-            userPreference = {
-                hdId: this.user.hdid,
-                preference: preference,
-                value: "false",
-                version: 0,
-                createdDateTime: new DateWrapper().toISO(),
-            };
+            userPreference.hdId = this.user.hdid;
             this.createUserPreference({
                 hdid: this.user.hdid,
                 userPreference: userPreference,
@@ -202,15 +194,11 @@ export default class SidebarComponent extends Vue {
     }
 
     private dismissTutorialForNotes() {
-        this.dismissTutorial(
-            "tutorialPopover",
-            this.user.preferences.tutorialPopover
-        );
+        this.dismissTutorial(this.user.preferences.tutorialPopover);
     }
 
     private dismissTutorialForExportRecords() {
         this.dismissTutorial(
-            "tutorialPopoverExportRecords",
             this.user.preferences.tutorialPopoverExportRecords
         );
     }
