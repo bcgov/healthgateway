@@ -1,5 +1,6 @@
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import { Dictionary } from "@/models/baseTypes";
+import { StringISODate } from "@/models/dateWrapper";
 
 // A collection of configuration items for use by Health Gateway and approved applications.
 export class ExternalConfiguration {
@@ -68,6 +69,10 @@ export interface WebClientConfiguration {
     minPatientAge: number;
     // Gets or sets the maximum age of a dependent
     maxDependentAge: number;
+    // Gets or sets the client IP as reported by the server.
+    clientIP?: string;
+    // Gets or sets the sets the offline configuration.
+    OfflineModeConfiguration?: OfflineModeConfiguration;
 }
 
 // Various timeout values used by the VUE WebClient application.
@@ -78,4 +83,16 @@ export interface TimeOutsConfiguration {
     logoutRedirect: string;
     // Gets or sets the aount of time in seconds that a user will have to wait between resending an SMS verification code.
     resendSMS: number;
+}
+
+// Configuration for offline mode.
+export interface OfflineModeConfiguration {
+    // The start datetime for offline mode.
+    StartDateTime: StringISODate;
+    // The end datetime for offline mode.
+    EndDateTime?: StringISODate;
+    //The message to display if in offline mode
+    Message: string;
+    //The list of IPs that can connect during offline mode.
+    Whitelist: string[];
 }
