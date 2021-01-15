@@ -234,6 +234,12 @@ export default class SidebarComponent extends Vue {
     }
 
     private get isTimeline(): boolean {
+        if (
+            !this.isMobileWidth &&
+            this.user.preferences.tutorialPopover?.value === "true"
+        ) {
+            this.showTutorialPopover = true;
+        }
         return this.$route.path == "/timeline";
     }
 
