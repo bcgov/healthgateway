@@ -70,6 +70,12 @@ export default class ReportsView extends Vue {
         }
     }
 
+    private clear() {
+        this.reportType = "";
+        this.startDate = null;
+        this.endDate = null;
+    }
+
     private showConfirmationModal() {
         this.messageModal.showModal();
     }
@@ -166,15 +172,31 @@ export default class ReportsView extends Vue {
                                         />
                                     </b-col>
                                     <b-col class="col-12 col-md-6">
-                                        <b-button
-                                            variant="primary"
-                                            data-testid="exportRecordBtn"
-                                            class="ml-auto d-block"
-                                            :disabled="!reportType || isLoading"
-                                            @click="showConfirmationModal"
+                                        <div
+                                            style="width: fit-content"
+                                            class="ml-auto"
                                         >
-                                            Download PDF
-                                        </b-button>
+                                            <b-button
+                                                variant="secondary"
+                                                data-testid="clearBtn"
+                                                class="mb-1 mr-1"
+                                                :disabled="isLoading"
+                                                @click="clear"
+                                            >
+                                                Clear
+                                            </b-button>
+                                            <b-button
+                                                variant="primary"
+                                                data-testid="exportRecordBtn"
+                                                class="mb-1"
+                                                :disabled="
+                                                    !reportType || isLoading
+                                                "
+                                                @click="showConfirmationModal"
+                                            >
+                                                Download PDF
+                                            </b-button>
+                                        </div>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -286,7 +308,8 @@ export default class ReportsView extends Vue {
     padding: 0px 10px;
     width: 100%;
     height: 400px;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 .form {
     background-color: $soft_background;
