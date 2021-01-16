@@ -20,20 +20,18 @@ namespace HealthGateway.WebClient.Models
 
     /// <summary>
     /// A collection of configuration items used to take Health Gateway offline.
+    /// If the OfflineModeConfiguration is null, then offline mode is disabled.
     /// </summary>
     public class OfflineModeConfiguration
     {
         /// <summary>
         /// Gets or sets the beginning datetime for the offline mode.
-        /// If the value is null offline mode is disabled.
-        /// If the value is in the future then offline is scheduled.
-        /// If the value is in the past then offline is enabled but dependent on the EndDateTime.
         /// </summary>
-        public DateTime? StartDateTime { get; set; }
+        public DateTime StartDateTime { get; set; } = DateTime.MinValue;
 
         /// <summary>
         /// Gets or sets the ending datetime for the offline mode.
-        /// if the value is null or in the future then offline is enabled but dependent on StartDateTime.
+        /// A null value means that we are permanently in offline mode.
         /// If the value is in the past then offline mode is disabled.
         /// </summary>
         public DateTime? EndDateTime { get; set; }
@@ -41,11 +39,11 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the offline message to be displayed to the client if offline mode is enabled.
         /// </summary>
-        public string? Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the list of IPs that can use the webclient during an outage.
         /// </summary>
-        public IEnumerable<string>? Whitelist { get; set; }
+        public IEnumerable<string> Whitelist { get; set; } = Array.Empty<string>();
     }
 }
