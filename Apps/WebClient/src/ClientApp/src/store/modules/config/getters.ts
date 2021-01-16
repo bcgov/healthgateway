@@ -5,6 +5,7 @@ import {
     OpenIdConnectConfiguration,
     WebClientConfiguration,
 } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
 
 export const getters: GetterTree<ConfigState, RootState> = {
     identityProviders(state: ConfigState): IdentityProviderConfiguration[] {
@@ -21,5 +22,29 @@ export const getters: GetterTree<ConfigState, RootState> = {
         const { config } = state;
         const { webClient } = config;
         return webClient;
+    },
+    isOffline(state: ConfigState): boolean {
+        const webclientConfig = state.config.webClient;
+        const clientIP = webclientConfig.clientIP;
+        const offlineConfig = webclientConfig.OfflineModeConfiguration;
+
+        if (offlineConfig !== undefined) {
+            let startTime = new DateWrapper(offlineConfig.StartDateTime);
+            let endTime =
+                offlineConfig.EndDateTime === undefined
+                    ? DateWrapper.fromNumerical(2050, 12, 31)
+                    : new DateWrapper(offlineConfig.EndDateTime);
+
+            let now = new DateWrapper();
+
+            if (
+                now.isAfterOrSame(startTime) &&
+                now.isBeforeOrSame(endTime) &&
+                !offlineConfig.IPWhitelist.includes(clientIP)
+            ) {
+                return true;
+            }
+        }
+        return false;
     },
 };

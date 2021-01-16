@@ -6,6 +6,9 @@ import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { Dictionary } from "@/models/baseTypes";
+import { WebClientConfiguration } from "./models/configData";
+import { DateWrapper } from "./models/dateWrapper";
+import { user } from "./store/modules/user/user";
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 declare let window: SnowplowWindow;
 
@@ -62,15 +65,19 @@ enum UserState {
     registered = "registered",
     pendingDeletion = "pendingDeletion",
     invalidLogin = "invalidLogin",
+    offline = "offline",
 }
 
 function calculateUserState() {
+    const isOffline = store.getters["config/isOffline"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isValid: boolean = store.getters["auth/isValidIdentityProvider"];
     const isRegistered: boolean = store.getters["user/userIsRegistered"];
     const userIsActive: boolean = store.getters["user/userIsActive"];
 
-    if (!isAuthenticated) {
+    if (isOffline) {
+        return UserState.offline;
+    } else if (!isAuthenticated) {
         return UserState.unauthenticated;
     } else if (!isValid) {
         return UserState.invalidLogin;
@@ -115,7 +122,11 @@ const routes = [
         path: "/",
         component: LandingView,
         meta: {
-            validStates: [UserState.unauthenticated, UserState.registered],
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.offline,
+            ],
         },
     },
     {
@@ -232,13 +243,12 @@ const routes = [
         path: "/idirLoggedIn",
         component: IdirLoggedInView,
         meta: { validStates: [UserState.invalidLogin] },
-    }, // IDIR Logged In warning
+    },
     {
         path: "/unauthorized",
         component: UnauthorizedView,
         meta: { stateless: true },
-    }, // Unauthorized
-
+    },
     {
         path: "/*",
         component: NotFoundView,
@@ -277,7 +287,9 @@ router.beforeEach(async (to, from, next) => {
             next();
         } else {
             // If the route does not accept the state, go to one of the default locations
-            if (currentUserState === UserState.pendingDeletion) {
+            if (currentUserState === UserState.offline) {
+                next({ path: "/" });
+            } else if (currentUserState === UserState.pendingDeletion) {
                 next({ path: "/profile" });
             } else if (currentUserState === UserState.registered) {
                 if (hasRequiredModules) {

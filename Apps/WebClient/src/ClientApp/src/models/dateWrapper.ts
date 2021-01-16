@@ -121,6 +121,27 @@ export class DateWrapper {
                 ("0" + day).slice(-2)
         );
     }
+    
+     /**
+     * Creates a new DateWrapper from a day, month, year numerical parameters
+     * @param year The year to be set
+     * @param month The Month to be set
+     * @param day The day to be set
+     * @returns a new DateWrapper object
+     */
+    public static maxDate(
+        year: number,
+        month: number,
+        day: number
+    ): DateWrapper {
+        return new DateWrapper(
+            year.toString() +
+                "-" +
+                ("0" + month).slice(-2) +
+                "-" +
+                ("0" + day).slice(-2)
+        );
+    }
 
     /**
      * Formats the date using the given a set of tokens
