@@ -6,9 +6,6 @@ import VueRouter, { Route } from "vue-router";
 import store from "./store/store";
 import { SnowplowWindow } from "@/plugins/extensions";
 import { Dictionary } from "@/models/baseTypes";
-import { WebClientConfiguration } from "./models/configData";
-import { DateWrapper } from "./models/dateWrapper";
-import { user } from "./store/modules/user/user";
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 declare let window: SnowplowWindow;
 

@@ -25,22 +25,20 @@ export const getters: GetterTree<ConfigState, RootState> = {
     },
     isOffline(state: ConfigState): boolean {
         const webclientConfig = state.config.webClient;
-        const clientIP = webclientConfig.clientIP;
-        const offlineConfig = webclientConfig.OfflineModeConfiguration;
+        const clientIP = webclientConfig.clientIP || "";
+        const offlineConfig = webclientConfig.offlineMode;
 
-        if (offlineConfig !== undefined) {
-            let startTime = new DateWrapper(offlineConfig.StartDateTime);
-            let endTime =
-                offlineConfig.EndDateTime === undefined
-                    ? DateWrapper.fromNumerical(2050, 12, 31)
-                    : new DateWrapper(offlineConfig.EndDateTime);
+        if (offlineConfig) {
+            const startTime = new DateWrapper(offlineConfig.startDateTime);
+            const endTime = offlineConfig.endDateTime
+                ? new DateWrapper(offlineConfig.endDateTime)
+                : DateWrapper.fromNumerical(2050, 12, 31);
 
-            let now = new DateWrapper();
-
+            const now = new DateWrapper();
             if (
                 now.isAfterOrSame(startTime) &&
                 now.isBeforeOrSame(endTime) &&
-                !offlineConfig.IPWhitelist.includes(clientIP)
+                !offlineConfig.whitelist.includes(clientIP)
             ) {
                 return true;
             }
