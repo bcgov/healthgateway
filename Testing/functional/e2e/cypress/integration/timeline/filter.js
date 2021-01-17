@@ -71,18 +71,18 @@ describe("Filters", () => {
     });
 
     it("Filter Immunization", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.get("[data-testid=Immunization-filter]").click({ force: true });
-            cy.get("[data-testid=immunizationTitle]").should("be.visible");
-            cy.get("[data-testid=noteTitle]").should("not.exist");
-            cy.get("[data-testid=encounterTitle]").should("not.exist");
-            cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-            cy.get("[data-testid=medicationTitle]").should("not.exist");
-            cy.get('[data-testid="filterDropdown"]').contains("Clear").click();
-        }
-        else {
-            cy.log("Skipped Filter Immunization as running locally")
-        }
+        // if (Cypress.config().baseUrl != localDevUri) {
+        //     cy.get("[data-testid=Immunization-filter]").click({ force: true });
+        //     cy.get("[data-testid=immunizationTitle]").should("be.visible");
+        //     cy.get("[data-testid=noteTitle]").should("not.exist");
+        //     cy.get("[data-testid=encounterTitle]").should("not.exist");
+        //     cy.get("[data-testid=laboratoryTitle]").should("not.exist");
+        //     cy.get("[data-testid=medicationTitle]").should("not.exist");
+        //     cy.get('[data-testid="filterDropdown"]').contains("Clear").click();
+        // }
+        // else {
+        //     cy.log("Skipped Filter Immunization as running locally")
+        // }
     });
 
     it("Filter Medication", () => {
