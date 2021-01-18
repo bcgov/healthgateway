@@ -765,5 +765,8 @@ export default class SidebarComponent extends Vue {
     .popover-content {
         max-width: 8rem;
     }
+    .bs-popover-right {
+        margin-left: 14rem !important;
+    }
 }
 </style>
