@@ -23,12 +23,26 @@ describe('Reports', () => {
         }
     })
 
-    it('Validate Date Filter Exists', () => {       
+    it('Validate Date Filter and Clear', () => {       
         cy.get('[data-testid=startDateInput]')
-            .should('be.enabled', 'be.visible')
+          .should('be.enabled', 'be.visible')
+          .should('have.value','')
+          .type("2020-01-01")
 
-            cy.get('[data-testid=endDateInput]')
-            .should('be.enabled', 'be.visible')
+        cy.get('[data-testid=endDateInput]')
+          .should('be.enabled', 'be.visible')
+          .should('have.value','')
+          .type("2020-12-31")
+
+        cy.get('[data-testid=clearBtn]')
+          .should('be.enabled', 'be.visible')
+          .click()
+
+        cy.get('[data-testid=startDateInput]')
+          .should('have.value','')
+
+        cy.get('[data-testid=endDateInput]')
+          .should('have.value','')
     })
 
     it('Validate Service Selection', () => {       
