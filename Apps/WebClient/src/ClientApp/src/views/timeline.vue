@@ -160,9 +160,6 @@ export default class TimelineView extends Vue {
         this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
             this.isAddingNote = true;
         });
-        this.eventBus.$on(EventMessageName.TimelinePrintView, () => {
-            this.printRecords();
-        });
         this.eventBus.$on(
             EventMessageName.IdleLogoutWarning,
             (isVisible: boolean) => {
@@ -625,10 +622,6 @@ export default class TimelineView extends Vue {
     private toggleMonthView() {
         this.isListView = false;
         window.location.hash = "calendar";
-    }
-
-    private printRecords() {
-        window.print();
     }
 
     private filtersChanged(newFilter: TimelineFilter) {
