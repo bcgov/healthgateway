@@ -72,7 +72,7 @@ export interface WebClientConfiguration {
     // Gets or sets the client IP as reported by the server.
     clientIP?: string;
     // Gets or sets the sets the offline configuration.
-    OfflineModeConfiguration?: OfflineModeConfiguration;
+    offlineMode?: OfflineModeConfiguration;
 }
 
 // Various timeout values used by the VUE WebClient application.
@@ -88,11 +88,11 @@ export interface TimeOutsConfiguration {
 // Configuration for offline mode.
 export interface OfflineModeConfiguration {
     // The start datetime for offline mode.
-    StartDateTime: StringISODate;
+    startDateTime: StringISODate;
     // The end datetime for offline mode.
-    EndDateTime?: StringISODate;
+    endDateTime?: StringISODate;
     //The message to display if in offline mode
-    Message: string;
+    message: string;
     //The list of IPs that can connect during offline mode.
-    Whitelist: string[];
+    whitelist: string[];
 }

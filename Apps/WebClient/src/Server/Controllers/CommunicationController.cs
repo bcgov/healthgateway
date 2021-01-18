@@ -15,18 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using HealthGateway.Common.AccessManagement.Authorization;
-    using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
-    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
