@@ -6,6 +6,9 @@ Implements functional tests for Health Gateway using Cypress.io tooling.
 
 A Developer should have gone through the Health Gateway installation and configuration.
 
+The developer should re-seed his/her database by connecting to the DB using PGAdmin or another client tool and running 
+cypress/db/seed.sql
+
 ## Cypress
 
 ### Installation and configuration

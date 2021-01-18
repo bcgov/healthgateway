@@ -128,7 +128,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                     this.records = results.resourcePayload;
                     this.filterAndSortEntries();
                     // Required for the sample page
-                    this.recordsPage = this.records.slice(0, 50);
+                    this.recordsPage = this.records;
                 } else if (
                     results.resultStatus == ResultType.ActionRequired &&
                     results.resultError?.actionCode == ActionType.Protected
