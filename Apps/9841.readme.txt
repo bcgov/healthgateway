@@ -1,1 +1,0 @@
-Temp file to be deleted after creating the user story's PR
