@@ -28,7 +28,7 @@ export default class LinearTimelineComponent extends Vue {
 
     @Watch("filter", { deep: true })
     private applyTimelineFilter() {
-        this.hasFilter = TimelineFilter.hasFilter(this.filter);
+        this.hasFilter = this.filter.hasActiveFilter();
         this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
             entry.filterApplies(this.filter)
         );
