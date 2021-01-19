@@ -37,7 +37,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import FilterComponent from "@/components/timeline/filters.vue";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineFilter from "@/models/timelineFilter";
+import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import { ActionType } from "@/constants/actionType";
 import { UserComment } from "@/models/userComment";
 import ImmunizationModel from "@/models/immunizationModel";
@@ -112,11 +112,21 @@ export default class TimelineView extends Vue {
         }
     }
 
+    @Watch("filterText")
+    private onFilterTextChanged() {
+        this.filter.keyword = this.filterText;
+    }
+
+    @Watch("filter", { deep: true })
+    private onFilterChanged() {
+        this.filterText = this.filter.keyword;
+    }
+
     private immunizationLoadDeferred = false;
     private immunizationLoadReady = false;
 
     private filterText = "";
-    private filter: TimelineFilter = new TimelineFilter();
+    private filter: TimelineFilter = new TimelineFilter([]);
     private timelineEntries: TimelineEntry[] = [];
     private isMedicationLoading = false;
     private isImmunizationLoading = false;
@@ -125,11 +135,6 @@ export default class TimelineView extends Vue {
     private isNoteLoading = false;
     private isCommentLoading = false;
     private idleLogoutWarning = false;
-    private medicationCount = 0;
-    private immunizationCount = 0;
-    private encounterCount = 0;
-    private laboratoryCount = 0;
-    private noteCount = 0;
     private protectiveWordAttempts = 0;
     private isAddingNote = false;
     private isEditingEntry = false;
@@ -211,6 +216,45 @@ export default class TimelineView extends Vue {
                 ? (this.isPacificTime = false)
                 : (this.isPacificTime = true);
         }
+
+        let entryTypes: EntryTypeFilter[] = [
+            {
+                type: EntryType.Immunization,
+                display: "Immunizations",
+                isEnabled: this.config.modules[EntryType.Immunization],
+                numEntries: 0,
+                isSelected: false,
+            },
+            {
+                type: EntryType.Medication,
+                display: "Medications",
+                isEnabled: this.config.modules[EntryType.Medication],
+                numEntries: 0,
+                isSelected: false,
+            },
+            {
+                type: EntryType.Laboratory,
+                display: "Laboratory",
+                isEnabled: this.config.modules[EntryType.Laboratory],
+                numEntries: 0,
+                isSelected: false,
+            },
+            {
+                type: EntryType.Encounter,
+                display: "MSP Visits",
+                isEnabled: this.config.modules[EntryType.Encounter],
+                numEntries: 0,
+                isSelected: false,
+            },
+            {
+                type: EntryType.Note,
+                display: "My Notes",
+                isEnabled: this.config.modules[EntryType.Note],
+                numEntries: 0,
+                isSelected: false,
+            },
+        ];
+        this.filter = new TimelineFilter(entryTypes);
     }
 
     private beforeRouteLeave(
@@ -305,7 +349,10 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.medicationCount = results.resourcePayload.length;
+                    this.setFilterTypeCount(
+                        EntryType.Medication,
+                        results.resourcePayload.length
+                    );
                 } else if (
                     results.resultStatus == ResultType.ActionRequired &&
                     results.resultError?.actionCode == ActionType.Protected
@@ -373,7 +420,11 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.laboratoryCount = results.resourcePayload.length;
+                    this.setFilterTypeCount(
+                        EntryType.Laboratory,
+                        results.resourcePayload.length
+                    );
+
                     if (results.resourcePayload.length > 0) {
                         this.protectiveWordModal.hideModal();
                         let showCovidModal = true;
@@ -442,7 +493,10 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.encounterCount = results.resourcePayload.length;
+                    this.setFilterTypeCount(
+                        EntryType.Encounter,
+                        results.resourcePayload.length
+                    );
                 } else {
                     this.logger.error(
                         "Error returned from the encounter call: " +
@@ -483,7 +537,10 @@ export default class TimelineView extends Vue {
                         );
                     }
                     this.sortEntries();
-                    this.noteCount = results.resourcePayload.length;
+                    this.setFilterTypeCount(
+                        EntryType.Note,
+                        results.resourcePayload.length
+                    );
                 } else {
                     this.logger.error(
                         "Error returned from the note call: " +
@@ -553,7 +610,10 @@ export default class TimelineView extends Vue {
             );
         }
         this.sortEntries();
-        this.immunizationCount = this.patientImmunizations.length;
+        this.setFilterTypeCount(
+            EntryType.Immunization,
+            this.patientImmunizations.length
+        );
     }
 
     private onEntryAdded(entry: TimelineEntry) {
@@ -563,7 +623,7 @@ export default class TimelineView extends Vue {
             this.timelineEntries.push(entry);
             this.sortEntries();
             if (entry.type === EntryType.Note) {
-                this.noteCount += 1;
+                this.addFilterTypeCount(EntryType.Note, 1);
             }
         }
     }
@@ -597,7 +657,7 @@ export default class TimelineView extends Vue {
         this.timelineEntries.splice(index, 1);
         this.sortEntries();
         if (entry.type === EntryType.Note) {
-            this.noteCount -= 1;
+            this.addFilterTypeCount(EntryType.Note, -1);
         }
     }
 
@@ -629,14 +689,27 @@ export default class TimelineView extends Vue {
         window.location.hash = "calendar";
     }
 
+    private setFilterTypeCount(entryType: EntryType, count: number) {
+        let typeFilter = this.filter.entryTypes.find(
+            (x) => x.type === entryType
+        );
+        if (typeFilter) {
+            typeFilter.numEntries = count;
+        }
+    }
+
     private filtersChanged(newFilter: TimelineFilter) {
         this.filter = newFilter;
         this.filter.keyword = this.filterText;
     }
 
-    @Watch("filterText")
-    private filterTextChanged() {
-        this.filter.keyword = this.filterText;
+    private addFilterTypeCount(entryType: EntryType, count: number) {
+        let typeFilter = this.filter.entryTypes.find(
+            (x) => x.type === entryType
+        );
+        if (typeFilter) {
+            typeFilter.numEntries += count;
+        }
     }
 }
 </script>
@@ -747,13 +820,8 @@ export default class TimelineView extends Vue {
                         </b-col>
                         <b-col v-if="!isLoading" class="col-auto pl-0">
                             <Filters
-                                :encounter-count="encounterCount"
-                                :medication-count="medicationCount"
-                                :immunization-count="immunizationCount"
-                                :laboratory-count="laboratoryCount"
-                                :note-count="noteCount"
                                 :is-list-view="isListView"
-                                @filters-changed="filtersChanged"
+                                :filter.sync="filter"
                             />
                         </b-col>
                     </b-row>

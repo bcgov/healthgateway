@@ -3,27 +3,46 @@ import { EntryType } from "@/models/timelineEntry";
 
 // Timeline filter model
 export default class TimelineFilter {
-    keyword: string;
-    startDate: StringISODate;
-    endDate: StringISODate;
-    entryTypes: EntryTypeFilter[];
-    pageSize: number;
+    public keyword: string;
+    public startDate: StringISODate;
+    public endDate: StringISODate;
+    public entryTypes: EntryTypeFilter[];
+    public pageSize: number;
 
-    constructor() {
+    constructor(types: EntryTypeFilter[]) {
         this.keyword = "";
-        this.entryTypes = [];
+        this.entryTypes = types;
         this.pageSize = 25;
         this.endDate = "";
         this.startDate = "";
     }
 
-    public static hasFilter(filter: TimelineFilter): boolean {
+    public hasActiveFilter(): boolean {
         return (
-            !!filter.endDate ||
-            !!filter.startDate ||
-            !!filter.keyword ||
-            filter.entryTypes?.some((et) => et.isSelected)
+            !!this.endDate ||
+            !!this.startDate ||
+            !!this.keyword ||
+            this.entryTypes.some((et) => et.isSelected)
         );
+    }
+
+    public getActiveFilterCount(): number {
+        let count = 0;
+        count += this.startDate === "" ? 0 : 1;
+        count += this.endDate === "" ? 0 : 1;
+        count += this.keyword === "" ? 0 : 1;
+        count += this.entryTypes.reduce(
+            (acumulator, entry) => (acumulator += entry.isSelected ? 1 : 0),
+            0
+        );
+        return count;
+    }
+
+    public clear(): void {
+        this.keyword = "";
+        this.endDate = "";
+        this.startDate = "";
+        this.entryTypes.forEach((x) => (x.isSelected = false));
     }
 }
 
