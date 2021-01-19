@@ -38,7 +38,7 @@ objects:
               - 'Content-Type: application/json'
               - '--data'
               - '{"icon_emoji":":cloud:","text":"Updated Health Gateway App ${NAME} Deployed to **${ENV}**"}'
-              - https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
+              - https://chat.developer.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
             containerName: ${NAME}
           failurePolicy: Ignore
       type: Rolling
