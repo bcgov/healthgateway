@@ -114,7 +114,7 @@ namespace HealthGateway.Common.Delegates
                         retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         break;
                     default:
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Notification Settings Endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA) };
                         this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                         break;
                 }
@@ -171,6 +171,11 @@ namespace HealthGateway.Common.Delegates
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
                         retVal.TotalResultCount = 1;
                         retVal.ResourcePayload = nsResponse;
+                        break;
+                    case HttpStatusCode.UnprocessableEntity:
+                        retVal.ResultStatus = Constants.ResultType.ActionRequired;
+                        this.logger.LogInformation($"PHSA has indicated that the SMS number is invalid: {notificationSettings.SMSNumber}");
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"PHSA has indicated that the SMS number is invalid: {notificationSettings.SMSNumber}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA) };
                         break;
                     case HttpStatusCode.BadRequest:
                         this.logger.LogError($"Error Details: {payload}");

@@ -126,6 +126,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
+            services.AddTransient<IEventLogDelegate, DBEventLogDelegate>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
