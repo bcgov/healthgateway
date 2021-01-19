@@ -26,6 +26,8 @@ export default class DatePickerComponent extends Vue {
     }
 
     private onFocus() {
+        // This makes the calendar popup when the input receives focus
+        // Currently disabled since it seems glitchy
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         // (this.datePicker.$refs.control as any).show();
     }
@@ -66,18 +68,15 @@ export default class DatePickerComponent extends Vue {
             inputValue: {
                 minLength: minLength(10),
                 minValue: (value: string) =>
-                    new DateWrapper(value).isAfter(this.minDate),
+                    new DateWrapper(value).isAfter(
+                        new DateWrapper("1900-01-01")
+                    ),
                 maxValue: (value: string) =>
-                    new DateWrapper(value).isBefore(this.maxDate),
+                    new DateWrapper(value).isBefore(
+                        new DateWrapper("2100-01-01")
+                    ),
             },
         };
-    }
-
-    private get minDate(): DateWrapper {
-        return new DateWrapper("1900-01-01");
-    }
-    private get maxDate(): DateWrapper {
-        return new DateWrapper("2100-01-01");
     }
 
     private isValid(param: Validation): boolean | undefined {

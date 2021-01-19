@@ -12,7 +12,7 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import { EntryType } from "@/models/timelineEntry";
-import DatePickerComponent from "@/components/datePicker.vue";
+import DatePickerComponent from "@/components/datePicker";
 library.add(faSlidersH);
 
 @Component({

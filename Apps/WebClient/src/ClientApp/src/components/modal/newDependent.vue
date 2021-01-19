@@ -14,7 +14,7 @@ import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import { ResultError } from "@/models/requestResult";
-import DatePickerComponent from "@/components/datePicker.vue";
+import DatePickerComponent from "@/components/datePicker";
 
 @Component({
     components: {
@@ -76,7 +76,6 @@ export default class NewDependentComponent extends Vue {
     }
 
     private isValid(param: Validation): boolean | undefined {
-        console.log(param);
         return param.$dirty ? !param.$invalid : undefined;
     }
 

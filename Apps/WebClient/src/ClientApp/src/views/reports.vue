@@ -13,7 +13,7 @@ import ImmunizationHistoryReportComponent from "@/components/report/immunization
 import type { WebClientConfiguration } from "@/models/configData";
 import { Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
-import DatePickerComponent from "@/components/datePicker.vue";
+import DatePickerComponent from "@/components/datePicker";
 
 @Component({
     components: {
