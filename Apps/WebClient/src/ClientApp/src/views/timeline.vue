@@ -41,7 +41,8 @@ import TimelineFilter from "@/models/timelineFilter";
 import { ActionType } from "@/constants/actionType";
 import { UserComment } from "@/models/userComment";
 import ImmunizationModel from "@/models/immunizationModel";
-import { Dictionary } from "vue-router/types/router";
+import { Dictionary } from "@/models/baseTypes";
+import UserPreferenceType from "@/constants/userPreferenceType";
 
 const namespace = "user";
 
@@ -376,12 +377,16 @@ export default class TimelineView extends Vue {
                     if (results.resourcePayload.length > 0) {
                         this.protectiveWordModal.hideModal();
                         let showCovidModal = true;
+                        const actionedCovidPreference =
+                            UserPreferenceType.ActionedCovidModalAt;
                         if (
-                            this.user.preferences.actionedCovidModalAt !=
+                            this.user.preferences[actionedCovidPreference] !=
                             undefined
                         ) {
                             const actionedCovidModalAt = new DateWrapper(
-                                this.user.preferences.actionedCovidModalAt.value
+                                this.user.preferences[
+                                    actionedCovidPreference
+                                ].value
                             );
                             const mostRecentLabTime = new DateWrapper(
                                 results.resourcePayload[0].messageDateTime

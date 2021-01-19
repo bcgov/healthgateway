@@ -80,13 +80,14 @@ namespace HealthGateway.Common.Services
                 dependentNotificationSettings.EmailAddress = notificationSettings.EmailAddress;
                 dependentNotificationSettings.EmailEnabled = notificationSettings.EmailEnabled;
                 dependentNotificationSettings.EmailScope = notificationSettings.EmailScope;
+
                 // Only send dependents sms number if it has been verified
                 if (notificationSettings.SMSVerified)
                 {
                     dependentNotificationSettings.SMSNumber = notificationSettings.SMSNumber;
                     dependentNotificationSettings.SMSEnabled = notificationSettings.SMSEnabled;
                     dependentNotificationSettings.SMSScope = notificationSettings.SMSScope;
-                    dependentNotificationSettings.SMSVerified= notificationSettings.SMSVerified;
+                    dependentNotificationSettings.SMSVerified = notificationSettings.SMSVerified;
                 }
 
                 string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings, options);
