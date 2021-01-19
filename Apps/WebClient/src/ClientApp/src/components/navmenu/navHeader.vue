@@ -171,7 +171,7 @@ export default class HeaderComponent extends Vue {
 }
 
 nav {
-    z-index: $z_top_layer;
+    z-index: $z_header;
 
     a h4 {
         text-decoration: none;

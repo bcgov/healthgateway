@@ -102,6 +102,7 @@ export default class DatePickerComponent extends Vue {
             <b-form-datepicker
                 ref="datePicker"
                 v-model="inputValue"
+                class="datepicker-style"
                 button-only
                 right
                 locale="en-CA"
@@ -109,3 +110,11 @@ export default class DatePickerComponent extends Vue {
         </b-input-group-append>
     </b-input-group>
 </template>
+
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+// Fixes datepicker displaing under site header on mobile
+.datepicker-style {
+    z-index: $z_datepicker;
+}
+</style>
