@@ -26,6 +26,7 @@ export default class FilterComponent extends Vue {
     @Prop() private laboratoryCount!: number;
     @Prop() private noteCount!: number;
     @Prop() private isListView!: boolean;
+    @Prop() private filter!: TimelineFilter;
 
     private logger!: ILogger;
     private eventBus = EventBus;
@@ -33,7 +34,7 @@ export default class FilterComponent extends Vue {
     private windowWidth = 0;
     private steps = [25, 50, 100, 500];
     private stepIndex = 0;
-    private filter: TimelineFilter = new TimelineFilter();
+
     private selectedEntryTypes: EntryType[] = [];
 
     private get isMobileView(): boolean {
@@ -44,6 +45,14 @@ export default class FilterComponent extends Vue {
         return this.filter.entryTypes.filter(
             (filter: EntryTypeFilter) => filter.isEnabled
         );
+    }
+
+    private get activeFilterCount(): number {
+        return this.filter.getActiveFilterCount();
+    }
+
+    private get hasFilterSelected(): boolean {
+        return this.filter.hasActiveFilter();
     }
 
     @Watch("selectedEntryTypes")
@@ -70,19 +79,9 @@ export default class FilterComponent extends Vue {
         this.filtersChanged();
     }
 
-    @Watch("noteCount")
-    private noteCountUpdate(newCount: number) {
-        this.filter.entryTypes[4].numEntries = newCount;
-    }
-
     @Emit()
     private filtersChanged(): TimelineFilter {
         return this.filter;
-    }
-
-    private sliderChanged() {
-        this.filter.pageSize = this.steps[this.stepIndex];
-        this.filtersChanged();
     }
 
     private created() {
@@ -92,7 +91,6 @@ export default class FilterComponent extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.clearFilters();
 
         this.eventBus.$on(
             EventMessageName.SelectedFilter,
@@ -105,16 +103,13 @@ export default class FilterComponent extends Vue {
         });
     }
 
-    private get hasFilterSelected(): boolean {
-        return (
-            this.selectedEntryTypes.length > 0 ||
-            this.filter.startDate !== "" ||
-            this.filter.endDate !== ""
-        );
-    }
-
     private destroyed() {
         window.removeEventListener("handleResize", this.handleResize);
+    }
+
+    private sliderChanged() {
+        this.filter.pageSize = this.steps[this.stepIndex];
+        this.filtersChanged();
     }
 
     private handleResize() {
@@ -127,50 +122,7 @@ export default class FilterComponent extends Vue {
 
     private clearFilters(): void {
         this.selectedEntryTypes = [];
-        this.filter = {
-            keyword: "",
-            pageSize: this.filter.pageSize,
-            startDate: "",
-            endDate: "",
-            entryTypes: [
-                {
-                    type: EntryType.Immunization,
-                    display: "Immunizations",
-                    isEnabled: this.config.modules[EntryType.Immunization],
-                    numEntries: this.immunizationCount,
-                    isSelected: false,
-                },
-                {
-                    type: EntryType.Medication,
-                    display: "Medications",
-                    isEnabled: this.config.modules[EntryType.Medication],
-                    numEntries: this.medicationCount,
-                    isSelected: false,
-                },
-
-                {
-                    type: EntryType.Laboratory,
-                    display: "Laboratory",
-                    isEnabled: this.config.modules[EntryType.Laboratory],
-                    numEntries: this.laboratoryCount,
-                    isSelected: false,
-                },
-                {
-                    type: EntryType.Encounter,
-                    display: "MSP Visits",
-                    isEnabled: this.config.modules[EntryType.Encounter],
-                    numEntries: this.encounterCount,
-                    isSelected: false,
-                },
-                {
-                    type: EntryType.Note,
-                    display: "My Notes",
-                    isEnabled: this.config.modules[EntryType.Note],
-                    numEntries: this.noteCount,
-                    isSelected: false,
-                },
-            ],
-        };
+        this.filter.clear();
     }
 
     private onExternalFilterSelection(filterType: EntryType) {
@@ -205,6 +157,16 @@ export default class FilterComponent extends Vue {
                 variant="outline-primary"
                 right
             >
+                <template #button-content>
+                    Filter
+                    <b-badge
+                        v-show="hasFilterSelected"
+                        variant="light"
+                        class="badge-style"
+                        >{{ activeFilterCount
+                        }}<span class="sr-only">filters applied</span></b-badge
+                    >
+                </template>
                 <b-row class="px-4">
                     <b-col><strong>Type</strong> </b-col>
                     <b-col class="col-auto">
@@ -414,6 +376,7 @@ export default class FilterComponent extends Vue {
 }
 </style>
 <style lang="scss">
+@import "@/assets/scss/_variables.scss";
 .filters-mobile-content {
     position: fixed;
     top: auto;
@@ -430,7 +393,12 @@ export default class FilterComponent extends Vue {
         font-size: 1.5em;
     }
 }
-.filter-selected {
-    border-width: 3px;
+
+.filters-wrapper {
+    .filter-selected {
+        border-color: $aquaBlue;
+        background-color: $aquaBlue;
+        color: white;
+    }
 }
 </style>
