@@ -15,7 +15,33 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >January 13, 2020 - v1.3.2 - Phone
+                                    >January 20, 2021 - v1.3.2 - Filters, Date Pickers, Export Records, Offline Mode
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added a colour fill and badge on the filter menu to highlight if filters have been applied. We also updated our date pickers, as the date format placeholder text wasn't visible on some platforms. 
+                                    </li>
+                                    <li>
+                                        We added a pop-over to point users to the Export Records for downloading pdfs for their records. We also added the ability to clear the date picker and record type selected. 
+                                    </li>
+                                    <li>
+                                        We created an offline mode for planned outages so that users know when we are doing maintenance on the application. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >January 13, 2021 - v1.3.2 - Phone
                                     Verification, Platform Migration Prep,
                                     Updated Statistics
                                 </strong>
@@ -50,7 +76,7 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >January 5, 2020 - v1.3.1.7 - Export Records
+                                    >January 5, 2021 - v1.3.1.7 - Export Records
                                     Date Picker, Immunization Display
                                 </strong>
                             </b-col>
