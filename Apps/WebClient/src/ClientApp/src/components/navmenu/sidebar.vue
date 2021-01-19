@@ -209,15 +209,14 @@ export default class SidebarComponent extends Vue {
     }
 
     private get showNoteTutorial(): boolean {
-        let a =
+        return (
             this.isPreferenceActive(
                 this.user.preferences[UserPreferenceType.TutorialMenuNote]
             ) &&
             this.isNoteTutorialEnabled &&
             this.isTimeline &&
-            this.isActiveProfile;
-        console.log("showNoteTutorial", a);
-        return a;
+            this.isActiveProfile
+        );
     }
 
     private set showNoteTutorial(value: boolean) {
