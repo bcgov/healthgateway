@@ -15,7 +15,8 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >January 20, 2021 - v1.3.2 - Filters, Date Pickers, Export Records, Offline Mode
+                                    >January 20, 2021 - v1.3.2 - Filters, Date
+                                    Pickers, Export Records, Offline Mode
                                 </strong>
                             </b-col>
                         </b-row>
@@ -23,13 +24,23 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We added a colour fill and badge on the filter menu to highlight if filters have been applied. We also updated our date pickers, as the date format placeholder text wasn't visible on some platforms. 
+                                        We added a colour fill and badge on the
+                                        filter menu to highlight if filters have
+                                        been applied. We also updated our date
+                                        pickers, as the date format placeholder
+                                        text wasn't visible on some platforms.
                                     </li>
                                     <li>
-                                        We added a pop-over to point users to the Export Records for downloading pdfs for their records. We also added the ability to clear the date picker and record type selected. 
+                                        We added a pop-over to point users to
+                                        the Export Records for downloading pdfs
+                                        for their records. We also added the
+                                        ability to clear the date picker and
+                                        record type selected.
                                     </li>
                                     <li>
-                                        We created an offline mode for planned outages so that users know when we are doing maintenance on the application. 
+                                        We created an offline mode for planned
+                                        outages so that users know when we are
+                                        doing maintenance on the application.
                                     </li>
                                 </ul>
                             </b-col>
