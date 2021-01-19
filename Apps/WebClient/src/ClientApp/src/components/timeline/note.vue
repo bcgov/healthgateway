@@ -19,7 +19,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import BannerError from "@/models/bannerError";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
-import DatePickerComponent from "@/components/datePicker";
+import DatePickerComponent from "@/components/datePicker.vue";
 
 @Component({
     components: {
