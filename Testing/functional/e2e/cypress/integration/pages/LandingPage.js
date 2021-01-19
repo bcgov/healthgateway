@@ -22,4 +22,21 @@ describe('Landing Page', () => {
                            .should('have.attr', 'href', '/login')
                            .should('have.text', 'Log in')
     })
+
+    it('Offline', () => {
+        cy.get('[data-testid=offlineMessage]').should('not.exist');
+        cy.readConfig().as("config").then(config => {
+            config.webClient.offlineMode.startDateTime = "2021-01-17T12:00:00";
+            config.webClient.offlineMode.endDateTime = "2021-01-20T12:00:00";
+            config.webClient.offlineMode.message = "customized offline message";
+            config.webClient.offlineMode.whitelist = [];
+            cy.server();
+            cy.route('GET', '/v1/api/configuration/', config);
+        })
+        cy.visit('/');
+        cy.get('[data-testid=offlineMessage]').contains('customized offline message');
+        cy.get('#btnLogin').should('not.exist');
+        cy.get('#menuBtnLogin').should('not.exist');
+        cy.get('footer > .navbar').should('not.visible');
+    })
 })

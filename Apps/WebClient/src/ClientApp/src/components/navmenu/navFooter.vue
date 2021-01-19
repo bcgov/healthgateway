@@ -19,10 +19,16 @@ export default class FooterComponent extends Vue {
 
     private get showFooter(): boolean {
         return (
-            !this.oidcIsAuthenticated ||
-            (this.userIsRegistered && this.isValidIdentityProvider)
+            (!this.oidcIsAuthenticated ||
+                (this.userIsRegistered && this.isValidIdentityProvider)) &&
+            !this.isOffline
         );
     }
+
+    @Getter("isOffline", {
+        namespace: "config",
+    })
+    isOffline!: boolean;
 }
 </script>
 

@@ -4,8 +4,8 @@ describe('Tutorial', () => {
     before(() => {
         cy.intercept("GET", "/v1/api/UserProfile/*", (req) => {
             req.reply((res) => {
-                res.body.resourcePayload.preferences.tutorialPopover.value = "true";
-                res.body.resourcePayload.preferences.tutorialPopoverExportRecords.value = "true";                
+                res.body.resourcePayload.preferences.tutorialMenuNote.value = "true";
+                res.body.resourcePayload.preferences.tutorialMenuExport.value = "true";                
             })
         })
         cy.enableModules("Note");

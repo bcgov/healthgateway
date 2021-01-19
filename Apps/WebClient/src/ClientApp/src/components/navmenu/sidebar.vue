@@ -12,11 +12,13 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faStream } from "@fortawesome/free-solid-svg-icons";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
+import UserPreferenceType from "@/constants/userPreferenceType";
 library.add(faStream);
 
 const auth = "auth";
 const user = "user";
 const sidebar = "sidebar";
+const config = "config";
 
 @Component({
     components: {
@@ -66,6 +68,13 @@ export default class SidebarComponent extends Vue {
     @Getter("userIsActive", { namespace: "user" })
     isActiveProfile!: boolean;
 
+    @Getter("isOffline", {
+        namespace: config,
+    })
+    isOffline!: boolean;
+
+    private UserPreferenceType = UserPreferenceType;
+
     private eventBus = EventBus;
 
     private logger!: ILogger;
@@ -73,8 +82,8 @@ export default class SidebarComponent extends Vue {
     private name = "";
     private windowWidth = 0;
 
-    private isTutorialEnabledForNotes = false;
-    private isTutorialEnabledForExportRecords = false;
+    private isNoteTutorialEnabled = false;
+    private isExportTutorialEnabled = false;
 
     @Watch("oidcIsAuthenticated")
     private onPropertyChanged() {
@@ -91,8 +100,8 @@ export default class SidebarComponent extends Vue {
 
     @Watch("isOpen")
     private onIsOpen() {
-        this.isTutorialEnabledForNotes = false;
-        this.isTutorialEnabledForExportRecords = false;
+        this.isNoteTutorialEnabled = false;
+        this.isExportTutorialEnabled = false;
     }
 
     private mounted() {
@@ -115,8 +124,8 @@ export default class SidebarComponent extends Vue {
                 return;
             }
 
-            this.isTutorialEnabledForNotes = true;
-            this.isTutorialEnabledForExportRecords = true;
+            this.isNoteTutorialEnabled = true;
+            this.isExportTutorialEnabled = true;
 
             document.querySelectorAll(".button-title").forEach((button) => {
                 if (transition?.classList.contains("collapsed")) {
@@ -154,8 +163,8 @@ export default class SidebarComponent extends Vue {
                     oidcUser.family_name
                 );
             }
-            this.isTutorialEnabledForNotes = true;
-            this.isTutorialEnabledForExportRecords = true;
+            this.isNoteTutorialEnabled = true;
+            this.isExportTutorialEnabled = true;
         });
     }
 
@@ -197,41 +206,39 @@ export default class SidebarComponent extends Vue {
         this.windowWidth = window.innerWidth;
     }
 
-    private showTutorialPopover(
-        tutorialPopover: UserPreference,
-        isTutorialEnabled: boolean
-    ): boolean {
+    private isPreferenceActive(tutorialPopover: UserPreference): boolean {
         if (this.isMobileWidth) {
-            return (
-                isTutorialEnabled &&
-                tutorialPopover?.value === "true" &&
-                this.isOpen
-            );
+            return tutorialPopover?.value === "true" && this.isOpen;
         } else {
-            return isTutorialEnabled && tutorialPopover?.value === "true";
+            return tutorialPopover?.value === "true";
         }
     }
 
-    private get showTutorialPopoverNotes(): boolean {
-        return this.showTutorialPopover(
-            this.user.preferences.tutorialPopover,
-            this.isTutorialEnabledForNotes
+    private get showNoteTutorial(): boolean {
+        return (
+            this.isPreferenceActive(
+                this.user.preferences[UserPreferenceType.TutorialMenuNote]
+            ) &&
+            this.isNoteTutorialEnabled &&
+            this.isTimeline &&
+            this.isActiveProfile
         );
     }
 
-    private set showTutorialPopoverNotes(value: boolean) {
-        this.isTutorialEnabledForNotes = value;
+    private set showNoteTutorial(value: boolean) {
+        this.isNoteTutorialEnabled = value;
     }
 
-    private get showTutorialPopoverExportRecords(): boolean {
-        return this.showTutorialPopover(
-            this.user.preferences.tutorialPopoverExportRecords,
-            this.isTutorialEnabledForExportRecords
+    private get showExportTutorial(): boolean {
+        return (
+            this.isPreferenceActive(
+                this.user.preferences[UserPreferenceType.TutorialMenuExport]
+            ) && this.isExportTutorialEnabled
         );
     }
 
-    private set showTutorialPopoverExportRecords(value: boolean) {
-        this.isTutorialEnabledForExportRecords = value;
+    private set showExportTutorial(value: boolean) {
+        this.isExportTutorialEnabled = value;
     }
 
     private get isOverlayVisible() {
@@ -283,7 +290,10 @@ export default class SidebarComponent extends Vue {
 <template>
     <div
         v-show="
-            oidcIsAuthenticated && userIsRegistered && isValidIdentityProvider
+            oidcIsAuthenticated &&
+            userIsRegistered &&
+            isValidIdentityProvider &&
+            !isOffline
         "
         class="wrapper"
     >
@@ -392,9 +402,9 @@ export default class SidebarComponent extends Vue {
                         <b-popover
                             ref="popover"
                             triggers="manual"
-                            :show.sync="showTutorialPopoverNotes"
+                            :show.sync="showNoteTutorial"
                             target="add-a-note-row"
-                            class="popover"
+                            custom-class="popover-style"
                             fallback-placement="clockwise"
                             placement="right"
                             variant="dark"
@@ -405,7 +415,10 @@ export default class SidebarComponent extends Vue {
                                     class="pop-over-close"
                                     @click="
                                         dismissTutorial(
-                                            user.preferences.tutorialPopover
+                                            user.preferences[
+                                                UserPreferenceType
+                                                    .TutorialMenuNote
+                                            ]
                                         )
                                     "
                                     >x</b-button
@@ -492,9 +505,9 @@ export default class SidebarComponent extends Vue {
                         <b-popover
                             ref="popover-export-records"
                             triggers="manual"
-                            :show.sync="showTutorialPopoverExportRecords"
+                            :show.sync="showExportTutorial"
                             target="export-records-row"
-                            class="popover"
+                            custom-class="popover-style"
                             fallback-placement="clockwise"
                             placement="right"
                             variant="dark"
@@ -505,8 +518,10 @@ export default class SidebarComponent extends Vue {
                                     class="pop-over-close"
                                     @click="
                                         dismissTutorial(
-                                            user.preferences
-                                                .tutorialPopoverExportRecords
+                                            user.preferences[
+                                                UserPreferenceType
+                                                    .TutorialMenuExport
+                                            ]
                                         )
                                     "
                                     >x</b-button
@@ -818,5 +833,12 @@ export default class SidebarComponent extends Vue {
     .bs-popover-right {
         margin-left: 14rem !important;
     }
+}
+</style>
+
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.popover-style {
+    z-index: $z_popover;
 }
 </style>

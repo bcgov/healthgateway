@@ -12,7 +12,7 @@ import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
-import { Dictionary } from "vue-router/types/router";
+import { Dictionary } from "@/models/baseTypes";
 import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()

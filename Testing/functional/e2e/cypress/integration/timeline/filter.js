@@ -1,5 +1,14 @@
 const { AuthMethod, localDevUri } = require("../../support/constants");
 
+function verifyActiveFilter(activeFilterCount) {
+    cy.get('[data-testid="filterDropdown"] > button').should('have.css', 'background-color', 'rgb(0, 146, 241)'); // has the '#0092f1' background-color
+    cy.get('[data-testid="filterDropdown"] > button > span').contains(activeFilterCount); // has 1 active filter
+    cy.viewport('iphone-6');
+    cy.get('[data-testid="mobileFilterDropdown"]').should('have.css', 'background-color', 'rgb(0, 146, 241)'); // has the '#0092f1' background-color
+    cy.viewport(1000, 600);
+    cy.get('[data-testid="filterDropdown"]').click();
+}
+
 describe("Filters", () => {
     before(() => {
         cy.login(
@@ -8,7 +17,7 @@ describe("Filters", () => {
             AuthMethod.KeyCloak
         );
     });
-
+    
     it("Validate Filter Counts", () => {
         const countRegex = /^.*?\((\d+)K?\).*$/;
         cy.get("[data-testid=filterDropdown]").click();
@@ -55,6 +64,8 @@ describe("Filters", () => {
             .clear()
             .type("2020-06-14");
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
+        cy.get('[data-testid="filterDropdown"]').click();
+        verifyActiveFilter('2');
 
         // Clear date range filter for next tests
         cy.get("[data-testid=filterStartDateInput] input")
@@ -108,6 +119,8 @@ describe("Filters", () => {
         cy.get("[data-testid=encounterTitle]").should("not.exist");
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("be.visible");
+        cy.get('[data-testid="filterDropdown"]').click();
+        verifyActiveFilter('1');
         cy.get('[data-testid="filterContainer"]').contains("Clear").click();
     });
 
@@ -118,6 +131,8 @@ describe("Filters", () => {
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
+        cy.get('[data-testid="filterDropdown"]').click();
+        verifyActiveFilter('1');
         cy.get('[data-testid="filterContainer"]').contains("Clear").click();
     });
 
@@ -128,6 +143,8 @@ describe("Filters", () => {
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=laboratoryTitle]").should("be.visible");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
+        cy.get('[data-testid="filterDropdown"]').click();
+        verifyActiveFilter('1');
         cy.get('[data-testid="filterContainer"]').contains("Clear").click();
     });
 
