@@ -250,9 +250,9 @@ export default class LandingView extends Vue {
                     ></b-row
                 >
                 <b-row class="py-3"
-                    ><b-col class="sub-title">{{
-                        offlineMessage
-                    }}</b-col></b-row
+                    ><b-col data-testid="offlineMessage" class="sub-title">
+                        {{ offlineMessage }}
+                    </b-col></b-row
                 >
                 <b-row class="pt-5"
                     ><b-col> <hr class="pt-5" /> </b-col>
