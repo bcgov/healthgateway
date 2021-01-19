@@ -106,7 +106,7 @@ namespace HealthGateway.Database.Delegates
                     CreatedDateTime = x.CreatedDateTime,
                     UserProfileId = x.UserProfileId,
                     UpdatedDateTime = x.UpdatedDateTime,
-                    Version = x.Version
+                    Version = x.Version,
                 })
                 .OrderByDescending(f => f.CreatedDateTime).ToList();
 

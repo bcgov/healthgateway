@@ -16,17 +16,15 @@
 namespace Healthgateway.JobScheduler.Jobs
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Text.Json;
     using System.Threading.Tasks;
     using Hangfire;
-    using HealthGateway.Common.AccessManagement.Administration;
     using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -41,6 +39,7 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly ILogger<NotificationSettingsJob> logger;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
         private readonly IAuthenticationDelegate authDelegate;
+        private readonly IEventLogDelegate eventLogDelegate;
         private readonly bool jobEnabled;
 
         /// <summary>
@@ -50,12 +49,13 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="logger">The logger to use.</param>
         /// <param name="notificationSettingsDelegate">The email delegate to use.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
-        public NotificationSettingsJob(IConfiguration configuration, ILogger<NotificationSettingsJob> logger, INotificationSettingsDelegate notificationSettingsDelegate, IAuthenticationDelegate authDelegate)
+        public NotificationSettingsJob(IConfiguration configuration, ILogger<NotificationSettingsJob> logger, INotificationSettingsDelegate notificationSettingsDelegate, IAuthenticationDelegate authDelegate, IEventLogDelegate eventLogDelegate)
         {
             this.configuration = configuration!;
             this.logger = logger;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
             this.authDelegate = authDelegate;
+            this.eventLogDelegate = eventLogDelegate;
             this.jobEnabled = this.configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, true);
         }
 
@@ -87,10 +87,23 @@ namespace Healthgateway.JobScheduler.Jobs
                     {
                         RequestResult<NotificationSettingsResponse> retVal = Task.Run(async () => await
                                         this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
-                        if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+                        if (retVal.ResultStatus == HealthGateway.Common.Constants.ResultType.ActionRequired)
                         {
-                            this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
-                            throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                            EventLog eventLog = new EventLog()
+                            {
+                                EventSource = this.notificationSettingsDelegate.GetType().Name,
+                                EventName = "SMS Rejected",
+                                EventDescription = notificationSettings.SMSNumber ?? string.Empty,
+                            };
+                            this.eventLogDelegate.WriteEventLog(eventLog);
+                        }
+                        else
+                        {
+                            if (retVal.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+                            {
+                                this.logger.LogError($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                                throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                            }
                         }
                     }
                 }
