@@ -41,6 +41,10 @@ export default class LandingView extends Vue {
         namespace: "auth",
     })
     oidcIsAuthenticated!: boolean;
+    @Getter("isOffline", {
+        namespace: "config",
+    })
+    isOffline!: boolean;
 
     private logo: string = Image00;
     private devices: string = Image02;
@@ -124,6 +128,14 @@ export default class LandingView extends Vue {
         },
     ];
 
+    private get offlineMessage(): string {
+        if (this.isOffline) {
+            return this.webClientConfig.offlineMode?.message || "";
+        } else {
+            return "";
+        }
+    }
+
     private mounted() {
         this.isOpenRegistration =
             this.webClientConfig.registrationStatus == RegistrationStatus.Open;
@@ -165,6 +177,7 @@ export default class LandingView extends Vue {
             </b-col>
         </b-row>
         <b-row
+            v-if="!isOffline"
             class="devices-section justify-content-center justify-content-lg-around align-items-center mx-0 mx-md-5"
         >
             <b-col class="d-none d-lg-block text-center col-6 col-xl-4">
@@ -228,6 +241,23 @@ export default class LandingView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
+        <b-row v-else class="align-items-center pt-2 pb-5 align-middle"
+            ><b-col class="cols-12 text-center">
+                <hr class="py-4" />
+                <b-row class="py-2">
+                    <b-col class="title"
+                        >The site is offline for maintenance</b-col
+                    ></b-row
+                >
+                <b-row class="py-3"
+                    ><b-col class="sub-title">{{
+                        offlineMessage
+                    }}</b-col></b-row
+                >
+                <b-row class="pt-5"
+                    ><b-col> <hr class="pt-5" /> </b-col>
+                </b-row> </b-col
+        ></b-row>
         <b-row class="tile-section my-0 my-md-1">
             <div>
                 <b-row
@@ -272,8 +302,13 @@ export default class LandingView extends Vue {
 @import "@/assets/scss/_variables.scss";
 
 .landing {
-    h1 {
-        color: $primary;
+    color: $primary;
+
+    .title {
+        font-size: 2.2rem;
+    }
+    .sub-title {
+        font-size: 1.5rem;
     }
 
     .btn-secondary-landing {
@@ -298,11 +333,10 @@ export default class LandingView extends Vue {
 
     .title-section {
         color: $primary;
-    }
-
-    .title-section h2 {
-        font-weight: 200;
-        font-size: x-large;
+        h2 {
+            font-weight: 200;
+            font-size: x-large;
+        }
     }
 
     .devices-section {
