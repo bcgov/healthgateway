@@ -2,10 +2,19 @@ const { AuthMethod } = require("../../../support/constants")
 
 describe('Validate Modals Popup', () => {
 
-    it('Protective Word Modal', () => {
+    before(() => {
+        cy.intercept("GET", "/v1/api/UserProfile/*", (req) => {
+            req.reply((res) => {
+                res.body.resourcePayload.preferences.tutorialPopover.value = "false";
+                res.body.resourcePayload.preferences.tutorialPopoverExportRecords.value = "false";                
+            })
+        });
         cy.enableModules("Medication");
         cy.login(Cypress.env('keycloak.protected.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
         cy.checkTimelineHasLoaded();
+    })
+
+    it('Protective Word Modal', () => {
         cy.get('[data-testid=protectiveWordModal]').contains('Restricted PharmaNet Records')
         cy.get('[data-testid=protectiveWordModalText]')
             .contains('Please enter the protective word required to access these restricted PharmaNet records.')

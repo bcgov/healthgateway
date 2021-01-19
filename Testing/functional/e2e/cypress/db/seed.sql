@@ -94,7 +94,7 @@ INSERT INTO gateway."Communication"(
 	null
 );
 
-/* User Preferences */
+/* User Preferences for hthgtwy11 */
 INSERT INTO gateway."UserPreference"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -141,6 +141,61 @@ INSERT INTO gateway."UserPreference"(
 	"Value")
 VALUES (
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialPopoverExportRecords', 
+	'false'
+);
+
+/* User Preferences for protected user */
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'actionedCovidModalAt', 
+	'2121-01-01T12:00:00.000-08:00'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialPopover', 
+	'false'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',	
 	'System', 
 	current_timestamp, 
 	'System', 
