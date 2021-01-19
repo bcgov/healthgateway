@@ -8,6 +8,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { DateWrapper } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
+import UserPreferenceType from "@/constants/userPreferenceType";
 
 @Component
 export default class CovidModalComponent extends Vue {
@@ -37,24 +38,25 @@ export default class CovidModalComponent extends Vue {
 
     private actionCovidModal() {
         this.logger.debug("Actioning Covid Modal...");
+        const actionedCovidPreference = UserPreferenceType.ActionedCovidModalAt;
         let isoNow = new DateWrapper().toISO();
-        if (this.user.preferences.actionedCovidModalAt != undefined) {
-            this.user.preferences.actionedCovidModalAt.value = isoNow;
+        if (this.user.preferences[actionedCovidPreference] != undefined) {
+            this.user.preferences[actionedCovidPreference].value = isoNow;
             this.updateUserPreference({
                 hdid: this.user.hdid,
-                userPreference: this.user.preferences.actionedCovidModalAt,
+                userPreference: this.user.preferences[actionedCovidPreference],
             });
         } else {
-            this.user.preferences.actionedCovidModalAt = {
+            this.user.preferences[actionedCovidPreference] = {
                 hdId: this.user.hdid,
-                preference: "actionedCovidModalAt",
+                preference: actionedCovidPreference,
                 value: isoNow,
                 version: 0,
                 createdDateTime: new DateWrapper().toISO(),
             };
             this.createUserPreference({
                 hdid: this.user.hdid,
-                userPreference: this.user.preferences.actionedCovidModalAt,
+                userPreference: this.user.preferences[actionedCovidPreference],
             });
         }
     }

@@ -1,4 +1,4 @@
-import { Dictionary } from "vue-router/types/router";
+import { Dictionary } from "@/models/baseTypes";
 import { StringISODate } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
 
