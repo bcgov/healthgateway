@@ -17,7 +17,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 export default class DatePickerComponent extends Vue {
     @Model("change", { type: String }) public model!: string;
     @Prop() state?: boolean;
-    @Ref("datePicker") datePicker: BFormDatepicker;
+    @Ref("datePicker") datePicker!: BFormDatepicker;
 
     private inputValue = "";
 
