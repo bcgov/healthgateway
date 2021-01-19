@@ -2,7 +2,7 @@ describe('Landing Page', () => {
     beforeEach(() => {
         cy.visit('/')
     })
-    
+
     it('Title', () => {
         cy.title().should('eq', 'Health Gateway')
     })
