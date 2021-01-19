@@ -155,10 +155,25 @@ export default class FilterComponent extends Vue {
             <b-button
                 id="filterBtn"
                 class="w-100"
+                :class="{ 'filter-selected': hasFilterSelected }"
                 data-testid="filterDropdown"
-                :variant="hasFilterSelected ? 'primary' : 'outline-primary'"
+                variant="outline-primary"
             >
                 Filter
+                <b-badge
+                    v-show="hasFilterSelected"
+                    variant="light"
+                    class="badge-style"
+                >
+                    {{ activeFilterCount }}
+                    <span class="sr-only">filters applied</span>
+                </b-badge>
+                <font-awesome-icon
+                    icon="chevron-down"
+                    size="xs"
+                    aria-hidden="true"
+                    class="ml-1"
+                />
             </b-button>
             <b-popover
                 target="filterBtn"
@@ -170,16 +185,6 @@ export default class FilterComponent extends Vue {
                 no-flip
                 menu-class="z-index-large w-100"
             >
-                <template #button-content>
-                    Filter
-                    <b-badge
-                        v-show="hasFilterSelected"
-                        variant="light"
-                        class="badge-style"
-                        >{{ activeFilterCount
-                        }}<span class="sr-only">filters applied</span></b-badge
-                    >
-                </template>
                 <b-row class="px-4">
                     <b-col><strong>Type</strong> </b-col>
                     <b-col class="col-auto">
