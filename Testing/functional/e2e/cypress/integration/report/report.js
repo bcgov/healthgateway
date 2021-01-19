@@ -9,24 +9,28 @@ describe('Reports', () => {
     })
 
     it('Validate Date Filter and Clear', () => {       
-        cy.get('[data-testid=startDateInput]')
+        cy.get('[data-testid=startDateInput] input')
           .should('be.enabled', 'be.visible')
           .should('have.value','')
+          .click()
+          .focus()
           .type("2020-01-01")
 
-        cy.get('[data-testid=endDateInput]')
+        cy.get('[data-testid=endDateInput] input')
           .should('be.enabled', 'be.visible')
           .should('have.value','')
+          .click()
+          .focus()
           .type("2020-12-31")
 
         cy.get('[data-testid=clearBtn]')
           .should('be.enabled', 'be.visible')
           .click()
 
-        cy.get('[data-testid=startDateInput]')
+        cy.get('[data-testid=startDateInput] input')
           .should('have.value','')
 
-        cy.get('[data-testid=endDateInput]')
+        cy.get('[data-testid=endDateInput] input')
           .should('have.value','')
     })
 

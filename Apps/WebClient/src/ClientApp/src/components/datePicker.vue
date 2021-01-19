@@ -27,14 +27,25 @@ export default class DatePickerComponent extends Vue {
 
     private onFocus() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (this.datePicker.$refs.control as any).show();
+        // (this.datePicker.$refs.control as any).show();
+    }
+
+    @Watch("model")
+    private onModelChanged() {
+        this.inputValue = this.model;
     }
 
     @Watch("inputValue")
-    @Emit("change")
     private onInputChanged() {
         this.$v.inputValue.$touch();
-        return this.isValid(this.$v.inputValue) ? this.inputValue : "";
+        if (this.isValid(this.$v.inputValue)) {
+            this.updateModel();
+        }
+    }
+
+    @Emit("change")
+    private updateModel() {
+        return this.inputValue;
     }
 
     @Emit("blur")

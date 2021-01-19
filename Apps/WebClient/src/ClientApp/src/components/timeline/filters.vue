@@ -203,6 +203,7 @@ export default class FilterComponent extends Vue {
             <b-button
                 id="filterBtn"
                 class="w-100"
+                data-testid="filterDropdown"
                 :variant="hasFilterSelected ? 'primary' : 'outline-primary'"
             >
                 Filter
@@ -210,9 +211,9 @@ export default class FilterComponent extends Vue {
             <b-popover
                 target="filterBtn"
                 triggers="focus"
-                data-testid="filterDropdown"
                 text="Filter"
                 class="w-100"
+                data-testid="filterContainer"
                 placement="bottom"
                 no-flip
                 menu-class="z-index-large w-100"
