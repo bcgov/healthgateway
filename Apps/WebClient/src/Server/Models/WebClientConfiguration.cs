@@ -59,9 +59,20 @@ namespace HealthGateway.WebClient.Models
         /// </summary>
         public int? MinPatientAge { get; set; }
 
-         /// <summary>
+        /// <summary>
         /// Gets or sets the maximum age of a dependent.
         /// </summary>
         public int? MaxDependentAge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the offline mode configuration.
+        /// </summary>
+        public OfflineModeConfiguration? OfflineMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client IP address.
+        /// This value is populated at runtime with the client invoking the web service.
+        /// </summary>
+        public string? ClientIP { get; set; }
     }
 }

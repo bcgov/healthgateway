@@ -18,6 +18,7 @@ library.add(faStream);
 const auth = "auth";
 const user = "user";
 const sidebar = "sidebar";
+const config = "config";
 
 @Component({
     components: {
@@ -66,6 +67,11 @@ export default class SidebarComponent extends Vue {
 
     @Getter("userIsActive", { namespace: "user" })
     isActiveProfile!: boolean;
+
+    @Getter("isOffline", {
+        namespace: config,
+    })
+    isOffline!: boolean;
 
     private UserPreferenceType = UserPreferenceType;
 
@@ -284,7 +290,10 @@ export default class SidebarComponent extends Vue {
 <template>
     <div
         v-show="
-            oidcIsAuthenticated && userIsRegistered && isValidIdentityProvider
+            oidcIsAuthenticated &&
+            userIsRegistered &&
+            isValidIdentityProvider &&
+            !isOffline
         "
         class="wrapper"
     >
