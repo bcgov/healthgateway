@@ -127,7 +127,7 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
-	'tutorialPopover', 
+	'tutorialMenuNote', 
 	'false'
 );
 
@@ -145,6 +145,6 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
-	'tutorialPopoverExportRecords', 
+	'tutorialMenuExport', 
 	'false'
 );

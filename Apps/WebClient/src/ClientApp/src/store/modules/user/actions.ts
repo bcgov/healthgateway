@@ -7,7 +7,8 @@ import { RootState, UserState } from "@/models/storeState";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
 import { DateWrapper } from "@/models/dateWrapper";
-import type { UserPreference } from "@/models/userPreference";
+import UserPreferenceType from "@/constants/userPreferenceType";
+import { UserPreference } from "@/models/userPreference";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -32,26 +33,30 @@ export const actions: ActionTree<UserState, RootState> = {
                     let isRegistered: boolean;
                     if (userProfile) {
                         isRegistered = userProfile.acceptedTermsOfService;
+                        const notePreference =
+                            UserPreferenceType.TutorialMenuNote;
                         // If there are no preferences, set the default popover state
                         if (
-                            userProfile.preferences.tutorialPopover ===
+                            userProfile.preferences[notePreference] ===
                             undefined
                         ) {
-                            userProfile.preferences.tutorialPopover = {
+                            userProfile.preferences[notePreference] = {
                                 hdId: userProfile.hdid,
-                                preference: "tutorialPopover",
+                                preference: notePreference,
                                 value: "true",
                                 version: 0,
                                 createdDateTime: new DateWrapper().toISO(),
                             };
                         }
+                        const exportPreference =
+                            UserPreferenceType.TutorialMenuExport;
                         if (
-                            userProfile.preferences
-                                .tutorialPopoverExportRecords === undefined
+                            userProfile.preferences[exportPreference] ===
+                            undefined
                         ) {
-                            userProfile.preferences.tutorialPopoverExportRecords = {
+                            userProfile.preferences[exportPreference] = {
                                 hdId: userProfile.hdid,
-                                preference: "tutorialPopoverExportRecords",
+                                preference: exportPreference,
                                 value: "true",
                                 version: 0,
                                 createdDateTime: new DateWrapper().toISO(),
