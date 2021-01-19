@@ -78,3 +78,8 @@ footer nav {
 .alert.alert-warning {
   border-color: theme-color-level(warning, -4);
 }
+
+// Fixes datepicker displaing under site header on mobile
+.dropdown-menu {
+  z-index: 9999;
+}

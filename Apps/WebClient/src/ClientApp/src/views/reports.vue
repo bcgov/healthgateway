@@ -13,6 +13,7 @@ import ImmunizationHistoryReportComponent from "@/components/report/immunization
 import type { WebClientConfiguration } from "@/models/configData";
 import { Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
+import DatePickerComponent from "@/components/datePicker.vue";
 
 @Component({
     components: {
@@ -23,6 +24,7 @@ import LoadingComponent from "@/components/loading.vue";
         MSPVisitsReportComponent,
         COVID19ReportComponent,
         ImmunizationHistoryReportComponent,
+        DatePickerComponent,
     },
 })
 export default class ReportsView extends Vue {
@@ -145,12 +147,10 @@ export default class ReportsView extends Vue {
                                 </b-row>
                                 <b-row>
                                     <b-col>
-                                        <b-form-input
+                                        <DatePickerComponent
                                             id="start-date"
                                             v-model="startDate"
-                                            max="2999-12-31"
                                             data-testid="startDateInput"
-                                            type="date"
                                         />
                                     </b-col>
                                 </b-row>
@@ -163,12 +163,10 @@ export default class ReportsView extends Vue {
                                 </b-row>
                                 <b-row>
                                     <b-col class="col-12 col-md-6 mb-2">
-                                        <b-form-input
+                                        <DatePickerComponent
                                             id="end-date"
                                             v-model="endDate"
-                                            max="2999-12-31"
                                             data-testid="endDateInput"
-                                            type="date"
                                         />
                                     </b-col>
                                     <b-col class="col-12 col-md-6">
