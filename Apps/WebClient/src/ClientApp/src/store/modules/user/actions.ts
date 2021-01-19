@@ -45,6 +45,18 @@ export const actions: ActionTree<UserState, RootState> = {
                                 createdDateTime: new DateWrapper().toISO(),
                             };
                         }
+                        if (
+                            userProfile.preferences
+                                .tutorialPopoverExportRecords === undefined
+                        ) {
+                            userProfile.preferences.tutorialPopoverExportRecords = {
+                                hdId: userProfile.hdid,
+                                preference: "tutorialPopoverExportRecords",
+                                value: "true",
+                                version: 0,
+                                createdDateTime: new DateWrapper().toISO(),
+                            };
+                        }
                     } else {
                         isRegistered = false;
                     }

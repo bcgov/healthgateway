@@ -165,9 +165,6 @@ export default class TimelineView extends Vue {
         this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
             this.isAddingNote = true;
         });
-        this.eventBus.$on(EventMessageName.TimelinePrintView, () => {
-            this.printRecords();
-        });
         this.eventBus.$on(
             EventMessageName.IdleLogoutWarning,
             (isVisible: boolean) => {
@@ -687,10 +684,6 @@ export default class TimelineView extends Vue {
         window.location.hash = "calendar";
     }
 
-    private printRecords() {
-        window.print();
-    }
-
     private setFilterTypeCount(entryType: EntryType, count: number) {
         let typeFilter = this.filter.entryTypes.find(
             (x) => x.type === entryType
@@ -698,6 +691,11 @@ export default class TimelineView extends Vue {
         if (typeFilter) {
             typeFilter.numEntries = count;
         }
+    }
+
+    private filtersChanged(newFilter: TimelineFilter) {
+        this.filter = newFilter;
+        this.filter.keyword = this.filterText;
     }
 
     private addFilterTypeCount(entryType: EntryType, count: number) {
