@@ -35,13 +35,8 @@
         "@fortawesome/fontawesome-free": "^5.15.2",
         "@mdi/font": "^5.8.55",
         "@nuxtjs/vuetify": "^1.11.2",
-<<<<<<< HEAD
         "@types/luxon": "^1.25.1",
         "@types/node": "^14.14.21",
-=======
-        "@types/luxon": "^1.25.0",
-        "@types/node": "^14.14.20",
->>>>>>> master
         "@typescript-eslint/eslint-plugin": "^4.13.0",
         "@typescript-eslint/parser": "^4.13.0",
         "@vue/cli-plugin-babel": "^4.5.9",
