@@ -1,14 +1,15 @@
 ﻿import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
+
+import { ServiceName } from "@/models/errorInterfaces";
+import UserFeedback from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import {
-    ILogger,
     IHttpDelegate,
+    ILogger,
     IUserFeedbackService,
 } from "@/services/interfaces";
-import UserFeedback from "@/models/userFeedback";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {

@@ -1,16 +1,17 @@
+import { User as OidcUser } from "oidc-client";
 import Vue from "vue";
 import { MutationTree } from "vuex";
-import { User as OidcUser } from "oidc-client";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
+
+import { DateWrapper } from "@/models/dateWrapper";
 import { StateType, UserState } from "@/models/storeState";
 import User from "@/models/user";
-import UserProfile from "@/models/userProfile";
 import UserEmailInvite from "@/models/userEmailInvite";
-import UserSMSInvite from "@/models/userSMSInvite";
-import { DateWrapper } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
+import UserProfile from "@/models/userProfile";
+import UserSMSInvite from "@/models/userSMSInvite";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 export const mutations: MutationTree<UserState> = {

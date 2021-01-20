@@ -1,19 +1,20 @@
 import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
+
+import { ResultType } from "@/constants/resulttype";
+import { Dictionary } from "@/models/baseTypes";
+import { ExternalConfiguration } from "@/models/configData";
+import { ServiceName } from "@/models/errorInterfaces";
+import RequestResult from "@/models/requestResult";
+import type { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import {
     IHttpDelegate,
     ILogger,
     IUserCommentService,
 } from "@/services/interfaces";
-import RequestResult from "@/models/requestResult";
-import type { UserComment } from "@/models/userComment";
-import { ResultType } from "@/constants/resulttype";
-import { ExternalConfiguration } from "@/models/configData";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
-import { Dictionary } from "@/models/baseTypes";
 
 @injectable()
 export class RestUserCommentService implements IUserCommentService {

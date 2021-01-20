@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
+
 import PageErrorComponent from "@/components/error.vue";
 import PageError from "@/models/pageError";
 

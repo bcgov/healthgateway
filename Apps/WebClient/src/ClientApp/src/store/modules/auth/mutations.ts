@@ -1,10 +1,11 @@
+import { User as OidcUser } from "oidc-client";
 import Vue from "vue";
 import { MutationTree } from "vuex";
+
 import { AuthState } from "@/models/storeState";
-import container from "@/plugins/inversify.config";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
-import { User as OidcUser } from "oidc-client";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 

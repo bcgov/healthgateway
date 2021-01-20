@@ -1,8 +1,10 @@
 import { Module } from "vuex";
-import { getters } from "./getters";
+
+import { ErrorBannerState, RootState } from "@/models/storeState";
+
 import { actions } from "./actions";
+import { getters } from "./getters";
 import { mutations } from "./mutations";
-import { RootState, ErrorBannerState } from "@/models/storeState";
 
 export const state: ErrorBannerState = {
     isShowing: false,

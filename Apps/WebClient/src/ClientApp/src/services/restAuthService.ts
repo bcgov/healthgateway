@@ -1,10 +1,5 @@
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    ILogger,
-    IAuthenticationService,
-    IHttpDelegate,
-} from "@/services/interfaces";
+import { CookieStorage } from "cookie-storage";
+import { injectable } from "inversify";
 import {
     User as OidcUser,
     UserManager,
@@ -12,11 +7,16 @@ import {
     WebStorageStateStore,
 } from "oidc-client";
 
-import { injectable } from "inversify";
 import { OpenIdConnectConfiguration } from "@/models/configData";
-import { CookieStorage } from "cookie-storage";
-import { FragmentedStorage } from "@/utility/fragmentStorage";
 import { OidcUserProfile } from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IAuthenticationService,
+    IHttpDelegate,
+    ILogger,
+} from "@/services/interfaces";
+import { FragmentedStorage } from "@/utility/fragmentStorage";
 
 @injectable()
 export class RestAuthenticationService implements IAuthenticationService {

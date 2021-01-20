@@ -16,9 +16,11 @@ module.exports = {
         "vue/no-v-html": "off",
         "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
         "linebreak-style": ["error", "unix"],
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error",
     },
     parserOptions: {
         parser: "@typescript-eslint/parser",
     },
-    plugins: ["sonarjs", "prettier"],
+    plugins: ["sonarjs", "prettier", "simple-import-sort"],
 };

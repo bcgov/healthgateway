@@ -1,6 +1,7 @@
 import { ActionTree } from "vuex";
-import { RootState, ErrorBannerState } from "@/models/storeState";
+
 import BannerError from "@/models/bannerError";
+import { ErrorBannerState, RootState } from "@/models/storeState";
 
 export const actions: ActionTree<ErrorBannerState, RootState> = {
     dismiss(context) {

@@ -1,18 +1,19 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faStream } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import { ILogger, IAuthenticationService } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+
+import FeedbackComponent from "@/components/feedback.vue";
+import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
-import FeedbackComponent from "@/components/feedback.vue";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faStream } from "@fortawesome/free-solid-svg-icons";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
-import UserPreferenceType from "@/constants/userPreferenceType";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { IAuthenticationService, ILogger } from "@/services/interfaces";
 library.add(faStream);
 
 const auth = "auth";

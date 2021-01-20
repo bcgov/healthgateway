@@ -1,9 +1,10 @@
 import { createLocalVue, shallowMount } from "@vue/test-utils";
-import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
-import container from "@/plugins/inversify.config";
+
+import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
 
 describe("NavBar Header Component", () => {

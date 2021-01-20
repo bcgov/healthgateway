@@ -1,41 +1,42 @@
 import "reflect-metadata";
+
 import { Container } from "inversify";
 
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import HttpDelegate from "@/services/httpDelegate";
 import {
-    ILogger,
     IAuthenticationService,
     ICommunicationService,
     IConfigService,
+    IDependentService,
+    IEncounterService,
     IHttpDelegate,
     IImmunizationService,
     ILaboratoryService,
+    ILogger,
     IMedicationService,
-    IEncounterService,
     IPatientService,
     IUserCommentService,
     IUserFeedbackService,
     IUserNoteService,
     IUserProfileService,
     IUserRatingService,
-    IDependentService,
 } from "@/services/interfaces";
-import HttpDelegate from "@/services/httpDelegate";
-import { WinstonLogger } from "@/services/winstonLogger";
 import { RestAuthenticationService } from "@/services/restAuthService";
-import { RestImmunizationService } from "@/services/restImmunizationService";
+import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestConfigService } from "@/services/restConfigService";
-import { RestPatientService } from "@/services/restPatientService";
-import { RestMedicationService } from "@/services/restMedicationService";
+import { RestDependentService } from "@/services/restDependentService";
 import { RestEncounterService } from "@/services/restEncounterService";
+import { RestImmunizationService } from "@/services/restImmunizationService";
 import { RestLaboratoryService } from "@/services/restLaboratoryService";
-import { RestUserProfileService } from "@/services/restUserProfileService";
+import { RestMedicationService } from "@/services/restMedicationService";
+import { RestPatientService } from "@/services/restPatientService";
+import { RestUserCommentService } from "@/services/restUserCommentService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserNoteService } from "@/services/restUserNoteService";
-import { RestCommunicationService } from "@/services/restCommunicationService";
-import { RestUserCommentService } from "@/services/restUserCommentService";
+import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserRatingService } from "@/services/restUserRatingService";
-import { RestDependentService } from "@/services/restDependentService";
+import { WinstonLogger } from "@/services/winstonLogger";
 
 const container = new Container();
 container

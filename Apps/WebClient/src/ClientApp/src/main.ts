@@ -1,29 +1,33 @@
 import "core-js/stable";
-
-import Vue from "vue";
-import VueRouter from "vue-router";
-
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
+import "@/plugins/registerComponentHooks";
+
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { BPopover } from "bootstrap-vue";
 import { BBadge } from "bootstrap-vue";
 import IdleVue from "idle-vue";
-import Vuelidate from "vuelidate";
+import Vue from "vue";
 import VueContentPlaceholders from "vue-content-placeholders";
-import "@/plugins/registerComponentHooks";
+import VueRouter from "vue-router";
+import Vuelidate from "vuelidate";
 
 const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
+import { ExternalConfiguration } from "@/models/configData";
+import User from "@/models/user";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import router from "@/router";
-import store from "@/store/store";
 import {
-    ILogger,
     IAuthenticationService,
     ICommunicationService,
     IConfigService,
+    IDependentService,
+    IEncounterService,
     IHttpDelegate,
     IImmunizationService,
     ILaboratoryService,
+    ILogger,
     IMedicationService,
     IPatientService,
     IUserCommentService,
@@ -31,13 +35,8 @@ import {
     IUserNoteService,
     IUserProfileService,
     IUserRatingService,
-    IEncounterService,
-    IDependentService,
 } from "@/services/interfaces";
-import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ExternalConfiguration } from "@/models/configData";
-import User from "@/models/user";
+import store from "@/store/store";
 
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 Vue.component("BPopover", BPopover);

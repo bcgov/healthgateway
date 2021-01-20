@@ -1,18 +1,19 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+
+import DependentCardComponent from "@/components/dependentCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import NewDependentComponent from "@/components/modal/newDependent.vue";
-import DependentCardComponent from "@/components/dependentCard.vue";
-import type { Dependent } from "@/models/dependent";
-import { IDependentService, ILogger } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import ErrorTranslator from "@/utility/errorTranslator";
-import { Action, Getter } from "vuex-class";
-import User from "@/models/user";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
+import type { Dependent } from "@/models/dependent";
+import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { IDependentService, ILogger } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {

@@ -1,8 +1,10 @@
 import { Module } from "vuex";
-import { getters } from "./getters";
-import { actions } from "./actions";
-import { mutations } from "./mutations";
+
 import { RootState, SidebarState } from "@/models/storeState";
+
+import { actions } from "./actions";
+import { getters } from "./getters";
+import { mutations } from "./mutations";
 
 export const state: SidebarState = {
     isOpen: false,

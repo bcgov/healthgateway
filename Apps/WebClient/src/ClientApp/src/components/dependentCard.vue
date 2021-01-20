@@ -1,29 +1,30 @@
 <script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Ref } from "vue-property-decorator";
-import type { Dependent } from "@/models/dependent";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import { Action, Getter } from "vuex-class";
-import { ResultError } from "@/models/requestResult";
-import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
-import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
-import { ResultType } from "@/constants/resulttype";
-import BannerError from "@/models/bannerError";
-import ErrorTranslator from "@/utility/errorTranslator";
-import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import container from "@/plugins/inversify.config";
-import {
-    ILogger,
-    ILaboratoryService,
-    IDependentService,
-} from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import User from "@/models/user";
-import { BTabs, BTab } from "bootstrap-vue";
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
-import { LaboratoryResult } from "@/models/laboratory";
+import { BTab, BTabs } from "bootstrap-vue";
+import Vue from "vue";
+import { Component, Emit, Prop, Ref } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+
+import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import { ResultType } from "@/constants/resulttype";
+import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import type { Dependent } from "@/models/dependent";
+import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import { LaboratoryResult } from "@/models/laboratory";
+import { ResultError } from "@/models/requestResult";
+import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IDependentService,
+    ILaboratoryService,
+    ILogger,
+} from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 library.add(faFileDownload);
 
 @Component({

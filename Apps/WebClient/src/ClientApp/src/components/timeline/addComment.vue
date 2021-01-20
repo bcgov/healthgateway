@@ -1,14 +1,15 @@
 <script lang="ts">
+import { faLock, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import type { UserComment } from "@/models/userComment";
-import User from "@/models/user";
-import { Action, Getter } from "vuex-class";
 import { Component, Emit, Prop } from "vue-property-decorator";
-import { IconDefinition, faLock } from "@fortawesome/free-solid-svg-icons";
-import { ILogger } from "@/services/interfaces";
+import { Action, Getter } from "vuex-class";
+
+import { DateWrapper } from "@/models/dateWrapper";
+import User from "@/models/user";
+import type { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { DateWrapper } from "@/models/dateWrapper";
+import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class AddCommentComponent extends Vue {

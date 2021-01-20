@@ -1,11 +1,12 @@
 import { ActionTree, Commit } from "vuex";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { LaboratoryState, RootState } from "@/models/storeState";
-import { ILogger, ILaboratoryService } from "@/services/interfaces";
+
+import { ResultType } from "@/constants/resulttype";
 import { LaboratoryOrder } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
+import { LaboratoryState, RootState } from "@/models/storeState";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILaboratoryService, ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 

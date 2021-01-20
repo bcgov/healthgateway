@@ -1,6 +1,7 @@
 import { MutationTree } from "vuex";
-import { ErrorBannerState } from "@/models/storeState";
+
 import BannerError from "@/models/bannerError";
+import { ErrorBannerState } from "@/models/storeState";
 
 export const mutations: MutationTree<ErrorBannerState> = {
     dissmiss(state: ErrorBannerState) {

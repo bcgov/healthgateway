@@ -1,4 +1,4 @@
-import { DateTime, DurationUnit, Duration, DurationObject } from "luxon";
+import { DateTime, Duration, DurationObject, DurationUnit } from "luxon";
 
 /**
  * Typed representation of a ISO Date, time is not relevant.

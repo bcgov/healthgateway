@@ -1,6 +1,6 @@
 import BannerError from "@/models/bannerError";
-import { ResultError } from "@/models/requestResult";
 import { ErrorType, ServiceName } from "@/models/errorInterfaces";
+import { ResultError } from "@/models/requestResult";
 
 export default class ErrorTranslator {
     public static internalNetworkError(

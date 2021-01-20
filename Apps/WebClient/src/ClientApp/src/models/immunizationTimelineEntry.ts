@@ -1,8 +1,8 @@
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import { DateWrapper } from "@/models/dateWrapper";
 import ImmunizationModel, {
     ImmunizationAgent,
 } from "@/models/immunizationModel";
-import { DateWrapper } from "@/models/dateWrapper";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 
 // The immunization timeline entry model

@@ -1,11 +1,11 @@
-import { ILogger } from "@/services/interfaces";
+import VueRouter, { Route } from "vue-router";
+
+import { Dictionary } from "@/models/baseTypes";
+import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-// Routes
-import VueRouter, { Route } from "vue-router";
-import store from "./store/store";
-import { SnowplowWindow } from "@/plugins/extensions";
-import { Dictionary } from "@/models/baseTypes";
+import { ILogger } from "@/services/interfaces";
+import store from "@/store/store";
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 declare let window: SnowplowWindow;
 

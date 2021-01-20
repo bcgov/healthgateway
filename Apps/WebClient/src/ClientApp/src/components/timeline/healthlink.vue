@@ -3,8 +3,8 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 
 import PhoneImage from "@/assets/images/timeline/811.png";
-import HealthlinkImage from "@/assets/images/timeline/healthlink.png";
 import CovidImage from "@/assets/images/timeline/CovidSidecardImage.png";
+import HealthlinkImage from "@/assets/images/timeline/healthlink.png";
 
 interface Healthcard {
     title: string;

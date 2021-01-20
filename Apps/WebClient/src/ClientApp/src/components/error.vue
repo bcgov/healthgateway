@@ -1,7 +1,8 @@
 <script lang="ts">
 import Vue from "vue";
-import PageError from "@/models/pageError";
 import { Component, Prop } from "vue-property-decorator";
+
+import PageError from "@/models/pageError";
 
 @Component
 export default class PageErrorComponent extends Vue {

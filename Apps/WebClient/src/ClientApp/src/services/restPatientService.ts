@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, IPatientService } from "@/services/interfaces";
-import RequestResult from "@/models/requestResult";
-import PatientData from "@/models/patientData";
+
 import { ExternalConfiguration } from "@/models/configData";
+import PatientData from "@/models/patientData";
+import RequestResult from "@/models/requestResult";
+import { IHttpDelegate, IPatientService } from "@/services/interfaces";
 
 @injectable()
 export class RestPatientService implements IPatientService {

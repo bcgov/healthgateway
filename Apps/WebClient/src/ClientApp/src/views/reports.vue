@@ -1,19 +1,20 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
-import PageTitleComponent from "@/components/pageTitle.vue";
-import { ILogger } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { Getter } from "vuex-class";
+
+import DatePickerComponent from "@/components/datePicker.vue";
+import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
-import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import PageTitleComponent from "@/components/pageTitle.vue";
 import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
+import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
+import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import { Getter } from "vuex-class";
-import LoadingComponent from "@/components/loading.vue";
-import DatePickerComponent from "@/components/datePicker.vue";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 
 @Component({
     components: {

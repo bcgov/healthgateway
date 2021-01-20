@@ -1,10 +1,11 @@
 import { ActionTree, Commit } from "vuex";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ImmunizationState, RootState } from "@/models/storeState";
-import { ILogger, IImmunizationService } from "@/services/interfaces";
+
 import { ResultType } from "@/constants/resulttype";
 import ImmunizationModel from "@/models/immunizationModel";
+import { ImmunizationState, RootState } from "@/models/storeState";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { IImmunizationService, ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
