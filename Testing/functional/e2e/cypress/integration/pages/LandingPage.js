@@ -26,10 +26,7 @@ describe('Landing Page', () => {
     it('Offline', () => {
         cy.get('[data-testid=offlineMessage]').should('not.exist');
         cy.readConfig().as("config").then(config => {
-            config.webClient.offlineMode.startDateTime = "2021-01-17T12:00:00";
-            config.webClient.offlineMode.endDateTime = "2021-01-20T12:00:00";
-            config.webClient.offlineMode.message = "customized offline message";
-            config.webClient.offlineMode.whitelist = [];
+            config.webClient['offlineMode'] = { startDateTime: "2021-01-17T12:00:00", endDateTime: "2121-01-21T12:00:00", message: "customized offline message", whitelist: []};
             cy.server();
             cy.route('GET', '/v1/api/configuration/', config);
         })
