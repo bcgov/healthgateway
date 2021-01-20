@@ -102,7 +102,7 @@ export default class DatePickerComponent extends Vue {
             <b-form-datepicker
                 ref="datePicker"
                 v-model="inputValue"
-                class="datepicker-style"
+                menu-class="datepicker-style"
                 button-only
                 right
                 locale="en-CA"
