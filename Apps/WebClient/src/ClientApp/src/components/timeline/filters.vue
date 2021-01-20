@@ -12,9 +12,14 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import { EntryType } from "@/models/timelineEntry";
+import DatePickerComponent from "@/components/datePicker.vue";
 library.add(faSlidersH);
 
-@Component
+@Component({
+    components: {
+        DatePickerComponent,
+    },
+})
 export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -147,26 +152,39 @@ export default class FilterComponent extends Vue {
 <template>
     <div class="filters-wrapper">
         <div class="filters-width d-none d-sm-block">
-            <b-dropdown
+            <b-button
+                id="filterBtn"
+                class="w-100"
+                :class="{ 'filter-selected': hasFilterSelected }"
                 data-testid="filterDropdown"
+                variant="outline-primary"
+            >
+                Filter
+                <b-badge
+                    v-show="hasFilterSelected"
+                    variant="light"
+                    class="badge-style"
+                >
+                    {{ activeFilterCount }}
+                    <span class="sr-only">filters applied</span>
+                </b-badge>
+                <font-awesome-icon
+                    icon="chevron-down"
+                    size="xs"
+                    aria-hidden="true"
+                    class="ml-1"
+                />
+            </b-button>
+            <b-popover
+                target="filterBtn"
+                triggers="focus"
                 text="Filter"
                 class="w-100"
+                data-testid="filterContainer"
+                placement="bottom"
                 no-flip
-                :toggle-class="{ 'filter-selected': hasFilterSelected }"
                 menu-class="z-index-large w-100"
-                variant="outline-primary"
-                right
             >
-                <template #button-content>
-                    Filter
-                    <b-badge
-                        v-show="hasFilterSelected"
-                        variant="light"
-                        class="badge-style"
-                        >{{ activeFilterCount
-                        }}<span class="sr-only">filters applied</span></b-badge
-                    >
-                </template>
                 <b-row class="px-4">
                     <b-col><strong>Type</strong> </b-col>
                     <b-col class="col-auto">
@@ -210,23 +228,19 @@ export default class FilterComponent extends Vue {
                     </b-row>
                     <b-row class="mt-1">
                         <b-col>
-                            <b-form-input
+                            <DatePickerComponent
                                 id="start-date"
                                 v-model="filter.startDate"
-                                max="2999-12-31"
                                 data-testid="filterStartDateInput"
-                                type="date"
                             />
                         </b-col>
                     </b-row>
                     <b-row class="mt-1">
                         <b-col>
-                            <b-form-input
+                            <DatePickerComponent
                                 id="end-date"
                                 v-model="filter.endDate"
-                                max="2999-12-31"
                                 data-testid="filterEndDateInput"
-                                type="date"
                             />
                         </b-col>
                     </b-row>
@@ -246,7 +260,7 @@ export default class FilterComponent extends Vue {
                         </b-col>
                     </b-row>
                 </div>
-            </b-dropdown>
+            </b-popover>
         </div>
 
         <!-- Mobile view specific modal-->
@@ -327,23 +341,19 @@ export default class FilterComponent extends Vue {
                     <h5>Dates</h5>
                     <b-row>
                         <b-col>
-                            <b-form-input
+                            <DatePickerComponent
                                 id="start-date"
                                 v-model="filter.startDate"
-                                max="2999-12-31"
                                 data-testid="filterStartDateInput"
-                                type="date"
                             />
                         </b-col>
                     </b-row>
                     <b-row class="mt-1">
                         <b-col>
-                            <b-form-input
+                            <DatePickerComponent
                                 id="end-date"
                                 v-model="filter.endDate"
-                                max="2999-12-31"
                                 data-testid="filterEndDateInput"
-                                type="date"
                             />
                         </b-col>
                     </b-row>

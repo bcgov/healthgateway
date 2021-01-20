@@ -43,21 +43,37 @@ describe("Filters", () => {
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
 
         // Validate "No records found with the selected filters" for a Date Range Filter
-        cy.get("[data-testid=filterStartDateInput]").type("2020-10-01");
-        cy.get("[data-testid=filterEndDateInput]").type("2020-10-02");
+        cy.get("[data-testid=filterStartDateInput] input")
+            .clear()
+            .focus()
+            .type("2020-10-01");
+        cy.get("[data-testid=filterEndDateInput] input")
+            .clear()
+            .focus()
+            .type("2020-10-02");
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.get("[data-testid=noTimelineEntriesText]").children().first().should("have.text", "No records found with the selected filters");
         
         // Select 06/14/2020 to 06/14/2020 should display data for this date range.
-        cy.get("[data-testid=filterStartDateInput]").type("2020-06-14");
-        cy.get("[data-testid=filterEndDateInput]").type("2020-06-14");
+        cy.get("[data-testid=filterStartDateInput] input")
+            .focus()
+            .clear()
+            .type("2020-06-14");
+        cy.get("[data-testid=filterEndDateInput] input")
+            .focus()
+            .clear()
+            .type("2020-06-14");
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
         cy.get('[data-testid="filterDropdown"]').click();
         verifyActiveFilter('2');
 
         // Clear date range filter for next tests
-        cy.get("[data-testid=filterStartDateInput]").clear();
-        cy.get("[data-testid=filterEndDateInput]").clear();
+        cy.get("[data-testid=filterStartDateInput] input")
+            .focus()
+            .clear();
+        cy.get("[data-testid=filterEndDateInput] input")
+            .focus()
+            .clear();
     });
 
     it("No Records on Linear Timeline", () => {
@@ -105,7 +121,7 @@ describe("Filters", () => {
         cy.get("[data-testid=medicationTitle]").should("be.visible");
         cy.get('[data-testid="filterDropdown"]').click();
         verifyActiveFilter('1');
-        cy.get('[data-testid="filterDropdown"]').contains("Clear").click();
+        cy.get('[data-testid="filterContainer"]').contains("Clear").click();
     });
 
     it("Filter Encounter", () => {
@@ -117,7 +133,7 @@ describe("Filters", () => {
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get('[data-testid="filterDropdown"]').click();
         verifyActiveFilter('1');
-        cy.get('[data-testid="filterDropdown"]').contains("Clear").click();
+        cy.get('[data-testid="filterContainer"]').contains("Clear").click();
     });
 
     it("Filter Laboratory", () => {
@@ -129,7 +145,7 @@ describe("Filters", () => {
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get('[data-testid="filterDropdown"]').click();
         verifyActiveFilter('1');
-        cy.get('[data-testid="filterDropdown"]').contains("Clear").click();
+        cy.get('[data-testid="filterContainer"]').contains("Clear").click();
     });
 
     it("Page size", () => {
