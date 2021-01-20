@@ -1,9 +1,10 @@
 import { GetterTree } from "vuex";
-import { RootState, ConfigState } from "@/models/storeState";
+
 import {
-    OpenIdConnectConfiguration,
-    AdminClientConfiguration
+    AdminClientConfiguration,
+    OpenIdConnectConfiguration
 } from "@/models/externalConfiguration";
+import { ConfigState, RootState } from "@/models/storeState";
 
 export const getters: GetterTree<ConfigState, RootState> = {
     serviceEndpoints(state: ConfigState): { [id: string]: string } {

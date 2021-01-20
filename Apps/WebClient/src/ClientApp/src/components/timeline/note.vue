@@ -17,8 +17,15 @@ import UserNote from "@/models/userNote";
 import User from "@/models/user";
 import { DateWrapper } from "@/models/dateWrapper";
 import BannerError from "@/models/bannerError";
+import { required } from "vuelidate/lib/validators";
+import { Validation } from "vuelidate/vuelidate";
+import DatePickerComponent from "@/components/datePicker.vue";
 
-@Component
+@Component({
+    components: {
+        DatePickerComponent,
+    },
+})
 export default class NoteTimelineComponent extends Vue {
     @Prop() isAddMode!: boolean;
     @Prop() entry!: NoteTimelineEntry;
@@ -48,6 +55,21 @@ export default class NoteTimelineComponent extends Vue {
         }
     }
 
+    private validations() {
+        return {
+            title: {
+                required: required,
+            },
+            dateString: {
+                required: required,
+            },
+        };
+    }
+
+    private isValid(param: Validation): boolean | undefined {
+        return param.$dirty ? !param.$invalid : undefined;
+    }
+
     private checkBlankNote() {
         if (this.text === "" && this.title === "") {
             this.eventBus.$emit(EventMessageName.IsNoteBlank, true);
@@ -73,7 +95,10 @@ export default class NoteTimelineComponent extends Vue {
 
     private onSubmit(evt: Event): void {
         evt.preventDefault();
-        if (this.isEditMode) {
+        this.$v.$touch();
+        if (this.$v.$invalid) {
+            return;
+        } else if (this.isEditMode) {
             this.updateNote();
         } else if (this.isAddMode) {
             this.createNote();
@@ -251,17 +276,27 @@ export default class NoteTimelineComponent extends Vue {
                                 type="text"
                                 placeholder="Title"
                                 maxlength="100"
+                                :state="isValid($v.title)"
                                 @input="checkBlankNote()"
+                                @blur.native="$v.title.$touch()"
                             />
+                            <b-form-invalid-feedback :state="isValid($v.title)">
+                                Title is required
+                            </b-form-invalid-feedback>
                         </b-col>
                         <b-col class="p-0 pl-sm-1 pt-sm-0 pt-1 col-sm-5 col-12">
-                            <b-form-input
+                            <DatePickerComponent
                                 id="date"
                                 v-model="dateString"
                                 data-testid="noteDateInput"
-                                required
-                                type="date"
+                                :state="isValid($v.dateString)"
+                                @blur="$v.dateString.$touch()"
                             />
+                            <b-form-invalid-feedback
+                                :state="isValid($v.dateString)"
+                            >
+                                Invalid Date
+                            </b-form-invalid-feedback>
                         </b-col>
                     </b-row>
                 </b-col>

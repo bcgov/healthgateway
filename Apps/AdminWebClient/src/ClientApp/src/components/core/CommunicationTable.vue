@@ -1,17 +1,19 @@
 <script lang="ts">
-import { Component, Vue, Watch, Emit } from "vue-property-decorator";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import BannerFeedback from "@/models/bannerFeedback";
-import Communication, {
-    CommunicationType,
-    CommunicationStatus
-} from "@/models/adminCommunication";
+import moment from "moment";
+import { Component, Emit, Vue, Watch } from "vue-property-decorator";
+import { DataTableHeader } from "vuetify";
+
 import BannerModal from "@/components/core/modals/BannerModal.vue";
 import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
+import Communication, {
+    CommunicationStatus,
+    CommunicationType
+} from "@/models/adminCommunication";
+import BannerFeedback from "@/models/bannerFeedback";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { ICommunicationService } from "@/services/interfaces";
-import moment from "moment";
 
 @Component({
     components: {
@@ -34,7 +36,7 @@ export default class CommunicationTable extends Vue {
     // 0: Banners, 1: Emails
     private tab = 0;
     private isNewCommunication = true;
-    private headers: any[] = [];
+    private headers: DataTableHeader[] = [];
     private editedBanner: Communication = {
         id: "-1",
         text: "",
@@ -100,8 +102,8 @@ export default class CommunicationTable extends Vue {
     }
 
     @Watch("tab")
-    private onTabChange(val: any) {
-        if (!val) {
+    private onTabChange(tabIndex: number) {
+        if (tabIndex === 0) {
             // Banners
             this.communicationList = this.bannerList;
             this.headers = this.bannerHeaders;
@@ -112,7 +114,7 @@ export default class CommunicationTable extends Vue {
         }
     }
 
-    private bannerHeaders: any[] = [
+    private bannerHeaders: DataTableHeader[] = [
         {
             text: "Subject",
             value: "subject",
@@ -146,7 +148,7 @@ export default class CommunicationTable extends Vue {
         }
     ];
 
-    private emailHeaders: any[] = [
+    private emailHeaders: DataTableHeader[] = [
         {
             text: "Subject",
             value: "subject",
@@ -235,7 +237,7 @@ export default class CommunicationTable extends Vue {
 
     private customSort(
         items: Communication[],
-        index: any[],
+        index: string[],
         isDescending: boolean[]
     ) {
         // items: 'Communication' items
@@ -278,13 +280,14 @@ export default class CommunicationTable extends Vue {
             .then((banners: Communication[]) => {
                 this.parseComms(banners);
             })
-            .catch((err: any) => {
+            .catch(err => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
                     message: "Error loading banners"
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;
@@ -331,13 +334,14 @@ export default class CommunicationTable extends Vue {
                 };
                 this.loadCommunicationList();
             })
-            .catch((err: any) => {
+            .catch(err => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
                     message: "Add communication failed, please try again"
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;
@@ -370,13 +374,14 @@ export default class CommunicationTable extends Vue {
                 };
                 this.loadCommunicationList();
             })
-            .catch((err: any) => {
+            .catch(err => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
                     message: "Error updating communication. Please try again."
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;
@@ -398,13 +403,14 @@ export default class CommunicationTable extends Vue {
                 };
                 this.loadCommunicationList();
             })
-            .catch((err: any) => {
+            .catch(err => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
                     message: "Error deleting communication. Please try again."
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;

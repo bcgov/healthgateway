@@ -11,7 +11,7 @@ import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import UserEmailInvite from "@/models/userEmailInvite";
 import UserSMSInvite from "@/models/userSMSInvite";
-import { Dictionary } from "vue-router/types/router";
+import { Dictionary } from "@/models/baseTypes";
 import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";

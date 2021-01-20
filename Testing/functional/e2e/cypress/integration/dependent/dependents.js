@@ -1,6 +1,7 @@
 const { AuthMethod } = require("../../support/constants")
 
 describe('dependents', () => {
+
     const validDependent = {
         firstName: "Sam",
         lastName: "Testfive",
@@ -20,6 +21,7 @@ describe('dependents', () => {
     }
 
     before(() => {
+        cy.setupDownloads();
         cy.enableModules(["CovidLabResults", "Laboratory", "Dependent"]);
         cy.login(
             Cypress.env('keycloak.username'), 
@@ -48,7 +50,7 @@ describe('dependents', () => {
             .blur()
             .should('have.class', 'is-invalid')
         //Validate Date of Birth
-        cy.get('[data-testid=dateOfBirthInput]')
+        cy.get('[data-testid=dateOfBirthInput] input')
             .should('be.enabled')
         // Validate PHN input
         cy.get('[data-testid=phnInput]')
@@ -58,7 +60,7 @@ describe('dependents', () => {
             .should('have.class', 'is-invalid')
 
         // Validate tesDate Input
-        cy.get('[data-testid=testDateInput]')
+        cy.get('[data-testid=testDateInput] input')
             .should('be.enabled')
 
         // Validate Cancel out of the form
@@ -78,9 +80,9 @@ describe('dependents', () => {
             .type(validDependent.firstName);
         cy.get('[data-testid=lastNameInput]')
             .type(validDependent.lastName);
-        cy.get('[data-testid=dateOfBirthInput]')
+        cy.get('[data-testid=dateOfBirthInput] input')
             .type(validDependent.invalidDoB);
-        cy.get('[data-testid=testDateInput]')
+        cy.get('[data-testid=testDateInput] input')
             .type(validDependent.testDate);
         cy.get('[data-testid=phnInput]')
             .type(validDependent.phn);
@@ -107,10 +109,10 @@ describe('dependents', () => {
         cy.get('[data-testid=lastNameInput]')
             .clear()
             .type(validDependent.wrongLastName);
-        cy.get('[data-testid=dateOfBirthInput]')
+        cy.get('[data-testid=dateOfBirthInput] input')
             .clear()
             .type(validDependent.doB);
-        cy.get('[data-testid=testDateInput]')
+        cy.get('[data-testid=testDateInput] input')
             .clear()
             .type(validDependent.testDate);
         cy.get('[data-testid=phnInput]')
@@ -142,10 +144,10 @@ describe('dependents', () => {
         cy.get('[data-testid=lastNameInput]')
             .clear()
             .type(noHdidDependent.lastName);
-        cy.get('[data-testid=dateOfBirthInput]')
+        cy.get('[data-testid=dateOfBirthInput] input')
             .clear()
             .type(noHdidDependent.doB);
-        cy.get('[data-testid=testDateInput]')
+        cy.get('[data-testid=testDateInput] input')
             .clear()
             .type(noHdidDependent.testDate);
         cy.get('[data-testid=phnInput]')
@@ -177,10 +179,10 @@ describe('dependents', () => {
         cy.get('[data-testid=lastNameInput]')
             .clear()
             .type(validDependent.lastName);
-        cy.get('[data-testid=dateOfBirthInput]')
+        cy.get('[data-testid=dateOfBirthInput] input')
             .clear()
             .type(validDependent.doB);
-        cy.get('[data-testid=testDateInput]')
+        cy.get('[data-testid=testDateInput] input')
             .clear()
             .type(validDependent.testDate);
         cy.get('[data-testid=phnInput]')
@@ -267,10 +269,10 @@ describe('dependents', () => {
         cy.get('[data-testid=lastNameInput]')
             .clear()
             .type(validDependent.lastName);
-        cy.get('[data-testid=dateOfBirthInput]')
+        cy.get('[data-testid=dateOfBirthInput] input')
             .clear()
             .type(validDependent.doB);
-        cy.get('[data-testid=testDateInput]')
+        cy.get('[data-testid=testDateInput] input')
             .clear()
             .type(validDependent.testDate);
         cy.get('[data-testid=phnInput]')

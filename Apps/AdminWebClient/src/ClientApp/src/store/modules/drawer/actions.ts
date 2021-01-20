@@ -1,6 +1,6 @@
 import { ActionTree } from "vuex";
 
-import { RootState, DrawerState } from "@/models/storeState";
+import { DrawerState, RootState } from "@/models/storeState";
 
 export const actions: ActionTree<DrawerState, RootState> = {
     initialize(): boolean {

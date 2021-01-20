@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
-import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
 import { Dictionary } from "vue-router/types/router";
-import UserFeedback from "@/models/userFeedback";
+
 import RequestResult from "@/models/requestResult";
+import UserFeedback from "@/models/userFeedback";
+import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()

@@ -14,7 +14,9 @@ describe('Notes', () => {
             .click();
         cy.get('[data-testid=noteTitleInput]')
             .type('Note Title!');
-        cy.get('[data-testid=noteDateInput]')
+        cy.get('[data-testid=noteDateInput] input')
+            .focus()
+            .clear()
             .type('1950-01-01');
         cy.get('[data-testid=noteTextInput]')
             .type('Test');

@@ -8,7 +8,7 @@ import PatientData from "@/models/patientData";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import type { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
-import { Dictionary } from "vue-router/types/router";
+import { Dictionary } from "@/models/baseTypes";
 import MedicationResult from "@/models/medicationResult";
 import RequestResult from "@/models/requestResult";
 import UserEmailInvite from "@/models/userEmailInvite";

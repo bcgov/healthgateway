@@ -12,9 +12,14 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import { EntryType } from "@/models/timelineEntry";
+import DatePickerComponent from "@/components/datePicker.vue";
 library.add(faSlidersH);
 
-@Component
+@Component({
+    components: {
+        DatePickerComponent,
+    },
+})
 export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
@@ -26,6 +31,7 @@ export default class FilterComponent extends Vue {
     @Prop() private laboratoryCount!: number;
     @Prop() private noteCount!: number;
     @Prop() private isListView!: boolean;
+    @Prop() private filter!: TimelineFilter;
 
     private logger!: ILogger;
     private eventBus = EventBus;
@@ -33,7 +39,7 @@ export default class FilterComponent extends Vue {
     private windowWidth = 0;
     private steps = [25, 50, 100, 500];
     private stepIndex = 0;
-    private filter: TimelineFilter = new TimelineFilter();
+
     private selectedEntryTypes: EntryType[] = [];
 
     private get isMobileView(): boolean {
@@ -44,6 +50,14 @@ export default class FilterComponent extends Vue {
         return this.filter.entryTypes.filter(
             (filter: EntryTypeFilter) => filter.isEnabled
         );
+    }
+
+    private get activeFilterCount(): number {
+        return this.filter.getActiveFilterCount();
+    }
+
+    private get hasFilterSelected(): boolean {
+        return this.filter.hasActiveFilter();
     }
 
     @Watch("selectedEntryTypes")
@@ -70,19 +84,9 @@ export default class FilterComponent extends Vue {
         this.filtersChanged();
     }
 
-    @Watch("noteCount")
-    private noteCountUpdate(newCount: number) {
-        this.filter.entryTypes[4].numEntries = newCount;
-    }
-
     @Emit()
     private filtersChanged(): TimelineFilter {
         return this.filter;
-    }
-
-    private sliderChanged() {
-        this.filter.pageSize = this.steps[this.stepIndex];
-        this.filtersChanged();
     }
 
     private created() {
@@ -92,7 +96,6 @@ export default class FilterComponent extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.clearFilters();
 
         this.eventBus.$on(
             EventMessageName.SelectedFilter,
@@ -105,16 +108,13 @@ export default class FilterComponent extends Vue {
         });
     }
 
-    private get hasFilterSelected(): boolean {
-        return (
-            this.selectedEntryTypes.length > 0 ||
-            this.filter.startDate !== "" ||
-            this.filter.endDate !== ""
-        );
-    }
-
     private destroyed() {
         window.removeEventListener("handleResize", this.handleResize);
+    }
+
+    private sliderChanged() {
+        this.filter.pageSize = this.steps[this.stepIndex];
+        this.filtersChanged();
     }
 
     private handleResize() {
@@ -127,50 +127,7 @@ export default class FilterComponent extends Vue {
 
     private clearFilters(): void {
         this.selectedEntryTypes = [];
-        this.filter = {
-            keyword: "",
-            pageSize: this.filter.pageSize,
-            startDate: "",
-            endDate: "",
-            entryTypes: [
-                {
-                    type: EntryType.Immunization,
-                    display: "Immunizations",
-                    isEnabled: this.config.modules[EntryType.Immunization],
-                    numEntries: this.immunizationCount,
-                    isSelected: false,
-                },
-                {
-                    type: EntryType.Medication,
-                    display: "Medications",
-                    isEnabled: this.config.modules[EntryType.Medication],
-                    numEntries: this.medicationCount,
-                    isSelected: false,
-                },
-
-                {
-                    type: EntryType.Laboratory,
-                    display: "Laboratory",
-                    isEnabled: this.config.modules[EntryType.Laboratory],
-                    numEntries: this.laboratoryCount,
-                    isSelected: false,
-                },
-                {
-                    type: EntryType.Encounter,
-                    display: "MSP Visits",
-                    isEnabled: this.config.modules[EntryType.Encounter],
-                    numEntries: this.encounterCount,
-                    isSelected: false,
-                },
-                {
-                    type: EntryType.Note,
-                    display: "My Notes",
-                    isEnabled: this.config.modules[EntryType.Note],
-                    numEntries: this.noteCount,
-                    isSelected: false,
-                },
-            ],
-        };
+        this.filter.clear();
     }
 
     private onExternalFilterSelection(filterType: EntryType) {
@@ -195,15 +152,38 @@ export default class FilterComponent extends Vue {
 <template>
     <div class="filters-wrapper">
         <div class="filters-width d-none d-sm-block">
-            <b-dropdown
+            <b-button
+                id="filterBtn"
+                class="w-100"
+                :class="{ 'filter-selected': hasFilterSelected }"
                 data-testid="filterDropdown"
+                variant="outline-primary"
+            >
+                Filter
+                <b-badge
+                    v-show="hasFilterSelected"
+                    variant="light"
+                    class="badge-style"
+                >
+                    {{ activeFilterCount }}
+                    <span class="sr-only">filters applied</span>
+                </b-badge>
+                <font-awesome-icon
+                    icon="chevron-down"
+                    size="xs"
+                    aria-hidden="true"
+                    class="ml-1"
+                />
+            </b-button>
+            <b-popover
+                target="filterBtn"
+                triggers="focus"
                 text="Filter"
                 class="w-100"
+                data-testid="filterContainer"
+                placement="bottom"
                 no-flip
-                :toggle-class="{ 'filter-selected': hasFilterSelected }"
                 menu-class="z-index-large w-100"
-                variant="outline-primary"
-                right
             >
                 <b-row class="px-4">
                     <b-col><strong>Type</strong> </b-col>
@@ -248,23 +228,19 @@ export default class FilterComponent extends Vue {
                     </b-row>
                     <b-row class="mt-1">
                         <b-col>
-                            <b-form-input
+                            <DatePickerComponent
                                 id="start-date"
                                 v-model="filter.startDate"
-                                max="2999-12-31"
                                 data-testid="filterStartDateInput"
-                                type="date"
                             />
                         </b-col>
                     </b-row>
                     <b-row class="mt-1">
                         <b-col>
-                            <b-form-input
+                            <DatePickerComponent
                                 id="end-date"
                                 v-model="filter.endDate"
-                                max="2999-12-31"
                                 data-testid="filterEndDateInput"
-                                type="date"
                             />
                         </b-col>
                     </b-row>
@@ -284,11 +260,12 @@ export default class FilterComponent extends Vue {
                         </b-col>
                     </b-row>
                 </div>
-            </b-dropdown>
+            </b-popover>
         </div>
 
         <!-- Mobile view specific modal-->
         <b-button
+            data-testid="mobileFilterDropdown"
             class="d-d-sm-inline d-sm-none"
             :class="{ 'filter-selected': hasFilterSelected }"
             variant="outline-primary"
@@ -364,23 +341,19 @@ export default class FilterComponent extends Vue {
                     <h5>Dates</h5>
                     <b-row>
                         <b-col>
-                            <b-form-input
+                            <DatePickerComponent
                                 id="start-date"
                                 v-model="filter.startDate"
-                                max="2999-12-31"
                                 data-testid="filterStartDateInput"
-                                type="date"
                             />
                         </b-col>
                     </b-row>
                     <b-row class="mt-1">
                         <b-col>
-                            <b-form-input
+                            <DatePickerComponent
                                 id="end-date"
                                 v-model="filter.endDate"
-                                max="2999-12-31"
                                 data-testid="filterEndDateInput"
-                                type="date"
                             />
                         </b-col>
                     </b-row>
@@ -414,6 +387,7 @@ export default class FilterComponent extends Vue {
 }
 </style>
 <style lang="scss">
+@import "@/assets/scss/_variables.scss";
 .filters-mobile-content {
     position: fixed;
     top: auto;
@@ -430,7 +404,12 @@ export default class FilterComponent extends Vue {
         font-size: 1.5em;
     }
 }
-.filter-selected {
-    border-width: 3px;
+
+.filters-wrapper {
+    .filter-selected {
+        border-color: $aquaBlue;
+        background-color: $aquaBlue;
+        color: white;
+    }
 }
 </style>

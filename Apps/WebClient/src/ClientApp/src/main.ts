@@ -7,6 +7,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { BPopover } from "bootstrap-vue";
+import { BBadge } from "bootstrap-vue";
 import IdleVue from "idle-vue";
 import Vuelidate from "vuelidate";
 import VueContentPlaceholders from "vue-content-placeholders";
@@ -40,6 +41,7 @@ import User from "@/models/user";
 
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 Vue.component("BPopover", BPopover);
+Vue.component("BBadge", BBadge);
 
 Vue.use(VueRouter);
 Vue.use(Vuelidate);

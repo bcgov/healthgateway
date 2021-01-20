@@ -13,6 +13,7 @@ import ImmunizationHistoryReportComponent from "@/components/report/immunization
 import type { WebClientConfiguration } from "@/models/configData";
 import { Getter } from "vuex-class";
 import LoadingComponent from "@/components/loading.vue";
+import DatePickerComponent from "@/components/datePicker.vue";
 
 @Component({
     components: {
@@ -23,6 +24,7 @@ import LoadingComponent from "@/components/loading.vue";
         MSPVisitsReportComponent,
         COVID19ReportComponent,
         ImmunizationHistoryReportComponent,
+        DatePickerComponent,
     },
 })
 export default class ReportsView extends Vue {
@@ -68,6 +70,12 @@ export default class ReportsView extends Vue {
                 text: "Immunizations",
             });
         }
+    }
+
+    private clear() {
+        this.reportType = "";
+        this.startDate = null;
+        this.endDate = null;
     }
 
     private showConfirmationModal() {
@@ -139,12 +147,10 @@ export default class ReportsView extends Vue {
                                 </b-row>
                                 <b-row>
                                     <b-col>
-                                        <b-form-input
+                                        <DatePickerComponent
                                             id="start-date"
                                             v-model="startDate"
-                                            max="2999-12-31"
                                             data-testid="startDateInput"
-                                            type="date"
                                         />
                                     </b-col>
                                 </b-row>
@@ -157,24 +163,38 @@ export default class ReportsView extends Vue {
                                 </b-row>
                                 <b-row>
                                     <b-col class="col-12 col-md-6 mb-2">
-                                        <b-form-input
+                                        <DatePickerComponent
                                             id="end-date"
                                             v-model="endDate"
-                                            max="2999-12-31"
                                             data-testid="endDateInput"
-                                            type="date"
                                         />
                                     </b-col>
                                     <b-col class="col-12 col-md-6">
-                                        <b-button
-                                            variant="primary"
-                                            data-testid="exportRecordBtn"
-                                            class="ml-auto d-block"
-                                            :disabled="!reportType || isLoading"
-                                            @click="showConfirmationModal"
+                                        <div
+                                            style="width: fit-content"
+                                            class="ml-auto"
                                         >
-                                            Download PDF
-                                        </b-button>
+                                            <b-button
+                                                variant="secondary"
+                                                data-testid="clearBtn"
+                                                class="mb-1 mr-1"
+                                                :disabled="isLoading"
+                                                @click="clear"
+                                            >
+                                                Clear
+                                            </b-button>
+                                            <b-button
+                                                variant="primary"
+                                                data-testid="exportRecordBtn"
+                                                class="mb-1"
+                                                :disabled="
+                                                    !reportType || isLoading
+                                                "
+                                                @click="showConfirmationModal"
+                                            >
+                                                Download PDF
+                                            </b-button>
+                                        </div>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -286,7 +306,8 @@ export default class ReportsView extends Vue {
     padding: 0px 10px;
     width: 100%;
     height: 400px;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 .form {
     background-color: $soft_background;

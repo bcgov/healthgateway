@@ -14,10 +14,12 @@ import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import { ResultError } from "@/models/requestResult";
+import DatePickerComponent from "@/components/datePicker.vue";
 
 @Component({
     components: {
         LoadingComponent,
+        DatePickerComponent,
     },
 })
 export default class NewDependentComponent extends Vue {
@@ -53,12 +55,16 @@ export default class NewDependentComponent extends Vue {
                     minLength: minLength(10),
                     minValue: (value: string) =>
                         new DateWrapper(value).isAfter(this.minBirthdate),
+                    maxValue: (value: string) =>
+                        new DateWrapper(value).isBefore(new DateWrapper()),
                 },
                 testDate: {
                     required: required,
                     minLength: minLength(10),
                     minValue: (value: string) =>
                         new DateWrapper(value).isAfter(this.minTestDate),
+                    maxValue: (value: string) =>
+                        new DateWrapper(value).isBefore(new DateWrapper()),
                 },
                 PHN: {
                     required: required,
@@ -220,19 +226,15 @@ export default class NewDependentComponent extends Vue {
                                     <label for="dateOfBirth"
                                         >Date of Birth</label
                                     >
-                                    <b-form-input
+                                    <DatePickerComponent
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
-                                        max="2999-12-31"
                                         data-testid="dateOfBirthInput"
-                                        :class="{
-                                            dependentCardDateInput:
-                                                dependent.dateOfBirth == '',
-                                        }"
-                                        required
-                                        type="date"
                                         :state="
                                             isValid($v.dependent.dateOfBirth)
+                                        "
+                                        @blur="
+                                            $v.dependent.dateOfBirth.$touch()
                                         "
                                     />
                                     <b-form-invalid-feedback
@@ -268,23 +270,18 @@ export default class NewDependentComponent extends Vue {
                                     <label for="testDate"
                                         >COVID-19 Test Date</label
                                     >
-                                    <b-form-input
+                                    <DatePickerComponent
                                         id="testDate"
                                         v-model="dependent.testDate"
                                         data-testid="testDateInput"
-                                        :class="{
-                                            dependentCardDateInput:
-                                                dependent.testDate == '',
-                                        }"
-                                        max="2999-12-31"
-                                        required
-                                        type="date"
                                         :state="isValid($v.dependent.testDate)"
+                                        @blur="$v.dependent.testDate.$touch()"
                                     />
                                     <b-form-invalid-feedback
                                         :state="isValid($v.dependent.testDate)"
                                     >
-                                        Date must be after Jan 1st 2020
+                                        Date must be after Jan 1st 2020 and
+                                        before Today
                                     </b-form-invalid-feedback>
                                 </b-col>
                             </b-row>

@@ -107,33 +107,35 @@
     </v-dialog>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch, Emit, Prop } from "vue-property-decorator";
-import container from "@/plugins/inversify.config";
+import moment from "moment";
+import {
+    Blockquote,
+    Bold,
+    BulletList,
+    Code,
+    HardBreak,
+    Heading,
+    History,
+    Italic,
+    Link,
+    ListItem,
+    OrderedList,
+    Paragraph,
+    Strike,
+    TiptapVuetify,
+    Underline
+} from "tiptap-vuetify";
+import { extend, ValidationProvider } from "vee-validate";
+import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
+
 import Communication, {
     CommunicationStatus
 } from "@/models/adminCommunication";
-import { ValidationProvider, extend } from "vee-validate";
-import moment from "moment";
-import {
-    TiptapVuetify,
-    Heading,
-    Bold,
-    Italic,
-    Strike,
-    Underline,
-    Code,
-    Paragraph,
-    BulletList,
-    OrderedList,
-    ListItem,
-    Link,
-    Blockquote,
-    HardBreak,
-    History
-} from "tiptap-vuetify";
 
 extend("dateValid", {
-    validate(value: any, args: any) {
+    validate(value: unknown, args: unknown[] | Record<string, Date>) {
+        // We know is a record
+        args = args as Record<string, Date>;
         if (moment(args.effective).isBefore(moment(args.expiry))) {
             return true;
         }
@@ -141,6 +143,7 @@ extend("dateValid", {
     },
     params: ["effective", "expiry"]
 });
+
 @Component({
     components: {
         ValidationProvider,
@@ -149,7 +152,7 @@ extend("dateValid", {
 })
 export default class BannerModal extends Vue {
     private dialog = false;
-    private extensions: any = [
+    private extensions = [
         History,
         Blockquote,
         Link,
@@ -210,8 +213,8 @@ export default class BannerModal extends Vue {
     }
 
     @Watch("dialog")
-    private onDialogChange(val: any) {
-        val || this.close();
+    private onDialogChange(dialogIsOpen: boolean) {
+        dialogIsOpen || this.close();
     }
 
     private save() {
@@ -241,7 +244,7 @@ export default class BannerModal extends Vue {
     private close() {
         this.$nextTick(() => {
             (this.$refs.form as Vue & {
-                resetValidation: () => any;
+                resetValidation: () => void;
             }).resetValidation();
             this.dialog = false;
             this.emitClose();

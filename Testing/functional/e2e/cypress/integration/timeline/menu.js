@@ -34,7 +34,6 @@ describe('Menu System', () => {
         cy.get('[data-testid=menuBtnProfileLink]').should('have.attr', 'href', '/profile')
         cy.get('[data-testid=menuBtnTimelineLink]').should('have.attr', 'href', '/timeline')
         cy.get('[data-testid=addNoteBtn]').should('be.visible')
-        cy.get('[data-testid=printViewBtn]').should('be.visible')
         cy.get('[data-testid=menuBtnHealthInsightsLink]').should('have.attr', 'href', '/healthInsights')
         cy.get('[data-testid=menuBtnReportsLink]').should('have.attr', 'href', '/reports')
         cy.get('[data-testid=menuBtnDependentsLink]').should('have.attr', 'href', '/dependents')

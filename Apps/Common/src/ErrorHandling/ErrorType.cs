@@ -58,6 +58,14 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
+        /// Gets the invalid SMS error.
+        /// </summary>
+        public static ErrorType SMSInvalid
+        {
+            get { return new ErrorType("SMS"); }
+        }
+
+        /// <summary>
         /// Gets or sets the value that holds the internal representation of the ErrorType.
         /// </summary>
         public string Value { get; set; }

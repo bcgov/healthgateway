@@ -127,6 +127,24 @@ VALUES (
 	current_timestamp, 
 	'System', 
 	current_timestamp, 
-	'tutorialPopover', 
+	'tutorialMenuNote', 
+	'false'
+);
+
+INSERT INTO gateway."UserPreference"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"Preference", 
+	"Value")
+VALUES (
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'tutorialMenuExport', 
 	'false'
 );

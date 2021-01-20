@@ -1,8 +1,9 @@
 <script lang="ts">
 import Vue from "vue";
-import { Prop, Component, Watch } from "vue-property-decorator";
-import BannerFeedback from "@/models/bannerFeedback";
+import { Component, Prop } from "vue-property-decorator";
+
 import { ResultType } from "@/constants/resulttype";
+import BannerFeedback from "@/models/bannerFeedback";
 
 @Component
 export default class BannerFeedbackComponent extends Vue {

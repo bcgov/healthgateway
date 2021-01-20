@@ -1,4 +1,5 @@
 import { MutationTree } from "vuex";
+
 import { DrawerState } from "@/models/storeState";
 
 export const mutations: MutationTree<DrawerState> = {

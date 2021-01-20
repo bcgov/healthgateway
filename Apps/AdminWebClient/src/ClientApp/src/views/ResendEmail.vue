@@ -1,62 +1,13 @@
-<template>
-    <v-container>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <BannerFeedbackComponent
-            :show-feedback.sync="showFeedback"
-            :feedback="bannerFeedback"
-            class="mt-5"
-        ></BannerFeedbackComponent>
-        <v-row justify="center">
-            <v-col md="9">
-                <v-text-field
-                    v-model="filterText"
-                    label="Filter"
-                    hide-details="auto"
-                >
-                    <v-icon slot="append">fas fa-search</v-icon>
-                </v-text-field>
-            </v-col>
-        </v-row>
-        <v-row justify="center">
-            <v-col md="9">
-                <v-row>
-                    <v-col no-gutters>
-                        <v-data-table
-                            v-model="selectedEmails"
-                            :headers="tableHeaders"
-                            :items="emailList"
-                            :items-per-page="5"
-                            show-select
-                            :search="filterText"
-                        >
-                            <template #:item.sentDateTime="{ item }">
-                                <span>{{ formatDate(item.sentDateTime) }}</span>
-                            </template>
-                        </v-data-table>
-                    </v-col>
-                </v-row>
-                <v-row justify="end" no-gutters>
-                    <v-btn
-                        :disabled="selectedEmails.length === 0"
-                        @click="resendEmails()"
-                        >Resend Emails</v-btn
-                    >
-                </v-row>
-            </v-col>
-        </v-row>
-    </v-container>
-</template>
-
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Vuetify from "vuetify/lib";
+
+import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
+import LoadingComponent from "@/components/core/Loading.vue";
+import { ResultType } from "@/constants/resulttype";
+import BannerFeedback from "@/models/bannerFeedback";
+import Email from "@/models/email";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import LoadingComponent from "@/components/core/Loading.vue";
-import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
-import BannerFeedback from "@/models/bannerFeedback";
-import { ResultType } from "@/constants/resulttype";
-import Email from "@/models/email";
 import { IEmailAdminService } from "@/services/interfaces";
 
 @Component({
@@ -77,7 +28,7 @@ export default class ResendEmailView extends Vue {
 
     private selectedEmails: Email[] = [];
 
-    private tableHeaders: any[] = [
+    private tableHeaders = [
         {
             text: "Subject",
             value: "subject"
@@ -138,7 +89,7 @@ export default class ResendEmailView extends Vue {
         let selectedIds = this.selectedEmails.map(s => s.id);
         this.emailService
             .resendEmails(selectedIds)
-            .then(emails => {
+            .then(() => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Success,
@@ -153,6 +104,7 @@ export default class ResendEmailView extends Vue {
                     title: "Error",
                     message: "Sending emails failed, please try again"
                 };
+                console.log(err);
             })
             .finally(() => {
                 this.isLoading = false;
@@ -161,3 +113,52 @@ export default class ResendEmailView extends Vue {
     }
 }
 </script>
+
+<template>
+    <v-container>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+        <BannerFeedbackComponent
+            :show-feedback.sync="showFeedback"
+            :feedback="bannerFeedback"
+            class="mt-5"
+        ></BannerFeedbackComponent>
+        <v-row justify="center">
+            <v-col md="9">
+                <v-text-field
+                    v-model="filterText"
+                    label="Filter"
+                    hide-details="auto"
+                >
+                    <v-icon slot="append">fas fa-search</v-icon>
+                </v-text-field>
+            </v-col>
+        </v-row>
+        <v-row justify="center">
+            <v-col md="9">
+                <v-row>
+                    <v-col no-gutters>
+                        <v-data-table
+                            v-model="selectedEmails"
+                            :headers="tableHeaders"
+                            :items="emailList"
+                            :items-per-page="5"
+                            show-select
+                            :search="filterText"
+                        >
+                            <template #:item.sentDateTime="{ item }">
+                                <span>{{ formatDate(item.sentDateTime) }}</span>
+                            </template>
+                        </v-data-table>
+                    </v-col>
+                </v-row>
+                <v-row justify="end" no-gutters>
+                    <v-btn
+                        :disabled="selectedEmails.length === 0"
+                        @click="resendEmails()"
+                        >Resend Emails</v-btn
+                    >
+                </v-row>
+            </v-col>
+        </v-row>
+    </v-container>
+</template>

@@ -1,9 +1,9 @@
 const { AuthMethod } = require("../../support/constants")
 describe('Immunization History Report', () => {
-    const downloadsFolder = 'cypress/downloads'
     let sensitiveDocText = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
     
     before(() => {
+        cy.setupDownloads();
         let isLoading = false;  
         cy.enableModules("Immunization");
         cy.intercept('GET', "**/v1/api/Immunization/*", (req) => { 
@@ -16,21 +16,6 @@ describe('Immunization History Report', () => {
             isLoading = !isLoading;
           })
         });
-
-        // The next command allow downloads in Electron, Chrome, and Edge
-        // without any users popups or file save dialogs.
-        if (!Cypress.isBrowser('firefox')) {
-          // since this call returns a promise, must tell Cypress to wait for it to be resolved
-          cy.log('Page.setDownloadBehavior')
-          cy.wrap(
-            Cypress.automation('remote:debugger:protocol',
-              {
-                command: 'Page.setDownloadBehavior',
-                params: { behavior: 'allow', downloadPath: downloadsFolder },
-              }),
-            { log: false }
-          )
-        }
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak, "/reports");
     })
 

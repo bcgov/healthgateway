@@ -15,6 +15,7 @@ library.add(faSignOutAlt);
 const auth = "auth";
 const user = "user";
 const sidebar = "sidebar";
+const config = "config";
 
 @Component({
     components: {
@@ -24,6 +25,10 @@ const sidebar = "sidebar";
 export default class HeaderComponent extends Vue {
     @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
     @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+    @Getter("isOffline", {
+        namespace: config,
+    })
+    isOffline!: boolean;
 
     @Getter("oidcIsAuthenticated", {
         namespace: auth,
@@ -56,6 +61,7 @@ export default class HeaderComponent extends Vue {
 
     private get displayMenu(): boolean {
         return (
+            !this.isOffline &&
             this.oidcIsAuthenticated &&
             this.userIsRegistered &&
             this.userIsActive
@@ -142,7 +148,7 @@ export default class HeaderComponent extends Vue {
                 <span class="pl-1">Logout</span>
             </div>
             <router-link
-                v-else
+                v-else-if="!isOffline"
                 id="menuBtnLogin"
                 data-testid="loginBtn"
                 class="nav-link"
@@ -165,7 +171,7 @@ export default class HeaderComponent extends Vue {
 }
 
 nav {
-    z-index: $z_top_layer;
+    z-index: $z_header;
 
     a h4 {
         text-decoration: none;
