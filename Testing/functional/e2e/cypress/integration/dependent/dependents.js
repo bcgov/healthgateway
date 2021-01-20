@@ -269,10 +269,10 @@ describe('dependents', () => {
         cy.get('[data-testid=lastNameInput]')
             .clear()
             .type(validDependent.lastName);
-        cy.get('[data-testid=dateOfBirthInput]')
+        cy.get('[data-testid=dateOfBirthInput] input')
             .clear()
             .type(validDependent.doB);
-        cy.get('[data-testid=testDateInput]')
+        cy.get('[data-testid=testDateInput] input')
             .clear()
             .type(validDependent.testDate);
         cy.get('[data-testid=phnInput]')
