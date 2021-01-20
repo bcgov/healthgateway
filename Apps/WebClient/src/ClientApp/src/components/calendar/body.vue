@@ -1,15 +1,17 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import TimelineEntry, { EntryType, DateGroup } from "@/models/timelineEntry";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import NoteTimelineEntry from "@/models/noteTimelineEntry";
+
+import EventBus, { EventMessageName } from "@/eventbus";
+import { DateWrapper } from "@/models/dateWrapper";
+import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
-import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
-import EventBus, { EventMessageName } from "@/eventbus";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import NoteTimelineEntry from "@/models/noteTimelineEntry";
+import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
+
 import { CalendarEntry, CalendarWeek } from "./models";
-import { DateWrapper } from "@/models/dateWrapper";
 
 @Component({})
 export default class CalendarBodyComponent extends Vue {

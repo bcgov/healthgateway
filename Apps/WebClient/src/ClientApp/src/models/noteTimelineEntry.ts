@@ -1,7 +1,7 @@
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import UserNote from "@/models/userNote";
 import { DateWrapper } from "@/models/dateWrapper";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
+import UserNote from "@/models/userNote";
 
 // The note timeline entry model
 export default class NoteTimelineEntry extends TimelineEntry {

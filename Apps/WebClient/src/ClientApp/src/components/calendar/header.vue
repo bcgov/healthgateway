@@ -1,10 +1,12 @@
 <script lang="ts">
 import Vue from "vue";
-import EventBus from "@/eventbus";
 import { Component, Prop, Watch } from "vue-property-decorator";
+
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
-import CalendarBody from "./body.vue";
+import EventBus from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
+
+import CalendarBody from "./body.vue";
 
 @Component({
     components: {

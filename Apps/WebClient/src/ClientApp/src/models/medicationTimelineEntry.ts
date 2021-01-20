@@ -1,8 +1,8 @@
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import Pharmacy from "@/models/pharmacy";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models//medicationSummary";
 import { DateWrapper } from "@/models/dateWrapper";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import Pharmacy from "@/models/pharmacy";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 
 // The medication timeline entry model

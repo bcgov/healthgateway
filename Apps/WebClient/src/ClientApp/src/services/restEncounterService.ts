@@ -1,17 +1,18 @@
 import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    ILogger,
-    IHttpDelegate,
-    IEncounterService,
-} from "@/services/interfaces";
-import { ExternalConfiguration } from "@/models/configData";
-import RequestResult from "@/models/requestResult";
+
 import { ResultType } from "@/constants/resulttype";
-import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
+import { ExternalConfiguration } from "@/models/configData";
 import Encounter from "@/models/encounter";
+import { ServiceName } from "@/models/errorInterfaces";
+import RequestResult from "@/models/requestResult";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IEncounterService,
+    IHttpDelegate,
+    ILogger,
+} from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestEncounterService implements IEncounterService {

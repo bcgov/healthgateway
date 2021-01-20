@@ -1,15 +1,16 @@
 <script lang="ts">
 import Vue from "vue";
-import { Getter } from "vuex-class";
 import { Component, Prop } from "vue-property-decorator";
-import type { WebClientConfiguration } from "@/models/configData";
-import { RegistrationStatus } from "@/constants/registrationStatus";
+import { Getter } from "vuex-class";
+
 import Image00 from "@/assets/images/registration/000_Logo-Dark.png";
 import Image01 from "@/assets/images/registration/001_BC-Services-Card.png";
 import Image02 from "@/assets/images/registration/002_App-Store.png";
 import Image03 from "@/assets/images/registration/003_Mobile-App.png";
 import Image04 from "@/assets/images/registration/004_USB-Card-Reader.png";
 import Image05 from "@/assets/images/registration/005_Mobile-Card.png";
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import type { WebClientConfiguration } from "@/models/configData";
 
 @Component
 export default class RegistrationInfoView extends Vue {

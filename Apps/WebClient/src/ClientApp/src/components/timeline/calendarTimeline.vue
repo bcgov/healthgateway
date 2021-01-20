@@ -1,8 +1,9 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
+
 import CalendarComponent from "@/components/calendar/calendar.vue";
+import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 @Component({
     components: {

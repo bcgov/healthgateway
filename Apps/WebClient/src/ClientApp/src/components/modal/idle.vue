@@ -2,6 +2,7 @@
 import Vue from "vue";
 import { Component, Emit } from "vue-property-decorator";
 import { Action } from "vuex-class";
+
 import EventBus, { EventMessageName } from "@/eventbus";
 
 @Component

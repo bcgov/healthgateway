@@ -1,16 +1,17 @@
 <script lang="ts">
 import Vue from "vue";
-import type { UserComment } from "@/models/userComment";
-import CommentComponent from "@/components/timeline/comment.vue";
-import AddCommentComponent from "@/components/timeline/addComment.vue";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import { Component, Prop } from "vue-property-decorator";
-import { ILogger } from "@/services/interfaces";
+import { Getter } from "vuex-class";
+
+import AddCommentComponent from "@/components/timeline/addComment.vue";
+import CommentComponent from "@/components/timeline/comment.vue";
+import { DateWrapper } from "@/models/dateWrapper";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import User from "@/models/user";
+import type { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { DateWrapper } from "@/models/dateWrapper";
-import { Getter } from "vuex-class";
-import User from "@/models/user";
+import { ILogger } from "@/services/interfaces";
 
 @Component({
     components: {

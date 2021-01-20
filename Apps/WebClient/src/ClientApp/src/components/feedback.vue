@@ -1,21 +1,22 @@
 <script lang="ts">
-import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { IUserFeedbackService } from "@/services/interfaces";
-import User from "@/models/user";
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faCheckCircle,
+    faTimesCircle as farTimesCircle,
+} from "@fortawesome/free-regular-svg-icons";
 import {
     faComments,
     faExclamationCircle,
     faMinus,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-    faCheckCircle,
-    faTimesCircle as farTimesCircle,
-} from "@fortawesome/free-regular-svg-icons";
+import Vue from "vue";
+import { Component, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
+
+import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { IUserFeedbackService } from "@/services/interfaces";
 library.add(faComments, faExclamationCircle, faMinus);
 
 const sidebar = "sidebar";

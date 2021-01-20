@@ -1,19 +1,20 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
-import { IconDefinition, faFlask } from "@fortawesome/free-solid-svg-icons";
-import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
-import { LaboratoryReport } from "@/models/laboratory";
-import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import { ILaboratoryService } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import User from "@/models/user";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { DateWrapper } from "@/models/dateWrapper";
+import { LaboratoryReport } from "@/models/laboratory";
+import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILaboratoryService } from "@/services/interfaces";
 library.add(faFileDownload);
 
 @Component({

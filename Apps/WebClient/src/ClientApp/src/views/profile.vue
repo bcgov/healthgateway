@@ -1,10 +1,12 @@
 <script lang="ts">
+import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faCheck,
+    faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { Duration } from "luxon";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
-import LoadingComponent from "@/components/loading.vue";
-import VerifySMSComponent from "@/components/modal/verifySMS.vue";
-import { Action, Getter } from "vuex-class";
-import { Validation } from "vuelidate/vuelidate";
 import {
     email,
     helpers,
@@ -13,27 +15,26 @@ import {
     requiredIf,
     sameAs,
 } from "vuelidate/lib/validators";
-import {
-    ILogger,
-    IAuthenticationService,
-    IUserProfileService,
-} from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import { Validation } from "vuelidate/vuelidate";
+import { Action, Getter } from "vuex-class";
+
+import LoadingComponent from "@/components/loading.vue";
+import VerifySMSComponent from "@/components/modal/verifySMS.vue";
+import BannerError from "@/models/bannerError";
+import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
 import User, { OidcUserProfile } from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
-import UserSMSInvite from "@/models/userSMSInvite";
 import UserProfile from "@/models/userProfile";
-import type { WebClientConfiguration } from "@/models/configData";
-import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
+import UserSMSInvite from "@/models/userSMSInvite";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import {
-    faCheck,
-    faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
-import BannerError from "@/models/bannerError";
+    IAuthenticationService,
+    ILogger,
+    IUserProfileService,
+} from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { DateWrapper } from "@/models/dateWrapper";
-import { Duration } from "luxon";
 
 library.add(faExclamationTriangle);
 

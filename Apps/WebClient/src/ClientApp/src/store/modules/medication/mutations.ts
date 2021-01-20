@@ -1,10 +1,11 @@
 import { MutationTree } from "vuex";
-import { ILogger } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { MedicationState, StateType } from "@/models/storeState";
+
 import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import { MedicationState, StateType } from "@/models/storeState";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 export const mutations: MutationTree<MedicationState> = {

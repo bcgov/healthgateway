@@ -1,15 +1,16 @@
 import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
+
+import Communication from "@/models/communication";
+import { ServiceName } from "@/models/errorInterfaces";
+import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import {
-    ILogger,
     ICommunicationService,
     IHttpDelegate,
+    ILogger,
 } from "@/services/interfaces";
-import RequestResult from "@/models/requestResult";
-import Communication from "@/models/communication";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestCommunicationService implements ICommunicationService {

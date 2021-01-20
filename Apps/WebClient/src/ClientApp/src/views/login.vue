@@ -1,8 +1,9 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
 import VueRouter from "vue-router";
+import { Action, Getter } from "vuex-class";
+
 import LoadingComponent from "@/components/loading.vue";
 import { IdentityProviderConfiguration } from "@/models/configData";
 

@@ -1,12 +1,13 @@
 <script lang="ts">
+import { faUserMd, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Getter } from "vuex-class";
-import { IconDefinition, faUserMd } from "@fortawesome/free-solid-svg-icons";
+
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import User from "@/models/user";
 import PhoneUtil from "@/utility/phoneUtil";
-import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
 @Component({
     components: {

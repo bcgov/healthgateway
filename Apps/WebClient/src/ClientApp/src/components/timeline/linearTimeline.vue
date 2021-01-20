@@ -1,10 +1,11 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import EventBus, { EventMessageName } from "@/eventbus";
-import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
+
 import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
+import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
+import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 
 @Component({

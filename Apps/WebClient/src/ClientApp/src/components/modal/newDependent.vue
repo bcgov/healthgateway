@@ -1,20 +1,21 @@
 <script lang="ts">
-import Vue from "vue";
-import LoadingComponent from "@/components/loading.vue";
-import { Component, Emit } from "vue-property-decorator";
-import { Validation } from "vuelidate/vuelidate";
-import { sameAs, required, minLength } from "vuelidate/lib/validators";
-import { DateWrapper } from "@/models/dateWrapper";
 import { Duration } from "luxon";
-import { IDependentService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import Vue from "vue";
+import { Component, Emit } from "vue-property-decorator";
+import { minLength, required, sameAs } from "vuelidate/lib/validators";
+import { Validation } from "vuelidate/vuelidate";
 import { Getter } from "vuex-class";
+
+import DatePickerComponent from "@/components/datePicker.vue";
+import LoadingComponent from "@/components/loading.vue";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
-import User from "@/models/user";
+import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/requestResult";
-import DatePickerComponent from "@/components/datePicker.vue";
+import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { IDependentService } from "@/services/interfaces";
 
 @Component({
     components: {

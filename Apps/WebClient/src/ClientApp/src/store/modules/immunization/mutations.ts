@@ -1,6 +1,7 @@
 import { MutationTree } from "vuex";
-import { ImmunizationState, StateType } from "@/models/storeState";
+
 import ImmunizationResult from "@/models/immunizationResult";
+import { ImmunizationState, StateType } from "@/models/storeState";
 
 export const mutations: MutationTree<ImmunizationState> = {
     setImmunizationResult(

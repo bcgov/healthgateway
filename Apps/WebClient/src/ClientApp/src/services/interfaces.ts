@@ -1,29 +1,30 @@
 import { User as OidcUser, UserManagerSettings } from "oidc-client";
+
+import AddDependentRequest from "@/models/addDependentRequest";
+import { Dictionary } from "@/models/baseTypes";
+import Communication from "@/models/communication";
 import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import type ImmunizationResult from "@/models/immunizationResult";
-import PatientData from "@/models/patientData";
-import UserProfile, { CreateUserRequest } from "@/models/userProfile";
-import type { UserComment } from "@/models/userComment";
-import UserFeedback from "@/models/userFeedback";
-import { Dictionary } from "@/models/baseTypes";
-import MedicationResult from "@/models/medicationResult";
-import RequestResult from "@/models/requestResult";
-import UserEmailInvite from "@/models/userEmailInvite";
-import { TermsOfService } from "@/models/termsOfService";
-import UserNote from "@/models/userNote";
-import Communication from "@/models/communication";
-import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
-import UserSMSInvite from "@/models/userSMSInvite";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import UserRating from "@/models/userRating";
-import Encounter from "@/models/encounter";
-import { OidcUserProfile } from "@/models/user";
-import AddDependentRequest from "@/models/addDependentRequest";
 import type { Dependent } from "@/models/dependent";
+import Encounter from "@/models/encounter";
+import type ImmunizationResult from "@/models/immunizationResult";
+import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import MedicationResult from "@/models/medicationResult";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import PatientData from "@/models/patientData";
+import RequestResult from "@/models/requestResult";
+import { TermsOfService } from "@/models/termsOfService";
+import { OidcUserProfile } from "@/models/user";
+import type { UserComment } from "@/models/userComment";
+import UserEmailInvite from "@/models/userEmailInvite";
+import UserFeedback from "@/models/userFeedback";
+import UserNote from "@/models/userNote";
 import type { UserPreference } from "@/models/userPreference";
+import UserProfile, { CreateUserRequest } from "@/models/userProfile";
+import UserRating from "@/models/userRating";
+import UserSMSInvite from "@/models/userSMSInvite";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;

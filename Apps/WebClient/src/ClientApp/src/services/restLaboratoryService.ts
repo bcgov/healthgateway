@@ -1,17 +1,18 @@
 import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    ILogger,
-    IHttpDelegate,
-    ILaboratoryService,
-} from "@/services/interfaces";
+
+import { ResultType } from "@/constants/resulttype";
 import { ExternalConfiguration } from "@/models/configData";
+import { ServiceName } from "@/models/errorInterfaces";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IHttpDelegate,
+    ILaboratoryService,
+    ILogger,
+} from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestLaboratoryService implements ILaboratoryService {

@@ -1,14 +1,14 @@
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import router from "@/router";
-import ProfileComponent from "@/views/profile.vue";
-import RegistrationComponent from "@/views/registration.vue";
-import LandingComponent from "@/views/landing.vue";
+import { ILogger } from "@/services/interfaces";
 import NotFoundComponent from "@/views/errors/notFound.vue";
+import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
+import LandingComponent from "@/views/landing.vue";
 import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
-import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
+import ProfileComponent from "@/views/profile.vue";
+import RegistrationComponent from "@/views/registration.vue";
 
 describe("Router", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

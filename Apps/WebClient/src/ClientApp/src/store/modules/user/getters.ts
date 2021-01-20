@@ -1,7 +1,8 @@
 import { GetterTree } from "vuex";
+
+import { DateWrapper } from "@/models/dateWrapper";
 import { RootState, UserState } from "@/models/storeState";
 import User from "@/models/user";
-import { DateWrapper } from "@/models/dateWrapper";
 
 export const getters: GetterTree<UserState, RootState> = {
     user(state: UserState): User {

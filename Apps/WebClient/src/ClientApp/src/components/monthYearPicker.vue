@@ -1,7 +1,8 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Watch, Emit } from "vue-property-decorator";
 import { directive as onClickaway } from "vue-clickaway";
+import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+
 import { DateWrapper } from "@/models/dateWrapper";
 
 class MonthToDisplay {

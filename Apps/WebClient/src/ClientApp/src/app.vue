@@ -1,38 +1,30 @@
 <script lang="ts">
-import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
-import Process, { EnvironmentType } from "@/constants/process.ts";
-import { ILogger } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import VueTheMask from "vue-the-mask";
-
 // Load Bootstrap general plugins
 import {
     AlertPlugin,
     ButtonPlugin,
     CardPlugin,
     FormCheckboxPlugin,
+    FormDatepickerPlugin,
     FormGroupPlugin,
     FormInputPlugin,
     FormPlugin,
     FormRadioPlugin,
+    FormRatingPlugin,
+    FormSelectPlugin,
     FormTextareaPlugin,
+    IconsPlugin,
     InputGroupPlugin,
     LayoutPlugin,
     LinkPlugin,
     ModalPlugin,
-    NavPlugin,
     NavbarPlugin,
+    NavPlugin,
     PaginationNavPlugin,
     SpinnerPlugin,
     TooltipPlugin,
-    FormRatingPlugin,
-    IconsPlugin,
-    FormSelectPlugin,
-    FormDatepickerPlugin,
 } from "bootstrap-vue";
+
 Vue.use(LayoutPlugin);
 Vue.use(NavPlugin);
 Vue.use(NavbarPlugin);
@@ -68,34 +60,43 @@ import {
     faAddressCard,
     faAngleDoubleLeft,
     faChartBar,
+    faChartLine,
     faCheckCircle,
     faChevronDown,
-    faChevronUp,
     faChevronLeft,
     faChevronRight,
+    faChevronUp,
+    faClipboardList,
     faCommentAlt,
     faEdit,
     faEllipsisV,
     faExclamationTriangle,
     faFileAlt,
+    faFlask,
     faLock,
+    faPills,
     faPrint,
     faSpinner,
+    faStream,
+    faSyringe,
     faTimes,
     faTimesCircle,
     faUser,
     faUserCircle,
-    faUserSecret,
-    faFlask,
-    faPills,
-    faSyringe,
-    faUserMd,
-    faClipboardList,
-    faChartLine,
-    faStream,
-    faUserPlus,
     faUserFriends,
+    faUserMd,
+    faUserPlus,
+    faUserSecret,
 } from "@fortawesome/free-solid-svg-icons";
+import Vue from "vue";
+import { Component, Ref, Watch } from "vue-property-decorator";
+import VueTheMask from "vue-the-mask";
+import { Getter } from "vuex-class";
+
+import Process, { EnvironmentType } from "@/constants/process.ts";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 library.add(
     faUser,
     faUserCircle,
@@ -129,11 +130,11 @@ library.add(
     faUserFriends
 );
 
-import HeaderComponent from "@/components/navmenu/navHeader.vue";
+import ErrorCard from "@/components/errorCard.vue";
 import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
+import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
-import ErrorCard from "@/components/errorCard.vue";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 

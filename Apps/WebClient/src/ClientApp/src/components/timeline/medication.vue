@@ -1,9 +1,10 @@
 <script lang="ts">
+import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import CommentSectionComponent from "@/components/timeline/commentSection.vue";
 import { Component, Prop } from "vue-property-decorator";
-import { IconDefinition, faPills } from "@fortawesome/free-solid-svg-icons";
+
+import CommentSectionComponent from "@/components/timeline/commentSection.vue";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import PhoneUtil from "@/utility/phoneUtil";
 
 @Component({

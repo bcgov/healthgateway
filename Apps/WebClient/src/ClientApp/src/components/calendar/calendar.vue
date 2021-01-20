@@ -1,15 +1,17 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-import CalendarHeader from "./header.vue";
-import CalendarBody from "./body.vue";
-import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
+
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
+import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
+
+import CalendarBody from "./body.vue";
+import CalendarHeader from "./header.vue";
 
 @Component({
     components: {

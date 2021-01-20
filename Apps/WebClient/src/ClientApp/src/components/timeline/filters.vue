@@ -1,18 +1,19 @@
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import { Getter } from "vuex-class";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
+import Vue from "vue";
+import Component from "vue-class-component";
 import { Emit, Prop, Watch } from "vue-property-decorator";
-import { ILogger } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { Getter } from "vuex-class";
+
+import DatePickerComponent from "@/components/datePicker.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
-import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import { EntryType } from "@/models/timelineEntry";
-import DatePickerComponent from "@/components/datePicker.vue";
+import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 library.add(faSlidersH);
 
 @Component({

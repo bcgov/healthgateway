@@ -1,15 +1,14 @@
-import AuthenticationData from "@/models/authenticationData";
-import { ExternalConfiguration } from "@/models/configData";
-import User from "@/models/user";
-import MedicationResult from "@/models/medicationResult";
 import { LaboratoryOrder } from "@/models//laboratory";
+import AuthenticationData from "@/models/authenticationData";
 import BannerError from "@/models/bannerError";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import { DateWrapper } from "@/models/dateWrapper";
-
-import { UserComment } from "@/models/userComment";
 import { Dictionary } from "@/models/baseTypes";
+import { ExternalConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
 import ImmunizationModel from "@/models/immunizationModel";
+import MedicationResult from "@/models/medicationResult";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import User from "@/models/user";
+import { UserComment } from "@/models/userComment";
 
 export enum StateType {
     NONE,

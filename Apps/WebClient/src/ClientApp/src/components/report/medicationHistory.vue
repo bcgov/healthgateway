@@ -1,22 +1,23 @@
 <script lang="ts">
+import html2pdf from "html2pdf.js";
 import Vue from "vue";
 import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { Action, Getter } from "vuex-class";
-import BannerError from "@/models/bannerError";
-import RequestResult from "@/models/requestResult";
+
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import html2pdf from "html2pdf.js";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ResultType } from "@/constants/resulttype";
-import ErrorTranslator from "@/utility/errorTranslator";
-import PDFDefinition from "@/plugins/pdfDefinition";
-import { ActionType } from "@/constants/actionType";
-import { DateWrapper } from "@/models/dateWrapper";
 import ReportHeaderComponent from "@/components/report/header.vue";
+import { ActionType } from "@/constants/actionType";
+import { ResultType } from "@/constants/resulttype";
+import BannerError from "@/models/bannerError";
+import { DateWrapper } from "@/models/dateWrapper";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import PDFDefinition from "@/plugins/pdfDefinition";
+import { ILogger } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {

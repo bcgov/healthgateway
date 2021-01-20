@@ -1,14 +1,14 @@
 import { ActionTree, Commit } from "vuex";
 
-import { ILogger, IUserProfileService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import UserPreferenceType from "@/constants/userPreferenceType";
+import { DateWrapper } from "@/models/dateWrapper";
 import { RootState, UserState } from "@/models/storeState";
 import UserEmailInvite from "@/models/userEmailInvite";
-import UserSMSInvite from "@/models/userSMSInvite";
-import { DateWrapper } from "@/models/dateWrapper";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import { UserPreference } from "@/models/userPreference";
+import UserSMSInvite from "@/models/userSMSInvite";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
