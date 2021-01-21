@@ -18,6 +18,7 @@ namespace HealthGateway.Encounter.Models
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Utils;
 
     /// <summary>
     /// Represents a patient Encounter.
@@ -63,7 +64,7 @@ namespace HealthGateway.Encounter.Models
         {
             return new EncounterModel()
             {
-                Id = model.ClaimId.ToString(),
+                Id = HashGenerator.ComputeHashToGuid($"{model.ServiceDate:yyyyMMdd}{model.SpecialtyDesc}{model.PractitionerName}{model.LocationName}").ToString(),
                 EncounterDate = model.ServiceDate,
                 SpecialtyDescription = model.SpecialtyDesc,
                 PractitionerName = model.PractitionerName,
@@ -89,10 +90,16 @@ namespace HealthGateway.Encounter.Models
         public static List<EncounterModel> FromODRClaimModelList(List<Claim> models)
         {
             List<EncounterModel> objects = new List<EncounterModel>();
-
+            Dictionary<string, EncounterModel> dictEncounterIds =
+                    new Dictionary<string, EncounterModel>();
             foreach (Claim claimModel in models)
             {
-                objects.Add(EncounterModel.FromODRClaimModel(claimModel));
+                var encounter = EncounterModel.FromODRClaimModel(claimModel);
+                if (!dictEncounterIds.ContainsKey(encounter.Id))
+                {
+                    objects.Add(encounter);
+                    dictEncounterIds.Add(encounter.Id, encounter);
+                }
             }
 
             return objects;

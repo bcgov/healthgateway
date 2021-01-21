@@ -49,6 +49,14 @@ namespace HealthGateway.Encounter.Test.Service
         [Fact]
         public void ValidateEncounters()
         {
+            var sameClaim = new Claim()
+            {
+                ClaimId = 1,
+                PractitionerName = "Mock Name 1",
+                LocationName = "Mock Name 1",
+                SpecialtyDesc = "Mocked SpecialtyDesc 1",
+                ServiceDate = DateTime.ParseExact("2000/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture)
+            };
             RequestResult<MSPVisitHistoryResponse> delegateResult = new RequestResult<MSPVisitHistoryResponse>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
@@ -58,18 +66,14 @@ namespace HealthGateway.Encounter.Test.Service
                 {
                     Claims = new List<Claim>()
                     {
-                        new Claim()
-                        {
-                            ClaimId = 1,
-                            PractitionerName = "Mock Name 1",
-                            ServiceDate = DateTime.ParseExact("2000/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture)
-                        },
+                        sameClaim,
                         new Claim()
                         {
                             ClaimId = 2,
                             PractitionerName = "Mock Name 2",
                             ServiceDate = DateTime.ParseExact("2015/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture)
                         },
+                        sameClaim,
                     },
                 }
             };
@@ -113,8 +117,8 @@ namespace HealthGateway.Encounter.Test.Service
                                                              mockMSPDelegate.Object);
 
             var actualResult = service.GetEncounters(hdid).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success &&
-                        actualResult.ResourcePayload.IsDeepEqual(expectedResult));
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.Equal(2, actualResult.ResourcePayload.Count()); // should return distint claims only.
         }
 
         [Fact]
