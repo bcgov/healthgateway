@@ -198,8 +198,11 @@ describe('dependents', () => {
     });
 
     it('Validate Dependent Tab', () => {
+        cy.get("[data-testid=loadingSpinner]")
+            .should("not.be.visible");
         // Validate the newly added dependent tab and elements are present   
         cy.get('[data-testid=dependentName]')
+            .last()
             .contains(validDependent.firstName)
             .contains(validDependent.lastName)  
         cy.get('[data-testid=dependentPHN]')

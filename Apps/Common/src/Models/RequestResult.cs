@@ -28,6 +28,26 @@ namespace HealthGateway.Common.Models
         where T : class
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="RequestResult{T}"/> class.
+        /// </summary>
+        public RequestResult()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestResult{T}"/> class.
+        /// </summary>
+        /// <param name="resourcePayload">The resource payload.</param>
+        /// <param name="resultStatus">The result status.</param>
+        public RequestResult(
+            T resourcePayload,
+            ResultType resultStatus)
+        {
+            this.ResourcePayload = resourcePayload;
+            this.ResultStatus = resultStatus;
+        }
+
+        /// <summary>
         /// Gets or sets the result payload.
         /// </summary>
         [JsonPropertyName("resourcePayload")]

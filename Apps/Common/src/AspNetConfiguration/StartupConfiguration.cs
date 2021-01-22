@@ -147,7 +147,6 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             this.Logger.LogDebug("ConfigureAuthorizationServices...");
 
-            // Configuration Authorization Handlers
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, FhirResourceAuthorizationHandler>();
 
@@ -220,7 +219,11 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Observation, FhirAccessType.Read, FhirResourceLookup.Parameter));
+                    policy.Requirements.Add(new FhirRequirement(
+                        FhirResource.Observation,
+                        FhirAccessType.Read,
+                        FhirResourceLookup.Parameter,
+                        supportsUserDelegation: true));
                 });
                 options.AddPolicy(LaboratoryPolicy.Write, policy =>
                 {
@@ -257,6 +260,20 @@ namespace HealthGateway.Common.AspNetConfiguration
                     policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
                 });
             });
+        }
+
+        /// <summary>
+        /// Configures the authorization services with user delegation access.
+        /// </summary>
+        /// <param name="services">The services collection provider.</param>
+        public void ConfigureDelegateAuthorizationServices(IServiceCollection services)
+        {
+            this.Logger.LogDebug("ConfigureDelegateAuthorizationServices...");
+
+            services.AddScoped<IAuthorizationHandler, FhirResourceDelegateAuthorizationHandler>();
+            this.ConfigureAuthorizationServices(services);
+            this.ConfigurePatientAccess(services);
+            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
         }
 
         /// <summary>
