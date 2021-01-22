@@ -29,17 +29,20 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
         /// <param name="fhirResource">The fhir resource (<see cref="FhirResource"/>) to validate.</param>
         /// <param name="fhirAccessType">The accessType (<see cref="FhirAccessType"/>) to validate.</param>
         /// <param name="fhirLookup">The mechanism to find the fhir resource identifer.</param>
-        /// <param name="supportsDelegation">Indicates if delegated authorization may occur.</param>
+        /// <param name="supportsSystemDelegation">Indicates if system delegated authorization may occur.</param>
+        /// <param name="supportsUserDelegation">Indicates if user delegated authorization may occur.</param>
         public FhirRequirement(
             string fhirResource,
             string fhirAccessType,
             FhirResourceLookup fhirLookup = FhirResourceLookup.Route,
-            bool supportsDelegation = true)
+            bool supportsSystemDelegation = true,
+            bool supportsUserDelegation = false)
         {
             this.Resource = fhirResource;
             this.AccessType = fhirAccessType;
             this.Lookup = fhirLookup;
-            this.SupportsDelegation = supportsDelegation;
+            this.SupportsSystemDelegation = supportsSystemDelegation;
+            this.SupportsUserDelegation = supportsUserDelegation;
         }
 
         /// <summary>
@@ -60,8 +63,13 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
         public FhirResourceLookup Lookup { get; }
 
         /// <summary>
-        /// Gets a value indicating whether delegation is supported for this requirement.
+        /// Gets a value indicating whether system delegation is supported for this requirement.
         /// </summary>
-        public bool SupportsDelegation { get; }
+        public bool SupportsSystemDelegation { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether user delegation is supported for this requirement.
+        /// </summary>
+        public bool SupportsUserDelegation { get; }
     }
 }

@@ -55,9 +55,8 @@ namespace HealthGateway.Laboratory
             this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureAuditServices(services);
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
-            this.startupConfig.ConfigureAuthorizationServices(services);
+            this.startupConfig.ConfigureDelegateAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
-            this.startupConfig.ConfigurePatientAccess(services);
             this.startupConfig.ConfigureTracing(services);
 
             services.AddCors(options =>
@@ -74,7 +73,6 @@ namespace HealthGateway.Laboratory
             // Add services
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();
             services.AddTransient<ILaboratoryService, LaboratoryService>();
-            services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
         }
 
         /// <summary>
