@@ -54,6 +54,7 @@ export default class CommentSectionComponent extends Vue {
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
+        // Some comments dont have entry type. This code updates them if they dont.
         let commentsToUpdate: UserComment[] = [];
         this.comments.forEach((x) => {
             if (x.entryTypeCode === CommentEntryType.None) {
