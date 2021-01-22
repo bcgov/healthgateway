@@ -1,18 +1,27 @@
 #!/usr/bin/env bash
-namespace=$1
-if [ -z "$namespace" ] 
+project=$1
+routeId=$2
+
+if [ -z "$project" ] 
 then
-  echo Setting namespace to default value: 0bd5ad
-  namespace=0bd5ad
+  echo Parameter 1 must be set to the OCP Project name 0bd5ad-dev, 0bd5ad-test, 0bd5ad-prod etc
+  exit 98
 fi
 
-oc project $namespace
-./route.sh poc webclient webclient
-./route.sh poc jobscheduler hangfire "/admin/jobscheduler" Redirect
-./route.sh poc adminwebclient adminwebclient "/admin" Redirect
-./route.sh poc medication medication "/api/medicationservice"
-./route.sh poc patient patient "/api/patientservice"
-./route.sh poc immunization immunization "/api/immunizationservice"
-./route.sh poc laboratory laboratory "/api/laboratoryservice"
-./route.sh poc encounter encounter "/api/encounterservice"
-#./route.sh poc odrproxy odrproxy "/dev/odrproxy"
+
+if [ -z "$routeId" ] 
+then
+  echo 2nd Parameter must be the route identifier dev, test, poc, www
+  exit 99
+fi
+
+oc project $project
+./route.sh $routeId webclient webclient
+./route.sh $routeId jobscheduler hangfire "/admin/jobscheduler" Redirect
+./route.sh $routeId adminwebclient adminwebclient "/admin" Redirect
+./route.sh $routeId medication medication "/api/medicationservice"
+./route.sh $routeId patient patient "/api/patientservice"
+./route.sh $routeId immunization immunization "/api/immunizationservice"
+./route.sh $routeId laboratory laboratory "/api/laboratoryservice"
+./route.sh $routeId encounter encounter "/api/encounterservice"
+#./route.sh  odrproxy odrproxy "/dev/odrproxy"
