@@ -43,6 +43,6 @@ namespace HealthGateway.Database.Constants
         /// <summary>
         /// The code representing Encounter.
         /// </summary>
-        public const string Encounter = "ENC";
+        public const string Encounter = "Enc";
     }
 }

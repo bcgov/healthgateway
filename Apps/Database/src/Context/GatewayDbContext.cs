@@ -896,6 +896,15 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<CommentEntryTypeCode>().HasData(
                 new CommentEntryTypeCode
                 {
+                    CommentEntryCode = CommentEntryType.None,
+                    Description = "Comment for an Unknown type Entry",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommentEntryTypeCode
+                {
                     CommentEntryCode = CommentEntryType.Medication,
                     Description = "Comment for a Medication Entry",
                     CreatedBy = UserId.DefaultUser,

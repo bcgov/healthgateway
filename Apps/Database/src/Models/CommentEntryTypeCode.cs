@@ -23,7 +23,7 @@ namespace HealthGateway.Database.Models
     {
         [Key]
         [Required]
-        [MaxLength(10)]
+        [MaxLength(3)]
         public string? CommentEntryCode { get; set; }
 
         [Required]
