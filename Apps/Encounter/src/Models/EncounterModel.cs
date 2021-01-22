@@ -17,6 +17,8 @@ namespace HealthGateway.Encounter.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -61,9 +63,26 @@ namespace HealthGateway.Encounter.Models
         /// <returns>The newly created Encounter object.</returns>
         public static EncounterModel FromODRClaimModel(Claim model)
         {
+#pragma warning disable CA5351 // Do Not Use Broken Cryptographic Algorithms
+#pragma warning disable SCS0006 // Weak hashing function
+            using var md5CryptoService = MD5.Create();
+#pragma warning restore SCS0006 // Weak hashing function
+#pragma warning restore CA5351 // Do Not Use Broken Cryptographic Algorithms
+            StringBuilder sourceId = new StringBuilder();
+            sourceId.Append($"{model.ServiceDate:yyyyMMdd}");
+            sourceId.Append($"{model.SpecialtyDesc}");
+            sourceId.Append($"{model.PractitionerName}");
+            sourceId.Append($"{model.LocationName}");
+            sourceId.Append($"{model.LocationAddress.Province}");
+            sourceId.Append($"{model.LocationAddress.City}");
+            sourceId.Append($"{model.LocationAddress.PostalCode}");
+            sourceId.Append($"{model.LocationAddress.AddrLine1}");
+            sourceId.Append($"{model.LocationAddress.AddrLine2}");
+            sourceId.Append($"{model.LocationAddress.AddrLine3}");
+            sourceId.Append($"{model.LocationAddress.AddrLine4}");
             return new EncounterModel()
             {
-                Id = model.ClaimId.ToString(),
+                Id = new Guid(md5CryptoService.ComputeHash(Encoding.Default.GetBytes(sourceId.ToString()))).ToString(),
                 EncounterDate = model.ServiceDate,
                 SpecialtyDescription = model.SpecialtyDesc,
                 PractitionerName = model.PractitionerName,
@@ -89,10 +108,15 @@ namespace HealthGateway.Encounter.Models
         public static List<EncounterModel> FromODRClaimModelList(List<Claim> models)
         {
             List<EncounterModel> objects = new List<EncounterModel>();
-
+            HashSet<string> encounterIds = new HashSet<string>();
             foreach (Claim claimModel in models)
             {
-                objects.Add(EncounterModel.FromODRClaimModel(claimModel));
+                var encounter = EncounterModel.FromODRClaimModel(claimModel);
+                if (!encounterIds.Contains(encounter.Id))
+                {
+                    objects.Add(encounter);
+                    encounterIds.Add(encounter.Id);
+                }
             }
 
             return objects;
