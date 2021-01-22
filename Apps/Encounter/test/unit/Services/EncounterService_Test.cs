@@ -34,6 +34,8 @@ namespace HealthGateway.Encounter.Test.Service
     using System.Globalization;
     using System.Linq;
     using System.Net;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -55,7 +57,15 @@ namespace HealthGateway.Encounter.Test.Service
                 PractitionerName = "Mock Name 1",
                 LocationName = "Mock Name 1",
                 SpecialtyDesc = "Mocked SpecialtyDesc 1",
-                ServiceDate = DateTime.ParseExact("2000/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture)
+                ServiceDate = DateTime.ParseExact("2000/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
+                LocationAddress = new LocationAddress()
+                {
+                    Province = "BC",
+                    City = "Victoria",
+                    PostalCode = "V6Y 0C2",
+                    AddrLine1 = "NoWay",
+                    AddrLine2 = "Alt"
+                },
             };
             RequestResult<MSPVisitHistoryResponse> delegateResult = new RequestResult<MSPVisitHistoryResponse>()
             {
@@ -119,6 +129,15 @@ namespace HealthGateway.Encounter.Test.Service
             var actualResult = service.GetEncounters(hdid).Result;
             Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
             Assert.Equal(2, actualResult.ResourcePayload.Count()); // should return distint claims only.
+#pragma warning disable CA5351 // Do Not Use Broken Cryptographic Algorithms
+#pragma warning disable SCS0006 // Weak hashing function
+            using var md5CryptoService = MD5.Create();
+#pragma warning restore SCS0006 // Weak hashing function
+#pragma warning restore CA5351 // Do Not Use Broken Cryptographic Algorithms
+            var model = actualResult.ResourcePayload.First();
+            var generatedId = new Guid(md5CryptoService.ComputeHash(Encoding.Default.GetBytes($"{model.EncounterDate:yyyyMMdd}{model.SpecialtyDescription}{model.PractitionerName}{model.Clinic.Name}{model.Clinic.Province}{model.Clinic.City}{model.Clinic.PostalCode}{model.Clinic.AddressLine1}{model.Clinic.AddressLine2}{model.Clinic.AddressLine3}{model.Clinic.AddressLine4}")));
+            var expectedGeneratedId = new Guid(md5CryptoService.ComputeHash(Encoding.Default.GetBytes($"{sameClaim.ServiceDate:yyyyMMdd}{sameClaim.SpecialtyDesc}{sameClaim.PractitionerName}{sameClaim.LocationName}{sameClaim.LocationAddress.Province}{sameClaim.LocationAddress.City}{sameClaim.LocationAddress.PostalCode}{sameClaim.LocationAddress.AddrLine1}{sameClaim.LocationAddress.AddrLine2}{sameClaim.LocationAddress.AddrLine3}{sameClaim.LocationAddress.AddrLine4}")));
+            Assert.Equal(expectedGeneratedId, generatedId);
         }
 
         [Fact]
