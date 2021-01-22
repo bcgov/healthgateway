@@ -48,12 +48,11 @@ describe('Encounter Service', () => {
         })
     }) 
 
-    it('Verify Encounter Authorized', () => {
+    it('Verify Dinctint Encounters', () => {
         const HDID='P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
-        cy.fixture('EncounterService/encounter.json').then((encounterResponse) => {
-            cy.get("@tokens").then(tokens => {
-                cy.log('Tokens', tokens)
-                cy.get("@config").then(config => {
+        cy.get("@tokens").then(tokens => {
+            cy.log('Tokens', tokens)
+            cy.get("@config").then(config => {
                 cy.log(`Encounter Service Endpoint: ${config.serviceEndpoints.Encounter}`)
                 cy.request({
                     url: `${config.serviceEndpoints.Encounter}v1/api/Encounter/${HDID}`,
@@ -66,12 +65,23 @@ describe('Encounter Service', () => {
                     }
                 })
                 .should((response) => { 
-                    expect(response.status).to.eq(200)
-                    expect(response.body).to.not.be.null
-                    expect(response.body).to.deep.equal(encounterResponse)
-                })          
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                    cy.log(`response.body: ${JSON.stringify(response.body)}`);
+                    let distintEncounters = new Set();
+                    let error = '';
+                    response.body.resourcePayload.forEach(enc => {
+                        let combinedKey = `${enc.encounterDate}${enc.specialtyDescription}${enc.practitionerName}${enc.clinic.name}${enc.clinic.addressLine1}${enc.clinic.addressLine2}${enc.clinic.addressLine3}${enc.clinic.addressLine4}${enc.clinic.city}${enc.clinic.postalCode}${enc.clinic.province}`;
+                        if (distintEncounters.has(combinedKey)) {
+                            error += `dup encounter: ${combinedKey} |`
+                        }
+                        else {
+                            distintEncounters.add(combinedKey);
+                        }
+                    });
+                    cy.expect(error).to.equal('');
                 })
             })
-        }) 
+        })
     })
 })
