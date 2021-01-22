@@ -1,7 +1,7 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter from "@/models/timelineFilter";
 
-export const enum EntryType {
+export enum EntryType {
     Medication = "Medication",
     Immunization = "Immunization",
     Laboratory = "Laboratory",

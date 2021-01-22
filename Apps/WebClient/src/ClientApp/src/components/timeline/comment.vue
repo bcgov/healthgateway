@@ -69,6 +69,7 @@ export default class CommentComponent extends Vue {
                 userProfileId: this.comment.userProfileId,
                 parentEntryId: this.comment.parentEntryId,
                 createdDateTime: this.comment.createdDateTime,
+                entryTypeCode: this.comment.entryTypeCode,
                 version: this.comment.version,
             },
         })
