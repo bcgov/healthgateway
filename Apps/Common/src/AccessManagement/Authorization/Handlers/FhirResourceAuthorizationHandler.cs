@@ -15,15 +15,19 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 {
+    using System;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -32,24 +36,34 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     public class FhirResourceAuthorizationHandler : IAuthorizationHandler
     {
         private const string System = "system";
-        private const string User = "user";
         private const string RouteResourceIdentifier = "hdid";
 
         private readonly ILogger<FhirResourceAuthorizationHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IResourceDelegateDelegate? resourceDelegateDelegate;
+        private readonly IPatientService? patientService;
+        private readonly int? maxDependentAge;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FhirResourceAuthorizationHandler"/> class.
         /// </summary>
         /// <param name="logger">the injected logger.</param>
+        /// <param name="configuration">The Configuration to use.</param>
         /// <param name="httpContextAccessor">The HTTP Context accessor.</param>
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
-        public FhirResourceAuthorizationHandler(ILogger<FhirResourceAuthorizationHandler> logger, IHttpContextAccessor httpContextAccessor, IResourceDelegateDelegate? resourceDelegateDelegate = null)
+        /// <param name="patientService">The injected Patient service.</param>
+        public FhirResourceAuthorizationHandler(
+            ILogger<FhirResourceAuthorizationHandler> logger,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor,
+            IResourceDelegateDelegate? resourceDelegateDelegate = null,
+            IPatientService? patientService = null)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
+            this.patientService = patientService;
+            this.maxDependentAge = configuration.GetSection("Authorization").GetValue<int?>("MaxDependentAge");
         }
 
         /// <summary>
@@ -203,8 +217,15 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 {
                     if (this.resourceDelegateDelegate.Exists(resourceHDID, userHDID))
                     {
-                        this.logger.LogInformation($"Authorized user {userHDID} to have {requirement.AccessType} access to Observation resource {resourceHDID}");
-                        retVal = true;
+                        if (this.IsDelegateExpired(resourceHDID))
+                        {
+                            this.logger.LogError($"Performing Observation delegation on resource {resourceHDID} failed as delegation is expired.");
+                        }
+                        else
+                        {
+                            this.logger.LogInformation($"Authorized user {userHDID} to have {requirement.AccessType} access to Observation resource {resourceHDID}");
+                            retVal = true;
+                        }
                     }
                     else
                     {
@@ -218,6 +239,28 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             }
 
             return retVal;
+        }
+
+        private bool IsDelegateExpired(string resourceHDID)
+        {
+            if (!this.maxDependentAge.HasValue)
+            {
+                this.logger.LogInformation($"Delegate expired check on resource {resourceHDID} skipped as max dependent age is null");
+                return false;
+            }
+
+            if (this.patientService == null)
+            {
+                this.logger.LogError($"Delegate expired check on resource {resourceHDID} failed as patientService is null");
+                return true;
+            }
+
+            RequestResult<PatientModel> patientResult = Task.Run(async () =>
+            {
+                return await this.patientService.GetPatient(resourceHDID, PatientIdentifierType.HDID).ConfigureAwait(true);
+            }).Result;
+
+            return patientResult.ResourcePayload.Birthdate.AddYears(this.maxDependentAge.Value) < DateTime.Now;
         }
     }
 }

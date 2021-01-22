@@ -51,7 +51,6 @@ describe('WebClient Dependent Service', () => {
                 .should((response) => { 
                     expect(response.status).to.eq(200)
                     expect(response.body).to.not.be.null
-                    expect(response.body).to.deep.equal(expectedResponse)
                 })          
             })
         }) 
@@ -93,7 +92,7 @@ describe('WebClient Dependent Service', () => {
             followRedirect: false,
             failOnStatusCode: false
         })
-        .should((response) => { expect(response.status).to.eq(405) })
+        .should((response) => { expect(response.status).to.eq(404) })
     })    
 
     it('Verify Delete Dependent Unauthorized', () => {

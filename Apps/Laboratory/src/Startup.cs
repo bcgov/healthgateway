@@ -57,6 +57,7 @@ namespace HealthGateway.Laboratory
             this.startupConfig.ConfigureAuthServicesForJwtBearer(services);
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
+            this.startupConfig.ConfigurePatientAccess(services);
             this.startupConfig.ConfigureTracing(services);
 
             services.AddCors(options =>
