@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +19,12 @@ namespace HealthGateway.Database.Models
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
-    public class MessagingVerificationTypeCode : AuditableEntity
+    public class CommentEntryTypeCode : AuditableEntity
     {
         [Key]
         [Required]
         [MaxLength(10)]
-        public string? MessagingVerificationCode { get; set; }
+        public string? CommentEntryCode { get; set; }
 
         [Required]
         [MaxLength(50)]

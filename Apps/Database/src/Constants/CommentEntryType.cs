@@ -21,6 +21,11 @@ namespace HealthGateway.Database.Constants
     public static class CommentEntryType
     {
         /// <summary>
+        /// The code represeting no entry type set.
+        /// </summary>
+        public const string None = "NA";
+
+        /// <summary>
         /// The code representing Medication.
         /// </summary>
         public const string Medication = "Med";

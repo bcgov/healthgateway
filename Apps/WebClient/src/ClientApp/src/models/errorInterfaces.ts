@@ -1,11 +1,11 @@
-export enum ErrorType {
+export const enum ErrorType {
     Concurreny = "C",
     ExternalCommunication = "CE",
     InternalCommunication = "CI",
     InvalidState = "I",
 }
 
-export enum ServiceName {
+export const enum ServiceName {
     DataBase = "DB",
     ClientRegistries = "CR",
     ODR = "ODR",

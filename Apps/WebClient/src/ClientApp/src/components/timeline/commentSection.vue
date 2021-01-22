@@ -8,7 +8,7 @@ import CommentComponent from "@/components/timeline/comment.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import User from "@/models/user";
-import type { UserComment } from "@/models/userComment";
+import { EntryTypeMapper, UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -34,6 +34,9 @@ export default class CommentSectionComponent extends Vue {
         id: "",
         text: "",
         parentEntryId: this.parentEntry.id,
+        entryTypeCode: EntryTypeMapper.toCommentEntryType(
+            this.parentEntry.type
+        ),
         userProfileId: "",
         createdDateTime: new DateWrapper().toISODate(),
         version: 0,

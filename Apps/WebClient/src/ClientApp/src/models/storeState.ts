@@ -10,7 +10,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 
-export enum StateType {
+export const enum StateType {
     NONE,
     INITIALIZED,
     REQUESTED,
