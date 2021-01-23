@@ -18,23 +18,18 @@ namespace HealthGateway.Immunization.Models
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Immunization.Models.PHSA;
 
     /// <summary>
     /// Represents a row in the Immunization Model.
     /// </summary>
-    public class ImmunizationModel
+    public class ImmunizationEvent
     {
         /// <summary>
         /// Gets or sets the Immunization id.
         /// </summary>
         [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Name.
-        /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Date of Immunization.
@@ -55,41 +50,48 @@ namespace HealthGateway.Immunization.Models
         public string ProviderOrClinic { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization Agents.
+        /// Gets or sets the Immunization definition.
         /// </summary>
-        public IEnumerable<ImmunizationAgentsResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentsResponse>();
+        [JsonPropertyName("immunization")]
+        public ImmunizationDefinition Immunization { get; set; } = new ImmunizationDefinition();
 
         /// <summary>
-        /// Creates a Immunization Model object from a PHSA model.
+        /// Gets or sets the Immunization forecast.
+        /// </summary>
+        [JsonPropertyName("forecast")]
+        public ImmunizationForecast Forecast { get; set; } = new ImmunizationForecast();
+
+        /// <summary>
+        /// Creates a ImmunizationEvent object from a PHSA model.
         /// </summary>
         /// <param name="model">The immunization object to convert.</param>
         /// <returns>The newly created ImmunizationModel object.</returns>
-        public static ImmunizationModel FromPHSAModel(ImmunizationResponse model)
+        public static ImmunizationEvent FromPHSAModel(ImmunizationResponse model)
         {
-            return new ImmunizationModel()
+            return new ImmunizationEvent()
             {
                 Id = model.SourceSystemId,
-                Name = model.Name,
                 DateOfImmunization = model.OccurrenceDateTime,
                 ProviderOrClinic = model.ProviderOrClinic,
-                ImmunizationAgents = model.ImmunizationAgents,
                 Status = model.Status,
+                Immunization = new ImmunizationDefinition() { Name = model.Name, ImmunizationAgents = ImmunizationAgent.FromPHSAModelList(model.ImmunizationAgents) },
+                Forecast = new ImmunizationForecast() // TODO: Needs to be mapped from the response
             };
         }
 
         /// <summary>
-        /// Creates a Immunization Model object from a PHSA model.
+        /// Creates a ImmunizationEvent object from a PHSA model.
         /// </summary>
         /// <param name="immunizationResponse">The list of PHSA models to convert.</param>
-        /// <returns>A list of ImmunizationModel objects.</returns>
-        public static IEnumerable<ImmunizationModel> FromPHSAModelList(IEnumerable<ImmunizationResponse>? immunizationResponse)
+        /// <returns>A list of ImmunizationEvent objects.</returns>
+        public static IEnumerable<ImmunizationEvent> FromPHSAModelList(IEnumerable<ImmunizationResponse>? immunizationResponse)
         {
-            List<ImmunizationModel> immunizations = new List<ImmunizationModel>();
+            List<ImmunizationEvent> immunizations = new List<ImmunizationEvent>();
             if (immunizationResponse != null)
             {
                 foreach (ImmunizationResponse immunizationModel in immunizationResponse)
                 {
-                    immunizations.Add(ImmunizationModel.FromPHSAModel(immunizationModel));
+                    immunizations.Add(ImmunizationEvent.FromPHSAModel(immunizationModel));
                 }
             }
 

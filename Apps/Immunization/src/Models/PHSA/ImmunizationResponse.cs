@@ -13,14 +13,14 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Immunization.Models.PHSA
 {
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The Immunization record data model.
+    /// The PHSA Immunization record data model.
     /// </summary>
     public class ImmunizationResponse
     {
@@ -63,6 +63,6 @@ namespace HealthGateway.Immunization.Models
         /// <summary>
         /// Gets or sets the Immunization Agents.
         /// </summary>
-        public IEnumerable<ImmunizationAgentsResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentsResponse>();
+        public IEnumerable<ImmunizationAgentResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentResponse>();
     }
 }

@@ -23,6 +23,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
@@ -59,7 +60,7 @@ namespace HealthGateway.Immunization.Services
                     ResourcePayload = new ImmunizationResult()
                     {
                         LoadState = LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload.LoadState),
-                        Immunizations = ImmunizationModel.FromPHSAModelList(delegateResult.ResourcePayload.Result),
+                        Immunizations = ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload.Result),
                     },
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
