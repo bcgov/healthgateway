@@ -302,6 +302,14 @@ namespace HealthGateway.Database.Context
                     .HasIndex(i => new { i.HdId, i.Domain })
                     .IsUnique();
 
+            // Create Foreign keys for Comment
+            modelBuilder.Entity<Comment>()
+                .HasOne<CommentEntryTypeCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.CommentEntryCode)
+                .HasForeignKey(k => k.EntryTypeCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -311,6 +319,7 @@ namespace HealthGateway.Database.Context
             this.SeedMessagingVerifications(modelBuilder);
             this.SeedCommunication(modelBuilder);
             this.SeedResourceDelegateReason(modelBuilder);
+            this.SeedCommentEntryTypeCode(modelBuilder);
         }
 
         /// <summary>
@@ -871,6 +880,60 @@ namespace HealthGateway.Database.Context
                 {
                     ReasonTypeCode = ResourceDelegateReason.COVIDLab,
                     Description = "Resource Delegation for Covid Laboratory",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                });
+        }
+
+        /// <summary>
+        /// Seeds the CommentEntryType codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedCommentEntryTypeCode(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CommentEntryTypeCode>().HasData(
+                new CommentEntryTypeCode
+                {
+                    CommentEntryCode = CommentEntryType.None,
+                    Description = "Comment for an Unknown type Entry",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommentEntryTypeCode
+                {
+                    CommentEntryCode = CommentEntryType.Medication,
+                    Description = "Comment for a Medication Entry",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommentEntryTypeCode
+                {
+                    CommentEntryCode = CommentEntryType.Immunization,
+                    Description = "Comment for an Immunization Entry",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommentEntryTypeCode
+                {
+                    CommentEntryCode = CommentEntryType.Laboratory,
+                    Description = "Comment for a Laboratory Entry",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommentEntryTypeCode
+                {
+                    CommentEntryCode = CommentEntryType.Encounter,
+                    Description = "Comment for an Encounter Entry",
                     CreatedBy = UserId.DefaultUser,
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
