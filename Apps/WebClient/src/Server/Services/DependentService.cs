@@ -84,6 +84,7 @@ namespace HealthGateway.WebClient.Services
                     };
                 }
             }
+
             this.logger.LogTrace("Getting dependent details...");
             RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(addDependentRequest.PHN, PatientIdentifierType.PHN).ConfigureAwait(true)).Result;
             if (patientResult.ResultStatus == ResultType.Error)
@@ -105,6 +106,7 @@ namespace HealthGateway.WebClient.Services
             }
 
             this.logger.LogDebug($"Finished getting dependent details...{JsonSerializer.Serialize(patientResult)}");
+
             // Verify dependent's details entered by user
             if (patientResult.ResourcePayload == null || !this.ValidateDependent(addDependentRequest, patientResult.ResourcePayload))
             {
@@ -128,6 +130,7 @@ namespace HealthGateway.WebClient.Services
 
             string json = JsonSerializer.Serialize(addDependentRequest.TestDate, addDependentRequest.TestDate.GetType());
             JsonDocument jsonDoc = JsonDocument.Parse(json);
+
             // Insert Dependent to database
             var dependent = new ResourceDelegate()
             {
@@ -135,7 +138,7 @@ namespace HealthGateway.WebClient.Services
                 ProfileHdid = delegateHdId,
                 ReasonCode = ResourceDelegateReason.COVIDLab,
                 ReasonObjectType = addDependentRequest.TestDate.GetType().AssemblyQualifiedName,
-                ReasonObject = jsonDoc
+                ReasonObject = jsonDoc,
             };
             DBResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(dependent, true);
 
@@ -252,8 +255,8 @@ namespace HealthGateway.WebClient.Services
                 return false;
             }
 
-            if (patientModel.Birthdate.Year != dependent.DateOfBirth.Year || 
-                patientModel.Birthdate.Month != dependent.DateOfBirth.Month || 
+            if (patientModel.Birthdate.Year != dependent.DateOfBirth.Year ||
+                patientModel.Birthdate.Month != dependent.DateOfBirth.Month ||
                 patientModel.Birthdate.Day != dependent.DateOfBirth.Day)
             {
                 this.logger.LogInformation("Validate Dependent: DateOfBirth mismatch.");

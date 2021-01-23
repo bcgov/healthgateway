@@ -83,6 +83,7 @@ export default class LoadingComponent extends Vue {
         <loading
             v-if="!isCustom"
             :active.sync="isLoading"
+            data-testid="loadingSpinner"
             :is-full-page="true"
         ></loading>
         <div v-else :class="backdrop ? 'backdrop' : 'block'">
