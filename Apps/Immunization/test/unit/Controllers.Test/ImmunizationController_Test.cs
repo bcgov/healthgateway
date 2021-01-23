@@ -41,35 +41,41 @@ namespace HealthGateway.Immunization.Test.Controller
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string token = "Fake Access Token";
             string userId = "1001";
-            var expectedAgents = new List<ImmunizationAgentsResponse>();
-            expectedAgents.Add(new ImmunizationAgentsResponse()
+            var expectedAgents = new List<ImmunizationAgent>();
+            expectedAgents.Add(new ImmunizationAgent()
             {
                 Name = "mocked agent",
                 Code = "mocked code",
                 LotNumber = "mocekd lot number",
                 ProductName = "mocked product",
             });
-            var expectedImmunizations = new List<ImmunizationModel>();
-            expectedImmunizations.Add(new ImmunizationModel()
+            var expectedImmunizations = new List<ImmunizationEvent>();
+            expectedImmunizations.Add(new ImmunizationEvent()
             {
                 DateOfImmunization = DateTime.Today,
-                Name = "Mocked Name",
                 ProviderOrClinic = "Mocked Clinic",
-                ImmunizationAgents = expectedAgents,
+                Immunization = new ImmunizationDefinition()
+                {
+                    Name = "Mocked Name",
+                    ImmunizationAgents = expectedAgents
+                }
             });
             // Add a blank agent
-            expectedImmunizations.Add(new ImmunizationModel()
+            expectedImmunizations.Add(new ImmunizationEvent()
             {
                 DateOfImmunization = DateTime.Today,
-                Name = "Mocked Name",
-                ImmunizationAgents = new List<ImmunizationAgentsResponse>(),
+                Immunization = new ImmunizationDefinition()
+                {
+                    Name = "Mocked Name",
+                    ImmunizationAgents = expectedAgents
+                }
             });
             var expectedImmzResult = new ImmunizationResult()
             {
                 Immunizations = expectedImmunizations,
                 LoadState = new LoadStateModel() { RefreshInProgress = false },
             };
-            
+
             RequestResult<ImmunizationResult> expectedRequestResult = new RequestResult<ImmunizationResult>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,

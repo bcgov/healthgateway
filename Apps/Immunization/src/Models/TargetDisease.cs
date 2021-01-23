@@ -15,30 +15,23 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Models
 {
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents Immunization Result.
+    /// Represents a target disease.
     /// </summary>
-    public class ImmunizationResult
+    public class TargetDisease
     {
         /// <summary>
-        /// Gets or sets the Load State.
+        /// Gets or sets the Disease Code.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public LoadStateModel LoadState { get; set; } = new LoadStateModel();
+        [JsonPropertyName("code")]
+        public string Code { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the list of Immunizations events.
+        /// Gets or sets the Disease Name.
         /// </summary>
-        [JsonPropertyName("immunizations")]
-        public IEnumerable<ImmunizationEvent> Immunizations { get; set; } = new List<ImmunizationEvent>();
-
-        /// <summary>
-        /// Gets or sets the list of Immunizations recomendations.
-        /// </summary>
-        [JsonPropertyName("recomendations")]
-        public IEnumerable<ImmunizationRecomendation> Recomendations { get; set; } = new List<ImmunizationRecomendation>();
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
     }
 }

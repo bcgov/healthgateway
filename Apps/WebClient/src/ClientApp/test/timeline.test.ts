@@ -9,7 +9,7 @@ import BannerError from "@/models/bannerError";
 import { Dictionary } from "@/models/baseTypes";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import ImmunizationModel from "@/models/immunizationModel";
+import { ImmunizationEvent } from "@/models/immunizationModel";
 import { LaboratoryOrder } from "@/models/laboratory";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
@@ -167,7 +167,7 @@ const commentActions: ActionTree<CommentState, RootState> = {
 };
 
 const immunizationGetters = {
-    getStoredImmunizations(state: ImmunizationState): ImmunizationModel[] {
+    getStoredImmunizations(state: ImmunizationState): ImmunizationEvent[] {
         console.log("getStoredImmunizations called", state);
         return [];
     },
@@ -178,7 +178,7 @@ const immunizationGetters = {
 };
 
 const immunizationActions: ActionTree<ImmunizationState, RootState> = {
-    retrieve(): Promise<RequestResult<ImmunizationModel[]>> {
+    retrieve(): Promise<RequestResult<ImmunizationEvent[]>> {
         return new Promise((resolve) => {
             resolve({
                 pageIndex: 0,

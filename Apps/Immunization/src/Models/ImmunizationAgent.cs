@@ -15,13 +15,14 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Models
 {
-    using System;
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Immunization.Models.PHSA;
 
     /// <summary>
-    /// The Immunization Agents response model.
+    /// The Immunization Agents model.
     /// </summary>
-    public class ImmunizationAgentsResponse
+    public class ImmunizationAgent
     {
         /// <summary>
         /// Gets or sets the Immunization id.
@@ -46,5 +47,40 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("productName")]
         public string ProductName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Creates a Immunization Model object from a PHSA model.
+        /// </summary>
+        /// <param name="model">The immunization object to convert.</param>
+        /// <returns>The newly created ImmunizationModel object.</returns>
+        public static ImmunizationAgent FromPHSAModel(ImmunizationAgentResponse model)
+        {
+            return new ImmunizationAgent()
+            {
+                Code = model.Code,
+                Name = model.Name,
+                LotNumber = model.LotNumber,
+                ProductName = model.ProductName,
+            };
+        }
+
+        /// <summary>
+        /// Creates a List of ImmunizationAgents object from a PHSA model.
+        /// </summary>
+        /// <param name="immunizationAgentResponse">The list of PHSA models to convert.</param>
+        /// <returns>A list of ImmunizationAgent objects.</returns>
+        public static IEnumerable<ImmunizationAgent> FromPHSAModelList(IEnumerable<ImmunizationAgentResponse>? immunizationAgentResponse)
+        {
+            List<ImmunizationAgent> immunizationAgents = new List<ImmunizationAgent>();
+            if (immunizationAgentResponse != null)
+            {
+                foreach (ImmunizationAgentResponse immunizationAgentModel in immunizationAgentResponse)
+                {
+                    immunizationAgents.Add(ImmunizationAgent.FromPHSAModel(immunizationAgentModel));
+                }
+            }
+
+            return immunizationAgents;
+        }
     }
 }

@@ -1,6 +1,7 @@
 import { DateWrapper } from "@/models/dateWrapper";
-import ImmunizationModel, {
+import {
     ImmunizationAgent,
+    ImmunizationEvent,
 } from "@/models/immunizationModel";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
@@ -9,7 +10,7 @@ import TimelineFilter from "@/models/timelineFilter";
 export default class ImmunizationTimelineEntry extends TimelineEntry {
     public immunization: ImmunizationViewModel;
 
-    public constructor(model: ImmunizationModel) {
+    public constructor(model: ImmunizationEvent) {
         super(
             model.id,
             EntryType.Immunization,
@@ -50,17 +51,17 @@ class ImmunizationViewModel {
     public providerOrClinic: string;
     public immunizationAgents: ImmunizationAgentViewModel[];
 
-    constructor(model: ImmunizationModel) {
+    constructor(model: ImmunizationEvent) {
         this.id = model.id;
         this.isSelfReported = model.isSelfReported;
         this.location = model.location;
-        this.name = model.name;
+        this.name = model.immunization.name;
         this.status = model.status;
         this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
         this.providerOrClinic =
             model.providerOrClinic === "" ? "N/A" : model.providerOrClinic;
         this.immunizationAgents = [];
-        model.immunizationAgents.forEach((agent) => {
+        model.immunization.immunizationAgents.forEach((agent) => {
             this.immunizationAgents.push(new ImmunizationAgentViewModel(agent));
         });
     }

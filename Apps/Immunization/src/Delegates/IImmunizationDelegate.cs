@@ -15,11 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Delegates
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
 
     /// <summary>
     /// Interface that defines a delegate to retrieve immunization information.

@@ -19,7 +19,6 @@ namespace HealthGateway.Immunization.Delegates
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -31,6 +30,7 @@ namespace HealthGateway.Immunization.Delegates
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

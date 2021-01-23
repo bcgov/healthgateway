@@ -1,5 +1,14 @@
 import { StringISODate } from "@/models/dateWrapper";
 
+export enum ForecastStatus {
+    Eligible = "Eligible",
+}
+
+export interface Immunization {
+    name: string;
+    immunizationAgents: ImmunizationAgent[];
+}
+
 export interface ImmunizationAgent {
     code: string;
     name: string;
@@ -7,13 +16,40 @@ export interface ImmunizationAgent {
     productName: string;
 }
 
-export default interface ImmunizationModel {
+export interface ImmunizationEvent {
     id: string;
     isSelfReported: boolean;
     location: string;
-    name: string;
+    immunization: Immunization;
     status: string;
     dateOfImmunization: StringISODate;
     providerOrClinic: string;
-    immunizationAgents: ImmunizationAgent[];
+    forecast?: Forecast;
+}
+
+export interface Recomendation {
+    recomendationId: string;
+    disseaseEligibleDate: StringISODate;
+    diseaseDueDate: StringISODate;
+    agentEligibleDate: StringISODate;
+    agentDueDate: StringISODate;
+
+    status: ForecastStatus;
+    targetDiseases: TargetDisease[];
+
+    immunization: Immunization;
+}
+
+export interface TargetDisease {
+    code: string;
+    name: string;
+}
+
+export interface Forecast {
+    recomendationId: string;
+    createDate: StringISODate;
+    status: ForecastStatus;
+    displayName: string;
+    eligibleDate: StringISODate;
+    dueDate: StringISODate;
 }
