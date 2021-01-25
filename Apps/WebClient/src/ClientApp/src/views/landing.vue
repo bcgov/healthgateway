@@ -83,7 +83,7 @@ export default class LandingView extends Vue {
         {
             name: "Encounter",
             definition: "user-md",
-            label: "Health Visits",
+            label: "Health Visits (Jan 2021)",
             color: "",
             active: false,
         },

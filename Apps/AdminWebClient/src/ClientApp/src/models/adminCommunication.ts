@@ -1,9 +1,9 @@
-export enum CommunicationType {
+export const enum CommunicationType {
     Email = "Email",
     Banner = "Banner"
 }
 
-export enum CommunicationStatus {
+export const enum CommunicationStatus {
     New = "New",
     Processed = "Processed",
     Error = "Error",
