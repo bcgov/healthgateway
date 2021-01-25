@@ -21,6 +21,7 @@ namespace HealthGateway.Immunization.Test.Service
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
     using HealthGateway.Immunization.Services;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -71,7 +72,7 @@ namespace HealthGateway.Immunization.Test.Service
                 ResourcePayload = new ImmunizationResult()
                 {
                     LoadState = LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload.LoadState),
-                    Immunizations = ImmunizationModel.FromPHSAModelList(delegateResult.ResourcePayload.Result),
+                    Immunizations = ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload.Result),
                 },
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
@@ -99,7 +100,7 @@ namespace HealthGateway.Immunization.Test.Service
                     ErrorCode = "MOCK_BAD_ERROR",
                 },
             };
-            RequestResult<IEnumerable<ImmunizationModel>> expectedResult = new RequestResult<IEnumerable<ImmunizationModel>>()
+            RequestResult<IEnumerable<ImmunizationEvent>> expectedResult = new RequestResult<IEnumerable<ImmunizationEvent>>()
             {
                 ResultStatus = delegateResult.ResultStatus,
                 ResultError = delegateResult.ResultError,

@@ -23,6 +23,7 @@ namespace HealthGateway.Immunization.Test.Delegate
     using HealthGateway.Common.Services;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
+    using HealthGateway.Immunization.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
