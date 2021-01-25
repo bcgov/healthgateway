@@ -51,7 +51,7 @@ class ForecastViewModel {
         if (model !== undefined) {
             this.displayName = model.displayName;
             this.dueDate =
-                model.dueDate !== ""
+                model.dueDate !== undefined
                     ? DateWrapper.format(
                           model.dueDate,
                           DateWrapper.yyyy_MM_dd_format
