@@ -1,14 +1,18 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import AddCommentComponent from "@/components/timeline/addComment.vue";
 import CommentComponent from "@/components/timeline/comment.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import User from "@/models/user";
-import type { UserComment } from "@/models/userComment";
+import {
+    CommentEntryType,
+    EntryTypeMapper,
+    UserComment,
+} from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -24,6 +28,11 @@ export default class CommentSectionComponent extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
     @Getter("getEntryComments", { namespace: "comment" })
     entryComments!: (entyId: string) => UserComment[];
+    @Action("updateComment", { namespace: "comment" })
+    updateComment!: (params: {
+        hdid: string;
+        comment: UserComment;
+    }) => Promise<UserComment>;
 
     private logger!: ILogger;
     private showComments = false;
@@ -34,6 +43,9 @@ export default class CommentSectionComponent extends Vue {
         id: "",
         text: "",
         parentEntryId: this.parentEntry.id,
+        entryTypeCode: EntryTypeMapper.toCommentEntryType(
+            this.parentEntry.type
+        ),
         userProfileId: "",
         createdDateTime: new DateWrapper().toISODate(),
         version: 0,
@@ -41,6 +53,23 @@ export default class CommentSectionComponent extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
+        // Some comments dont have entry type. This code updates them if they dont.
+        let commentsToUpdate: UserComment[] = [];
+        this.comments.forEach((x) => {
+            if (x.entryTypeCode === CommentEntryType.None) {
+                x.entryTypeCode = EntryTypeMapper.toCommentEntryType(
+                    this.parentEntry.type
+                );
+                x.updatedBy = "System_Backfill";
+                commentsToUpdate.push(x);
+            }
+        });
+
+        commentsToUpdate.forEach((x) => {
+            this.logger.info("Updating comment " + x.id);
+            this.updateComment({ hdid: this.user.hdid, comment: x });
+        });
     }
 
     private get comments(): UserComment[] {

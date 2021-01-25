@@ -50,6 +50,7 @@ export default class AddCommentComponent extends Vue {
                 text: this.commentInput,
                 parentEntryId: this.comment.parentEntryId,
                 userProfileId: this.user.hdid,
+                entryTypeCode: this.comment.entryTypeCode,
                 version: 0,
                 createdDateTime: new DateWrapper().toISO(),
             },
