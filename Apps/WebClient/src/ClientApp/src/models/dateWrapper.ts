@@ -44,6 +44,11 @@ export class DateWrapper {
     private readonly _internal_date: DateTime;
 
     /**
+     * The 'yyyy-MM-dd' tokens to format the string as.
+     */
+    public static yyyy_MM_dd_format = "yyyy-MM-dd";
+
+    /**
      * Gets the internal date time object. Use only for debugging. DO NOT USE OTHERWISE.
      */
     public get internalDate(): DateTime {
@@ -130,6 +135,17 @@ export class DateWrapper {
      */
     public format(formatString: string): string {
         return this.internalDate.toFormat(formatString);
+    }
+
+    /**
+     * Formats the date using the given a set of tokens
+     * See https://moment.github.io/luxon/docs/manual/formatting.html for the rules
+     * @param dateString The date string to be formatted.
+     * @param formatString The tokens to format the string as.
+     * @returns a string representation of the datetime with the given format.
+     */
+    public static format(dateString: string, formatString: string): string {
+        return new DateWrapper(dateString).format(formatString);
     }
 
     /**

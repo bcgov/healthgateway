@@ -1,5 +1,6 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import {
+    Forecast,
     ImmunizationAgent,
     ImmunizationEvent,
 } from "@/models/immunizationModel";
@@ -41,6 +42,30 @@ class ImmunizationAgentViewModel {
     }
 }
 
+class ForecastViewModel {
+    public displayName: string;
+    public dueDate: string;
+    public status: string;
+
+    constructor(model?: Forecast) {
+        if (model !== undefined) {
+            this.displayName = model.displayName;
+            this.dueDate =
+                model.dueDate !== undefined
+                    ? DateWrapper.format(
+                          model.dueDate,
+                          DateWrapper.yyyy_MM_dd_format
+                      )
+                    : "";
+            this.status = model.status;
+        } else {
+            this.displayName = "";
+            this.dueDate = "";
+            this.status = "";
+        }
+    }
+}
+
 class ImmunizationViewModel {
     public id: string;
     public isSelfReported: boolean;
@@ -50,6 +75,7 @@ class ImmunizationViewModel {
     public dateOfImmunization: DateWrapper;
     public providerOrClinic: string;
     public immunizationAgents: ImmunizationAgentViewModel[];
+    public forecast: ForecastViewModel;
 
     constructor(model: ImmunizationEvent) {
         this.id = model.id;
@@ -64,5 +90,6 @@ class ImmunizationViewModel {
         model.immunization.immunizationAgents.forEach((agent) => {
             this.immunizationAgents.push(new ImmunizationAgentViewModel(agent));
         });
+        this.forecast = new ForecastViewModel(model.forecast);
     }
 }
