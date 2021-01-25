@@ -59,5 +59,23 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("dueDate")]
         public DateTime DueDate { get; set; }
+
+        /// <summary>
+        /// Creates a ImmunizationForecast object from a PHSA model.
+        /// </summary>
+        /// <param name="model">The immunization forecast object to convert.</param>
+        /// <returns>The newly created ImmunizationForecast object.</returns>
+        public static ImmunizationForecast FromPHSAModel(ImmunizationRorecastResponse model)
+        {
+            return new ImmunizationForecast()
+            {
+                RecomendationId = model.ImmsId,
+                CreateDate = model.ForecastCreateDate,
+                Status = (ForecastStatus)Enum.Parse(typeof(ForecastStatus), model.ForecastStatus, true),
+                DisplayName = model.DisplayName,
+                EligibleDate = model.EligibleDate,
+                DueDate = model.DueDate
+            };
+        }
     }
 }
