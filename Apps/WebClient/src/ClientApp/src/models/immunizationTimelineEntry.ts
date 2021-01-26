@@ -50,13 +50,15 @@ class ForecastViewModel {
 
     constructor(model: Forecast) {
         this.displayName = model.displayName;
-        this.dueDate =
-            model.dueDate !== undefined
-                ? DateWrapper.format(
-                      model.dueDate,
-                      DateTimeFormat.formatDateString
-                  )
-                : "";
+        if (model.dueDate) {
+            this.dueDate = DateWrapper.format(
+                model.dueDate,
+                DateTimeFormat.formatDateString
+            );
+        } else {
+            this.dueDate = "";
+        }
+
         this.status = model.status;
     }
 }
@@ -70,7 +72,7 @@ class ImmunizationViewModel {
     public dateOfImmunization: DateWrapper;
     public providerOrClinic: string;
     public immunizationAgents: ImmunizationAgentViewModel[];
-    public forecast: ForecastViewModel;
+    public forecast?: ForecastViewModel;
 
     constructor(model: ImmunizationEvent) {
         this.id = model.id;
@@ -85,6 +87,8 @@ class ImmunizationViewModel {
         model.immunization.immunizationAgents.forEach((agent) => {
             this.immunizationAgents.push(new ImmunizationAgentViewModel(agent));
         });
-        this.forecast = new ForecastViewModel(model.forecast);
+        if (model.forecast) {
+            this.forecast = new ForecastViewModel(model.forecast);
+        }
     }
 }

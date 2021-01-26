@@ -24,15 +24,15 @@ export interface ImmunizationEvent {
     status: string;
     dateOfImmunization: StringISODate;
     providerOrClinic: string;
-    forecast: Forecast;
+    forecast?: Forecast;
 }
 
 export interface Recommendation {
     recommendationSetId: string;
-    disseaseEligibleDate: StringISODate;
-    diseaseDueDate: StringISODate;
-    agentEligibleDate: StringISODate;
-    agentDueDate: StringISODate;
+    disseaseEligibleDate?: StringISODate;
+    diseaseDueDate?: StringISODate;
+    agentEligibleDate?: StringISODate;
+    agentDueDate?: StringISODate;
 
     status: ForecastStatus;
     targetDiseases: TargetDisease[];
