@@ -35,6 +35,12 @@ namespace HealthGateway.Admin.Services
         public bool IsAuthorized { get; set; }
 
         /// <summary>
+        /// Gets or sets the list of roles that the user is authorized for.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public IList<string> Roles { get; set; } = new List<string>();
+
+        /// <summary>
         /// Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
         /// </summary>
         public string Token { get; set; } = string.Empty;

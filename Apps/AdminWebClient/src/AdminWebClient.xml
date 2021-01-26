@@ -692,6 +692,11 @@
             Gets or sets a value indicating whether the client has been authorized for this app or not.
             </summary>
         </member>
+        <member name="P:HealthGateway.Admin.Services.AuthenticationData.Roles">
+            <summary>
+            Gets or sets the list of roles that the user is authorized for.
+            </summary>
+        </member>
         <member name="P:HealthGateway.Admin.Services.AuthenticationData.Token">
             <summary>
             Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.

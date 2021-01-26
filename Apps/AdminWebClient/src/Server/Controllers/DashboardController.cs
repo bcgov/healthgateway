@@ -15,11 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
