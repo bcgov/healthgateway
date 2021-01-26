@@ -269,7 +269,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             the client’s complete immunization history and may
                             impact forecasted vaccines. For information on
                             recommended immunizations, please visit
-                            <a>http://www.immunizebc.ca</a> or contact your
+                            <a>https://www.immunizebc.ca</a> or contact your
                             local Public Health Unit.
                         </div>
                     </b-col>
