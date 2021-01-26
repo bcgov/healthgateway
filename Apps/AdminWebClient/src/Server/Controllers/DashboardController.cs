@@ -15,11 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -29,7 +26,7 @@ namespace HealthGateway.Admin.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser")]
+    [Authorize(Roles = "AdminUser,AdminReviewer")]
     public class DashboardController
     {
         private readonly IDashboardService dashboardService;
