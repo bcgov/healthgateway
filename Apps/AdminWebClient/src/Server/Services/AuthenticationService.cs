@@ -37,8 +37,8 @@ namespace HealthGateway.Admin.Services
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IConfiguration configuration;
-
-        private readonly string validUserRole;
+        private readonly string rolesClaimType;
+        private readonly string[] validUserRoles;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationService"/> class.
@@ -51,7 +51,9 @@ namespace HealthGateway.Admin.Services
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
-            this.validUserRole = configuration.GetSection("OpenIdConnect").GetValue<string>("UserRole");
+            IConfigurationSection oidcSection = configuration.GetSection("OpenIdConnect");
+            this.validUserRoles = oidcSection.GetSection("UserRole").Get<string[]>();
+            this.rolesClaimType = oidcSection.GetValue<string>("RolesClaim");
         }
 
         /// <summary>
@@ -72,7 +74,12 @@ namespace HealthGateway.Admin.Services
                     Name = user.FindFirstValue("name"),
                     Email = user.FindFirstValue(ClaimTypes.Email),
                 };
-                authData.IsAuthorized = user?.Claims.Where(c => c.Type == "user_realm_roles" && c.Value == this.validUserRole).Select(c => c.Value == this.validUserRole).FirstOrDefault() ?? false;
+                authData.Roles =
+                    user.FindAll(this.rolesClaimType)
+                    .Select(claim => claim.Value)
+                    .Where(role => this.validUserRoles.Contains(role));
+
+                authData.IsAuthorized = authData.Roles.Any();
             }
 
             return authData;

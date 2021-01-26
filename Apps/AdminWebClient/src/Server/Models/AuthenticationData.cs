@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System.Collections.Generic;
     using HealthGateway.Admin.Models;
 
     /// <summary>
@@ -37,6 +38,11 @@ namespace HealthGateway.Admin.Services
         /// Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
         /// </summary>
         public string Token { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the assgined user roles.
+        /// </summary>
+        public IEnumerable<string>? Roles { get; set; }
 
         /// <summary>
         /// Gets or sets the authenticated user, <see cref="User"/>.

@@ -29,7 +29,7 @@ namespace HealthGateway.Admin.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser")]
+    [Authorize(Roles = "AdminUser,AdminReviewer")]
     public class UserFeedbackController
     {
         private readonly IUserFeedbackService feedbackService;
