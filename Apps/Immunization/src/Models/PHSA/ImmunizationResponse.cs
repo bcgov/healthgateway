@@ -13,32 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Immunization.Models.PHSA
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Immunization.Models.PHSA.Recommendation;
 
     /// <summary>
-    /// Represents Immunization Result.
+    /// Represents Immunization Response.
     /// </summary>
-    public class ImmunizationResult
+    public class ImmunizationResponse
     {
         /// <summary>
-        /// Gets or sets the Load State.
+        /// Gets or sets the list of Immunization Views.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public LoadStateModel LoadState { get; set; } = new LoadStateModel();
+        [JsonPropertyName("immunizationViews")]
+        public IList<ImmunizationViewResponse> ImmunizationViews { get; set; } = new List<ImmunizationViewResponse>();
 
         /// <summary>
-        /// Gets or sets the list of Immunizations events.
+        /// Gets or sets the list of Immunization Recommendations.
         /// </summary>
-        [JsonPropertyName("immunizations")]
-        public IList<ImmunizationEvent> Immunizations { get; set; } = new List<ImmunizationEvent>();
-
-        /// <summary>
-        /// Gets or sets the list of Immunizations recommendations.
-        /// </summary>
-        [JsonPropertyName("recommendations")]
-        public IList<ImmunizationRecommendation> Recommendations { get; set; } = new List<ImmunizationRecommendation>();
+        [JsonPropertyName("immunizationRecommendations")]
+        public IList<ImmunizationRecommendationResponse> Recommendations { get; set; } = new List<ImmunizationRecommendationResponse>();
     }
 }

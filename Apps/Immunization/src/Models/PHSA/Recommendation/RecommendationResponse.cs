@@ -13,37 +13,38 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA.Recomendation
+namespace HealthGateway.Immunization.Models.PHSA.Recommendation
 {
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The PHSA Target Disease Code data model.
+    /// The PHSA Immunization Recommendation data model.
     /// </summary>
-    public class TargetDiseaseCode
+    public class RecommendationResponse
     {
         /// <summary>
-        /// Gets or sets the Code text.
+        /// Gets or sets the Date Criterion.
         /// </summary>
-        [JsonPropertyName("code")]
-        public string Code { get; set; } = string.Empty;
+        [JsonPropertyName("dateCriterion")]
+        public IList<DateCriterion> DateCriterions { get; set; } = new List<DateCriterion>();
 
         /// <summary>
-        /// Gets or sets the Common Type.
+        /// Gets or sets the Forecast Status.
         /// </summary>
-        [JsonPropertyName("commonType")]
-        public string CommonType { get; set; } = string.Empty;
+        [JsonPropertyName("forecastStatus")]
+        public ForecastStatusModel ForecastStatus { get; set; } = new ForecastStatusModel();
 
         /// <summary>
-        /// Gets or sets the Display.
+        /// Gets or sets the Target Disease.
         /// </summary>
-        [JsonPropertyName("display")]
-        public string Display { get; set; } = string.Empty;
+        [JsonPropertyName("targetDisease")]
+        public TargetDiseaseResponse TargetDisease { get; set; } = new TargetDiseaseResponse();
 
         /// <summary>
-        /// Gets or sets the System.
+        /// Gets or sets the Vaccine Code.
         /// </summary>
-        [JsonPropertyName("system")]
-        public string System { get; set; } = string.Empty;
+        [JsonPropertyName("vaccineCode")]
+        public VaccineCode VaccineCode { get; set; } = new VaccineCode();
     }
 }

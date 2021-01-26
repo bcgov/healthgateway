@@ -13,20 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA.Recomendation
+namespace HealthGateway.Immunization.Models.PHSA.Recommendation
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The PHSA Target Disease data model.
+    /// The PHSA Vaccine Code data model.
     /// </summary>
-    public class TargetDisease
+    public class VaccineCode
     {
         /// <summary>
-        /// Gets or sets the Target Disese Codes.
+        /// Gets or sets the Vaccine Code Text.
         /// </summary>
-        [JsonPropertyName("targetDiseaseCodes")]
-        public IList<TargetDiseaseCode> targetDiseaseCodes { get; set; } = new List<TargetDiseaseCode>();
+        [JsonPropertyName("vaccineCodeText")]
+        public string VaccineCodeText { get; set; } = string.Empty;
+        /// <summary>
+        /// Gets or sets the Vaccine codes.
+        /// </summary>
+        [JsonPropertyName("vaccineCodes")]
+        public IList<SystemCode> VaccineCodes { get; set; } = new List<SystemCode>();
     }
 }

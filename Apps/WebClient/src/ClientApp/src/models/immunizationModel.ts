@@ -27,8 +27,8 @@ export interface ImmunizationEvent {
     forecast?: Forecast;
 }
 
-export interface Recomendation {
-    recomendationId: string;
+export interface Recommendation {
+    recommendationSetId: string;
     disseaseEligibleDate: StringISODate;
     diseaseDueDate: StringISODate;
     agentEligibleDate: StringISODate;
@@ -46,7 +46,7 @@ export interface TargetDisease {
 }
 
 export interface Forecast {
-    recomendationId: string;
+    recommendationId: string;
     createDate: StringISODate;
     status: ForecastStatus;
     displayName: string;

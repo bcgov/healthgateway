@@ -13,26 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA.Recomendation
+namespace HealthGateway.Immunization.Models.PHSA.Recommendation
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The PHSA Forecast Status data model.
+    /// The PHSA Date Criterion data model.
     /// </summary>
-    public class ForecastStatus
+    public class DateCriterion
     {
         /// <summary>
-        /// Gets or sets the Forecast Status codes.
+        /// Gets or sets the Date Criterion codes.
         /// </summary>
-        [JsonPropertyName("forcastCodes")]
-        public IList<ForecastCode> ForcastCodes { get; set; } = new List<ForecastCode>();
+        [JsonPropertyName("dateCriterionCode")]
+        public DateCriterionCode DateCriterionCode { get; set; } = new DateCriterionCode();
 
         /// <summary>
         /// Gets or sets the Date Criterion value.
         /// </summary>
-        [JsonPropertyName("forecastStatusText")]
-        public string ForecastStatusText { get; set; } = string.Empty;
+        [JsonPropertyName("value")]
+        public string Value { get; set; } = string.Empty;
     }
 }

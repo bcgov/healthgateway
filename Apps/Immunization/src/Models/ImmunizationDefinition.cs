@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Models
 {
     using System.Collections.Generic;
+    using HealthGateway.Immunization.Models.PHSA.Recommendation;
 
     /// <summary>
     /// Defines an Immunization definition.
@@ -31,5 +32,19 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the Immunization Agents.
         /// </summary>
         public IEnumerable<ImmunizationAgent> ImmunizationAgents { get; set; } = new List<ImmunizationAgent>();
+
+        /// <summary>
+        /// Creates an ImmunizationDefinition object from a PHSA model.
+        /// </summary>
+        /// <param name="model">The vaccine code object to convert.</param>
+        /// <returns>The newly created ImmunizationDefinition object.</returns>
+        public static ImmunizationDefinition FromPHSAModel(VaccineCode model)
+        {
+            return new ImmunizationDefinition()
+            {
+                Name = model.VaccineCodeText,
+                ImmunizationAgents = ImmunizationAgent.FromPHSACodesModel(model.VaccineCodes)
+            };
+        }
     }
 }

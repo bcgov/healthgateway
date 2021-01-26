@@ -25,10 +25,10 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationForecast
     {
         /// <summary>
-        /// Gets or sets the Recomendation Id.
+        /// Gets or sets the Recommendation Id.
         /// </summary>
-        [JsonPropertyName("recomendationId")]
-        public string RecomendationId { get; set; } = string.Empty;
+        [JsonPropertyName("recommendationId")]
+        public string RecommendationId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Create Date.
@@ -69,7 +69,7 @@ namespace HealthGateway.Immunization.Models
         {
             return new ImmunizationForecast()
             {
-                RecomendationId = model.ImmsId,
+                RecommendationId = model.ImmsId,
                 CreateDate = model.ForecastCreateDate,
                 Status = (ForecastStatus)Enum.Parse(typeof(ForecastStatus), model.ForecastStatus, true),
                 DisplayName = model.DisplayName,

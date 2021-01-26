@@ -84,7 +84,7 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         /// <param name="immunizationViewResponse">The list of PHSA models to convert.</param>
         /// <returns>A list of ImmunizationEvent objects.</returns>
-        public static IEnumerable<ImmunizationEvent> FromPHSAModelList(IEnumerable<ImmunizationViewResponse>? immunizationViewResponse)
+        public static IList<ImmunizationEvent> FromPHSAModelList(IEnumerable<ImmunizationViewResponse>? immunizationViewResponse)
         {
             List<ImmunizationEvent> immunizations = new List<ImmunizationEvent>();
             if (immunizationViewResponse != null)

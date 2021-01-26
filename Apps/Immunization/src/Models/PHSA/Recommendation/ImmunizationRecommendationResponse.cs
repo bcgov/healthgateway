@@ -13,24 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models.PHSA.Recomendation
+namespace HealthGateway.Immunization.Models.PHSA.Recommendation
 {
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Constants;
 
     /// <summary>
-    /// Represents an Recomendation response.
+    /// Represents an Immunization Recommendation response.
     /// </summary>
-    public class RecomendationResponse
+    public class ImmunizationRecommendationResponse
     {
-        /// <summary>
-        /// Gets or sets the Recomendation Id.
-        /// </summary>
-        [JsonPropertyName("recomendationId")]
-        public string RecomendationId { get; set; } = string.Empty;
-
         /// <summary>
         /// Gets or sets the Dissease Eligible Date.
         /// </summary>
@@ -38,9 +31,27 @@ namespace HealthGateway.Immunization.Models.PHSA.Recomendation
         public DateTime ForecastCreationDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of recomendations definition.
+        /// Gets or sets the Recommendation Id.
+        /// </summary>
+        [JsonPropertyName("recommendationId")]
+        public string RecommendationId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Recommendation Source System.
+        /// </summary>
+        [JsonPropertyName("recommendationSourceSystem")]
+        public string RecommendationSourceSystem { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Recommendation Source System Id.
+        /// </summary>
+        [JsonPropertyName("recommendationSourceSystemId")]
+        public string RecommendationSourceSystemId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the list of recommendations definition.
         /// </summary>
         [JsonPropertyName("recommendations")]
-        public IList<ImmunizationRecomendationResponse> Immunization { get; set; } = new List<ImmunizationRecomendationResponse>();
+        public IList<RecommendationResponse> Recommendations { get; set; } = new List<RecommendationResponse>();
     }
 }
