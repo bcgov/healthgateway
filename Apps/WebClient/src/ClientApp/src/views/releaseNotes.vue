@@ -15,7 +15,8 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >January 27, 2021 - v1.3.3 - MSP Visits, Forecasted Immunizations
+                                    >January 27, 2021 - v1.3.3 - MSP Visits,
+                                    Forecasted Immunizations
                                 </strong>
                             </b-col>
                         </b-row>
@@ -23,10 +24,22 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We launched our MSP visit feature, which will provide access to your last seven years of health visits billed to the Medical Services Plan, including GP and specialist consultations. 
+                                        We launched our MSP visit feature, which
+                                        will provide access to your last seven
+                                        years of health visits billed to the
+                                        Medical Services Plan, including GP and
+                                        specialist consultations.
                                     </li>
                                     <li>
-                                        We updated our immunization records to include recommended future immunizations based on our BC immunization schedule and COVID-19 immunization program. If you've received the first dose of your COVID-19 immunization, you will see a recommended date for your next dose in both the health care timeline and export records pages. 
+                                        We updated our immunization records to
+                                        include recommended future immunizations
+                                        based on our BC immunization schedule
+                                        and COVID-19 immunization program. If
+                                        you've received the first dose of your
+                                        COVID-19 immunization, you will see a
+                                        recommended date for your next dose in
+                                        both the health care timeline and export
+                                        records pages.
                                     </li>
                                 </ul>
                             </b-col>
