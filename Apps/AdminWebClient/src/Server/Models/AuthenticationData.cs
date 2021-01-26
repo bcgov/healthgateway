@@ -46,11 +46,6 @@ namespace HealthGateway.Admin.Services
         public string Token { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the assgined user roles.
-        /// </summary>
-        public IEnumerable<string>? Roles { get; set; }
-
-        /// <summary>
         /// Gets or sets the authenticated user, <see cref="User"/>.
         /// </summary>
         public UserProfile? User { get; set; }
