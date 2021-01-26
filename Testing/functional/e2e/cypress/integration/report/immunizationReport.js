@@ -38,15 +38,13 @@ describe('Immunization History Report', () => {
             .should('be.visible')
         
         cy.get('[data-testid=immunizationDateTitle]')
-        .should('be.visible')
+            .should('be.visible')
         cy.get('[data-testid=immunizationProviderTitle]')
-        .should('be.visible')
+            .should('be.visible')
         cy.get('[data-testid=immunizationItemTitle]')
-        .should('be.visible')
+            .should('be.visible')
         cy.get('[data-testid=immunizationAgentTitle]')
-        .should('be.visible')
-        cy.get('[data-testid=immunizationStatusTitle]')
-        .should('be.visible')
+            .should('be.visible')
 
         cy.get('[data-testid=immunizationItemDate]')
             .last()
@@ -56,6 +54,21 @@ describe('Immunization History Report', () => {
         cy.get('[data-testid=immunizationItemProviderClinic]')
             .should('be.visible')
         cy.get('[data-testid=immunizationItemAgent]')
+            .should('be.visible')
+
+        cy.get('[data-testid=recommendationTitle]')
+            .should('be.visible')
+        cy.get('[data-testid=recommendationDateTitle]')
+            .should('be.visible')
+        cy.get('[data-testid=recommendationStatusTitle]')
+            .should('be.visible')
+    
+        cy.get('[data-testid=recommendation]')
+            .should('be.visible')
+        cy.get('[data-testid=recommendationDate]')
+            .last()
+            .contains(/\d{4}-\d{2}-\d{2}/);
+        cy.get('[data-testid=recommendationStatus]')
             .should('be.visible')
 
         cy.get('[data-testid=exportRecordBtn]')

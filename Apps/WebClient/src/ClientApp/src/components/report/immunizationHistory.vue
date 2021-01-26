@@ -7,7 +7,7 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ImmunizationEvent } from "@/models/immunizationModel";
+import { ImmunizationEvent, Recomendation } from "@/models/immunizationModel";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -29,6 +29,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     immunizationIsDeferred!: boolean;
     @Getter("getStoredImmunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
+    @Getter("getStoredRecommendations", { namespace: "immunization" })
+    patientRecomendations!: Recomendation[];
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
     @Action("retrieve", { namespace: "immunization" })
@@ -41,6 +43,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private logger!: ILogger;
     private notFoundText = "Not Found";
     private immunizationRecords: ImmunizationEvent[] = [];
+    private recommendationRecords: Recomendation[] = [];
     private isPreview = true;
     private isLoading = false;
 
@@ -67,6 +70,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private loadRecords() {
         this.immunizationRecords = this.patientImmunizations;
+        this.recommendationRecords = this.patientRecomendations;
         this.filterAndSortEntries();
         this.isLoading = false;
     }
@@ -119,6 +123,10 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private get isEmpty() {
         return this.immunizationRecords.length == 0;
+    }
+
+    private get isRecommendationEmpty() {
+        return this.recommendationRecords.length == 0;
     }
 
     private mounted() {
@@ -178,7 +186,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <ReportHeaderComponent
                         :start-date="startDate"
                         :end-date="endDate"
-                        title="Health Gateway Immunization History"
+                        title="Health Gateway Immunization Record"
                     />
                     <hr />
                     <b-row>
@@ -194,13 +202,13 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
-                    <b-col data-testid="immunizationDateTitle" class="col-1"
+                    <b-col data-testid="immunizationDateTitle" class="col-2"
                         >Date</b-col
                     >
                     <b-col data-testid="immunizationProviderTitle" class="col-2"
                         >Provider / Clinic</b-col
                     >
-                    <b-col data-testid="immunizationItemTitle" class="col-2"
+                    <b-col data-testid="immunizationItemTitle" class="col-3"
                         >Immunization</b-col
                     >
                     <b-col data-testid="immunizationAgentTitle" class="col-5">
@@ -210,9 +218,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             <b-col>Lot Number</b-col>
                         </b-row>
                     </b-col>
-                    <b-col data-testid="immunizationStatusTitle" class="col-2"
-                        >Status</b-col
-                    >
                 </b-row>
                 <b-row
                     v-for="immzRecord in immunizationRecords"
@@ -221,7 +226,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 >
                     <b-col
                         data-testid="immunizationItemDate"
-                        class="col-1 text-nowrap"
+                        class="col-2 text-nowrap"
                     >
                         {{ formatDate(immzRecord.dateOfImmunization) }}
                     </b-col>
@@ -231,7 +236,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     >
                         {{ immzRecord.providerOrClinic }}
                     </b-col>
-                    <b-col data-testid="immunizationItemName" class="col-2">
+                    <b-col data-testid="immunizationItemName" class="col-3">
                         {{ immzRecord.name }}
                     </b-col>
                     <b-col data-testid="immunizationItemAgent" class="col-5">
@@ -250,8 +255,58 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             </b-col>
                         </b-row>
                     </b-col>
-                    <b-col data-testid="immunizationItemStatus" class="col-2">
-                        {{ immzRecord.status }}
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <h4>Recommended Immunizations</h4>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <div>
+                            DISCLAIMER: Provincial Immunization Registry record
+                            only. Immunization history displayed may not portray
+                            the client’s complete immunization history and may
+                            impact forecasted vaccines. For information on
+                            recommended immunizations, please visit
+                            <a>http://www.immunizebc.ca</a> or contact your
+                            local Public Health Unit.
+                        </div>
+                    </b-col>
+                </b-row>
+                <b-row
+                    v-if="isRecommendationEmpty && (!isLoading || !isPreview)"
+                    class="mt-2"
+                >
+                    <b-col>No recommendations found.</b-col>
+                </b-row>
+                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
+                    <b-col data-testid="recommendationTitle" class="col-3"
+                        >Immunization</b-col
+                    >
+                    <b-col data-testid="recommendationDateTitle" class="col-2"
+                        >Date</b-col
+                    >
+                    <b-col data-testid="recommendationStatusTitle" class="col-2"
+                        >Status</b-col
+                    >
+                </b-row>
+                <b-row
+                    v-for="recommendation in recommendationRecords"
+                    :key="recommendation.recomendationId"
+                    class="item py-1"
+                >
+                    <b-col
+                        data-testid="recommendation"
+                        class="col-3 text-nowrap"
+                    >
+                        {{ recommendation.immunization.name }}
+                    </b-col>
+                    <b-col data-testid="recommendationDate" class="col-2">
+                        {{ formatDate(recommendation.agentDueDate) }}
+                    </b-col>
+                    <b-col data-testid="recommendationStatus" class="col-2">
+                        {{ recommendation.status }}
                     </b-col>
                 </b-row>
             </section>
