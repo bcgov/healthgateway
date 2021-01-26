@@ -702,11 +702,6 @@
             Gets or sets the Token representing the OpenIDConnect JWT for the authenticated user.
             </summary>
         </member>
-        <member name="P:HealthGateway.Admin.Services.AuthenticationData.Roles">
-            <summary>
-            Gets or sets the assgined user roles.
-            </summary>
-        </member>
         <member name="P:HealthGateway.Admin.Services.AuthenticationData.User">
             <summary>
             Gets or sets the authenticated user, <see cref="P:HealthGateway.Admin.Services.AuthenticationData.User"/>.
