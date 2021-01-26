@@ -44,11 +44,6 @@ export class DateWrapper {
     private readonly _internal_date: DateTime;
 
     /**
-     * The 'yyyy-MM-dd' tokens to format the string as.
-     */
-    public static yyyy_MM_dd_format = "yyyy-MM-dd";
-
-    /**
      * Gets the internal date time object. Use only for debugging. DO NOT USE OTHERWISE.
      */
     public get internalDate(): DateTime {
