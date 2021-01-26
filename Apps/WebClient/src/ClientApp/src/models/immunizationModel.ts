@@ -24,7 +24,7 @@ export interface ImmunizationEvent {
     status: string;
     dateOfImmunization: StringISODate;
     providerOrClinic: string;
-    forecast?: Forecast;
+    forecast: Forecast;
 }
 
 export interface Recomendation {

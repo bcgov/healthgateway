@@ -1,3 +1,4 @@
+import DateTimeFormat from "@/constants/dateTimeFormat";
 import { DateWrapper } from "@/models/dateWrapper";
 import {
     Forecast,
@@ -47,22 +48,16 @@ class ForecastViewModel {
     public dueDate: string;
     public status: string;
 
-    constructor(model?: Forecast) {
-        if (model !== undefined) {
-            this.displayName = model.displayName;
-            this.dueDate =
-                model.dueDate !== undefined
-                    ? DateWrapper.format(
-                          model.dueDate,
-                          DateWrapper.yyyy_MM_dd_format
-                      )
-                    : "";
-            this.status = model.status;
-        } else {
-            this.displayName = "";
-            this.dueDate = "";
-            this.status = "";
-        }
+    constructor(model: Forecast) {
+        this.displayName = model.displayName;
+        this.dueDate =
+            model.dueDate !== undefined
+                ? DateWrapper.format(
+                      model.dueDate,
+                      DateTimeFormat.formatDateString
+                  )
+                : "";
+        this.status = model.status;
     }
 }
 
