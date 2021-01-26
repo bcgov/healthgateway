@@ -4,6 +4,7 @@ TRUNCATE gateway."Communication" CASCADE;
 TRUNCATE gateway."ResourceDelegate" CASCADE;
 TRUNCATE gateway."ResourceDelegateHistory" CASCADE;
 TRUNCATE gateway."UserPreference" CASCADE;
+TRUNCATE gateway."Comment" CASCADE;
 
 /* Registered HealthGateway User */
 INSERT INTO gateway."UserProfile"(

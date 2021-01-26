@@ -64,6 +64,6 @@ describe('Comments', () => {
         cy.checkTimelineHasLoaded();
         verifyAdd();
         verifyEdit();
-        //verifyDelete();
+        verifyDelete();
     });
 })

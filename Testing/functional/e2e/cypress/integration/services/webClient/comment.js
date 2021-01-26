@@ -35,24 +35,26 @@ describe('WebClient Comment Service', () => {
     }) 
 
     it('Verify Get Comment Authorized', () => {
-        cy.get("@tokens").then(tokens => {
-            cy.log('Tokens', tokens)
-            cy.request({
-                url: `${BASEURL}${HDID}/Comment/`,
-                followRedirect: false,
-                auth: {
-                    bearer: tokens.access_token
-                },
-                headers: {
-                    accept: 'application/json'
-                }
+        cy.fixture('WebClientService/comments.json').then((expectedResponse) => {
+            cy.get("@tokens").then(tokens => {
+                cy.log('Tokens', tokens)
+                cy.request({
+                    url: `${BASEURL}${HDID}/Comment/`,
+                    followRedirect: false,
+                    auth: {
+                        bearer: tokens.access_token
+                    },
+                    headers: {
+                        accept: 'application/json'
+                    }
+                })
+                .should((response) => { 
+                    expect(response.status).to.eq(200)
+                    expect(response.body).to.not.be.null
+                    expect(response.body).to.deep.equal(expectedResponse)
+                })
             })
-            .should((response) => { 
-                expect(response.status).to.eq(200)
-                expect(response.body).to.not.be.null
-                expect(response.body.resultStatus).to.eq(1)
-            })
-        }) 
+        });
     })
 
     it('Verify Post Comment Unauthorized', () => {
