@@ -7,7 +7,7 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
-import ImmunizationModel from "@/models/immunizationModel";
+import { ImmunizationEvent } from "@/models/immunizationModel";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -28,19 +28,19 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;
     @Getter("getStoredImmunizations", { namespace: "immunization" })
-    patientImmunizations!: ImmunizationModel[];
+    patientImmunizations!: ImmunizationEvent[];
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: {
         hdid: string;
-    }) => Promise<ImmunizationModel[]>;
+    }) => Promise<ImmunizationEvent[]>;
     @Ref("report")
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
-    private immunizationRecords: ImmunizationModel[] = [];
+    private immunizationRecords: ImmunizationEvent[] = [];
     private isPreview = true;
     private isLoading = false;
 

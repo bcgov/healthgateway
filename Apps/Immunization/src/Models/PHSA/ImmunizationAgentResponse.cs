@@ -13,28 +13,37 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Immunization.Models.PHSA
 {
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// Defines a PHSA Immunization Agent model.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class ImmunizationAgentResponse
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets or sets the Immunization id.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
+        [JsonPropertyName("code")]
+        public string Code { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the result section.
+        /// Gets or sets the Immunization Name.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public T? Result { get; set; } =  default(T);
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Immunization Lot Number.
+        /// </summary>
+        [JsonPropertyName("lotNumber")]
+        public string LotNumber { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Immunization Product Name.
+        /// </summary>
+        [JsonPropertyName("productName")]
+        public string ProductName { get; set; } = string.Empty;
     }
 }

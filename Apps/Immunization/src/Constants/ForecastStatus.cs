@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,28 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Immunization.Constants
 {
-    using System.Collections.Generic;
+    using System.Runtime.Serialization;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// Immunization forecast status.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    public enum ForecastStatus
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// The immunization forecast is Eligible.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
-
-        /// <summary>
-        /// Gets or sets the result section.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public T? Result { get; set; } =  default(T);
+        [EnumMember(Value = "Eligible")]
+        Eligible
     }
 }
