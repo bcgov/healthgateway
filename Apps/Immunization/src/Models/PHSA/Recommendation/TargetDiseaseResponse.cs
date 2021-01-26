@@ -13,28 +13,20 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Immunization.Models.PHSA.Recommendation
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// The PHSA Target Disease data model.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class TargetDiseaseResponse
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets or sets the Target Disese Codes.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
-
-        /// <summary>
-        /// Gets or sets the result section.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public T? Result { get; set; } =  default(T);
+        [JsonPropertyName("targetDiseaseCodes")]
+        public IList<SystemCode> targetDiseaseCodes { get; set; } = new List<SystemCode>();
     }
 }

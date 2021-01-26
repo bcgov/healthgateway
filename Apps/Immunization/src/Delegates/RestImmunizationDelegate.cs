@@ -108,7 +108,7 @@ namespace HealthGateway.Immunization.Delegates
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;
                                 retVal.ResourcePayload = phsaResult;
-                                retVal.TotalResultCount = phsaResult.Result.Count;
+                                retVal.TotalResultCount = 1;
                                 retVal.PageSize = int.Parse(this.immunizationConfig.FetchSize, CultureInfo.InvariantCulture);
                             }
                             else

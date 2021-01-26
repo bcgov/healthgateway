@@ -15,14 +15,14 @@ export default class ImmunizationTimelineComponent extends Vue {
     @Prop() entry!: ImmunizationTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
-    private detailsVisible = false;
+    private forecastVisible = false;
 
     private get entryIcon(): IconDefinition {
         return faSyringe;
     }
 
     private toggleDetails(): void {
-        this.detailsVisible = !this.detailsVisible;
+        this.forecastVisible = !this.forecastVisible;
     }
 }
 </script>
@@ -121,7 +121,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                         </b-row>
                     </b-col>
                 </b-row>
-                <b-row>
+                <b-row v-if="entry.immunization.forecast">
                     <b-col>
                         <div class="d-flex flex-row-reverse">
                             <b-btn
@@ -129,7 +129,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="detailsButton"
                                 @click="toggleDetails()"
                             >
-                                <span v-if="detailsVisible">
+                                <span v-if="forecastVisible">
                                     <font-awesome-icon
                                         icon="chevron-up"
                                         aria-hidden="true"
@@ -141,13 +141,15 @@ export default class ImmunizationTimelineComponent extends Vue {
                                         aria-hidden="true"
                                     ></font-awesome-icon
                                 ></span>
-                                <span v-if="detailsVisible">Hide Forecast</span>
+                                <span v-if="forecastVisible"
+                                    >Hide Forecast</span
+                                >
                                 <span v-else>Forecast</span>
                             </b-btn>
                         </div>
                         <b-collapse
                             :id="'entryDetails-' + index + '-' + datekey"
-                            v-model="detailsVisible"
+                            v-model="forecastVisible"
                         >
                             <div>
                                 <div class="detailSection">

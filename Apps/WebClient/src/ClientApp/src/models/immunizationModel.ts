@@ -24,15 +24,15 @@ export interface ImmunizationEvent {
     status: string;
     dateOfImmunization: StringISODate;
     providerOrClinic: string;
-    forecast: Forecast;
+    forecast?: Forecast;
 }
 
-export interface Recomendation {
-    recomendationId: string;
-    disseaseEligibleDate: StringISODate;
-    diseaseDueDate: StringISODate;
-    agentEligibleDate: StringISODate;
-    agentDueDate: StringISODate;
+export interface Recommendation {
+    recommendationSetId: string;
+    disseaseEligibleDate?: StringISODate;
+    diseaseDueDate?: StringISODate;
+    agentEligibleDate?: StringISODate;
+    agentDueDate?: StringISODate;
 
     status: ForecastStatus;
     targetDiseases: TargetDisease[];
@@ -46,7 +46,7 @@ export interface TargetDisease {
 }
 
 export interface Forecast {
-    recomendationId: string;
+    recommendationId: string;
     createDate: StringISODate;
     status: ForecastStatus;
     displayName: string;
