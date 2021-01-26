@@ -6,4 +6,5 @@ export default interface AuthenticationData {
     isAuthorized: boolean;
     roles: string[];
     userProfile: UserProfile;
+    roles: string[];
 }
