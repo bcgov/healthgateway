@@ -125,6 +125,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                     <b-col>
                         <div class="d-flex flex-row-reverse">
                             <b-btn
+                                data-testid="detailsBtn"
                                 variant="link"
                                 class="detailsButton"
                                 @click="toggleDetails()"
@@ -166,22 +167,31 @@ export default class ImmunizationTimelineComponent extends Vue {
                                     </b-row>
                                     <b-row>
                                         <b-col>
-                                            {{
-                                                entry.immunization.forecast
-                                                    .displayName
-                                            }}
+                                            <span
+                                                data-testid="forecastDisplayName"
+                                                >{{
+                                                    entry.immunization.forecast
+                                                        .displayName
+                                                }}</span
+                                            >
                                         </b-col>
                                         <b-col>
-                                            {{
-                                                entry.immunization.forecast
-                                                    .dueDate
-                                            }}
+                                            <span
+                                                data-testid="forecastDueDate"
+                                                >{{
+                                                    entry.immunization.forecast
+                                                        .dueDate
+                                                }}</span
+                                            >
                                         </b-col>
                                         <b-col>
-                                            {{
-                                                entry.immunization.forecast
-                                                    .status
-                                            }}
+                                            <span
+                                                data-testid="forecastStatus"
+                                                >{{
+                                                    entry.immunization.forecast
+                                                        .status
+                                                }}</span
+                                            >
                                         </b-col>
                                     </b-row>
                                 </div>
@@ -189,7 +199,9 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 <div class="detailSection">
                                     <div>
                                         <br />
-                                        <p>
+                                        <p
+                                            data-testid="forecastFollowDirections"
+                                        >
                                             Please follow directions from your
                                             COVID vaccine provider for
                                             information on COVID-19 2nd dose.
