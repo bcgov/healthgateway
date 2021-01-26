@@ -178,7 +178,7 @@ export default class FilterComponent extends Vue {
             </b-button>
             <b-popover
                 target="filterBtn"
-                triggers="focus"
+                triggers="click"
                 text="Filter"
                 class="w-100"
                 data-testid="filterContainer"
