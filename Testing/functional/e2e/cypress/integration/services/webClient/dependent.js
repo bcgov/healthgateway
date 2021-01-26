@@ -35,24 +35,22 @@ describe('WebClient Dependent Service', () => {
     }) 
 
     it('Verify Get Dependents Authorized', () => {
-        cy.fixture('WebClientService/dependents.json').then((expectedResponse) => {
-            cy.get("@tokens").then(tokens => {
-                cy.log('Tokens', tokens)
-                cy.request({
-                    url: `${BASEURL}${HDID}/Dependent`,
-                    followRedirect: false,
-                    auth: {
-                        bearer: tokens.access_token
-                    },
-                    headers: {
-                        accept: 'application/json'
-                    }
-                })
-                .should((response) => { 
-                    expect(response.status).to.eq(200)
-                    expect(response.body).to.not.be.null
-                })          
+        cy.get("@tokens").then(tokens => {
+            cy.log('Tokens', tokens)
+            cy.request({
+                url: `${BASEURL}${HDID}/Dependent`,
+                followRedirect: false,
+                auth: {
+                    bearer: tokens.access_token
+                },
+                headers: {
+                    accept: 'application/json'
+                }
             })
+            .should((response) => { 
+                expect(response.status).to.eq(200)
+                expect(response.body).to.not.be.null
+            })          
         }) 
     })
 
@@ -103,7 +101,7 @@ describe('WebClient Dependent Service', () => {
             failOnStatusCode: false
         })
         .should((response) => { expect(response.status).to.eq(401) })
-    })    
+    })
 
     it('Verify Delete Dependent Forbidden', () => {
         cy.get("@tokens").then(tokens => {
