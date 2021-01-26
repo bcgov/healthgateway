@@ -51,7 +51,8 @@ namespace HealthGateway.Immunization.Test.Delegate
         [Fact]
         public void Ok()
         {
-            ImmunizationResponse expectedResponse = new ImmunizationResponse()
+
+            ImmunizationViewResponse expectedViewResponse = new ImmunizationViewResponse()
             {
                 Id = Guid.NewGuid(),
                 SourceSystemId = "mockSourceSystemId",
@@ -61,25 +62,13 @@ namespace HealthGateway.Immunization.Test.Delegate
 
             PHSAResult<ImmunizationResponse> phsaResponse = new PHSAResult<ImmunizationResponse>()
             {
-                Result = new List<ImmunizationResponse>()
+                Result = new ImmunizationResponse()
                 {
-                    expectedResponse,
+                    ImmunizationViews = new List<ImmunizationViewResponse>() { expectedViewResponse }
                 }
             };
 
             string json = JsonSerializer.Serialize(phsaResponse, null);
-
-            RequestResult<IEnumerable<ImmunizationResponse>> expectedResult = new RequestResult<IEnumerable<ImmunizationResponse>>()
-            {
-                ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new List<ImmunizationResponse>()
-                {
-                   expectedResponse,
-                },
-                PageIndex = 0,
-                PageSize = 25,
-                TotalResultCount = 1,
-            };
 
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IHttpClientService httpClientService = GetHttpClientService(HttpStatusCode.OK, json);
@@ -89,7 +78,7 @@ namespace HealthGateway.Immunization.Test.Delegate
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Equal(1, actualResult.ResourcePayload.Result.Count);
+            Assert.Equal(1, actualResult.ResourcePayload.Result.ImmunizationViews.Count());
         }
 
         [Fact]

@@ -52,9 +52,9 @@ describe('WebClient Comment Service', () => {
                     expect(response.status).to.eq(200)
                     expect(response.body).to.not.be.null
                     expect(response.body).to.deep.equal(expectedResponse)
-                })          
+                })
             })
-        }) 
+        });
     })
 
     it('Verify Post Comment Unauthorized', () => {

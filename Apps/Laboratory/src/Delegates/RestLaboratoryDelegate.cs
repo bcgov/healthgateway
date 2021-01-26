@@ -103,7 +103,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 WriteIndented = true,
                             };
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<LaboratoryOrder>? phsaResult = JsonSerializer.Deserialize<PHSAResult<LaboratoryOrder>>(payload, options);
+                            PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload, options);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;

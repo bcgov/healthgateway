@@ -1,68 +1,39 @@
-// -------------------------------------------------------------------------
-//  Copyright © 2019 Province of British Columbia
+//-------------------------------------------------------------------------
+// Copyright © 2019 Province of British Columbia
 //
-//  Licensed under the Apache License, Version 2.0 (the "License");
-//  you may not use this file except in compliance with the License.
-//  You may obtain a copy of the License at
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-//  http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 //
-//  Unless required by applicable law or agreed to in writing, software
-//  distributed under the License is distributed on an "AS IS" BASIS,
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//  See the License for the specific language governing permissions and
-//  limitations under the License.
-// -------------------------------------------------------------------------
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Models.PHSA
 {
-    using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Immunization.Models.PHSA.Recommendation;
 
     /// <summary>
-    /// The PHSA Immunization record data model.
+    /// Represents Immunization Response.
     /// </summary>
     public class ImmunizationResponse
     {
         /// <summary>
-        /// Gets or sets the Immunization id.
+        /// Gets or sets the list of Immunization Views.
         /// </summary>
-        [JsonPropertyName("id")]
-        public Guid Id { get; set; }
+        [JsonPropertyName("immunizationViews")]
+        public IList<ImmunizationViewResponse> ImmunizationViews { get; set; } = new List<ImmunizationViewResponse>();
 
         /// <summary>
-        /// Gets or sets the SourceSystemId.
+        /// Gets or sets the list of Immunization Recommendations.
         /// </summary>
-        [JsonPropertyName("sourceSystemId")]
-        public string SourceSystemId { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization Name.
-        /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization Status.
-        /// </summary>
-        [JsonPropertyName("status")]
-        public string Status { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Provider or Clinic providing the Immunization.
-        /// </summary>
-        [JsonPropertyName("providerOrClinic")]
-        public string ProviderOrClinic { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization occurence date time.
-        /// </summary>
-        [JsonPropertyName("occurrenceDateTime")]
-        public DateTime OccurrenceDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Immunization Agents.
-        /// </summary>
-        public IEnumerable<ImmunizationAgentResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentResponse>();
+        [JsonPropertyName("immunizationRecommendations")]
+        public IList<ImmunizationRecommendationResponse> Recommendations { get; set; } = new List<ImmunizationRecommendationResponse>();
     }
 }

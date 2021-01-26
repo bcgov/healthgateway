@@ -13,28 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Immunization.Models.PHSA.Recommendation
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// The PHSA Date Criterion data model.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class DateCriterion
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets or sets the Date Criterion codes.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
+        [JsonPropertyName("dateCriterionCode")]
+        public DateCriterionCode DateCriterionCode { get; set; } = new DateCriterionCode();
 
         /// <summary>
-        /// Gets or sets the result section.
+        /// Gets or sets the Date Criterion value.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public T? Result { get; set; } =  default(T);
+        [JsonPropertyName("value")]
+        public string Value { get; set; } = string.Empty;
     }
 }

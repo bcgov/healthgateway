@@ -33,12 +33,12 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the list of Immunizations events.
         /// </summary>
         [JsonPropertyName("immunizations")]
-        public IEnumerable<ImmunizationEvent> Immunizations { get; set; } = new List<ImmunizationEvent>();
+        public IList<ImmunizationEvent> Immunizations { get; set; } = new List<ImmunizationEvent>();
 
         /// <summary>
-        /// Gets or sets the list of Immunizations recomendations.
+        /// Gets or sets the list of Immunizations recommendations.
         /// </summary>
-        [JsonPropertyName("recomendations")]
-        public IEnumerable<ImmunizationRecomendation> Recomendations { get; set; } = new List<ImmunizationRecomendation>();
+        [JsonPropertyName("recommendations")]
+        public IList<ImmunizationRecommendation> Recommendations { get; set; } = new List<ImmunizationRecommendation>();
     }
 }

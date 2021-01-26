@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Models
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
     using HealthGateway.Immunization.Models.PHSA;
+    using HealthGateway.Immunization.Models.PHSA.Recommendation;
 
     /// <summary>
     /// The Immunization Agents model.
@@ -82,5 +83,29 @@ namespace HealthGateway.Immunization.Models
 
             return immunizationAgents;
         }
+
+        /// <summary>
+        /// Creates a List of ImmunizationAgents object from a PHSA model.
+        /// </summary>
+        /// <param name="vaccineCodes">The list of PHSA models to convert.</param>
+        /// <returns>A list of ImmunizationAgent objects.</returns>
+        public static IEnumerable<ImmunizationAgent> FromPHSACodesModel(IEnumerable<SystemCode>? vaccineCodes)
+        {
+            List<ImmunizationAgent> immunizationAgents = new List<ImmunizationAgent>();
+            foreach (SystemCode systemCode in vaccineCodes)
+            {
+                immunizationAgents.Add(
+                    new ImmunizationAgent()
+                    {
+                        Code = systemCode.Code,
+                        Name = systemCode.Display
+                    }
+                );
+            }
+
+            return immunizationAgents;
+        }
+
+
     }
 }
