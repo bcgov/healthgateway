@@ -7,7 +7,7 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ImmunizationEvent, Recomendation } from "@/models/immunizationModel";
+import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -30,7 +30,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     @Getter("getStoredImmunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
     @Getter("getStoredRecommendations", { namespace: "immunization" })
-    patientRecomendations!: Recomendation[];
+    patientRecommendations!: Recommendation[];
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
     @Action("retrieve", { namespace: "immunization" })
@@ -43,7 +43,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private logger!: ILogger;
     private notFoundText = "Not Found";
     private immunizationRecords: ImmunizationEvent[] = [];
-    private recommendationRecords: Recomendation[] = [];
+    private recommendationRecords: Recommendation[] = [];
     private isPreview = true;
     private isLoading = false;
 
@@ -70,7 +70,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private loadRecords() {
         this.immunizationRecords = this.patientImmunizations;
-        this.recommendationRecords = this.patientRecomendations;
+        this.recommendationRecords = this.patientRecommendations;
         this.filterAndSortEntries();
         this.isLoading = false;
     }
@@ -306,7 +306,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         </b-row>
                         <b-row
                             v-for="recommendation in recommendationRecords"
-                            :key="recommendation.recomendationId"
+                            :key="recommendation.recommendationId"
                             class="item py-1"
                         >
                             <b-col

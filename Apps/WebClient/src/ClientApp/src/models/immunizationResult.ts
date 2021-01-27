@@ -1,4 +1,4 @@
-import { ImmunizationEvent, Recomendation } from "@/models/immunizationModel";
+import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 
 export interface LoadState {
     refreshInProgress: boolean;
@@ -7,5 +7,5 @@ export interface LoadState {
 export default interface ImmunizationResult {
     loadState: LoadState;
     immunizations: ImmunizationEvent[];
-    recommendations: Recomendation[];
+    recommendations: Recommendation[];
 }

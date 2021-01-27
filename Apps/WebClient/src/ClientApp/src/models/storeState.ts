@@ -4,7 +4,7 @@ import BannerError from "@/models/bannerError";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ImmunizationEvent, Recomendation } from "@/models/immunizationModel";
+import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import User from "@/models/user";
@@ -62,7 +62,7 @@ export interface LaboratoryState {
 
 export interface ImmunizationState {
     immunizations: ImmunizationEvent[];
-    recomendations: Recomendation[];
+    recommendations: Recommendation[];
     statusMessage: string;
     error: boolean;
     stateType: StateType;

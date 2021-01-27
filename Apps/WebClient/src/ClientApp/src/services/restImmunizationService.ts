@@ -42,6 +42,7 @@ export class RestImmunizationService implements IImmunizationService {
                     resourcePayload: {
                         loadState: { refreshInProgress: false },
                         immunizations: [],
+                        recommendations: [],
                     },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,

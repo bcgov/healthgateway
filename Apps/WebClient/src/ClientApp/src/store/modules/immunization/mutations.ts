@@ -13,7 +13,7 @@ export const mutations: MutationTree<ImmunizationState> = {
             state.stateType = StateType.DEFERRED;
         } else {
             state.immunizations = immunizationResult.immunizations;
-            state.recomendations = immunizationResult.recommendations;
+            state.recommendations = immunizationResult.recommendations;
             state.stateType = StateType.INITIALIZED;
         }
 
