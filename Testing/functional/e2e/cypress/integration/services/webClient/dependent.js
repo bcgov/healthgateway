@@ -83,16 +83,6 @@ describe('WebClient Dependent Service', () => {
         })
     })
 
-    it('Verify Put Dependent Not Found', () => {
-        cy.request({ 
-            method: 'PUT',
-            url: `${BASEURL}${HDID}`,
-            followRedirect: false,
-            failOnStatusCode: false
-        })
-        .should((response) => { expect(response.status).to.eq(404) })
-    })    
-
     it('Verify Delete Dependent Unauthorized', () => {
         cy.request({ 
             method: 'DELETE',
