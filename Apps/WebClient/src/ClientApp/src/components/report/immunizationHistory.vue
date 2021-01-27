@@ -180,7 +180,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
 <template>
     <div>
-        <div ref="report">
+        <div v-show="!isLoading" ref="report">
             <section class="pdf-item">
                 <div v-show="!isPreview">
                     <ReportHeaderComponent
@@ -189,16 +189,13 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         title="Health Gateway Immunization Record"
                     />
                     <hr />
-                    <b-row>
-                        <b-col>
-                            <h4>Immunization History</h4>
-                        </b-col>
-                    </b-row>
                 </div>
-                <b-row
-                    v-if="isEmpty && (!isLoading || !isPreview)"
-                    class="mt-2"
-                >
+                <b-row>
+                    <b-col>
+                        <h4>Immunization History</h4>
+                    </b-col>
+                </b-row>
+                <b-row v-if="isEmpty" class="mt-2">
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
@@ -237,11 +234,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         {{ immzRecord.providerOrClinic }}
                     </b-col>
                     <b-col data-testid="immunizationItemName" class="col-3">
-                        {{ immzRecord.name }}
+                        {{ immzRecord.immunization.name }}
                     </b-col>
                     <b-col data-testid="immunizationItemAgent" class="col-5">
                         <b-row
-                            v-for="agent in immzRecord.immunizationAgents"
+                            v-for="agent in immzRecord.immunization
+                                .immunizationAgents"
                             :key="agent.code"
                         >
                             <b-col>
@@ -257,56 +255,79 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     </b-col>
                 </b-row>
                 <b-row>
-                    <b-col>
-                        <h4>Recommended Immunizations</h4>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <div>
-                            DISCLAIMER: Provincial Immunization Registry record
-                            only. Immunization history displayed may not portray
-                            the client’s complete immunization history and may
-                            impact forecasted vaccines. For information on
-                            recommended immunizations, please visit
-                            <a>https://www.immunizebc.ca</a> or contact your
-                            local Public Health Unit.
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row
-                    v-if="isRecommendationEmpty && (!isLoading || !isPreview)"
-                    class="mt-2"
-                >
-                    <b-col>No recommendations found.</b-col>
-                </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
-                    <b-col data-testid="recommendationTitle" class="col-3"
-                        >Immunization</b-col
-                    >
-                    <b-col data-testid="recommendationDateTitle" class="col-2"
-                        >Date</b-col
-                    >
-                    <b-col data-testid="recommendationStatusTitle" class="col-2"
-                        >Status</b-col
-                    >
-                </b-row>
-                <b-row
-                    v-for="recommendation in recommendationRecords"
-                    :key="recommendation.recomendationId"
-                    class="item py-1"
-                >
-                    <b-col
-                        data-testid="recommendation"
-                        class="col-3 text-nowrap"
-                    >
-                        {{ recommendation.immunization.name }}
-                    </b-col>
-                    <b-col data-testid="recommendationDate" class="col-2">
-                        {{ formatDate(recommendation.agentDueDate) }}
-                    </b-col>
-                    <b-col data-testid="recommendationStatus" class="col-2">
-                        {{ recommendation.status }}
+                    <b-col class="col-7">
+                        <b-row class="mt-3">
+                            <b-col>
+                                <h4>Recommended Immunizations</h4>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <div id="disclaimer">
+                                    DISCLAIMER: Provincial Immunization Registry
+                                    record only. Immunization history displayed
+                                    may not portray the client’s complete
+                                    immunization history and may impact
+                                    forecasted vaccines. For information on
+                                    recommended immunizations, please visit
+                                    <a>https://www.immunizebc.ca</a> or contact
+                                    your local Public Health Unit.
+                                </div>
+                            </b-col>
+                        </b-row>
+                        <b-row
+                            v-if="
+                                isRecommendationEmpty &&
+                                (!isLoading || !isPreview)
+                            "
+                            class="mt-2"
+                        >
+                            <b-col>No recommendations found.</b-col>
+                        </b-row>
+                        <b-row
+                            v-else-if="!isRecommendationEmpty"
+                            class="py-3 mt-4 header"
+                        >
+                            <b-col
+                                data-testid="recommendationTitle"
+                                class="col-6"
+                                >Immunization</b-col
+                            >
+                            <b-col
+                                data-testid="recommendationDateTitle"
+                                class="col-3"
+                                >Date</b-col
+                            >
+                            <b-col
+                                data-testid="recommendationStatusTitle"
+                                class="col-3"
+                                >Status</b-col
+                            >
+                        </b-row>
+                        <b-row
+                            v-for="recommendation in recommendationRecords"
+                            :key="recommendation.recomendationId"
+                            class="item py-1"
+                        >
+                            <b-col
+                                data-testid="recommendation"
+                                class="col-6 text-nowrap"
+                            >
+                                {{ recommendation.immunization.name }}
+                            </b-col>
+                            <b-col
+                                data-testid="recommendationDate"
+                                class="col-3"
+                            >
+                                {{ formatDate(recommendation.agentDueDate) }}
+                            </b-col>
+                            <b-col
+                                data-testid="recommendationStatus"
+                                class="col-3"
+                            >
+                                {{ recommendation.status }}
+                            </b-col>
+                        </b-row>
                     </b-col>
                 </b-row>
             </section>
@@ -337,9 +358,14 @@ h4 {
 }
 
 .item:nth-child(odd) {
-    background-color: $medium_background;
+    background-color: $soft_background;
 }
 .item:nth-child(even) {
-    background-color: $soft_background;
+    background-color: $medium_background;
+}
+
+#disclaimer {
+    font-size: 0.7em;
+    font-weight: bold !important;
 }
 </style>
