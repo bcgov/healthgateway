@@ -3,7 +3,8 @@
     "loadState": {
       "refreshInProgress": true
     },
-    "immunizations": []
+    "immunizations": [],
+    "recommendations": []
   },
   "totalResultCount": 0,
   "pageIndex": 0,
