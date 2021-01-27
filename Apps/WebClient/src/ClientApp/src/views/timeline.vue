@@ -23,7 +23,7 @@ import { Dictionary } from "@/models/baseTypes";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
-import ImmunizationModel from "@/models/immunizationModel";
+import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { LaboratoryOrder } from "@/models/laboratory";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
@@ -90,10 +90,10 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: {
         hdid: string;
-    }) => Promise<ImmunizationModel[]>;
+    }) => Promise<ImmunizationEvent[]>;
 
     @Getter("getStoredImmunizations", { namespace: "immunization" })
-    patientImmunizations!: ImmunizationModel[];
+    patientImmunizations!: ImmunizationEvent[];
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;

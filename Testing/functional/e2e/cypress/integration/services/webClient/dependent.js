@@ -34,7 +34,7 @@ describe('WebClient Dependent Service', () => {
         })
     }) 
 
-    it('Verify Get Dependents Authorized', () => {        
+    it('Verify Get Dependents Authorized', () => {
         cy.get("@tokens").then(tokens => {
             cy.log('Tokens', tokens)
             cy.request({
@@ -50,7 +50,7 @@ describe('WebClient Dependent Service', () => {
             .should((response) => { 
                 expect(response.status).to.eq(200)
                 expect(response.body).to.not.be.null
-            })          
+            })
         })
     })
 
@@ -101,7 +101,7 @@ describe('WebClient Dependent Service', () => {
             failOnStatusCode: false
         })
         .should((response) => { expect(response.status).to.eq(401) })
-    })    
+    })
 
     it('Verify Delete Dependent Forbidden', () => {
         cy.get("@tokens").then(tokens => {

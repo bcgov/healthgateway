@@ -2,6 +2,8 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import MenuItem from "@/models/menuItem";
+
 @Component
 export default class MainNavbar extends Vue {
     @Action("setState", { namespace: "drawer" })
@@ -9,6 +11,10 @@ export default class MainNavbar extends Vue {
     @Getter("isOpen", { namespace: "drawer" }) private isDrawerOpen!: boolean;
     @Getter("isAuthorized", { namespace: "auth" })
     private isAuthorized!: boolean;
+    @Getter("isReviewer", { namespace: "auth" })
+    private isUserReviewer!: boolean;
+    @Getter("isSuperAdmin", { namespace: "auth" })
+    private isUserAdmin!: boolean;
 
     private isOpen = true;
     private drawer = false;
@@ -18,37 +24,56 @@ export default class MainNavbar extends Vue {
     private logo = "favicon.ico";
     private image = "./assets/images/background.jpg";
 
-    private items = [
-        {
-            title: "Dashboard",
-            icon: "view_quilt",
-            to: "/"
-        },
-        {
-            title: "JobScheduler",
-            icon: "schedule",
-            to: "/job-scheduler"
-        },
-        {
-            title: "Communications",
-            icon: "email",
-            to: "/communication"
-        },
-        { title: "Feedback Review", icon: "comment", to: "/user-feedback" },
-        {
-            title: "System Analytics",
-            icon: "fa-download",
-            to: "/stats"
-        },
-        {
-            title: "Resend Emails",
-            icon: "email",
-            to: "/admin-email"
-        }
-    ];
+    private items: MenuItem[] = [];
 
     private mounted() {
         this.isOpen = this.isDrawerOpen;
+    }
+
+    private loadMenuItems() {
+        this.items = [
+            {
+                title: "Dashboard",
+                icon: "view_quilt",
+                to: "/",
+                visible: this.isUserReviewer || this.isUserAdmin
+            },
+            {
+                title: "JobScheduler",
+                icon: "schedule",
+                to: "/job-scheduler",
+                visible: this.isUserAdmin
+            },
+            {
+                title: "Communications",
+                icon: "email",
+                to: "/communication",
+                visible: this.isUserAdmin
+            },
+            {
+                title: "Feedback Review",
+                icon: "comment",
+                to: "/user-feedback",
+                visible: this.isUserReviewer || this.isUserAdmin
+            },
+            {
+                title: "System Analytics",
+                icon: "fa-download",
+                to: "/stats",
+                visible: this.isUserAdmin
+            },
+            {
+                title: "Resend Emails",
+                icon: "email",
+                to: "/admin-email",
+                visible: this.isUserAdmin
+            }
+        ];
+    }
+
+    @Watch("isAuthorized")
+    private onIsAuthorizedChange() {
+        this.loadMenuItems();
     }
 
     @Watch("isOpen")
@@ -98,6 +123,7 @@ export default class MainNavbar extends Vue {
                     <v-divider />
                     <v-list-item
                         v-for="(item, i) in items"
+                        v-show="item.visible"
                         :key="i"
                         :to="item.to"
                         :active-class="color"

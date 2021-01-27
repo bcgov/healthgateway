@@ -1,5 +1,6 @@
 import { GetterTree } from "vuex";
 
+import { UserRoles } from "@/constants/userRoles";
 import { AuthState, RootState } from "@/models/storeState";
 import User from "@/models/userProfile";
 
@@ -24,5 +25,17 @@ export const getters: GetterTree<AuthState, RootState> = {
         return authentication != undefined
             ? authentication.userProfile
             : undefined;
+    },
+    roles(state: AuthState): string[] {
+        const { authentication } = state;
+        return authentication?.roles ?? [];
+    },
+    isSuperAdmin(state: AuthState): boolean {
+        const { authentication } = state;
+        return authentication?.roles.includes(UserRoles.Admin) ?? false;
+    },
+    isReviewer(state: AuthState): boolean {
+        const { authentication } = state;
+        return authentication?.roles.includes(UserRoles.Reviewer) ?? false;
     }
 };

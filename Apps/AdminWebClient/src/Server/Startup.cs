@@ -201,6 +201,7 @@ namespace HealthGateway.AdminWebClient
                             if (identity != null)
                             {
                                 identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                                this.logger.LogTrace($"Token = {accessToken.RawData}");
                             }
                         }
 

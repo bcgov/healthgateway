@@ -133,6 +133,17 @@ export class DateWrapper {
     }
 
     /**
+     * Formats the date using the given a set of tokens
+     * See https://moment.github.io/luxon/docs/manual/formatting.html for the rules
+     * @param dateString The date string to be formatted.
+     * @param formatString The tokens to format the string as.
+     * @returns a string representation of the datetime with the given format.
+     */
+    public static format(dateString: string, formatString: string): string {
+        return new DateWrapper(dateString).format(formatString);
+    }
+
+    /**
      * Formats the date to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
      * @returns the formated string representation
      */
