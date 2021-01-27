@@ -7,7 +7,7 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ImmunizationEvent } from "@/models/immunizationModel";
+import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -29,6 +29,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     immunizationIsDeferred!: boolean;
     @Getter("getStoredImmunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
+    @Getter("getStoredRecommendations", { namespace: "immunization" })
+    patientRecommendations!: Recommendation[];
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
     @Action("retrieve", { namespace: "immunization" })
@@ -41,6 +43,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private logger!: ILogger;
     private notFoundText = "Not Found";
     private immunizationRecords: ImmunizationEvent[] = [];
+    private recommendationRecords: Recommendation[] = [];
     private isPreview = true;
     private isLoading = false;
 
@@ -67,6 +70,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private loadRecords() {
         this.immunizationRecords = this.patientImmunizations;
+        this.recommendationRecords = this.patientRecommendations;
         this.filterAndSortEntries();
         this.isLoading = false;
     }
@@ -121,6 +125,10 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         return this.immunizationRecords.length == 0;
     }
 
+    private get isRecommendationEmpty() {
+        return this.recommendationRecords.length == 0;
+    }
+
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchPatientImmunizations();
@@ -172,35 +180,32 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
 <template>
     <div>
-        <div ref="report">
+        <div v-show="!isLoading" ref="report">
             <section class="pdf-item">
                 <div v-show="!isPreview">
                     <ReportHeaderComponent
                         :start-date="startDate"
                         :end-date="endDate"
-                        title="Health Gateway Immunization History"
+                        title="Health Gateway Immunization Record"
                     />
                     <hr />
-                    <b-row>
-                        <b-col>
-                            <h4>Immunization History</h4>
-                        </b-col>
-                    </b-row>
                 </div>
-                <b-row
-                    v-if="isEmpty && (!isLoading || !isPreview)"
-                    class="mt-2"
-                >
+                <b-row>
+                    <b-col>
+                        <h4>Immunization History</h4>
+                    </b-col>
+                </b-row>
+                <b-row v-if="isEmpty" class="mt-2">
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
-                    <b-col data-testid="immunizationDateTitle" class="col-1"
+                    <b-col data-testid="immunizationDateTitle" class="col-2"
                         >Date</b-col
                     >
                     <b-col data-testid="immunizationProviderTitle" class="col-2"
                         >Provider / Clinic</b-col
                     >
-                    <b-col data-testid="immunizationItemTitle" class="col-2"
+                    <b-col data-testid="immunizationItemTitle" class="col-3"
                         >Immunization</b-col
                     >
                     <b-col data-testid="immunizationAgentTitle" class="col-5">
@@ -210,9 +215,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             <b-col>Lot Number</b-col>
                         </b-row>
                     </b-col>
-                    <b-col data-testid="immunizationStatusTitle" class="col-2"
-                        >Status</b-col
-                    >
                 </b-row>
                 <b-row
                     v-for="immzRecord in immunizationRecords"
@@ -221,7 +223,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 >
                     <b-col
                         data-testid="immunizationItemDate"
-                        class="col-1 text-nowrap"
+                        class="col-2 text-nowrap"
                     >
                         {{ formatDate(immzRecord.dateOfImmunization) }}
                     </b-col>
@@ -231,12 +233,13 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     >
                         {{ immzRecord.providerOrClinic }}
                     </b-col>
-                    <b-col data-testid="immunizationItemName" class="col-2">
-                        {{ immzRecord.name }}
+                    <b-col data-testid="immunizationItemName" class="col-3">
+                        {{ immzRecord.immunization.name }}
                     </b-col>
                     <b-col data-testid="immunizationItemAgent" class="col-5">
                         <b-row
-                            v-for="agent in immzRecord.immunizationAgents"
+                            v-for="agent in immzRecord.immunization
+                                .immunizationAgents"
                             :key="agent.code"
                         >
                             <b-col>
@@ -250,8 +253,81 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             </b-col>
                         </b-row>
                     </b-col>
-                    <b-col data-testid="immunizationItemStatus" class="col-2">
-                        {{ immzRecord.status }}
+                </b-row>
+                <b-row>
+                    <b-col class="col-7">
+                        <b-row class="mt-3">
+                            <b-col>
+                                <h4>Recommended Immunizations</h4>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <div id="disclaimer">
+                                    DISCLAIMER: Provincial Immunization Registry
+                                    record only. Immunization history displayed
+                                    may not portray the client’s complete
+                                    immunization history and may impact
+                                    forecasted vaccines. For information on
+                                    recommended immunizations, please visit
+                                    <a>https://www.immunizebc.ca</a> or contact
+                                    your local Public Health Unit.
+                                </div>
+                            </b-col>
+                        </b-row>
+                        <b-row
+                            v-if="
+                                isRecommendationEmpty &&
+                                (!isLoading || !isPreview)
+                            "
+                            class="mt-2"
+                        >
+                            <b-col>No recommendations found.</b-col>
+                        </b-row>
+                        <b-row
+                            v-else-if="!isRecommendationEmpty"
+                            class="py-3 mt-4 header"
+                        >
+                            <b-col
+                                data-testid="recommendationTitle"
+                                class="col-6"
+                                >Immunization</b-col
+                            >
+                            <b-col
+                                data-testid="recommendationDateTitle"
+                                class="col-3"
+                                >Date</b-col
+                            >
+                            <b-col
+                                data-testid="recommendationStatusTitle"
+                                class="col-3"
+                                >Status</b-col
+                            >
+                        </b-row>
+                        <b-row
+                            v-for="recommendation in recommendationRecords"
+                            :key="recommendation.recommendationId"
+                            class="item py-1"
+                        >
+                            <b-col
+                                data-testid="recommendation"
+                                class="col-6 text-nowrap"
+                            >
+                                {{ recommendation.immunization.name }}
+                            </b-col>
+                            <b-col
+                                data-testid="recommendationDate"
+                                class="col-3"
+                            >
+                                {{ formatDate(recommendation.agentDueDate) }}
+                            </b-col>
+                            <b-col
+                                data-testid="recommendationStatus"
+                                class="col-3"
+                            >
+                                {{ recommendation.status }}
+                            </b-col>
+                        </b-row>
                     </b-col>
                 </b-row>
             </section>
@@ -282,9 +358,14 @@ h4 {
 }
 
 .item:nth-child(odd) {
-    background-color: $medium_background;
+    background-color: $soft_background;
 }
 .item:nth-child(even) {
-    background-color: $soft_background;
+    background-color: $medium_background;
+}
+
+#disclaimer {
+    font-size: 0.7em;
+    font-weight: bold !important;
 }
 </style>

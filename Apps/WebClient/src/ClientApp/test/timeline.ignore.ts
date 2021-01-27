@@ -9,7 +9,7 @@ import BannerError from "@/models/bannerError";
 import { Dictionary } from "@/models/baseTypes";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ImmunizationEvent } from "@/models/immunizationModel";
+import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { LaboratoryOrder } from "@/models/laboratory";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
@@ -174,6 +174,10 @@ const immunizationGetters = {
     isDeferredLoad(state: ImmunizationState): boolean {
         console.log("isDeferredLoad called", state);
         return false;
+    },
+    getStoredRecommendations(state: ImmunizationState): Recommendation[] {
+        console.log("getStoredRecommendations called", state);
+        return [];
     },
 };
 

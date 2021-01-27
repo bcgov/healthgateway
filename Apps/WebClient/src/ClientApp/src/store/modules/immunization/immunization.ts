@@ -9,6 +9,7 @@ import { mutations } from "./mutations";
 export const state: ImmunizationState = {
     statusMessage: "",
     immunizations: [],
+    recommendations: [],
     error: false,
     stateType: StateType.NONE,
 };
