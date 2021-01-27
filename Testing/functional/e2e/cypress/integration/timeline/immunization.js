@@ -63,5 +63,6 @@ describe('Immunization', () => {
       cy.get('[data-testid=forecastStatus]').first().contains('Eligible');
       cy.get('[data-testid=forecastFollowDirections]').first().contains(' Please follow directions from your COVID vaccine provider for information on COVID-19 2nd dose. For information on recommended immunizations, please visit ');
       cy.get('[data-testid=forecastFollowDirections]').first().contains('https://immunizebc.ca/');
+      cy.get('[data-testid=forecastFollowDirections]').first().contains('or contact your local Public Health Unit.');
     })
 })
