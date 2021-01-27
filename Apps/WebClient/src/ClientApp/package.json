@@ -107,7 +107,7 @@
         "vue-countdown": "^1.0.4",
         "vue-loading-overlay": "^3.4.2",
         "vue-property-decorator": "^9.1.2",
-        "vue-router": "^3.5.0",
+        "vue-router": "^3.5.1",
         "vue-the-mask": "^0.11.1",
         "vuelidate": "^0.7.6",
         "vuex": "^3.6.0",
