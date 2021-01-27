@@ -50,8 +50,8 @@ describe('WebClient Dependent Service', () => {
             .should((response) => { 
                 expect(response.status).to.eq(200)
                 expect(response.body).to.not.be.null
-            })          
-        }) 
+            })
+        })
     })
 
     it('Verify Post Dependent Unauthorized', () => {
@@ -82,16 +82,6 @@ describe('WebClient Dependent Service', () => {
             .should((response) => { expect(response.status).to.eq(403) })       
         })
     })
-
-    it('Verify Put Dependent Not Found', () => {
-        cy.request({ 
-            method: 'PUT',
-            url: `${BASEURL}${HDID}`,
-            followRedirect: false,
-            failOnStatusCode: false
-        })
-        .should((response) => { expect(response.status).to.eq(404) })
-    })    
 
     it('Verify Delete Dependent Unauthorized', () => {
         cy.request({ 
