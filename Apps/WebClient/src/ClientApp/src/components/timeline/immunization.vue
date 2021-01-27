@@ -212,7 +212,8 @@ export default class ImmunizationTimelineComponent extends Vue {
                                                 target="blank_"
                                                 >https://immunizebc.ca/</a
                                             >
-                                            or contact
+                                            or contact your local Public Health
+                                            Unit.
                                         </p>
                                     </div>
                                 </div>
