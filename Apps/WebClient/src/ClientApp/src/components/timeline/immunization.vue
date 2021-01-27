@@ -1,9 +1,10 @@
 <script lang="ts">
+import { faSyringe, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { Component, Prop } from "vue-property-decorator";
+
 import CommentSectionComponent from "@/components/timeline/commentSection.vue";
-import { IconDefinition, faSyringe } from "@fortawesome/free-solid-svg-icons";
+import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 
 @Component({
     components: {
@@ -14,9 +15,14 @@ export default class ImmunizationTimelineComponent extends Vue {
     @Prop() entry!: ImmunizationTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
+    private forecastVisible = false;
 
     private get entryIcon(): IconDefinition {
         return faSyringe;
+    }
+
+    private toggleDetails(): void {
+        this.forecastVisible = !this.forecastVisible;
     }
 }
 </script>
@@ -64,7 +70,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="px-1"
                                 data-testid="immunizationAgentNameTitle"
                             >
-                                <strong> Immunizing agent </strong>
+                                <strong> Immunizing Agent </strong>
                             </b-col>
                             <b-col
                                 class="px-1"
@@ -113,6 +119,106 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 {{ agent.lotNumber }}
                             </b-col>
                         </b-row>
+                    </b-col>
+                </b-row>
+                <b-row v-if="entry.immunization.forecast">
+                    <b-col>
+                        <div class="d-flex flex-row-reverse">
+                            <b-btn
+                                data-testid="detailsBtn"
+                                variant="link"
+                                class="detailsButton"
+                                @click="toggleDetails()"
+                            >
+                                <span v-if="forecastVisible">
+                                    <font-awesome-icon
+                                        icon="chevron-up"
+                                        aria-hidden="true"
+                                    ></font-awesome-icon
+                                ></span>
+                                <span v-else>
+                                    <font-awesome-icon
+                                        icon="chevron-down"
+                                        aria-hidden="true"
+                                    ></font-awesome-icon
+                                ></span>
+                                <span v-if="forecastVisible"
+                                    >Hide Forecast</span
+                                >
+                                <span v-else>Forecast</span>
+                            </b-btn>
+                        </div>
+                        <b-collapse
+                            :id="'entryDetails-' + index + '-' + datekey"
+                            v-model="forecastVisible"
+                        >
+                            <div>
+                                <div class="detailSection">
+                                    <b-row>
+                                        <b-col>
+                                            <strong>Immunization</strong>
+                                        </b-col>
+                                        <b-col>
+                                            <strong>Due Date</strong>
+                                        </b-col>
+                                        <b-col>
+                                            <strong>Status</strong>
+                                        </b-col>
+                                    </b-row>
+                                    <b-row>
+                                        <b-col>
+                                            <span
+                                                data-testid="forecastDisplayName"
+                                                >{{
+                                                    entry.immunization.forecast
+                                                        .displayName
+                                                }}</span
+                                            >
+                                        </b-col>
+                                        <b-col>
+                                            <span
+                                                data-testid="forecastDueDate"
+                                                >{{
+                                                    entry.immunization.forecast
+                                                        .dueDate
+                                                }}</span
+                                            >
+                                        </b-col>
+                                        <b-col>
+                                            <span
+                                                data-testid="forecastStatus"
+                                                >{{
+                                                    entry.immunization.forecast
+                                                        .status
+                                                }}</span
+                                            >
+                                        </b-col>
+                                    </b-row>
+                                </div>
+
+                                <div class="detailSection">
+                                    <div>
+                                        <br />
+                                        <p
+                                            data-testid="forecastFollowDirections"
+                                        >
+                                            Please follow directions from your
+                                            COVID vaccine provider for
+                                            information on COVID-19 2nd dose.
+                                            For information on recommended
+                                            immunizations, please visit
+                                            <a
+                                                href="https://immunizebc.ca/"
+                                                target="blank_"
+                                                >https://immunizebc.ca/</a
+                                            >
+                                            or contact your local Public Health
+                                            Unit.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </b-collapse>
                     </b-col>
                 </b-row>
             </b-col>

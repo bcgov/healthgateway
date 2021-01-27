@@ -1,11 +1,12 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Emit } from "vue-property-decorator";
-import { ILogger, IUserRatingService } from "@/services/interfaces";
+import { Getter } from "vuex-class";
+
+import type { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { Getter } from "vuex-class";
-import type { WebClientConfiguration } from "@/models/configData";
+import { ILogger, IUserRatingService } from "@/services/interfaces";
 
 @Component
 export default class RatingComponent extends Vue {

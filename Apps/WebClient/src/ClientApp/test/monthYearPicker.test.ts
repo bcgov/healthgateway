@@ -1,9 +1,10 @@
 import { shallowMount } from "@vue/test-utils";
+
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 import { DateWrapper } from "@/models/dateWrapper";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 
 describe("MonthYearPickerComponent", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

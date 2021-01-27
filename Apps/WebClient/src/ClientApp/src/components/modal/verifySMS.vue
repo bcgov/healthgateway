@@ -1,16 +1,17 @@
 ﻿<script lang="ts">
+import VueCountdown from "@chenfengyuan/vue-countdown";
 import Vue from "vue";
-import LoadingComponent from "@/components/loading.vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
+
+import LoadingComponent from "@/components/loading.vue";
+import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
+import UserSMSInvite from "@/models/userSMSInvite";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
-import UserSMSInvite from "@/models/userSMSInvite";
-import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
-import VueCountdown from "@chenfengyuan/vue-countdown";
 
 @Component({
     components: {

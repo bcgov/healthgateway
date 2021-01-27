@@ -1,12 +1,13 @@
 import { ActionTree, Commit } from "vuex";
+
+import { ResultType } from "@/constants/resulttype";
+import { Dictionary } from "@/models/baseTypes";
+import RequestResult from "@/models/requestResult";
+import { CommentState, RootState } from "@/models/storeState";
+import { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { CommentState, RootState } from "@/models/storeState";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
-import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
-import { UserComment } from "@/models/userComment";
-import { Dictionary } from "@/models/baseTypes";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 

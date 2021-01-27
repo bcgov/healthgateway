@@ -30,9 +30,15 @@ namespace HealthGateway.Immunization.Models
         public LoadStateModel LoadState { get; set; } = new LoadStateModel();
 
         /// <summary>
-        /// Gets or sets the list of Immunizations.
+        /// Gets or sets the list of Immunizations events.
         /// </summary>
         [JsonPropertyName("immunizations")]
-        public IEnumerable<ImmunizationModel> Immunizations { get; set; } = new List<ImmunizationModel>();
+        public IList<ImmunizationEvent> Immunizations { get; set; } = new List<ImmunizationEvent>();
+
+        /// <summary>
+        /// Gets or sets the list of Immunizations recommendations.
+        /// </summary>
+        [JsonPropertyName("recommendations")]
+        public IList<ImmunizationRecommendation> Recommendations { get; set; } = new List<ImmunizationRecommendation>();
     }
 }

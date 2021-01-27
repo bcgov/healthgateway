@@ -1,14 +1,15 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { Action, Getter } from "vuex-class";
+
+import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { ILogger, IPatientService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import BannerError from "@/models/bannerError";
 
 @Component
 export default class ReportHeaderComponent extends Vue {

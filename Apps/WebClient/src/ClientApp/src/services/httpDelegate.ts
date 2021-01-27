@@ -1,9 +1,10 @@
 import Axios, { AxiosRequestConfig } from "axios";
 import { injectable } from "inversify";
+
 import { Dictionary } from "@/models/baseTypes";
-import { IHttpDelegate, ILogger } from "@/services/interfaces";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import { IHttpDelegate, ILogger } from "@/services/interfaces";
 
 @injectable()
 export default class HttpDelegate implements IHttpDelegate {

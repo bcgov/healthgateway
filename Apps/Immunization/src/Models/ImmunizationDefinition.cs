@@ -15,36 +15,36 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Models
 {
-    using System;
-    using System.Text.Json.Serialization;
+    using System.Collections.Generic;
+    using HealthGateway.Immunization.Models.PHSA.Recommendation;
 
     /// <summary>
-    /// The Immunization Agents response model.
+    /// Defines an Immunization definition.
     /// </summary>
-    public class ImmunizationAgentsResponse
+    public class ImmunizationDefinition
     {
         /// <summary>
-        /// Gets or sets the Immunization id.
+        /// Gets or sets the Immunization name.
         /// </summary>
-        [JsonPropertyName("code")]
-        public string Code { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization Name.
-        /// </summary>
-        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization Lot Number.
+        /// Gets or sets the Immunization Agents.
         /// </summary>
-        [JsonPropertyName("lotNumber")]
-        public string LotNumber { get; set; } = string.Empty;
+        public IEnumerable<ImmunizationAgent> ImmunizationAgents { get; set; } = new List<ImmunizationAgent>();
 
         /// <summary>
-        /// Gets or sets the Immunization Product Name.
+        /// Creates an ImmunizationDefinition object from a PHSA model.
         /// </summary>
-        [JsonPropertyName("productName")]
-        public string ProductName { get; set; } = string.Empty;
+        /// <param name="model">The vaccine code object to convert.</param>
+        /// <returns>The newly created ImmunizationDefinition object.</returns>
+        public static ImmunizationDefinition FromPHSAModel(VaccineCode model)
+        {
+            return new ImmunizationDefinition()
+            {
+                Name = model.VaccineCodeText,
+                ImmunizationAgents = ImmunizationAgent.FromPHSACodesModel(model.VaccineCodes)
+            };
+        }
     }
 }

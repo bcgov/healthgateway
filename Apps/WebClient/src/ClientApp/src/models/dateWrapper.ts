@@ -1,4 +1,4 @@
-import { DateTime, DurationUnit, Duration, DurationObject } from "luxon";
+import { DateTime, Duration, DurationObject, DurationUnit } from "luxon";
 
 /**
  * Typed representation of a ISO Date, time is not relevant.
@@ -130,6 +130,17 @@ export class DateWrapper {
      */
     public format(formatString: string): string {
         return this.internalDate.toFormat(formatString);
+    }
+
+    /**
+     * Formats the date using the given a set of tokens
+     * See https://moment.github.io/luxon/docs/manual/formatting.html for the rules
+     * @param dateString The date string to be formatted.
+     * @param formatString The tokens to format the string as.
+     * @returns a string representation of the datetime with the given format.
+     */
+    public static format(dateString: string, formatString: string): string {
+        return new DateWrapper(dateString).format(formatString);
     }
 
     /**

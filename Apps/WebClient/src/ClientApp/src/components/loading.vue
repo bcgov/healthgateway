@@ -1,15 +1,16 @@
 ﻿<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import "vue-loading-overlay/dist/vue-loading.css";
+
 import {
-    IconDefinition,
-    faPills,
     faEdit,
     faFlask,
+    faPills,
     faSyringe,
+    IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
+import Vue from "vue";
 import Loading from "vue-loading-overlay";
-import "vue-loading-overlay/dist/vue-loading.css";
+import { Component, Prop } from "vue-property-decorator";
 
 @Component({
     components: {
@@ -82,6 +83,7 @@ export default class LoadingComponent extends Vue {
         <loading
             v-if="!isCustom"
             :active.sync="isLoading"
+            data-testid="loadingSpinner"
             :is-full-page="true"
         ></loading>
         <div v-else :class="backdrop ? 'backdrop' : 'block'">

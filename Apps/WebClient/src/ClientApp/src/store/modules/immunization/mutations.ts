@@ -1,6 +1,7 @@
 import { MutationTree } from "vuex";
-import { ImmunizationState, StateType } from "@/models/storeState";
+
 import ImmunizationResult from "@/models/immunizationResult";
+import { ImmunizationState, StateType } from "@/models/storeState";
 
 export const mutations: MutationTree<ImmunizationState> = {
     setImmunizationResult(
@@ -12,6 +13,7 @@ export const mutations: MutationTree<ImmunizationState> = {
             state.stateType = StateType.DEFERRED;
         } else {
             state.immunizations = immunizationResult.immunizations;
+            state.recommendations = immunizationResult.recommendations;
             state.stateType = StateType.INITIALIZED;
         }
 

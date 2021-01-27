@@ -11,6 +11,8 @@ import ResendEmailView from "@/views/ResendEmail.vue";
 import StatsView from "@/views/Stats.vue";
 import UnauthorizedView from "@/views/Unauthorized.vue";
 
+import { UserRoles } from "./constants/userRoles";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -18,7 +20,10 @@ const routes = [
         path: "/",
         name: "Dashboard",
         component: DashboardView,
-        meta: { requiresAuth: true }
+        meta: {
+            requiresAuth: true,
+            validRoles: [UserRoles.Admin, UserRoles.Reviewer]
+        }
     },
     {
         path: "/signin",
@@ -35,7 +40,7 @@ const routes = [
     {
         path: "/job-scheduler",
         name: "JobScheduler",
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
         beforeEnter() {
             location.href =
                 store.getters["config/serviceEndpoints"]["JobScheduler"];
@@ -45,25 +50,28 @@ const routes = [
         path: "/admin-email",
         name: "Resend Emails",
         component: ResendEmailView,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] }
     },
     {
         path: "/user-feedback",
         name: "User Feedback list",
         component: FeedbackView,
-        meta: { requiresAuth: true }
+        meta: {
+            requiresAuth: true,
+            validRoles: [UserRoles.Admin, UserRoles.Reviewer]
+        }
     },
     {
         path: "/communication",
         name: "System Communications",
         component: CommunicationView,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] }
     },
     {
         path: "/stats",
         name: "System Analytics",
         component: StatsView,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] }
     },
     {
         path: "/unauthorized",
@@ -87,7 +95,15 @@ router.beforeEach(async (to, from, next) => {
             next({ path: "/signin", query: { redirect: to.path } });
         } else {
             const isAuthorized = store.getters["auth/isAuthorized"];
-            if (!isAuthorized) {
+            const userRoles: string[] = store.getters["auth/roles"];
+            if (
+                !isAuthorized ||
+                !userRoles.some(
+                    userRole =>
+                        !to.meta.validRoles ||
+                        to.meta.validRoles.includes(userRole)
+                )
+            ) {
                 next({ path: "/unauthorized" });
             } else {
                 next();

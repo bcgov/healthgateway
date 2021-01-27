@@ -1,4 +1,5 @@
 import { GetterTree } from "vuex";
+
 import { AuthState, RootState } from "@/models/storeState";
 
 export const getters: GetterTree<AuthState, RootState> = {

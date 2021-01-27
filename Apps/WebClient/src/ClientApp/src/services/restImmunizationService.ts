@@ -1,17 +1,18 @@
 import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
+
+import { ResultType } from "@/constants/resulttype";
+import { ExternalConfiguration } from "@/models/configData";
+import { ServiceName } from "@/models/errorInterfaces";
+import ImmunizationResult from "@/models/immunizationResult";
+import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import {
-    ILogger,
     IHttpDelegate,
     IImmunizationService,
+    ILogger,
 } from "@/services/interfaces";
-import ImmunizationResult from "@/models/immunizationResult";
-import { ExternalConfiguration } from "@/models/configData";
-import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
 
 @injectable()
 export class RestImmunizationService implements IImmunizationService {
@@ -41,6 +42,7 @@ export class RestImmunizationService implements IImmunizationService {
                     resourcePayload: {
                         loadState: { refreshInProgress: false },
                         immunizations: [],
+                        recommendations: [],
                     },
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,

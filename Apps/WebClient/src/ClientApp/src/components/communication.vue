@@ -1,10 +1,11 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+
 import Communication from "@/models/communication";
-import { ILogger, ICommunicationService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ICommunicationService, ILogger } from "@/services/interfaces";
 
 @Component
 export default class CommunicationComponent extends Vue {

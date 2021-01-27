@@ -1,11 +1,12 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { ILogger, IUserProfileService } from "@/services/interfaces";
+
+import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
+import LoadingComponent from "@/components/loading.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import LoadingComponent from "@/components/loading.vue";
-import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
+import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 @Component({
     components: {

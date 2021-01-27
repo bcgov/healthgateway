@@ -1,8 +1,9 @@
 import { createLocalVue, shallowMount } from "@vue/test-utils";
-import AppComponent from "@/app.vue";
 import VueRouter from "vue-router";
-import container from "@/plugins/inversify.config";
+
+import AppComponent from "@/app.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
 
 describe("Home view", () => {

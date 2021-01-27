@@ -1,12 +1,13 @@
-import { Wrapper, createLocalVue, shallowMount } from "@vue/test-utils";
+import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import Vuex from "vuex";
-import LoginComponent from "@/views/login.vue";
+
+import { IdentityProviderConfiguration } from "@/models/configData";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 import { auth as authModule } from "@/store/modules/auth/auth";
 import { user as userModule } from "@/store/modules/user/user";
-import { IdentityProviderConfiguration } from "@/models/configData";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
+import LoginComponent from "@/views/login.vue";
 
 const pushMethod = jest.fn();
 

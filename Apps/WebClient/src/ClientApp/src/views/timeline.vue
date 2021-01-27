@@ -1,48 +1,48 @@
 <script lang="ts">
+import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
 import { NavigationGuardNext, Route } from "vue-router";
-import EventBus, { EventMessageName } from "@/eventbus";
-import type { WebClientConfiguration } from "@/models/configData";
-import {
-    ILogger,
-    IEncounterService,
-    IUserNoteService,
-} from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { Action, Getter } from "vuex-class";
+
+import ErrorCardComponent from "@/components/errorCard.vue";
+import LoadingComponent from "@/components/loading.vue";
+import CovidModalComponent from "@/components/modal/covid.vue";
+import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
+import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
+import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
+import FilterComponent from "@/components/timeline/filters.vue";
+import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
+import NoteTimelineComponent from "@/components/timeline/note.vue";
+import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
-import User from "@/models/user";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import UserPreferenceType from "@/constants/userPreferenceType";
+import EventBus, { EventMessageName } from "@/eventbus";
+import BannerError from "@/models/bannerError";
+import { Dictionary } from "@/models/baseTypes";
+import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
+import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
+import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
+import { LaboratoryOrder } from "@/models/laboratory";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
-import MedicationStatementHistory from "../models/medicationStatementHistory";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import RequestResult from "@/models/requestResult";
-import { IconDefinition, faSearch } from "@fortawesome/free-solid-svg-icons";
-
-import LoadingComponent from "@/components/loading.vue";
-import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import CovidModalComponent from "@/components/modal/covid.vue";
-import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
-import NoteTimelineComponent from "@/components/timeline/note.vue";
-import { LaboratoryOrder } from "@/models/laboratory";
-import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
-import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
-import ErrorCardComponent from "@/components/errorCard.vue";
-import BannerError from "@/models/bannerError";
-import ErrorTranslator from "@/utility/errorTranslator";
-import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
-import FilterComponent from "@/components/timeline/filters.vue";
-import { DateWrapper } from "@/models/dateWrapper";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
-import { ActionType } from "@/constants/actionType";
+import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
-import ImmunizationModel from "@/models/immunizationModel";
-import { Dictionary } from "@/models/baseTypes";
-import UserPreferenceType from "@/constants/userPreferenceType";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IEncounterService,
+    ILogger,
+    IUserNoteService,
+} from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 const namespace = "user";
 
@@ -90,10 +90,10 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: {
         hdid: string;
-    }) => Promise<ImmunizationModel[]>;
+    }) => Promise<ImmunizationEvent[]>;
 
     @Getter("getStoredImmunizations", { namespace: "immunization" })
-    patientImmunizations!: ImmunizationModel[];
+    patientImmunizations!: ImmunizationEvent[];
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;

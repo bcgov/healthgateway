@@ -1,10 +1,10 @@
 import { ActionTree, Commit } from "vuex";
 
-import { IConfigService } from "@/services/interfaces";
+import { ExternalConfiguration } from "@/models/configData";
+import { ConfigState, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ConfigState, RootState } from "@/models/storeState";
-import { ExternalConfiguration } from "@/models/configData";
+import { IConfigService } from "@/services/interfaces";
 
 function handleError(commit: Commit, error: Error) {
     console.log("ERROR:" + error);

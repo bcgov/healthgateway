@@ -1,18 +1,19 @@
 import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    ILogger,
-    IHttpDelegate,
-    IUserNoteService,
-} from "@/services/interfaces";
+
+import { ResultType } from "@/constants/resulttype";
+import { Dictionary } from "@/models/baseTypes";
+import { ExternalConfiguration } from "@/models/configData";
+import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
-import { ResultType } from "@/constants/resulttype";
-import { ExternalConfiguration } from "@/models/configData";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IHttpDelegate,
+    ILogger,
+    IUserNoteService,
+} from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
-import { Dictionary } from "@/models/baseTypes";
 import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()

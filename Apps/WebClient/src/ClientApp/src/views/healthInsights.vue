@@ -3,26 +3,24 @@ import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import { ILogger } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ResultType } from "@/constants/resulttype";
-import type { WebClientConfiguration } from "@/models/configData";
-import User from "@/models/user";
-import TimelineEntry from "@/models/timelineEntry";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import RequestResult from "@/models/requestResult";
-
+import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import ErrorCardComponent from "@/components/errorCard.vue";
-
 import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
-import BannerError from "@/models/bannerError";
-import ErrorTranslator from "@/utility/errorTranslator";
-import { DateWrapper } from "@/models/dateWrapper";
 import { ActionType } from "@/constants/actionType";
+import { ResultType } from "@/constants/resulttype";
+import BannerError from "@/models/bannerError";
+import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import RequestResult from "@/models/requestResult";
+import TimelineEntry from "@/models/timelineEntry";
+import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 const namespace = "user";
 

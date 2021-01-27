@@ -1,25 +1,26 @@
 <script lang="ts">
-import Vue from "vue";
-import { Action, Getter } from "vuex-class";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import {
-    ILogger,
-    IAuthenticationService,
-    IUserProfileService,
-} from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { Validation } from "vuelidate/vuelidate";
-import { email, helpers, requiredIf, sameAs } from "vuelidate/lib/validators";
-import { RegistrationStatus } from "@/constants/registrationStatus";
-import LoadingComponent from "@/components/loading.vue";
-import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
-import type { WebClientConfiguration } from "@/models/configData";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import type { OidcUserProfile } from "@/models/user";
-import ErrorTranslator from "@/utility/errorTranslator";
+import Vue from "vue";
+import { Component, Prop, Ref } from "vue-property-decorator";
+import { email, helpers, requiredIf, sameAs } from "vuelidate/lib/validators";
+import { Validation } from "vuelidate/vuelidate";
+import { Action, Getter } from "vuex-class";
+
+import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
+import LoadingComponent from "@/components/loading.vue";
+import { RegistrationStatus } from "@/constants/registrationStatus";
 import BannerError from "@/models/bannerError";
+import type { WebClientConfiguration } from "@/models/configData";
+import type { OidcUserProfile } from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IAuthenticationService,
+    ILogger,
+    IUserProfileService,
+} from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 library.add(faCheck);
 

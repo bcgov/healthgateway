@@ -1,19 +1,20 @@
 import { injectable } from "inversify";
-import { Dictionary } from "@/models/baseTypes";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    ILogger,
-    IHttpDelegate,
-    IMedicationService,
-} from "@/services/interfaces";
-import { ExternalConfiguration } from "@/models/configData";
-import RequestResult from "@/models/requestResult";
+
 import { ResultType } from "@/constants/resulttype";
+import { Dictionary } from "@/models/baseTypes";
+import { ExternalConfiguration } from "@/models/configData";
+import { ServiceName } from "@/models/errorInterfaces";
 import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import RequestResult from "@/models/requestResult";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IHttpDelegate,
+    ILogger,
+    IMedicationService,
+} from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()

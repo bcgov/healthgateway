@@ -1,13 +1,13 @@
 <script lang="ts">
 import Vue from "vue";
+import { Component, Prop } from "vue-property-decorator";
 
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 
-import { Component, Prop } from "vue-property-decorator";
-import MedicationTimelineComponent from "./medication.vue";
+import EncounterTimelineComponent from "./encounter.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
 import LaboratoryTimelineComponent from "./laboratory.vue";
-import EncounterTimelineComponent from "./encounter.vue";
+import MedicationTimelineComponent from "./medication.vue";
 import NoteTimelineComponent from "./note.vue";
 
 @Component({

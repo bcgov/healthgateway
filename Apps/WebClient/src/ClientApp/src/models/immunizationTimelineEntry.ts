@@ -1,15 +1,18 @@
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import ImmunizationModel, {
-    ImmunizationAgent,
-} from "@/models/immunizationModel";
+import DateTimeFormat from "@/constants/dateTimeFormat";
 import { DateWrapper } from "@/models/dateWrapper";
+import {
+    Forecast,
+    ImmunizationAgent,
+    ImmunizationEvent,
+} from "@/models/immunizationModel";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
     public immunization: ImmunizationViewModel;
 
-    public constructor(model: ImmunizationModel) {
+    public constructor(model: ImmunizationEvent) {
         super(
             model.id,
             EntryType.Immunization,
@@ -40,6 +43,26 @@ class ImmunizationAgentViewModel {
     }
 }
 
+class ForecastViewModel {
+    public displayName: string;
+    public dueDate: string;
+    public status: string;
+
+    constructor(model: Forecast) {
+        this.displayName = model.displayName;
+        if (model.dueDate) {
+            this.dueDate = DateWrapper.format(
+                model.dueDate,
+                DateTimeFormat.formatDateString
+            );
+        } else {
+            this.dueDate = "";
+        }
+
+        this.status = model.status;
+    }
+}
+
 class ImmunizationViewModel {
     public id: string;
     public isSelfReported: boolean;
@@ -49,19 +72,23 @@ class ImmunizationViewModel {
     public dateOfImmunization: DateWrapper;
     public providerOrClinic: string;
     public immunizationAgents: ImmunizationAgentViewModel[];
+    public forecast?: ForecastViewModel;
 
-    constructor(model: ImmunizationModel) {
+    constructor(model: ImmunizationEvent) {
         this.id = model.id;
         this.isSelfReported = model.isSelfReported;
         this.location = model.location;
-        this.name = model.name;
+        this.name = model.immunization.name;
         this.status = model.status;
         this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
         this.providerOrClinic =
             model.providerOrClinic === "" ? "N/A" : model.providerOrClinic;
         this.immunizationAgents = [];
-        model.immunizationAgents.forEach((agent) => {
+        model.immunization.immunizationAgents.forEach((agent) => {
             this.immunizationAgents.push(new ImmunizationAgentViewModel(agent));
         });
+        if (model.forecast) {
+            this.forecast = new ForecastViewModel(model.forecast);
+        }
     }
 }

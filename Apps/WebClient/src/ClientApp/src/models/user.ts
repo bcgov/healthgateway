@@ -1,6 +1,6 @@
+import { Dictionary } from "@/models/baseTypes";
 import { StringISODate } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
-import { Dictionary } from "@/models/baseTypes";
 
 export default class User {
     public hdid = "";

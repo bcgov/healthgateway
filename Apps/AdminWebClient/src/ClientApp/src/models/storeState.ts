@@ -1,7 +1,7 @@
 import AuthenticationData from "@/models/authenticationData";
 import ExternalConfiguration from "@/models/externalConfiguration";
 
-export enum StateType {
+export const enum StateType {
     NONE,
     INITIALIZED,
     REQUESTED,

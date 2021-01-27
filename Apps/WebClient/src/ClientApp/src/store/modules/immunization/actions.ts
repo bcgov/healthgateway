@@ -1,10 +1,11 @@
 import { ActionTree, Commit } from "vuex";
+
+import { ResultType } from "@/constants/resulttype";
+import { ImmunizationEvent } from "@/models/immunizationModel";
+import { ImmunizationState, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ImmunizationState, RootState } from "@/models/storeState";
-import { ILogger, IImmunizationService } from "@/services/interfaces";
-import { ResultType } from "@/constants/resulttype";
-import ImmunizationModel from "@/models/immunizationModel";
+import { IImmunizationService, ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -18,12 +19,12 @@ const immunizationService: IImmunizationService = container.get<IImmunizationSer
 );
 
 export const actions: ActionTree<ImmunizationState, RootState> = {
-    retrieve(context, params: { hdid: string }): Promise<ImmunizationModel[]> {
+    retrieve(context, params: { hdid: string }): Promise<ImmunizationEvent[]> {
         return new Promise((resolve, reject) => {
-            const immunizationModels: ImmunizationModel[] =
+            const immunizationEvents: ImmunizationEvent[] =
                 context.getters.getStoredImmunizations;
             if (
-                immunizationModels.length > 0 &&
+                immunizationEvents.length > 0 &&
                 !context.getters.isDeferredLoad
             ) {
                 logger.debug(`Immunizations found stored, not quering!`);

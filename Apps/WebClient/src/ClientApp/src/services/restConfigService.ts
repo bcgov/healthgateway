@@ -1,8 +1,9 @@
-import { IConfigService, IHttpDelegate } from "@/services/interfaces";
 import { injectable } from "inversify";
+
 import { ExternalConfiguration } from "@/models/configData";
-import ErrorTranslator from "@/utility/errorTranslator";
 import { ServiceName } from "@/models/errorInterfaces";
+import { IConfigService, IHttpDelegate } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 @injectable()
 export class RestConfigService implements IConfigService {

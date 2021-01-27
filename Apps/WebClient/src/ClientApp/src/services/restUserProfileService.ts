@@ -1,21 +1,22 @@
 import { injectable } from "inversify";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    ILogger,
-    IHttpDelegate,
-    IUserProfileService,
-} from "@/services/interfaces";
-import UserProfile, { CreateUserRequest } from "@/models/userProfile";
+
+import { Dictionary } from "@/models/baseTypes";
+import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import UserEmailInvite from "@/models/userEmailInvite";
-import UserSMSInvite from "@/models/userSMSInvite";
-import { Dictionary } from "@/models/baseTypes";
-import ErrorTranslator from "@/utility/errorTranslator";
-import { ServiceName } from "@/models/errorInterfaces";
-import RequestResultUtil from "@/utility/requestResultUtil";
 import type { UserPreference } from "@/models/userPreference";
+import UserProfile, { CreateUserRequest } from "@/models/userProfile";
+import UserSMSInvite from "@/models/userSMSInvite";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import {
+    IHttpDelegate,
+    ILogger,
+    IUserProfileService,
+} from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
+import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestUserProfileService implements IUserProfileService {

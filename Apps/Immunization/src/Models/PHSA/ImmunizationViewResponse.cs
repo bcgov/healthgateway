@@ -13,16 +13,16 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Immunization.Models.PHSA
 {
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The Immunization record data model.
+    /// The PHSA Immunization view data model.
     /// </summary>
-    public class ImmunizationResponse
+    public class ImmunizationViewResponse
     {
         /// <summary>
         /// Gets or sets the Immunization id.
@@ -61,8 +61,17 @@ namespace HealthGateway.Immunization.Models
         public DateTime OccurrenceDateTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the Immunization Forecasts.
+        /// </summary>
+        [JsonPropertyName("immunizationForecast")]
+        public ImmunizationRorecastResponse? ImmunizationForecast { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the Immunization Agents.
         /// </summary>
-        public IEnumerable<ImmunizationAgentsResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentsResponse>();
+        [JsonPropertyName("immunizationAgents")]
+        public IEnumerable<ImmunizationAgentResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentResponse>();
+
+
     }
 }

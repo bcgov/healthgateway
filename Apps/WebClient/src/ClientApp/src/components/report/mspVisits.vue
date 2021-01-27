@@ -1,20 +1,21 @@
 <script lang="ts">
+import html2pdf from "html2pdf.js";
 import Vue from "vue";
 import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
-import Encounter from "@/models/encounter";
-import { IEncounterService } from "@/services/interfaces";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ResultType } from "@/constants/resulttype";
 import { Action, Getter } from "vuex-class";
-import User from "@/models/user";
-import { ILogger } from "@/services/interfaces";
-import BannerError from "@/models/bannerError";
-import ErrorTranslator from "@/utility/errorTranslator";
-import html2pdf from "html2pdf.js";
-import PDFDefinition from "@/plugins/pdfDefinition";
+
 import ReportHeaderComponent from "@/components/report/header.vue";
+import { ResultType } from "@/constants/resulttype";
+import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
+import Encounter from "@/models/encounter";
+import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import PDFDefinition from "@/plugins/pdfDefinition";
+import { IEncounterService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {

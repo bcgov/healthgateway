@@ -1,13 +1,14 @@
 const { AuthMethod, localDevUri } = require("../../support/constants");
 
 function verifyActiveFilter(activeFilterCount) {
-    cy.get('[data-testid=filterDropdown]').click();
+    cy.get("[data-testid=filterDropdown]").click();
     cy.get('[data-testid=filterDropdown]').should('have.css', 'background-color', 'rgb(0, 146, 241)'); // has the '#0092f1' background-color
     cy.get('[data-testid=filterDropdown] > span').contains(activeFilterCount); // has 1 active filter
     cy.viewport('iphone-6');
     cy.get('[data-testid=mobileFilterDropdown]').should('have.css', 'background-color', 'rgb(0, 146, 241)'); // has the '#0092f1' background-color
     cy.viewport(1000, 600);
-    cy.get('[data-testid=filterDropdown]').click();
+    cy.wait(500);
+    cy.get("[data-testid=filterDropdown]").focus().click({ force: true });
 }
 
 describe("Filters", () => {
@@ -74,6 +75,7 @@ describe("Filters", () => {
         cy.get("[data-testid=filterEndDateInput] input")
             .focus()
             .clear();
+        cy.get("[data-testid=filterDropdown]").focus().click({ force: true });
     });
 
     it("No Records on Linear Timeline", () => {

@@ -1,13 +1,14 @@
-import { ActionTree } from "vuex";
-import { AuthState, RootState } from "@/models/storeState";
 import { Route } from "vue-router";
-import {
-    ILogger,
-    IHttpDelegate,
-    IAuthenticationService,
-} from "@/services/interfaces";
+import { ActionTree } from "vuex";
+
+import { AuthState, RootState } from "@/models/storeState";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
+import {
+    IAuthenticationService,
+    IHttpDelegate,
+    ILogger,
+} from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 function routeIsOidcCallback(route: Route): boolean {

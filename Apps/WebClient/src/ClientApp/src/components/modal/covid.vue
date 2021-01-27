@@ -2,13 +2,14 @@
 import Vue from "vue";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
-import User from "@/models/user";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-import { DateWrapper } from "@/models/dateWrapper";
-import type { UserPreference } from "@/models/userPreference";
+
 import UserPreferenceType from "@/constants/userPreferenceType";
+import { DateWrapper } from "@/models/dateWrapper";
+import User from "@/models/user";
+import type { UserPreference } from "@/models/userPreference";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class CovidModalComponent extends Vue {

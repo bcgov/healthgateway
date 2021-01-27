@@ -1,25 +1,26 @@
 <script lang="ts">
-import Vue from "vue";
-import EventBus, { EventMessageName } from "@/eventbus";
-import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
 import {
-    IconDefinition,
     faEdit,
     faEllipsisV,
+    IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
-import { IUserNoteService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import ErrorTranslator from "@/utility/errorTranslator";
-import container from "@/plugins/inversify.config";
-import UserNote from "@/models/userNote";
-import User from "@/models/user";
-import { DateWrapper } from "@/models/dateWrapper";
-import BannerError from "@/models/bannerError";
+import Vue from "vue";
+import { Component, Prop } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
+import { Action, Getter } from "vuex-class";
+
 import DatePickerComponent from "@/components/datePicker.vue";
+import EventBus, { EventMessageName } from "@/eventbus";
+import BannerError from "@/models/bannerError";
+import { DateWrapper } from "@/models/dateWrapper";
+import NoteTimelineEntry from "@/models/noteTimelineEntry";
+import User from "@/models/user";
+import UserNote from "@/models/userNote";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { IUserNoteService } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {

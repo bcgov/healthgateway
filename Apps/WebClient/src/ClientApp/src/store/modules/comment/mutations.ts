@@ -1,9 +1,10 @@
 import Vue from "vue";
 import { MutationTree } from "vuex";
-import { CommentState, StateType } from "@/models/storeState";
-import { UserComment } from "@/models/userComment";
+
 import { Dictionary } from "@/models/baseTypes";
 import { DateWrapper } from "@/models/dateWrapper";
+import { CommentState, StateType } from "@/models/storeState";
+import { UserComment } from "@/models/userComment";
 
 export const mutations: MutationTree<CommentState> = {
     setProfileComments(

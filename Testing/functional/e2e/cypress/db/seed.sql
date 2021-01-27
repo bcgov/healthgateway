@@ -4,6 +4,7 @@ TRUNCATE gateway."Communication" CASCADE;
 TRUNCATE gateway."ResourceDelegate" CASCADE;
 TRUNCATE gateway."ResourceDelegateHistory" CASCADE;
 TRUNCATE gateway."UserPreference" CASCADE;
+TRUNCATE gateway."Comment" CASCADE;
 
 /* Registered HealthGateway User */
 INSERT INTO gateway."UserProfile"(
@@ -147,4 +148,48 @@ VALUES (
 	current_timestamp, 
 	'tutorialMenuExport', 
 	'false'
+);
+
+/* Add Resource Delegates */
+INSERT INTO gateway."ResourceDelegate"(
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"ReasonObjectType", 
+	"ReasonObject")
+VALUES (
+	'232434345442257', 
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	'COVIDLab', 
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
+	'"2021-01-20T00:00:00"'
+);
+INSERT INTO gateway."ResourceDelegate"(
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"ReasonObjectType", 
+	"ReasonObject")
+VALUES (
+	'162346565465464564565463257', 
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	'COVIDLab', 
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
+	'"2021-01-20T00:00:00"'
 );

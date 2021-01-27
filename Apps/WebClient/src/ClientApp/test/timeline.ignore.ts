@@ -1,15 +1,18 @@
-import { Wrapper, createLocalVue, mount } from "@vue/test-utils";
-import TimelineComponent from "@/views/timeline.vue";
+import { createLocalVue, mount, Wrapper } from "@vue/test-utils";
 import VueContentPlaceholders from "vue-content-placeholders";
+import VueRouter from "vue-router";
 import Vuex, { ActionTree } from "vuex";
+
 import { RegistrationStatus } from "@/constants/registrationStatus";
-import type { WebClientConfiguration } from "@/models/configData";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import { user as userModule } from "@/store/modules/user/user";
-import User from "@/models/user";
-import RequestResult from "@/models/requestResult";
 import { ResultType } from "@/constants/resulttype";
+import BannerError from "@/models/bannerError";
+import { Dictionary } from "@/models/baseTypes";
+import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
+import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { LaboratoryOrder } from "@/models/laboratory";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import RequestResult from "@/models/requestResult";
 import {
     CommentState,
     ErrorBannerState,
@@ -19,15 +22,13 @@ import {
     RootState,
     SidebarState,
 } from "@/models/storeState";
-import container from "@/plugins/inversify.config";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
-import { DateWrapper } from "@/models/dateWrapper";
-import { Dictionary } from "@/models/baseTypes";
+import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
-import ImmunizationModel from "@/models/immunizationModel";
-import VueRouter from "vue-router";
-import BannerError from "@/models/bannerError";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
+import { user as userModule } from "@/store/modules/user/user";
+import TimelineComponent from "@/views/timeline.vue";
 
 const today = new DateWrapper();
 const yesterday = today.subtract({ day: 1 });
@@ -166,7 +167,7 @@ const commentActions: ActionTree<CommentState, RootState> = {
 };
 
 const immunizationGetters = {
-    getStoredImmunizations(state: ImmunizationState): ImmunizationModel[] {
+    getStoredImmunizations(state: ImmunizationState): ImmunizationEvent[] {
         console.log("getStoredImmunizations called", state);
         return [];
     },
@@ -174,10 +175,14 @@ const immunizationGetters = {
         console.log("isDeferredLoad called", state);
         return false;
     },
+    getStoredRecommendations(state: ImmunizationState): Recommendation[] {
+        console.log("getStoredRecommendations called", state);
+        return [];
+    },
 };
 
 const immunizationActions: ActionTree<ImmunizationState, RootState> = {
-    retrieve(): Promise<RequestResult<ImmunizationModel[]>> {
+    retrieve(): Promise<RequestResult<ImmunizationEvent[]>> {
         return new Promise((resolve) => {
             resolve({
                 pageIndex: 0,

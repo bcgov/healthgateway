@@ -1,6 +1,7 @@
 import { GetterTree } from "vuex";
-import { LaboratoryState, RootState } from "@/models/storeState";
+
 import { LaboratoryOrder } from "@/models/laboratory";
+import { LaboratoryState, RootState } from "@/models/storeState";
 
 export const getters: GetterTree<LaboratoryState, RootState> = {
     getStoredLaboratoryOrders: (
