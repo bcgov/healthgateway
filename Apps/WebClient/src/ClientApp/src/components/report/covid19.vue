@@ -9,6 +9,7 @@ import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder } from "@/models/laboratory";
+import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -25,6 +26,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export default class COVID19ReportComponent extends Vue {
     @Prop() private startDate?: string;
     @Prop() private endDate?: string;
+    @Prop() private patientData?: PatientData;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
@@ -178,6 +180,7 @@ export default class COVID19ReportComponent extends Vue {
                     :start-date="startDate"
                     :end-date="endDate"
                     title="Health Gateway COVID-19 Test Result History"
+                    :patient-data="patientData"
                 />
                 <b-row
                     v-if="isEmpty && (!isLoading || !isPreview)"
