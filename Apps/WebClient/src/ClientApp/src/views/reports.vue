@@ -85,6 +85,8 @@ export default class ReportsView extends Vue {
 
     private downloadPdf() {
         this.isGeneratingReport = true;
+        // Fixes a possible bug with html2canvas where if the page is scrolled it could cut off the image.
+        window.scrollTo(0, 0);
         let generatePromise: Promise<void>;
         switch (this.reportType) {
             case "MED":
