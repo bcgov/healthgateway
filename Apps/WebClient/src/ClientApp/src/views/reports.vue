@@ -11,6 +11,7 @@ import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -43,7 +44,9 @@ export default class ReportsView extends Vue {
     @Ref("immunizationHistoryReport")
     readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
 
+    private eventBus = EventBus;
     private isLoading = false;
+    private patientDataRetrieved = false;
     private isGeneratingReport = false;
     private logger!: ILogger;
     private reportType = "";
@@ -71,6 +74,12 @@ export default class ReportsView extends Vue {
                 text: "Immunizations",
             });
         }
+        this.eventBus.$on(
+            EventMessageName.PatientDataRetrieved,
+            (retrieved: boolean) => {
+                this.patientDataRetrieved = retrieved;
+            }
+        );
     }
 
     private clear() {
@@ -189,7 +198,9 @@ export default class ReportsView extends Vue {
                                                 data-testid="exportRecordBtn"
                                                 class="mb-1"
                                                 :disabled="
-                                                    !reportType || isLoading
+                                                    !reportType ||
+                                                    isLoading ||
+                                                    !patientDataRetrieved
                                                 "
                                                 @click="showConfirmationModal"
                                             >

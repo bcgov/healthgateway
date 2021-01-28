@@ -3,6 +3,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import EventBus, { EventMessageName } from "@/eventbus";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
@@ -26,6 +27,8 @@ export default class ReportHeaderComponent extends Vue {
     private lastName = "";
     private phn = "";
     private dateOfBirth = "";
+    private retryCount = 2;
+    private eventBus = EventBus;
 
     private fetchPatientData() {
         const patientService: IPatientService = container.get<IPatientService>(
@@ -45,13 +48,29 @@ export default class ReportHeaderComponent extends Vue {
                             result.resourcePayload.birthdate
                         );
                     }
+                    this.eventBus.$emit(
+                        EventMessageName.PatientDataRetrieved,
+                        true
+                    );
                 }
             })
             .catch((err) => {
                 this.logger.error(`Error fetching Patient Data: ${err}`);
-                this.addError(
-                    ErrorTranslator.toBannerError("Patient Data loading", err)
-                );
+                if (this.retryCount > 0) {
+                    this.retryCount--;
+                    this.fetchPatientData();
+                } else {
+                    this.eventBus.$emit(
+                        EventMessageName.PatientDataRetrieved,
+                        false
+                    );
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Unable to retrieve patient data for generating report",
+                            undefined
+                        )
+                    );
+                }
             });
     }
 
