@@ -1,4 +1,3 @@
-import { Route } from "vue-router";
 import { ActionTree } from "vuex";
 
 import { AuthState, RootState } from "@/models/storeState";
@@ -11,12 +10,6 @@ import {
 } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-function routeIsOidcCallback(route: Route): boolean {
-    if (route.meta.isOidcCallback) {
-        return true;
-    }
-    return false;
-}
 
 const authService: IAuthenticationService = container.get<IAuthenticationService>(
     SERVICE_IDENTIFIER.AuthenticationService
@@ -26,13 +19,8 @@ const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
 );
 
 export const actions: ActionTree<AuthState, RootState> = {
-    oidcCheckAccess(context, route: Route): Promise<boolean> {
+    oidcCheckUser(context): Promise<boolean> {
         return new Promise<boolean>((resolve) => {
-            if (routeIsOidcCallback(route)) {
-                resolve(true);
-                return;
-            }
-            let hasAccess = true;
             const isAuthenticatedInStore =
                 context.state.authentication.idToken !== undefined;
 
@@ -40,7 +28,7 @@ export const actions: ActionTree<AuthState, RootState> = {
                 if (!oidcUser || oidcUser.expired) {
                     logger.warn("Could not get the user!");
                     context.dispatch("clearStorage");
-                    hasAccess = false;
+                    resolve(false);
                 } else {
                     context.dispatch("oidcWasAuthenticated", oidcUser);
                     if (!isAuthenticatedInStore) {
@@ -49,8 +37,8 @@ export const actions: ActionTree<AuthState, RootState> = {
                             "The user was previously unauthenticated, now it is!"
                         );
                     }
+                    resolve(true);
                 }
-                resolve(hasAccess);
             });
         });
     },

@@ -270,40 +270,44 @@ router.beforeEach(async (to, from, next) => {
         next();
     } else {
         // Make sure that the route accepts the current state
-        const currentUserState = calculateUserState();
-        logger.debug(`current state: ${currentUserState}`);
-        const isValidState = to.meta.validStates.includes(currentUserState);
-        const availableModules = getAvailableModules();
-        const hasRequiredModules =
-            to.meta.requiredModules === undefined
-                ? true
-                : to.meta.requiredModules.every((val: string) =>
-                      availableModules.includes(val)
-                  );
-        if (isValidState && hasRequiredModules) {
-            next();
-        } else {
-            // If the route does not accept the state, go to one of the default locations
-            if (currentUserState === UserState.offline) {
-                next({ path: "/" });
-            } else if (currentUserState === UserState.pendingDeletion) {
-                next({ path: "/profile" });
-            } else if (currentUserState === UserState.registered) {
-                if (hasRequiredModules) {
-                    next({ path: "/timeline" });
+        store.dispatch("auth/oidcCheckUser").then((isValid: boolean) => {
+            logger.info("User is valid: " + isValid);
+
+            const currentUserState = calculateUserState();
+            logger.debug(`current state: ${currentUserState}`);
+            const isValidState = to.meta.validStates.includes(currentUserState);
+            const availableModules = getAvailableModules();
+            const hasRequiredModules =
+                to.meta.requiredModules === undefined
+                    ? true
+                    : to.meta.requiredModules.every((val: string) =>
+                          availableModules.includes(val)
+                      );
+            if (isValidState && hasRequiredModules) {
+                next();
+            } else {
+                // If the route does not accept the state, go to one of the default locations
+                if (currentUserState === UserState.offline) {
+                    next({ path: "/" });
+                } else if (currentUserState === UserState.pendingDeletion) {
+                    next({ path: "/profile" });
+                } else if (currentUserState === UserState.registered) {
+                    if (hasRequiredModules) {
+                        next({ path: "/timeline" });
+                    } else {
+                        next({ path: "/unauthorized" });
+                    }
+                } else if (currentUserState === UserState.notRegistered) {
+                    next({ path: REGISTRATION_PATH });
+                } else if (currentUserState === UserState.invalidLogin) {
+                    next({ path: "/idirLoggedIn" });
+                } else if (currentUserState === UserState.unauthenticated) {
+                    next({ path: "/login", query: { redirect: to.path } });
                 } else {
                     next({ path: "/unauthorized" });
                 }
-            } else if (currentUserState === UserState.notRegistered) {
-                next({ path: REGISTRATION_PATH });
-            } else if (currentUserState === UserState.invalidLogin) {
-                next({ path: "/idirLoggedIn" });
-            } else if (currentUserState === UserState.unauthenticated) {
-                next({ path: "/login", query: { redirect: to.path } });
-            } else {
-                next({ path: "/unauthorized" });
             }
-        }
+        });
     }
 });
 
