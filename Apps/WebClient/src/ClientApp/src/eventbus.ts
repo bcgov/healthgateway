@@ -17,5 +17,4 @@ export class EventMessageName {
     public static readonly TimelinePageUpdate = "timeline-page-update";
     public static readonly SelectedFilter = "filter-selected";
     public static readonly IsNoteBlank = "note-blank";
-    public static readonly PatientDataRetrieved = "patient-data-retrieved";
 }

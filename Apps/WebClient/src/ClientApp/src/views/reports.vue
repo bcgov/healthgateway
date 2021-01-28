@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
@@ -11,11 +11,15 @@ import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
-import EventBus, { EventMessageName } from "@/eventbus";
+import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
+import PatientData from "@/models/patientData";
+import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
+import { ILogger, IPatientService } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {
@@ -32,6 +36,8 @@ import { ILogger } from "@/services/interfaces";
 export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+    @Getter("user", { namespace: "user" })
+    private user!: User;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -44,15 +50,22 @@ export default class ReportsView extends Vue {
     @Ref("immunizationHistoryReport")
     readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
 
-    private eventBus = EventBus;
+    @Action("addError", { namespace: "errorBanner" })
+    private addError!: (error: BannerError) => void;
+
     private isLoading = false;
-    private patientDataRetrieved = false;
     private isGeneratingReport = false;
     private logger!: ILogger;
     private reportType = "";
     private startDate?: Date | null = null;
     private endDate?: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
+    private retryCount = 2;
+    private patientData: PatientData | null = null;
+
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format("yyyy-MM-dd");
+    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -74,12 +87,8 @@ export default class ReportsView extends Vue {
                 text: "Immunizations",
             });
         }
-        this.eventBus.$on(
-            EventMessageName.PatientDataRetrieved,
-            (retrieved: boolean) => {
-                this.patientDataRetrieved = retrieved;
-            }
-        );
+
+        this.fetchPatientData();
     }
 
     private clear() {
@@ -114,6 +123,46 @@ export default class ReportsView extends Vue {
         generatePromise.then(() => {
             this.isGeneratingReport = false;
         });
+    }
+
+    private fetchPatientData() {
+        const patientService: IPatientService = container.get<IPatientService>(
+            SERVICE_IDENTIFIER.PatientService
+        );
+
+        patientService
+            .getPatientData(this.user.hdid)
+            .then((result) => {
+                // Load patient data
+                if (result) {
+                    this.patientData = new PatientData();
+                    this.patientData.personalhealthnumber =
+                        result.resourcePayload.personalhealthnumber;
+                    this.patientData.firstname =
+                        result.resourcePayload.firstname;
+                    this.patientData.lastname = result.resourcePayload.lastname;
+                    if (result.resourcePayload.birthdate != null) {
+                        this.patientData.birthdate = this.formatDate(
+                            result.resourcePayload.birthdate
+                        );
+                    }
+                    debugger;
+                }
+            })
+            .catch((err) => {
+                this.logger.error(`Error fetching Patient Data: ${err}`);
+                if (this.retryCount > 0) {
+                    this.retryCount--;
+                    this.fetchPatientData();
+                } else {
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Unable to retrieve patient data for generating report",
+                            undefined
+                        )
+                    );
+                }
+            });
     }
 }
 </script>
@@ -200,7 +249,7 @@ export default class ReportsView extends Vue {
                                                 :disabled="
                                                     !reportType ||
                                                     isLoading ||
-                                                    !patientDataRetrieved
+                                                    patientData === null
                                                 "
                                                 @click="showConfirmationModal"
                                             >
@@ -227,6 +276,7 @@ export default class ReportsView extends Vue {
                             ref="medicationHistoryReport"
                             :start-date="startDate"
                             :end-date="endDate"
+                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -239,6 +289,7 @@ export default class ReportsView extends Vue {
                             ref="mspVisitsReport"
                             :start-date="startDate"
                             :end-date="endDate"
+                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -251,6 +302,7 @@ export default class ReportsView extends Vue {
                             ref="covid19Report"
                             :start-date="startDate"
                             :end-date="endDate"
+                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -263,6 +315,7 @@ export default class ReportsView extends Vue {
                             ref="immunizationHistoryReport"
                             :start-date="startDate"
                             :end-date="endDate"
+                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>

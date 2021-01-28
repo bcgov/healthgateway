@@ -1,82 +1,21 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
 
-import EventBus, { EventMessageName } from "@/eventbus";
-import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
-import User from "@/models/user";
+import PatientData from "@/models/patientData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILogger, IPatientService } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
+import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class ReportHeaderComponent extends Vue {
     @Prop() private title!: string;
     @Prop() private startDate?: string;
     @Prop() private endDate?: string;
-    @Getter("user", { namespace: "user" })
-    private user!: User;
-    @Action("addError", { namespace: "errorBanner" })
-    private addError!: (error: BannerError) => void;
+    @Prop() private patientData?: PatientData;
 
     private logger!: ILogger;
-    private firstName = "";
-    private lastName = "";
-    private phn = "";
-    private dateOfBirth = "";
-    private retryCount = 2;
-    private eventBus = EventBus;
-
-    private fetchPatientData() {
-        const patientService: IPatientService = container.get<IPatientService>(
-            SERVICE_IDENTIFIER.PatientService
-        );
-
-        patientService
-            .getPatientData(this.user.hdid)
-            .then((result) => {
-                // Load patient data
-                if (result) {
-                    this.phn = result.resourcePayload.personalhealthnumber;
-                    this.firstName = result.resourcePayload.firstname;
-                    this.lastName = result.resourcePayload.lastname;
-                    if (result.resourcePayload.birthdate != null) {
-                        this.dateOfBirth = this.formatDate(
-                            result.resourcePayload.birthdate
-                        );
-                    }
-                    this.eventBus.$emit(
-                        EventMessageName.PatientDataRetrieved,
-                        true
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(`Error fetching Patient Data: ${err}`);
-                if (this.retryCount > 0) {
-                    this.retryCount--;
-                    this.fetchPatientData();
-                } else {
-                    this.eventBus.$emit(
-                        EventMessageName.PatientDataRetrieved,
-                        false
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Unable to retrieve patient data for generating report",
-                            undefined
-                        )
-                    );
-                }
-            });
-    }
-
-    private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
-    }
 
     private formatDateLong(date: string): string {
         return new DateWrapper(date).toMediumDate();
@@ -88,7 +27,6 @@ export default class ReportHeaderComponent extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchPatientData();
     }
 }
 </script>
@@ -114,15 +52,22 @@ export default class ReportHeaderComponent extends Vue {
         <b-row class="pt-2">
             <b-col>
                 <label>Name:</label>
-                <span class="px-1">{{ firstName }} {{ lastName }}</span>
+                <span class="px-1"
+                    >{{ patientData !== null ? patientData.firstname : "" }}
+                    {{ patientData !== null ? patientData.lastname : "" }}</span
+                >
             </b-col>
             <b-col>
                 <label>PHN:</label>
-                <span class="px-1">{{ phn }}</span>
+                <span class="px-1">{{
+                    patientData !== null ? patientData.personalhealthnumber : ""
+                }}</span>
             </b-col>
             <b-col>
                 <label>Date of Birth:</label>
-                <span class="px-1">{{ dateOfBirth }}</span>
+                <span class="px-1">{{
+                    patientData !== null ? patientData.birthdate : ""
+                }}</span>
             </b-col>
         </b-row>
         <b-row v-if="startDate || endDate" class="pt-2">
