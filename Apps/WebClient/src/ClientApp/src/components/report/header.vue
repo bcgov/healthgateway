@@ -65,36 +65,23 @@ export default class ReportHeaderComponent extends Vue {
         </b-row>
         <b-row class="py-1 text-primary small">
             <b-col>
-<<<<<<< Updated upstream
-                <label>Name:</label>
+                <strong>Name:</strong>
                 <span class="px-1"
                     >{{ patientData !== null ? patientData.firstname : "" }}
                     {{ patientData !== null ? patientData.lastname : "" }}</span
                 >
             </b-col>
             <b-col>
-                <label>PHN:</label>
+                <strong>PHN:</strong>
                 <span class="px-1">{{
                     patientData !== null ? patientData.personalhealthnumber : ""
                 }}</span>
             </b-col>
             <b-col>
-                <label>Date of Birth:</label>
+                <strong>Date of Birth:</strong>
                 <span class="px-1">{{
                     patientData !== null ? patientData.birthdate : ""
                 }}</span>
-=======
-                <strong>Name:</strong>
-                <span class="px-1">{{ firstName }} {{ lastName }}</span>
-            </b-col>
-            <b-col>
-                <strong>PHN:</strong>
-                <span class="px-1">{{ phn }}</span>
-            </b-col>
-            <b-col>
-                <strong>Date of Birth:</strong>
-                <span class="px-1">{{ dateOfBirth }}</span>
->>>>>>> Stashed changes
             </b-col>
         </b-row>
         <b-row v-if="startDate || endDate" class="pt-2 small">
