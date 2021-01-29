@@ -236,7 +236,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-2 header">
+                <b-row v-else-if="!isEmpty" class="py-3 header">
                     <b-col class="col-1">Date</b-col>
                     <b-col class="col-1">DIN/PIN</b-col>
                     <b-col class="col-2">Brand</b-col>
