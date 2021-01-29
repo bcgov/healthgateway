@@ -8,6 +8,7 @@ export default class TimelineFilter {
     public endDate: StringISODate;
     public entryTypes: EntryTypeFilter[];
     public pageSize: number;
+    public isListView: boolean;
 
     constructor(types: EntryTypeFilter[]) {
         this.keyword = "";
@@ -15,6 +16,7 @@ export default class TimelineFilter {
         this.pageSize = 25;
         this.endDate = "";
         this.startDate = "";
+        this.isListView = true;
     }
 
     public hasActiveFilter(): boolean {
