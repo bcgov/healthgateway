@@ -19,7 +19,7 @@ describe('Pagination', () => {
             });
     })
 
-    it('Go to Next Page then Previous', () => {
+    it('Validating Navigation', () => {
         cy.get('[data-testid=dateGroup]')
             .first()
             .then((firstPageDateElement) => {
