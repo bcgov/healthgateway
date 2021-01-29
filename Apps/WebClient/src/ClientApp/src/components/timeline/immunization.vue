@@ -41,14 +41,6 @@ export default class ImmunizationTimelineComponent extends Vue {
                     <b-col cols="auto" data-testid="immunizationTitle">
                         <strong>{{ entry.immunization.name }}</strong>
                     </b-col>
-                    <b-col cols="auto" class="text-muted">
-                        <strong>
-                            Status:
-                            <span data-testid="immunizationStatus">
-                                {{ entry.immunization.status }}
-                            </span></strong
-                        >
-                    </b-col>
                 </b-row>
             </b-col>
         </b-row>
