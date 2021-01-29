@@ -1,8 +1,6 @@
 import { StringISODate } from "@/models/dateWrapper";
 
-export enum ForecastStatus {
-    Eligible = "Eligible",
-}
+export type ForecastStatus = string;
 
 export interface Immunization {
     name: string;

@@ -19,7 +19,6 @@ namespace HealthGateway.Immunization.Models
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Constants;
     using HealthGateway.Immunization.Models.PHSA.Recommendation;
 
     /// <summary>
@@ -61,7 +60,7 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the Status.
         /// </summary>
         [JsonPropertyName("status")]
-        public ForecastStatus Status { get; set; }
+        public string Status { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Target Diseases.
@@ -116,7 +115,7 @@ namespace HealthGateway.Immunization.Models
                 DiseaseDueDate = diseaseDue != null ? DateTime.Parse(diseaseDue.Value) : null,
                 AgentEligibleDate = agentEligible != null ? DateTime.Parse(agentEligible.Value) : null,
                 AgentDueDate = agentDue != null ? DateTime.Parse(agentDue.Value) : null,
-                Status = (ForecastStatus)Enum.Parse(typeof(ForecastStatus), model.ForecastStatus.ForecastStatusText, true),
+                Status = model.ForecastStatus.ForecastStatusText,
                 TargetDiseases = TargetDisease.FromPHSAModelList(model.TargetDisease),
                 Immunization = ImmunizationDefinition.FromPHSAModel(model.VaccineCode),
             };

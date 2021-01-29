@@ -17,7 +17,6 @@ namespace HealthGateway.Immunization.Models
 {
     using System;
     using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Constants;
 
     /// <summary>
     /// Represents Immunization Forecast.
@@ -40,7 +39,7 @@ namespace HealthGateway.Immunization.Models
         /// Gets or sets the Status.
         /// </summary>
         [JsonPropertyName("status")]
-        public ForecastStatus Status { get; set; }
+        public string Status { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Display Name.
@@ -71,7 +70,7 @@ namespace HealthGateway.Immunization.Models
             {
                 RecommendationId = model.ImmsId,
                 CreateDate = model.ForecastCreateDate,
-                Status = (ForecastStatus)Enum.Parse(typeof(ForecastStatus), model.ForecastStatus, true),
+                Status = model.ForecastStatus,
                 DisplayName = model.DisplayName,
                 EligibleDate = model.EligibleDate,
                 DueDate = model.DueDate
