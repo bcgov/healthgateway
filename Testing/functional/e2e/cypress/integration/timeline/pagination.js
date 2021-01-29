@@ -2,7 +2,7 @@ require('cypress-xpath')
 const { AuthMethod } = require("../../support/constants")
 
 describe('Pagination', () => {
-    before(() => {
+    beforeEach(() => {
         cy.enableModules(["Medication", "Note"]);
         cy.login(Cypress.env('keycloak.username'),
             Cypress.env('keycloak.password'),
@@ -19,7 +19,7 @@ describe('Pagination', () => {
             });
     })
 
-    it('Go to Next Page', () => {
+    it('Validating Navigation', () => {
         cy.get('[data-testid=dateGroup]')
             .first()
             .then((firstPageDateElement) => {
@@ -35,23 +35,21 @@ describe('Pagination', () => {
                         expect(firstDate).to.be.greaterThan(secondDate);
                     })
             });
-    })
-
-    it('Go to Previous Page', () => {
+        
         cy.get('[data-testid=dateGroup]')
-            .first()
-            .then((secondPageDateElement) => {
-                cy.get('[data-testid=pagination]')
-                    .contains("Prev")
-                    .click();
+        .first()
+        .then((secondPageDateElement) => {
+            cy.get('[data-testid=pagination]')
+                .contains("Prev")
+                .click();
 
-                cy.get('[data-testid=dateGroup]')
-                    .first()
-                    .then(firstPageDateElement => {
-                        const firstDate = new Date(firstPageDateElement.text());
-                        const secondDate = new Date(secondPageDateElement.text());
-                        expect(firstDate).to.be.greaterThan(secondDate);
-                    })
-            });
+            cy.get('[data-testid=dateGroup]')
+                .first()
+                .then(firstPageDateElement => {
+                    const firstDate = new Date(firstPageDateElement.text());
+                    const secondDate = new Date(secondPageDateElement.text());
+                    expect(firstDate).to.be.greaterThan(secondDate);
+                })
+        });
     })
 })
