@@ -717,8 +717,8 @@ export default class TimelineView extends Vue {
 <template>
     <div>
         <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
-        <b-row class="my-3 fluid">
-            <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
+        <b-row class="my-3 fluid p-0 m-0">
+            <b-col id="timeline" class="col-12 col-lg-9 column-wrapper m-0 p-0">
                 <b-alert
                     :show="hasNewTermsOfService"
                     dismissible

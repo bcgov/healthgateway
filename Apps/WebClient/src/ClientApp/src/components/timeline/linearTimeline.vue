@@ -190,7 +190,11 @@ export default class LinearTimelineComponent extends Vue {
             </b-col>
         </b-row>
         <div id="timeData" data-testid="linearTimelineData">
-            <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
+            <b-row
+                v-for="dateGroup in dateGroups"
+                :key="dateGroup.key"
+                class="p-0 m-0"
+            >
                 <b-col cols="auto">
                     <div
                         :id="dateGroup.key"

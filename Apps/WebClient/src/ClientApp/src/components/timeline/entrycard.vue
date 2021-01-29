@@ -31,7 +31,7 @@ export default class EntrycardTimelineComponent extends Vue {
 </script>
 
 <template>
-    <b-row class="entryCard">
+    <b-row class="entryCard p-0 m-0">
         <MedicationComponent
             v-if="entry.type === EntryType.Medication"
             :key="entry.id"
@@ -73,13 +73,16 @@ export default class EntrycardTimelineComponent extends Vue {
 <style lang="scss" scoped>
 .entryCard {
     width: 100%;
-    padding-left: 50px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    min-width: 100%;
+    /*padding-top: 10px;
+    padding-bottom: 10px;*/
+    /*border-color: red;
+    border-width: 1px;
+    border-style: solid;*/
 }
-@media screen and (max-width: 600px) {
+/*@media screen and (max-width: 600px) {
     .entryCard {
         padding-left: 30px;
     }
-}
+}*/
 </style>
