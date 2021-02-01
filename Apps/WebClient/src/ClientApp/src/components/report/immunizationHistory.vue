@@ -202,9 +202,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     <b-col data-testid="immunizationDateTitle" class="col-2"
                         >Date</b-col
                     >
-                    <b-col data-testid="immunizationProviderTitle" class="col-2"
-                        >Provider / Clinic</b-col
-                    >
                     <b-col data-testid="immunizationItemTitle" class="col-3"
                         >Immunization</b-col
                     >
@@ -215,6 +212,9 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             <b-col>Lot Number</b-col>
                         </b-row>
                     </b-col>
+                    <b-col data-testid="immunizationProviderTitle" class="col-2"
+                        >Provider / Clinic</b-col
+                    >
                 </b-row>
                 <b-row
                     v-for="immzRecord in immunizationRecords"
@@ -226,12 +226,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         class="col-2 text-nowrap"
                     >
                         {{ formatDate(immzRecord.dateOfImmunization) }}
-                    </b-col>
-                    <b-col
-                        data-testid="immunizationItemProviderClinic"
-                        class="col-2"
-                    >
-                        {{ immzRecord.providerOrClinic }}
                     </b-col>
                     <b-col data-testid="immunizationItemName" class="col-3">
                         {{ immzRecord.immunization.name }}
@@ -252,6 +246,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                                 {{ agent.lotNumber }}
                             </b-col>
                         </b-row>
+                    </b-col>
+                    <b-col
+                        data-testid="immunizationItemProviderClinic"
+                        class="col-2"
+                    >
+                        {{ immzRecord.providerOrClinic }}
                     </b-col>
                 </b-row>
                 <b-row>
