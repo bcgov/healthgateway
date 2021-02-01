@@ -148,7 +148,6 @@ export default class ReportsView extends Vue {
                             result.resourcePayload.birthdate
                         );
                     }
-                    debugger;
                 }
             })
             .catch((err) => {

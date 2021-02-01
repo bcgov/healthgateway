@@ -32,6 +32,7 @@ export default class FilterComponent extends Vue {
     private eventBus = EventBus;
     private isVisible = false;
     private windowWidth = 0;
+    private isListView = true;
 
     private selectedEntryTypes: EntryType[] = [];
 
@@ -82,13 +83,23 @@ export default class FilterComponent extends Vue {
         return this.filter;
     }
 
-    private toggleListView() {
-        this.filter.isListView = true;
-        window.location.hash = "linear";
+    private emitSwitchedView() {
+        this.eventBus.$emit(
+            EventMessageName.TimelineViewUpdated,
+            this.isListView
+        );
     }
+
+    private toggleListView() {
+        this.isListView = true;
+        window.location.hash = "linear";
+        this.emitSwitchedView();
+    }
+
     private toggleMonthView() {
-        this.filter.isListView = false;
+        this.isListView = false;
         window.location.hash = "calendar";
+        this.emitSwitchedView();
     }
 
     private created() {
@@ -107,9 +118,6 @@ export default class FilterComponent extends Vue {
         );
         this.eventBus.$on(EventMessageName.TimelineEntryAdded, () => {
             this.onEntryAdded();
-        });
-        this.eventBus.$on(EventMessageName.CalendarDateEventClick, () => {
-            this.filter.isListView = true;
         });
     }
 
@@ -253,7 +261,7 @@ export default class FilterComponent extends Vue {
                             <b-btn
                                 data-testid="monthViewToggle"
                                 class="month-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: !filter.isListView }"
+                                :class="{ active: !isListView }"
                                 @click.stop="toggleMonthView"
                             >
                                 Date
@@ -263,7 +271,7 @@ export default class FilterComponent extends Vue {
                             <b-btn
                                 data-testid="listViewToggle"
                                 class="list-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: filter.isListView }"
+                                :class="{ active: isListView }"
                                 @click.stop="toggleListView"
                             >
                                 List

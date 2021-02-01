@@ -127,6 +127,7 @@ export default class TimelineView extends Vue {
 
     private filterText = "";
     private filter: TimelineFilter = new TimelineFilter([]);
+    private isListView = true;
     private timelineEntries: TimelineEntry[] = [];
     private isMedicationLoading = false;
     private isImmunizationLoading = false;
@@ -202,6 +203,12 @@ export default class TimelineView extends Vue {
         this.eventBus.$on(EventMessageName.IsNoteBlank, (isBlank: boolean) => {
             this.isBlankNote = isBlank;
         });
+        this.eventBus.$on(
+            EventMessageName.TimelineViewUpdated,
+            (isListView: boolean) => {
+                this.isListView = isListView;
+            }
+        );
 
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
@@ -816,19 +823,21 @@ export default class TimelineView extends Vue {
                     </b-col>
                 </b-row>
                 <LinearTimeline
-                    v-show="filter.isListView && !isLoading"
+                    v-show="isListView && !isLoading"
                     :timeline-entries="timelineEntries"
-                    :is-visible="filter.isListView"
+                    :is-visible="isListView"
                     :total-entries="getTotalCount()"
                     :filter="filter"
+                    :is-list-view="isListView"
                 >
                 </LinearTimeline>
                 <CalendarTimeline
-                    v-show="!filter.isListView && !isLoading"
+                    v-show="!isListView && !isLoading"
                     :timeline-entries="timelineEntries"
-                    :is-visible="!filter.isListView"
+                    :is-visible="!isListView"
                     :total-entries="getTotalCount()"
                     :filter="filter"
+                    :is-list-view="isListView"
                 >
                 </CalendarTimeline>
                 <b-row v-if="isLoading">
