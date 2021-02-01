@@ -49,9 +49,6 @@ export default class CalendarTimelineComponent extends Vue {
             :filter="filter"
             :is-visible="isVisible && !timelineIsEmpty"
         >
-            <div slot="month-list-toggle">
-                <slot name="month-list-toggle"></slot>
-            </div>
         </CalendarComponent>
         <div v-if="timelineIsEmpty" class="text-center pt-2">
             <b-row>

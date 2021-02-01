@@ -127,9 +127,6 @@ export default class CalendarComponent extends Vue {
             :title-format="titleFormat"
             :available-months="availableMonths"
         >
-            <div slot="month-list-toggle">
-                <slot name="month-list-toggle"></slot>
-            </div>
         </CalendarHeader>
         <b-row class="sticky-top sticky-line" />
         <!-- body display date day and events -->

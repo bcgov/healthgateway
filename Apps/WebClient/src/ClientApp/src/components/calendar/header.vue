@@ -111,11 +111,6 @@ export default class CalendarComponent extends Vue {
                 <font-awesome-icon :icon="rightIcon" />
             </b-btn>
         </b-col>
-        <b-col
-            class="header-right px-0 col-12 order-first col-sm order-sm-last"
-        >
-            <slot name="month-list-toggle"></slot>
-        </b-col>
     </b-row>
 </template>
 
