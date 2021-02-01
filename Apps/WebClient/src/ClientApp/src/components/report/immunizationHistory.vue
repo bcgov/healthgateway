@@ -182,8 +182,9 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     <div>
         <div v-show="!isLoading" ref="report">
             <section class="pdf-item">
-                <div v-show="!isPreview">
+                <div>
                     <ReportHeaderComponent
+                        v-show="!isPreview"
                         :start-date="startDate"
                         :end-date="endDate"
                         title="Health Gateway Immunization Record"
@@ -195,10 +196,10 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         <h4>Immunization History</h4>
                     </b-col>
                 </b-row>
-                <b-row v-if="isEmpty" class="mt-2">
+                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
+                <b-row v-else-if="!isEmpty" class="py-3 header">
                     <b-col data-testid="immunizationDateTitle" class="col-2"
                         >Date</b-col
                     >

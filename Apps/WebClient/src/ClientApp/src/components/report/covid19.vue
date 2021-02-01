@@ -182,13 +182,10 @@ export default class COVID19ReportComponent extends Vue {
                     title="Health Gateway COVID-19 Test Result History"
                     :patient-data="patientData"
                 />
-                <b-row
-                    v-if="isEmpty && (!isLoading || !isPreview)"
-                    class="mt-2"
-                >
+                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
+                <b-row v-else-if="!isEmpty" class="py-3 header">
                     <b-col class="col">Date</b-col>
                     <b-col class="col">Test Type</b-col>
                     <b-col class="col">Test Location</b-col>
