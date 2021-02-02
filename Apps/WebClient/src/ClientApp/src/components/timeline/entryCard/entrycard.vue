@@ -58,6 +58,7 @@ export default class EntrycardTimelineComponent extends Vue {
                             <div>
                                 <b-btn
                                     variant="link"
+                                    data-testid="entryCardDetailsButton"
                                     class="detailsButton"
                                     @click="toggleDetails()"
                                 >

@@ -4,6 +4,10 @@ const HDID='P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
 
 function verifyAdd(entryTypeCode) {
     cy.log('Validate ADD comment...')
+    cy.get('[data-testid=entryCardDetailsButton]')
+        .first()
+        .click();
+    
     cy.get('[data-testid=addCommentTextArea]')
         .first()
         .type('test comment goes here!');
