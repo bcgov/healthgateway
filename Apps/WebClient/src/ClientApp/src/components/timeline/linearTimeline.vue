@@ -239,8 +239,8 @@ export default class LinearTimelineComponent extends Vue {
                         {{ getHeadingDate(dateGroup.date) }}
                     </div>
                 </b-col>
-                <b-col class="pl-2">
-                    <hr class="dateBreakLine" />
+                <b-col align-self="center" class="pl-2">
+                    <hr class="dateBreakLine my-0" />
                 </b-col>
                 <component
                     :is="getComponentForEntry(entry.type)"

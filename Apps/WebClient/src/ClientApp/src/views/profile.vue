@@ -477,7 +477,7 @@ export default class ProfileView extends Vue {
 <template>
     <div class="m-3">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <div class="row py-5 my-3 fluid">
+        <b-row class="py-1 my-3 py-md-5 fluid">
             <div class="col-12 col-lg-9 column-wrapper">
                 <div id="pageTitle">
                     <h1 id="subject">Profile</h1>
@@ -870,7 +870,7 @@ export default class ProfileView extends Vue {
                     </b-row>
                 </div>
             </div>
-        </div>
+        </b-row>
         <VerifySMSComponent
             ref="verifySMSModal"
             :sms-number="smsNumber"
