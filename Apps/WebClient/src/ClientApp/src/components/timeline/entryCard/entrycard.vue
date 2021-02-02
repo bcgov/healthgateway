@@ -29,8 +29,8 @@ export default class EntrycardTimelineComponent extends Vue {
 </script>
 
 <template>
-    <b-row class="timelineCard mb-1">
-        <b-col>
+    <b-row class="cardWrapper mb-1">
+        <b-col class="timelineCard ml-0 ml-md-4">
             <b-row class="entryHeading px-2 py-3">
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
@@ -102,10 +102,12 @@ $right-pane-width: 90px;
     margin: 0px;
 }
 
-.timelineCard {
+.cardWrapper {
     width: 100%;
     min-width: 100%;
+}
 
+.timelineCard {
     border-color: $soft_background;
     border-style: solid;
     border-width: 2px;

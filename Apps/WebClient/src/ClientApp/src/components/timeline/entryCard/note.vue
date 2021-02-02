@@ -24,6 +24,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
+// TODO: Task 9998
 @Component({
     components: {
         DatePickerComponent,
