@@ -22,12 +22,13 @@ import container from "@/plugins/inversify.config";
 import { IUserNoteService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
+// TODO: Task 9998
 @Component({
     components: {
         DatePickerComponent,
     },
 })
-export default class NoteTimelineComponent extends Vue {
+export default class NoteEditComponent extends Vue {
     @Prop() isAddMode!: boolean;
     @Prop() entry!: NoteTimelineEntry;
     @Action("addError", { namespace: "errorBanner" })
@@ -42,6 +43,8 @@ export default class NoteTimelineComponent extends Vue {
     private isEditMode = false;
     private isSaving = false;
     private eventBus = EventBus;
+
+    private isVisible = false;
 
     private mounted() {
         this.noteService = container.get<IUserNoteService>(
@@ -218,94 +221,21 @@ export default class NoteTimelineComponent extends Vue {
 </script>
 
 <template>
-    <b-col class="timelineCard" :class="isEditing ? 'px-0' : ''">
-        <b-form @submit="onSubmit" @reset="onReset">
-            <b-row class="entryHeading">
-                <b-col class="d-flex" :class="!isEditing ? 'px-0' : ''">
-                    <div class="icon leftPane">
-                        <font-awesome-icon
-                            :icon="entryIcon"
-                            size="2x"
-                        ></font-awesome-icon>
-                    </div>
-                    <div v-if="!isEditing" class="entryTitle d-flex">
-                        <div class="pt-1 w-100" data-testid="noteTitle">
-                            {{ entry.title }}
-                        </div>
-                        <div>
-                            <!-- Right aligned nav items -->
-                            <b-navbar-nav class="ml-auto">
-                                <b-nav-item-dropdown
-                                    right
-                                    text=""
-                                    :no-caret="true"
-                                >
-                                    <!-- Using 'button-content' slot -->
-                                    <template slot="button-content">
-                                        <font-awesome-icon
-                                            data-testid="noteMenuBtn"
-                                            class="noteMenu"
-                                            :icon="menuIcon"
-                                            size="1x"
-                                        ></font-awesome-icon>
-                                    </template>
-                                    <b-dropdown-item
-                                        data-testid="editNoteMenuBtn"
-                                        class="menuItem"
-                                        @click="editNote()"
-                                    >
-                                        Edit
-                                    </b-dropdown-item>
-                                    <b-dropdown-item
-                                        data-testid="deleteNoteMenuBtn"
-                                        class="menuItem"
-                                        @click="deleteNote()"
-                                    >
-                                        Delete
-                                    </b-dropdown-item>
-                                </b-nav-item-dropdown>
-                            </b-navbar-nav>
-                        </div>
-                    </div>
-                    <b-row v-else class="editableEntryTitle pr-1">
-                        <b-col class="p-0 col-sm-7 col-12">
-                            <b-form-input
-                                id="title"
-                                ref="titleInput"
-                                v-model="title"
-                                data-testid="noteTitleInput"
-                                type="text"
-                                placeholder="Title"
-                                maxlength="100"
-                                :state="isValid($v.title)"
-                                @input="checkBlankNote()"
-                                @blur.native="$v.title.$touch()"
-                            />
-                            <b-form-invalid-feedback :state="isValid($v.title)">
-                                Title is required
-                            </b-form-invalid-feedback>
-                        </b-col>
-                        <b-col class="p-0 pl-sm-1 pt-sm-0 pt-1 col-sm-5 col-12">
-                            <DatePickerComponent
-                                id="date"
-                                v-model="dateString"
-                                data-testid="noteDateInput"
-                                :state="isValid($v.dateString)"
-                                @blur="$v.dateString.$touch()"
-                            />
-                            <b-form-invalid-feedback
-                                :state="isValid($v.dateString)"
-                            >
-                                Invalid Date
-                            </b-form-invalid-feedback>
-                        </b-col>
-                    </b-row>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col class="leftPane"></b-col>
-                <b-col>
-                    <b-row>
+    <b-modal
+        id="new-dependent-modal"
+        v-model="isVisible"
+        data-testid="newDependentModal"
+        content-class="mt-5"
+        title="Dependent Registration"
+        size="lg"
+        header-bg-variant="primary"
+        header-text-variant="light"
+        centered
+    >
+        <b-row>
+            <b-col>
+                <form>
+                    <b-row data-testid="newDependentModalText">
                         <b-col v-if="!isEditing" class="entryDetails">
                             {{
                                 !detailsVisible ? entry.textSummary : entry.text
@@ -364,10 +294,33 @@ export default class NoteTimelineComponent extends Vue {
                             </div>
                         </b-col>
                     </b-row>
-                </b-col>
+                </form>
+            </b-col>
+        </b-row>
+        <template #modal-footer>
+            <b-row>
+                <div class="mr-2">
+                    <b-btn
+                        data-testid="saveNoteBtn"
+                        variant="primary"
+                        type="submit"
+                        :disabled="isSaving"
+                        >Save</b-btn
+                    >
+                </div>
+                <div>
+                    <b-btn
+                        data-testid="cancelRegistrationBtn"
+                        variant="secondary"
+                        :disabled="isSaving"
+                        @click="hideModal"
+                        >Cancel</b-btn
+                    >
+                </div>
             </b-row>
-        </b-form>
-    </b-col>
+        </template>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
+    </b-modal>
 </template>
 
 <style lang="scss" scoped>

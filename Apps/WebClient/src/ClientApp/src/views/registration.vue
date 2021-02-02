@@ -282,7 +282,7 @@ export default class RegistrationView extends Vue {
 </script>
 
 <template>
-    <b-container class="py-5">
+    <b-container class="py-2 py-md-5">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <div v-if="!isLoading && termsOfService !== ''">
             <b-row v-if="isRegistrationClosed">

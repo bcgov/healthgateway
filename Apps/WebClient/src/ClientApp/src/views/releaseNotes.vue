@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4">
+    <div class="m-3 px-4">
         <b-row>
             <b-col>
                 <b-row class="my-3 fluid">

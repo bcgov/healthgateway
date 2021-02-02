@@ -80,9 +80,9 @@ export default class DependentsView extends Vue {
 }
 </script>
 <template>
-    <div>
+    <div class="m-3">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
-        <b-row class="my-3 fluid">
+        <b-row>
             <b-col class="col-12 col-lg-9 column-wrapper">
                 <b-row>
                     <b-col>

@@ -84,6 +84,7 @@ describe("Filters", () => {
     });
 
     it("No Records on Calendar Timeline", () => {
+        cy.get('[data-testid=filterDropdown]').click();
         cy.get("[data-testid=monthViewToggle]").first().click();
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.get("[data-testid=filterTextInput]").clear();

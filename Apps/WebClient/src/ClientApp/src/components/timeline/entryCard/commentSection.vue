@@ -3,8 +3,8 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import AddCommentComponent from "@/components/timeline/addComment.vue";
-import CommentComponent from "@/components/timeline/comment.vue";
+import AddCommentComponent from "@/components/timeline/entryCard/addComment.vue";
+import CommentComponent from "@/components/timeline/entryCard/comment.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import User from "@/models/user";
@@ -87,73 +87,69 @@ export default class CommentSectionComponent extends Vue {
 </script>
 
 <template>
-    <b-row>
-        <b-col class="commentSection">
-            <div>
-                <b-row class="pt-2">
-                    <b-col>
-                        <div v-if="hasComments" class="d-flex flex-row-reverse">
-                            <b-btn
-                                variant="link"
-                                class="px-3 py-2"
-                                @click="showComments = !showComments"
-                            >
-                                <span>
-                                    {{
-                                        comments.length > 1
-                                            ? comments.length + " Comments"
-                                            : "1 Comment"
-                                    }}</span
-                                >
-                            </b-btn>
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <AddComment
-                            :comment="newComment"
-                            @on-comment-added="onAdd"
-                        ></AddComment>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <b-collapse
-                            :id="'entryComments-' + parentEntry.id"
-                            v-model="showComments"
+    <b-row class="py-2">
+        <b-col>
+            <b-row class="pt-2">
+                <b-col>
+                    <div v-if="hasComments" class="d-flex flex-row-reverse">
+                        <b-btn
+                            variant="link"
+                            class="py-2"
+                            @click="showComments = !showComments"
                         >
-                            <div v-if="!isLoadingComments">
-                                <div
-                                    v-for="comment in comments"
-                                    :key="comment.id"
-                                >
-                                    <Comment :comment="comment"></Comment>
-                                </div>
+                            <span>
+                                {{
+                                    comments.length > 1
+                                        ? comments.length + " Comments"
+                                        : "1 Comment"
+                                }}</span
+                            >
+                        </b-btn>
+                    </div>
+                </b-col>
+            </b-row>
+            <AddComment
+                :comment="newComment"
+                @on-comment-added="onAdd"
+            ></AddComment>
+            <b-row class="pt-2">
+                <b-col>
+                    <b-collapse
+                        :id="'entryComments-' + parentEntry.id"
+                        v-model="showComments"
+                    >
+                        <div v-if="!isLoadingComments">
+                            <div v-for="comment in comments" :key="comment.id">
+                                <Comment :comment="comment"></Comment>
                             </div>
-                            <div v-else>
-                                <div class="d-flex align-items-center">
-                                    <strong>Loading...</strong>
-                                    <b-spinner class="ml-5"></b-spinner>
-                                </div>
+                        </div>
+                        <div v-else>
+                            <div class="d-flex align-items-center">
+                                <strong>Loading...</strong>
+                                <b-spinner class="ml-5"></b-spinner>
                             </div>
-                        </b-collapse>
-                    </b-col>
-                </b-row>
-            </div>
+                        </div>
+                    </b-collapse>
+                </b-col>
+            </b-row>
         </b-col>
     </b-row>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
+.col {
+    padding: 0px;
+    margin: 0px;
+}
+.row {
+    padding: 0;
+    margin: 0px;
+}
+
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
     display: none;
-}
-
-.commentSection {
-    padding-left: 0px;
-    padding-right: 0px;
 }
 </style>

@@ -378,6 +378,33 @@ export default class FilterComponent extends Vue {
                     </b-row>
                 </b-col>
             </b-row>
+            <b-row class="justify-content-center py-2">
+                <b-col class="col-10">
+                    <h5>View</h5>
+                    <b-row class="view-selector mt-1">
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                data-testid="monthViewToggle"
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: !isListView }"
+                                @click.stop="toggleMonthView"
+                            >
+                                Date
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                data-testid="listViewToggle"
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: isListView }"
+                                @click.stop="toggleListView"
+                            >
+                                List
+                            </b-btn>
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-row>
         </b-modal>
     </div>
 </template>

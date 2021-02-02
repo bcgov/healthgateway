@@ -207,9 +207,19 @@ export default class App extends Vue {
     </div>
 </template>
 
+<style lang="scss" scoped>
+.row {
+    margin: 0px;
+    padding: 0px;
+}
+
+.col {
+    margin: 0px;
+    padding: 0px;
+}
+</style>
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
-
 @media print {
     .navbar {
         display: flex !important;
