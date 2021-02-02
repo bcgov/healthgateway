@@ -121,6 +121,11 @@ export default class FilterComponent extends Vue {
         });
     }
 
+    private beforeDestroy() {
+        this.eventBus.$off(EventMessageName.SelectedFilter);
+        this.eventBus.$off(EventMessageName.TimelineEntryAdded);
+    }
+
     private destroyed() {
         window.removeEventListener("handleResize", this.handleResize);
     }

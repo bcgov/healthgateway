@@ -90,6 +90,12 @@ export default class LinearTimelineComponent extends Vue {
         );
     }
 
+    private beforeDestroy() {
+        this.eventBus.$off(EventMessageName.CalendarDateEventClick);
+        this.eventBus.$off(EventMessageName.CalendarMonthUpdated);
+        this.eventBus.$off(EventMessageName.TimelineEntryAdded);
+    }
+
     private linkGen(pageNum: number) {
         return `?page=${pageNum}`;
     }

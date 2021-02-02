@@ -15,10 +15,11 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop() entry!: TimelineEntry;
     @Prop() cardId!: string;
     @Prop() title!: string;
+    @Prop() subtitle!: string;
     @Prop() entryIcon!: string;
     @Prop() iconClass!: string;
     @Prop({ default: true }) allowComment!: boolean;
-    @Prop() subtitle!: string;
+    @Prop({ default: true }) showDetailsButton!: boolean;
 
     private detailsVisible = false;
 
@@ -47,6 +48,9 @@ export default class EntrycardTimelineComponent extends Vue {
                         >
                             <strong>{{ title }}</strong>
                         </b-col>
+                        <b-col cols="auto">
+                            <slot name="header-menu"> </slot>
+                        </b-col>
                     </b-row>
                     <b-row class="py-2">
                         <b-col class="text-muted">
@@ -54,8 +58,8 @@ export default class EntrycardTimelineComponent extends Vue {
                                 subtitle
                             }}</slot>
                         </b-col>
-                        <b-col class="rightPane">
-                            <div>
+                        <b-col class="rightPane align-self-end">
+                            <div v-if="showDetailsButton">
                                 <b-btn
                                     variant="link"
                                     data-testid="entryCardDetailsButton"
