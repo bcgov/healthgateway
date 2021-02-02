@@ -176,13 +176,10 @@ export default class MSPVisitsReportComponent extends Vue {
                     title="Health Gateway MSP Visit History"
                     :patient-data="patientData"
                 />
-                <b-row
-                    v-if="isEmpty && (!isLoading || !isPreview)"
-                    class="mt-2"
-                >
+                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
+                <b-row v-else-if="!isEmpty" class="py-3 header">
                     <b-col>Date</b-col>
                     <b-col>Provider Name</b-col>
                     <b-col>Specialty Description</b-col>

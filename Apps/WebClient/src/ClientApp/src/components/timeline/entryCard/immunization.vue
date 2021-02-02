@@ -36,15 +36,6 @@ export default class ImmunizationTimelineComponent extends Vue {
         :entry="entry"
         :allow-comment="false"
     >
-        <div slot="header-description">
-            <strong>
-                Status:
-                <span data-testid="immunizationStatus">
-                    {{ entry.immunization.status }}
-                </span></strong
-            >
-        </div>
-
         <b-row slot="details-body" class="justify-content-between">
             <b-col>
                 <b-row

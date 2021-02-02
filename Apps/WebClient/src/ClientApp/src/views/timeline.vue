@@ -125,6 +125,7 @@ export default class TimelineView extends Vue {
 
     private filterText = "";
     private filter: TimelineFilter = new TimelineFilter([]);
+    private isListView = true;
     private timelineEntries: TimelineEntry[] = [];
     private isMedicationLoading = false;
     private isImmunizationLoading = false;
@@ -141,7 +142,6 @@ export default class TimelineView extends Vue {
     private unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
 
-    private isListView = true;
     private eventBus = EventBus;
 
     private logger!: ILogger;
@@ -198,12 +198,15 @@ export default class TimelineView extends Vue {
         this.eventBus.$on(EventMessageName.TimelineEntryEditClose, () => {
             this.onEntryEditClose();
         });
-        this.eventBus.$on(EventMessageName.CalendarDateEventClick, () => {
-            this.isListView = true;
-        });
         this.eventBus.$on(EventMessageName.IsNoteBlank, (isBlank: boolean) => {
             this.isBlankNote = isBlank;
         });
+        this.eventBus.$on(
+            EventMessageName.TimelineViewUpdated,
+            (isListView: boolean) => {
+                this.isListView = isListView;
+            }
+        );
 
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
@@ -678,15 +681,6 @@ export default class TimelineView extends Vue {
         );
     }
 
-    private toggleListView() {
-        this.isListView = true;
-        window.location.hash = "linear";
-    }
-    private toggleMonthView() {
-        this.isListView = false;
-        window.location.hash = "calendar";
-    }
-
     private setFilterTypeCount(entryType: EntryType, count: number) {
         let typeFilter = this.filter.entryTypes.find(
             (x) => x.type === entryType
@@ -837,38 +831,17 @@ export default class TimelineView extends Vue {
                     :is-visible="isListView"
                     :total-entries="getTotalCount()"
                     :filter="filter"
-                />
+                    :is-list-view="isListView"
+                >
+                </LinearTimeline>
                 <CalendarTimeline
                     v-show="!isListView && !isLoading"
                     :timeline-entries="timelineEntries"
                     :is-visible="!isListView"
                     :total-entries="getTotalCount()"
                     :filter="filter"
+                    :is-list-view="isListView"
                 >
-                    <b-row
-                        slot="month-list-toggle"
-                        class="view-selector justify-content-end"
-                    >
-                        <b-col cols="auto" class="pr-0">
-                            <b-btn
-                                data-testid="monthViewToggle"
-                                class="month-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: true }"
-                            >
-                                Month
-                            </b-btn>
-                        </b-col>
-                        <b-col cols="auto" class="pl-0">
-                            <b-btn
-                                data-testid="listViewToggle"
-                                class="list-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: false }"
-                                @click.stop="toggleListView"
-                            >
-                                List
-                            </b-btn>
-                        </b-col>
-                    </b-row>
                 </CalendarTimeline>
                 <b-row v-if="isLoading">
                     <b-col>
@@ -974,29 +947,6 @@ export default class TimelineView extends Vue {
 .btn-light {
     border-color: $primary;
     color: $primary;
-}
-
-.view-selector {
-    min-width: 170px;
-    .btn-outline-primary {
-        font-size: 1em;
-        background-color: white;
-    }
-    .btn-outline-primary:focus {
-        color: white;
-        background-color: $primary;
-    }
-    .btn-outline-primary:hover {
-        color: white;
-        background-color: $primary;
-    }
-    .month-view-btn {
-        border-radius: 5px 0px 0px 5px;
-        border-right: 0px;
-    }
-    .list-view-btn {
-        border-radius: 0px 5px 5px 0px;
-    }
 }
 
 .z-index-large {
