@@ -81,66 +81,64 @@ export default class AddCommentComponent extends Vue {
 </script>
 
 <template>
-    <b-col>
-        <div>
-            <b-row class="p-2">
-                <b-col cols="auto" class="px-0 align-self-center">
-                    <div
-                        :id="'tooltip-' + comment.parentEntryId"
-                        class="tooltip-info"
-                    >
-                        <font-awesome-icon :icon="lockIcon" size="1x">
-                        </font-awesome-icon>
-                    </div>
-                    <b-tooltip
-                        variant="secondary"
-                        :target="'tooltip-' + comment.parentEntryId"
-                        placement="left"
-                        triggers="hover"
-                    >
-                        Only you can see comments added to your medical records.
-                    </b-tooltip>
-                </b-col>
-                <b-col class="col pl-2 pr-0">
-                    <b-form @submit.prevent>
-                        <b-form-textarea
-                            :id="'comment-input-' + comment.parentEntryId"
-                            v-model="commentInput"
-                            data-testid="addCommentTextArea"
-                            class="comment-input-style"
-                            :class="
-                                commentInput.length <= 30 ? 'single-line' : ''
-                            "
-                            rows="2"
-                            max-rows="10"
-                            no-resize
-                            placeholder="Write a comment"
-                            maxlength="1000"
-                            :disabled="isSaving"
-                        ></b-form-textarea>
-                    </b-form>
-                </b-col>
-                <b-col
-                    class="pl-2 pr-0 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
-                >
-                    <b-button
-                        data-testid="postCommentBtn"
-                        class="mr-2 px-4"
-                        variant="primary"
-                        :disabled="commentInput === '' || isSaving"
-                        @click="onSubmit"
-                    >
-                        Post
-                    </b-button>
-                </b-col>
-            </b-row>
-        </div>
-    </b-col>
+    <b-row>
+        <b-col cols="auto" class="pl-0 pr-2 align-self-center">
+            <div :id="'tooltip-' + comment.parentEntryId" class="tooltip-info">
+                <font-awesome-icon :icon="lockIcon" size="1x">
+                </font-awesome-icon>
+            </div>
+            <b-tooltip
+                variant="secondary"
+                :target="'tooltip-' + comment.parentEntryId"
+                placement="left"
+                triggers="hover"
+            >
+                Only you can see comments added to your medical records.
+            </b-tooltip>
+        </b-col>
+        <b-col>
+            <b-form @submit.prevent>
+                <b-form-textarea
+                    :id="'comment-input-' + comment.parentEntryId"
+                    v-model="commentInput"
+                    data-testid="addCommentTextArea"
+                    class="comment-input-style"
+                    :class="commentInput.length <= 30 ? 'single-line' : ''"
+                    rows="2"
+                    max-rows="10"
+                    no-resize
+                    placeholder="Write a comment"
+                    maxlength="1000"
+                    :disabled="isSaving"
+                ></b-form-textarea>
+            </b-form>
+        </b-col>
+        <b-col
+            class="pl-2 pr-0 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
+        >
+            <b-button
+                data-testid="postCommentBtn"
+                class="mr-2 px-4"
+                variant="primary"
+                :disabled="commentInput === '' || isSaving"
+                @click="onSubmit"
+            >
+                Post
+            </b-button>
+        </b-col>
+    </b-row>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
+.col {
+    padding: 0px;
+    margin: 0px;
+}
+.row {
+    padding: 0;
+    margin: 0px;
+}
 .comment-input-style:not(:focus) {
     background-color: $soft_background;
 }

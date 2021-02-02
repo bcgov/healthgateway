@@ -190,7 +190,7 @@ export default class App extends Vue {
         </header>
         <b-row class="p-0 m-0">
             <NavSidebar class="no-print sticky-top vh-100" />
-            <main class="col fill-height p-0 m-0">
+            <main class="col fill-height">
                 <ErrorCard
                     title="Whoops!"
                     description="An error occurred."
@@ -207,9 +207,19 @@ export default class App extends Vue {
     </div>
 </template>
 
+<style lang="scss" scoped>
+.row {
+    margin: 0px;
+    padding: 0px;
+}
+
+.col {
+    margin: 0px;
+    padding: 0px;
+}
+</style>
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
-
 @media print {
     .navbar {
         display: flex !important;

@@ -6,7 +6,7 @@ import { Action, Getter } from "vuex-class";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
+import LineChartComponent from "@/components/plot/lineChart.vue";
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";

@@ -20,7 +20,7 @@ export default class ErrorCardComponent extends Vue {
         data-testid="errorBanner"
         variant="danger"
         dismissible
-        class="no-print mt-3"
+        class="no-print mt-3 mx-2"
         :show="isShowing"
     >
         <h4>Whoops, something went wrong... Try refreshing the page</h4>
