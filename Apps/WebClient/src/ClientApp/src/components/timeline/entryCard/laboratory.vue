@@ -49,6 +49,10 @@ export default class LaboratoryTimelineComponent extends Vue {
         return faFlask;
     }
 
+    private get reportAvailable(): boolean {
+        return this.entry.reportAvailable;
+    }
+
     private formatDate(date: DateWrapper): string {
         return date.format("LLL dd, yyyy t");
     }
@@ -78,10 +82,6 @@ export default class LaboratoryTimelineComponent extends Vue {
             .finally(() => {
                 this.isLoadingDocument = false;
             });
-    }
-
-    private get reportAvailable(): boolean {
-        return this.entry.reportAvailable;
     }
 }
 </script>
