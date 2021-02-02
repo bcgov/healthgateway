@@ -13,7 +13,7 @@ describe('Pagination', () => {
     it('Count Records', () => {
         // xpath is an additional library and we should probably not use it much but this should
         // help in migrating over Selenium Tests
-        cy.xpath('//*[contains(@class, "entryCard")]')
+        cy.xpath('//*[contains(@class, "timelineCard")]')
             .then(elements => {                
                 cy.get('#listControls').find('.col').contains(`Displaying ${elements.length} out of `)
             });
