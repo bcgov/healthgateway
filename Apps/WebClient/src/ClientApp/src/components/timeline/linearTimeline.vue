@@ -90,6 +90,12 @@ export default class LinearTimelineComponent extends Vue {
         );
     }
 
+    private beforeDestroy() {
+        this.eventBus.$off(EventMessageName.CalendarDateEventClick);
+        this.eventBus.$off(EventMessageName.CalendarMonthUpdated);
+        this.eventBus.$off(EventMessageName.TimelineEntryAdded);
+    }
+
     private linkGen(pageNum: number) {
         return `?page=${pageNum}`;
     }
@@ -217,12 +223,8 @@ export default class LinearTimelineComponent extends Vue {
             </b-col>
         </b-row>
         <div id="timeData" data-testid="linearTimelineData">
-            <b-row
-                v-for="dateGroup in dateGroups"
-                :key="dateGroup.key"
-                class="p-0 m-0"
-            >
-                <b-col cols="auto" class="p-0 m-0">
+            <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
+                <b-col cols="auto">
                     <div
                         :id="dateGroup.key"
                         :ref="dateGroup.key"
@@ -233,8 +235,8 @@ export default class LinearTimelineComponent extends Vue {
                         {{ getHeadingDate(dateGroup.date) }}
                     </div>
                 </b-col>
-                <b-col class="pl-2">
-                    <hr class="dateBreakLine" />
+                <b-col align-self="center" class="pl-2">
+                    <hr class="dateBreakLine my-0" />
                 </b-col>
                 <component
                     :is="getComponentForEntry(entry.type)"

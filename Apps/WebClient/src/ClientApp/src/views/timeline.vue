@@ -150,6 +150,8 @@ export default class TimelineView extends Vue {
     readonly protectiveWordModal!: ProtectiveWordComponent;
     @Ref("covidModal")
     readonly covidModal!: CovidModalComponent;
+    @Ref("noteEditModal")
+    readonly noteEditModal!: NoteEditComponent;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -163,6 +165,7 @@ export default class TimelineView extends Vue {
         window.addEventListener("beforeunload", this.onBrowserClose);
         this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
             this.isAddingNote = true;
+            this.noteEditModal.showModal();
         });
         this.eventBus.$on(
             EventMessageName.IdleLogoutWarning,
@@ -177,9 +180,13 @@ export default class TimelineView extends Vue {
                 this.onEntryAdded(entry);
             }
         );
-        this.eventBus.$on(EventMessageName.TimelineEntryEdit, () => {
-            this.onEntryEdit();
-        });
+        this.eventBus.$on(
+            EventMessageName.TimelineEntryEdit,
+            (note: NoteTimelineEntry) => {
+                this.onEntryEdit();
+                this.noteEditModal.showModal(note);
+            }
+        );
         this.eventBus.$on(
             EventMessageName.TimelineEntryUpdated,
             (entry: TimelineEntry) => {
@@ -192,11 +199,8 @@ export default class TimelineView extends Vue {
                 this.onEntryDeleted(entry);
             }
         );
-        this.eventBus.$on(EventMessageName.TimelineEntryAddClose, () => {
-            this.onEntryAddClose();
-        });
-        this.eventBus.$on(EventMessageName.TimelineEntryEditClose, () => {
-            this.onEntryEditClose();
+        this.eventBus.$on(EventMessageName.TimelineNoteEditClose, () => {
+            this.onNoteEditClose();
         });
         this.eventBus.$on(EventMessageName.IsNoteBlank, (isBlank: boolean) => {
             this.isBlankNote = isBlank;
@@ -256,6 +260,18 @@ export default class TimelineView extends Vue {
             },
         ];
         this.filter = new TimelineFilter(entryTypes);
+    }
+
+    private beforeDestroy() {
+        this.eventBus.$off(EventMessageName.TimelineCreateNote);
+        this.eventBus.$off(EventMessageName.IdleLogoutWarning);
+        this.eventBus.$off(EventMessageName.TimelineEntryAdded);
+        this.eventBus.$off(EventMessageName.TimelineEntryEdit);
+        this.eventBus.$off(EventMessageName.TimelineEntryUpdated);
+        this.eventBus.$off(EventMessageName.TimelineEntryDeleted);
+        this.eventBus.$off(EventMessageName.TimelineNoteEditClose);
+        this.eventBus.$off(EventMessageName.IsNoteBlank);
+        this.eventBus.$off(EventMessageName.TimelineViewUpdated);
     }
 
     private beforeRouteLeave(
@@ -633,11 +649,8 @@ export default class TimelineView extends Vue {
         this.isEditingEntry = true;
     }
 
-    private onEntryEditClose() {
+    private onNoteEditClose() {
         this.isEditingEntry = false;
-    }
-
-    private onEntryAddClose() {
         this.isAddingNote = false;
     }
 
@@ -820,11 +833,6 @@ export default class TimelineView extends Vue {
                         </b-col>
                     </b-row>
                 </div>
-                <b-row v-if="isAddingNote" class="pb-5">
-                    <b-col>
-                        <NoteTimelineComponent :is-add-mode="true" />
-                    </b-col>
-                </b-row>
                 <LinearTimeline
                     v-show="isListView && !isLoading"
                     :timeline-entries="timelineEntries"
@@ -878,12 +886,7 @@ export default class TimelineView extends Vue {
             @submit="onProtectiveWordSubmit"
             @cancel="onProtectiveWordCancel"
         />
-        <NoteEditComponent
-            ref="noteEditModal"
-            :is-loading="isLoading"
-            @submit="onCovidSubmit"
-            @cancel="onCovidCancel"
-        />
+        <NoteEditComponent ref="noteEditModal" :is-loading="isLoading" />
     </div>
 </template>
 
