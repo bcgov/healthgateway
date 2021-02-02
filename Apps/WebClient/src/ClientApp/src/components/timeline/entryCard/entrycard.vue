@@ -42,7 +42,9 @@ export default class EntrycardTimelineComponent extends Vue {
                 </b-col>
                 <b-col class="entryTitleWrapper">
                     <b-row>
-                        <b-col :data-testid="entry.type + 'Title'">
+                        <b-col
+                            :data-testid="entry.type.toLowerCase() + 'Title'"
+                        >
                             <strong>{{ title }}</strong>
                         </b-col>
                     </b-row>

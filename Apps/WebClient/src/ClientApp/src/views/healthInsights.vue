@@ -222,9 +222,9 @@ export default class HealthInsightsView extends Vue {
 </script>
 
 <template>
-    <div>
+    <div class="m-3">
         <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
-        <b-row class="my-3 fluid">
+        <b-row>
             <b-col
                 id="healthInsights"
                 class="col-12 col-md-10 col-lg-9 column-wrapper"

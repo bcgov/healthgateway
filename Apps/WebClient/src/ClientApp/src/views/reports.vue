@@ -169,8 +169,8 @@ export default class ReportsView extends Vue {
 </script>
 
 <template>
-    <div>
-        <div class="my-3 fluid">
+    <div class="m-3">
+        <div>
             <b-row>
                 <b-col
                     id="healthInsights"
