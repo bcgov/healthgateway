@@ -5,7 +5,7 @@
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 0 --no-fix && vue-cli-service build",
-        "test": "vue-cli-service test:unit",
+        "test": "vue-cli-service test:unit --no-cache",
         "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 0",
         "lintfix": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --fix",
         "vue-help": "vue-cli-service help"
@@ -55,7 +55,7 @@
         "popper.js": "^1.16.1",
         "prettier": "^2.2.1",
         "raw-loader": "^4.0.2",
-        "sass": "^1.32.5",
+        "sass": "^1.32.6",
         "sass-loader": "^10.1.1",
         "style-loader": "^2.0.0",
         "terser-webpack-plugin": "^5.1.1",

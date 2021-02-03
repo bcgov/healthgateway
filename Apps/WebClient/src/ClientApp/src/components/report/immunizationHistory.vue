@@ -23,6 +23,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export default class ImmunizationHistoryReportComponent extends Vue {
     @Prop() private startDate?: string;
     @Prop() private endDate?: string;
+    @Prop() private patientData?: PatientData;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Getter("isDeferredLoad", { namespace: "immunization" })
@@ -188,6 +189,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         :start-date="startDate"
                         :end-date="endDate"
                         title="Health Gateway Immunization Record"
+                        :patient-data="patientData"
                     />
                     <hr />
                 </div>
