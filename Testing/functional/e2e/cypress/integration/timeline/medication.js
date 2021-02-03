@@ -6,7 +6,7 @@ describe('Medication', () => {
             config.webClient.modules.CovidLabResults = false
             config.webClient.modules.Comment = false
             config.webClient.modules.Encounter = false
-            config.webClient.modules.Immunization = true
+            config.webClient.modules.Immunization = false
             config.webClient.modules.Laboratory = false
             config.webClient.modules.Medication = true
             config.webClient.modules.MedicationHistory = false
@@ -25,7 +25,7 @@ describe('Medication', () => {
             .should('be.visible');
         cy.get('[data-testid=medicationPractitioner]')
             .should('not.be.visible');
-        cy.get('[data-testid=medicationViewDetailsBtn]')
+        cy.get('[data-testid=entryCardDetailsButton]')
             .first()
             .click();
         cy.get('[data-testid=medicationPractitioner]')

@@ -26,20 +26,13 @@ export default class FilterComponent extends Vue {
     config!: WebClientConfiguration;
     @Getter("isOpen", { namespace: "sidebar" }) isSidebarOpen!: boolean;
 
-    @Prop() private medicationCount!: number;
-    @Prop() private immunizationCount!: number;
-    @Prop() private encounterCount!: number;
-    @Prop() private laboratoryCount!: number;
-    @Prop() private noteCount!: number;
-    @Prop() private isListView!: boolean;
     @Prop() private filter!: TimelineFilter;
 
     private logger!: ILogger;
     private eventBus = EventBus;
     private isVisible = false;
     private windowWidth = 0;
-    private steps = [25, 50, 100, 500];
-    private stepIndex = 0;
+    private isListView = true;
 
     private selectedEntryTypes: EntryType[] = [];
 
@@ -90,6 +83,25 @@ export default class FilterComponent extends Vue {
         return this.filter;
     }
 
+    private emitSwitchedView() {
+        this.eventBus.$emit(
+            EventMessageName.TimelineViewUpdated,
+            this.isListView
+        );
+    }
+
+    private toggleListView() {
+        this.isListView = true;
+        window.location.hash = "linear";
+        this.emitSwitchedView();
+    }
+
+    private toggleMonthView() {
+        this.isListView = false;
+        window.location.hash = "calendar";
+        this.emitSwitchedView();
+    }
+
     private created() {
         window.addEventListener("resize", this.handleResize);
         this.handleResize();
@@ -111,11 +123,6 @@ export default class FilterComponent extends Vue {
 
     private destroyed() {
         window.removeEventListener("handleResize", this.handleResize);
-    }
-
-    private sliderChanged() {
-        this.filter.pageSize = this.steps[this.stepIndex];
-        this.filtersChanged();
     }
 
     private handleResize() {
@@ -245,19 +252,30 @@ export default class FilterComponent extends Vue {
                             />
                         </b-col>
                     </b-row>
-                    <b-row v-if="isListView" class="mt-2">
-                        <b-col>
-                            <label for="entries-per-page"
-                                >Items per page: {{ steps[stepIndex] }}</label
+                    <b-row class="mt-2">
+                        <b-col><strong>View</strong> </b-col>
+                        <b-col class="col-auto"></b-col>
+                    </b-row>
+                    <b-row class="view-selector mt-1">
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                data-testid="monthViewToggle"
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: !isListView }"
+                                @click.stop="toggleMonthView"
                             >
-                            <b-form-input
-                                id="entries-per-page"
-                                v-model="stepIndex"
-                                type="range"
-                                min="0"
-                                max="3"
-                                @change="sliderChanged()"
-                            ></b-form-input>
+                                Date
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                data-testid="listViewToggle"
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: isListView }"
+                                @click.stop="toggleListView"
+                            >
+                                List
+                            </b-btn>
                         </b-col>
                     </b-row>
                 </div>
@@ -360,19 +378,31 @@ export default class FilterComponent extends Vue {
                     </b-row>
                 </b-col>
             </b-row>
-            <b-row v-if="isListView" class="justify-content-center mt-2 mx-3">
-                <b-col>
-                    <label for="entries-per-page"
-                        >Items per page: {{ steps[stepIndex] }}</label
-                    >
-                    <b-form-input
-                        id="entries-per-page"
-                        v-model="stepIndex"
-                        type="range"
-                        min="0"
-                        max="3"
-                        @change="sliderChanged()"
-                    ></b-form-input>
+            <b-row class="justify-content-center py-2">
+                <b-col class="col-10">
+                    <h5>View</h5>
+                    <b-row class="view-selector mt-1">
+                        <b-col cols="auto" class="pr-0">
+                            <b-btn
+                                data-testid="monthViewToggle"
+                                class="month-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: !isListView }"
+                                @click.stop="toggleMonthView"
+                            >
+                                Date
+                            </b-btn>
+                        </b-col>
+                        <b-col cols="auto" class="pl-0">
+                            <b-btn
+                                data-testid="listViewToggle"
+                                class="list-view-btn btn-outline-primary px-2 m-0"
+                                :class="{ active: isListView }"
+                                @click.stop="toggleListView"
+                            >
+                                List
+                            </b-btn>
+                        </b-col>
+                    </b-row>
                 </b-col>
             </b-row>
         </b-modal>
@@ -411,6 +441,29 @@ export default class FilterComponent extends Vue {
         border-color: $aquaBlue;
         background-color: $aquaBlue;
         color: white;
+    }
+}
+
+.view-selector {
+    min-width: 170px;
+    .btn-outline-primary {
+        font-size: 1em;
+        background-color: white;
+    }
+    .btn-outline-primary:focus {
+        color: white;
+        background-color: $primary;
+    }
+    .btn-outline-primary:hover {
+        color: white;
+        background-color: $primary;
+    }
+    .month-view-btn {
+        border-radius: 5px 0px 0px 5px;
+        border-right: 0px;
+    }
+    .list-view-btn {
+        border-radius: 0px 5px 5px 0px;
     }
 }
 </style>

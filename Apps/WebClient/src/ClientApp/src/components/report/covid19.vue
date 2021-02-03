@@ -186,31 +186,25 @@ export default class COVID19ReportComponent extends Vue {
                     <b-col>No records found.</b-col>
                 </b-row>
                 <b-row v-else-if="!isEmpty" class="py-3 header">
-                    <b-col class="col">Date</b-col>
-                    <b-col class="col">Test Type</b-col>
-                    <b-col class="col">Test Location</b-col>
-                    <b-col class="col">Result</b-col>
+                    <b-col>Date</b-col>
+                    <b-col>Test Type</b-col>
+                    <b-col>Test Location</b-col>
+                    <b-col>Result</b-col>
                 </b-row>
                 <b-row v-for="item in records" :key="item.id" class="item py-1">
                     <b-col
                         data-testid="covid19ItemDate"
-                        class="col my-auto text-nowrap"
+                        class="my-auto text-nowrap"
                     >
                         {{ formatDate(item.labResults[0].collectedDateTime) }}
                     </b-col>
-                    <b-col
-                        data-testid="covid19ItemTestType"
-                        class="col my-auto"
-                    >
+                    <b-col data-testid="covid19ItemTestType" class="my-auto">
                         {{ item.labResults[0].testType }}
                     </b-col>
-                    <b-col
-                        data-testid="covid19ItemLocation"
-                        class="col my-auto"
-                    >
+                    <b-col data-testid="covid19ItemLocation" class="my-auto">
                         {{ item.location }}
                     </b-col>
-                    <b-col data-testid="covid19ItemResult" class="col my-auto">
+                    <b-col data-testid="covid19ItemResult" class="my-auto">
                         {{ item.labResults[0].labResultOutcome }}
                     </b-col>
                 </b-row>

@@ -10,9 +10,8 @@ describe('MSP Visits', () => {
     it('Validate Card Details', () => {
         cy.get('[data-testid=encounterTitle]')
             .should('be.visible');
-        cy.get('[data-testid=encounterDescription]')
-            .should('be.visible');
-        cy.get('[data-testid=encounterDetailsButton').first()
+        cy.get('[data-testid=entryCardDetailsButton')
+            .first()
             .click()
         cy.get('[data-testid=encounterClinicLabel')
             .should('be.visible');

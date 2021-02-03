@@ -32,6 +32,9 @@ describe('Immunization', () => {
     })
 
     it('Validate Card Details', () => {
+      cy.get('[data-testid=entryCardDetailsButton')
+        .first()
+        .click()
       cy.get('[data-testid=immunizationTitle]')
         .should('be.visible')
       cy.get('[data-testid=immunizationProductTitle]')
@@ -39,12 +42,6 @@ describe('Immunization', () => {
       cy.get('[data-testid=immunizationProviderTitle]')
         .should('be.visible')
       cy.get('[data-testid=immunizationLotTitle]')
-        .should('be.visible')
-      cy.get('[data-testid=immunizationProductName]')
-        .should('be.visible')
-      cy.get('[data-testid=immunizationProviderName]')
-        .should('be.visible')
-      cy.get('[data-testid=immunizationLotNumber]')
         .should('be.visible')
       
       // Verify Forecast
