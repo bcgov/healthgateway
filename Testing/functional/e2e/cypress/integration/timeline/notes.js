@@ -58,7 +58,6 @@ describe('Notes', () => {
             .first()
             .click();
         cy.get('[data-testid=noteTitle]')
-            .contains('Note Title!')
             .should('not.exist');
     })
 })
