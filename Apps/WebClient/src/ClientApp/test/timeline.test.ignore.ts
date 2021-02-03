@@ -332,9 +332,9 @@ describe("Timeline view", () => {
                 return wrapper.vm.$data.isLoading;
             },
             () => {
-                expect(wrapper.findAll(".entryCard").length).toEqual(3);
-                expect(wrapper.findAll(".entryCard").length).toEqual(3);
-                expect(wrapper.findAll(".date").length).toEqual(2);
+                expect(wrapper.findAll(".cardWrapper").length).toEqual(3);
+                expect(wrapper.findAll(".cardWrapper").length).toEqual(3);
+                expect(wrapper.findAll(".dateHeading").length).toEqual(2);
                 unwatch();
             }
         );
