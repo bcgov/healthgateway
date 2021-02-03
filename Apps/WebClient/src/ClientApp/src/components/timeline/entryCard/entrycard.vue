@@ -44,6 +44,7 @@ export default class EntrycardTimelineComponent extends Vue {
                 <b-col class="entryTitleWrapper">
                     <b-row>
                         <b-col
+                            class="py-1"
                             :data-testid="entry.type.toLowerCase() + 'Title'"
                         >
                             <strong>{{ title }}</strong>
@@ -52,7 +53,7 @@ export default class EntrycardTimelineComponent extends Vue {
                             <slot name="header-menu"> </slot>
                         </b-col>
                     </b-row>
-                    <b-row class="py-2">
+                    <b-row>
                         <b-col class="text-muted">
                             <slot name="header-description">{{
                                 subtitle

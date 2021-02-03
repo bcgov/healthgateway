@@ -80,11 +80,6 @@ export default class CalendarComponent extends Vue {
         );
     }
 
-    private beforeDestroy() {
-        this.eventBus.$off(EventMessageName.TimelinePageUpdate);
-        this.eventBus.$off(EventMessageName.TimelineEntryAdded);
-    }
-
     private onEntryAdded(entry: TimelineEntry) {
         this.$nextTick().then(() => {
             this.currentMonth = entry.date.startOf("month");

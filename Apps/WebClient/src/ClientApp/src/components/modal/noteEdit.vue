@@ -1,5 +1,9 @@
 <script lang="ts">
-import { faEdit, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import {
+    faEdit,
+    faEllipsisV,
+    IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
@@ -38,16 +42,18 @@ export default class NoteEditComponent extends Vue {
 
     private isVisible = false;
 
+    private isNewNote = true;
+
     private get entryIcon(): IconDefinition {
         return faEdit;
     }
 
-    private get isNewNote(): boolean {
-        return this.title === "" ? true : false;
-    }
-
     private get modalTitle(): string {
         return this.isNewNote ? "Add Note" : "Update Note";
+    }
+
+    private get menuIcon(): IconDefinition {
+        return faEllipsisV;
     }
 
     private mounted() {
@@ -81,11 +87,14 @@ export default class NoteEditComponent extends Vue {
     }
 
     public showModal(entry?: NoteTimelineEntry): void {
+        console.log(entry);
+        this.clear();
         if (entry) {
             this.entry = entry;
             this.text = entry.text;
             this.title = entry.title;
             this.dateString = entry.date.toISODate();
+            this.isNewNote = false;
         }
         this.isVisible = true;
     }
@@ -133,10 +142,11 @@ export default class NoteEditComponent extends Vue {
                 version: 0,
             })
             .then((result) => {
+                console.log(result);
                 if (result) {
+                    this.errorMessage = "";
                     this.onNoteAdded(result);
                     this.handleSubmit();
-                    this.errorMessage = "";
                 }
             })
             .catch((err) => {
@@ -148,6 +158,7 @@ export default class NoteEditComponent extends Vue {
     }
 
     private onNoteAdded(note: UserNote) {
+        console.log("EMIIITIGNG");
         this.eventBus.$emit(
             EventMessageName.TimelineEntryAdded,
             new NoteTimelineEntry(note)
@@ -189,6 +200,7 @@ export default class NoteEditComponent extends Vue {
 
         this.isSaving = false;
         this.errorMessage = "";
+        this.isNewNote = true;
     }
 }
 </script>

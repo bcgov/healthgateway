@@ -177,6 +177,7 @@ export default class TimelineView extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineEntryAdded,
             (entry: TimelineEntry) => {
+                console.log("sdfsdfsdfsd");
                 this.onEntryAdded(entry);
             }
         );
@@ -260,18 +261,6 @@ export default class TimelineView extends Vue {
             },
         ];
         this.filter = new TimelineFilter(entryTypes);
-    }
-
-    private beforeDestroy() {
-        this.eventBus.$off(EventMessageName.TimelineCreateNote);
-        this.eventBus.$off(EventMessageName.IdleLogoutWarning);
-        this.eventBus.$off(EventMessageName.TimelineEntryAdded);
-        this.eventBus.$off(EventMessageName.TimelineEntryEdit);
-        this.eventBus.$off(EventMessageName.TimelineEntryUpdated);
-        this.eventBus.$off(EventMessageName.TimelineEntryDeleted);
-        this.eventBus.$off(EventMessageName.TimelineNoteEditClose);
-        this.eventBus.$off(EventMessageName.IsNoteBlank);
-        this.eventBus.$off(EventMessageName.TimelineViewUpdated);
     }
 
     private beforeRouteLeave(

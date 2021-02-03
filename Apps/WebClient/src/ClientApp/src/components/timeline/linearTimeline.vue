@@ -85,15 +85,10 @@ export default class LinearTimelineComponent extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineEntryAdded,
             (entry: TimelineEntry) => {
+                console.log(entry);
                 this.onEntryAdded(entry);
             }
         );
-    }
-
-    private beforeDestroy() {
-        this.eventBus.$off(EventMessageName.CalendarDateEventClick);
-        this.eventBus.$off(EventMessageName.CalendarMonthUpdated);
-        this.eventBus.$off(EventMessageName.TimelineEntryAdded);
     }
 
     private linkGen(pageNum: number) {
@@ -229,7 +224,7 @@ export default class LinearTimelineComponent extends Vue {
                         :id="dateGroup.key"
                         :ref="dateGroup.key"
                         data-testid="dateGroup"
-                        class="dateHeading pl-2"
+                        class="dateHeading pl-0"
                         tabindex="1"
                     >
                         {{ getHeadingDate(dateGroup.date) }}
