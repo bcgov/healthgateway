@@ -10,7 +10,7 @@ import { errorBanner } from "./modules/error/errorBanner";
 import { immunization } from "./modules/immunization/immunization";
 import { laboratory } from "./modules/laboratory/laboratory";
 import { medication } from "./modules/medication/medication";
-import { sidebar } from "./modules/sidebar/sidebar";
+import { navbar } from "./modules/navbar/navbar";
 import { user } from "./modules/user/user";
 
 Vue.use(Vuex);
@@ -27,7 +27,7 @@ const storeOptions: StoreOptions<RootState> = {
         laboratory,
         comment,
         immunization,
-        sidebar,
+        navbar,
         errorBanner,
     },
 };

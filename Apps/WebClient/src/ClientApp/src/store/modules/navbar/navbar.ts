@@ -1,18 +1,19 @@
 import { Module } from "vuex";
 
-import { RootState, SidebarState } from "@/models/storeState";
+import { NavbarState, RootState } from "@/models/storeState";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
 
-export const state: SidebarState = {
-    isOpen: false,
+export const state: NavbarState = {
+    isSidebarOpen: false,
+    isHeaderShown: true,
 };
 
 const namespaced = true;
 
-export const sidebar: Module<SidebarState, RootState> = {
+export const navbar: Module<NavbarState, RootState> = {
     namespaced,
     state,
     getters,
