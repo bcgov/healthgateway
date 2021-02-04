@@ -254,10 +254,6 @@ export default class SidebarComponent extends Vue {
         return this.$route.path == "/timeline";
     }
 
-    private get isProfile(): boolean {
-        return this.$route.path == "/profile";
-    }
-
     private get isTermsOfService(): boolean {
         return this.$route.path == "/profile/termsOfService";
     }
@@ -302,38 +298,6 @@ export default class SidebarComponent extends Vue {
         <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container m-0 p-0">
                 <b-col class="m-0 p-0">
-                    <!-- Profile Button -->
-                    <router-link
-                        id="menuBtnProfile"
-                        data-testid="menuBtnProfileLink"
-                        to="/profile"
-                        class="my-4"
-                    >
-                        <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isProfile }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                class="button-spacer"
-                                cols="1"
-                            ></b-col>
-                            <b-col title="Profile" :class="{ 'col-3': isOpen }">
-                                <font-awesome-icon
-                                    icon="user-circle"
-                                    class="button-icon"
-                                    size="3x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-show="isOpen"
-                                data-testid="sidebarUserName"
-                                cols="7"
-                                class="button-title"
-                                >{{ name }}</b-col
-                            >
-                        </b-row>
-                    </router-link>
                     <!-- Timeline button -->
                     <router-link
                         v-show="isActiveProfile"
