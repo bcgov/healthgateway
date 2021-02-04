@@ -57,10 +57,10 @@ export default class ReportsView extends Vue {
     private isGeneratingReport = false;
     private logger!: ILogger;
     private reportType = "";
-    private startDate?: Date | null = null;
-    private endDate?: Date | null = null;
-    private selectedStartDate?: Date | null = null;
-    private selectedEndDate?: Date | null = null;
+    private startDate: Date | null = null;
+    private endDate: Date | null = null;
+    private selectedStartDate: Date | null = null;
+    private selectedEndDate: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
     private retryCount = 2;
     private patientData: PatientData | null = null;
