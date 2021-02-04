@@ -92,7 +92,7 @@ describe("Filters", () => {
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.get("[data-testid=filterTextInput]").clear();
         cy.get("[data-testid=listViewToggle]").last().click();
-    }); 
+    });
 
     it("Filter Checkboxes are Visible", () => {
         cy.get("[data-testid=Medication-filter]")
