@@ -8,7 +8,15 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 const { AuthMethod } = require("./constants");
-let storedCookies = [];
+const { globalStorage } = require("./globalStorage")
+
+function storeAuthCookies() {
+    cy.getCookies()
+        .then((cookies) => {
+            globalStorage.authCookies = cookies;
+        });
+}
+
 Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
@@ -74,7 +82,7 @@ Cypress.Commands.add(
                         // Wait for cookies are set before store them in cypress.
                         cy.get('[data-testid=logoutBtn]')
                             .should('be.visible')
-                        cy.storeCookies();
+                        storeAuthCookies();
                     })
             });
         }
@@ -223,15 +231,8 @@ Cypress.Commands.add("setupDownloads", () => {
   }
 });
 
-Cypress.Commands.add("storeCookies", () => {
-    cy.getCookies()
-        .then((cookies) => {
-            storedCookies = cookies;
-        });
-});
-
-Cypress.Commands.add("restoreCookies", () => {
-    storedCookies.forEach(cookie => {
+Cypress.Commands.add("restoreAuthCookies", () => {
+    globalStorage.authCookies.forEach(cookie => {
         cy.setCookie(cookie.name, cookie.value);
     });
 });

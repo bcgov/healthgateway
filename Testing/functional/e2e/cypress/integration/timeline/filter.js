@@ -13,7 +13,7 @@ function verifyActiveFilter(activeFilterCount) {
 
 describe("Filters", () => {  
     beforeEach(() => {
-        cy.restoreCookies();
+        cy.restoreAuthCookies();
     })
     before(() => {
         cy.login(
