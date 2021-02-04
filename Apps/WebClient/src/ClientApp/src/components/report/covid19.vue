@@ -9,6 +9,7 @@ import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder } from "@/models/laboratory";
+import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -25,6 +26,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export default class COVID19ReportComponent extends Vue {
     @Prop() private startDate?: string;
     @Prop() private endDate?: string;
+    @Prop() private patientData?: PatientData;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
@@ -178,39 +180,31 @@ export default class COVID19ReportComponent extends Vue {
                     :start-date="startDate"
                     :end-date="endDate"
                     title="Health Gateway COVID-19 Test Result History"
+                    :patient-data="patientData"
                 />
-                <b-row
-                    v-if="isEmpty && (!isLoading || !isPreview)"
-                    class="mt-2"
-                >
+                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
-                    <b-col class="col">Date</b-col>
-                    <b-col class="col">Test Type</b-col>
-                    <b-col class="col">Test Location</b-col>
-                    <b-col class="col">Result</b-col>
+                <b-row v-else-if="!isEmpty" class="py-3 header">
+                    <b-col>Date</b-col>
+                    <b-col>Test Type</b-col>
+                    <b-col>Test Location</b-col>
+                    <b-col>Result</b-col>
                 </b-row>
                 <b-row v-for="item in records" :key="item.id" class="item py-1">
                     <b-col
                         data-testid="covid19ItemDate"
-                        class="col my-auto text-nowrap"
+                        class="my-auto text-nowrap"
                     >
                         {{ formatDate(item.labResults[0].collectedDateTime) }}
                     </b-col>
-                    <b-col
-                        data-testid="covid19ItemTestType"
-                        class="col my-auto"
-                    >
+                    <b-col data-testid="covid19ItemTestType" class="my-auto">
                         {{ item.labResults[0].testType }}
                     </b-col>
-                    <b-col
-                        data-testid="covid19ItemLocation"
-                        class="col my-auto"
-                    >
+                    <b-col data-testid="covid19ItemLocation" class="my-auto">
                         {{ item.location }}
                     </b-col>
-                    <b-col data-testid="covid19ItemResult" class="col my-auto">
+                    <b-col data-testid="covid19ItemResult" class="my-auto">
                         {{ item.labResults[0].labResultOutcome }}
                     </b-col>
                 </b-row>

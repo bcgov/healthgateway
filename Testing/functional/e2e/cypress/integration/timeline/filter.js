@@ -84,6 +84,7 @@ describe("Filters", () => {
     });
 
     it("No Records on Calendar Timeline", () => {
+        cy.get('[data-testid=filterDropdown]').click();
         cy.get("[data-testid=monthViewToggle]").first().click();
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.get("[data-testid=filterTextInput]").clear();
@@ -91,30 +92,31 @@ describe("Filters", () => {
     });
 
     it("Filter Checkboxes are Visible", () => {
-        cy.get('[data-testid=filterDropdown]').click();
-        cy.get("[data-testid=Medication-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=Note-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=Immunization-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=Laboratory-filter]").should("not.to.be.checked");
-        cy.get("[data-testid=Encounter-filter]").should("not.to.be.checked");
+        cy.get("[data-testid=Medication-filter]")
+            .should("not.to.be.checked");
+        cy.get("[data-testid=Note-filter]")
+            .should("not.to.be.checked");
+        cy.get("[data-testid=Immunization-filter]")
+            .should("not.to.be.checked");
+        cy.get("[data-testid=Laboratory-filter]")
+            .should("not.to.be.checked");
+        cy.get("[data-testid=Encounter-filter]")
+            .should("not.to.be.checked");
     });
 
     it("Filter Immunization", () => {
-        // if (Cypress.config().baseUrl != localDevUri) {
-        //     cy.get("[data-testid=Immunization-filter]").click({ force: true });
-        //     cy.get("[data-testid=immunizationTitle]").should("be.visible");
-        //     cy.get("[data-testid=noteTitle]").should("not.exist");
-        //     cy.get("[data-testid=encounterTitle]").should("not.exist");
-        //     cy.get("[data-testid=laboratoryTitle]").should("not.exist");
-        //     cy.get("[data-testid=medicationTitle]").should("not.exist");
-        //     cy.get('[data-testid=filterDropdown]').contains("Clear").click();
-        // }
-        // else {
-        //     cy.log("Skipped Filter Immunization as running locally")
-        // }
+        cy.get('[data-testid=filterContainer]').contains("Clear").click();
+        cy.get("[data-testid=Immunization-filter]").click({ force: true });
+        cy.get("[data-testid=noteTitle]").should("not.exist");
+        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=laboratoryTitle]").should("not.exist");
+        cy.get("[data-testid=medicationTitle]").should("not.exist");
+        cy.get("[data-testid=immunizationTitle]").should("exist");
+        verifyActiveFilter('1');
     });
 
     it("Filter Medication", () => {
+        cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Medication-filter]").click({ force: true });
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=noteTitle]").should("not.exist");
@@ -122,10 +124,10 @@ describe("Filters", () => {
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("be.visible");
         verifyActiveFilter('1');
-        cy.get('[data-testid=filterContainer]').contains("Clear").click();
     });
 
     it("Filter Encounter", () => {
+        cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Encounter-filter]").click({ force: true });
         cy.get("[data-testid=encounterTitle]").should("be.visible");
         cy.get("[data-testid=noteTitle]").should("not.exist");
@@ -133,10 +135,10 @@ describe("Filters", () => {
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         verifyActiveFilter('1');
-        cy.get('[data-testid=filterContainer]').contains("Clear").click();
     });
 
     it("Filter Laboratory", () => {
+        cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Laboratory-filter]").click({ force: true });
         cy.get("[data-testid=encounterTitle]").should("not.exist");
         cy.get("[data-testid=noteTitle]").should("not.exist");
@@ -144,41 +146,6 @@ describe("Filters", () => {
         cy.get("[data-testid=laboratoryTitle]").should("be.visible");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         verifyActiveFilter('1');
-        cy.get('[data-testid=filterContainer]').contains("Clear").click();
-    });
-
-    it("Page size", () => {
-        cy.get("[data-testid=linearTimelineData")
-            .find("[data-testid=timelineCard]")
-            .its("length")
-            .should("eq", 25);
-
-        cy.get("#entries-per-page")
-            .as("range")
-            .invoke("val", 1)
-            .trigger("change");
-        cy.get("[data-testid=linearTimelineData]")
-            .find("[data-testid=timelineCard]")
-            .its("length")
-            .should("eq", 50);
-
-        cy.get("#entries-per-page")
-            .as("range")
-            .invoke("val", 2)
-            .trigger("change");
-        cy.get("[data-testid=linearTimelineData]")
-            .find("[data-testid=timelineCard]")
-            .its("length")
-            .should("eq", 100);
-
-        cy.get("#entries-per-page")
-            .as("range")
-            .invoke("val", 0)
-            .trigger("change");
-        cy.get("[data-testid=linearTimelineData]")
-            .find("[data-testid=timelineCard]")
-            .its("length")
-            .should("eq", 25);
     });
 
     it("Validate disabled filters", () => {

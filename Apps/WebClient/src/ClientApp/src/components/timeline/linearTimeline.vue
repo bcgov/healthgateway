@@ -2,15 +2,24 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 
-import EntryCardTimelineComponent from "@/components/timeline/entrycard.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
+import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
+
+import EncounterTimelineComponent from "./entryCard/encounter.vue";
+import ImmunizationTimelineComponent from "./entryCard/immunization.vue";
+import LaboratoryTimelineComponent from "./entryCard/laboratory.vue";
+import MedicationTimelineComponent from "./entryCard/medication.vue";
+import NoteTimelineComponent from "./entryCard/note.vue";
 
 @Component({
     components: {
-        EntryCardComponent: EntryCardTimelineComponent,
+        MedicationComponent: MedicationTimelineComponent,
+        ImmunizationComponent: ImmunizationTimelineComponent,
+        LaboratoryComponent: LaboratoryTimelineComponent,
+        EncounterComponent: EncounterTimelineComponent,
+        NoteComponent: NoteTimelineComponent,
     },
 })
 export default class LinearTimelineComponent extends Vue {
@@ -22,7 +31,6 @@ export default class LinearTimelineComponent extends Vue {
     private filteredTimelineEntries: TimelineEntry[] = [];
     private visibleTimelineEntries: TimelineEntry[] = [];
     private currentPage = 1;
-    private hasErrors = false;
     private eventBus = EventBus;
     private dateGroups: DateGroup[] = [];
     private hasFilter = false;
@@ -77,6 +85,7 @@ export default class LinearTimelineComponent extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineEntryAdded,
             (entry: TimelineEntry) => {
+                console.log(entry);
                 this.onEntryAdded(entry);
             }
         );
@@ -154,13 +163,34 @@ export default class LinearTimelineComponent extends Vue {
         let container: HTMLElement[] = this.$refs[dateEpoch] as HTMLElement[];
         container[0].focus();
     }
+
+    private getComponentForEntry(entryType: EntryType): string {
+        switch (entryType) {
+            case EntryType.Medication:
+                return "MedicationComponent";
+
+            case EntryType.Immunization:
+                return "ImmunizationComponent";
+
+            case EntryType.Laboratory:
+                return "LaboratoryComponent";
+
+            case EntryType.Encounter:
+                return "EncounterComponent";
+
+            case EntryType.Note:
+                return "NoteComponent";
+            default:
+                return "";
+        }
+    }
 }
 </script>
 
 <template>
     <div>
-        <b-row class="no-print sticky-top sticky-offset">
-            <b-col class="py-2">
+        <b-row class="no-print sticky-top sticky-offset pt-2 pl-2">
+            <b-col>
                 <b-pagination-nav
                     v-show="!timelineIsEmpty"
                     v-model="currentPage"
@@ -172,10 +202,8 @@ export default class LinearTimelineComponent extends Vue {
                     next-text="Next"
                     prev-text="Prev"
                     use-router
+                    class="pb-0"
                 ></b-pagination-nav>
-            </b-col>
-            <b-col class="py-2 col-12 col-sm-auto order-first order-sm-last">
-                <slot name="month-list-toggle"></slot>
             </b-col>
         </b-row>
         <b-row v-if="!timelineIsEmpty" class="sticky-top sticky-line" />
@@ -184,7 +212,7 @@ export default class LinearTimelineComponent extends Vue {
             class="no-print"
             data-testid="displayCountText"
         >
-            <b-col>
+            <b-col class="p-2">
                 Displaying {{ getVisibleCount() }} out of
                 {{ totalEntries }} records
             </b-col>
@@ -196,16 +224,17 @@ export default class LinearTimelineComponent extends Vue {
                         :id="dateGroup.key"
                         :ref="dateGroup.key"
                         data-testid="dateGroup"
-                        class="date"
+                        class="dateHeading pl-0"
                         tabindex="1"
                     >
                         {{ getHeadingDate(dateGroup.date) }}
                     </div>
                 </b-col>
-                <b-col>
-                    <hr class="dateBreakLine" />
+                <b-col align-self="center" class="pl-2">
+                    <hr class="dateBreakLine my-0" />
                 </b-col>
-                <EntryCardComponent
+                <component
+                    :is="getComponentForEntry(entry.type)"
                     v-for="(entry, index) in dateGroup.entries"
                     :key="entry.type + '-' + entry.id"
                     :datekey="dateGroup.key"
@@ -227,7 +256,7 @@ export default class LinearTimelineComponent extends Vue {
                     />
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row class="px-2">
                 <b-col>
                     <p
                         class="text-center pt-2 noTimelineEntriesText"
@@ -246,39 +275,57 @@ export default class LinearTimelineComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.column-wrapper {
-    border: 1px;
+
+.row {
+    margin: 0px;
+    padding: 0px;
+}
+
+.col {
+    margin: 0px;
+    padding: 0px;
 }
 
 .dateBreakLine {
     border-top: dashed 2px $primary;
+    @media (max-width: 575px) {
+        border-top: dashed 1px $primary;
+    }
 }
 
-.date {
+.dateHeading {
     padding-top: 0px;
     color: $primary;
     font-size: 1.3em;
+    @media (max-width: 575px) {
+        font-size: 1.1em;
+    }
 }
 
 .sticky-offset {
-    top: 70px;
+    top: 54px;
     background-color: white;
     z-index: 2;
 }
 
 .sticky-line {
-    top: 139px;
+    top: 107px;
     background-color: white;
     border-bottom: solid $primary 2px;
     margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
-        top: 193px;
+        top: 107px;
     }
 }
 
 .noTimelineEntriesText {
     font-size: 1.5rem;
     color: #6c757d;
+}
+</style>
+<style lang="scss">
+ul.pagination {
+    margin-bottom: 8px;
 }
 </style>

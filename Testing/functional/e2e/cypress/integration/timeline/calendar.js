@@ -10,6 +10,7 @@ describe('Calendar View', () => {
     })
 
     it('Navigate to Month View', () => {
+        cy.get('[data-testid=filterDropdown]').click();
         cy.get('[data-testid=monthViewToggle]')
             .first()
             .click();
@@ -20,6 +21,7 @@ describe('Calendar View', () => {
     })
 
     it('Validate Year Selector', () => {
+        cy.get('[data-testid=filterDropdown]').click();
         cy.get('[data-testid=monthViewToggle]')
             .first()
             .click();

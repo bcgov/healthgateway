@@ -81,7 +81,7 @@ export default class CalendarComponent extends Vue {
 
 <template>
     <b-row class="calendar-header">
-        <b-col cols="col-sm-auto" class="p-0">
+        <b-col cols="col-sm-auto">
             <b-btn
                 v-show="hasAvailableMonths"
                 variant="light"
@@ -92,7 +92,7 @@ export default class CalendarComponent extends Vue {
                 <font-awesome-icon :icon="leftIcon" />
             </b-btn>
         </b-col>
-        <b-col cols="col-sm-auto" class="p-0">
+        <b-col cols="col-sm-auto">
             <MonthYearPickerComponent
                 v-show="hasAvailableMonths"
                 :current-month="currentMonth"
@@ -100,7 +100,7 @@ export default class CalendarComponent extends Vue {
                 @date-changed="dateSelected"
             />
         </b-col>
-        <b-col cols="col-sm-auto" class="p-0">
+        <b-col cols="col-sm-auto">
             <b-btn
                 v-show="hasAvailableMonths"
                 variant="light"
@@ -111,19 +111,22 @@ export default class CalendarComponent extends Vue {
                 <font-awesome-icon :icon="rightIcon" />
             </b-btn>
         </b-col>
-        <b-col
-            class="header-right px-0 col-12 order-first col-sm order-sm-last"
-        >
-            <slot name="month-list-toggle"></slot>
-        </b-col>
     </b-row>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.calendar-header {
-    padding-bottom: 15px;
+.row {
+    margin: 0px;
+    padding: 0px;
+}
 
+.col {
+    margin: 0px;
+    padding: 0px;
+}
+
+.calendar-header {
     .btn-outline-primary {
         font-size: 2em;
         background-color: white;

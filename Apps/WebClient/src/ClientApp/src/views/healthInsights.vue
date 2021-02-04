@@ -6,7 +6,7 @@ import { Action, Getter } from "vuex-class";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
-import LineChartComponent from "@/components/timeline/plot/lineChart.vue";
+import LineChartComponent from "@/components/plot/lineChart.vue";
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
@@ -222,9 +222,9 @@ export default class HealthInsightsView extends Vue {
 </script>
 
 <template>
-    <div>
+    <div class="m-3">
         <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
-        <b-row class="my-3 fluid">
+        <b-row>
             <b-col
                 id="healthInsights"
                 class="col-12 col-md-10 col-lg-9 column-wrapper"

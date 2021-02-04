@@ -8,6 +8,7 @@ import ReportHeaderComponent from "@/components/report/header.vue";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
+import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -23,6 +24,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export default class ImmunizationHistoryReportComponent extends Vue {
     @Prop() private startDate?: string;
     @Prop() private endDate?: string;
+    @Prop() private patientData?: PatientData;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Getter("isDeferredLoad", { namespace: "immunization" })
@@ -182,11 +184,13 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     <div>
         <div v-show="!isLoading" ref="report">
             <section class="pdf-item">
-                <div v-show="!isPreview">
+                <div>
                     <ReportHeaderComponent
+                        v-show="!isPreview"
                         :start-date="startDate"
                         :end-date="endDate"
                         title="Health Gateway Immunization Record"
+                        :patient-data="patientData"
                     />
                     <hr />
                 </div>
@@ -195,15 +199,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         <h4>Immunization History</h4>
                     </b-col>
                 </b-row>
-                <b-row v-if="isEmpty" class="mt-2">
+                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
+                <b-row v-else-if="!isEmpty" class="py-3 header">
                     <b-col data-testid="immunizationDateTitle" class="col-2"
                         >Date</b-col
-                    >
-                    <b-col data-testid="immunizationProviderTitle" class="col-2"
-                        >Provider / Clinic</b-col
                     >
                     <b-col data-testid="immunizationItemTitle" class="col-3"
                         >Immunization</b-col
@@ -215,6 +216,9 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             <b-col>Lot Number</b-col>
                         </b-row>
                     </b-col>
+                    <b-col data-testid="immunizationProviderTitle" class="col-2"
+                        >Provider / Clinic</b-col
+                    >
                 </b-row>
                 <b-row
                     v-for="immzRecord in immunizationRecords"
@@ -226,12 +230,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         class="col-2 text-nowrap"
                     >
                         {{ formatDate(immzRecord.dateOfImmunization) }}
-                    </b-col>
-                    <b-col
-                        data-testid="immunizationItemProviderClinic"
-                        class="col-2"
-                    >
-                        {{ immzRecord.providerOrClinic }}
                     </b-col>
                     <b-col data-testid="immunizationItemName" class="col-3">
                         {{ immzRecord.immunization.name }}
@@ -252,6 +250,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                                 {{ agent.lotNumber }}
                             </b-col>
                         </b-row>
+                    </b-col>
+                    <b-col
+                        data-testid="immunizationItemProviderClinic"
+                        class="col-2"
+                    >
+                        {{ immzRecord.providerOrClinic }}
                     </b-col>
                 </b-row>
                 <b-row>

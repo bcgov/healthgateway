@@ -11,6 +11,7 @@ import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -28,6 +29,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export default class MedicationHistoryReportComponent extends Vue {
     @Prop() private startDate?: string;
     @Prop() private endDate?: string;
+    @Prop() private patientData?: PatientData;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("getMedicationStatements", { namespace: "medication" })
@@ -229,11 +231,12 @@ export default class MedicationHistoryReportComponent extends Vue {
                     :start-date="startDate"
                     :end-date="endDate"
                     title="Health Gateway Medication History"
+                    :patient-data="patientData"
                 />
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-2 header">
+                <b-row v-else-if="!isEmpty" class="py-3 header">
                     <b-col class="col-1">Date</b-col>
                     <b-col class="col-1">DIN/PIN</b-col>
                     <b-col class="col-2">Brand</b-col>

@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
@@ -11,10 +11,15 @@ import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
+import PatientData from "@/models/patientData";
+import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
+import { ILogger, IPatientService } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {
@@ -31,6 +36,8 @@ import { ILogger } from "@/services/interfaces";
 export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+    @Getter("user", { namespace: "user" })
+    private user!: User;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -43,6 +50,9 @@ export default class ReportsView extends Vue {
     @Ref("immunizationHistoryReport")
     readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
 
+    @Action("addError", { namespace: "errorBanner" })
+    private addError!: (error: BannerError) => void;
+
     private isLoading = false;
     private isGeneratingReport = false;
     private logger!: ILogger;
@@ -50,6 +60,12 @@ export default class ReportsView extends Vue {
     private startDate?: Date | null = null;
     private endDate?: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
+    private retryCount = 2;
+    private patientData: PatientData | null = null;
+
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format("yyyy-MM-dd");
+    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -71,6 +87,8 @@ export default class ReportsView extends Vue {
                 text: "Immunizations",
             });
         }
+
+        this.fetchPatientData();
     }
 
     private clear() {
@@ -85,6 +103,8 @@ export default class ReportsView extends Vue {
 
     private downloadPdf() {
         this.isGeneratingReport = true;
+        // Fixes a possible bug with html2canvas where if the page is scrolled it could cut off the image.
+        window.scrollTo(0, 0);
         let generatePromise: Promise<void>;
         switch (this.reportType) {
             case "MED":
@@ -106,12 +126,51 @@ export default class ReportsView extends Vue {
             this.isGeneratingReport = false;
         });
     }
+
+    private fetchPatientData() {
+        const patientService: IPatientService = container.get<IPatientService>(
+            SERVICE_IDENTIFIER.PatientService
+        );
+
+        patientService
+            .getPatientData(this.user.hdid)
+            .then((result) => {
+                // Load patient data
+                if (result) {
+                    this.patientData = new PatientData();
+                    this.patientData.personalhealthnumber =
+                        result.resourcePayload.personalhealthnumber;
+                    this.patientData.firstname =
+                        result.resourcePayload.firstname;
+                    this.patientData.lastname = result.resourcePayload.lastname;
+                    if (result.resourcePayload.birthdate != null) {
+                        this.patientData.birthdate = this.formatDate(
+                            result.resourcePayload.birthdate
+                        );
+                    }
+                }
+            })
+            .catch((err) => {
+                this.logger.error(`Error fetching Patient Data: ${err}`);
+                if (this.retryCount > 0) {
+                    this.retryCount--;
+                    this.fetchPatientData();
+                } else {
+                    this.addError(
+                        ErrorTranslator.toBannerError(
+                            "Unable to retrieve patient data for generating report",
+                            undefined
+                        )
+                    );
+                }
+            });
+    }
 }
 </script>
 
 <template>
-    <div>
-        <div class="my-3 fluid">
+    <div class="m-3">
+        <div>
             <b-row>
                 <b-col
                     id="healthInsights"
@@ -189,7 +248,9 @@ export default class ReportsView extends Vue {
                                                 data-testid="exportRecordBtn"
                                                 class="mb-1"
                                                 :disabled="
-                                                    !reportType || isLoading
+                                                    !reportType ||
+                                                    isLoading ||
+                                                    patientData === null
                                                 "
                                                 @click="showConfirmationModal"
                                             >
@@ -216,6 +277,7 @@ export default class ReportsView extends Vue {
                             ref="medicationHistoryReport"
                             :start-date="startDate"
                             :end-date="endDate"
+                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -228,6 +290,7 @@ export default class ReportsView extends Vue {
                             ref="mspVisitsReport"
                             :start-date="startDate"
                             :end-date="endDate"
+                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -240,6 +303,7 @@ export default class ReportsView extends Vue {
                             ref="covid19Report"
                             :start-date="startDate"
                             :end-date="endDate"
+                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -252,6 +316,7 @@ export default class ReportsView extends Vue {
                             ref="immunizationHistoryReport"
                             :start-date="startDate"
                             :end-date="endDate"
+                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>

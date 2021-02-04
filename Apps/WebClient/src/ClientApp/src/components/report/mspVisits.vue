@@ -9,6 +9,7 @@ import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
+import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -25,6 +26,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 export default class MSPVisitsReportComponent extends Vue {
     @Prop() private startDate?: string;
     @Prop() private endDate?: string;
+    @Prop() private patientData?: PatientData;
     @Getter("user", { namespace: "user" })
     private user!: User;
     @Action("addError", { namespace: "errorBanner" })
@@ -172,30 +174,28 @@ export default class MSPVisitsReportComponent extends Vue {
                     :start-date="startDate"
                     :end-date="endDate"
                     title="Health Gateway MSP Visit History"
+                    :patient-data="patientData"
                 />
-                <b-row
-                    v-if="isEmpty && (!isLoading || !isPreview)"
-                    class="mt-2"
-                >
+                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 mt-4 header">
-                    <b-col class="col">Date</b-col>
-                    <b-col class="col">Provider Name</b-col>
-                    <b-col class="col">Specialty Description</b-col>
-                    <b-col class="col">Clinic Location</b-col>
+                <b-row v-else-if="!isEmpty" class="py-3 header">
+                    <b-col>Date</b-col>
+                    <b-col>Provider Name</b-col>
+                    <b-col>Specialty Description</b-col>
+                    <b-col>Clinic Location</b-col>
                 </b-row>
                 <b-row v-for="item in records" :key="item.id" class="item py-1">
-                    <b-col class="col my-auto text-nowrap">
+                    <b-col class="my-auto text-nowrap">
                         {{ formatDate(item.encounterDate) }}
                     </b-col>
-                    <b-col class="col my-auto">
+                    <b-col class="my-auto">
                         {{ item.practitionerName }}
                     </b-col>
-                    <b-col class="col my-auto">
+                    <b-col class="my-auto">
                         {{ item.specialtyDescription }}
                     </b-col>
-                    <b-col class="col my-auto">
+                    <b-col class="my-auto">
                         <p>{{ item.clinic.name }}</p>
                         <p>{{ item.clinic.address }}</p>
                     </b-col>

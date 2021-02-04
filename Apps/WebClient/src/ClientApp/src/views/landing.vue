@@ -83,7 +83,7 @@ export default class LandingView extends Vue {
         {
             name: "Encounter",
             definition: "user-md",
-            label: "Health Visits (Jan 2021)",
+            label: "Health Visits",
             color: "",
             active: false,
         },
@@ -157,7 +157,7 @@ export default class LandingView extends Vue {
 </script>
 
 <template>
-    <div class="landing">
+    <div class="landing mx-2">
         <CommunicationComponent />
         <b-row
             class="title-section justify-content-center align-items-center mx-1 mx-md-5 my-2"

@@ -119,22 +119,20 @@ export default class CalendarComponent extends Vue {
 </script>
 
 <template>
-    <div class="calendar mx-3">
+    <div class="calendar">
         <!-- header pick month -->
         <CalendarHeader
-            class="sticky-top sticky-offset"
+            class="sticky-top sticky-offset p-2"
             :current-month.sync="currentMonth"
             :title-format="titleFormat"
             :available-months="availableMonths"
         >
-            <div slot="month-list-toggle">
-                <slot name="month-list-toggle"></slot>
-            </div>
         </CalendarHeader>
         <b-row class="sticky-top sticky-line" />
         <!-- body display date day and events -->
         <CalendarBody
             v-show="isVisible"
+            class="pt-2 px-0 px-md-2"
             :current-month="currentMonth"
             :date-groups="dateGroups"
             :month-names="monthNames"
@@ -148,19 +146,29 @@ export default class CalendarComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+.row {
+    margin: 0px;
+    padding: 0px;
+}
+
+.col {
+    margin: 0px;
+    padding: 0px;
+}
+
 .sticky-offset {
-    top: 70px;
+    top: 54px;
     background-color: white;
     z-index: 2;
 }
 .sticky-line {
-    top: 122px;
+    top: 107px;
     background-color: white;
     border-bottom: solid $primary 2px;
     margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
-        top: 160px;
+        top: 107px;
     }
 }
 </style>
