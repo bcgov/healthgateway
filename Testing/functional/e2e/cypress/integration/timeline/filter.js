@@ -11,7 +11,10 @@ function verifyActiveFilter(activeFilterCount) {
     cy.get("[data-testid=filterDropdown]").focus().click({ force: true });
 }
 
-describe("Filters", () => {
+describe("Filters", () => {  
+    beforeEach(() => {
+        cy.restoreCookies();
+    })
     before(() => {
         cy.login(
             Cypress.env("keycloak.username"),
@@ -89,7 +92,7 @@ describe("Filters", () => {
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.get("[data-testid=filterTextInput]").clear();
         cy.get("[data-testid=listViewToggle]").last().click();
-    });
+    }); 
 
     it("Filter Checkboxes are Visible", () => {
         cy.get("[data-testid=Medication-filter]")

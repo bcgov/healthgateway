@@ -8,7 +8,7 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 const { AuthMethod } = require("./constants");
-
+let storedCookies = {};
 Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
@@ -71,6 +71,10 @@ Cypress.Commands.add(
                         const callbackURL = `${callBackQS}`
                         cy.log("Visiting Callback")
                         cy.visit(callbackURL)
+                        // Wait for cookies are set before store them in cypress.
+                        cy.get('[data-testid=logoutBtn]')
+                            .should('be.visible')
+                        cy.storeCookies();
                     })
             });
         }
@@ -148,6 +152,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
         })
     })
     .then(response => {
+        cy.log(`CALLBACK for Posting credentials : response: ${JSON.stringify(response)}`)
         let callBackQS = response.headers["location"];
         const url = new URL(callBackQS);
         const params = url.search.substring(1).split("&");
@@ -216,4 +221,17 @@ Cypress.Commands.add("setupDownloads", () => {
       { log: false }
     )
   }
+});
+
+Cypress.Commands.add("storeCookies", () => {
+    cy.getCookies()
+        .then((cookies) => {
+            storedCookies = cookies;
+        });
+});
+
+Cypress.Commands.add("restoreCookies", () => {
+    storedCookies.forEach(cookie => {
+        cy.setCookie(cookie.name, cookie.value);
+    });
 });
