@@ -269,7 +269,10 @@ export default class ReportsView extends Vue {
                                 </b-form-tag>
                             </b-col>
                         </b-row>
-                        <b-collapse id="advanced-panel">
+                        <b-collapse
+                            id="advanced-panel"
+                            data-testid="advancedPanel"
+                        >
                             <b-row class="border-top pt-3">
                                 <b-col class="col-12 col-md-3 mb-2">
                                     <b-row>
@@ -318,7 +321,7 @@ export default class ReportsView extends Vue {
                                                 <b-button
                                                     v-b-toggle.advanced-panel
                                                     variant="primary"
-                                                    data-testid="exportRecordBtn"
+                                                    data-testid="applyFilterBtn"
                                                     class="mb-1 ml-2"
                                                     :disabled="
                                                         isLoading ||

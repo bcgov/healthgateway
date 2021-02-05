@@ -4,49 +4,61 @@ describe('Reports', () => {
     let sensitiveDocText = ' The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ';
     before(() => {
         cy.setupDownloads();
-        cy.enableModules(["Encounter", "Medication", "Laboratory"]);
+        cy.enableModules(["Encounter", "Medication", "Laboratory", "Immunization"]);
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak, "/reports");
     })
+/*
+    it('Validate Advanced - Dates and Clear', () => {    
+        cy.get('[data-testid=advancedPanel]')
+            .should('not.be.visible');
+    
+        cy.get('[data-testid=advancedBtn]')
+            .should('be.enabled', 'be.visible')
+            .click();
 
-    it('Validate Date Filter and Clear', () => {       
         cy.get('[data-testid=startDateInput] input')
-          .should('be.enabled', 'be.visible')
-          .should('have.value','')
-          .click()
-          .focus()
-          .type("2020-01-01")
-
+        .should('be.enabled', 'be.visible')
+        .should('have.value','')
+        .click()
+        .focus()
+        .type("2020-01-01")
+    
         cy.get('[data-testid=endDateInput] input')
-          .should('be.enabled', 'be.visible')
-          .should('have.value','')
-          .click()
-          .focus()
-          .type("2020-12-31")
-
+        .should('be.enabled', 'be.visible')
+        .should('have.value','')
+        .click()
+        .focus()
+        .type("2020-12-31")
+    
         cy.get('[data-testid=clearBtn]')
-          .should('be.enabled', 'be.visible')
-          .click()
-
+        .should('be.enabled', 'be.visible')
+        .click()
+    
         cy.get('[data-testid=startDateInput] input')
-          .should('have.value','')
-
+        .should('have.value','')
+    
         cy.get('[data-testid=endDateInput] input')
-          .should('have.value','')
-    })
+        .should('have.value','')
+    })*/
 
     it('Validate Service Selection', () => {       
         cy.get('[data-testid=exportRecordBtn]')
-            .should('not.be.enabled', 'be.visible')
+            .should('be.disabled', 'be.visible')
 
         cy.get('[data-testid=infoText]')
             .should('have.text', ' Select a record type above to create a report ')
 
+        // display visual when no record type selected (mobile and desktop) 
         cy.get('[data-testid=infoImage]')
             .should('be.visible')
+        cy.viewport('iphone-6');
+        cy.get('[data-testid=infoImage]')
+            .should('be.visible')
+        cy.viewport(1000, 600);
 
         cy.get('[data-testid=reportType]')
             .should('be.enabled', 'be.visible')
-            .select("MED")        
+            .select("MED")
 
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.enabled', 'be.visible')
@@ -56,20 +68,22 @@ describe('Reports', () => {
             .select("")        
 
         cy.get('[data-testid=exportRecordBtn]')
-            .should('not.be.enabled', 'be.visible')
-
+            .should('be.disabled', 'be.visible')
     })
-
-    it('Validate Medication Report', () => {         
+    
+    it('Validate Medication Report', () => {
         cy.get('[data-testid=reportType]')
             .should('be.enabled', 'be.visible')
-            .select("MED")        
-
+            .select("MED");
         cy.get('[data-testid=medicationReportSample]')
-            .should('be.visible')
-        
+            .should('be.visible');
+
+        cy.viewport('iphone-6');
+        cy.get('[data-testid=medicationReportSample]')
+            .should('not.be.visible');
+        cy.viewport(1000, 600);
+
         cy.get('[data-testid=exportRecordBtn]')
-            .should('be.enabled', 'be.visible')
             .click();
 
         cy.get('[data-testid=genericMessageModal]')
@@ -93,6 +107,11 @@ describe('Reports', () => {
         cy.get('[data-testid=mspVisitsReportSample]')
             .should('be.visible')
         
+        cy.viewport('iphone-6');
+        cy.get('[data-testid=mspVisitsReportSample]')
+            .should('not.be.visible');
+        cy.viewport(1000, 600);
+
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.enabled', 'be.visible')
             .click();
@@ -120,6 +139,44 @@ describe('Reports', () => {
         cy.get('[data-testid=covid19ItemDate]')
             .last()
             .contains(/\d{4}-\d{2}-\d{2}/);
+        
+        cy.viewport('iphone-6');
+        cy.get('[data-testid=covid19ReportSample]')
+            .should('not.be.visible');
+        cy.viewport(1000, 600);
+
+        cy.get('[data-testid=exportRecordBtn]')
+            .should('be.enabled', 'be.visible')
+            .click();
+
+        cy.get('[data-testid=genericMessageModal]')
+            .should('be.visible');
+
+        cy.get('[data-testid=genericMessageText]')
+            .should('have.text', sensitiveDocText);
+
+        cy.get('[data-testid=genericMessageSubmitBtn]')
+            .click();
+            
+        cy.get('[data-testid=genericMessageModal]')
+            .should('not.exist');
+    })
+
+    it('Validate Immunization Report', () => {         
+        cy.get('[data-testid=reportType]')
+            .should('be.enabled', 'be.visible')
+            .select("Immunization")        
+
+        cy.get('[data-testid=immunizationHistoryReportSample]')
+            .should('be.visible')
+        cy.get('[data-testid=immunizationItemDate]')
+            .last()
+            .contains(/\d{4}-\d{2}-\d{2}/);
+        
+        cy.viewport('iphone-6');
+        cy.get('[data-testid=immunizationHistoryReportSample]')
+            .should('not.be.visible');
+        cy.viewport(1000, 600);
 
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.enabled', 'be.visible')
