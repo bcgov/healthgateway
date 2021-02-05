@@ -167,7 +167,6 @@ export default class HeaderComponent extends Vue {
 
     private loadOidcUser(): void {
         this.authenticationService.getOidcUserProfile().then((oidcUser) => {
-            console.log(oidcUser);
             if (oidcUser) {
                 this.oidcUser = oidcUser;
             }
