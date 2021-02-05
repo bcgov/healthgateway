@@ -31,7 +31,6 @@ describe('Menu System', () => {
 
     it('Side bar contains nav links', () => {
         login(false);
-        cy.get('[data-testid=menuBtnProfileLink]').should('have.attr', 'href', '/profile')
         cy.get('[data-testid=menuBtnTimelineLink]').should('have.attr', 'href', '/timeline')
         cy.get('[data-testid=addNoteBtn]').should('be.visible')
         cy.get('[data-testid=menuBtnHealthInsightsLink]').should('have.attr', 'href', '/healthInsights')

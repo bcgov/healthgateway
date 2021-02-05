@@ -247,8 +247,8 @@ export default class HeaderComponent extends Vue {
                 <b-nav-item-dropdown
                     v-if="oidcIsAuthenticated"
                     id="menuBtnLogout"
-                    data-testid="logoutBtn"
                     menu-class="drop-menu-position"
+                    data-testid="headerDropdownBtn"
                     :no-caret="true"
                     toggle-class="p-0 m-0 pr-1"
                     right
@@ -281,7 +281,10 @@ export default class HeaderComponent extends Vue {
                     >
                         <span>Profile</span>
                     </b-dropdown-item>
-                    <b-dropdown-item-button @click="handleLogoutClick()">
+                    <b-dropdown-item-button
+                        data-testid="logoutBtn"
+                        @click="handleLogoutClick()"
+                    >
                         Logout</b-dropdown-item-button
                     >
                 </b-nav-item-dropdown>
