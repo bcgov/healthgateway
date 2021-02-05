@@ -7,8 +7,8 @@ describe('Reports', () => {
         cy.enableModules(["Encounter", "Medication", "Laboratory", "Immunization"]);
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak, "/reports");
     })
-/*
-    it('Validate Advanced - Dates and Clear', () => {    
+
+    it('Validate Advanced - Dates, Cancel and Apply', () => {    
         cy.get('[data-testid=advancedPanel]')
             .should('not.be.visible');
     
@@ -29,8 +29,11 @@ describe('Reports', () => {
         .click()
         .focus()
         .type("2020-12-31")
-    
-        cy.get('[data-testid=clearBtn]')
+
+        cy.get('[data-testid=applyFilterBtn]')
+        .click()
+
+        cy.get('[data-testid=clearFilter] button')
         .should('be.enabled', 'be.visible')
         .click()
     
@@ -39,7 +42,22 @@ describe('Reports', () => {
     
         cy.get('[data-testid=endDateInput] input')
         .should('have.value','')
-    })*/
+        
+        // Validate filters - Cancel  button
+        cy.get('[data-testid=advancedBtn]')
+            .click();
+        cy.get('[data-testid=clearBtn]')
+            .should('be.enabled', 'be.visible')
+            .click();
+        cy.get('[data-testid=clearBtn]')
+            .should('not.be.visible')
+        cy.get('[data-testid=applyFilterBtn]')
+            .should('not.be.visible')
+        cy.get('[data-testid=startDateInput] input')
+            .should('not.be.visible')        
+        cy.get('[data-testid=endDateInput] input')
+            .should('not.be.visible')
+    })
 
     it('Validate Service Selection', () => {       
         cy.get('[data-testid=exportRecordBtn]')
