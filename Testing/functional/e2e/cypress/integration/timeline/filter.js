@@ -11,7 +11,10 @@ function verifyActiveFilter(activeFilterCount) {
     cy.get("[data-testid=filterDropdown]").focus().click({ force: true });
 }
 
-describe("Filters", () => {
+describe("Filters", () => {  
+    beforeEach(() => {
+        cy.restoreAuthCookies();
+    })
     before(() => {
         cy.login(
             Cypress.env("keycloak.username"),

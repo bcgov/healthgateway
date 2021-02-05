@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -23,6 +24,8 @@ import NoteTimelineComponent from "./entryCard/note.vue";
     },
 })
 export default class LinearTimelineComponent extends Vue {
+    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+
     @Prop() private timelineEntries!: TimelineEntry[];
     @Prop({ default: 0 }) private totalEntries!: number;
     @Prop() private isVisible!: boolean;
@@ -189,7 +192,10 @@ export default class LinearTimelineComponent extends Vue {
 
 <template>
     <div>
-        <b-row class="no-print sticky-top sticky-offset pt-2 pl-2">
+        <b-row
+            class="no-print sticky-top sticky-offset pt-2 pl-2"
+            :class="{ 'header-offset': isHeaderShown }"
+        >
             <b-col>
                 <b-pagination-nav
                     v-show="!timelineIsEmpty"
@@ -206,7 +212,11 @@ export default class LinearTimelineComponent extends Vue {
                 ></b-pagination-nav>
             </b-col>
         </b-row>
-        <b-row v-if="!timelineIsEmpty" class="sticky-top sticky-line" />
+        <b-row
+            v-if="!timelineIsEmpty"
+            class="sticky-top sticky-line"
+            :class="{ 'header-offset': isHeaderShown }"
+        />
         <b-row
             id="listControls"
             class="no-print"
@@ -285,6 +295,9 @@ export default class LinearTimelineComponent extends Vue {
     margin: 0px;
     padding: 0px;
 }
+.sticky-top {
+    transition: all 0.3s;
+}
 
 .dateBreakLine {
     border-top: dashed 2px $primary;
@@ -303,19 +316,26 @@ export default class LinearTimelineComponent extends Vue {
 }
 
 .sticky-offset {
-    top: 54px;
+    top: $timeline-filter-height;
     background-color: white;
     z-index: 2;
+    &.header-offset {
+        top: $header-height + $timeline-filter-height;
+    }
 }
 
 .sticky-line {
-    top: 107px;
+    top: $timeline-filter-height + $timeline-pagination-height;
     background-color: white;
     border-bottom: solid $primary 2px;
     margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
         top: 107px;
+    }
+    &.header-offset {
+        top: $header-height + $timeline-filter-height +
+            $timeline-pagination-height;
     }
 }
 

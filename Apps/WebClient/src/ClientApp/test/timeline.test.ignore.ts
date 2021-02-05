@@ -19,8 +19,8 @@ import {
     ImmunizationState,
     LaboratoryState,
     MedicationState,
+    NavbarState,
     RootState,
-    SidebarState,
 } from "@/models/storeState";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
@@ -134,7 +134,7 @@ const medicationActions: ActionTree<MedicationState, RootState> = {
 
 const medicationGetters = {};
 
-const sidebarActions: ActionTree<SidebarState, RootState> = {
+const sidebarActions: ActionTree<NavbarState, RootState> = {
     toggleSidebar(context) {
         console.log("toggleSidebar called", context);
     },
@@ -144,7 +144,7 @@ const sidebarActions: ActionTree<SidebarState, RootState> = {
 };
 
 const sidebarGetters = {
-    isOpen(state: SidebarState): boolean {
+    isOpen(state: NavbarState): boolean {
         console.log("isOpen called", state);
         return true;
     },

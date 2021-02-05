@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -20,6 +21,8 @@ import CalendarHeader from "./header.vue";
     },
 })
 export default class CalendarComponent extends Vue {
+    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+
     @Prop() dateGroups!: DateGroup[];
     @Prop() private filter!: TimelineFilter;
     @Prop() private isVisible!: boolean;
@@ -123,12 +126,16 @@ export default class CalendarComponent extends Vue {
         <!-- header pick month -->
         <CalendarHeader
             class="sticky-top sticky-offset p-2"
+            :class="{ 'header-offset': isHeaderShown }"
             :current-month.sync="currentMonth"
             :title-format="titleFormat"
             :available-months="availableMonths"
         >
         </CalendarHeader>
-        <b-row class="sticky-top sticky-line" />
+        <b-row
+            class="sticky-top sticky-line"
+            :class="{ 'header-offset': isHeaderShown }"
+        />
         <!-- body display date day and events -->
         <CalendarBody
             v-show="isVisible"
@@ -155,20 +162,30 @@ export default class CalendarComponent extends Vue {
     margin: 0px;
     padding: 0px;
 }
+.sticky-top {
+    transition: all 0.3s;
+}
 
 .sticky-offset {
-    top: 54px;
+    top: $timeline-filter-height;
     background-color: white;
     z-index: 2;
+    &.header-offset {
+        top: $header-height + $timeline-filter-height;
+    }
 }
+
 .sticky-line {
-    top: 107px;
+    top: $timeline-filter-height + $timeline-dates-height;
     background-color: white;
     border-bottom: solid $primary 2px;
     margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
-        top: 107px;
+        top: $timeline-filter-height + $timeline-dates-height;
+    }
+    &.header-offset {
+        top: $header-height + $timeline-filter-height + $timeline-dates-height;
     }
 }
 </style>

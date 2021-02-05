@@ -17,10 +17,10 @@ describe("NavBar Header Component", () => {
 
     const customStore = new Vuex.Store({
         modules: {
-            sidebar: {
+            navbar: {
                 namespaced: true,
                 getters: {
-                    isOpen: () => {
+                    isSidebarOpen: () => {
                         return true;
                     },
                 },
