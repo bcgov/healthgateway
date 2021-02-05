@@ -249,7 +249,7 @@ export default class ReportsView extends Vue {
                             <b-col class="d-flex justify-content-start">
                                 <b-form-tag
                                     variant="light"
-                                    class="border"
+                                    class="filter-selected"
                                     title="From"
                                     data-testid="clearFilter"
                                     @remove="clearFilter"
@@ -452,5 +452,9 @@ export default class ReportsView extends Vue {
     background-color: $soft_background;
     border: $lightGrey solid 1px;
     border-radius: 5px 5px 5px 5px;
+}
+.filter-selected {
+    background-color: $aquaBlue;
+    color: white;
 }
 </style>
