@@ -50,6 +50,12 @@ namespace HealthGateway.Immunization.Models
         public string ProviderOrClinic { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the Targeted Disease of the Immunization.
+        /// </summary>
+        [JsonPropertyName("targetedDisease")]
+        public string TargetedDisease { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the Immunization definition.
         /// </summary>
         [JsonPropertyName("immunization")]
@@ -72,6 +78,7 @@ namespace HealthGateway.Immunization.Models
             {
                 Id = model.SourceSystemId,
                 DateOfImmunization = model.OccurrenceDateTime,
+                TargetedDisease = model.TargetedDisease,
                 ProviderOrClinic = model.ProviderOrClinic,
                 Status = model.Status,
                 Immunization = new ImmunizationDefinition() { Name = model.Name, ImmunizationAgents = ImmunizationAgent.FromPHSAModelList(model.ImmunizationAgents) },
