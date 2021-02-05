@@ -1,4 +1,5 @@
 <script lang="ts">
+import { BFormTag } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -20,6 +21,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IPatientService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+Vue.component("BFormTag", BFormTag);
 
 @Component({
     components: {
@@ -103,6 +105,10 @@ export default class ReportsView extends Vue {
     private updateFilter() {
         this.startDate = this.selectedStartDate;
         this.endDate = this.selectedEndDate;
+    }
+
+    private formatDateLong(date: string): string {
+        return new DateWrapper(date).toMediumDate();
     }
 
     private showConfirmationModal() {
@@ -239,6 +245,30 @@ export default class ReportsView extends Vue {
                                 </b-row>
                             </b-col>
                         </b-row>
+                        <b-row v-if="startDate || endDate">
+                            <b-col class="d-flex justify-content-start">
+                                <b-form-tag
+                                    variant="light"
+                                    class="filter-selected"
+                                    title="From"
+                                    data-testid="clearFilter"
+                                    @remove="clearFilter"
+                                >
+                                    {{
+                                        startDate
+                                            ? `From ${formatDateLong(
+                                                  startDate
+                                              )}`
+                                            : ""
+                                    }}
+                                    {{
+                                        endDate
+                                            ? ` To ${formatDateLong(endDate)}`
+                                            : ""
+                                    }}
+                                </b-form-tag>
+                            </b-col>
+                        </b-row>
                         <b-collapse id="advanced-panel">
                             <b-row class="border-top pt-3">
                                 <b-col class="col-12 col-md-3 mb-2">
@@ -277,26 +307,26 @@ export default class ReportsView extends Vue {
                                                 class="ml-auto"
                                             >
                                                 <b-button
+                                                    v-b-toggle.advanced-panel
                                                     variant="link"
                                                     data-testid="clearBtn"
                                                     class="mb-1 mr-2 text-muted"
                                                     :disabled="isLoading"
-                                                    @click="clearFilter"
                                                 >
-                                                    Clear
+                                                    Cancel
                                                 </b-button>
                                                 <b-button
+                                                    v-b-toggle.advanced-panel
                                                     variant="primary"
                                                     data-testid="exportRecordBtn"
                                                     class="mb-1 ml-2"
                                                     :disabled="
-                                                        !reportType ||
                                                         isLoading ||
                                                         patientData === null
                                                     "
                                                     @click="updateFilter"
                                                 >
-                                                    Update
+                                                    Apply
                                                 </b-button>
                                             </div>
                                         </b-col>
@@ -422,5 +452,9 @@ export default class ReportsView extends Vue {
     background-color: $soft_background;
     border: $lightGrey solid 1px;
     border-radius: 5px 5px 5px 5px;
+}
+.filter-selected {
+    background-color: $aquaBlue;
+    color: white;
 }
 </style>
