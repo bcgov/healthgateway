@@ -166,6 +166,7 @@ export default class FilterComponent extends Vue {
                 :class="{ 'filter-selected': hasFilterSelected }"
                 data-testid="filterDropdown"
                 variant="outline-primary"
+                tabindex="0"
             >
                 Filter
                 <b-badge
@@ -185,7 +186,7 @@ export default class FilterComponent extends Vue {
             </b-button>
             <b-popover
                 target="filterBtn"
-                triggers="click"
+                triggers="click blur"
                 text="Filter"
                 class="w-100"
                 data-testid="filterContainer"
