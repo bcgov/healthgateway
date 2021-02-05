@@ -6,6 +6,7 @@ import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import FeedbackComponent from "@/components/feedback.vue";
+import ScreenWidth from "@/constants/screenWidth";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -18,7 +19,7 @@ library.add(faStream);
 
 const auth = "auth";
 const user = "user";
-const sidebar = "sidebar";
+const navbar = "navbar";
 const config = "config";
 
 @Component({
@@ -38,13 +39,13 @@ export default class SidebarComponent extends Vue {
         userPreference: UserPreference;
     }) => void;
 
-    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
+    @Action("toggleSidebar", { namespace: navbar }) toggleSidebar!: () => void;
 
-    @Action("setSidebarState", { namespace: sidebar }) setSidebarState!: (
+    @Action("setSidebarState", { namespace: navbar }) setSidebarState!: (
         isOpen: boolean
     ) => void;
 
-    @Getter("isOpen", { namespace: sidebar }) isOpen!: boolean;
+    @Getter("isSidebarOpen", { namespace: navbar }) isOpen!: boolean;
 
     @Getter("oidcIsAuthenticated", {
         namespace: auth,
@@ -247,7 +248,7 @@ export default class SidebarComponent extends Vue {
     }
 
     private get isMobileWidth(): boolean {
-        return this.windowWidth < 768;
+        return this.windowWidth < ScreenWidth.Mobile;
     }
 
     private get isTimeline(): boolean {

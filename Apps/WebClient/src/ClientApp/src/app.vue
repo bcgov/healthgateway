@@ -185,10 +185,8 @@ export default class App extends Vue {
             </div>
         </div>
 
-        <header>
-            <NavHeader />
-        </header>
-        <b-row class="p-0 m-0">
+        <NavHeader />
+        <b-row>
             <NavSidebar class="no-print sticky-top vh-100" />
             <main class="col fill-height">
                 <ErrorCard

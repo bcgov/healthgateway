@@ -19,14 +19,14 @@ import container from "@/plugins/inversify.config";
 import { IUserFeedbackService } from "@/services/interfaces";
 library.add(faComments, faExclamationCircle, faMinus);
 
-const sidebar = "sidebar";
+const navbar = "navbar";
 const user = "user";
 
 @Component
 export default class FeedbackComponent extends Vue {
-    @Action("toggleSidebar", { namespace: sidebar }) toggleSidebar!: () => void;
+    @Action("toggleSidebar", { namespace: navbar }) toggleSidebar!: () => void;
 
-    @Getter("isOpen", { namespace: sidebar }) isSidebarOpen!: boolean;
+    @Getter("isSidebarOpen", { namespace: navbar }) isSidebarOpen!: boolean;
     @Getter("user", { namespace: user }) user!: User;
 
     private comment = "";
