@@ -7,10 +7,10 @@ import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/rating.vue";
 import ScreenWidth from "@/constants/screenWidth";
-import User from "@/models/user";
+import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
+import { IAuthenticationService, ILogger } from "@/services/interfaces";
 library.add(faSignInAlt);
 library.add(faSignOutAlt);
 
@@ -60,7 +60,10 @@ export default class HeaderComponent extends Vue {
     @Ref("ratingComponent")
     readonly ratingComponent!: RatingComponent;
 
+    private oidcUser: OidcUserProfile | null = null;
+
     private logger!: ILogger;
+    private authenticationService!: IAuthenticationService;
 
     private windowWidth = 0;
     private lastScrollTop = 0;
@@ -79,6 +82,12 @@ export default class HeaderComponent extends Vue {
         return this.windowWidth < ScreenWidth.Mobile;
     }
 
+    private get userName(): string {
+        return this.oidcUser
+            ? this.oidcUser.given_name + " " + this.oidcUser.family_name
+            : "";
+    }
+
     @Watch("isMobileWidth")
     private onMobileWidth() {
         if (!this.isMobileWidth) {
@@ -86,8 +95,23 @@ export default class HeaderComponent extends Vue {
         }
     }
 
+    @Watch("oidcIsAuthenticated")
+    private onPropertyChanged() {
+        // If there is no name in the scope, retrieve it from the service.
+        if (this.oidcIsAuthenticated) {
+            this.loadOidcUser();
+        }
+    }
+
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        // Load the user name and current email
+        this.authenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        if (this.oidcIsAuthenticated) {
+            this.loadOidcUser();
+        }
     }
 
     private created() {
@@ -141,6 +165,14 @@ export default class HeaderComponent extends Vue {
         this.toggleSidebar();
     }
 
+    private loadOidcUser(): void {
+        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
+            if (oidcUser) {
+                this.oidcUser = oidcUser;
+            }
+        });
+    }
+
     private handleLogoutClick() {
         if (this.isValidIdentityProvider) {
             this.showRating();
@@ -173,9 +205,9 @@ export default class HeaderComponent extends Vue {
                 <b-icon
                     v-if="isSidebarOpen"
                     icon="x"
-                    class="icon-class"
+                    class="menu-icon"
                 ></b-icon>
-                <b-icon v-else icon="list" class="icon-class"></b-icon>
+                <b-icon v-else icon="list" class="menu-icon"></b-icon>
             </span>
 
             <!-- Brand -->
@@ -211,17 +243,51 @@ export default class HeaderComponent extends Vue {
 
             <!-- Navbar links -->
             <b-navbar-nav class="ml-auto">
-                <div
+                <b-nav-item-dropdown
                     v-if="oidcIsAuthenticated"
                     id="menuBtnLogout"
-                    data-testid="logoutBtn"
-                    variant="link"
-                    class="nav-link"
-                    @click="handleLogoutClick()"
+                    menu-class="drop-menu-position"
+                    data-testid="headerDropdownBtn"
+                    :no-caret="true"
+                    toggle-class="p-0 m-0 pr-1"
+                    right
                 >
-                    <font-awesome-icon icon="sign-out-alt"></font-awesome-icon>
-                    <span class="pl-1">Logout</span>
-                </div>
+                    <!-- Using 'button-content' slot -->
+                    <template #button-content class="align-middle">
+                        <b-row class="p-0 m-0 align-items-center">
+                            <b-col class="p-0 m-0">
+                                <font-awesome-icon
+                                    icon="user-circle"
+                                    class="profile-menu p-0 m-0"
+                                ></font-awesome-icon>
+                            </b-col>
+                            <b-col v-if="!isMobileWidth" class="p-0 m-0 pl-2">
+                                {{ userName }}
+                            </b-col>
+                        </b-row>
+                    </template>
+
+                    <span v-if="isMobileWidth">
+                        <b-dropdown-item>
+                            {{ userName }}
+                        </b-dropdown-item>
+                        <b-dropdown-divider />
+                    </span>
+                    <b-dropdown-item
+                        id="menuBtnProfile"
+                        data-testid="profileBtn"
+                        to="/profile"
+                    >
+                        <span>Profile</span>
+                    </b-dropdown-item>
+                    <b-dropdown-item-button
+                        data-testid="logoutBtn"
+                        @click="handleLogoutClick()"
+                    >
+                        Logout</b-dropdown-item-button
+                    >
+                </b-nav-item-dropdown>
+
                 <router-link
                     v-else-if="!isOffline"
                     id="menuBtnLogin"
@@ -246,6 +312,7 @@ export default class HeaderComponent extends Vue {
 
 .sticky-top {
     transition: all 0.3s;
+    z-index: $z_header;
 }
 
 .navbar {
@@ -260,14 +327,12 @@ export default class HeaderComponent extends Vue {
     }
 }
 
-.icon-class {
+.menu-icon {
     width: 1.5em;
     height: 1.5em;
 }
 
 nav {
-    z-index: $z_header;
-
     a h4 {
         text-decoration: none;
         color: white;
@@ -287,5 +352,16 @@ nav {
     .nav-link {
         cursor: pointer;
     }
+}
+
+.profile-menu {
+    font-size: 2em;
+    color: white;
+}
+</style>
+
+<style lang="scss">
+.drop-menu-position {
+    position: absolute !important;
 }
 </style>
