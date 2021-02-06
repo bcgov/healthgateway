@@ -60,6 +60,13 @@ describe('Reports', () => {
             .should('not.be.visible')        
         cy.get('[data-testid=endDateInput] input')
             .should('not.be.visible')
+        
+        cy.get('[data-testid=clearFilter] button')
+            .should('be.visible')
+            .click();
+        
+        cy.get('[data-testid=clearFilter] button')
+            .should('not.exist');
     })
 
     it('Validate Service Selection', () => {       
