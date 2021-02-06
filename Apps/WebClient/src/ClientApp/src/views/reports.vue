@@ -102,6 +102,11 @@ export default class ReportsView extends Vue {
         this.selectedEndDate = null;
     }
 
+    private cancelFilter() {
+        this.selectedStartDate = this.startDate;
+        this.selectedEndDate = this.endDate;
+    }
+
     private updateFilter() {
         this.startDate = this.selectedStartDate;
         this.endDate = this.selectedEndDate;
@@ -254,18 +259,22 @@ export default class ReportsView extends Vue {
                                     data-testid="clearFilter"
                                     @remove="clearFilter"
                                 >
-                                    {{
-                                        startDate
-                                            ? `From ${formatDateLong(
-                                                  startDate
-                                              )}`
-                                            : ""
-                                    }}
-                                    {{
-                                        endDate
-                                            ? ` To ${formatDateLong(endDate)}`
-                                            : ""
-                                    }}
+                                    <span data-testid="selectedDatesFilter"
+                                        >{{
+                                            startDate
+                                                ? `From ${formatDateLong(
+                                                      startDate
+                                                  )}`
+                                                : ""
+                                        }}
+                                        {{
+                                            endDate
+                                                ? ` To ${formatDateLong(
+                                                      endDate
+                                                  )}`
+                                                : ""
+                                        }}</span
+                                    >
                                 </b-form-tag>
                             </b-col>
                         </b-row>
@@ -315,6 +324,7 @@ export default class ReportsView extends Vue {
                                                     data-testid="clearBtn"
                                                     class="mb-1 mr-2 text-muted"
                                                     :disabled="isLoading"
+                                                    @click="cancelFilter"
                                                 >
                                                     Cancel
                                                 </b-button>

@@ -21,34 +21,37 @@ describe('Reports', () => {
         .should('have.value','')
         .click()
         .focus()
-        .type("2020-01-01")
+        .type("2021-02-03")
     
         cy.get('[data-testid=endDateInput] input')
         .should('be.enabled', 'be.visible')
         .should('have.value','')
         .click()
         .focus()
-        .type("2020-12-31")
+        .type("2021-02-05")
 
         cy.get('[data-testid=applyFilterBtn]')
-        .click()
+            .click()
+        cy.get('[data-testid=selectedDatesFilter]')
+            .contains('From Feb 3, 2021 To Feb 5, 2021')
 
-        cy.get('[data-testid=clearFilter] button')
-        .should('be.enabled', 'be.visible')
-        .click()
-    
-        cy.get('[data-testid=startDateInput] input')
-        .should('have.value','')
-    
-        cy.get('[data-testid=endDateInput] input')
-        .should('have.value','')
-        
         // Validate filters - Cancel  button
         cy.get('[data-testid=advancedBtn]')
             .click();
+        
+        // Cancel button should not set the newly entered values
+        cy.get('[data-testid=startDateInput] input')
+            .type("2020-02-03")
+        cy.get('[data-testid=endDateInput] input')
+            .type("2020-02-05")
         cy.get('[data-testid=clearBtn]')
             .should('be.enabled', 'be.visible')
             .click();
+        cy.get('[data-testid=startDateInput] input')
+            .should('have.value','2021-02-03')
+        cy.get('[data-testid=endDateInput] input')
+            .should('have.value','2021-02-05')
+
         cy.get('[data-testid=clearBtn]')
             .should('not.be.visible')
         cy.get('[data-testid=applyFilterBtn]')
