@@ -80,7 +80,7 @@ Cypress.Commands.add(
                         cy.log("Visiting Callback")
                         cy.visit(callbackURL)
                         // Wait for cookies are set before store them in cypress.
-                        cy.get('[data-testid=logoutBtn]')
+                        cy.get('[data-testid=headerDropdownBtn]')
                             .should('be.visible')
                         storeAuthCookies();
                     })

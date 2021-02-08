@@ -23,12 +23,18 @@ describe("NavBar Header Component", () => {
                     isSidebarOpen: () => {
                         return true;
                     },
+                    isHeaderShown: () => {
+                        return true;
+                    },
                 },
             },
             auth: {
                 namespaced: true,
                 getters: {
                     oidcIsAuthenticated: () => {
+                        return false;
+                    },
+                    isValidIdentityProvider: () => {
                         return true;
                     },
                 },
