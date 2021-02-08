@@ -262,14 +262,25 @@ export default class HeaderComponent extends Vue {
                                 ></font-awesome-icon>
                             </b-col>
                             <b-col v-if="!isMobileWidth" class="p-0 m-0 pl-2">
-                                {{ userName }}
+                                <span data-testid="profileButtonUserName">{{
+                                    userName
+                                }}</span>
                             </b-col>
                         </b-row>
                     </template>
 
                     <span v-if="isMobileWidth">
                         <b-dropdown-item>
-                            {{ userName }}
+                            <b-row>
+                                <b-col cols="1"></b-col>
+                                <b-col>
+                                    <span
+                                        data-testid="profileUserNameMobileOnly"
+                                    >
+                                        {{ userName }}
+                                    </span>
+                                </b-col>
+                            </b-row>
                         </b-dropdown-item>
                         <b-dropdown-divider />
                     </span>
@@ -278,14 +289,38 @@ export default class HeaderComponent extends Vue {
                         data-testid="profileBtn"
                         to="/profile"
                     >
-                        <span>Profile</span>
+                        <b-row>
+                            <b-col cols="1">
+                                <font-awesome-icon
+                                    data-testid="profileDropDownIcon"
+                                    icon="user-circle"
+                                    class="p-0 m-0"
+                                >
+                                </font-awesome-icon>
+                            </b-col>
+                            <b-col
+                                ><span data-testid="profileDropDownLabel"
+                                    >Profile</span
+                                >
+                            </b-col>
+                        </b-row>
                     </b-dropdown-item>
                     <b-dropdown-item-button
                         data-testid="logoutBtn"
                         @click="handleLogoutClick()"
                     >
-                        Logout</b-dropdown-item-button
-                    >
+                        <b-row>
+                            <b-col cols="1">
+                                <font-awesome-icon
+                                    data-testid="logoutDropDownIcon"
+                                    icon="sign-out-alt"
+                                    class="p-0 m-0"
+                                >
+                                </font-awesome-icon>
+                            </b-col>
+                            <b-col>Logout</b-col>
+                        </b-row>
+                    </b-dropdown-item-button>
                 </b-nav-item-dropdown>
 
                 <router-link
