@@ -54,7 +54,7 @@ export default class ErrorCardComponent extends Vue {
                     </p>
                     <p data-testid="errorTextDetails">{{ error.detail }}</p>
                     <p data-testid="errorSupportDetails">
-                        {{ error.supportMessage }}
+                        {{ error.supportDetails }}
                     </p>
                 </div>
             </div>
