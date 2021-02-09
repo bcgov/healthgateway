@@ -29,7 +29,9 @@ export default class ImmunizationTimelineComponent extends Vue {
     }
 
     private get isCovidImmunization(): boolean {
-        return this.entry.immunization.targetedDisease === "Covid";
+        return this.entry.immunization.targetedDisease
+            ?.toLowerCase()
+            .includes("covid");
     }
 
     private toggleDetails(): void {

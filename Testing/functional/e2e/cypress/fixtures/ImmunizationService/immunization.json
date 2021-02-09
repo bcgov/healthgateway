@@ -53,10 +53,11 @@
     "immunizations": [
       {
         "id": "3209587_54397520",
-        "name": "Diphtheria, Tetanus, Pertussis, Polio",
+        "name": "COVID-19",
         "dateOfImmunization": "2013-09-20T00:00:00",
         "status": "Completed",
-        "providerOrClinic": "",
+        "targetedDisease": "Covid",
+        "providerOrClinic": "TEST LOCATION",
         "immunization":
           {
             "name":"Mocked Name",
@@ -64,8 +65,8 @@
               {
                 "code": "414003004",
                 "name": "DTaP-IPV",
-                "lotNumber": "",
-                "productName": ""
+                "lotNumber": "123456",
+                "productName": "COVID"
               }
             ]
           },
@@ -81,10 +82,11 @@
       },
       {
         "id": "3209587_54397521",
-        "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib",
+        "name": "COVID",
         "dateOfImmunization": "2010-03-28T00:00:00",
         "status": "Completed",
         "providerOrClinic": "Provider A",
+        "targetedDisease": "Covid",
         "immunization":
           {
             "name":"Mocked Name",

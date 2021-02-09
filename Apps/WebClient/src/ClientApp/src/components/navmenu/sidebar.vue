@@ -14,7 +14,7 @@ import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { IAuthenticationService, ILogger } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 library.add(faStream);
 
 const auth = "auth";
@@ -80,20 +80,10 @@ export default class SidebarComponent extends Vue {
     private eventBus = EventBus;
 
     private logger!: ILogger;
-    private authenticationService!: IAuthenticationService;
-    private name = "";
     private windowWidth = 0;
 
     private isNoteTutorialEnabled = false;
     private isExportTutorialEnabled = false;
-
-    @Watch("oidcIsAuthenticated")
-    private onPropertyChanged() {
-        // If there is no name in the scope, retrieve it from the service.
-        if (this.oidcIsAuthenticated && !this.name) {
-            this.loadName();
-        }
-    }
 
     @Watch("$route")
     private onRouteChanged() {
@@ -108,12 +98,6 @@ export default class SidebarComponent extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.authenticationService = container.get(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-        if (this.oidcIsAuthenticated) {
-            this.loadName();
-        }
 
         // Setup the transition listener to avoid text wrapping
         var transition = document.querySelector("#sidebar");
@@ -155,23 +139,6 @@ export default class SidebarComponent extends Vue {
 
     private toggleOpen() {
         this.toggleSidebar();
-    }
-
-    private loadName(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
-            if (oidcUser) {
-                this.name = this.getFullname(
-                    oidcUser.given_name,
-                    oidcUser.family_name
-                );
-            }
-            this.isNoteTutorialEnabled = true;
-            this.isExportTutorialEnabled = true;
-        });
-    }
-
-    private getFullname(firstName: string, lastName: string): string {
-        return firstName + " " + lastName;
     }
 
     private clearOverlay() {
@@ -255,10 +222,6 @@ export default class SidebarComponent extends Vue {
         return this.$route.path == "/timeline";
     }
 
-    private get isProfile(): boolean {
-        return this.$route.path == "/profile";
-    }
-
     private get isTermsOfService(): boolean {
         return this.$route.path == "/profile/termsOfService";
     }
@@ -303,38 +266,6 @@ export default class SidebarComponent extends Vue {
         <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
             <b-row class="row-container m-0 p-0">
                 <b-col class="m-0 p-0">
-                    <!-- Profile Button -->
-                    <router-link
-                        id="menuBtnProfile"
-                        data-testid="menuBtnProfileLink"
-                        to="/profile"
-                        class="my-4"
-                    >
-                        <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
-                            :class="{ selected: isProfile }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                class="button-spacer"
-                                cols="1"
-                            ></b-col>
-                            <b-col title="Profile" :class="{ 'col-3': isOpen }">
-                                <font-awesome-icon
-                                    icon="user-circle"
-                                    class="button-icon"
-                                    size="3x"
-                                />
-                            </b-col>
-                            <b-col
-                                v-show="isOpen"
-                                data-testid="sidebarUserName"
-                                cols="7"
-                                class="button-title"
-                                >{{ name }}</b-col
-                            >
-                        </b-row>
-                    </router-link>
                     <!-- Timeline button -->
                     <router-link
                         v-show="isActiveProfile"
