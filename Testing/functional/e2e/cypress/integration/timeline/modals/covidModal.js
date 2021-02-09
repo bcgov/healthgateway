@@ -70,6 +70,6 @@ describe('Validate Modals Popup', () => {
         cy.get('[data-testid=covidModal]').should('not.exist')
         cy.reload()
         cy.get('[data-testid=covidModal]').should('not.exist')
-        cy.get('[data-testid=sidebarUserName]').should('not.be.visible')
+        cy.get('[data-testid=timelineLabel]').should('be.visible');
     })
 })
