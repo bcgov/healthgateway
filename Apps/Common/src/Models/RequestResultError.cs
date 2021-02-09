@@ -47,8 +47,7 @@ namespace HealthGateway.Common.Models
         public string ErrorCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the error code.
-        /// Will always be set when ResultType is Error.
+        /// Gets or sets the trace id associated with the request.
         /// </summary>
         [JsonPropertyName("traceId")]
         public string TraceId { get; set; } = string.Empty;
