@@ -11,6 +11,7 @@ export default class ErrorTranslator {
             errorCode:
                 "ClientApp-" + ErrorType.InternalCommunication + "-" + service,
             resultMessage: resultMessage,
+            traceId: "",
         };
     }
 
@@ -22,7 +23,7 @@ export default class ErrorTranslator {
             return {
                 title,
                 description: this.getDisplayMessage(error.errorCode),
-                detail: error.resultMessage,
+                detail: `${error.resultMessage}. If this issue persists, contact HealthGateway@gov.bc.ca and provide ${error.traceId}.`,
                 errorCode: error.errorCode,
             };
         } else {
