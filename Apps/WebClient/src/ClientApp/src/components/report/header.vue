@@ -18,7 +18,7 @@ export default class ReportHeaderComponent extends Vue {
     private logger!: ILogger;
 
     private formatDateLong(date: string): string {
-        return new DateWrapper(date).toMediumDate();
+        return new DateWrapper(date).formatDateMed();
     }
 
     private get currentDate() {
