@@ -23,9 +23,8 @@ describe('Banner Error', () => {
     it('Verify banner error', () => {
         cy.get('[data-testid=errorTextDescription]')
             .contains('Error Code');
-            it('Verify banner error', () => {
-                cy.get('[data-testid=errorTextDetails]')
-                    .contains('Error ABC');
+        cy.get('[data-testid=errorTextDetails]')
+            .contains('Error ABC');
         cy.get('[data-testid=errorSupportDetails]')
             .contains('If this issue persists, contact HealthGateway@gov.bc.ca and provide 123456789');
     })
