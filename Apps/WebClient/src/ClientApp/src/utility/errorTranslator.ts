@@ -23,8 +23,9 @@ export default class ErrorTranslator {
             return {
                 title,
                 description: this.getDisplayMessage(error.errorCode),
-                detail: `${error.resultMessage}. If this issue persists, contact HealthGateway@gov.bc.ca and provide ${error.traceId}.`,
+                detail: error.resultMessage,
                 errorCode: error.errorCode,
+                supportDetails: `If this issue persists, contact HealthGateway@gov.bc.ca and provide ${error.traceId}.`,
             };
         } else {
             return {
@@ -32,6 +33,7 @@ export default class ErrorTranslator {
                 description: "",
                 detail: "",
                 errorCode: "",
+                supportDetails: "",
             };
         }
     }

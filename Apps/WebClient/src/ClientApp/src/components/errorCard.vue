@@ -53,6 +53,9 @@ export default class ErrorCardComponent extends Vue {
                         {{ error.description }}
                     </p>
                     <p data-testid="errorTextDetails">{{ error.detail }}</p>
+                    <p data-testid="errorSupportDetails">
+                        {{ error.supportMessage }}
+                    </p>
                 </div>
             </div>
         </b-collapse>
