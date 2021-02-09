@@ -3,5 +3,5 @@ export default interface BannerError {
     description: string;
     detail: string;
     errorCode: string;
-    supportDetails: string;
+    traceId: string;
 }
