@@ -242,7 +242,7 @@ export default class TimelineView extends Vue {
             },
             {
                 type: EntryType.Laboratory,
-                display: "Laboratory",
+                display: "COVID-19 Tests",
                 isEnabled: this.config.modules[EntryType.Laboratory],
                 numEntries: 0,
                 isSelected: false,
