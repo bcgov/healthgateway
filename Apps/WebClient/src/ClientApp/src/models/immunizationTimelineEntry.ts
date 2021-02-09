@@ -73,6 +73,7 @@ class ImmunizationViewModel {
     public providerOrClinic: string;
     public immunizationAgents: ImmunizationAgentViewModel[];
     public forecast?: ForecastViewModel;
+    public targetedDisease: string;
 
     constructor(model: ImmunizationEvent) {
         this.id = model.id;
@@ -90,5 +91,7 @@ class ImmunizationViewModel {
         if (model.forecast) {
             this.forecast = new ForecastViewModel(model.forecast);
         }
+
+        this.targetedDisease = model.targetedDisease;
     }
 }
