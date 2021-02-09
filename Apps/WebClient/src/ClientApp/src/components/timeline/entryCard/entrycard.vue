@@ -79,7 +79,7 @@ export default class EntrycardTimelineComponent extends Vue {
             </b-row>
             <b-row>
                 <b-col class="leftPane d-none d-md-block"></b-col>
-                <b-col class="px-3">
+                <b-col v-show="detailsVisible" class="p-3">
                     <b-collapse
                         :id="'entryDetails-' + cardId"
                         v-model="detailsVisible"

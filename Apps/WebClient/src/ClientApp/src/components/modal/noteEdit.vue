@@ -87,7 +87,6 @@ export default class NoteEditComponent extends Vue {
     }
 
     public showModal(entry?: NoteTimelineEntry): void {
-        console.log(entry);
         this.clear();
         if (entry) {
             this.entry = entry;
@@ -142,7 +141,6 @@ export default class NoteEditComponent extends Vue {
                 version: 0,
             })
             .then((result) => {
-                console.log(result);
                 if (result) {
                     this.errorMessage = "";
                     this.onNoteAdded(result);
@@ -158,7 +156,6 @@ export default class NoteEditComponent extends Vue {
     }
 
     private onNoteAdded(note: UserNote) {
-        console.log("EMIIITIGNG");
         this.eventBus.$emit(
             EventMessageName.TimelineEntryAdded,
             new NoteTimelineEntry(note)
