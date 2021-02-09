@@ -58,7 +58,6 @@ export default class ImmunizationCardComponent extends Vue {
 
                 return vale;
             });
-        console.log(covidImmunizations);
 
         for (let index = 0; index < covidImmunizations.length; index++) {
             const element = covidImmunizations[index];
@@ -90,8 +89,6 @@ export default class ImmunizationCardComponent extends Vue {
                     provider: "",
                 });
         }
-
-        console.log(this.doses);
     }
 
     @Watch("oidcIsAuthenticated")

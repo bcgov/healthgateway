@@ -183,7 +183,6 @@ export default class TimelineView extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineEntryAdded,
             (entry: TimelineEntry) => {
-                console.log("sdfsdfsdfsd");
                 this.onEntryAdded(entry);
             }
         );
