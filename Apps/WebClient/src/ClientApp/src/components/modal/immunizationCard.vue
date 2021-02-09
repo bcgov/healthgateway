@@ -44,8 +44,9 @@ export default class ImmunizationCardComponent extends Vue {
 
     @Watch("immunizations", { deep: true })
     private onImmunizationsChange() {
+        this.doses = [];
         const covidImmunizations = this.immunizations
-            .filter((x) => x.immunization.name.toLowerCase().includes("a"))
+            .filter((x) => x.targetedDisease?.toLowerCase().includes("covid"))
             .sort((a, b) => {
                 const firstDate = new DateWrapper(a.dateOfImmunization);
                 const secondDate = new DateWrapper(b.dateOfImmunization);
@@ -186,7 +187,9 @@ export default class ImmunizationCardComponent extends Vue {
                             <b-col class="field">
                                 <b-row class="value" align-h="between">
                                     <b-col cols="6">{{ dose.product }}</b-col>
-                                    <b-col cols="4">{{ dose.date }}</b-col>
+                                    <b-col cols="4" data-testid="doseDate">
+                                        {{ dose.date }}
+                                    </b-col>
                                 </b-row>
                                 <b-row class="text-muted" align-h="between"
                                     ><b-col class="description" cols="6"
