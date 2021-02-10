@@ -1,4 +1,5 @@
 <script lang="ts">
+import { BFormTag } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -20,6 +21,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IPatientService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+Vue.component("BFormTag", BFormTag);
 
 @Component({
     components: {
@@ -57,8 +59,10 @@ export default class ReportsView extends Vue {
     private isGeneratingReport = false;
     private logger!: ILogger;
     private reportType = "";
-    private startDate?: Date | null = null;
-    private endDate?: Date | null = null;
+    private startDate: Date | null = null;
+    private endDate: Date | null = null;
+    private selectedStartDate: Date | null = null;
+    private selectedEndDate: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
     private retryCount = 2;
     private patientData: PatientData | null = null;
@@ -91,10 +95,25 @@ export default class ReportsView extends Vue {
         this.fetchPatientData();
     }
 
-    private clear() {
-        this.reportType = "";
+    private clearFilter() {
         this.startDate = null;
         this.endDate = null;
+        this.selectedStartDate = null;
+        this.selectedEndDate = null;
+    }
+
+    private cancelFilter() {
+        this.selectedStartDate = this.startDate;
+        this.selectedEndDate = this.endDate;
+    }
+
+    private updateFilter() {
+        this.startDate = this.selectedStartDate;
+        this.endDate = this.selectedEndDate;
+    }
+
+    private formatDateLong(date: string): string {
+        return new DateWrapper(date).toMediumDate();
     }
 
     private showConfirmationModal() {
@@ -172,21 +191,16 @@ export default class ReportsView extends Vue {
     <div class="m-3">
         <div>
             <b-row>
-                <b-col
-                    id="healthInsights"
-                    class="col-12 col-md-10 col-lg-9 column-wrapper"
-                >
+                <b-col class="col-12 col-md-10 col-lg-9 column-wrapper">
                     <PageTitleComponent :title="`Export Records`" />
                     <div class="my-3 px-3 py-4 form">
                         <b-row>
-                            <b-col class="col-12 col-md-3 mb-2">
-                                <b-row>
-                                    <b-col>
-                                        <label for="reportType">
-                                            Record Type
-                                        </label>
-                                    </b-col>
-                                </b-row>
+                            <b-col>
+                                <label for="reportType"> Record Type </label>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col class="col-12 col-md-8 mb-2">
                                 <b-row>
                                     <b-col>
                                         <b-form-select
@@ -199,50 +213,12 @@ export default class ReportsView extends Vue {
                                     </b-col>
                                 </b-row>
                             </b-col>
-                            <b-col class="col-12 col-md-3 mb-2">
+                            <b-col class="col-12 col-md-3">
                                 <b-row>
-                                    <b-col>
-                                        <label for="start-date">From</label>
-                                    </b-col>
-                                </b-row>
-                                <b-row>
-                                    <b-col>
-                                        <DatePickerComponent
-                                            id="start-date"
-                                            v-model="startDate"
-                                            data-testid="startDateInput"
-                                        />
-                                    </b-col>
-                                </b-row>
-                            </b-col>
-                            <b-col class="col-12 col-md-6">
-                                <b-row>
-                                    <b-col>
-                                        <label for="end-date">To</label>
-                                    </b-col>
-                                </b-row>
-                                <b-row>
-                                    <b-col class="col-12 col-md-6 mb-2">
-                                        <DatePickerComponent
-                                            id="end-date"
-                                            v-model="endDate"
-                                            data-testid="endDateInput"
-                                        />
-                                    </b-col>
-                                    <b-col class="col-12 col-md-6">
-                                        <div
-                                            style="width: fit-content"
-                                            class="ml-auto"
-                                        >
-                                            <b-button
-                                                variant="secondary"
-                                                data-testid="clearBtn"
-                                                class="mb-1 mr-1"
-                                                :disabled="isLoading"
-                                                @click="clear"
-                                            >
-                                                Clear
-                                            </b-button>
+                                    <b-col
+                                        class="d-flex justify-content-center justify-content-md-end"
+                                    >
+                                        <div style="width: fit-content">
                                             <b-button
                                                 variant="primary"
                                                 data-testid="exportRecordBtn"
@@ -259,8 +235,118 @@ export default class ReportsView extends Vue {
                                         </div>
                                     </b-col>
                                 </b-row>
+                                <b-row>
+                                    <b-col
+                                        class="d-flex justify-content-start justify-content-md-end"
+                                    >
+                                        <b-button
+                                            v-b-toggle.advanced-panel
+                                            variant="link"
+                                            data-testid="advancedBtn"
+                                        >
+                                            Advanced
+                                        </b-button>
+                                    </b-col>
+                                </b-row>
                             </b-col>
                         </b-row>
+                        <b-row v-if="startDate || endDate">
+                            <b-col class="d-flex justify-content-start">
+                                <b-form-tag
+                                    variant="light"
+                                    class="filter-selected"
+                                    title="From"
+                                    data-testid="clearFilter"
+                                    @remove="clearFilter"
+                                >
+                                    <span data-testid="selectedDatesFilter"
+                                        >{{
+                                            startDate
+                                                ? `From ${formatDateLong(
+                                                      startDate
+                                                  )}`
+                                                : ""
+                                        }}
+                                        {{
+                                            endDate
+                                                ? ` To ${formatDateLong(
+                                                      endDate
+                                                  )}`
+                                                : ""
+                                        }}</span
+                                    >
+                                </b-form-tag>
+                            </b-col>
+                        </b-row>
+                        <b-collapse
+                            id="advanced-panel"
+                            data-testid="advancedPanel"
+                        >
+                            <b-row class="border-top pt-3">
+                                <b-col class="col-12 col-md-3 mb-2">
+                                    <b-row>
+                                        <b-col>
+                                            <label for="start-date">From</label>
+                                        </b-col>
+                                    </b-row>
+                                    <b-row>
+                                        <b-col>
+                                            <DatePickerComponent
+                                                id="start-date"
+                                                v-model="selectedStartDate"
+                                                data-testid="startDateInput"
+                                            />
+                                        </b-col>
+                                    </b-row>
+                                </b-col>
+                                <b-col class="col-12 col-md-9">
+                                    <b-row>
+                                        <b-col>
+                                            <label for="end-date">To</label>
+                                        </b-col>
+                                    </b-row>
+                                    <b-row>
+                                        <b-col class="col-12 col-md-4 mb-2">
+                                            <DatePickerComponent
+                                                id="end-date"
+                                                v-model="selectedEndDate"
+                                                data-testid="endDateInput"
+                                            />
+                                        </b-col>
+                                        <b-col class="col-12 col-md-8">
+                                            <div
+                                                style="width: fit-content"
+                                                class="ml-auto"
+                                            >
+                                                <b-button
+                                                    v-b-toggle.advanced-panel
+                                                    variant="link"
+                                                    data-testid="clearBtn"
+                                                    class="mb-1 mr-2 text-muted"
+                                                    :disabled="isLoading"
+                                                    @click="cancelFilter"
+                                                >
+                                                    Cancel
+                                                </b-button>
+                                                <b-button
+                                                    v-b-toggle.advanced-panel
+                                                    variant="primary"
+                                                    data-testid="applyFilterBtn"
+                                                    class="mb-1 ml-2"
+                                                    :disabled="
+                                                        isLoading ||
+                                                        patientData === null
+                                                    "
+                                                    @click="updateFilter"
+                                                >
+                                                    Apply
+                                                </b-button>
+                                            </div>
+                                        </b-col>
+                                    </b-row>
+                                </b-col>
+                            </b-row>
+                        </b-collapse>
                     </div>
                     <LoadingComponent
                         v-if="isLoading || isGeneratingReport"
@@ -271,7 +357,7 @@ export default class ReportsView extends Vue {
                     <div
                         v-if="reportType == 'MED'"
                         data-testid="medicationReportSample"
-                        class="sample"
+                        class="sample d-none d-md-block"
                     >
                         <MedicationHistoryReportComponent
                             ref="medicationHistoryReport"
@@ -284,7 +370,7 @@ export default class ReportsView extends Vue {
                     <div
                         v-else-if="reportType == 'MSP'"
                         data-testid="mspVisitsReportSample"
-                        class="sample"
+                        class="sample d-none d-md-block"
                     >
                         <MSPVisitsReportComponent
                             ref="mspVisitsReport"
@@ -297,7 +383,7 @@ export default class ReportsView extends Vue {
                     <div
                         v-else-if="reportType == 'COVID-19'"
                         data-testid="covid19ReportSample"
-                        class="sample"
+                        class="sample d-none d-md-block"
                     >
                         <COVID19ReportComponent
                             ref="covid19Report"
@@ -310,7 +396,7 @@ export default class ReportsView extends Vue {
                     <div
                         v-else-if="reportType == 'Immunization'"
                         data-testid="immunizationHistoryReportSample"
-                        class="sample"
+                        class="sample d-none d-md-block"
                     >
                         <ImmunizationHistoryReportComponent
                             ref="immunizationHistoryReport"
@@ -379,5 +465,9 @@ export default class ReportsView extends Vue {
     background-color: $soft_background;
     border: $lightGrey solid 1px;
     border-radius: 5px 5px 5px 5px;
+}
+.filter-selected {
+    background-color: $aquaBlue;
+    color: white;
 }
 </style>

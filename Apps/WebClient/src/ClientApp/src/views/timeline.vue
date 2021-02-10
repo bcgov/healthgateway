@@ -96,6 +96,8 @@ export default class TimelineView extends Vue {
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;
 
+    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+
     @Watch("immunizationIsDeferred")
     private whenImmunizationIsDeferred(newVal: boolean, oldVal: boolean) {
         if (newVal) {
@@ -240,7 +242,7 @@ export default class TimelineView extends Vue {
             },
             {
                 type: EntryType.Laboratory,
-                display: "Laboratory",
+                display: "COVID-19 Tests",
                 isEnabled: this.config.modules[EntryType.Laboratory],
                 numEntries: 0,
                 isSelected: false,
@@ -795,7 +797,10 @@ export default class TimelineView extends Vue {
                     <h1 id="subject">Health Care Timeline</h1>
                     <hr class="mb-0" />
                 </div>
-                <div class="sticky-top sticky-offset px-2">
+                <div
+                    class="sticky-top sticky-offset px-2"
+                    :class="{ 'header-offset': isHeaderShown }"
+                >
                     <b-row class="no-print justify-content-between">
                         <b-col>
                             <div class="form-group has-filter">
@@ -890,6 +895,9 @@ export default class TimelineView extends Vue {
     margin: 0px;
     padding: 0px;
 }
+.sticky-top {
+    transition: all 0.3s;
+}
 
 .column-wrapper {
     border: 1px;
@@ -917,6 +925,9 @@ export default class TimelineView extends Vue {
     padding-top: 1rem;
     background-color: white;
     z-index: 2;
+    &.header-offset {
+        top: $header-height;
+    }
 }
 
 .has-filter .form-control {

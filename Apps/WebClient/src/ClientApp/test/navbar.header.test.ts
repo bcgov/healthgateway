@@ -17,10 +17,13 @@ describe("NavBar Header Component", () => {
 
     const customStore = new Vuex.Store({
         modules: {
-            sidebar: {
+            navbar: {
                 namespaced: true,
                 getters: {
-                    isOpen: () => {
+                    isSidebarOpen: () => {
+                        return true;
+                    },
+                    isHeaderShown: () => {
                         return true;
                     },
                 },
@@ -29,6 +32,9 @@ describe("NavBar Header Component", () => {
                 namespaced: true,
                 getters: {
                     oidcIsAuthenticated: () => {
+                        return false;
+                    },
+                    isValidIdentityProvider: () => {
                         return true;
                     },
                 },

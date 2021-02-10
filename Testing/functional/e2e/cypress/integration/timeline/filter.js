@@ -11,7 +11,10 @@ function verifyActiveFilter(activeFilterCount) {
     cy.get("[data-testid=filterDropdown]").focus().click({ force: true });
 }
 
-describe("Filters", () => {
+describe("Filters", () => {  
+    beforeEach(() => {
+        cy.restoreAuthCookies();
+    })
     before(() => {
         cy.login(
             Cypress.env("keycloak.username"),
@@ -92,6 +95,7 @@ describe("Filters", () => {
     });
 
     it("Filter Checkboxes are Visible", () => {
+        cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=Medication-filter]")
             .should("not.to.be.checked");
         cy.get("[data-testid=Note-filter]")

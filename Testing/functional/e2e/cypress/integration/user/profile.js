@@ -11,7 +11,8 @@ describe('User Profile', () => {
     })
 
     it('Validate email fields', () => {
-        cy.get('[data-testid=menuBtnProfileLink]').click()
+        cy.get('[data-testid=headerDropdownBtn]').click()
+        cy.get('[data-testid=profileBtn]').click()
         cy.get('[data-testid=editEmailBtn]').click()
         let emailInput = cy.get('[data-testid=emailInput]')
         emailInput.clear()
@@ -30,7 +31,8 @@ describe('User Profile', () => {
     })
 
     it('Verify Phone Countdown timer', () => {
-        cy.get('[data-testid=menuBtnProfileLink]').click()
+        cy.get('[data-testid=headerDropdownBtn]').click()
+        cy.get('[data-testid=profileBtn]').click()
         cy.get('[data-testid=editSMSBtn]').click()
         let cellPhoneInput = cy.get('[data-testid=smsNumberInput]')
         cellPhoneInput.clear()

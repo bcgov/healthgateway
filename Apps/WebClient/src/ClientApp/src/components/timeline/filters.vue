@@ -24,7 +24,7 @@ library.add(faSlidersH);
 export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-    @Getter("isOpen", { namespace: "sidebar" }) isSidebarOpen!: boolean;
+    @Getter("isSidebarOpen", { namespace: "navbar" }) isSidebarOpen!: boolean;
 
     @Prop() private filter!: TimelineFilter;
 
@@ -166,6 +166,7 @@ export default class FilterComponent extends Vue {
                 :class="{ 'filter-selected': hasFilterSelected }"
                 data-testid="filterDropdown"
                 variant="outline-primary"
+                tabindex="0"
             >
                 Filter
                 <b-badge
@@ -185,7 +186,7 @@ export default class FilterComponent extends Vue {
             </b-button>
             <b-popover
                 target="filterBtn"
-                triggers="click"
+                triggers="click blur"
                 text="Filter"
                 class="w-100"
                 data-testid="filterContainer"

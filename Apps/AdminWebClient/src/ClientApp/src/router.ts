@@ -26,8 +26,13 @@ const routes = [
         }
     },
     {
-        path: "/signin",
+        path: "/Login",
         name: "Login",
+        meta: { requiresAuth: false }
+    },
+    {
+        path: "/signin",
+        name: "Signin",
         component: LoginView,
         meta: { requiresAuth: false }
     },

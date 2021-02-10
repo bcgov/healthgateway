@@ -75,8 +75,9 @@ export interface CommentState {
     stateType: StateType;
 }
 
-export interface SidebarState {
-    isOpen: boolean;
+export interface NavbarState {
+    isSidebarOpen: boolean;
+    isHeaderShown: boolean;
 }
 
 export interface ErrorBannerState {

@@ -4,6 +4,7 @@ import { injectable } from "inversify";
 
 import AuthenticationData from "@/models/authenticationData";
 import ExternalConfiguration from "@/models/externalConfiguration";
+import Router from "@/router";
 import { IAuthenticationService, IHttpDelegate } from "@/services/interfaces";
 
 @injectable()
@@ -28,16 +29,12 @@ export class RestAuthenticationService implements IAuthenticationService {
 
         const fullRedirectUrl = new URL(relativeToPath, window.location.href);
 
-        const authPathUrl = new URL(
-            `${this.config.forwardProxies.basePath}/Login`,
-            window.location.href
-        );
-
-        const queryParams = `?redirectUri=${fullRedirectUrl.href}`;
-        const fullPath = authPathUrl + queryParams;
-
-        console.log(fullPath);
-        window.location.href = fullPath;
+        Router.push({
+            path: "/Login",
+            query: { redirectUri: fullRedirectUrl.href }
+        });
+        // Triggers a page refresh so the server side route can redirect to the oidc flow
+        Router.go(0);
     }
 
     public getAuthentication(): Promise<AuthenticationData> {
