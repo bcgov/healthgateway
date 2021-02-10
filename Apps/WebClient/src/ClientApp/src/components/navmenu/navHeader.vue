@@ -353,6 +353,7 @@ export default class HeaderComponent extends Vue {
 .navbar {
     padding-left: 8px;
     padding-right: 8px;
+    min-height: $header-height;
 }
 
 .nav-up {
