@@ -95,7 +95,10 @@ describe("Filters", () => {
     });
 
     it("Filter Checkboxes are Visible", () => {
+<<<<<<< HEAD
         cy.get("[data-testid=filterDropdown]").click();
+=======
+>>>>>>> master
         cy.get("[data-testid=Medication-filter]")
             .should("not.to.be.checked");
         cy.get("[data-testid=Note-filter]")

@@ -36,7 +36,11 @@
         "@mdi/font": "^5.9.55",
         "@nuxtjs/vuetify": "^1.11.3",
         "@types/luxon": "^1.25.1",
+<<<<<<< HEAD
         "@types/node": "^14.14.25",
+=======
+        "@types/node": "^14.14.24",
+>>>>>>> master
         "@typescript-eslint/eslint-plugin": "^4.14.2",
         "@typescript-eslint/parser": "^4.14.2",
         "@vue/cli-plugin-babel": "^4.5.11",
@@ -66,6 +70,10 @@
         "vue-cli-plugin-axios": "0.0.4",
         "vue-cli-plugin-vuetify": "^2.1.0",
         "vue-template-compiler": "^2.6.12",
+<<<<<<< HEAD
         "vuetify-loader": "^1.7.2"
+=======
+        "vuetify-loader": "^1.7.1"
+>>>>>>> master
     }
 }

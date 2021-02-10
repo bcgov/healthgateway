@@ -192,10 +192,14 @@ export default class LinearTimelineComponent extends Vue {
 
 <template>
     <div>
+<<<<<<< HEAD
         <b-row
             class="no-print sticky-top sticky-offset pt-2 pl-2"
             :class="{ 'header-offset': isHeaderShown }"
         >
+=======
+        <b-row class="no-print sticky-top sticky-offset pt-2 pl-2">
+>>>>>>> master
             <b-col>
                 <b-pagination-nav
                     v-show="!timelineIsEmpty"
@@ -294,9 +298,12 @@ export default class LinearTimelineComponent extends Vue {
 .col {
     margin: 0px;
     padding: 0px;
+<<<<<<< HEAD
 }
 .sticky-top {
     transition: all 0.3s;
+=======
+>>>>>>> master
 }
 
 .dateBreakLine {
@@ -316,7 +323,11 @@ export default class LinearTimelineComponent extends Vue {
 }
 
 .sticky-offset {
+<<<<<<< HEAD
     top: $timeline-filter-height;
+=======
+    top: 54px;
+>>>>>>> master
     background-color: white;
     z-index: 2;
     &.header-offset {
@@ -325,17 +336,24 @@ export default class LinearTimelineComponent extends Vue {
 }
 
 .sticky-line {
+<<<<<<< HEAD
     top: $timeline-filter-height + $timeline-pagination-height;
+=======
+    top: 107px;
+>>>>>>> master
     background-color: white;
     border-bottom: solid $primary 2px;
     margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
         top: 107px;
+<<<<<<< HEAD
     }
     &.header-offset {
         top: $header-height + $timeline-filter-height +
             $timeline-pagination-height;
+=======
+>>>>>>> master
     }
 }
 

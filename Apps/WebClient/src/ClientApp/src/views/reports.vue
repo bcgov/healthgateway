@@ -21,7 +21,10 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IPatientService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+<<<<<<< HEAD
 Vue.component("BFormTag", BFormTag);
+=======
+>>>>>>> master
 
 @Component({
     components: {

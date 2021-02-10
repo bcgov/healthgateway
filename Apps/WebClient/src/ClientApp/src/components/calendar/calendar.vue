@@ -126,7 +126,10 @@ export default class CalendarComponent extends Vue {
         <!-- header pick month -->
         <CalendarHeader
             class="sticky-top sticky-offset p-2"
+<<<<<<< HEAD
             :class="{ 'header-offset': isHeaderShown }"
+=======
+>>>>>>> master
             :current-month.sync="currentMonth"
             :title-format="titleFormat"
             :available-months="availableMonths"
@@ -162,12 +165,18 @@ export default class CalendarComponent extends Vue {
     margin: 0px;
     padding: 0px;
 }
+<<<<<<< HEAD
 .sticky-top {
     transition: all 0.3s;
 }
 
 .sticky-offset {
     top: $timeline-filter-height;
+=======
+
+.sticky-offset {
+    top: 54px;
+>>>>>>> master
     background-color: white;
     z-index: 2;
     &.header-offset {
@@ -176,16 +185,24 @@ export default class CalendarComponent extends Vue {
 }
 
 .sticky-line {
+<<<<<<< HEAD
     top: $timeline-filter-height + $timeline-dates-height;
+=======
+    top: 107px;
+>>>>>>> master
     background-color: white;
     border-bottom: solid $primary 2px;
     margin-top: -2px;
     z-index: 1;
     @media (max-width: 575px) {
+<<<<<<< HEAD
         top: $timeline-filter-height + $timeline-dates-height;
     }
     &.header-offset {
         top: $header-height + $timeline-filter-height + $timeline-dates-height;
+=======
+        top: 107px;
+>>>>>>> master
     }
 }
 </style>
