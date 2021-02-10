@@ -7,7 +7,7 @@ describe('Banner Error', () => {
                 res.body.resultStatus = 0;
                 res.body['resultError'] = {
                     resultMessage: "Error ABC",
-                    errorCode: "Error Code",
+                    errorCode: "ClientApp-CI-DB",
                     traceId: "123456789"
                 };
             })
@@ -22,7 +22,7 @@ describe('Banner Error', () => {
     
     it('Verify banner error', () => {
         cy.get('[data-testid=errorTextDescription]')
-            .contains('Error Code');
+            .contains(`ClientApp got a Internal Communication error while processing a ${"Data Base"} request.`);
         cy.get('[data-testid=errorTextDetails]')
             .contains('Error ABC');
         cy.get('[data-testid=errorSupportDetails]')
