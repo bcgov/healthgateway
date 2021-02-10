@@ -721,7 +721,6 @@ export default class TimelineView extends Vue {
                         dismissible
                         variant="info"
                         class="no-print"
-<<<<<<< HEAD
                     >
                         <h4>Updated Terms of Service</h4>
                         <span>
@@ -742,28 +741,6 @@ export default class TimelineView extends Vue {
                         variant="info"
                         class="no-print"
                     >
-=======
-                    >
-                        <h4>Updated Terms of Service</h4>
-                        <span>
-                            The Terms of Service have been updated since your
-                            last login. You can review them
-                            <router-link
-                                id="termsOfServiceLink"
-                                variant="primary"
-                                to="/termsOfService"
-                            >
-                                here</router-link
-                            >.
-                        </span>
-                    </b-alert>
-                    <b-alert
-                        :show="unverifiedEmail || unverifiedSMS"
-                        dismissible
-                        variant="info"
-                        class="no-print"
-                    >
->>>>>>> master
                         <h4>Please complete your profile</h4>
                         <span>
                             Your email or cell phone number have not been
@@ -820,14 +797,10 @@ export default class TimelineView extends Vue {
                     <h1 id="subject">Health Care Timeline</h1>
                     <hr class="mb-0" />
                 </div>
-<<<<<<< HEAD
                 <div
                     class="sticky-top sticky-offset px-2"
                     :class="{ 'header-offset': isHeaderShown }"
                 >
-=======
-                <div class="sticky-top sticky-offset px-2">
->>>>>>> master
                     <b-row class="no-print justify-content-between">
                         <b-col>
                             <div class="form-group has-filter">
@@ -922,12 +895,9 @@ export default class TimelineView extends Vue {
     margin: 0px;
     padding: 0px;
 }
-<<<<<<< HEAD
 .sticky-top {
     transition: all 0.3s;
 }
-=======
->>>>>>> master
 
 .column-wrapper {
     border: 1px;
@@ -955,12 +925,9 @@ export default class TimelineView extends Vue {
     padding-top: 1rem;
     background-color: white;
     z-index: 2;
-<<<<<<< HEAD
     &.header-offset {
         top: $header-height;
     }
-=======
->>>>>>> master
 }
 
 .has-filter .form-control {

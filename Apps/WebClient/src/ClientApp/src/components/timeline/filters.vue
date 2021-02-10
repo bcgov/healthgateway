@@ -24,11 +24,7 @@ library.add(faSlidersH);
 export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-<<<<<<< HEAD
     @Getter("isSidebarOpen", { namespace: "navbar" }) isSidebarOpen!: boolean;
-=======
-    @Getter("isOpen", { namespace: "sidebar" }) isSidebarOpen!: boolean;
->>>>>>> master
 
     @Prop() private filter!: TimelineFilter;
 
