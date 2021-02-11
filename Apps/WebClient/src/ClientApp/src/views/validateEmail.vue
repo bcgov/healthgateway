@@ -65,11 +65,7 @@ export default class ValidateEmailView extends Vue {
                 <h4 v-if="isLoading" data-testid="verifingInvite">
                     We are verifying your email...
                 </h4>
-                <h4
-                    v-else-if="isSuccess"
-                    class="text-success"
-                    data-testid="verifiedInvite"
-                >
+                <h4 v-else-if="isSuccess" data-testid="verifiedInvite">
                     Your email was successfully verified!
                 </h4>
                 <h4 v-else-if="isActionRequired" data-testid="expiredInvite">
