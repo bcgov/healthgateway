@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -77,12 +78,17 @@ namespace HealthGateway.WebClient.Services
                     this.messageVerificationDelegate.Update(emailInvite);
                 }
                 retVal.ResultStatus = ResultType.Error;
+                retVal.ResultError = new RequestResultError() { 
+                    ResultMessage = "Invalid Email Invite",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) 
+                };
             }
             else if (emailInvite.VerificationAttempts >= MaxVerificationAttempts ||
                      emailInvite.ExpireDate < DateTime.UtcNow)
             {
                 // Verification Expired
                 retVal.ResultStatus = ResultType.ActionRequired;
+                retVal.ResultError = ErrorTranslator.ActionRequired("Email Invite Expired", ActionType.Expired);
             }
             else
             {

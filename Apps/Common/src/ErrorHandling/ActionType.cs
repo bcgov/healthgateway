@@ -58,6 +58,14 @@ namespace HealthGateway.Common.ErrorHandling
         }
 
         /// <summary>
+        /// Gets the expired user error.
+        /// </summary>
+        public static ActionType Expired
+        {
+            get { return new ActionType("EXPIRED"); }
+        }
+
+        /// <summary>
         /// Gets or sets the value that holds the internal representation of the ActionType.
         /// </summary>
         public string Value { get; set; }
