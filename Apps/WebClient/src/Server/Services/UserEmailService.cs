@@ -65,9 +65,10 @@ namespace HealthGateway.WebClient.Services
             PrimitiveRequestResult<bool> retVal = new PrimitiveRequestResult<bool>();
             MessagingVerification? emailInvite = this.messageVerificationDelegate.GetByInviteKey(inviteKey);
 
-            if (emailInvite?.HdId != hdid ||
-                emailInvite?.Validated == true ||
-                emailInvite?.Deleted == true)
+            if (emailInvite == null ||
+                emailInvite.HdId != hdid ||
+                emailInvite.Validated == true ||
+                emailInvite.Deleted == true)
             {
                 // Invalid Verification Attempt
                 emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
