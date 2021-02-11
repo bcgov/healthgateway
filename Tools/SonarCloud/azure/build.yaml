@@ -7,7 +7,7 @@ schedules:
     include:
     - dev
 pool:
-  name: 'HealthGatewayOCP4'
+  name: 'HealthGateway'
 
 jobs:
   - job: AnalyzeProjects
