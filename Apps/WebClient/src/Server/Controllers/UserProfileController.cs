@@ -249,14 +249,8 @@ namespace HealthGateway.WebClient.Controllers
 
                 if (accessToken != null)
                 {
-                    if (this.userEmailService.ValidateEmail(hdid, inviteKey, accessToken))
-                    {
-                        return new OkResult();
-                    }
-                    else
-                    {
-                        return new NotFoundResult();
-                    }
+                    PrimitiveRequestResult<bool> result = this.userEmailService.ValidateEmail(hdid, inviteKey, accessToken);
+                    return new JsonResult(result);
                 }
             }
 

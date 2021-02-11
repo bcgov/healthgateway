@@ -5,6 +5,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -20,20 +21,29 @@ export default class ValidateEmailView extends Vue {
     @Action("checkRegistration", { namespace: "user" })
     checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
 
-    private isLoading = false;
-    private isSuccess: boolean | null = null;
+    private isLoading = true;
+    private resultStatus: ResultType | null = null;
 
+    private get isSuccess() {
+        return this.resultStatus === ResultType.Success;
+    }
+    private get isActionRequired() {
+        return this.resultStatus === ResultType.ActionRequired;
+    }
     private mounted() {
+        this.verifyEmail();
+    }
+
+    private verifyEmail() {
         this.isLoading = true;
         const userProfileService: IUserProfileService = container.get(
             SERVICE_IDENTIFIER.UserProfileService
         );
-
         userProfileService
             .validateEmail(this.user.hdid, this.inviteKey)
-            .then((isValid) => {
-                this.isSuccess = isValid;
-                if (isValid) {
+            .then((result) => {
+                this.resultStatus = result.resultStatus;
+                if (this.resultStatus == ResultType.Success) {
                     this.checkRegistration({ hdid: this.user.hdid });
                     setTimeout(
                         () => this.$router.push({ path: "/timeline" }),
@@ -51,44 +61,20 @@ export default class ValidateEmailView extends Vue {
 <template>
     <b-container>
         <b-row class="pt-5">
-            <b-col class="text-center mb-5">
-                <h4 v-if="isLoading" class="title">
-                    We are verifying your email...
-                </h4>
-                <h4
-                    v-if="!isLoading && isSuccess === true"
-                    class="text-success"
-                >
+            <b-col class="text-center mb-5 title">
+                <h4 v-if="isLoading">We are verifying your email...</h4>
+                <h4 v-else-if="isSuccess" class="text-success">
                     Your email was successfully verified!
                 </h4>
-                <h4
-                    v-if="!isLoading && isSuccess === false"
-                    class="text-danger"
-                >
+                <h4 v-else-if="isActionRequired">
+                    Your verification link is expired. Resend your verification
+                    email from the
+                    <router-link to="/profile"> Profile Page</router-link>.
+                </h4>
+                <h4 v-else>
                     Something is not right, are you sure this is the correct
                     link?
                 </h4>
-            </b-col>
-        </b-row>
-        <b-row class="pt-5">
-            <b-col class="text-center mb-5">
-                <b-spinner v-if="isLoading"></b-spinner>
-                <span
-                    v-if="!isLoading && isSuccess === true"
-                    class="text-success"
-                    ><font-awesome-icon
-                        icon="check-circle"
-                        size="10x"
-                    ></font-awesome-icon
-                ></span>
-                <span
-                    v-if="!isLoading && isSuccess === false"
-                    class="text-danger"
-                    ><font-awesome-icon
-                        icon="times-circle"
-                        size="10x"
-                    ></font-awesome-icon
-                ></span>
             </b-col>
         </b-row>
     </b-container>
