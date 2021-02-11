@@ -88,7 +88,6 @@ export default class LinearTimelineComponent extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineEntryAdded,
             (entry: TimelineEntry) => {
-                console.log(entry);
                 this.onEntryAdded(entry);
             }
         );

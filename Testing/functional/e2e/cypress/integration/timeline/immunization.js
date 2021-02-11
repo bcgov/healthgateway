@@ -62,4 +62,18 @@ describe('Immunization', () => {
       cy.get('[data-testid=forecastFollowDirections]').first().contains('https://immunizebc.ca/');
       cy.get('[data-testid=forecastFollowDirections]').first().contains('or contact your local Public Health Unit.');
     })
+
+    it('Validate Proof of Immunization Card', () => {
+      cy.get('[data-testid=cardBtn')
+        .first()
+        .click()
+      cy.get('[data-testid=covidImmunizationCard] .modal-dialog')
+        .should('be.visible')
+      cy.get('[data-testid=doseDate]')
+        .first()
+        .contains('Mar 28, 2010')
+      cy.get('[data-testid=doseDate]')
+        .last()
+        .contains('Sep 20, 2013')        
+   })
 })
