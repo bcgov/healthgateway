@@ -62,16 +62,24 @@ export default class ValidateEmailView extends Vue {
     <b-container>
         <b-row class="pt-5">
             <b-col class="text-center mb-5 title">
-                <h4 v-if="isLoading">We are verifying your email...</h4>
-                <h4 v-else-if="isSuccess" class="text-success">
+                <h4 v-if="isLoading" data-testid="verifingInvite">
+                    We are verifying your email...
+                </h4>
+                <h4
+                    v-else-if="isSuccess"
+                    class="text-success"
+                    data-testid="verifiedInvite"
+                >
                     Your email was successfully verified!
                 </h4>
-                <h4 v-else-if="isActionRequired">
+                <h4 v-else-if="isActionRequired" data-testid="expiredInvite">
                     Your verification link is expired. Resend your verification
                     email from the
-                    <router-link to="/profile"> Profile Page</router-link>.
+                    <router-link to="/profile" data-testid="profileLink">
+                        Profile Page</router-link
+                    >.
                 </h4>
-                <h4 v-else>
+                <h4 v-else data-testid="invalidInvite">
                     Something is not right, are you sure this is the correct
                     link?
                 </h4>
