@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,6 +63,11 @@ namespace HealthGateway.WebClient.Models
         /// Gets or sets the maximum age of a dependent.
         /// </summary>
         public int? MaxDependentAge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email verification's expiry hours.
+        /// </summary>
+        public int EmailVerificationExpiryHours { get; set; }
 
         /// <summary>
         /// Gets or sets the offline mode configuration.

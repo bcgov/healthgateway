@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,11 +33,11 @@ namespace HealthGateway.Common.Services
     /// </summary>
     public class EmailQueueService : IEmailQueueService
     {
-        private const int VerificationExpiryDays = 5;
 #pragma warning disable SA1310 // Disable _ in variable name
         private const string INVITE_KEY_VARIABLE = "InviteKey";
         private const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
         private const string ENVIRONMENT_VARIABLE = "Environment";
+        private const string VERIFICATION_EXPIRY_HOURS = "VerificationExpiryHours";
 #pragma warning restore SA1310 // Restore warnings
         private readonly IEmailDelegate emailDelegate;
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
@@ -128,19 +128,20 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost)
+        public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost, int verificationExpiryHours)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
             MessagingVerification invite = new MessagingVerification();
             invite.InviteKey = Guid.NewGuid();
             invite.HdId = hdid;
-            invite.ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays);
+            invite.ExpireDate = DateTime.UtcNow.AddHours(verificationExpiryHours);
 
             string hostUrl = activationHost.ToString();
             hostUrl = hostUrl.Remove(hostUrl.Length - 1, 1); // Strips last slash
 
-            keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
+            keyValues.Add(INVITE_KEY_VARIABLE, hdid);
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
+            keyValues.Add(VERIFICATION_EXPIRY_HOURS, $"{verificationExpiryHours}");
 
             invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.RegistrationTemplate), keyValues);
             this.QueueNewInviteEmail(invite);
