@@ -31,7 +31,7 @@ export default class EntrycardTimelineComponent extends Vue {
 
 <template>
     <b-row class="cardWrapper mb-1">
-        <b-col class="timelineCard ml-0 ml-md-4">
+        <b-col class="timelineCard ml-0 ml-md-2">
             <b-row class="entryHeading px-2 py-3">
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
