@@ -128,10 +128,8 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogInformation($"Removing email from user ${hdid}");
             userProfile.Email = null;
             this.profileDelegate.Update(userProfile);
-
             // Update the notification settings
             this.UpdateNotificationSettings(userProfile);
-
             if (emailInvite != null)
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
@@ -143,7 +141,17 @@ namespace HealthGateway.WebClient.Services
             if (!string.IsNullOrEmpty(email))
             {
                 this.logger.LogInformation($"Sending new email invite for user ${hdid}");
-                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri, emailInvite != null ? emailInvite.InviteKey : null);
+
+                Guid? existingInviteKey = null;
+                if (emailInvite != null
+                    && emailInvite.Email != null
+                    && !string.IsNullOrEmpty(emailInvite.Email.To)
+                    && email.Equals(emailInvite.Email.To, StringComparison.OrdinalIgnoreCase))
+                {
+                    existingInviteKey = emailInvite.InviteKey;
+                }
+
+                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri, existingInviteKey);
             }
 
             this.logger.LogDebug($"Finished updating user email");
