@@ -152,8 +152,8 @@ namespace HealthGateway.Common.Services
 
             keyValues.Add(INVITE_KEY_VARIABLE, invite.InviteKey.ToString());
             keyValues.Add(ACTIVATION_HOST_VARIABLE, hostUrl);
-            decimal verificationExpiryHours = this.emailVerificationExpirySeconds / 3600;
-            keyValues.Add(EMAIL_TEMPLATE_EXPIRY_HOURS, verificationExpiryHours.ToString("C2", CultureInfo.CurrentCulture));
+            float verificationExpiryHours = this.emailVerificationExpirySeconds / 3600;
+            keyValues.Add(EMAIL_TEMPLATE_EXPIRY_HOURS, verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture));
 
             invite.Email = this.ProcessTemplate(toEmail, this.GetEmailTemplate(EmailTemplateName.RegistrationTemplate), keyValues);
             this.QueueNewInviteEmail(invite);
