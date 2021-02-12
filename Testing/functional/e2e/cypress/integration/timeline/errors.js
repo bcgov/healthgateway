@@ -4,12 +4,7 @@ describe('Banner Error', () => {
     before(() => {
         cy.intercept("GET", "/v1/api/Note/*", (req) => {
             req.reply((res) => {
-                res.body.resultStatus = 0;
-                res.body['resultError'] = {
-                    resultMessage: "Error ABC",
-                    errorCode: "ClientApp-CI-DB",
-                    traceId: "123456789"
-                };
+                res.send({ fixture: "WebClientService/dbError.json" });
             })
         })
         cy.enableModules("Note");
