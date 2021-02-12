@@ -128,6 +128,7 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogInformation($"Removing email from user ${hdid}");
             userProfile.Email = null;
             this.profileDelegate.Update(userProfile);
+
             // Update the notification settings
             this.UpdateNotificationSettings(userProfile);
             if (emailInvite != null)
