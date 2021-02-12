@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,7 +131,6 @@ namespace HealthGateway.WebClient.Services
 
             // Update the notification settings
             this.UpdateNotificationSettings(userProfile);
-
             if (emailInvite != null)
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
@@ -143,7 +142,17 @@ namespace HealthGateway.WebClient.Services
             if (!string.IsNullOrEmpty(email))
             {
                 this.logger.LogInformation($"Sending new email invite for user ${hdid}");
-                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+
+                Guid? existingInviteKey = null;
+                if (emailInvite != null
+                    && emailInvite.Email != null
+                    && !string.IsNullOrEmpty(emailInvite.Email.To)
+                    && email.Equals(emailInvite.Email.To, StringComparison.OrdinalIgnoreCase))
+                {
+                    existingInviteKey = emailInvite.InviteKey;
+                }
+
+                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri, existingInviteKey);
             }
 
             this.logger.LogDebug($"Finished updating user email");
