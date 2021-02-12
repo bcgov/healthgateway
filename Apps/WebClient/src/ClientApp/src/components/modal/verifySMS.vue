@@ -82,7 +82,7 @@ export default class VerifySMSComponent extends Vue {
             if (this.tooManyRetries) {
                 this.error = false;
             }
-            if (result !== null && result.expired) {
+            if (result !== null && result.expired && !result.validated) {
                 this.sendUserSMSUpdate();
             }
         });
