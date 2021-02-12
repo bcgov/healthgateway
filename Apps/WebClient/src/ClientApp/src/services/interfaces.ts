@@ -92,7 +92,10 @@ export interface IUserProfileService {
     recoverAccount(hdid: string): Promise<UserProfile>;
     getLatestEmailInvite(hdid: string): Promise<UserEmailInvite>;
     getLatestSMSInvite(hdid: string): Promise<UserSMSInvite | null>;
-    validateEmail(hdid: string, inviteKey: string): Promise<boolean>;
+    validateEmail(
+        hdid: string,
+        inviteKey: string
+    ): Promise<RequestResult<boolean>>;
     validateSMS(hdid: string, digit: string): Promise<boolean>;
     updateEmail(hdid: string, email: string): Promise<boolean>;
     updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;

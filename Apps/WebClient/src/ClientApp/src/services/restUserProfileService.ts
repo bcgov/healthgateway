@@ -167,18 +167,21 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
-    public validateEmail(hdid: string, inviteKey: string): Promise<boolean> {
-        return new Promise((resolve) => {
+    public validateEmail(
+        hdid: string,
+        inviteKey: string
+    ): Promise<RequestResult<boolean>> {
+        return new Promise((resolve, reject) => {
             this.http
-                .get(
+                .get<RequestResult<boolean>>(
                     `${this.USER_PROFILE_BASE_URI}/${hdid}/email/validate/${inviteKey}`
                 )
-                .then(() => {
-                    return resolve(true);
+                .then((requestResult) => {
+                    return resolve(requestResult);
                 })
                 .catch((err) => {
                     this.logger.error(`validateEmail error: ${err}`);
-                    return resolve(false);
+                    reject(err);
                 });
         });
     }
