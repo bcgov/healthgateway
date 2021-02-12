@@ -65,9 +65,9 @@ namespace HealthGateway.WebClient.Models
         public int? MaxDependentAge { get; set; }
 
         /// <summary>
-        /// Gets or sets the email verification's expiry hours.
+        /// Gets or sets the email verification's expiry seconds.
         /// </summary>
-        public int EmailVerificationExpiryHours { get; set; }
+        public int EmailVerificationExpirySeconds { get; set; }
 
         /// <summary>
         /// Gets or sets the offline mode configuration.

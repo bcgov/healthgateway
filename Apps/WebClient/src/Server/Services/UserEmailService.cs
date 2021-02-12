@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
-    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -130,7 +129,7 @@ namespace HealthGateway.WebClient.Services
             if (!string.IsNullOrEmpty(email))
             {
                 this.logger.LogInformation($"Sending new email invite for user ${hdid}");
-                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri, emailInvite != null ? emailInvite.InviteKey : null);
             }
 
             this.logger.LogDebug($"Finished updating user email");

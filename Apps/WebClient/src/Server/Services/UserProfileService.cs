@@ -185,7 +185,7 @@ namespace HealthGateway.WebClient.Services
 
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
-                    this.emailQueueService.QueueNewInviteEmail(hdid, requestedEmail, hostUri, this.configurationService.GetConfiguration().WebClient.EmailVerificationExpiryHours);
+                    this.emailQueueService.QueueNewInviteEmail(hdid, requestedEmail, hostUri);
                 }
 
                 if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
