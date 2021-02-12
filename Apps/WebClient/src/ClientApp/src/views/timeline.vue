@@ -780,7 +780,7 @@ export default class TimelineView extends Vue {
                     >
                         <span v-if="!immunizationLoadReady">
                             <h4 data-testid="immunizationLoading">
-                                Still loading your immunization records
+                                Still searching for immunization records
                             </h4>
                         </span>
                         <span v-else data-testid="immunizationReady">
