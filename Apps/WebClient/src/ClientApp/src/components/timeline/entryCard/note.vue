@@ -100,7 +100,7 @@ export default class NoteTimelineComponent extends Vue {
         :allow-comment="false"
         :show-details-button="showDetailsButton"
     >
-        <b-navbar-nav slot="header-menu" class="ml-auto">
+        <b-navbar-nav slot="header-menu">
             <b-nav-item-dropdown
                 right
                 text=""
@@ -133,21 +133,14 @@ export default class NoteTimelineComponent extends Vue {
             </b-nav-item-dropdown>
         </b-navbar-nav>
 
-        <b-row slot="details-body" class="justify-content-between">
-            <b-col class="entryDetails p-3">
-                {{ entry.text }}
-            </b-col>
-        </b-row>
+        <span slot="details-body">
+            {{ entry.text }}
+        </span>
     </EntryCard>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-.entryDetails {
-    word-wrap: break-word;
-    padding-left: 15px;
-}
 
 .noteMenu {
     color: $soft_text;
