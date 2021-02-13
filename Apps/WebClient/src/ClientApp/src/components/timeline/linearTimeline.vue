@@ -159,7 +159,7 @@ export default class LinearTimelineComponent extends Vue {
     private focusOnDate(date: DateWrapper) {
         const dateEpoch = date.fromEpoch();
         let container: HTMLElement[] = this.$refs[dateEpoch] as HTMLElement[];
-        container[0].focus();
+        container[0].querySelector("button").focus();
     }
 
     private getComponentForEntry(entryType: EntryType): string {
@@ -223,7 +223,11 @@ export default class LinearTimelineComponent extends Vue {
             </b-col>
         </b-row>
         <div id="timeData" data-testid="linearTimelineData">
-            <div v-for="dateGroup in dateGroups" :key="dateGroup.key">
+            <div
+                v-for="dateGroup in dateGroups"
+                :key="dateGroup.key"
+                :ref="dateGroup.key"
+            >
                 <component
                     :is="getComponentForEntry(entry.type)"
                     v-for="(entry, index) in dateGroup.entries"
