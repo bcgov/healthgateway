@@ -78,10 +78,12 @@ namespace HealthGateway.WebClient.Services
                     emailInvite.VerificationAttempts++;
                     this.messageVerificationDelegate.Update(emailInvite);
                 }
+
                 retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError() { 
+                retVal.ResultError = new RequestResultError()
+                {
                     ResultMessage = "Invalid Email Invite",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) 
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                 };
             }
             else if (emailInvite.VerificationAttempts >= MaxVerificationAttempts ||
