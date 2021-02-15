@@ -96,7 +96,7 @@
         "idle-vue": "^2.0.5",
         "image-webpack-loader": "^7.0.1",
         "inversify": "^5.0.5",
-        "luxon": "^1.25.0",
+        "luxon": "^1.26.0",
         "oidc-client": "^1.11.3",
         "reflect-metadata": "^0.1.13",
         "vue": "^2.6.12",
