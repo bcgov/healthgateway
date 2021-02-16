@@ -63,7 +63,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
             PrimitiveRequestResult<bool> retVal = new PrimitiveRequestResult<bool>();
-            MessagingVerification? emailInvite = this.messageVerificationDelegate.GetByInviteKey(inviteKey);
+            MessagingVerification? emailInvite = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
 
             if (emailInvite == null ||
                 emailInvite.HdId != hdid ||

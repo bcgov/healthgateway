@@ -66,13 +66,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public MessagingVerification? GetByInviteKey(Guid inviteKey)
+        public MessagingVerification? GetLastByInviteKey(Guid inviteKey)
         {
             this.logger.LogTrace($"Getting email invite from DB... {inviteKey}");
             MessagingVerification? retVal = this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.InviteKey == inviteKey && p.VerificationType == MessagingVerificationType.Email)
+                .OrderByDescending(mv => mv.CreatedDateTime)
                 .FirstOrDefault();
 
             this.logger.LogDebug($"Finished getting email invite from DB. {JsonSerializer.Serialize(retVal)}");

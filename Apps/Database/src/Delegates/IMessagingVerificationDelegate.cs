@@ -33,11 +33,11 @@ namespace HealthGateway.Database.Delegates
         Guid Insert(MessagingVerification messageVerification);
 
         /// <summary>
-        /// Gets an Email Message Verification by the Invite key and the users HDID.
+        /// Gets the last Email Message Verification by the Invite key.
         /// </summary>
         /// <param name="inviteKey">The users inviteKey as emailed.</param>
         /// <returns>The message verification that was fetched.</returns>
-        MessagingVerification? GetByInviteKey(Guid inviteKey);
+        MessagingVerification? GetLastByInviteKey(Guid inviteKey);
 
         /// <summary>
         /// Gets the last Messaging Verification for the user base on type and users HDID.
