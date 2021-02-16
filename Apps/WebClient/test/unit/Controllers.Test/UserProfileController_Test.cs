@@ -326,8 +326,15 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public async void ShouldValidateEmail()
         {
+            PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
+            {
+                ResourcePayload = true,
+                ResultStatus = ResultType.Success,
+                ResultError = null
+            };
+
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            emailServiceMock.Setup(s => s.ValidateEmail(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(true);
+            emailServiceMock.Setup(s => s.ValidateEmail(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
             UserProfileController controller = new UserProfileController(
@@ -344,8 +351,14 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public async void ShouldValidateEmailWithEmailNotFound()
         {
+            PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
+            {
+                ResourcePayload = false,
+                ResultStatus = ResultType.Error,
+                ResultError = null
+            };
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            emailServiceMock.Setup(s => s.ValidateEmail(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(false);
+            emailServiceMock.Setup(s => s.ValidateEmail(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(primitiveRequestResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
             UserProfileController controller = new UserProfileController(
