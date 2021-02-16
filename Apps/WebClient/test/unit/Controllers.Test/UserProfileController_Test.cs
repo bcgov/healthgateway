@@ -345,7 +345,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 null
             );
             IActionResult actualResult = await controller.ValidateEmail(hdid, Guid.NewGuid());
-            Assert.IsType<OkResult>(actualResult);
+            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+            
+            Assert.Equal(ResultType.Success, result.ResultStatus);
         }
 
         [Fact]
@@ -369,7 +371,9 @@ namespace HealthGateway.WebClient.Test.Controllers
                 null
             );
             IActionResult actualResult = await controller.ValidateEmail(hdid, Guid.NewGuid());
-            Assert.IsType<NotFoundResult>(actualResult);
+            var result = ((JsonResult)actualResult).Value as PrimitiveRequestResult<bool>;
+
+            Assert.Equal(ResultType.Error, result.ResultStatus);
         }
 
         [Fact]
