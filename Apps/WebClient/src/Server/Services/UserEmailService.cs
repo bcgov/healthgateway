@@ -141,20 +141,20 @@ namespace HealthGateway.WebClient.Services
                 this.messageVerificationDelegate.Update(emailInvite);
             }
 
+            Guid inviteKey = Guid.NewGuid();
             if (!string.IsNullOrEmpty(email))
             {
                 this.logger.LogInformation($"Sending new email invite for user ${hdid}");
 
-                Guid? existingInviteKey = null;
                 if (emailInvite != null
                     && emailInvite.Email != null
                     && !string.IsNullOrEmpty(emailInvite.Email.To)
                     && email.Equals(emailInvite.Email.To, StringComparison.OrdinalIgnoreCase))
                 {
-                    existingInviteKey = emailInvite.InviteKey;
+                    inviteKey = emailInvite.InviteKey;
                 }
 
-                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri, existingInviteKey);
+                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri, inviteKey);
             }
 
             this.logger.LogDebug($"Finished updating user email");

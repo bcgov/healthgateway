@@ -79,8 +79,8 @@ namespace HealthGateway.Common.Services
         /// <param name="hdid">The users hdid to associate the invite with.</param>
         /// <param name="toEmail">The To email address.</param>
         /// <param name="activationHost">The host of the email validation endpoint.</param>
-        /// <param name="existingInviteKey">The key of the existing invite.</param>
-        void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost, Guid? existingInviteKey = null);
+        /// <param name="inviteKey">The email invite key to be sent.</param>
+        void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost, Guid inviteKey);
 
         /// <summary>
         /// Queues a new email using a populated Email object.

@@ -138,12 +138,11 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost, Guid? existingInviteKey)
+        public void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost, Guid inviteKey)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
             MessagingVerification invite = new MessagingVerification();
-            invite.InviteKey = existingInviteKey.HasValue ? existingInviteKey.Value : Guid.NewGuid();
-
+            invite.InviteKey = inviteKey;
             invite.HdId = hdid;
             invite.ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds);
 
