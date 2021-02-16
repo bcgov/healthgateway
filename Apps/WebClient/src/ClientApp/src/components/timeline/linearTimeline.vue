@@ -159,7 +159,7 @@ export default class LinearTimelineComponent extends Vue {
     private focusOnDate(date: DateWrapper) {
         const dateEpoch = date.fromEpoch();
         let container: HTMLElement[] = this.$refs[dateEpoch] as HTMLElement[];
-        container[0].querySelector("button").focus();
+        container[0].querySelector("button")?.focus();
     }
 
     private getComponentForEntry(entryType: EntryType): string {

@@ -43,8 +43,8 @@ export default class EntrycardTimelineComponent extends Vue {
 
 <template>
     <b-row class="cardWrapper mb-1">
-        <b-col class="timelineCard ml-0 ml-md-4">
-            <b-row class="entryHeading px-3 py-3">
+        <b-col class="timelineCard ml-0 ml-md-2">
+            <b-row class="entryHeading px-3 py-2">
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
                         <font-awesome-icon
@@ -70,7 +70,11 @@ export default class EntrycardTimelineComponent extends Vue {
                             <strong v-else>{{ title }}</strong>
                         </b-col>
                         <b-col cols="4" class="text-right">
-                            <span class="text-muted">{{ dateString }}</span>
+                            <span
+                                class="text-muted"
+                                data-testid="entryCardDate"
+                                >{{ dateString }}</span
+                            >
                         </b-col>
                     </b-row>
                     <b-row>
@@ -79,7 +83,7 @@ export default class EntrycardTimelineComponent extends Vue {
                                 subtitle
                             }}</slot>
                         </b-col>
-                        <b-col cols="4" class="text-right">
+                        <b-col cols="4" class="text-right align-self-center">
                             <slot name="header-menu"> </slot>
                         </b-col>
                     </b-row>

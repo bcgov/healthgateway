@@ -91,9 +91,10 @@ export default class MonthYearPickerComponent extends Vue {
 
     private getDisplayMonthCss(displayMonth: MonthToDisplay) {
         if (displayMonth.hasData) {
+            // Months are indexed 0-11
+            const monthIndex = this.currentMonth.month() - 1;
             return `item col-4 ${
-                this.currentMonth.month() ===
-                    this.monthsToDisplay.indexOf(displayMonth) &&
+                monthIndex === this.monthsToDisplay.indexOf(displayMonth) &&
                 this.currentMonth.year() === this.selectedYear
                     ? "selected"
                     : ""

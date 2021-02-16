@@ -34,8 +34,46 @@ describe('Calendar View', () => {
         cy.get('[data-testid=monthBtnJan]').click();
         cy.get('#currentDate')
             .should('not.have.text', ' January 2019 ');
+        
         cy.get('[data-testid=monthBtnFeb]').click();
         cy.get('#currentDate')
-            .should('have.text', ' February 2019 ');
+            .should('have.text', ' February 2019 ')
+        cy.get('[data-testid=monthBtnFeb]')
+            .should('have.class', 'selected');
+
+        cy.get('#currentDate').click();
+        cy.get('[data-testid=monthBtnApr]').click();
+        cy.get('#currentDate')
+            .should('have.text', ' April 2019 ');
+        cy.get('[data-testid=monthBtnApr]')
+            .should('have.class', 'selected');
+        cy.get('[data-testid=monthBtnFeb]')
+            .should('not.have.class', 'selected');
+    })
+
+    it('Click on Calendar item to Linear Timeline', () => {
+        cy.get('[data-testid=filterDropdown]').click();
+        cy.get('[data-testid=monthViewToggle]')
+            .first()
+            .click();
+        cy.location('hash')
+            .should('eq', '#calendar');
+        cy.get('#currentDate').click();
+        cy.get('#currentDate').click();
+        cy.get('.years')
+            .children()
+            .should('be.visible');
+        cy.get('[data-testid=yearBtn2019]').click();
+        cy.get('[data-testid=monthBtnApr]').click();
+        cy.get('#currentDate')
+            .should('have.text', ' April 2019 ');
+        cy.get('[data-testid=event-monthday-10]').click();
+        cy.location('hash')
+            .should('eq', '#linear');
+        cy.focused()
+            .should('have.text', 'Methadone (Maintenance) 1mg/Ml');
+        cy.contains('[data-testid=entryCardDate]', '2019-04-10')
+            .should('be.visible');
+            
     })
 })
