@@ -228,6 +228,7 @@ export default class CalendarBodyComponent extends Vue {
                                 :key="event.id"
                                 cols="auto"
                                 class="event-item"
+                                :data-testid="'event-monthday-' + day.monthDay"
                                 @click="eventClick(event, $event)"
                             >
                                 <div

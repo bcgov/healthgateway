@@ -107,10 +107,6 @@ export default class LinearTimelineComponent extends Vue {
         return result;
     }
 
-    private getHeadingDate(date: DateWrapper): string {
-        return date.format("LLL d, yyyy");
-    }
-
     @Watch("currentPage")
     @Watch("filter.pageSize")
     @Watch("filteredTimelineEntries")
@@ -163,7 +159,7 @@ export default class LinearTimelineComponent extends Vue {
     private focusOnDate(date: DateWrapper) {
         const dateEpoch = date.fromEpoch();
         let container: HTMLElement[] = this.$refs[dateEpoch] as HTMLElement[];
-        container[0].focus();
+        container[0].querySelector("button")?.focus();
     }
 
     private getComponentForEntry(entryType: EntryType): string {
@@ -227,21 +223,11 @@ export default class LinearTimelineComponent extends Vue {
             </b-col>
         </b-row>
         <div id="timeData" data-testid="linearTimelineData">
-            <b-row v-for="dateGroup in dateGroups" :key="dateGroup.key">
-                <b-col cols="auto">
-                    <div
-                        :id="dateGroup.key"
-                        :ref="dateGroup.key"
-                        data-testid="dateGroup"
-                        class="dateHeading pl-0"
-                        tabindex="1"
-                    >
-                        {{ getHeadingDate(dateGroup.date) }}
-                    </div>
-                </b-col>
-                <b-col align-self="center" class="pl-2">
-                    <hr class="dateBreakLine my-0" />
-                </b-col>
+            <div
+                v-for="dateGroup in dateGroups"
+                :key="dateGroup.key"
+                :ref="dateGroup.key"
+            >
                 <component
                     :is="getComponentForEntry(entry.type)"
                     v-for="(entry, index) in dateGroup.entries"
@@ -251,7 +237,7 @@ export default class LinearTimelineComponent extends Vue {
                     :index="index"
                     data-testid="timelineCard"
                 />
-            </b-row>
+            </div>
         </div>
         <div v-if="timelineIsEmpty" class="text-center pt-2">
             <b-row>
@@ -296,22 +282,6 @@ export default class LinearTimelineComponent extends Vue {
 }
 .sticky-top {
     transition: all 0.3s;
-}
-
-.dateBreakLine {
-    border-top: dashed 2px $primary;
-    @media (max-width: 575px) {
-        border-top: dashed 1px $primary;
-    }
-}
-
-.dateHeading {
-    padding-top: 0px;
-    color: $primary;
-    font-size: 1.3em;
-    @media (max-width: 575px) {
-        font-size: 1.1em;
-    }
 }
 
 .sticky-offset {

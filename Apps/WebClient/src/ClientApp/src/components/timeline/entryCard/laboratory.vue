@@ -102,8 +102,8 @@ export default class LaboratoryTimelineComponent extends Vue {
             >
         </div>
 
-        <b-row slot="details-body" class="justify-content-between">
-            <b-col v-if="reportAvailable">
+        <div slot="details-body">
+            <div v-if="reportAvailable">
                 <b-spinner v-if="isLoadingDocument"></b-spinner>
                 <span v-else>
                     <strong>Report:</strong>
@@ -115,105 +115,105 @@ export default class LaboratoryTimelineComponent extends Vue {
                         />
                     </b-btn>
                 </span>
-                <div class="detailSection">
-                    {{ entry.summaryDescription }}
+            </div>
+            <div class="detailSection">
+                {{ entry.summaryDescription }}
+            </div>
+
+            <div class="detailSection">
+                <div>
+                    <strong>Ordering Providers:</strong>
+                    {{ entry.orderingProviders }}
                 </div>
-
-                <div class="detailSection">
-                    <div>
-                        <strong>Ordering Providers:</strong>
-                        {{ entry.orderingProviders }}
-                    </div>
-                    <div>
-                        <strong>Reporting Lab:</strong>
-                        {{ entry.reportingLab }}
-                    </div>
-                    <div>
-                        <strong>Location:</strong>
-                        {{ entry.location }}
-                    </div>
+                <div>
+                    <strong>Reporting Lab:</strong>
+                    {{ entry.reportingLab }}
                 </div>
-
-                <div class="detailSection">
-                    <strong>Results:</strong>
-                    <div
-                        v-for="result in entry.resultList"
-                        :key="result.id"
-                        class="border p-1"
-                    >
-                        <div>
-                            <strong>Test Type:</strong>
-                            {{ result.testType }}
-                        </div>
-                        <div>
-                            <strong>Out Of Range:</strong>
-                            {{ result.outOfRange }}
-                        </div>
-                        <div>
-                            <strong>Test Status:</strong>
-                            {{ result.testStatus }}
-                        </div>
-                        <div class="my-2">
-                            <strong>Result Description:</strong>
-                            <p v-html="result.resultDescription"></p>
-                        </div>
-                        <div>
-                            <strong>Collected Date Time:</strong>
-                            {{ formatDate(result.collectedDateTime) }}
-                        </div>
-
-                        <div>
-                            <strong>Received Date Time:</strong>
-                            {{ formatDate(result.receivedDateTime) }}
-                        </div>
-                    </div>
+                <div>
+                    <strong>Location:</strong>
+                    {{ entry.location }}
                 </div>
+            </div>
 
-                <div class="detailSection">
+            <div class="detailSection">
+                <strong>Results:</strong>
+                <div
+                    v-for="result in entry.resultList"
+                    :key="result.id"
+                    class="border p-1"
+                >
                     <div>
-                        <strong>What to expect next</strong>
-                        <p>
-                            If you receive a
-                            <b>positive</b> COVID-19 result:
-                        </p>
-                        <ul>
-                            <li>
-                                You and the people you live with need to
-                                self-isolate now.
-                            </li>
-                            <li>
-                                Public health will contact you in 2 to 3 days
-                                with further instructions.
-                            </li>
-                            <li>
-                                If you are a health care worker, please notify
-                                your employer of your positive result.
-                            </li>
-                            <li>
-                                Monitor your health and contact a health care
-                                provider or call 8-1-1 if you are concerned
-                                about your symptoms.
-                            </li>
-                            <li>
-                                Go to
-                                <a
-                                    href="http://www.bccdc.ca/results"
-                                    target="blank_"
-                                    >www.bccdc.ca/results</a
-                                >
-                                for more information about your test result.
-                            </li>
-                        </ul>
+                        <strong>Test Type:</strong>
+                        {{ result.testType }}
+                    </div>
+                    <div>
+                        <strong>Out Of Range:</strong>
+                        {{ result.outOfRange }}
+                    </div>
+                    <div>
+                        <strong>Test Status:</strong>
+                        {{ result.testStatus }}
+                    </div>
+                    <div class="my-2">
+                        <strong>Result Description:</strong>
+                        <p v-html="result.resultDescription"></p>
+                    </div>
+                    <div>
+                        <strong>Collected Date Time:</strong>
+                        {{ formatDate(result.collectedDateTime) }}
+                    </div>
+
+                    <div>
+                        <strong>Received Date Time:</strong>
+                        {{ formatDate(result.receivedDateTime) }}
                     </div>
                 </div>
-                <MessageModalComponent
-                    ref="messageModal"
-                    title="Sensitive Document Download"
-                    message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-                    @submit="getReport"
-                />
-            </b-col>
-        </b-row>
+            </div>
+
+            <div class="detailSection">
+                <div>
+                    <strong>What to expect next</strong>
+                    <p>
+                        If you receive a
+                        <b>positive</b> COVID-19 result:
+                    </p>
+                    <ul>
+                        <li>
+                            You and the people you live with need to
+                            self-isolate now.
+                        </li>
+                        <li>
+                            Public health will contact you in 2 to 3 days with
+                            further instructions.
+                        </li>
+                        <li>
+                            If you are a health care worker, please notify your
+                            employer of your positive result.
+                        </li>
+                        <li>
+                            Monitor your health and contact a health care
+                            provider or call 8-1-1 if you are concerned about
+                            your symptoms.
+                        </li>
+                        <li>
+                            Go to
+                            <a
+                                href="http://www.bccdc.ca/results"
+                                target="blank_"
+                                >www.bccdc.ca/results</a
+                            >
+                            for more information about your test result.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <MessageModalComponent
+                ref="messageModal"
+                title="Sensitive Document Download"
+                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+                @submit="getReport"
+            />
+        </div>
     </EntryCard>
 </template>
 
