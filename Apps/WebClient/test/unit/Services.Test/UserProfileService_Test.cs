@@ -40,6 +40,7 @@ namespace HealthGateway.WebClient.Test.Services
     {
         readonly string hdid = "1234567890123456789012345678901234567890123456789012";
 
+        // TODO: Remove helper methods
         private Tuple<RequestResult<UserProfileModel>, UserProfileModel> ExecuteGetUserProfile(Database.Constants.DBStatusCode dbResultStatus, DateTime lastLoginDateTime)
         {
             UserProfile userProfile = new UserProfile
