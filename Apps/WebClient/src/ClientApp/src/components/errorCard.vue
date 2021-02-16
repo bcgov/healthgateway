@@ -53,6 +53,10 @@ export default class ErrorCardComponent extends Vue {
                         {{ error.description }}
                     </p>
                     <p data-testid="errorTextDetails">{{ error.detail }}</p>
+                    <p v-if="error.traceId" data-testid="errorSupportDetails">
+                        If this issue persists, contact HealthGateway@gov.bc.ca
+                        and provide {{ error.traceId }}
+                    </p>
                 </div>
             </div>
         </b-collapse>

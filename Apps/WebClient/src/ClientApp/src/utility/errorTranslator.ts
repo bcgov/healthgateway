@@ -11,6 +11,7 @@ export default class ErrorTranslator {
             errorCode:
                 "ClientApp-" + ErrorType.InternalCommunication + "-" + service,
             resultMessage: resultMessage,
+            traceId: "",
         };
     }
 
@@ -24,6 +25,7 @@ export default class ErrorTranslator {
                 description: this.getDisplayMessage(error.errorCode),
                 detail: error.resultMessage,
                 errorCode: error.errorCode,
+                traceId: error.traceId,
             };
         } else {
             return {
@@ -31,6 +33,7 @@ export default class ErrorTranslator {
                 description: "",
                 detail: "",
                 errorCode: "",
+                traceId: "",
             };
         }
     }
