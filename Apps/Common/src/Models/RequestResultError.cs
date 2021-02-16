@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    using System.Diagnostics;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.ErrorHandling;
 
@@ -23,6 +24,14 @@ namespace HealthGateway.Common.Models
     /// </summary>
     public class RequestResultError
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestResultError"/> class.
+        /// </summary>
+        public RequestResultError()
+        {
+            this.TraceId = Activity.Current?.TraceId.ToString() ?? string.Empty;
+        }
+
         /// <summary>
         /// Gets or sets the message depending on the result type.
         /// Will always be set when ResultType is Error.
@@ -36,6 +45,12 @@ namespace HealthGateway.Common.Models
         /// </summary>
         [JsonPropertyName("errorCode")]
         public string ErrorCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the trace id associated with the request.
+        /// </summary>
+        [JsonPropertyName("traceId")]
+        public string TraceId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the action code.
