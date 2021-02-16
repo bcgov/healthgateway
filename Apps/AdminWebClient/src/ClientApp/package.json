@@ -35,7 +35,7 @@
         "@fortawesome/fontawesome-free": "^5.15.2",
         "@mdi/font": "^5.9.55",
         "@nuxtjs/vuetify": "^1.11.3",
-        "@types/luxon": "^1.25.1",
+        "@types/luxon": "^1.25.3",
         "@types/node": "^14.14.25",
         "@typescript-eslint/eslint-plugin": "^4.15.0",
         "@typescript-eslint/parser": "^4.15.0",
