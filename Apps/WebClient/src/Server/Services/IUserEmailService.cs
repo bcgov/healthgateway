@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -29,8 +30,8 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
-        /// <returns>returns true if the email invite was found.</returns>
-        bool ValidateEmail(string hdid, Guid inviteKey, string bearerToken);
+        /// <returns>Returns a request result with appropriate result status..</returns>
+        PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey, string bearerToken);
 
         /// <summary>
         /// Retrieves the last invite email.
