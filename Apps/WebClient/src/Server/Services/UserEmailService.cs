@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -58,31 +59,18 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool ValidateEmail(string hdid, Guid inviteKey, string bearerToken)
+        public PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey, string bearerToken)
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
-            bool retVal = false;
-            MessagingVerification? emailInvite = this.messageVerificationDelegate.GetByInviteKey(inviteKey);
+            PrimitiveRequestResult<bool> retVal = new PrimitiveRequestResult<bool>();
+            MessagingVerification? emailInvite = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
 
-            if (emailInvite != null &&
-                emailInvite.HdId == hdid &&
-                !emailInvite.Validated &&
-                !emailInvite.Deleted &&
-                emailInvite.VerificationAttempts < MaxVerificationAttempts &&
-                emailInvite.ExpireDate >= DateTime.UtcNow)
+            if (emailInvite == null ||
+                emailInvite.HdId != hdid ||
+                emailInvite.Validated == true ||
+                emailInvite.Deleted == true)
             {
-                emailInvite.Validated = true;
-                this.messageVerificationDelegate.Update(emailInvite);
-                UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.Email = emailInvite.Email!.To; // Gets the user email from the email sent.
-                this.profileDelegate.Update(userProfile);
-                retVal = true;
-
-                // Update the notification settings
-                this.UpdateNotificationSettings(userProfile);
-            }
-            else
-            {
+                // Invalid Verification Attempt
                 emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
                 if (emailInvite != null &&
                     !emailInvite.Validated)
@@ -90,6 +78,33 @@ namespace HealthGateway.WebClient.Services
                     emailInvite.VerificationAttempts++;
                     this.messageVerificationDelegate.Update(emailInvite);
                 }
+
+                retVal.ResultStatus = ResultType.Error;
+                retVal.ResultError = new RequestResultError()
+                {
+                    ResultMessage = "Invalid Email Invite",
+                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                };
+            }
+            else if (emailInvite.VerificationAttempts >= MaxVerificationAttempts ||
+                     emailInvite.ExpireDate < DateTime.UtcNow)
+            {
+                // Verification Expired
+                retVal.ResultStatus = ResultType.ActionRequired;
+                retVal.ResultError = ErrorTranslator.ActionRequired("Email Invite Expired", ActionType.Expired);
+            }
+            else
+            {
+                emailInvite.Validated = true;
+                this.messageVerificationDelegate.Update(emailInvite);
+                UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
+                userProfile.Email = emailInvite.Email!.To; // Gets the user email from the email sent.
+                this.profileDelegate.Update(userProfile);
+
+                // Update the notification settings
+                this.UpdateNotificationSettings(userProfile);
+
+                retVal.ResultStatus = ResultType.Success;
             }
 
             this.logger.LogDebug($"Finished validating email: {JsonConvert.SerializeObject(retVal)}");
@@ -118,7 +133,6 @@ namespace HealthGateway.WebClient.Services
 
             // Update the notification settings
             this.UpdateNotificationSettings(userProfile);
-
             if (emailInvite != null)
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
@@ -127,10 +141,20 @@ namespace HealthGateway.WebClient.Services
                 this.messageVerificationDelegate.Update(emailInvite);
             }
 
+            Guid inviteKey = Guid.NewGuid();
             if (!string.IsNullOrEmpty(email))
             {
                 this.logger.LogInformation($"Sending new email invite for user ${hdid}");
-                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri);
+
+                if (emailInvite != null
+                    && emailInvite.Email != null
+                    && !string.IsNullOrEmpty(emailInvite.Email.To)
+                    && email.Equals(emailInvite.Email.To, StringComparison.OrdinalIgnoreCase))
+                {
+                    inviteKey = emailInvite.InviteKey;
+                }
+
+                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri, inviteKey);
             }
 
             this.logger.LogDebug($"Finished updating user email");

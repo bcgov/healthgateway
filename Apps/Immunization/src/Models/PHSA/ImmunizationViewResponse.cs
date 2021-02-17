@@ -55,6 +55,12 @@ namespace HealthGateway.Immunization.Models.PHSA
         public string ProviderOrClinic { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the Targeted Disease of the Immunization.
+        /// </summary>
+        [JsonPropertyName("targetedDisease")]
+        public string TargetedDisease { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the Immunization occurence date time.
         /// </summary>
         [JsonPropertyName("occurrenceDateTime")]

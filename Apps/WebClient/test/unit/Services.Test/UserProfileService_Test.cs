@@ -40,6 +40,7 @@ namespace HealthGateway.WebClient.Test.Services
     {
         readonly string hdid = "1234567890123456789012345678901234567890123456789012";
 
+        // TODO: Remove helper methods
         private Tuple<RequestResult<UserProfileModel>, UserProfileModel> ExecuteGetUserProfile(Database.Constants.DBStatusCode dbResultStatus, DateTime lastLoginDateTime)
         {
             UserProfile userProfile = new UserProfile
@@ -88,7 +89,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
+            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
@@ -189,7 +190,7 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
             if (messagingVerification == null)
                 messagingVerification = new MessagingVerification();
-            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(messagingVerification);
+            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(messagingVerification);
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { RegistrationStatus = registrationStatus } });
@@ -266,7 +267,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
+            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { RegistrationStatus = RegistrationStatus.Open } });
@@ -386,7 +387,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
+            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
@@ -607,7 +608,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
+            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
@@ -733,7 +734,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
+            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());

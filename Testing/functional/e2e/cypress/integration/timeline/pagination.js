@@ -11,7 +11,7 @@ describe('Pagination', () => {
     })
 
     it('Count Records', () => {
-        // xpath is an additional library and we should probably not use it much but this should
+        // xpath is an additional library and we should probably not use much but this should
         // help in migrating over Selenium Tests
         cy.xpath('//*[contains(@class, "timelineCard")]')
             .then(elements => {                
@@ -20,14 +20,14 @@ describe('Pagination', () => {
     })
 
     it('Validating Navigation', () => {
-        cy.get('[data-testid=dateGroup]')
+        cy.get('[data-testid=entryCardDate]')
             .first()
             .then((firstPageDateElement) => {
                 cy.get('[data-testid=pagination]')
                     .contains("Next")
                     .click();
 
-                cy.get('[data-testid=dateGroup]')
+                cy.get('[data-testid=entryCardDate]')
                     .first()
                     .then(secondPageDateElement => {
                         const firstDate = new Date(firstPageDateElement.text());
@@ -36,14 +36,14 @@ describe('Pagination', () => {
                     })
             });
         
-        cy.get('[data-testid=dateGroup]')
+        cy.get('[data-testid=entryCardDate]')
         .first()
         .then((secondPageDateElement) => {
             cy.get('[data-testid=pagination]')
                 .contains("Prev")
                 .click();
 
-            cy.get('[data-testid=dateGroup]')
+            cy.get('[data-testid=entryCardDate]')
                 .first()
                 .then(firstPageDateElement => {
                     const firstDate = new Date(firstPageDateElement.text());

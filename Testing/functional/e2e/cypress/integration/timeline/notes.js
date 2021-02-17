@@ -22,9 +22,9 @@ describe('Notes', () => {
             .type('Test');
         cy.get('[data-testid=saveNoteBtn]')
             .click();
-        cy.get('[data-testid=dateGroup]')
+        cy.get('[data-testid=entryCardDate]')
             .last()
-            .should('have.text', ' Jan 1, 1950 ');
+            .should('have.text', '1950-01-01');
         cy.get('[data-testid=noteTitle]')
             .last()
             .should('have.text', 'Note Title!');
@@ -55,7 +55,7 @@ describe('Notes', () => {
             expect(str).to.eq('Are you sure you want to delete this note?');
         });
         cy.get('[data-testid=deleteNoteMenuBtn]')
-            .first()
+            .last()
             .click();
         cy.get('[data-testid=noteTitle]')
             .should('not.exist');

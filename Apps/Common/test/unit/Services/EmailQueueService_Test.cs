@@ -27,6 +27,7 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -53,6 +54,12 @@ namespace HealthGateway.CommonTests.Services
                 Body = $"{bodyPrefix} ${{environment}}",
                 From = "mock@mock.com",
             };
+
+            Dictionary<string, string> configDictionary = new Dictionary<string, string>
+            {
+                {"WebClient:EmailVerificationExpirySeconds", "10"},
+            };
+
             Guid expectedEmailId = Guid.Parse("389425bc-0380-467f-b003-e03cfa871f83");
             Dictionary<string, string> kv = new Dictionary<string, string>();
             kv.Add("environment", environment);
@@ -63,8 +70,10 @@ namespace HealthGateway.CommonTests.Services
             mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedEmailId);
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
+            var configService = new ConfigurationBuilder().Build();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
+                        configService,
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
@@ -74,7 +83,7 @@ namespace HealthGateway.CommonTests.Services
                      It.Is<Job>(job => job.Method.Name == "SendEmail" && (Guid)job.Args[0] == expectedEmailId),
                      It.IsAny<EnqueuedState>()));
             mockEmailDelegate.Verify(x => x.InsertEmail(It.Is<Email>(email => email.To == expectedEmail &&
-                                                                              email.Subject == emailTemplate.Subject && 
+                                                                              email.Subject == emailTemplate.Subject &&
                                                                               email.Body == expectedBody), true));
         }
 
@@ -102,8 +111,10 @@ namespace HealthGateway.CommonTests.Services
             mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedEmailId);
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
+            var configService = new ConfigurationBuilder().Build();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
+                        configService,
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
@@ -142,8 +153,10 @@ namespace HealthGateway.CommonTests.Services
             mockEmailDelegate.Setup(s => s.GetEmail(It.IsAny<Guid>())).Returns(email);
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
+            var configService = new ConfigurationBuilder().Build();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
+                        configService,
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
@@ -161,8 +174,10 @@ namespace HealthGateway.CommonTests.Services
             mockEmailDelegate.Setup(s => s.GetEmail(It.IsAny<Guid>())).Returns<Email>(null);
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
+            var configService = new ConfigurationBuilder().Build();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
+                        configService,
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
@@ -195,8 +210,10 @@ namespace HealthGateway.CommonTests.Services
             mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), true)).Callback<Email, bool>((email, b) => email.Id = expectedNewEmailId);
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
+            var configService = new ConfigurationBuilder().Build();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
+                        configService,
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
@@ -242,26 +259,34 @@ namespace HealthGateway.CommonTests.Services
             mockEmailDelegate.Setup(s => s.InsertEmail(It.IsAny<Email>(), false)).
                                         Callback<Email, bool>((email, b) => email.Id = expectedEmailId);
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
-            mockMessagingVerificationDelegate.Setup(s => 
+            mockMessagingVerificationDelegate.Setup(s =>
                             s.Insert(It.IsAny<MessagingVerification>())).
-                            Callback<MessagingVerification>(emv => 
+                            Callback<MessagingVerification>(emv =>
                             {
                                 emv.Id = expectedEmailId;
                                 emv.EmailId = expectedEmailId;
                                 emv.Email.Id = expectedEmailId;
                             });
             var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Dictionary<string, string> configDictionary = new Dictionary<string, string>
+            {
+                {"WebClient:EmailVerificationExpirySeconds", "10"},
+            };
+            IConfiguration configService = new ConfigurationBuilder()
+                                        .AddInMemoryCollection(configDictionary)
+                                        .Build();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
+                        configService,
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
                         mockWebHosting.Object);
-            emailService.QueueNewInviteEmail(expectedHDID, expectedEmail, new Uri($"{ActivationHost}/"));
+            emailService.QueueNewInviteEmail(expectedHDID, expectedEmail, new Uri($"{ActivationHost}/"), new Guid());
             mockJobclient.Verify(x => x.Create(
                      It.Is<Job>(job => job.Method.Name == "SendEmail" && (Guid)job.Args[0] == expectedEmailId),
                      It.IsAny<EnqueuedState>()));
-            mockMessagingVerificationDelegate.Verify(x => 
+            mockMessagingVerificationDelegate.Verify(x =>
                                 x.Insert(It.Is<MessagingVerification>(emv =>
                                 emv.InviteKey != null &&
                                 emv.HdId == expectedHDID &&
@@ -281,8 +306,11 @@ namespace HealthGateway.CommonTests.Services
             var mockEmailDelegate = new Mock<IEmailDelegate>();
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
+            var config = new ConfigurationBuilder().Build();
+
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
+                        config,
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
@@ -299,8 +327,16 @@ namespace HealthGateway.CommonTests.Services
             var mockEmailDelegate = new Mock<IEmailDelegate>();
             var mockMessagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
             var mockWebHosting = new Mock<IWebHostEnvironment>();
+            Dictionary<string, string> configDictionary = new Dictionary<string, string>
+            {
+                {"WebClient:EmailVerificationExpirySeconds", "10"},
+            };
+            IConfiguration configService = new ConfigurationBuilder()
+                                        .AddInMemoryCollection(configDictionary)
+                                        .Build();
             IEmailQueueService emailService = new EmailQueueService(
                         mockLogger.Object,
+                        configService,
                         mockJobclient.Object,
                         mockEmailDelegate.Object,
                         mockMessagingVerificationDelegate.Object,
@@ -335,6 +371,7 @@ namespace HealthGateway.CommonTests.Services
             };
             IEmailQueueService emailService = new EmailQueueService(
                 new Mock<ILogger<EmailQueueService>>().Object,
+                new ConfigurationBuilder().Build(),
                 new Mock<IBackgroundJobClient>().Object,
                 new Mock<IEmailDelegate>().Object,
                 new Mock<IMessagingVerificationDelegate>().Object,
@@ -363,6 +400,7 @@ namespace HealthGateway.CommonTests.Services
             mockWebHosting.Setup(s => s.EnvironmentName).Returns(Environments.Production);
             IEmailQueueService emailService = new EmailQueueService(
                 new Mock<ILogger<EmailQueueService>>().Object,
+                new ConfigurationBuilder().Build(),
                 new Mock<IBackgroundJobClient>().Object,
                 new Mock<IEmailDelegate>().Object,
                 new Mock<IMessagingVerificationDelegate>().Object,
@@ -389,8 +427,10 @@ namespace HealthGateway.CommonTests.Services
             var mockWebHosting = new Mock<IWebHostEnvironment>();
             // mockWebHosting.Setup(s => s.IsProduction()).Returns(false);
             mockWebHosting.Setup(s => s.EnvironmentName).Returns(environment);
+
             IEmailQueueService emailService = new EmailQueueService(
                 new Mock<ILogger<EmailQueueService>>().Object,
+                new ConfigurationBuilder().Build(),
                 new Mock<IBackgroundJobClient>().Object,
                 new Mock<IEmailDelegate>().Object,
                 new Mock<IMessagingVerificationDelegate>().Object,

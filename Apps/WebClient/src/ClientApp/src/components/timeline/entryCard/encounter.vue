@@ -41,19 +41,17 @@ export default class EncounterTimelineComponent extends Vue {
 
         <b-row slot="details-body">
             <b-col>
-                <div class="detailSection">
-                    <div data-testid="encounterClinicLabel">
-                        <strong>Clinic/Practitioner:</strong>
-                    </div>
-                    <div data-testid="encounterClinicName">
-                        {{ entry.clinic.name }}
-                    </div>
-                    <div data-testid="encounterClinicAddress">
-                        {{ entry.clinic.address }}
-                    </div>
-                    <div data-testid="encounterClinicPhone">
-                        {{ formatPhone(entry.clinic.phoneNumber) }}
-                    </div>
+                <div data-testid="encounterClinicLabel">
+                    <strong>Clinic/Practitioner:</strong>
+                </div>
+                <div data-testid="encounterClinicName">
+                    {{ entry.clinic.name }}
+                </div>
+                <div data-testid="encounterClinicAddress">
+                    {{ entry.clinic.address }}
+                </div>
+                <div data-testid="encounterClinicPhone">
+                    {{ formatPhone(entry.clinic.phoneNumber) }}
                 </div>
             </b-col>
         </b-row>
@@ -68,8 +66,5 @@ export default class EncounterTimelineComponent extends Vue {
 .row {
     padding: 0;
     margin: 0px;
-}
-.detailSection {
-    margin-top: 15px;
 }
 </style>

@@ -144,6 +144,14 @@ export class DateWrapper {
     }
 
     /**
+     * Formats the date to abbreviated date (MMM dd, YYYY)
+     * @returns the formated string representation
+     */
+    public formatDateMed(): string {
+        return this.internalDate.toLocaleString(DateTime.DATE_MED);
+    }
+
+    /**
      * Formats the date to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
      * @returns the formated string representation
      */
@@ -173,14 +181,6 @@ export class DateWrapper {
      */
     public fromEpoch(): string {
         return this.internalDate.valueOf().toString();
-    }
-
-    /**
-     * Formats the date to abbreviated date (MMM dd, YYYY)
-     * @returns the formated string representation
-     */
-    public toMediumDate(): string {
-        return this.internalDate.toLocaleString(DateTime.DATE_MED);
     }
 
     /**

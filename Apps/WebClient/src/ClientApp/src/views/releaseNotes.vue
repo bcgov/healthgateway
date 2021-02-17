@@ -15,7 +15,104 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >January 27, 2021 - v1.3.3 - MSP Visits,
+                                    >February 17, 2021 - v1.3.7 - Email
+                                    Verification, COVID-19 Immunization Card,
+                                    Error Messaging
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We updated the email verfication flow to
+                                        simplify the registration flow and
+                                        minimize errors when verifying.
+                                    </li>
+                                    <li>
+                                        We added a COVID-19 Immunization Card to
+                                        provide a summary card of COVID-19
+                                        vaccine doses, similar to the one
+                                        provided at clinics.
+                                    </li>
+                                    <li>
+                                        We updated our error messages to include
+                                        trace ID to better support
+                                        troubleshooting with users.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >February 10, 2021 - v1.3.6 - Date Pickers,
+                                    Menu Update
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We moved the date pickers on the export
+                                        records page to an advanced filter
+                                        option, to streamline pdf generation.
+                                    </li>
+                                    <li>
+                                        We updated the navigation menu, moving
+                                        the profile option to the header with
+                                        the logout button.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >February 3, 2021 - v1.3.5 - Condensed
+                                    Timeline, BC Gov Logo on Exports, OpenShift
+                                    Upgrade
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We updated the timeline view so more
+                                        records are visible on a small screen,
+                                        especially important for mobile screens.
+                                    </li>
+                                    <li>
+                                        We added the BC government logo to as a
+                                        header for all of the PDFs that are
+                                        generated in the Health Gateway.
+                                    </li>
+                                    <li>
+                                        We migrated our application to a newer
+                                        platform which will provide improved
+                                        performance.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >January 27, 2021 - v1.3.4 - MSP Visits,
                                     Forecasted Immunizations
                                 </strong>
                             </b-col>
@@ -51,7 +148,7 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >January 20, 2021 - v1.3.2 - Filters, Date
+                                    >January 20, 2021 - v1.3.3 - Filters, Date
                                     Pickers, Export Records, Offline Mode
                                 </strong>
                             </b-col>

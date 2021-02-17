@@ -113,7 +113,7 @@ export default class ReportsView extends Vue {
     }
 
     private formatDateLong(date: string): string {
-        return new DateWrapper(date).toMediumDate();
+        return new DateWrapper(date).formatDateMed();
     }
 
     private showConfirmationModal() {

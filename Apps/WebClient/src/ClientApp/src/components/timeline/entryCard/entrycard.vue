@@ -2,6 +2,7 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
+import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 
 import CommentSectionComponent from "./commentSection.vue";
@@ -23,6 +24,17 @@ export default class EntrycardTimelineComponent extends Vue {
 
     private detailsVisible = false;
 
+    private get dateString(): string {
+        const today = new DateWrapper();
+        if (this.entry.date.isSame(today, "day")) {
+            return "Today";
+        } else if (this.entry.date.year() === today.year()) {
+            return this.entry.date.format("MMM d");
+        } else {
+            return this.entry.date.format("yyyy-MM-dd");
+        }
+    }
+
     private toggleDetails(): void {
         this.detailsVisible = !this.detailsVisible;
     }
@@ -31,8 +43,8 @@ export default class EntrycardTimelineComponent extends Vue {
 
 <template>
     <b-row class="cardWrapper mb-1">
-        <b-col class="timelineCard ml-0 ml-md-4">
-            <b-row class="entryHeading px-2 py-3">
+        <b-col class="timelineCard ml-0 ml-md-2">
+            <b-row class="entryHeading px-3 py-2">
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
                         <font-awesome-icon
@@ -44,54 +56,51 @@ export default class EntrycardTimelineComponent extends Vue {
                 <b-col class="entryTitleWrapper">
                     <b-row>
                         <b-col
-                            class="py-1"
                             :data-testid="entry.type.toLowerCase() + 'Title'"
                         >
-                            <strong>{{ title }}</strong>
+                            <b-btn
+                                v-if="showDetailsButton"
+                                variant="link"
+                                data-testid="entryCardDetailsButton"
+                                class="detailsButton text-left"
+                                @click="toggleDetails()"
+                            >
+                                <strong>{{ title }}</strong>
+                            </b-btn>
+                            <strong v-else>{{ title }}</strong>
                         </b-col>
-                        <b-col cols="auto">
-                            <slot name="header-menu"> </slot>
+                        <b-col cols="4" class="text-right">
+                            <span
+                                class="text-muted"
+                                data-testid="entryCardDate"
+                                >{{ dateString }}</span
+                            >
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col class="text-muted">
+                        <b-col class="py-1 text-muted align-self-center">
                             <slot name="header-description">{{
                                 subtitle
                             }}</slot>
                         </b-col>
-                        <b-col class="rightPane align-self-end">
-                            <div v-if="showDetailsButton">
-                                <b-btn
-                                    variant="link"
-                                    data-testid="entryCardDetailsButton"
-                                    class="detailsButton"
-                                    @click="toggleDetails()"
-                                >
-                                    <span v-if="detailsVisible"
-                                        >Hide Details</span
-                                    >
-                                    <span v-else>View Details</span>
-                                </b-btn>
-                            </div>
+                        <b-col cols="4" class="text-right align-self-center">
+                            <slot name="header-menu"> </slot>
                         </b-col>
                     </b-row>
                 </b-col>
             </b-row>
-            <b-row>
-                <b-col class="leftPane d-none d-md-block"></b-col>
-                <b-col class="px-3">
-                    <b-collapse
-                        :id="'entryDetails-' + cardId"
-                        v-model="detailsVisible"
-                    >
+            <b-collapse :id="'entryDetails-' + cardId" v-model="detailsVisible">
+                <b-row>
+                    <b-col class="leftPane d-none d-md-block"></b-col>
+                    <b-col class="pb-3 pt-1 px-3">
                         <slot name="details-body"></slot>
                         <CommentSection
                             v-if="allowComment"
                             :parent-entry="entry"
                         />
-                    </b-collapse>
-                </b-col>
-            </b-row>
+                    </b-col>
+                </b-row>
+            </b-collapse>
         </b-col>
     </b-row>
 </template>
@@ -101,12 +110,15 @@ export default class EntrycardTimelineComponent extends Vue {
 $left-pane-width: 80px;
 $right-pane-width: 90px;
 
-.col {
+div[class^="col"],
+div[class*=" col"] {
     padding: 0px;
     margin: 0px;
 }
-.row {
-    padding: 0;
+
+div[class^="row"],
+div[class*=" row"] {
+    padding: 0px;
     margin: 0px;
 }
 
@@ -154,6 +166,6 @@ $right-pane-width: 90px;
 
 .detailsButton {
     padding: 0px;
-    text-align: right;
+    color: $primary;
 }
 </style>

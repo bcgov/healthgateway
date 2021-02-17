@@ -8,6 +8,7 @@ import { Action, Getter } from "vuex-class";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
+import ImmunizationCardComponent from "@/components/modal/immunizationCard.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
@@ -58,6 +59,7 @@ Component.registerHooks(["beforeRouteLeave"]);
         CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
+        ImmunizationCard: ImmunizationCardComponent,
     },
 })
 export default class TimelineView extends Vue {
@@ -154,6 +156,8 @@ export default class TimelineView extends Vue {
     readonly covidModal!: CovidModalComponent;
     @Ref("noteEditModal")
     readonly noteEditModal!: NoteEditComponent;
+    @Ref("immunizationCard")
+    readonly immunizationCard!: ImmunizationCardComponent;
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -179,7 +183,6 @@ export default class TimelineView extends Vue {
         this.eventBus.$on(
             EventMessageName.TimelineEntryAdded,
             (entry: TimelineEntry) => {
-                console.log("sdfsdfsdfsd");
                 this.onEntryAdded(entry);
             }
         );
@@ -214,6 +217,9 @@ export default class TimelineView extends Vue {
                 this.isListView = isListView;
             }
         );
+        this.eventBus.$on(EventMessageName.TimelineCovidCard, () => {
+            this.immunizationCard.showModal();
+        });
 
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
@@ -774,7 +780,7 @@ export default class TimelineView extends Vue {
                     >
                         <span v-if="!immunizationLoadReady">
                             <h4 data-testid="immunizationLoading">
-                                Still loading your immunization records
+                                Still searching for immunization records
                             </h4>
                         </span>
                         <span v-else data-testid="immunizationReady">
@@ -881,6 +887,7 @@ export default class TimelineView extends Vue {
             @cancel="onProtectiveWordCancel"
         />
         <NoteEditComponent ref="noteEditModal" :is-loading="isLoading" />
+        <ImmunizationCard ref="immunizationCard" />
     </div>
 </template>
 
