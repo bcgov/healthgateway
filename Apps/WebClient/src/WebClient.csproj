@@ -52,7 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\DumpHeaders\" />
-    <Folder Include="Views\Robots\" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
