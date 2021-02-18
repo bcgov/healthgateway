@@ -85,16 +85,6 @@ describe('WebClient UserProfile Service', () => {
         })
     })
 
-    it('Verify Put UserProfile Not Found', () => {
-        cy.request({
-            method: 'PUT',
-            url: `${BASEURL}${HDID}`,
-            followRedirect: false,
-            failOnStatusCode: false
-        })
-            .should((response) => { expect(response.status).to.eq(405) })
-    })
-
     it('Verify Delete UserProfile Unauthorized', () => {
         cy.request({
             method: 'DELETE',
