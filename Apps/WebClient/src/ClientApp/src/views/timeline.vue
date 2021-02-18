@@ -14,9 +14,7 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
-import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import BannerError from "@/models/bannerError";
 import { Dictionary } from "@/models/baseTypes";
@@ -100,6 +98,21 @@ export default class TimelineView extends Vue {
 
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
+    @Getter("isLoading", { namespace: "medication" })
+    isMedicationLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "comment" })
+    isCommentLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "laboratory" })
+    isLaboratoryLoading!: boolean;
+
+    @Getter("medicationStatements", { namespace: "medication" })
+    medicationStatements!: MedicationStatementHistory[];
+
+    @Getter("laboratoryOrders", { namespace: "laboratory" })
+    laboratoryOrders!: LaboratoryOrder[];
+
     @Watch("immunizationIsDeferred")
     private whenImmunizationIsDeferred(newVal: boolean, oldVal: boolean) {
         if (newVal) {
@@ -124,6 +137,40 @@ export default class TimelineView extends Vue {
         this.filterText = this.filter.keyword;
     }
 
+    @Watch("isMedicationLoading")
+    private onMedicationLoading() {
+        if (!this.isMedicationLoading) {
+            // Add the medication entries to the timeline list
+            for (let medication of this.medicationStatements) {
+                this.timelineEntries.push(
+                    new MedicationTimelineEntry(medication)
+                );
+            }
+            this.sortEntries();
+            this.setFilterTypeCount(
+                EntryType.Medication,
+                this.medicationStatements.length
+            );
+        }
+    }
+
+    @Watch("isLaboratoryLoading")
+    private onLaboratoryLoading() {
+        console.log(this.isLaboratoryLoading, "isLaboratoryLoading");
+        console.log(this.laboratoryOrders, "laboratoryOrders");
+        if (!this.isLaboratoryLoading) {
+            // Add the Laboratory entries to the timeline list
+            for (let order of this.laboratoryOrders) {
+                this.timelineEntries.push(new LaboratoryTimelineEntry(order));
+            }
+            this.sortEntries();
+            this.setFilterTypeCount(
+                EntryType.Laboratory,
+                this.laboratoryOrders.length
+            );
+        }
+    }
+
     private immunizationLoadDeferred = false;
     private immunizationLoadReady = false;
 
@@ -131,14 +178,10 @@ export default class TimelineView extends Vue {
     private filter: TimelineFilter = new TimelineFilter([]);
     private isListView = true;
     private timelineEntries: TimelineEntry[] = [];
-    private isMedicationLoading = false;
     private isImmunizationLoading = false;
-    private isLaboratoryLoading = false;
     private isEncounterLoading = false;
     private isNoteLoading = false;
-    private isCommentLoading = false;
     private idleLogoutWarning = false;
-    private protectiveWordAttempts = 0;
     private isAddingNote = false;
     private isEditingEntry = false;
     private isPacificTime = false;
@@ -333,9 +376,9 @@ export default class TimelineView extends Vue {
 
     private onCovidCancel() {
         // Display protective word modal if required
-        if (this.protectiveWordAttempts > 0) {
+        /*if (this.protectiveWordAttempts > 0) {
             this.protectiveWordModal.showModal();
-        }
+        }*/
     }
 
     private checkTimezone(isDST: boolean): boolean {
@@ -347,59 +390,15 @@ export default class TimelineView extends Vue {
     }
 
     private fetchMedicationStatements(protectiveWord?: string) {
-        this.isMedicationLoading = true;
-
         this.getMedicationStatements({
             hdid: this.user.hdid,
             protectiveWord: protectiveWord,
-        })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.protectiveWordAttempts = 0;
-                    // Add the medication entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new MedicationTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.setFilterTypeCount(
-                        EntryType.Medication,
-                        results.resourcePayload.length
-                    );
-                } else if (
-                    results.resultStatus == ResultType.ActionRequired &&
-                    results.resultError?.actionCode == ActionType.Protected
-                ) {
-                    if (!this.covidModal.show) {
-                        this.protectiveWordModal.showModal();
-                    }
-                    this.protectiveWordAttempts++;
-                } else {
-                    this.logger.error(
-                        "Error returned from the medication statements call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Medications Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Fetch Medications Error",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isMedicationLoading = false;
-            });
+        }).catch((err) => {
+            this.logger.error(err);
+            this.addError(
+                ErrorTranslator.toBannerError("Fetch Medications Error", err)
+            );
+        });
     }
 
     private fetchImmunizations() {
@@ -423,71 +422,7 @@ export default class TimelineView extends Vue {
     }
 
     private fetchLaboratoryResults() {
-        this.isLaboratoryLoading = true;
-        this.getLaboratoryOrders({ hdid: this.user.hdid })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the laboratory entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new LaboratoryTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.setFilterTypeCount(
-                        EntryType.Laboratory,
-                        results.resourcePayload.length
-                    );
-
-                    if (results.resourcePayload.length > 0) {
-                        this.protectiveWordModal.hideModal();
-                        let showCovidModal = true;
-                        const actionedCovidPreference =
-                            UserPreferenceType.ActionedCovidModalAt;
-                        if (
-                            this.user.preferences[actionedCovidPreference] !=
-                            undefined
-                        ) {
-                            const actionedCovidModalAt = new DateWrapper(
-                                this.user.preferences[
-                                    actionedCovidPreference
-                                ].value
-                            );
-                            const mostRecentLabTime = new DateWrapper(
-                                results.resourcePayload[0].messageDateTime
-                            );
-                            if (
-                                actionedCovidModalAt.isAfter(mostRecentLabTime)
-                            ) {
-                                showCovidModal = false;
-                            }
-                        }
-                        if (showCovidModal) {
-                            this.covidModal.showModal();
-                        }
-                    }
-                } else {
-                    this.logger.error(
-                        "Error returned from the laboratory call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Laboratory Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Laboratory Error", err)
-                );
-            })
-            .finally(() => {
-                this.isLaboratoryLoading = false;
-            });
+        this.getLaboratoryOrders({ hdid: this.user.hdid });
     }
 
     private fetchEncounters() {
@@ -580,36 +515,14 @@ export default class TimelineView extends Vue {
     }
 
     private fetchComments() {
-        this.isCommentLoading = true;
-
         this.retrieveProfileComments({
             hdid: this.user.hdid,
-        })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.logger.debug("Profile Comments Loaded");
-                } else {
-                    this.logger.error(
-                        "Error returned from the retrieve comments call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Profile Comments Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Profile Comments Error", err)
-                );
-            })
-            .finally(() => {
-                this.isCommentLoading = false;
-            });
+        }).catch((err) => {
+            this.logger.error(err);
+            this.addError(
+                ErrorTranslator.toBannerError("Profile Comments Error", err)
+            );
+        });
     }
 
     private loadImmunizationEntries() {
@@ -881,7 +794,6 @@ export default class TimelineView extends Vue {
         />
         <ProtectiveWordComponent
             ref="protectiveWordModal"
-            :error="protectiveWordAttempts > 1"
             :is-loading="isLoading"
             @submit="onProtectiveWordSubmit"
             @cancel="onProtectiveWordCancel"

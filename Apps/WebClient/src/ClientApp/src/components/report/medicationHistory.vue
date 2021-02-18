@@ -136,7 +136,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                     results.resultStatus == ResultType.ActionRequired &&
                     results.resultError?.actionCode == ActionType.Protected
                 ) {
-                    this.protectiveWordModal.showModal();
+                    //this.protectiveWordModal.showModal();
                     this.protectiveWordAttempts++;
                 } else {
                     this.logger.error(

@@ -1,41 +1,41 @@
 import { MutationTree } from "vuex";
 
-import MedicationResult from "@/models/medicationResult";
+import { ActionType } from "@/constants/actionType";
+import { ResultType } from "@/constants/resulttype";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import { MedicationState, StateType } from "@/models/storeState";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+import RequestResult from "@/models/requestResult";
+import { LoadStatus, MedicationState } from "@/models/storeState";
 
 export const mutations: MutationTree<MedicationState> = {
-    setMedicationStatements(
-        state: MedicationState,
-        medicationStatements: MedicationStatementHistory[]
-    ) {
-        state.medicationStatements = medicationStatements;
-        state.error = false;
-        state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+    setRequested(state: MedicationState) {
+        state.status = LoadStatus.REQUESTED;
     },
-    addMedicationInformation(
+    setMedicationResult(
         state: MedicationState,
-        medicationResult: MedicationResult
+        medicationResult: RequestResult<MedicationStatementHistory[]>
     ) {
-        logger.debug(
-            `addMedicationInformation medicationResult: ${JSON.stringify(
-                medicationResult
-            )}`
-        );
-        state.medications.push(medicationResult);
-        state.error = false;
-        state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        if (medicationResult.resultStatus == ResultType.Success) {
+            state.protectiveWordAttempts = 0;
+            state.medicationStatements = medicationResult.resourcePayload;
+            state.statusMessage = "success";
+            state.error = undefined;
+            state.status = LoadStatus.LOADED;
+        } else if (
+            medicationResult.resultStatus == ResultType.ActionRequired &&
+            medicationResult.resultError?.actionCode == ActionType.Protected
+        ) {
+            state.protectiveWordAttempts++;
+            state.error = undefined;
+            state.status = LoadStatus.PROTECTED;
+        } else {
+            state.status = LoadStatus.ERROR;
+            state.statusMessage =
+                "Error returned from the medication statements call";
+            state.error = medicationResult.resultError;
+        }
     },
-
-    medicationError(state: MedicationState, errorMessage: string) {
-        state.error = true;
-        state.statusMessage = errorMessage;
-        state.stateType = StateType.ERROR;
+    medicationError(state: MedicationState, error: Error) {
+        state.statusMessage = error.message;
+        state.status = LoadStatus.ERROR;
     },
 };

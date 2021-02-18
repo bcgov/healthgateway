@@ -3,7 +3,7 @@ import { ActionTree, Commit } from "vuex";
 import { ResultType } from "@/constants/resulttype";
 import { Dictionary } from "@/models/baseTypes";
 import RequestResult from "@/models/requestResult";
-import { CommentState, RootState } from "@/models/storeState";
+import { CommentState, LoadStatus, RootState } from "@/models/storeState";
 import { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -13,7 +13,7 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 function handleError(commit: Commit, error: Error) {
     logger.error(`ERROR: ${JSON.stringify(error)}`);
-    commit("commentError");
+    commit("commentError", error);
 }
 
 const commentService: IUserCommentService = container.get<IUserCommentService>(
@@ -29,7 +29,7 @@ export const actions: ActionTree<CommentState, RootState> = {
             const profileComments: Dictionary<
                 UserComment[]
             > = context.getters.getStoredProfileComments();
-            if (Object.keys(profileComments).length > 0) {
+            if (context.state.status === LoadStatus.LOADED) {
                 logger.debug(`Comments found stored, not quering!`);
                 resolve({
                     pageIndex: 0,
@@ -40,6 +40,7 @@ export const actions: ActionTree<CommentState, RootState> = {
                 });
             } else {
                 logger.debug(`Retrieving User comments`);
+                context.commit("setRequested");
                 commentService
                     .getCommentsForProfile(params.hdid)
                     .then((results) => {
