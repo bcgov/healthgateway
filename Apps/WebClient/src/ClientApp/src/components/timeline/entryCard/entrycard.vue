@@ -1,11 +1,16 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 
 import CommentSectionComponent from "./commentSection.vue";
+library.add(faComment);
 
 @Component({
     components: {
@@ -21,6 +26,17 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop() iconClass!: string;
     @Prop({ default: true }) allowComment!: boolean;
     @Prop({ default: true }) showDetailsButton!: boolean;
+
+    @Getter("getEntryComments", { namespace: "comment" })
+    entryComments!: (entyId: string) => UserComment[];
+
+    private get comments(): UserComment[] {
+        return this.entryComments(this.entry.id) || [];
+    }
+
+    private get commentsCount(): number {
+        return this.comments !== undefined ? this.comments.length : 0;
+    }
 
     private detailsVisible = false;
 
@@ -84,6 +100,15 @@ export default class EntrycardTimelineComponent extends Vue {
                             }}</slot>
                         </b-col>
                         <b-col cols="4" class="text-right align-self-center">
+                            <span class="pr-2" data-testid="commentCount">{{
+                                commentsCount > 1 ? commentsCount : ""
+                            }}</span>
+                            <span v-if="commentsCount > 0">
+                                <font-awesome-icon
+                                    :icon="['far', 'comment']"
+                                    data-testid="commentIcon"
+                                />
+                            </span>
                             <slot name="header-menu"> </slot>
                         </b-col>
                     </b-row>
