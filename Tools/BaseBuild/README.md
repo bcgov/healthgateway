@@ -91,7 +91,7 @@ oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
 
 ### WebClient Production Only Robots.txt Configuration
 
-Health Gateway has a configurable [robots.txt](../../Apps/WebClient/src/Server/Controllers/RobotsController.cs) that is based on the HealthGateway_Robots.txdt environment variable.  Our default is to have all Robots disallowed in non-Production environments.
+Health Gateway has a configurable [robots.txt](../../Apps/WebClient/src/Server/Controllers/RobotsController.cs) that is based on the HealthGateway_Robots.txt environment variable.  Our default is to have all Robots disallowed in non-Production environments.
 
 Create a ConfigMap for the Robots file
 
