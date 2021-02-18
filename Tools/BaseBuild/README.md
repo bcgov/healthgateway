@@ -89,6 +89,25 @@ oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret]
 oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
 ```
 
+### WebClient Production Only Robots.txt Configuration
+
+Health Gateway has a configurable [robots.txt](../../Apps/WebClient/src/Server/Controllers/RobotsController.cs) that is based on the HealthGateway_Robots.txdt environment variable.  Our default is to have all Robots disallowed in non-Production environments.
+
+Create a ConfigMap for the Robots file
+
+```console
+oc create configmap robots.txt --from-file=HealthGateway_Robots.txt=robots.txt
+```
+
+Once complete manually add the configmap to the webclient deployment config using the name HealthGateway_Robots.txt
+
+The following should work from CLI but DOES NOT as it forces the environment name to uppercase and replaces the . with a _
+e.g. HEALTHGATEWAY_ROBOTS_TXT - investigating but not critical and so documenting.
+
+```console
+oc set env --from=configmap/robots.txt dc/webclient
+```
+
 ### Routes
 
 Once the services have been deployed, you will need to create endpoint routes.  Certificates are required for this step and you can download the HealthgatewayPrivateKey.pem, wildcard.healthgateway.gov.bc.ca.pem and the caCertificate.pem from the Health Gateway Secure Documentation under Certificates 2020.
