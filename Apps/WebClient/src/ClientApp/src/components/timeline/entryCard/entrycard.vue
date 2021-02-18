@@ -22,6 +22,14 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: true }) allowComment!: boolean;
     @Prop({ default: true }) showDetailsButton!: boolean;
 
+    private get displayTitle(): string {
+        if (this.title === "") {
+            return this.entry.type.toString();
+        } else {
+            return this.title;
+        }
+    }
+
     private detailsVisible = false;
 
     private get dateString(): string {
@@ -65,9 +73,9 @@ export default class EntrycardTimelineComponent extends Vue {
                                 class="detailsButton text-left"
                                 @click="toggleDetails()"
                             >
-                                <strong>{{ title }}</strong>
+                                <strong>{{ displayTitle }}</strong>
                             </b-btn>
-                            <strong v-else>{{ title }}</strong>
+                            <strong v-else>{{ displayTitle }}</strong>
                         </b-col>
                         <b-col cols="4" class="text-right">
                             <span
