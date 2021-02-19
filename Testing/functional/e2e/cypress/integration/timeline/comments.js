@@ -82,7 +82,7 @@ function verifyDelete() {
         .should('not.exist');
 }
 
-function validateComment(moduleName) {
+function validateComment(moduleName, entryTypeCode) {
     cy.enableModules([moduleName, "Comment"]);
     cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak);
     cy.checkTimelineHasLoaded();
@@ -90,7 +90,7 @@ function validateComment(moduleName) {
         .should('not.exist');
     cy.get('[data-testid=commentCount]')
         .should('not.exist');
-    verifyAdd('Lab');
+    verifyAdd(entryTypeCode);
     cy.get('[data-testid=commentIcon]')
         .should('exist');
     cy.get('[data-testid=commentCount]')
@@ -115,14 +115,14 @@ describe('Comments', () => {
     })
 
     it('Validate Add/Edit/Delete for LAB', () => {
-        validateComment("Laboratory");
+        validateComment("Laboratory", 'Lab');
     });
 
     it('Validate Add/Edit/Delete for MED', () => {
-        validateComment("Medication");
+        validateComment("Medication", 'Med');
     });
 
     it('Validate Add/Edit/Delete for ENC', () => {
-        validateComment("Encounter");
+        validateComment("Encounter", 'Enc');
     });
 })
