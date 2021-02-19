@@ -29,11 +29,11 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private user!: User;
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;
-    @Getter("getStoredImmunizations", { namespace: "immunization" })
+    @Getter("immunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
     @Getter("getStoredRecommendations", { namespace: "immunization" })
     patientRecommendations!: Recommendation[];
-    @Action("addError", { namespace: "errorBanner" })
+    @Action("addBannerError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: {

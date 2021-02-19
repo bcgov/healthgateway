@@ -15,7 +15,7 @@ const medicationService: IMedicationService = container.get<IMedicationService>(
 );
 
 export const actions: ActionTree<MedicationState, RootState> = {
-    getMedicationStatements(
+    retrieve(
         context,
         params: { hdid: string; protectiveWord?: string }
     ): Promise<RequestResult<MedicationStatementHistory[]>> {
@@ -47,6 +47,7 @@ export const actions: ActionTree<MedicationState, RootState> = {
                     })
                     .catch((error) => {
                         context.commit("medicationError", error);
+                        context.commit("errorBanner/addError", error);
                         reject(error);
                     });
             }

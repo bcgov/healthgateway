@@ -10,10 +10,10 @@ export const actions: ActionTree<ErrorBannerState, RootState> = {
     show(context) {
         context.commit("show");
     },
-    setError(context, error: BannerError) {
+    setBannerError(context, error: BannerError) {
         context.commit("setError", error);
     },
-    addError(context, error: BannerError) {
+    addBannerError(context, error: BannerError) {
         context.commit("addError", error);
     },
 };

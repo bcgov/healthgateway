@@ -52,7 +52,7 @@ export default class ReportsView extends Vue {
     @Ref("immunizationHistoryReport")
     readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
 
-    @Action("addError", { namespace: "errorBanner" })
+    @Action("addBannerError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
 
     private isLoading = false;

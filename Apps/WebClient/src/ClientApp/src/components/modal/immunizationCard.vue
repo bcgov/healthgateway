@@ -25,7 +25,7 @@ export default class ImmunizationCardComponent extends Vue {
     })
     oidcIsAuthenticated!: boolean;
 
-    @Getter("getStoredImmunizations", { namespace: "immunization" })
+    @Getter("immunizations", { namespace: "immunization" })
     immunizations!: ImmunizationEvent[];
 
     private readonly modalId: string = "covid-card-modal";

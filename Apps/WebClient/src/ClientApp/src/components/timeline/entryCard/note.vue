@@ -25,7 +25,7 @@ import EntrycardTimelineComponent from "./entrycard.vue";
     },
 })
 export default class NoteTimelineComponent extends Vue {
-    @Action("addError", { namespace: "errorBanner" })
+    @Action("addBannerError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
     @Action("deleteNote", { namespace: "note" })
@@ -53,7 +53,7 @@ export default class NoteTimelineComponent extends Vue {
         );
     }
 
-    private deleteNote2(): void {
+    private handleDelete(): void {
         if (confirm("Are you sure you want to delete this note?")) {
             this.isSaving = true;
             this.deleteNote({
@@ -74,7 +74,7 @@ export default class NoteTimelineComponent extends Vue {
         }
     }
 
-    private editNote() {
+    private handleEdit() {
         this.eventBus.$emit(EventMessageName.TimelineEntryEdit, this.entry);
     }
 
@@ -114,14 +114,14 @@ export default class NoteTimelineComponent extends Vue {
                 <b-dropdown-item
                     data-testid="editNoteMenuBtn"
                     class="menuItem"
-                    @click="editNote()"
+                    @click="handleNote()"
                 >
                     Edit
                 </b-dropdown-item>
                 <b-dropdown-item
                     data-testid="deleteNoteMenuBtn"
                     class="menuItem"
-                    @click="deleteNote2()"
+                    @click="handleDelete()"
                 >
                     Delete
                 </b-dropdown-item>

@@ -15,7 +15,7 @@ const encounterService: IEncounterService = container.get<IEncounterService>(
 );
 
 export const actions: ActionTree<EncounterState, RootState> = {
-    getEncounters(
+    retrieve(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>> {

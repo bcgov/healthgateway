@@ -107,7 +107,7 @@ export default class NoteEditComponent extends Vue {
         this.eventBus.$emit(EventMessageName.TimelineNoteEditClose);
     }
 
-    private updateNote2() {
+    private update() {
         let entry = this.entry as NoteTimelineEntry;
         this.isSaving = true;
         this.updateNote({
@@ -134,7 +134,7 @@ export default class NoteEditComponent extends Vue {
             });
     }
 
-    private createNote2() {
+    private create() {
         this.isSaving = true;
         this.createNote({
             hdid: this.user.hdid,
@@ -182,9 +182,9 @@ export default class NoteEditComponent extends Vue {
         if (this.$v.$invalid) {
             return;
         } else if (this.isNewNote) {
-            this.createNote2();
+            this.create();
         } else {
-            this.updateNote2();
+            this.update();
         }
     }
 

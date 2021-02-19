@@ -15,8 +15,6 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
-import BannerError from "@/models/bannerError";
-import { Dictionary } from "@/models/baseTypes";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
@@ -28,11 +26,9 @@ import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import RequestResult from "@/models/requestResult";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import User from "@/models/user";
-import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -57,49 +53,31 @@ Component.registerHooks(["beforeRouteLeave"]);
 export default class TimelineView extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 
-    @Action("getOrders", { namespace: "laboratory" })
-    getLaboratoryOrders!: (params: {
-        hdid: string;
-    }) => Promise<RequestResult<LaboratoryOrder[]>>;
-
-    @Action("getMedicationStatements", { namespace: "medication" })
-    getMedicationStatements!: (params: {
-        hdid: string;
-        protectiveWord?: string;
-    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
-
-    @Action("retrieveProfileComments", { namespace: "comment" })
-    retrieveProfileComments!: (params: {
-        hdid: string;
-    }) => Promise<RequestResult<Dictionary<UserComment[]>>>;
-
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
     @Action("retrieve", { namespace: "immunization" })
-    retrieveImmunizations!: (params: {
-        hdid: string;
-    }) => Promise<ImmunizationEvent[]>;
+    retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("getStoredImmunizations", { namespace: "immunization" })
-    patientImmunizations!: ImmunizationEvent[];
-
-    @Action("getEncounters", { namespace: "encounter" })
-    getPatientEncounters!: (params: { hdid: string }) => Promise<Encounter[]>;
+    @Action("retrieve", { namespace: "encounter" })
+    retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieve", { namespace: "note" })
-    retrieveNotes!: (params: { hdid: string }) => Promise<UserNote[]>;
+    retrieveNotes!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("patientEncounters", { namespace: "encounter" })
-    patientEncounters!: Encounter[];
+    @Action("retrieve", { namespace: "laboratory" })
+    retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isDeferredLoad", { namespace: "immunization" })
-    immunizationIsDeferred!: boolean;
+    @Action("retrieve", { namespace: "medication" })
+    retrieveMedications!: (params: {
+        hdid: string;
+        protectiveWord?: string;
+    }) => Promise<void>;
 
-    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+    @Action("retrieve", { namespace: "comment" })
+    retrieveComments!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("isLoading", { namespace: "medication" })
     isMedicationLoading!: boolean;
@@ -118,6 +96,15 @@ export default class TimelineView extends Vue {
 
     @Getter("isLoading", { namespace: "note" })
     isNoteLoading!: boolean;
+
+    @Getter("isDeferredLoad", { namespace: "immunization" })
+    immunizationIsDeferred!: boolean;
+
+    @Getter("immunizations", { namespace: "immunization" })
+    patientImmunizations!: ImmunizationEvent[];
+
+    @Getter("patientEncounters", { namespace: "encounter" })
+    patientEncounters!: Encounter[];
 
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
@@ -138,76 +125,59 @@ export default class TimelineView extends Vue {
         this.filterText = this.filter.keyword;
     }
 
-    @Watch("isMedicationLoading")
-    private onMedicationLoading() {
-        if (!this.isMedicationLoading) {
-            // Add the medication entries to the timeline list
-            for (let medication of this.medicationStatements) {
-                this.timelineEntries.push(
-                    new MedicationTimelineEntry(medication)
+    private get timelineEntries(): TimelineEntry[] {
+        let timelineEntries = [];
+        // Add the medication entries to the timeline list
+        for (let medication of this.medicationStatements) {
+            timelineEntries.push(new MedicationTimelineEntry(medication));
+        }
+        this.setFilterTypeCount(
+            EntryType.Medication,
+            this.medicationStatements.length
+        );
+
+        // Add the Laboratory entries to the timeline list
+        for (let order of this.laboratoryOrders) {
+            timelineEntries.push(new LaboratoryTimelineEntry(order));
+        }
+        this.setFilterTypeCount(
+            EntryType.Laboratory,
+            this.laboratoryOrders.length
+        );
+
+        // Add the Encounter entries to the timeline list
+        for (let encounter of this.patientEncounters) {
+            timelineEntries.push(new EncounterTimelineEntry(encounter));
+        }
+        this.setFilterTypeCount(
+            EntryType.Encounter,
+            this.patientEncounters.length
+        );
+
+        // Add the Note entries to the timeline list
+        for (let note of this.userNotes) {
+            timelineEntries.push(new NoteTimelineEntry(note));
+        }
+
+        // Add the immunization entries to the timeline list
+        if (!this.immunizationIsDeferred && !this.immunizationNeedsInput) {
+            for (let immunization of this.patientImmunizations) {
+                timelineEntries.push(
+                    new ImmunizationTimelineEntry(immunization)
                 );
             }
-            this.sortEntries();
+
             this.setFilterTypeCount(
-                EntryType.Medication,
-                this.medicationStatements.length
+                EntryType.Immunization,
+                this.patientImmunizations.length
             );
         }
-    }
 
-    @Watch("isLaboratoryLoading")
-    private onLaboratoryLoading() {
-        if (!this.isLaboratoryLoading) {
-            // Add the Laboratory entries to the timeline list
-            for (let order of this.laboratoryOrders) {
-                this.timelineEntries.push(new LaboratoryTimelineEntry(order));
-            }
-            this.sortEntries();
-            this.setFilterTypeCount(
-                EntryType.Laboratory,
-                this.laboratoryOrders.length
-            );
-        }
-    }
+        this.setFilterTypeCount(EntryType.Note, this.userNotes.length);
 
-    @Watch("isEncounterLoading")
-    private onEncounterLoading() {
-        if (!this.isEncounterLoading) {
-            // Add the Encounter entries to the timeline list
-            for (let encounter of this.patientEncounters) {
-                this.timelineEntries.push(
-                    new EncounterTimelineEntry(encounter)
-                );
-            }
-            this.sortEntries();
-            this.setFilterTypeCount(
-                EntryType.Encounter,
-                this.laboratoryOrders.length
-            );
-        }
-    }
+        timelineEntries = this.sortEntries(timelineEntries);
 
-    @Watch("isNoteLoading")
-    private onNoteLoading() {
-        if (!this.isNoteLoading) {
-            // Add the Note entries to the timeline list
-            for (let note of this.userNotes) {
-                this.timelineEntries.push(new NoteTimelineEntry(note));
-            }
-            this.sortEntries();
-            this.setFilterTypeCount(EntryType.Note, this.userNotes.length);
-        }
-    }
-
-    @Watch("isImmunizationLoading")
-    private onImmunizationLoading() {
-        if (
-            !this.isImmunizationLoading &&
-            !this.immunizationIsDeferred &&
-            !this.immunizationNeedsInput
-        ) {
-            this.loadImmunizationEntries();
-        }
+        return timelineEntries;
     }
 
     @Watch("immunizationIsDeferred")
@@ -222,7 +192,6 @@ export default class TimelineView extends Vue {
     private filterText = "";
     private filter: TimelineFilter = new TimelineFilter([]);
     private isListView = true;
-    private timelineEntries: TimelineEntry[] = [];
 
     private idleLogoutWarning = false;
     private isAddingNote = false;
@@ -244,12 +213,7 @@ export default class TimelineView extends Vue {
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        this.fetchMedicationStatements();
-        this.fetchImmunizations();
-        this.fetchLaboratoryResults();
-        this.fetchEncounters();
-        this.fetchNotes();
-        this.fetchComments();
+        this.fetchTimelineData();
 
         window.addEventListener("beforeunload", this.onBrowserClose);
         this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
@@ -422,46 +386,13 @@ export default class TimelineView extends Vue {
         }
     }
 
-    private fetchMedicationStatements() {
-        this.getMedicationStatements({ hdid: this.user.hdid });
-    }
-
-    private fetchImmunizations() {
+    private fetchTimelineData() {
+        this.retrieveMedications({ hdid: this.user.hdid });
         this.retrieveImmunizations({ hdid: this.user.hdid });
-    }
-
-    private fetchLaboratoryResults() {
-        this.getLaboratoryOrders({ hdid: this.user.hdid });
-    }
-
-    private fetchEncounters() {
-        this.getPatientEncounters({ hdid: this.user.hdid });
-    }
-
-    private fetchNotes() {
+        this.retrieveLaboratory({ hdid: this.user.hdid });
+        this.retrieveEncounters({ hdid: this.user.hdid });
         this.retrieveNotes({ hdid: this.user.hdid });
-    }
-
-    private fetchComments() {
-        this.retrieveProfileComments({ hdid: this.user.hdid });
-    }
-
-    private loadImmunizationEntries() {
-        if (this.immunizationNeedsInput) {
-            this.immunizationNeedsInput = false;
-        }
-
-        // Add the immunization entries to the timeline list
-        for (let immunization of this.patientImmunizations) {
-            this.timelineEntries.push(
-                new ImmunizationTimelineEntry(immunization)
-            );
-        }
-        this.sortEntries();
-        this.setFilterTypeCount(
-            EntryType.Immunization,
-            this.patientImmunizations.length
-        );
+        this.retrieveComments({ hdid: this.user.hdid });
     }
 
     private onEntryAdded(entry: TimelineEntry) {
@@ -469,7 +400,7 @@ export default class TimelineView extends Vue {
         this.isAddingNote = false;
         if (entry) {
             this.timelineEntries.push(entry);
-            this.sortEntries();
+            //this.sortEntries();
             if (entry.type === EntryType.Note) {
                 this.addFilterTypeCount(EntryType.Note, 1);
             }
@@ -493,14 +424,14 @@ export default class TimelineView extends Vue {
         this.timelineEntries.splice(index, 1);
         this.timelineEntries.push(entry);
         this.isEditingEntry = false;
-        this.sortEntries();
+        //this.sortEntries();
     }
 
     private onEntryDeleted(entry: TimelineEntry) {
         this.logger.debug(`Timeline Entry deleted: ${JSON.stringify(entry)}`);
         const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
         this.timelineEntries.splice(index, 1);
-        this.sortEntries();
+        //this.sortEntries();
         if (entry.type === EntryType.Note) {
             this.addFilterTypeCount(EntryType.Note, -1);
         }
@@ -510,8 +441,8 @@ export default class TimelineView extends Vue {
         return this.timelineEntries.length;
     }
 
-    private sortEntries() {
-        this.timelineEntries.sort((a, b) =>
+    private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
+        return timelineEntries.sort((a, b) =>
             a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
         );
     }
@@ -616,7 +547,7 @@ export default class TimelineView extends Vue {
                                 data-testid="immunizationBtnReady"
                                 variant="link"
                                 class="detailsButton px-0"
-                                @click="loadImmunizationEntries()"
+                                @click="immunizationNeedsInput = false"
                             >
                                 Load to timeline.
                             </b-btn></span

@@ -4,7 +4,7 @@ import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { ImmunizationState, LoadStatus, RootState } from "@/models/storeState";
 
 export const getters: GetterTree<ImmunizationState, RootState> = {
-    getStoredImmunizations(state: ImmunizationState): ImmunizationEvent[] {
+    immunizations(state: ImmunizationState): ImmunizationEvent[] {
         return state.immunizations;
     },
     getStoredRecommendations(state: ImmunizationState): Recommendation[] {

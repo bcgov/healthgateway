@@ -8,7 +8,7 @@ export const getters: GetterTree<MedicationState, RootState> = {
     medicationStatements(state: MedicationState): MedicationStatementHistory[] {
         return state.medicationStatements;
     },
-    getStoredMedicationInformation: (state: MedicationState) => (
+    medicationInformation: (state: MedicationState) => (
         din: string
     ): MedicationResult | undefined => {
         din = din.padStart(8, "0");
@@ -20,9 +20,6 @@ export const getters: GetterTree<MedicationState, RootState> = {
     },
     isProtected(state: MedicationState): boolean {
         return state.status === LoadStatus.PROTECTED;
-    },
-    isLoaded(state: MedicationState): boolean {
-        return state.status === LoadStatus.LOADED;
     },
     isLoading(state: MedicationState): boolean {
         return state.status === LoadStatus.REQUESTED;

@@ -44,7 +44,7 @@ export default class HealthInsightsView extends Vue {
         protectiveWord?: string;
     }) => Promise<RequestResult<MedicationStatementHistory[]>>;
 
-    @Action("addError", { namespace: "errorBanner" })
+    @Action("addBannerError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
     private logger!: ILogger;

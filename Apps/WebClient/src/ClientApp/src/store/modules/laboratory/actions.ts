@@ -15,7 +15,7 @@ const laboratoryService: ILaboratoryService = container.get<ILaboratoryService>(
 );
 
 export const actions: ActionTree<LaboratoryState, RootState> = {
-    getOrders(
+    retrieve(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<LaboratoryOrder[]>> {

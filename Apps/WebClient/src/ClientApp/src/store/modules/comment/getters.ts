@@ -5,9 +5,7 @@ import { CommentState, LoadStatus, RootState } from "@/models/storeState";
 import { UserComment } from "@/models/userComment";
 
 export const getters: GetterTree<CommentState, RootState> = {
-    getStoredProfileComments: (state: CommentState) => (): Dictionary<
-        UserComment[]
-    > => {
+    comments(state: CommentState): Dictionary<UserComment[]> {
         return state.profileComments;
     },
     getEntryComments: (state: CommentState) => (

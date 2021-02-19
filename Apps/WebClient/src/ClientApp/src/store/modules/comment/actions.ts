@@ -1,8 +1,5 @@
 import { ActionTree, Commit } from "vuex";
 
-import { ResultType } from "@/constants/resulttype";
-import { Dictionary } from "@/models/baseTypes";
-import RequestResult from "@/models/requestResult";
 import { CommentState, LoadStatus, RootState } from "@/models/storeState";
 import { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -14,6 +11,12 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 function handleError(commit: Commit, error: Error) {
     logger.error(`ERROR: ${JSON.stringify(error)}`);
     commit("commentError", error);
+
+    commit("errorBanner/addError", error);
+    /*ErrorTranslator.toBannerError(
+        "Fetch Medications Error",
+        results.resultError
+    )*/
 }
 
 const commentService: IUserCommentService = container.get<IUserCommentService>(
@@ -21,23 +24,11 @@ const commentService: IUserCommentService = container.get<IUserCommentService>(
 );
 
 export const actions: ActionTree<CommentState, RootState> = {
-    retrieveProfileComments(
-        context,
-        params: { hdid: string }
-    ): Promise<RequestResult<Dictionary<UserComment[]>>> {
+    retrieve(context, params: { hdid: string }): Promise<void> {
         return new Promise((resolve, reject) => {
-            const profileComments: Dictionary<
-                UserComment[]
-            > = context.getters.getStoredProfileComments();
             if (context.state.status === LoadStatus.LOADED) {
                 logger.debug(`Comments found stored, not quering!`);
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: profileComments,
-                    resultStatus: ResultType.Success,
-                    totalResultCount: Object.keys(profileComments).length,
-                });
+                resolve();
             } else {
                 logger.debug(`Retrieving User comments`);
                 context.commit("setRequested");
@@ -48,7 +39,7 @@ export const actions: ActionTree<CommentState, RootState> = {
                             "setProfileComments",
                             results.resourcePayload
                         );
-                        resolve(results);
+                        resolve();
                     })
                     .catch((error) => {
                         handleError(context.commit, error);

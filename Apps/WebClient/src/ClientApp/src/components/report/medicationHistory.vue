@@ -37,7 +37,7 @@ export default class MedicationHistoryReportComponent extends Vue {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<RequestResult<MedicationStatementHistory[]>>;
-    @Action("addError", { namespace: "errorBanner" })
+    @Action("addBannerError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
     @Ref("protectiveWordModal")
     readonly protectiveWordModal!: ProtectiveWordComponent;

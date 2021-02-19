@@ -42,7 +42,7 @@ export default class RegistrationView extends Vue {
     @Getter("webClient", { namespace: "config" })
     webClientConfig!: WebClientConfiguration;
 
-    @Action("addError", { namespace: "errorBanner" })
+    @Action("addBannerError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
     private accepted = false;
