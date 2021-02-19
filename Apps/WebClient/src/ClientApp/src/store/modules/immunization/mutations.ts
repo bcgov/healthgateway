@@ -5,7 +5,10 @@ import { ImmunizationState, LoadStatus } from "@/models/storeState";
 
 export const mutations: MutationTree<ImmunizationState> = {
     setRequested(state: ImmunizationState) {
-        state.status = LoadStatus.REQUESTED;
+        state.status =
+            state.status === LoadStatus.DEFERRED
+                ? LoadStatus.ASYNC_REQUESTED
+                : LoadStatus.REQUESTED;
     },
     setImmunizationResult(
         state: ImmunizationState,
@@ -22,8 +25,8 @@ export const mutations: MutationTree<ImmunizationState> = {
             state.status = LoadStatus.LOADED;
         }
     },
-    immunizationError(state: ImmunizationState, errorMessage: string) {
-        state.statusMessage = errorMessage;
+    immunizationError(state: ImmunizationState, error: Error) {
+        state.statusMessage = error.message;
         state.status = LoadStatus.ERROR;
     },
 };

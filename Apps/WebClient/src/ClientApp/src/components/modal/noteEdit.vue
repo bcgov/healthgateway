@@ -8,7 +8,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
@@ -17,9 +17,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { IUserNoteService } from "@/services/interfaces";
 
 @Component({
     components: {
@@ -28,10 +25,18 @@ import { IUserNoteService } from "@/services/interfaces";
     },
 })
 export default class NoteEditComponent extends Vue {
+    @Action("createNote", { namespace: "note" }) createNote!: (params: {
+        hdid: string;
+        note: UserNote;
+    }) => Promise<UserNote>;
+    @Action("updateNote", { namespace: "note" }) updateNote!: (params: {
+        hdid: string;
+        note: UserNote;
+    }) => Promise<UserNote>;
+
     @Getter("user", { namespace: "user" }) user!: User;
 
     private entry?: NoteTimelineEntry;
-    private noteService!: IUserNoteService;
     private text = "";
     private title = "";
     private dateString: string = new DateWrapper().toISODate();
@@ -57,9 +62,6 @@ export default class NoteEditComponent extends Vue {
     }
 
     private mounted() {
-        this.noteService = container.get<IUserNoteService>(
-            SERVICE_IDENTIFIER.UserNoteService
-        );
         this.clear();
     }
 
@@ -105,18 +107,20 @@ export default class NoteEditComponent extends Vue {
         this.eventBus.$emit(EventMessageName.TimelineNoteEditClose);
     }
 
-    private updateNote() {
+    private updateNote2() {
         let entry = this.entry as NoteTimelineEntry;
         this.isSaving = true;
-        this.noteService
-            .updateNote(this.user.hdid, {
+        this.updateNote({
+            hdid: this.user.hdid,
+            note: {
                 id: entry.id,
                 text: this.text,
                 title: this.title,
                 journalDateTime: new DateWrapper(this.dateString).toISODate(),
                 version: entry.version as number,
                 hdId: this.user.hdid,
-            })
+            },
+        })
             .then((result) => {
                 this.errorMessage = "";
                 this.onNoteUpdated(result);
@@ -130,16 +134,18 @@ export default class NoteEditComponent extends Vue {
             });
     }
 
-    private createNote() {
+    private createNote2() {
         this.isSaving = true;
-        this.noteService
-            .createNote(this.user.hdid, {
+        this.createNote({
+            hdid: this.user.hdid,
+            note: {
                 text: this.text,
                 title: this.title,
                 journalDateTime: new DateWrapper(this.dateString).toISODate(),
                 hdId: this.user.hdid,
                 version: 0,
-            })
+            },
+        })
             .then((result) => {
                 if (result) {
                     this.errorMessage = "";
@@ -176,9 +182,9 @@ export default class NoteEditComponent extends Vue {
         if (this.$v.$invalid) {
             return;
         } else if (this.isNewNote) {
-            this.createNote();
+            this.createNote2();
         } else {
-            this.updateNote();
+            this.updateNote2();
         }
     }
 

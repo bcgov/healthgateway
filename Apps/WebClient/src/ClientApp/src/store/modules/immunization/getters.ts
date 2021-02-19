@@ -11,7 +11,10 @@ export const getters: GetterTree<ImmunizationState, RootState> = {
         return state.recommendations;
     },
     isDeferredLoad(state: ImmunizationState): boolean {
-        return state.status === LoadStatus.DEFERRED;
+        return (
+            state.status === LoadStatus.DEFERRED ||
+            state.status === LoadStatus.ASYNC_REQUESTED
+        );
     },
     isLoading(state: ImmunizationState): boolean {
         return state.status === LoadStatus.REQUESTED;

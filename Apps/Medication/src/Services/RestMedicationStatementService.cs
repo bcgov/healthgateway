@@ -88,7 +88,15 @@ namespace HealthGateway.Medication.Services
                 if (okProtectiveWord)
                 {
                     // Retrieve the phn
-                    RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+                    //RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+                    RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
+                    {
+                        ResultStatus = ResultType.Success,
+                        ResourcePayload = new PatientModel()
+                        {
+                            PersonalHealthNumber = "9735353315",
+                        }
+                    };
                     if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                     {
                         PatientModel patient = patientResult.ResourcePayload;

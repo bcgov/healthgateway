@@ -1,51 +1,51 @@
 import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
-import { LaboratoryOrder } from "@/models/laboratory";
+import Encounter from "@/models/encounter";
 import RequestResult from "@/models/requestResult";
-import { LaboratoryState, LoadStatus, RootState } from "@/models/storeState";
+import { EncounterState, LoadStatus, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILaboratoryService, ILogger } from "@/services/interfaces";
+import { IEncounterService, ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-const laboratoryService: ILaboratoryService = container.get<ILaboratoryService>(
-    SERVICE_IDENTIFIER.LaboratoryService
+const encounterService: IEncounterService = container.get<IEncounterService>(
+    SERVICE_IDENTIFIER.EncounterService
 );
 
-export const actions: ActionTree<LaboratoryState, RootState> = {
-    getOrders(
+export const actions: ActionTree<EncounterState, RootState> = {
+    getEncounters(
         context,
         params: { hdid: string }
-    ): Promise<RequestResult<LaboratoryOrder[]>> {
+    ): Promise<RequestResult<Encounter[]>> {
         return new Promise((resolve, reject) => {
-            const laboratoryOrders: LaboratoryOrder[] =
-                context.getters.laboratoryOrders;
+            const patientEncounters: Encounter[] =
+                context.getters.patientEncounters;
             if (context.state.status === LoadStatus.LOADED) {
-                logger.debug(`Laboratory found stored, not quering!`);
+                logger.debug(`Encounters found stored, not quering!`);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: laboratoryOrders,
+                    resourcePayload: patientEncounters,
                     resultStatus: ResultType.Success,
-                    totalResultCount: laboratoryOrders.length,
+                    totalResultCount: patientEncounters.length,
                 });
             } else {
-                logger.debug(`Retrieving Laboratory Orders`);
+                logger.debug(`Retrieving Patient Encounters`);
                 context.commit("setRequested");
-                laboratoryService
-                    .getOrders(params.hdid)
+                encounterService
+                    .getPatientEncounters(params.hdid)
                     .then((result) => {
                         context.commit(
-                            "setLaboratoryOrders",
+                            "setPatientEncounters",
                             result.resourcePayload
                         );
                         resolve(result);
                     })
                     .catch((error) => {
                         logger.error(`ERROR: ${JSON.stringify(error)}`);
-                        context.commit("laboratoryError", error);
+                        context.commit("encounterError", error);
                         reject(error);
                     });
             }

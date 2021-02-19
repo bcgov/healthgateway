@@ -14,12 +14,12 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
-import { ResultType } from "@/constants/resulttype";
 import EventBus, { EventMessageName } from "@/eventbus";
 import BannerError from "@/models/bannerError";
 import { Dictionary } from "@/models/baseTypes";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
@@ -33,16 +33,10 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
+import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import {
-    IEncounterService,
-    ILogger,
-    IUserNoteService,
-} from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
-
-const namespace = "user";
+import { ILogger } from "@/services/interfaces";
 
 // Register the router hooks with their names
 Component.registerHooks(["beforeRouteLeave"]);
@@ -61,7 +55,7 @@ Component.registerHooks(["beforeRouteLeave"]);
     },
 })
 export default class TimelineView extends Vue {
-    @Getter("user", { namespace }) user!: User;
+    @Getter("user", { namespace: "user" }) user!: User;
 
     @Action("getOrders", { namespace: "laboratory" })
     getLaboratoryOrders!: (params: {
@@ -93,6 +87,15 @@ export default class TimelineView extends Vue {
     @Getter("getStoredImmunizations", { namespace: "immunization" })
     patientImmunizations!: ImmunizationEvent[];
 
+    @Action("getEncounters", { namespace: "encounter" })
+    getPatientEncounters!: (params: { hdid: string }) => Promise<Encounter[]>;
+
+    @Action("retrieve", { namespace: "note" })
+    retrieveNotes!: (params: { hdid: string }) => Promise<UserNote[]>;
+
+    @Getter("patientEncounters", { namespace: "encounter" })
+    patientEncounters!: Encounter[];
+
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;
 
@@ -107,25 +110,23 @@ export default class TimelineView extends Vue {
     @Getter("isLoading", { namespace: "laboratory" })
     isLaboratoryLoading!: boolean;
 
+    @Getter("isLoading", { namespace: "encounter" })
+    isEncounterLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "immunization" })
+    isImmunizationLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "note" })
+    isNoteLoading!: boolean;
+
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: LaboratoryOrder[];
 
-    @Watch("immunizationIsDeferred")
-    private whenImmunizationIsDeferred(newVal: boolean, oldVal: boolean) {
-        if (newVal) {
-            this.immunizationLoadDeferred = true;
-        }
-
-        if (!newVal && oldVal) {
-            this.immunizationLoadReady = true;
-            if (this.patientImmunizations.length === 0) {
-                this.loadImmunizationEntries();
-            }
-        }
-    }
+    @Getter("notes", { namespace: "note" })
+    userNotes!: UserNote[];
 
     @Watch("filterText")
     private onFilterTextChanged() {
@@ -156,8 +157,6 @@ export default class TimelineView extends Vue {
 
     @Watch("isLaboratoryLoading")
     private onLaboratoryLoading() {
-        console.log(this.isLaboratoryLoading, "isLaboratoryLoading");
-        console.log(this.laboratoryOrders, "laboratoryOrders");
         if (!this.isLaboratoryLoading) {
             // Add the Laboratory entries to the timeline list
             for (let order of this.laboratoryOrders) {
@@ -171,16 +170,60 @@ export default class TimelineView extends Vue {
         }
     }
 
-    private immunizationLoadDeferred = false;
-    private immunizationLoadReady = false;
+    @Watch("isEncounterLoading")
+    private onEncounterLoading() {
+        if (!this.isEncounterLoading) {
+            // Add the Encounter entries to the timeline list
+            for (let encounter of this.patientEncounters) {
+                this.timelineEntries.push(
+                    new EncounterTimelineEntry(encounter)
+                );
+            }
+            this.sortEntries();
+            this.setFilterTypeCount(
+                EntryType.Encounter,
+                this.laboratoryOrders.length
+            );
+        }
+    }
+
+    @Watch("isNoteLoading")
+    private onNoteLoading() {
+        if (!this.isNoteLoading) {
+            // Add the Note entries to the timeline list
+            for (let note of this.userNotes) {
+                this.timelineEntries.push(new NoteTimelineEntry(note));
+            }
+            this.sortEntries();
+            this.setFilterTypeCount(EntryType.Note, this.userNotes.length);
+        }
+    }
+
+    @Watch("isImmunizationLoading")
+    private onImmunizationLoading() {
+        if (
+            !this.isImmunizationLoading &&
+            !this.immunizationIsDeferred &&
+            !this.immunizationNeedsInput
+        ) {
+            this.loadImmunizationEntries();
+        }
+    }
+
+    @Watch("immunizationIsDeferred")
+    private whenImmunizationIsDeferred(isDeferred: boolean) {
+        if (isDeferred) {
+            this.immunizationNeedsInput = true;
+        }
+    }
+
+    private immunizationNeedsInput = false;
 
     private filterText = "";
     private filter: TimelineFilter = new TimelineFilter([]);
     private isListView = true;
     private timelineEntries: TimelineEntry[] = [];
-    private isImmunizationLoading = false;
-    private isEncounterLoading = false;
-    private isNoteLoading = false;
+
     private idleLogoutWarning = false;
     private isAddingNote = false;
     private isEditingEntry = false;
@@ -193,10 +236,6 @@ export default class TimelineView extends Vue {
 
     private logger!: ILogger;
 
-    @Ref("protectiveWordModal")
-    readonly protectiveWordModal!: ProtectiveWordComponent;
-    @Ref("covidModal")
-    readonly covidModal!: CovidModalComponent;
     @Ref("noteEditModal")
     readonly noteEditModal!: NoteEditComponent;
     @Ref("immunizationCard")
@@ -211,6 +250,7 @@ export default class TimelineView extends Vue {
         this.fetchEncounters();
         this.fetchNotes();
         this.fetchComments();
+
         window.addEventListener("beforeunload", this.onBrowserClose);
         this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
             this.isAddingNote = true;
@@ -374,13 +414,6 @@ export default class TimelineView extends Vue {
         );
     }
 
-    private onCovidCancel() {
-        // Display protective word modal if required
-        /*if (this.protectiveWordAttempts > 0) {
-            this.protectiveWordModal.showModal();
-        }*/
-    }
-
     private checkTimezone(isDST: boolean): boolean {
         if (isDST) {
             return new Date().getTimezoneOffset() / 60 === 7;
@@ -389,36 +422,12 @@ export default class TimelineView extends Vue {
         }
     }
 
-    private fetchMedicationStatements(protectiveWord?: string) {
-        this.getMedicationStatements({
-            hdid: this.user.hdid,
-            protectiveWord: protectiveWord,
-        }).catch((err) => {
-            this.logger.error(err);
-            this.addError(
-                ErrorTranslator.toBannerError("Fetch Medications Error", err)
-            );
-        });
+    private fetchMedicationStatements() {
+        this.getMedicationStatements({ hdid: this.user.hdid });
     }
 
     private fetchImmunizations() {
-        this.isImmunizationLoading = true;
-        this.retrieveImmunizations({ hdid: this.user.hdid })
-            .then(() => {
-                this.loadImmunizationEntries();
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Fetch Immunizations Error",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isImmunizationLoading = false;
-            });
+        this.retrieveImmunizations({ hdid: this.user.hdid });
     }
 
     private fetchLaboratoryResults() {
@@ -426,110 +435,22 @@ export default class TimelineView extends Vue {
     }
 
     private fetchEncounters() {
-        this.isEncounterLoading = true;
-        const encounterService: IEncounterService = container.get(
-            SERVICE_IDENTIFIER.EncounterService
-        );
-        this.isEncounterLoading = true;
-        encounterService
-            .getPatientEncounters(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the encounter entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new EncounterTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.setFilterTypeCount(
-                        EntryType.Encounter,
-                        results.resourcePayload.length
-                    );
-                } else {
-                    this.logger.error(
-                        "Error returned from the encounter call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Encounter Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Encounter Error", err)
-                );
-            })
-            .finally(() => {
-                this.isEncounterLoading = false;
-            });
+        this.getPatientEncounters({ hdid: this.user.hdid });
     }
 
     private fetchNotes() {
-        const noteService: IUserNoteService = container.get(
-            SERVICE_IDENTIFIER.UserNoteService
-        );
-        this.isNoteLoading = true;
-        noteService
-            .getNotes(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the immunization entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new NoteTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.setFilterTypeCount(
-                        EntryType.Note,
-                        results.resourcePayload.length
-                    );
-                } else {
-                    this.logger.error(
-                        "Error returned from the note call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Notes Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Notes Error", err)
-                );
-            })
-            .finally(() => {
-                this.isNoteLoading = false;
-            });
+        this.retrieveNotes({ hdid: this.user.hdid });
     }
 
     private fetchComments() {
-        this.retrieveProfileComments({
-            hdid: this.user.hdid,
-        }).catch((err) => {
-            this.logger.error(err);
-            this.addError(
-                ErrorTranslator.toBannerError("Profile Comments Error", err)
-            );
-        });
+        this.retrieveProfileComments({ hdid: this.user.hdid });
     }
 
     private loadImmunizationEntries() {
-        if (this.immunizationLoadReady) {
-            this.immunizationLoadDeferred = false;
-            this.immunizationLoadReady = false;
+        if (this.immunizationNeedsInput) {
+            this.immunizationNeedsInput = false;
         }
+
         // Add the immunization entries to the timeline list
         for (let immunization of this.patientImmunizations) {
             this.timelineEntries.push(
@@ -583,15 +504,6 @@ export default class TimelineView extends Vue {
         if (entry.type === EntryType.Note) {
             this.addFilterTypeCount(EntryType.Note, -1);
         }
-    }
-
-    private onProtectiveWordSubmit(value: string) {
-        this.fetchMedicationStatements(value);
-    }
-
-    private onProtectiveWordCancel() {
-        // Does nothing as it won't be able to fetch pharmanet data.
-        this.logger.debug("protective word cancelled");
     }
 
     private getTotalCount(): number {
@@ -687,11 +599,11 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="immunizationLoadDeferred"
+                        :show="immunizationNeedsInput"
                         variant="info"
                         class="no-print"
                     >
-                        <span v-if="!immunizationLoadReady">
+                        <span v-if="immunizationIsDeferred">
                             <h4 data-testid="immunizationLoading">
                                 Still searching for immunization records
                             </h4>
@@ -786,18 +698,8 @@ export default class TimelineView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <CovidModalComponent
-            ref="covidModal"
-            :is-loading="isLoading"
-            @submit="onCovidSubmit"
-            @cancel="onCovidCancel"
-        />
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :is-loading="isLoading"
-            @submit="onProtectiveWordSubmit"
-            @cancel="onProtectiveWordCancel"
-        />
+        <CovidModalComponent :is-loading="isLoading" @submit="onCovidSubmit" />
+        <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent ref="noteEditModal" :is-loading="isLoading" />
         <ImmunizationCard ref="immunizationCard" />
     </div>

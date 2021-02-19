@@ -10,11 +10,14 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 
+import Encounter from "./encounter";
 import { ResultError } from "./requestResult";
+import UserNote from "./userNote";
 
 export enum LoadStatus {
     NONE,
     REQUESTED,
+    ASYNC_REQUESTED,
     LOADED,
     DEFERRED,
     PROTECTED,
@@ -72,8 +75,22 @@ export interface ImmunizationState {
     status: LoadStatus;
 }
 
+export interface EncounterState {
+    patientEncounters: Encounter[];
+    statusMessage: string;
+    error?: ResultError;
+    status: LoadStatus;
+}
+
 export interface CommentState {
     profileComments: Dictionary<UserComment[]>;
+    statusMessage: string;
+    error?: ResultError;
+    status: LoadStatus;
+}
+
+export interface NoteState {
+    notes: UserNote[];
     statusMessage: string;
     error?: ResultError;
     status: LoadStatus;
