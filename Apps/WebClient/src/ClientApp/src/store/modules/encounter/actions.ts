@@ -2,7 +2,7 @@ import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
 import Encounter from "@/models/encounter";
-import RequestResult from "@/models/requestResult";
+import RequestResult, { ResultError } from "@/models/requestResult";
 import { EncounterState, LoadStatus, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -37,18 +37,31 @@ export const actions: ActionTree<EncounterState, RootState> = {
                 encounterService
                     .getPatientEncounters(params.hdid)
                     .then((result) => {
-                        context.commit(
-                            "setPatientEncounters",
-                            result.resourcePayload
-                        );
-                        resolve(result);
+                        if (result.resultStatus === ResultType.Error) {
+                            context.dispatch("handleError", result.resultError);
+                            reject(result.resultError);
+                        } else {
+                            context.commit(
+                                "setPatientEncounters",
+                                result.resourcePayload
+                            );
+                            resolve(result);
+                        }
                     })
                     .catch((error) => {
-                        logger.error(`ERROR: ${JSON.stringify(error)}`);
-                        context.commit("encounterError", error);
+                        context.dispatch("handleError", error);
                         reject(error);
                     });
             }
         });
+    },
+    handleError(context, error: ResultError) {
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("encounterError", error);
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch Encounter Error", error },
+            { root: true }
+        );
     },
 };

@@ -25,7 +25,7 @@ import EntrycardTimelineComponent from "./entrycard.vue";
     },
 })
 export default class NoteTimelineComponent extends Vue {
-    @Action("addBannerError", { namespace: "errorBanner" })
+    @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
     @Action("deleteNote", { namespace: "note" })

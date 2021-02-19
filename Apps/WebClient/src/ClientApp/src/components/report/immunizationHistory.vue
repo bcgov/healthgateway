@@ -33,7 +33,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     patientImmunizations!: ImmunizationEvent[];
     @Getter("getStoredRecommendations", { namespace: "immunization" })
     patientRecommendations!: Recommendation[];
-    @Action("addBannerError", { namespace: "errorBanner" })
+    @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: {

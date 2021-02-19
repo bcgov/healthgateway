@@ -1,5 +1,7 @@
-import { ActionTree, Commit } from "vuex";
+import { ActionTree } from "vuex";
 
+import { ResultType } from "@/constants/resulttype";
+import { ResultError } from "@/models/requestResult";
 import { CommentState, LoadStatus, RootState } from "@/models/storeState";
 import { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -7,17 +9,6 @@ import container from "@/plugins/inversify.config";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-function handleError(commit: Commit, error: Error) {
-    logger.error(`ERROR: ${JSON.stringify(error)}`);
-    commit("commentError", error);
-
-    commit("errorBanner/addError", error);
-    /*ErrorTranslator.toBannerError(
-        "Fetch Medications Error",
-        results.resultError
-    )*/
-}
 
 const commentService: IUserCommentService = container.get<IUserCommentService>(
     SERVICE_IDENTIFIER.UserCommentService
@@ -34,15 +25,20 @@ export const actions: ActionTree<CommentState, RootState> = {
                 context.commit("setRequested");
                 commentService
                     .getCommentsForProfile(params.hdid)
-                    .then((results) => {
-                        context.commit(
-                            "setProfileComments",
-                            results.resourcePayload
-                        );
-                        resolve();
+                    .then((result) => {
+                        if (result.resultStatus === ResultType.Error) {
+                            context.dispatch("handleError", result.resultError);
+                            reject(result.resultError);
+                        } else {
+                            context.commit(
+                                "setProfileComments",
+                                result.resourcePayload
+                            );
+                            resolve();
+                        }
                     })
                     .catch((error) => {
-                        handleError(context.commit, error);
+                        context.dispatch("handleError", error);
                         reject(error);
                     });
             }
@@ -60,7 +56,7 @@ export const actions: ActionTree<CommentState, RootState> = {
                     resolve(resultComment);
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.dispatch("handleError", error);
                     reject(error);
                 });
         });
@@ -77,7 +73,7 @@ export const actions: ActionTree<CommentState, RootState> = {
                     resolve(resultComment);
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.dispatch("handleError", error);
                     reject(error);
                 });
         });
@@ -94,9 +90,18 @@ export const actions: ActionTree<CommentState, RootState> = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.dispatch("handleError", error);
                     reject(error);
                 });
         });
+    },
+    handleError(context, error: ResultError) {
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("commentError", error);
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch Comment Error", error },
+            { root: true }
+        );
     },
 };

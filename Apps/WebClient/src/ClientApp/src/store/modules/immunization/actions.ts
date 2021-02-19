@@ -1,6 +1,7 @@
 import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
+import { ResultError } from "@/models/requestResult";
 import { ImmunizationState, LoadStatus, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -37,15 +38,25 @@ export const actions: ActionTree<ImmunizationState, RootState> = {
                             context.commit("setImmunizationResult", payload);
                             resolve();
                         } else {
+                            context.dispatch("handleError", result.resultError);
                             reject(result.resultError);
                         }
                     })
                     .catch((error) => {
-                        logger.error(`ERROR: ${JSON.stringify(error)}`);
-                        context.commit("immunizationError", error);
+                        context.dispatch("handleError", error);
                         reject(error);
                     });
             }
         });
+    },
+    handleError(context, error: ResultError) {
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("immunizationError", error);
+
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch Immunizations Error", error },
+            { root: true }
+        );
     },
 };

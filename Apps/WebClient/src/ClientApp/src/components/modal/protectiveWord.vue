@@ -12,7 +12,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 const med = "medication";
 @Component
 export default class ProtectiveWordComponent extends Vue {
-    @Action("addBannerError", { namespace: "errorBanner" })
+    @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
     @Action("getMedicationStatements", { namespace: med })

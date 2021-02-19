@@ -29,7 +29,7 @@ export default class MSPVisitsReportComponent extends Vue {
     @Prop() private patientData?: PatientData;
     @Getter("user", { namespace: "user" })
     private user!: User;
-    @Action("addBannerError", { namespace: "errorBanner" })
+    @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
     @Ref("report")
     readonly report!: HTMLElement;

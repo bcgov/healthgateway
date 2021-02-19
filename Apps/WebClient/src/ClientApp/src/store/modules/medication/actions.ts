@@ -2,7 +2,7 @@ import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import RequestResult from "@/models/requestResult";
+import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus, MedicationState, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -36,21 +36,35 @@ export const actions: ActionTree<MedicationState, RootState> = {
             } else {
                 logger.debug("Retrieving Medication Statements");
                 context.commit("setRequested");
-                medicationService
+                return medicationService
                     .getPatientMedicationStatementHistory(
                         params.hdid,
                         params.protectiveWord
                     )
                     .then((result) => {
-                        context.commit("setMedicationResult", result);
-                        resolve(result);
+                        if (result.resultStatus === ResultType.Error) {
+                            context.dispatch("handleError", result.resultError);
+                            reject(result.resultError);
+                        } else {
+                            context.commit("setMedicationResult", result);
+                            resolve(result);
+                        }
                     })
                     .catch((error) => {
-                        context.commit("medicationError", error);
-                        context.commit("errorBanner/addError", error);
+                        context.dispatch("handleError", error);
                         reject(error);
                     });
             }
         });
+    },
+    handleError(context, error: ResultError) {
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("medicationError", error);
+
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch Medications Error", error },
+            { root: true }
+        );
     },
 };

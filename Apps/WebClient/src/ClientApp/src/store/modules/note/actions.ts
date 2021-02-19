@@ -1,7 +1,7 @@
-import { ActionTree, Commit } from "vuex";
+import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
-import RequestResult from "@/models/requestResult";
+import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus, NoteState, RootState } from "@/models/storeState";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -9,11 +9,6 @@ import container from "@/plugins/inversify.config";
 import { ILogger, IUserNoteService } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-function handleError(commit: Commit, error: Error) {
-    logger.error(`ERROR: ${JSON.stringify(error)}`);
-    commit("noteError", error);
-}
 
 const noteService: IUserNoteService = container.get<IUserNoteService>(
     SERVICE_IDENTIFIER.UserNoteService
@@ -40,12 +35,17 @@ export const actions: ActionTree<NoteState, RootState> = {
                 context.commit("setRequested");
                 noteService
                     .getNotes(params.hdid)
-                    .then((results) => {
-                        context.commit("setNotes", results.resourcePayload);
-                        resolve(results);
+                    .then((result) => {
+                        if (result.resultStatus === ResultType.Error) {
+                            context.dispatch("handleError", result.resultError);
+                            reject(result.resultError);
+                        } else {
+                            context.commit("setNotes", result.resourcePayload);
+                            resolve(result);
+                        }
                     })
                     .catch((error) => {
-                        handleError(context.commit, error);
+                        context.dispatch("handleError", error);
                         reject(error);
                     });
             }
@@ -63,7 +63,7 @@ export const actions: ActionTree<NoteState, RootState> = {
                     resolve(result);
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.dispatch("handleError", error);
                     reject(error);
                 });
         });
@@ -80,7 +80,7 @@ export const actions: ActionTree<NoteState, RootState> = {
                     resolve(result);
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.dispatch("handleError", error);
                     reject(error);
                 });
         });
@@ -97,9 +97,18 @@ export const actions: ActionTree<NoteState, RootState> = {
                     resolve();
                 })
                 .catch((error) => {
-                    handleError(context.commit, error);
+                    context.dispatch("handleError", error);
                     reject(error);
                 });
         });
+    },
+    handleError(context, error: ResultError) {
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("noteError", error);
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch Notes Error", error },
+            { root: true }
+        );
     },
 };
