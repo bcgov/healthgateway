@@ -6,7 +6,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { NavigationGuardNext, Route } from "vue-router";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 import { Action, Getter } from "vuex-class";
@@ -19,8 +18,6 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
 
-// Register the router hooks with their names
-Component.registerHooks(["beforeRouteLeave"]);
 @Component({
     components: {
         LoadingComponent,
@@ -38,6 +35,8 @@ export default class NoteEditComponent extends Vue {
     }) => Promise<UserNote>;
 
     @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
 
     private entry?: NoteTimelineEntry;
     private text = "";
@@ -83,18 +82,6 @@ export default class NoteEditComponent extends Vue {
         if (this.isVisible && !this.isIdleWarningVisible && !this.isBlankNote) {
             event.returnValue = this.unsavedChangesText;
         }
-    }
-
-    private beforeRouteLeave(
-        to: Route,
-        from: Route,
-        next: NavigationGuardNext
-    ) {
-        console.log("WHAAAA");
-        if (!this.isVisible && !confirm(this.unsavedChangesText)) {
-            return;
-        }
-        next();
     }
 
     private validations() {

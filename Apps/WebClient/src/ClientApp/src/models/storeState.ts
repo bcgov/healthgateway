@@ -101,6 +101,10 @@ export interface NavbarState {
     isHeaderShown: boolean;
 }
 
+export interface IdleState {
+    isVisible: boolean;
+}
+
 export interface ErrorBannerState {
     isShowing: boolean;
     errors: BannerError[];

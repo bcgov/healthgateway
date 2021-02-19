@@ -8,6 +8,7 @@ import { comment } from "./modules/comment/comment";
 import { config } from "./modules/config/config";
 import { encounter } from "./modules/encounter/encounter";
 import { errorBanner } from "./modules/error/errorBanner";
+import { idle } from "./modules/idle/idle";
 import { immunization } from "./modules/immunization/immunization";
 import { laboratory } from "./modules/laboratory/laboratory";
 import { medication } from "./modules/medication/medication";
@@ -32,6 +33,7 @@ const storeOptions: StoreOptions<RootState> = {
         encounter,
         note,
         navbar,
+        idle,
         errorBanner,
     },
 };

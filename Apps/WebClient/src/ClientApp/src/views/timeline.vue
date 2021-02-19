@@ -44,6 +44,9 @@ import UserNote from "@/models/userNote";
     },
 })
 export default class TimelineView extends Vue {
+    @Ref("immunizationCard")
+    readonly immunizationCard!: ImmunizationCardComponent;
+
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("webClient", { namespace: "config" })
@@ -190,8 +193,32 @@ export default class TimelineView extends Vue {
 
     private eventBus = EventBus;
 
-    @Ref("immunizationCard")
-    readonly immunizationCard!: ImmunizationCardComponent;
+    private get unverifiedEmail(): boolean {
+        return !this.user.verifiedEmail && this.user.hasEmail;
+    }
+
+    private get unverifiedSMS(): boolean {
+        return !this.user.verifiedSMS && this.user.hasSMS;
+    }
+
+    private get hasNewTermsOfService(): boolean {
+        return this.user.hasTermsOfServiceUpdated;
+    }
+
+    private get searchIcon(): IconDefinition {
+        return faSearch;
+    }
+
+    private get isLoading(): boolean {
+        return (
+            this.isMedicationLoading ||
+            this.isImmunizationLoading ||
+            this.isLaboratoryLoading ||
+            this.isEncounterLoading ||
+            this.isNoteLoading ||
+            this.isCommentLoading
+        );
+    }
 
     private mounted() {
         this.fetchTimelineData();
@@ -255,33 +282,6 @@ export default class TimelineView extends Vue {
             },
         ];
         this.filter = new TimelineFilter(entryTypes);
-    }
-
-    private get unverifiedEmail(): boolean {
-        return !this.user.verifiedEmail && this.user.hasEmail;
-    }
-
-    private get unverifiedSMS(): boolean {
-        return !this.user.verifiedSMS && this.user.hasSMS;
-    }
-
-    private get hasNewTermsOfService(): boolean {
-        return this.user.hasTermsOfServiceUpdated;
-    }
-
-    private get searchIcon(): IconDefinition {
-        return faSearch;
-    }
-
-    private get isLoading(): boolean {
-        return (
-            this.isMedicationLoading ||
-            this.isImmunizationLoading ||
-            this.isLaboratoryLoading ||
-            this.isEncounterLoading ||
-            this.isNoteLoading ||
-            this.isCommentLoading
-        );
     }
 
     private onCovidSubmit() {
