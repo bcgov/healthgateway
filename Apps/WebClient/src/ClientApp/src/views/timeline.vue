@@ -2,7 +2,6 @@
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
-import { NavigationGuardNext, Route } from "vue-router";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/errorCard.vue";
@@ -30,12 +29,6 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
-
-// Register the router hooks with their names
-Component.registerHooks(["beforeRouteLeave"]);
 
 @Component({
     components: {
@@ -125,6 +118,13 @@ export default class TimelineView extends Vue {
         this.filterText = this.filter.keyword;
     }
 
+    @Watch("immunizationIsDeferred")
+    private whenImmunizationIsDeferred(isDeferred: boolean) {
+        if (isDeferred) {
+            this.immunizationNeedsInput = true;
+        }
+    }
+
     private get timelineEntries(): TimelineEntry[] {
         let timelineEntries = [];
         // Add the medication entries to the timeline list
@@ -180,93 +180,32 @@ export default class TimelineView extends Vue {
         return timelineEntries;
     }
 
-    @Watch("immunizationIsDeferred")
-    private whenImmunizationIsDeferred(isDeferred: boolean) {
-        if (isDeferred) {
-            this.immunizationNeedsInput = true;
-        }
-    }
-
     private immunizationNeedsInput = false;
 
     private filterText = "";
     private filter: TimelineFilter = new TimelineFilter([]);
     private isListView = true;
 
-    private idleLogoutWarning = false;
-    private isAddingNote = false;
-    private isEditingEntry = false;
     private isPacificTime = false;
-    private isBlankNote = true;
-    private unsavedChangesText =
-        "You have unsaved changes. Are you sure you want to leave?";
 
     private eventBus = EventBus;
 
-    private logger!: ILogger;
-
-    @Ref("noteEditModal")
-    readonly noteEditModal!: NoteEditComponent;
     @Ref("immunizationCard")
     readonly immunizationCard!: ImmunizationCardComponent;
 
     private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
         this.fetchTimelineData();
 
-        window.addEventListener("beforeunload", this.onBrowserClose);
-        this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
-            this.isAddingNote = true;
-            this.noteEditModal.showModal();
-        });
-        this.eventBus.$on(
-            EventMessageName.IdleLogoutWarning,
-            (isVisible: boolean) => {
-                this.idleLogoutWarning = isVisible;
-            }
-        );
-
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryAdded,
-            (entry: TimelineEntry) => {
-                this.onEntryAdded(entry);
-            }
-        );
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryEdit,
-            (note: NoteTimelineEntry) => {
-                this.onEntryEdit();
-                this.noteEditModal.showModal(note);
-            }
-        );
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryUpdated,
-            (entry: TimelineEntry) => {
-                this.onEntryUpdated(entry);
-            }
-        );
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryDeleted,
-            (entry: TimelineEntry) => {
-                this.onEntryDeleted(entry);
-            }
-        );
-        this.eventBus.$on(EventMessageName.TimelineNoteEditClose, () => {
-            this.onNoteEditClose();
-        });
-        this.eventBus.$on(EventMessageName.IsNoteBlank, (isBlank: boolean) => {
-            this.isBlankNote = isBlank;
-        });
         this.eventBus.$on(
             EventMessageName.TimelineViewUpdated,
             (isListView: boolean) => {
                 this.isListView = isListView;
             }
         );
-        this.eventBus.$on(EventMessageName.TimelineCovidCard, () => {
-            this.immunizationCard.showModal();
-        });
+        this.eventBus.$on(
+            EventMessageName.TimelineCovidCard,
+            this.immunizationCard.showModal
+        );
 
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
@@ -318,32 +257,6 @@ export default class TimelineView extends Vue {
         this.filter = new TimelineFilter(entryTypes);
     }
 
-    private beforeRouteLeave(
-        to: Route,
-        from: Route,
-        next: NavigationGuardNext
-    ) {
-        if (
-            !this.idleLogoutWarning &&
-            (this.isAddingNote || this.isEditingEntry) &&
-            !this.isBlankNote &&
-            !confirm(this.unsavedChangesText)
-        ) {
-            return;
-        }
-        next();
-    }
-
-    private onBrowserClose(event: BeforeUnloadEvent) {
-        if (
-            !this.idleLogoutWarning &&
-            !this.isBlankNote &&
-            (this.isAddingNote || this.isEditingEntry)
-        ) {
-            event.returnValue = this.unsavedChangesText;
-        }
-    }
-
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
     }
@@ -393,48 +306,6 @@ export default class TimelineView extends Vue {
         this.retrieveEncounters({ hdid: this.user.hdid });
         this.retrieveNotes({ hdid: this.user.hdid });
         this.retrieveComments({ hdid: this.user.hdid });
-    }
-
-    private onEntryAdded(entry: TimelineEntry) {
-        this.logger.debug(`Timeline Entry added: ${JSON.stringify(entry)}`);
-        this.isAddingNote = false;
-        if (entry) {
-            this.timelineEntries.push(entry);
-            //this.sortEntries();
-            if (entry.type === EntryType.Note) {
-                this.addFilterTypeCount(EntryType.Note, 1);
-            }
-        }
-    }
-
-    private onEntryEdit() {
-        this.isEditingEntry = true;
-    }
-
-    private onNoteEditClose() {
-        this.isEditingEntry = false;
-        this.isAddingNote = false;
-    }
-
-    private onEntryUpdated(entry: TimelineEntry) {
-        this.logger.debug(`Timeline Entry updated: ${JSON.stringify(entry)}`);
-        const index = this.timelineEntries.findIndex(
-            (e) => e.id === entry.id && e.type === entry.type
-        );
-        this.timelineEntries.splice(index, 1);
-        this.timelineEntries.push(entry);
-        this.isEditingEntry = false;
-        //this.sortEntries();
-    }
-
-    private onEntryDeleted(entry: TimelineEntry) {
-        this.logger.debug(`Timeline Entry deleted: ${JSON.stringify(entry)}`);
-        const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
-        this.timelineEntries.splice(index, 1);
-        //this.sortEntries();
-        if (entry.type === EntryType.Note) {
-            this.addFilterTypeCount(EntryType.Note, -1);
-        }
     }
 
     private getTotalCount(): number {
@@ -631,7 +502,7 @@ export default class TimelineView extends Vue {
         </b-row>
         <CovidModalComponent :is-loading="isLoading" @submit="onCovidSubmit" />
         <ProtectiveWordComponent :is-loading="isLoading" />
-        <NoteEditComponent ref="noteEditModal" :is-loading="isLoading" />
+        <NoteEditComponent :is-loading="isLoading" />
         <ImmunizationCard ref="immunizationCard" />
     </div>
 </template>

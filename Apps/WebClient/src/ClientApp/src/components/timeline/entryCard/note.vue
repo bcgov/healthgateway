@@ -60,9 +60,6 @@ export default class NoteTimelineComponent extends Vue {
                 hdid: this.user.hdid,
                 note: this.entry.toModel(),
             })
-                .then(() => {
-                    this.onNoteDeleted(this.entry);
-                })
                 .catch((err) => {
                     this.addError(
                         ErrorTranslator.toBannerError("Delete Note Error", err)
@@ -75,11 +72,7 @@ export default class NoteTimelineComponent extends Vue {
     }
 
     private handleEdit() {
-        this.eventBus.$emit(EventMessageName.TimelineEntryEdit, this.entry);
-    }
-
-    private onNoteDeleted(note: NoteTimelineEntry) {
-        this.eventBus.$emit(EventMessageName.TimelineEntryDeleted, note);
+        this.eventBus.$emit(EventMessageName.EditNote, this.entry);
     }
 }
 </script>
@@ -114,7 +107,7 @@ export default class NoteTimelineComponent extends Vue {
                 <b-dropdown-item
                     data-testid="editNoteMenuBtn"
                     class="menuItem"
-                    @click="handleNote()"
+                    @click="handleEdit()"
                 >
                     Edit
                 </b-dropdown-item>

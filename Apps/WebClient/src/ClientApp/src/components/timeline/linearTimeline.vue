@@ -48,6 +48,7 @@ export default class LinearTimelineComponent extends Vue {
 
     @Watch("timelineEntries")
     private refreshEntries() {
+        console.log("refreshEntries");
         this.applyTimelineFilter();
     }
 
@@ -80,17 +81,10 @@ export default class LinearTimelineComponent extends Vue {
 
         this.eventBus.$on(
             EventMessageName.CalendarMonthUpdated,
-            (firstEntryDate: DateWrapper) => {
-                this.setPageFromDate(firstEntryDate);
-            }
+            this.setPageFromDate
         );
 
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryAdded,
-            (entry: TimelineEntry) => {
-                this.onEntryAdded(entry);
-            }
-        );
+        this.eventBus.$on(EventMessageName.AddedNote, this.onEntryAdded);
     }
 
     private linkGen(pageNum: number) {
@@ -137,8 +131,8 @@ export default class LinearTimelineComponent extends Vue {
     }
 
     private setPageFromDate(eventDate: DateWrapper) {
-        let index = this.filteredTimelineEntries.findIndex(
-            (entry) => entry.date === eventDate
+        let index = this.filteredTimelineEntries.findIndex((entry) =>
+            entry.date.isSame(eventDate)
         );
         this.currentPage = Math.floor(index / this.filter.pageSize) + 1;
     }
@@ -192,6 +186,9 @@ export default class LinearTimelineComponent extends Vue {
             :class="{ 'header-offset': isHeaderShown }"
         >
             <b-col>
+                {{ timelineIsEmpty }}
+                {{ currentPage }}
+                {{ numberOfPages }}
                 <b-pagination-nav
                     v-show="!timelineIsEmpty"
                     v-model="currentPage"
