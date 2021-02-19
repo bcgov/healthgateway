@@ -1,22 +1,28 @@
 const { AuthMethod } = require("../../support/constants")
 const BASEURL = "/v1/api/UserProfile/"
 const HDID='P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A'
+const COMMENT = 'test comment goes here!';
 
-function verifyAdd(entryTypeCode) {
-    cy.log('Validate ADD comment...')
+function addComment(comment) {
+    cy.log('Adding comment...')
     cy.get('[data-testid=entryCardDetailsButton]')
         .first()
         .click();
     
     cy.get('[data-testid=addCommentTextArea]')
         .first()
-        .type('test comment goes here!');
+        .type(comment);
     cy.get('[data-testid=postCommentBtn]')
         .first()
         .click();
+}
+
+function verifyAdd(entryTypeCode) {
+    addComment(COMMENT);
+
     cy.get('[data-testid=commentText]')
-        .contains('test comment goes here!');
-    
+        .first()
+        .contains(COMMENT);    
     cy.get("@tokens").then(tokens => {
         cy.request({
             url: `${BASEURL}${HDID}/Comment/`,
@@ -33,9 +39,14 @@ function verifyAdd(entryTypeCode) {
             expect(response.body).to.not.be.null
             cy.log(`response.body: ${JSON.stringify(response.body)}`)
             expect(JSON.stringify(response.body.resourcePayload)).contains(`"entryTypeCode":"${entryTypeCode}"`);
+            
+            cy.get('[data-testid=entryCardDetailsButton]')
+                .first()
+                .click();
         })
     });
 }
+
 function verifyEdit() {
     cy.log('Validate EDIT comment...')
     cy.get('[data-testid=commentMenuBtn]')
@@ -51,8 +62,9 @@ function verifyEdit() {
     cy.get('[data-testid=commentText]')
         .contains('edited comment');
 }
-function verifyDelete() {
-    cy.log('Validate DELETE comment...')
+
+function deleteComment() {
+    cy.log('Deleting a comment...')
     cy.get('[data-testid=commentMenuBtn]')
         .first()
         .click();
@@ -62,8 +74,38 @@ function verifyDelete() {
     cy.get('[data-testid=commentMenuDeleteBtn]')
         .first()
         .click();
+}
+
+function verifyDelete() {
+    deleteComment();
     cy.get('[data-testid=commentText]')
         .should('not.exist');
+}
+
+function validateComment(moduleName) {
+    cy.enableModules([moduleName, "Comment"]);
+    cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak);
+    cy.checkTimelineHasLoaded();
+    cy.get('[data-testid=commentIcon]')
+        .should('not.exist');
+    cy.get('[data-testid=commentCount]')
+        .should('not.exist');
+    verifyAdd('Lab');
+    cy.get('[data-testid=commentIcon]')
+        .should('exist');
+    cy.get('[data-testid=commentCount]')
+        .should('not.exist');
+    
+    // Add 2nd comments to test the comment icon & comment count.
+    addComment(COMMENT);
+    cy.get('[data-testid=commentIcon]')
+        .should('exist');
+    cy.get('[data-testid=commentCount]')
+        .should('exist');
+    
+    verifyEdit();
+    deleteComment();
+    verifyDelete();
 }
 
 describe('Comments', () => {
@@ -72,28 +114,15 @@ describe('Comments', () => {
             .as("tokens")
     })
 
-    it('Validate Add/Edit/Delete for MED', () => {
-        cy.enableModules(["Medication", "Comment"]);
-        cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak);
-        cy.checkTimelineHasLoaded();
-        verifyAdd('Med');
-        verifyEdit();
-        verifyDelete();
-    });
     it('Validate Add/Edit/Delete for LAB', () => {
-        cy.enableModules(["Laboratory", "Comment"]);
-        cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak);
-        cy.checkTimelineHasLoaded();
-        verifyAdd('Lab');
-        verifyEdit();
-        verifyDelete();
+        validateComment("Laboratory");
     });
+
+    it('Validate Add/Edit/Delete for MED', () => {
+        validateComment("Medication");
+    });
+
     it('Validate Add/Edit/Delete for ENC', () => {
-        cy.enableModules(["Encounter", "Comment"]);
-        cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak);
-        cy.checkTimelineHasLoaded();
-        verifyAdd('Enc');
-        verifyEdit();
-        verifyDelete();
+        validateComment("Encounter");
     });
 })

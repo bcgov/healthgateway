@@ -100,9 +100,14 @@ export default class EntrycardTimelineComponent extends Vue {
                             }}</slot>
                         </b-col>
                         <b-col cols="4" class="text-right align-self-center">
-                            <span class="pr-2" data-testid="commentCount">{{
-                                commentsCount > 1 ? commentsCount : ""
-                            }}</span>
+                            <span
+                                v-if="commentsCount > 1"
+                                class="pr-2"
+                                data-testid="commentCount"
+                                >{{
+                                    commentsCount > 1 ? commentsCount : ""
+                                }}</span
+                            >
                             <span v-if="commentsCount > 0">
                                 <font-awesome-icon
                                     :icon="['far', 'comment']"
