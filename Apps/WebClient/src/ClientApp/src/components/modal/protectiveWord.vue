@@ -7,7 +7,9 @@ import BannerError from "@/models/bannerError";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
-import ErrorTranslator from "@/utility/errorTranslator";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 
 const med = "medication";
 @Component
@@ -32,6 +34,12 @@ export default class ProtectiveWordComponent extends Vue {
     private protectiveWord = "";
     private isDismissed = false;
 
+    private logger!: ILogger;
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     private get isVisible(): boolean {
         return this.isProtected && !this.isLoading && !this.isDismissed;
     }
@@ -54,7 +62,11 @@ export default class ProtectiveWordComponent extends Vue {
         this.retrieveMedications({
             hdid: this.user.hdid,
             protectiveWord: this.protectiveWord,
-        }).catch(() => {});
+        }).catch((err) => {
+            this.logger.error(
+                "Error retrieving medications: " + JSON.stringify(err)
+            );
+        });
     }
 }
 </script>
