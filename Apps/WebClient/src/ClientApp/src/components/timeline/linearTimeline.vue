@@ -185,9 +185,6 @@ export default class LinearTimelineComponent extends Vue {
             :class="{ 'header-offset': isHeaderShown }"
         >
             <b-col>
-                {{ timelineIsEmpty }}
-                {{ currentPage }}
-                {{ numberOfPages }}
                 <b-pagination-nav
                     v-show="!timelineIsEmpty"
                     v-model="currentPage"

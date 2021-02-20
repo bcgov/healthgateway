@@ -54,11 +54,7 @@ export default class ProtectiveWordComponent extends Vue {
         this.retrieveMedications({
             hdid: this.user.hdid,
             protectiveWord: this.protectiveWord,
-        }).catch((err) => {
-            this.addError(
-                ErrorTranslator.toBannerError("Fetch Medications Error", err)
-            );
-        });
+        }).catch(() => {});
     }
 }
 </script>
