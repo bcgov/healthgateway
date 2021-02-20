@@ -15,8 +15,8 @@ export default class ProtectiveWordComponent extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
-    @Action("getMedicationStatements", { namespace: med })
-    getMedicationStatements!: (params: {
+    @Action("retrieve", { namespace: med })
+    retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<RequestResult<MedicationStatementHistory[]>>;
@@ -51,7 +51,7 @@ export default class ProtectiveWordComponent extends Vue {
     }
 
     private fetchMedications() {
-        this.getMedicationStatements({
+        this.retrieveMedications({
             hdid: this.user.hdid,
             protectiveWord: this.protectiveWord,
         }).catch((err) => {

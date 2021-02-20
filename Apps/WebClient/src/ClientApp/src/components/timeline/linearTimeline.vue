@@ -48,7 +48,6 @@ export default class LinearTimelineComponent extends Vue {
 
     @Watch("timelineEntries")
     private refreshEntries() {
-        console.log("refreshEntries");
         this.applyTimelineFilter();
     }
 

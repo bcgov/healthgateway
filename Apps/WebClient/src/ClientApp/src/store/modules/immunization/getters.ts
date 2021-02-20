@@ -7,7 +7,7 @@ export const getters: GetterTree<ImmunizationState, RootState> = {
     immunizations(state: ImmunizationState): ImmunizationEvent[] {
         return state.immunizations;
     },
-    getStoredRecommendations(state: ImmunizationState): Recommendation[] {
+    recomendations(state: ImmunizationState): Recommendation[] {
         return state.recommendations;
     },
     isDeferredLoad(state: ImmunizationState): boolean {

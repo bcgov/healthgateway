@@ -29,6 +29,9 @@ import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
 
 @Component({
     components: {
@@ -193,6 +196,8 @@ export default class TimelineView extends Vue {
 
     private eventBus = EventBus;
 
+    private logger!: ILogger;
+
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
     }
@@ -220,8 +225,12 @@ export default class TimelineView extends Vue {
         );
     }
 
-    private mounted() {
+    private created() {
         this.fetchTimelineData();
+    }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         this.eventBus.$on(
             EventMessageName.TimelineViewUpdated,
@@ -300,12 +309,16 @@ export default class TimelineView extends Vue {
     }
 
     private fetchTimelineData() {
-        this.retrieveMedications({ hdid: this.user.hdid });
-        this.retrieveImmunizations({ hdid: this.user.hdid });
-        this.retrieveLaboratory({ hdid: this.user.hdid });
-        this.retrieveEncounters({ hdid: this.user.hdid });
-        this.retrieveNotes({ hdid: this.user.hdid });
-        this.retrieveComments({ hdid: this.user.hdid });
+        Promise.all([
+            this.retrieveMedications({ hdid: this.user.hdid }),
+            this.retrieveImmunizations({ hdid: this.user.hdid }),
+            this.retrieveLaboratory({ hdid: this.user.hdid }),
+            this.retrieveEncounters({ hdid: this.user.hdid }),
+            this.retrieveNotes({ hdid: this.user.hdid }),
+            this.retrieveComments({ hdid: this.user.hdid }),
+        ]).catch((err) => {
+            this.logger.error(`Error loading timeline data: ${err}`);
+        });
     }
 
     private getTotalCount(): number {

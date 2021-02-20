@@ -36,13 +36,13 @@ export const mutations: MutationTree<CommentState> = {
                 isUtc: true,
             });
 
-            const vale = secondDate.isAfter(firstDate)
+            const value = secondDate.isAfter(firstDate)
                 ? -1
                 : firstDate.isAfter(secondDate)
                 ? 1
                 : 0;
 
-            return vale;
+            return value;
         });
     },
     updateComment(state: CommentState, userComment: UserComment) {

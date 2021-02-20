@@ -1,28 +1,20 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import LineChartComponent from "@/components/plot/lineChart.vue";
-import { ActionType } from "@/constants/actionType";
-import { ResultType } from "@/constants/resulttype";
-import BannerError from "@/models/bannerError";
-import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import RequestResult from "@/models/requestResult";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
-
-const namespace = "user";
 
 @Component({
     components: {
@@ -33,119 +25,71 @@ const namespace = "user";
     },
 })
 export default class HealthInsightsView extends Vue {
-    @Getter("user", { namespace }) user!: User;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Action("getMedicationStatements", { namespace: "medication" })
-    getMedicationStatements!: (params: {
+    @Action("retrieve", { namespace: "medication" })
+    retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
-    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
+    }) => Promise<void>;
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    @Getter("isLoading", { namespace: "medication" })
+    isMedicationLoading!: boolean;
+
+    @Getter("medicationStatements", { namespace: "medication" })
+    medicationStatements!: MedicationStatementHistory[];
+
+    @Getter("user", { namespace: "user" }) user!: User;
 
     private logger!: ILogger;
-
-    private timelineEntries: TimelineEntry[] = [];
-    private isMedicationLoading = false;
-    private protectiveWordAttempts = 0;
 
     private startDate: DateWrapper | null = null;
     private endDate: DateWrapper | null = null;
 
     private timeChartData: Chart.ChartData = {};
 
-    private chartOptions: Chart.ChartOptions = {
+    private readonly chartOptions: Chart.ChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
     };
 
-    @Ref("protectiveWordModal")
-    readonly protectiveWordModal!: ProtectiveWordComponent;
+    private get timelineEntries(): TimelineEntry[] {
+        let timelineEntries: TimelineEntry[] = [];
+        if (this.medicationStatements.length > 0) {
+            // Add the medication entries to the timeline list
+            for (let medication of this.medicationStatements) {
+                timelineEntries.push(new MedicationTimelineEntry(medication));
+            }
 
-    private mounted() {
+            timelineEntries = this.sortEntries(timelineEntries);
+            timelineEntries = timelineEntries.reverse();
+
+            this.startDate = timelineEntries[0].date;
+            this.endDate = timelineEntries[timelineEntries.length - 1].date;
+
+            this.prepareMonthlyChart(timelineEntries);
+        }
+
+        return timelineEntries;
+    }
+
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchMedicationStatements();
+        this.retrieveMedications({ hdid: this.user.hdid }).catch((err) => {
+            this.logger.error(`Error loading Health Insights data: ${err}`);
+        });
     }
 
     private get isLoading(): boolean {
         return this.isMedicationLoading;
     }
 
-    private get isMedicationEnabled(): boolean {
-        return this.config.modules["Medication"];
-    }
-
     private get visibleCount(): number {
         return this.timelineEntries.length;
     }
 
-    private fetchMedicationStatements(protectiveWord?: string) {
-        this.isMedicationLoading = true;
-
-        this.getMedicationStatements({
-            hdid: this.user.hdid,
-            protectiveWord: protectiveWord,
-        })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.protectiveWordAttempts = 0;
-                    // Add the medication entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new MedicationTimelineEntry(result)
-                        );
-                    }
-                    this.timelineEntries = this.timelineEntries.reverse();
-                    this.startDate = this.timelineEntries[0].date;
-                    this.endDate = this.timelineEntries[
-                        this.timelineEntries.length - 1
-                    ].date;
-
-                    this.prepareMonthlyChart();
-                } else if (
-                    results.resultStatus == ResultType.ActionRequired &&
-                    results.resultError?.actionCode == ActionType.Protected
-                ) {
-                    //this.protectiveWordModal.showModal();
-                    this.protectiveWordAttempts++;
-                } else {
-                    this.logger.error(
-                        "Error returned from the medication statements call: " +
-                            results.resultError?.resultMessage
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Medications Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Fetch Medications Error",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isMedicationLoading = false;
-            });
-    }
-
-    private onProtectiveWordSubmit(value: string) {
-        this.fetchMedicationStatements(value);
-    }
-
-    private onProtectiveWordCancel() {
-        // Does nothing as it won't be able to fetch pharmanet data.
-        this.logger.debug("protective word cancelled");
+    private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
+        return timelineEntries.sort((a, b) =>
+            a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
+        );
     }
 
     /**
@@ -170,7 +114,7 @@ export default class HealthInsightsView extends Vue {
     /**
      * Prepares the dataset based on the timeline entries
      */
-    private prepareMonthlyChart() {
+    private prepareMonthlyChart(entries: TimelineEntry[]) {
         let months: string[] = this.getMonthsBetweenDates(
             this.startDate as DateWrapper,
             this.endDate as DateWrapper
@@ -182,8 +126,8 @@ export default class HealthInsightsView extends Vue {
             let currentMonth = months[monthIndex];
             monthCounter.push(0);
 
-            while (entryIndex < this.timelineEntries.length) {
-                let entry = this.timelineEntries[entryIndex];
+            while (entryIndex < entries.length) {
+                let entry = entries[entryIndex];
                 if (new DateWrapper(currentMonth).isSame(entry.date, "month")) {
                     monthCounter[monthIndex] += 1;
                     entryIndex++;
@@ -276,13 +220,7 @@ export default class HealthInsightsView extends Vue {
                 </div>
             </b-col>
         </b-row>
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :error="protectiveWordAttempts > 1"
-            :is-loading="isLoading"
-            @submit="onProtectiveWordSubmit"
-            @cancel="onProtectiveWordCancel"
-        />
+        <ProtectiveWordComponent :is-loading="isLoading" />
     </div>
 </template>
 

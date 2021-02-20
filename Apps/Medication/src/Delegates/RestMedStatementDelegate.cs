@@ -193,7 +193,7 @@ namespace HealthGateway.Medication.Delegates
         public bool ValidateProtectiveWord(string phn, string? protectiveWord, string hdid, string ipAddress)
         {
             // Only for testing
-            //return protectiveWord == "ASDASD";
+            return protectiveWord == "ASDASD";
 
             using (Source.StartActivity("ValidateProtectiveWord"))
             {
