@@ -13,9 +13,7 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import BannerError from "@/models/bannerError";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import User from "@/models/user";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { IUserNoteService } from "@/services/interfaces";
+import UserNote from "@/models/userNote";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
@@ -30,20 +28,15 @@ export default class NoteTimelineComponent extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
+    @Action("deleteNote", { namespace: "note" })
+    deleteNote!: (params: { hdid: string; note: UserNote }) => Promise<void>;
+
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Prop() entry!: NoteTimelineEntry;
 
-    private noteService!: IUserNoteService;
-
     private isSaving = false;
     private eventBus = EventBus;
-
-    private mounted() {
-        this.noteService = container.get<IUserNoteService>(
-            SERVICE_IDENTIFIER.UserNoteService
-        );
-    }
 
     private get entryIcon(): IconDefinition {
         return faEdit;
@@ -60,14 +53,13 @@ export default class NoteTimelineComponent extends Vue {
         );
     }
 
-    private deleteNote(): void {
+    private handleDelete(): void {
         if (confirm("Are you sure you want to delete this note?")) {
             this.isSaving = true;
-            this.noteService
-                .deleteNote(this.user.hdid, this.entry.toModel())
-                .then(() => {
-                    this.onNoteDeleted(this.entry);
-                })
+            this.deleteNote({
+                hdid: this.user.hdid,
+                note: this.entry.toModel(),
+            })
                 .catch((err) => {
                     this.addError(
                         ErrorTranslator.toBannerError("Delete Note Error", err)
@@ -79,12 +71,8 @@ export default class NoteTimelineComponent extends Vue {
         }
     }
 
-    private editNote() {
-        this.eventBus.$emit(EventMessageName.TimelineEntryEdit, this.entry);
-    }
-
-    private onNoteDeleted(note: NoteTimelineEntry) {
-        this.eventBus.$emit(EventMessageName.TimelineEntryDeleted, note);
+    private handleEdit() {
+        this.eventBus.$emit(EventMessageName.EditNote, this.entry);
     }
 }
 </script>
@@ -119,14 +107,14 @@ export default class NoteTimelineComponent extends Vue {
                 <b-dropdown-item
                     data-testid="editNoteMenuBtn"
                     class="menuItem"
-                    @click="editNote()"
+                    @click="handleEdit()"
                 >
                     Edit
                 </b-dropdown-item>
                 <b-dropdown-item
                     data-testid="deleteNoteMenuBtn"
                     class="menuItem"
-                    @click="deleteNote()"
+                    @click="handleDelete()"
                 >
                     Delete
                 </b-dropdown-item>

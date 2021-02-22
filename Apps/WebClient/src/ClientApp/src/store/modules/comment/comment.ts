@@ -1,6 +1,6 @@
 import { Module } from "vuex";
 
-import { CommentState, RootState, StateType } from "@/models/storeState";
+import { CommentState, LoadStatus, RootState } from "@/models/storeState";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
@@ -9,8 +9,8 @@ import { mutations } from "./mutations";
 export const state: CommentState = {
     statusMessage: "",
     profileComments: {},
-    error: false,
-    stateType: StateType.NONE,
+    error: undefined,
+    status: LoadStatus.NONE,
 };
 
 const namespaced = true;

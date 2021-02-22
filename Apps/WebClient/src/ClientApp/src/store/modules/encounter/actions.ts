@@ -1,52 +1,50 @@
 import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import Encounter from "@/models/encounter";
 import RequestResult, { ResultError } from "@/models/requestResult";
-import { LoadStatus, MedicationState, RootState } from "@/models/storeState";
+import { EncounterState, LoadStatus, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILogger, IMedicationService } from "@/services/interfaces";
+import { IEncounterService, ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-const medicationService: IMedicationService = container.get<IMedicationService>(
-    SERVICE_IDENTIFIER.MedicationService
+const encounterService: IEncounterService = container.get<IEncounterService>(
+    SERVICE_IDENTIFIER.EncounterService
 );
 
-export const actions: ActionTree<MedicationState, RootState> = {
+export const actions: ActionTree<EncounterState, RootState> = {
     retrieve(
         context,
-        params: { hdid: string; protectiveWord?: string }
-    ): Promise<RequestResult<MedicationStatementHistory[]>> {
+        params: { hdid: string }
+    ): Promise<RequestResult<Encounter[]>> {
         return new Promise((resolve, reject) => {
-            const medicationStatements: MedicationStatementHistory[] =
-                context.getters.medicationStatements;
+            const patientEncounters: Encounter[] =
+                context.getters.patientEncounters;
             if (context.state.status === LoadStatus.LOADED) {
-                logger.debug(
-                    "Medication Statements found stored, not quering!"
-                );
+                logger.debug(`Encounters found stored, not quering!`);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
-                    resourcePayload: medicationStatements,
+                    resourcePayload: patientEncounters,
                     resultStatus: ResultType.Success,
-                    totalResultCount: medicationStatements.length,
+                    totalResultCount: patientEncounters.length,
                 });
             } else {
-                logger.debug("Retrieving Medication Statements");
+                logger.debug(`Retrieving Patient Encounters`);
                 context.commit("setRequested");
-                return medicationService
-                    .getPatientMedicationStatementHistory(
-                        params.hdid,
-                        params.protectiveWord
-                    )
+                encounterService
+                    .getPatientEncounters(params.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
                             context.dispatch("handleError", result.resultError);
                             reject(result.resultError);
                         } else {
-                            context.commit("setMedicationResult", result);
+                            context.commit(
+                                "setPatientEncounters",
+                                result.resourcePayload
+                            );
                             resolve(result);
                         }
                     })
@@ -59,11 +57,10 @@ export const actions: ActionTree<MedicationState, RootState> = {
     },
     handleError(context, error: ResultError) {
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("medicationError", error);
-
+        context.commit("encounterError", error);
         context.dispatch(
             "errorBanner/addResultError",
-            { message: "Fetch Medications Error", error },
+            { message: "Fetch Encounter Error", error },
             { root: true }
         );
     },

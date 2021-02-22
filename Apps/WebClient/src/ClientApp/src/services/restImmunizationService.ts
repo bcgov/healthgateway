@@ -36,7 +36,7 @@ export class RestImmunizationService implements IImmunizationService {
     ): Promise<RequestResult<ImmunizationResult>> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
-                resolve({
+                return resolve({
                     pageIndex: 0,
                     pageSize: 0,
                     resourcePayload: {
@@ -47,9 +47,9 @@ export class RestImmunizationService implements IImmunizationService {
                     resultStatus: ResultType.Success,
                     totalResultCount: 0,
                 });
-                return;
             }
-            this.http
+
+            return this.http
                 .getWithCors<RequestResult<ImmunizationResult>>(
                     `${this.baseUri}${this.IMMS_BASE_URI}/${hdid}`
                 )

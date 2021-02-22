@@ -6,19 +6,14 @@ import { Action, Getter } from "vuex-class";
 
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ReportHeaderComponent from "@/components/report/header.vue";
-import { ActionType } from "@/constants/actionType";
-import { ResultType } from "@/constants/resulttype";
-import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
-import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import PDFDefinition from "@/plugins/pdfDefinition";
 import { ILogger } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {
@@ -27,37 +22,31 @@ import ErrorTranslator from "@/utility/errorTranslator";
     },
 })
 export default class MedicationHistoryReportComponent extends Vue {
-    @Prop() private startDate?: string;
-    @Prop() private endDate?: string;
-    @Prop() private patientData?: PatientData;
+    @Prop() private startDate!: string | null;
+    @Prop() private endDate!: string | null;
+    @Prop() private patientData!: PatientData | null;
+
     @Getter("user", { namespace: "user" })
     private user!: User;
-    @Action("getMedicationStatements", { namespace: "medication" })
-    private getMedicationStatements!: (params: {
-        hdid: string;
-        protectiveWord?: string;
-    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
-    @Action("addError", { namespace: "errorBanner" })
-    private addError!: (error: BannerError) => void;
-    @Ref("protectiveWordModal")
-    readonly protectiveWordModal!: ProtectiveWordComponent;
+
+    @Action("retrieve", { namespace: "medication" })
+    private retrieveMedications!: (params: { hdid: string }) => Promise<void>;
+
+    @Getter("isLoading", { namespace: "medication" })
+    isLoading!: boolean;
+
+    @Getter("medicationStatements", { namespace: "medication" })
+    medicationStatements!: MedicationStatementHistory[];
+
     @Ref("report")
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
     private fileMaxRecords = 1000;
-    private protectiveWordAttempts = 0;
-    private recordsPage: MedicationStatementHistory[] = [];
-    private records: MedicationStatementHistory[] = [];
-    private isPreview = true;
-    private isLoading = false;
 
-    @Watch("startDate")
-    @Watch("endDate")
-    private onDateChanged() {
-        this.fetchMedicationStatements();
-    }
+    private recordsPage: MedicationStatementHistory[] = [];
+    private isPreview = true;
 
     @Watch("isLoading")
     @Emit()
@@ -66,110 +55,65 @@ export default class MedicationHistoryReportComponent extends Vue {
     }
 
     private get totalFiles(): number {
-        return Math.ceil(this.records.length / this.fileMaxRecords);
+        return Math.ceil(this.visibleRecords.length / this.fileMaxRecords);
     }
 
     private get isEmpty() {
-        return this.records.length == 0;
+        return this.visibleRecords.length === 0;
     }
 
-    private mounted() {
+    private get visibleRecords(): MedicationStatementHistory[] {
+        let records = this.medicationStatements.filter((record) => {
+            let filterStart = true;
+            if (this.startDate !== null) {
+                filterStart = new DateWrapper(
+                    record.dispensedDate
+                ).isAfterOrSame(new DateWrapper(this.startDate));
+            }
+
+            let filterEnd = true;
+            if (this.endDate !== null) {
+                filterEnd = new DateWrapper(
+                    record.dispensedDate
+                ).isBeforeOrSame(new DateWrapper(this.endDate));
+            }
+            return filterStart && filterEnd;
+        });
+        records.sort((a, b) => {
+            const firstDate = new DateWrapper(a.dispensedDate);
+            const secondDate = new DateWrapper(b.dispensedDate);
+
+            const value = firstDate.isAfter(secondDate)
+                ? 1
+                : firstDate.isBefore(secondDate)
+                ? -1
+                : 0;
+
+            return value;
+        });
+
+        // Required for the sample page
+        this.recordsPage = records;
+
+        return records;
+    }
+
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchMedicationStatements();
+        this.retrieveMedications({ hdid: this.user.hdid }).catch((err) => {
+            this.logger.error(`Error loading medication data: ${err}`);
+        });
     }
 
     private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 
-    private hasGenerated() {
-        this.logger.debug("finished generating Medication History PDF...");
-        this.isLoading = false;
-    }
-
-    private filterAndSortEntries() {
-        this.records = this.records.filter((record) => {
-            return (
-                (!this.startDate ||
-                    new DateWrapper(record.dispensedDate).isAfterOrSame(
-                        new DateWrapper(this.startDate)
-                    )) &&
-                (!this.endDate ||
-                    new DateWrapper(record.dispensedDate).isBeforeOrSame(
-                        new DateWrapper(this.endDate)
-                    ))
-            );
-        });
-        this.records.sort((a, b) =>
-            a.dispensedDate > b.dispensedDate
-                ? -1
-                : a.dispensedDate < b.dispensedDate
-                ? 1
-                : 0
-        );
-    }
-
-    private onProtectiveWordSubmit(value: string) {
-        this.fetchMedicationStatements(value);
-    }
-
-    private onProtectiveWordCancel() {
-        // Does nothing as it won't be able to fetch pharmanet data.
-        this.logger.debug("protective word cancelled");
-    }
-
-    private fetchMedicationStatements(protectiveWord?: string) {
-        this.isLoading = true;
-
-        this.getMedicationStatements({
-            hdid: this.user.hdid,
-            protectiveWord: protectiveWord,
-        })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.protectiveWordAttempts = 0;
-                    this.records = results.resourcePayload;
-                    this.filterAndSortEntries();
-                    // Required for the sample page
-                    this.recordsPage = this.records;
-                } else if (
-                    results.resultStatus == ResultType.ActionRequired &&
-                    results.resultError?.actionCode == ActionType.Protected
-                ) {
-                    this.protectiveWordModal.showModal();
-                    this.protectiveWordAttempts++;
-                } else {
-                    this.logger.error(
-                        "Error returned from the medication statements call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Medications Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Fetch Medications Error",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
-
     public async generatePdf(fileIndex = 0): Promise<void> {
         this.logger.debug("generating Medication History PDF...");
         this.isPreview = false;
         // Breaks records into chunks for multiple files.
-        this.recordsPage = this.records.slice(
+        this.recordsPage = this.visibleRecords.slice(
             fileIndex * this.fileMaxRecords,
             (fileIndex + 1) * this.fileMaxRecords
         );
@@ -290,10 +234,7 @@ export default class MedicationHistoryReportComponent extends Vue {
         </div>
         <ProtectiveWordComponent
             ref="protectiveWordModal"
-            :error="protectiveWordAttempts > 1"
             :is-loading="isLoading"
-            @submit="onProtectiveWordSubmit"
-            @cancel="onProtectiveWordCancel"
         />
     </div>
 </template>

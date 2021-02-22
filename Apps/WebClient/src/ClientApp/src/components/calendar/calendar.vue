@@ -75,12 +75,7 @@ export default class CalendarComponent extends Vue {
             }
         );
 
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryAdded,
-            (entry: TimelineEntry) => {
-                this.onEntryAdded(entry);
-            }
-        );
+        this.eventBus.$on(EventMessageName.AddedNote, this.onEntryAdded);
     }
 
     private onEntryAdded(entry: TimelineEntry) {

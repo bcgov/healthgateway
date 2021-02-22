@@ -3,6 +3,7 @@ import { GetterTree } from "vuex";
 import { DateWrapper } from "@/models/dateWrapper";
 import { RootState, UserState } from "@/models/storeState";
 import User from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
 
 export const getters: GetterTree<UserState, RootState> = {
     user(state: UserState): User {
@@ -19,5 +20,11 @@ export const getters: GetterTree<UserState, RootState> = {
     },
     smsResendDateTime(state: UserState): DateWrapper | undefined {
         return state.smsResendDateTime;
+    },
+
+    getPreference: (state: UserState) => (
+        preferenceName: string
+    ): UserPreference | undefined => {
+        return state.user.preferences[preferenceName];
     },
 };
