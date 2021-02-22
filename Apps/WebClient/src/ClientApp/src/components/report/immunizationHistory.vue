@@ -71,7 +71,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private loadRecords() {
-        this.immunizationRecords = this.patientImmunizations;
         this.recommendationRecords = this.patientRecommendations;
         this.filterAndSortEntries();
         this.isLoading = false;
@@ -98,7 +97,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private filterAndSortEntries() {
-        this.immunizationRecords = this.immunizationRecords.filter((record) => {
+        let immunizationRecords = this.patientImmunizations.filter((record) => {
             return (
                 (!this.startDate ||
                     new DateWrapper(record.dateOfImmunization).isAfterOrSame(
@@ -110,13 +109,14 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     ))
             );
         });
-        this.immunizationRecords.sort((a, b) =>
+        immunizationRecords.sort((a, b) =>
             a.dateOfImmunization > b.dateOfImmunization
                 ? -1
                 : a.dateOfImmunization < b.dateOfImmunization
                 ? 1
                 : 0
         );
+        this.immunizationRecords = immunizationRecords;
     }
 
     private formatDate(date: string): string {

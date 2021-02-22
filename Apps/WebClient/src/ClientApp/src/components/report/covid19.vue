@@ -61,8 +61,7 @@ export default class COVID19ReportComponent extends Vue {
         this.getLaboratoryOrders({ hdid: this.user.hdid })
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
-                    this.records = results.resourcePayload;
-                    this.filterAndSortEntries();
+                    this.filterAndSortEntries(results.resourcePayload);
                 } else {
                     this.logger.error(
                         "Error returned from the LaboratoryResults call: " +
@@ -90,8 +89,8 @@ export default class COVID19ReportComponent extends Vue {
             });
     }
 
-    private filterAndSortEntries() {
-        this.records = this.records.filter((record) => {
+    private filterAndSortEntries(labOrders: LaboratoryOrder[]) {
+        let records = labOrders.filter((record) => {
             return (
                 (!this.startDate ||
                     new DateWrapper(
@@ -103,7 +102,7 @@ export default class COVID19ReportComponent extends Vue {
                     ).isBeforeOrSame(new DateWrapper(this.endDate)))
             );
         });
-        this.records.sort((a, b) =>
+        records.sort((a, b) =>
             a.labResults[0].collectedDateTime >
             b.labResults[0].collectedDateTime
                 ? -1
@@ -112,6 +111,8 @@ export default class COVID19ReportComponent extends Vue {
                 ? 1
                 : 0
         );
+
+        this.records = records;
     }
 
     private get isEmpty() {
@@ -174,7 +175,7 @@ export default class COVID19ReportComponent extends Vue {
 <template>
     <div>
         <div ref="report">
-            <section class="pdf-item">
+            <section v-if="!isLoading" class="pdf-item">
                 <ReportHeaderComponent
                     v-show="!isPreview"
                     :start-date="startDate"
@@ -182,10 +183,10 @@ export default class COVID19ReportComponent extends Vue {
                     title="Health Gateway COVID-19 Test Result History"
                     :patient-data="patientData"
                 />
-                <b-row v-if="isEmpty && (!isLoading || !isPreview)">
+                <b-row v-if="isEmpty">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 header">
+                <b-row v-else class="py-3 header">
                     <b-col>Date</b-col>
                     <b-col>Test Type</b-col>
                     <b-col>Test Location</b-col>

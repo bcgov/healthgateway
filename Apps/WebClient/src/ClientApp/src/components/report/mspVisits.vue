@@ -61,8 +61,7 @@ export default class MSPVisitsReportComponent extends Vue {
             .getPatientEncounters(this.user.hdid)
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
-                    this.records = results.resourcePayload;
-                    this.filterAndSortEntries();
+                    this.filterAndSortEntries(results.resourcePayload);
                 } else {
                     this.logger.error(
                         "Error returned from the encounter call: " +
@@ -87,8 +86,8 @@ export default class MSPVisitsReportComponent extends Vue {
             });
     }
 
-    private filterAndSortEntries() {
-        this.records = this.records.filter((record) => {
+    private filterAndSortEntries(encounters: Encounter[]) {
+        let records = encounters.filter((record) => {
             return (
                 (!this.startDate ||
                     new DateWrapper(record.encounterDate).isAfterOrSame(
@@ -100,13 +99,15 @@ export default class MSPVisitsReportComponent extends Vue {
                     ))
             );
         });
-        this.records.sort((a, b) =>
+        records.sort((a, b) =>
             a.encounterDate > b.encounterDate
                 ? -1
                 : a.encounterDate < b.encounterDate
                 ? 1
                 : 0
         );
+
+        this.records = records;
     }
 
     private get isEmpty() {

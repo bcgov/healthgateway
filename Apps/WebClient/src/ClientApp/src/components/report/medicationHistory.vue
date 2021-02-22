@@ -87,8 +87,8 @@ export default class MedicationHistoryReportComponent extends Vue {
         this.isLoading = false;
     }
 
-    private filterAndSortEntries() {
-        this.records = this.records.filter((record) => {
+    private filterAndSortEntries(medications: MedicationStatementHistory[]) {
+        let records = medications.filter((record) => {
             return (
                 (!this.startDate ||
                     new DateWrapper(record.dispensedDate).isAfterOrSame(
@@ -100,13 +100,17 @@ export default class MedicationHistoryReportComponent extends Vue {
                     ))
             );
         });
-        this.records.sort((a, b) =>
+        records.sort((a, b) =>
             a.dispensedDate > b.dispensedDate
                 ? -1
                 : a.dispensedDate < b.dispensedDate
                 ? 1
                 : 0
         );
+
+        this.records = records;
+        // Required for the sample page
+        this.recordsPage = this.records;
     }
 
     private onProtectiveWordSubmit(value: string) {
@@ -128,10 +132,7 @@ export default class MedicationHistoryReportComponent extends Vue {
             .then((results) => {
                 if (results.resultStatus == ResultType.Success) {
                     this.protectiveWordAttempts = 0;
-                    this.records = results.resourcePayload;
-                    this.filterAndSortEntries();
-                    // Required for the sample page
-                    this.recordsPage = this.records;
+                    this.filterAndSortEntries(results.resourcePayload);
                 } else if (
                     results.resultStatus == ResultType.ActionRequired &&
                     results.resultError?.actionCode == ActionType.Protected
