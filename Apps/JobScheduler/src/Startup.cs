@@ -77,17 +77,7 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.ConfigureHttpServices(services);
             services.AddRazorPages();
             this.startupConfig.ConfigureOpenIdConnectServices(services);
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("allowAny", policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
+            this.startupConfig.ConfigureAccessControl(services);
 
             string requiredUserRole = this.configuration.GetValue<string>("OpenIdConnect:UserRole");
             string userRoleClaimType = this.configuration.GetValue<string>("OpenIdConnect:RolesClaim");
