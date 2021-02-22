@@ -14,9 +14,6 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import MobileEntryCardComponent from "@/components/timeline/mobileEntryCard/mobileEntryCard.vue";
-import { ActionType } from "@/constants/actionType";
-import { ResultType } from "@/constants/resulttype";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -217,6 +214,10 @@ export default class TimelineView extends Vue {
 
     private get searchIcon(): IconDefinition {
         return faSearch;
+    }
+
+    private handleViewDetails() {
+        this.eventBus.$emit(EventMessageName.EntryDetails, this.timelineEntries);
     }
 
     private get isLoading(): boolean {
@@ -521,6 +522,7 @@ export default class TimelineView extends Vue {
         <CovidModalComponent :is-loading="isLoading" @submit="onCovidSubmit" />
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
+        <MobileEntryCardComponent :is-loading="isLoading" />
         <ImmunizationCard ref="immunizationCard" />
     </div>
 </template>
