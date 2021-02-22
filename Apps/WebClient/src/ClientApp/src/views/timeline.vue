@@ -14,6 +14,7 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
+import MobileEntryCardComponent from "@/components/timeline/mobileEntryCard/mobileEntryCard.vue";
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
@@ -55,6 +56,7 @@ Component.registerHooks(["beforeRouteLeave"]);
         ProtectiveWordComponent,
         CovidModalComponent,
         NoteEditComponent,
+        MobileEntryCardComponent,
         LinearTimeline: LinearTimelineComponent,
         CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
@@ -156,6 +158,8 @@ export default class TimelineView extends Vue {
     readonly covidModal!: CovidModalComponent;
     @Ref("noteEditModal")
     readonly noteEditModal!: NoteEditComponent;
+    @Ref("mobileEntryCardModal")
+    readonly mobileEntryCardModal!: MobileEntryCardComponent;
     @Ref("immunizationCard")
     readonly immunizationCard!: ImmunizationCardComponent;
 
@@ -171,7 +175,8 @@ export default class TimelineView extends Vue {
         window.addEventListener("beforeunload", this.onBrowserClose);
         this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
             this.isAddingNote = true;
-            this.noteEditModal.showModal();
+            this.mobileEntryCardModal.showModal();
+            // this.noteEditModal.showModal();
         });
         this.eventBus.$on(
             EventMessageName.IdleLogoutWarning,
@@ -190,7 +195,8 @@ export default class TimelineView extends Vue {
             EventMessageName.TimelineEntryEdit,
             (note: NoteTimelineEntry) => {
                 this.onEntryEdit();
-                this.noteEditModal.showModal(note);
+                this.mobileEntryCardModal.showModal(note);
+                // this.noteEditModal.showModal(note);
             }
         );
         this.eventBus.$on(
@@ -887,6 +893,10 @@ export default class TimelineView extends Vue {
             @cancel="onProtectiveWordCancel"
         />
         <NoteEditComponent ref="noteEditModal" :is-loading="isLoading" />
+        <MobileEntryCardComponent
+            ref="mobileEntryCardModal"
+            :is-loading="isLoading"
+        />
         <ImmunizationCard ref="immunizationCard" />
     </div>
 </template>
