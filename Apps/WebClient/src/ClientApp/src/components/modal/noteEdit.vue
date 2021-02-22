@@ -8,7 +8,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
@@ -17,9 +17,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { IUserNoteService } from "@/services/interfaces";
 
 @Component({
     components: {
@@ -28,10 +25,20 @@ import { IUserNoteService } from "@/services/interfaces";
     },
 })
 export default class NoteEditComponent extends Vue {
+    @Action("createNote", { namespace: "note" }) createNote!: (params: {
+        hdid: string;
+        note: UserNote;
+    }) => Promise<UserNote>;
+    @Action("updateNote", { namespace: "note" }) updateNote!: (params: {
+        hdid: string;
+        note: UserNote;
+    }) => Promise<UserNote>;
+
     @Getter("user", { namespace: "user" }) user!: User;
 
+    @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
+
     private entry?: NoteTimelineEntry;
-    private noteService!: IUserNoteService;
     private text = "";
     private title = "";
     private dateString: string = new DateWrapper().toISODate();
@@ -43,6 +50,9 @@ export default class NoteEditComponent extends Vue {
     private isVisible = false;
 
     private isNewNote = true;
+
+    private readonly unsavedChangesText =
+        "You have unsaved changes. Are you sure you want to leave?";
 
     private get entryIcon(): IconDefinition {
         return faEdit;
@@ -56,11 +66,22 @@ export default class NoteEditComponent extends Vue {
         return faEllipsisV;
     }
 
+    private get isBlankNote(): boolean {
+        return this.text === "" && this.title === "";
+    }
+
     private mounted() {
-        this.noteService = container.get<IUserNoteService>(
-            SERVICE_IDENTIFIER.UserNoteService
-        );
         this.clear();
+        this.eventBus.$on(EventMessageName.EditNote, this.editNote);
+        this.eventBus.$on(EventMessageName.CreateNote, this.newNote);
+
+        window.addEventListener("beforeunload", this.onBrowserClose);
+    }
+
+    private onBrowserClose(event: BeforeUnloadEvent) {
+        if (this.isVisible && !this.isIdleWarningVisible && !this.isBlankNote) {
+            event.returnValue = this.unsavedChangesText;
+        }
     }
 
     private validations() {
@@ -78,23 +99,19 @@ export default class NoteEditComponent extends Vue {
         return param.$dirty ? !param.$invalid : undefined;
     }
 
-    private checkBlankNote() {
-        if (this.text === "" && this.title === "") {
-            this.eventBus.$emit(EventMessageName.IsNoteBlank, true);
-        } else {
-            this.eventBus.$emit(EventMessageName.IsNoteBlank, false);
-        }
+    public editNote(entry: NoteTimelineEntry): void {
+        this.clear();
+        this.entry = entry;
+        this.text = entry.text;
+        this.title = entry.title;
+        this.dateString = entry.date.toISODate();
+        this.isNewNote = false;
+        this.isVisible = true;
     }
 
-    public showModal(entry?: NoteTimelineEntry): void {
+    public newNote(): void {
         this.clear();
-        if (entry) {
-            this.entry = entry;
-            this.text = entry.text;
-            this.title = entry.title;
-            this.dateString = entry.date.toISODate();
-            this.isNewNote = false;
-        }
+        this.isNewNote = true;
         this.isVisible = true;
     }
 
@@ -102,24 +119,24 @@ export default class NoteEditComponent extends Vue {
         this.$v.$reset();
         this.isVisible = false;
         this.clear();
-        this.eventBus.$emit(EventMessageName.TimelineNoteEditClose);
     }
 
-    private updateNote() {
+    private update() {
         let entry = this.entry as NoteTimelineEntry;
         this.isSaving = true;
-        this.noteService
-            .updateNote(this.user.hdid, {
+        this.updateNote({
+            hdid: this.user.hdid,
+            note: {
                 id: entry.id,
                 text: this.text,
                 title: this.title,
                 journalDateTime: new DateWrapper(this.dateString).toISODate(),
                 version: entry.version as number,
                 hdId: this.user.hdid,
-            })
-            .then((result) => {
+            },
+        })
+            .then(() => {
                 this.errorMessage = "";
-                this.onNoteUpdated(result);
                 this.handleSubmit();
             })
             .catch((err) => {
@@ -130,16 +147,18 @@ export default class NoteEditComponent extends Vue {
             });
     }
 
-    private createNote() {
+    private create() {
         this.isSaving = true;
-        this.noteService
-            .createNote(this.user.hdid, {
+        this.createNote({
+            hdid: this.user.hdid,
+            note: {
                 text: this.text,
                 title: this.title,
                 journalDateTime: new DateWrapper(this.dateString).toISODate(),
                 hdId: this.user.hdid,
                 version: 0,
-            })
+            },
+        })
             .then((result) => {
                 if (result) {
                     this.errorMessage = "";
@@ -157,14 +176,7 @@ export default class NoteEditComponent extends Vue {
 
     private onNoteAdded(note: UserNote) {
         this.eventBus.$emit(
-            EventMessageName.TimelineEntryAdded,
-            new NoteTimelineEntry(note)
-        );
-    }
-
-    private onNoteUpdated(note: UserNote) {
-        this.eventBus.$emit(
-            EventMessageName.TimelineEntryUpdated,
+            EventMessageName.AddedNote,
             new NoteTimelineEntry(note)
         );
     }
@@ -176,9 +188,9 @@ export default class NoteEditComponent extends Vue {
         if (this.$v.$invalid) {
             return;
         } else if (this.isNewNote) {
-            this.createNote();
+            this.create();
         } else {
-            this.updateNote();
+            this.update();
         }
     }
 
@@ -254,7 +266,6 @@ export default class NoteEditComponent extends Vue {
                         placeholder="Title"
                         maxlength="100"
                         :state="isValid($v.title)"
-                        @input="checkBlankNote()"
                         @blur.native="$v.title.$touch()"
                     />
                     <b-form-invalid-feedback :state="isValid($v.title)">
@@ -284,7 +295,6 @@ export default class NoteEditComponent extends Vue {
                         rows="3"
                         max-rows="6"
                         maxlength="1000"
-                        @input="checkBlankNote()"
                     ></b-form-textarea>
                 </b-col>
             </b-row>

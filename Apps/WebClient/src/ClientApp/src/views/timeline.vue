@@ -2,7 +2,6 @@
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
-import { NavigationGuardNext, Route } from "vue-router";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/errorCard.vue";
@@ -14,14 +13,10 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
-import { ActionType } from "@/constants/actionType";
-import { ResultType } from "@/constants/resulttype";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
-import BannerError from "@/models/bannerError";
-import { Dictionary } from "@/models/baseTypes";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
+import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
@@ -30,24 +25,13 @@ import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import RequestResult from "@/models/requestResult";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
 import User from "@/models/user";
-import { UserComment } from "@/models/userComment";
+import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import {
-    IEncounterService,
-    ILogger,
-    IUserNoteService,
-} from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
-
-const namespace = "user";
-
-// Register the router hooks with their names
-Component.registerHooks(["beforeRouteLeave"]);
+import { ILogger } from "@/services/interfaces";
 
 @Component({
     components: {
@@ -63,56 +47,72 @@ Component.registerHooks(["beforeRouteLeave"]);
     },
 })
 export default class TimelineView extends Vue {
-    @Getter("user", { namespace }) user!: User;
+    @Ref("immunizationCard")
+    readonly immunizationCard!: ImmunizationCardComponent;
 
-    @Action("getOrders", { namespace: "laboratory" })
-    getLaboratoryOrders!: (params: {
-        hdid: string;
-    }) => Promise<RequestResult<LaboratoryOrder[]>>;
-
-    @Action("getMedicationStatements", { namespace: "medication" })
-    getMedicationStatements!: (params: {
-        hdid: string;
-        protectiveWord?: string;
-    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
-
-    @Action("retrieveProfileComments", { namespace: "comment" })
-    retrieveProfileComments!: (params: {
-        hdid: string;
-    }) => Promise<RequestResult<Dictionary<UserComment[]>>>;
+    @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (error: BannerError) => void;
+    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
     @Action("retrieve", { namespace: "immunization" })
-    retrieveImmunizations!: (params: {
-        hdid: string;
-    }) => Promise<ImmunizationEvent[]>;
+    retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("getStoredImmunizations", { namespace: "immunization" })
-    patientImmunizations!: ImmunizationEvent[];
+    @Action("retrieve", { namespace: "encounter" })
+    retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
+
+    @Action("retrieve", { namespace: "note" })
+    retrieveNotes!: (params: { hdid: string }) => Promise<void>;
+
+    @Action("retrieve", { namespace: "laboratory" })
+    retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
+
+    @Action("retrieve", { namespace: "medication" })
+    retrieveMedications!: (params: {
+        hdid: string;
+        protectiveWord?: string;
+    }) => Promise<void>;
+
+    @Action("retrieve", { namespace: "comment" })
+    retrieveComments!: (params: { hdid: string }) => Promise<void>;
+
+    @Getter("isLoading", { namespace: "medication" })
+    isMedicationLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "comment" })
+    isCommentLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "laboratory" })
+    isLaboratoryLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "encounter" })
+    isEncounterLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "immunization" })
+    isImmunizationLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "note" })
+    isNoteLoading!: boolean;
 
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;
 
-    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+    @Getter("immunizations", { namespace: "immunization" })
+    patientImmunizations!: ImmunizationEvent[];
 
-    @Watch("immunizationIsDeferred")
-    private whenImmunizationIsDeferred(newVal: boolean, oldVal: boolean) {
-        if (newVal) {
-            this.immunizationLoadDeferred = true;
-        }
+    @Getter("patientEncounters", { namespace: "encounter" })
+    patientEncounters!: Encounter[];
 
-        if (!newVal && oldVal) {
-            this.immunizationLoadReady = true;
-            if (this.patientImmunizations.length === 0) {
-                this.loadImmunizationEntries();
-            }
-        }
-    }
+    @Getter("medicationStatements", { namespace: "medication" })
+    medicationStatements!: MedicationStatementHistory[];
+
+    @Getter("laboratoryOrders", { namespace: "laboratory" })
+    laboratoryOrders!: LaboratoryOrder[];
+
+    @Getter("notes", { namespace: "note" })
+    userNotes!: UserNote[];
 
     @Watch("filterText")
     private onFilterTextChanged() {
@@ -124,102 +124,124 @@ export default class TimelineView extends Vue {
         this.filterText = this.filter.keyword;
     }
 
-    private immunizationLoadDeferred = false;
-    private immunizationLoadReady = false;
+    @Watch("immunizationIsDeferred")
+    private whenImmunizationIsDeferred(isDeferred: boolean) {
+        if (isDeferred) {
+            this.immunizationNeedsInput = true;
+        }
+    }
+
+    private get timelineEntries(): TimelineEntry[] {
+        let timelineEntries = [];
+        // Add the medication entries to the timeline list
+        for (let medication of this.medicationStatements) {
+            timelineEntries.push(new MedicationTimelineEntry(medication));
+        }
+        this.setFilterTypeCount(
+            EntryType.Medication,
+            this.medicationStatements.length
+        );
+
+        // Add the Laboratory entries to the timeline list
+        for (let order of this.laboratoryOrders) {
+            timelineEntries.push(new LaboratoryTimelineEntry(order));
+        }
+        this.setFilterTypeCount(
+            EntryType.Laboratory,
+            this.laboratoryOrders.length
+        );
+
+        // Add the Encounter entries to the timeline list
+        for (let encounter of this.patientEncounters) {
+            timelineEntries.push(new EncounterTimelineEntry(encounter));
+        }
+        this.setFilterTypeCount(
+            EntryType.Encounter,
+            this.patientEncounters.length
+        );
+
+        // Add the Note entries to the timeline list
+        for (let note of this.userNotes) {
+            timelineEntries.push(new NoteTimelineEntry(note));
+        }
+
+        // Add the immunization entries to the timeline list
+        if (!this.immunizationIsDeferred && !this.immunizationNeedsInput) {
+            for (let immunization of this.patientImmunizations) {
+                timelineEntries.push(
+                    new ImmunizationTimelineEntry(immunization)
+                );
+            }
+
+            this.setFilterTypeCount(
+                EntryType.Immunization,
+                this.patientImmunizations.length
+            );
+        }
+
+        this.setFilterTypeCount(EntryType.Note, this.userNotes.length);
+
+        timelineEntries = this.sortEntries(timelineEntries);
+
+        return timelineEntries;
+    }
+
+    private immunizationNeedsInput = false;
 
     private filterText = "";
     private filter: TimelineFilter = new TimelineFilter([]);
     private isListView = true;
-    private timelineEntries: TimelineEntry[] = [];
-    private isMedicationLoading = false;
-    private isImmunizationLoading = false;
-    private isLaboratoryLoading = false;
-    private isEncounterLoading = false;
-    private isNoteLoading = false;
-    private isCommentLoading = false;
-    private idleLogoutWarning = false;
-    private protectiveWordAttempts = 0;
-    private isAddingNote = false;
-    private isEditingEntry = false;
+
     private isPacificTime = false;
-    private isBlankNote = true;
-    private unsavedChangesText =
-        "You have unsaved changes. Are you sure you want to leave?";
 
     private eventBus = EventBus;
 
     private logger!: ILogger;
 
-    @Ref("protectiveWordModal")
-    readonly protectiveWordModal!: ProtectiveWordComponent;
-    @Ref("covidModal")
-    readonly covidModal!: CovidModalComponent;
-    @Ref("noteEditModal")
-    readonly noteEditModal!: NoteEditComponent;
-    @Ref("immunizationCard")
-    readonly immunizationCard!: ImmunizationCardComponent;
+    private get unverifiedEmail(): boolean {
+        return !this.user.verifiedEmail && this.user.hasEmail;
+    }
+
+    private get unverifiedSMS(): boolean {
+        return !this.user.verifiedSMS && this.user.hasSMS;
+    }
+
+    private get hasNewTermsOfService(): boolean {
+        return this.user.hasTermsOfServiceUpdated;
+    }
+
+    private get searchIcon(): IconDefinition {
+        return faSearch;
+    }
+
+    private get isLoading(): boolean {
+        return (
+            this.isMedicationLoading ||
+            this.isImmunizationLoading ||
+            this.isLaboratoryLoading ||
+            this.isEncounterLoading ||
+            this.isNoteLoading ||
+            this.isCommentLoading
+        );
+    }
+
+    private created() {
+        this.fetchTimelineData();
+    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-        this.fetchMedicationStatements();
-        this.fetchImmunizations();
-        this.fetchLaboratoryResults();
-        this.fetchEncounters();
-        this.fetchNotes();
-        this.fetchComments();
-        window.addEventListener("beforeunload", this.onBrowserClose);
-        this.eventBus.$on(EventMessageName.TimelineCreateNote, () => {
-            this.isAddingNote = true;
-            this.noteEditModal.showModal();
-        });
-        this.eventBus.$on(
-            EventMessageName.IdleLogoutWarning,
-            (isVisible: boolean) => {
-                this.idleLogoutWarning = isVisible;
-            }
-        );
-
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryAdded,
-            (entry: TimelineEntry) => {
-                this.onEntryAdded(entry);
-            }
-        );
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryEdit,
-            (note: NoteTimelineEntry) => {
-                this.onEntryEdit();
-                this.noteEditModal.showModal(note);
-            }
-        );
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryUpdated,
-            (entry: TimelineEntry) => {
-                this.onEntryUpdated(entry);
-            }
-        );
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryDeleted,
-            (entry: TimelineEntry) => {
-                this.onEntryDeleted(entry);
-            }
-        );
-        this.eventBus.$on(EventMessageName.TimelineNoteEditClose, () => {
-            this.onNoteEditClose();
-        });
-        this.eventBus.$on(EventMessageName.IsNoteBlank, (isBlank: boolean) => {
-            this.isBlankNote = isBlank;
-        });
         this.eventBus.$on(
             EventMessageName.TimelineViewUpdated,
             (isListView: boolean) => {
                 this.isListView = isListView;
             }
         );
-        this.eventBus.$on(EventMessageName.TimelineCovidCard, () => {
-            this.immunizationCard.showModal();
-        });
+        this.eventBus.$on(
+            EventMessageName.TimelineCovidCard,
+            this.immunizationCard.showModal
+        );
 
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
@@ -271,71 +293,11 @@ export default class TimelineView extends Vue {
         this.filter = new TimelineFilter(entryTypes);
     }
 
-    private beforeRouteLeave(
-        to: Route,
-        from: Route,
-        next: NavigationGuardNext
-    ) {
-        if (
-            !this.idleLogoutWarning &&
-            (this.isAddingNote || this.isEditingEntry) &&
-            !this.isBlankNote &&
-            !confirm(this.unsavedChangesText)
-        ) {
-            return;
-        }
-        next();
-    }
-
-    private onBrowserClose(event: BeforeUnloadEvent) {
-        if (
-            !this.idleLogoutWarning &&
-            !this.isBlankNote &&
-            (this.isAddingNote || this.isEditingEntry)
-        ) {
-            event.returnValue = this.unsavedChangesText;
-        }
-    }
-
-    private get unverifiedEmail(): boolean {
-        return !this.user.verifiedEmail && this.user.hasEmail;
-    }
-
-    private get unverifiedSMS(): boolean {
-        return !this.user.verifiedSMS && this.user.hasSMS;
-    }
-
-    private get hasNewTermsOfService(): boolean {
-        return this.user.hasTermsOfServiceUpdated;
-    }
-
-    private get searchIcon(): IconDefinition {
-        return faSearch;
-    }
-
-    private get isLoading(): boolean {
-        return (
-            this.isMedicationLoading ||
-            this.isImmunizationLoading ||
-            this.isLaboratoryLoading ||
-            this.isEncounterLoading ||
-            this.isNoteLoading ||
-            this.isCommentLoading
-        );
-    }
-
     private onCovidSubmit() {
         this.eventBus.$emit(
             EventMessageName.SelectedFilter,
             EntryType.Laboratory
         );
-    }
-
-    private onCovidCancel() {
-        // Display protective word modal if required
-        if (this.protectiveWordAttempts > 0) {
-            this.protectiveWordModal.showModal();
-        }
     }
 
     private checkTimezone(isDST: boolean): boolean {
@@ -346,347 +308,25 @@ export default class TimelineView extends Vue {
         }
     }
 
-    private fetchMedicationStatements(protectiveWord?: string) {
-        this.isMedicationLoading = true;
-
-        this.getMedicationStatements({
-            hdid: this.user.hdid,
-            protectiveWord: protectiveWord,
-        })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.protectiveWordAttempts = 0;
-                    // Add the medication entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new MedicationTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.setFilterTypeCount(
-                        EntryType.Medication,
-                        results.resourcePayload.length
-                    );
-                } else if (
-                    results.resultStatus == ResultType.ActionRequired &&
-                    results.resultError?.actionCode == ActionType.Protected
-                ) {
-                    if (!this.covidModal.show) {
-                        this.protectiveWordModal.showModal();
-                    }
-                    this.protectiveWordAttempts++;
-                } else {
-                    this.logger.error(
-                        "Error returned from the medication statements call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Medications Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Fetch Medications Error",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isMedicationLoading = false;
-            });
-    }
-
-    private fetchImmunizations() {
-        this.isImmunizationLoading = true;
-        this.retrieveImmunizations({ hdid: this.user.hdid })
-            .then(() => {
-                this.loadImmunizationEntries();
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Fetch Immunizations Error",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isImmunizationLoading = false;
-            });
-    }
-
-    private fetchLaboratoryResults() {
-        this.isLaboratoryLoading = true;
-        this.getLaboratoryOrders({ hdid: this.user.hdid })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the laboratory entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new LaboratoryTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.setFilterTypeCount(
-                        EntryType.Laboratory,
-                        results.resourcePayload.length
-                    );
-
-                    if (results.resourcePayload.length > 0) {
-                        this.protectiveWordModal.hideModal();
-                        let showCovidModal = true;
-                        const actionedCovidPreference =
-                            UserPreferenceType.ActionedCovidModalAt;
-                        if (
-                            this.user.preferences[actionedCovidPreference] !=
-                            undefined
-                        ) {
-                            const actionedCovidModalAt = new DateWrapper(
-                                this.user.preferences[
-                                    actionedCovidPreference
-                                ].value
-                            );
-                            const mostRecentLabTime = new DateWrapper(
-                                results.resourcePayload[0].messageDateTime
-                            );
-                            if (
-                                actionedCovidModalAt.isAfter(mostRecentLabTime)
-                            ) {
-                                showCovidModal = false;
-                            }
-                        }
-                        if (showCovidModal) {
-                            this.covidModal.showModal();
-                        }
-                    }
-                } else {
-                    this.logger.error(
-                        "Error returned from the laboratory call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Laboratory Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Laboratory Error", err)
-                );
-            })
-            .finally(() => {
-                this.isLaboratoryLoading = false;
-            });
-    }
-
-    private fetchEncounters() {
-        this.isEncounterLoading = true;
-        const encounterService: IEncounterService = container.get(
-            SERVICE_IDENTIFIER.EncounterService
-        );
-        this.isEncounterLoading = true;
-        encounterService
-            .getPatientEncounters(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the encounter entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new EncounterTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.setFilterTypeCount(
-                        EntryType.Encounter,
-                        results.resourcePayload.length
-                    );
-                } else {
-                    this.logger.error(
-                        "Error returned from the encounter call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Encounter Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Encounter Error", err)
-                );
-            })
-            .finally(() => {
-                this.isEncounterLoading = false;
-            });
-    }
-
-    private fetchNotes() {
-        const noteService: IUserNoteService = container.get(
-            SERVICE_IDENTIFIER.UserNoteService
-        );
-        this.isNoteLoading = true;
-        noteService
-            .getNotes(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    // Add the immunization entries to the timeline list
-                    for (let result of results.resourcePayload) {
-                        this.timelineEntries.push(
-                            new NoteTimelineEntry(result)
-                        );
-                    }
-                    this.sortEntries();
-                    this.setFilterTypeCount(
-                        EntryType.Note,
-                        results.resourcePayload.length
-                    );
-                } else {
-                    this.logger.error(
-                        "Error returned from the note call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Notes Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Notes Error", err)
-                );
-            })
-            .finally(() => {
-                this.isNoteLoading = false;
-            });
-    }
-
-    private fetchComments() {
-        this.isCommentLoading = true;
-
-        this.retrieveProfileComments({
-            hdid: this.user.hdid,
-        })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.logger.debug("Profile Comments Loaded");
-                } else {
-                    this.logger.error(
-                        "Error returned from the retrieve comments call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Profile Comments Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Profile Comments Error", err)
-                );
-            })
-            .finally(() => {
-                this.isCommentLoading = false;
-            });
-    }
-
-    private loadImmunizationEntries() {
-        if (this.immunizationLoadReady) {
-            this.immunizationLoadDeferred = false;
-            this.immunizationLoadReady = false;
-        }
-        // Add the immunization entries to the timeline list
-        for (let immunization of this.patientImmunizations) {
-            this.timelineEntries.push(
-                new ImmunizationTimelineEntry(immunization)
-            );
-        }
-        this.sortEntries();
-        this.setFilterTypeCount(
-            EntryType.Immunization,
-            this.patientImmunizations.length
-        );
-    }
-
-    private onEntryAdded(entry: TimelineEntry) {
-        this.logger.debug(`Timeline Entry added: ${JSON.stringify(entry)}`);
-        this.isAddingNote = false;
-        if (entry) {
-            this.timelineEntries.push(entry);
-            this.sortEntries();
-            if (entry.type === EntryType.Note) {
-                this.addFilterTypeCount(EntryType.Note, 1);
-            }
-        }
-    }
-
-    private onEntryEdit() {
-        this.isEditingEntry = true;
-    }
-
-    private onNoteEditClose() {
-        this.isEditingEntry = false;
-        this.isAddingNote = false;
-    }
-
-    private onEntryUpdated(entry: TimelineEntry) {
-        this.logger.debug(`Timeline Entry updated: ${JSON.stringify(entry)}`);
-        const index = this.timelineEntries.findIndex(
-            (e) => e.id === entry.id && e.type === entry.type
-        );
-        this.timelineEntries.splice(index, 1);
-        this.timelineEntries.push(entry);
-        this.isEditingEntry = false;
-        this.sortEntries();
-    }
-
-    private onEntryDeleted(entry: TimelineEntry) {
-        this.logger.debug(`Timeline Entry deleted: ${JSON.stringify(entry)}`);
-        const index = this.timelineEntries.findIndex((e) => e.id == entry.id);
-        this.timelineEntries.splice(index, 1);
-        this.sortEntries();
-        if (entry.type === EntryType.Note) {
-            this.addFilterTypeCount(EntryType.Note, -1);
-        }
-    }
-
-    private onProtectiveWordSubmit(value: string) {
-        this.fetchMedicationStatements(value);
-    }
-
-    private onProtectiveWordCancel() {
-        // Does nothing as it won't be able to fetch pharmanet data.
-        this.logger.debug("protective word cancelled");
+    private fetchTimelineData() {
+        Promise.all([
+            this.retrieveMedications({ hdid: this.user.hdid }),
+            this.retrieveImmunizations({ hdid: this.user.hdid }),
+            this.retrieveLaboratory({ hdid: this.user.hdid }),
+            this.retrieveEncounters({ hdid: this.user.hdid }),
+            this.retrieveNotes({ hdid: this.user.hdid }),
+            this.retrieveComments({ hdid: this.user.hdid }),
+        ]).catch((err) => {
+            this.logger.error(`Error loading timeline data: ${err}`);
+        });
     }
 
     private getTotalCount(): number {
         return this.timelineEntries.length;
     }
 
-    private sortEntries() {
-        this.timelineEntries.sort((a, b) =>
+    private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
+        return timelineEntries.sort((a, b) =>
             a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
         );
     }
@@ -774,11 +414,11 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="immunizationLoadDeferred"
+                        :show="immunizationNeedsInput"
                         variant="info"
                         class="no-print"
                     >
-                        <span v-if="!immunizationLoadReady">
+                        <span v-if="immunizationIsDeferred">
                             <h4 data-testid="immunizationLoading">
                                 Still searching for immunization records
                             </h4>
@@ -791,7 +431,7 @@ export default class TimelineView extends Vue {
                                 data-testid="immunizationBtnReady"
                                 variant="link"
                                 class="detailsButton px-0"
-                                @click="loadImmunizationEntries()"
+                                @click="immunizationNeedsInput = false"
                             >
                                 Load to timeline.
                             </b-btn></span
@@ -873,20 +513,9 @@ export default class TimelineView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <CovidModalComponent
-            ref="covidModal"
-            :is-loading="isLoading"
-            @submit="onCovidSubmit"
-            @cancel="onCovidCancel"
-        />
-        <ProtectiveWordComponent
-            ref="protectiveWordModal"
-            :error="protectiveWordAttempts > 1"
-            :is-loading="isLoading"
-            @submit="onProtectiveWordSubmit"
-            @cancel="onProtectiveWordCancel"
-        />
-        <NoteEditComponent ref="noteEditModal" :is-loading="isLoading" />
+        <CovidModalComponent :is-loading="isLoading" @submit="onCovidSubmit" />
+        <ProtectiveWordComponent :is-loading="isLoading" />
+        <NoteEditComponent :is-loading="isLoading" />
         <ImmunizationCard ref="immunizationCard" />
     </div>
 </template>

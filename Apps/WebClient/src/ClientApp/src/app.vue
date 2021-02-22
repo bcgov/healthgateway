@@ -148,7 +148,7 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     },
 })
 export default class App extends Vue {
-    @Ref("idleModal") readonly idleModal?: IdleComponent;
+    @Ref("idleModal") readonly idleModal!: IdleComponent;
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated?: boolean;
 
@@ -170,7 +170,7 @@ export default class App extends Vue {
     @Watch("isAppIdle")
     private onIsAppIdleChanged(idle: boolean) {
         if (idle && this.oidcIsAuthenticated) {
-            this.idleModal?.show();
+            this.idleModal.show();
         }
     }
 }

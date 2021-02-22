@@ -1,6 +1,6 @@
 import { Module } from "vuex";
 
-import { AuthState, RootState, StateType } from "@/models/storeState";
+import { AuthState, LoadStatus, RootState } from "@/models/storeState";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
@@ -11,7 +11,7 @@ export const state: AuthState = {
     authentication: { isChecked: false, identityProvider: "" },
     error: undefined,
     isAuthenticated: false,
-    stateType: StateType.NONE,
+    status: LoadStatus.NONE,
 };
 
 const namespaced = true;

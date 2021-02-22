@@ -1,62 +1,71 @@
 ﻿<script lang="ts">
 import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
+import BannerError from "@/models/bannerError";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import RequestResult from "@/models/requestResult";
+import User from "@/models/user";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.config";
+import { ILogger } from "@/services/interfaces";
+
+const med = "medication";
 @Component
 export default class ProtectiveWordComponent extends Vue {
-    @Prop() error!: boolean;
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
+    @Action("retrieve", { namespace: med })
+    retrieveMedications!: (params: {
+        hdid: string;
+        protectiveWord?: string;
+    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
+
+    @Getter("isProtected", { namespace: med })
+    isProtected!: boolean;
+    @Getter("user", { namespace: "user" }) user!: User;
+    @Getter("protectedWordAttempts", { namespace: med })
+    protectedWordAttempts!: number;
+
     @Prop({ default: false }) isLoading!: boolean;
 
     private protectiveWord = "";
-    private show = false;
-    private isVisible = false;
+    private isDismissed = false;
 
-    public showModal(): void {
-        this.show = true;
-        if (!this.isLoading) {
-            this.isVisible = true;
-        }
+    private logger!: ILogger;
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    public hideModal(): void {
-        this.show = false;
-        this.isVisible = false;
+    private get isVisible(): boolean {
+        return this.isProtected && !this.isLoading && !this.isDismissed;
     }
 
-    @Watch("isLoading")
-    private onIsLoading() {
-        if (!this.isLoading && this.show) {
-            this.isVisible = true;
-        }
+    private set isVisible(visible: boolean) {
+        this.isDismissed = !visible;
     }
 
-    @Emit()
-    private submit() {
-        this.show = false;
-        this.isVisible = false;
-        return this.protectiveWord;
-    }
-
-    @Emit()
-    private cancel() {
-        this.hideModal();
-        return;
+    private get error(): boolean {
+        return this.protectedWordAttempts > 1;
     }
 
     private handleOk(bvModalEvt: Event) {
         // Prevent modal from closing
         bvModalEvt.preventDefault();
-
-        // Trigger submit handler
-        this.handleSubmit();
+        this.fetchMedications();
     }
 
-    private handleSubmit() {
-        this.submit();
-
-        // Hide the modal manually
-        this.$nextTick(() => {
-            this.hideModal();
+    private fetchMedications() {
+        this.retrieveMedications({
+            hdid: this.user.hdid,
+            protectiveWord: this.protectiveWord,
+        }).catch((err) => {
+            this.logger.error(
+                "Error retrieving medications: " + JSON.stringify(err)
+            );
         });
     }
 }
@@ -74,7 +83,7 @@ export default class ProtectiveWordComponent extends Vue {
     >
         <b-row>
             <b-col>
-                <form @submit.stop.prevent="handleSubmit">
+                <form @submit.stop.prevent="handleOk">
                     <b-row>
                         <b-col cols="8">
                             <label for="protectiveWord-input"

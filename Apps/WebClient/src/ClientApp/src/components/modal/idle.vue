@@ -1,53 +1,52 @@
 ﻿<script lang="ts">
 import Vue from "vue";
-import { Component, Emit } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import { Action } from "vuex-class";
-
-import EventBus, { EventMessageName } from "@/eventbus";
 
 @Component
 export default class IdleComponent extends Vue {
     @Action("authenticateOidcSilent", { namespace: "auth" })
     authenticateOidcSilent!: () => Promise<void>;
+    @Action("setVisibleState", { namespace: "idle" })
+    setVisibleState!: (isVisible: boolean) => void;
 
-    private readonly modalId: string = "idle-modal";
-    private totalTime = 60;
-    private visible = false;
-    private timerHandle?: number;
-    private timeoutHandle?: number;
-    private eventBus = EventBus;
+    private readonly maxCountdownTime = 60;
+    private logoutCountdown = this.maxCountdownTime;
+    private isVisible = false;
+    private timerHandle = 0;
+    private timeoutHandle = 0;
 
-    @Emit()
-    public show(): void {
-        if (!this.visible) {
-            this.$bvModal.show(this.modalId);
-            this.timerHandle = window.setInterval(() => this.countdown(), 1000);
-            this.timeoutHandle = window.setTimeout(() => {
-                this.eventBus.$emit(EventMessageName.IdleLogoutWarning, true);
-                this.logout();
-            }, 1000 * 60);
+    @Watch("logoutCountdown")
+    private onCountdownUpdate() {
+        if (this.logoutCountdown <= 0) {
+            this.$router.push("/logout");
+            window.clearTimeout(this.timeoutHandle);
+            window.clearInterval(this.timerHandle);
         }
     }
 
-    @Emit()
-    public logout(): void {
-        this.$router.push("/logout");
-    }
+    public show(): void {
+        if (!this.isVisible) {
+            this.timerHandle = window.setInterval(() => this.countdown(), 1000);
+            this.timeoutHandle = window.setTimeout(() => {
+                this.setVisibleState(false);
+            }, 1000 * this.maxCountdownTime);
+        }
 
-    private refresh() {
-        this.authenticateOidcSilent();
-        this.reset();
+        this.isVisible = true;
+        this.setVisibleState(true);
     }
 
     private reset() {
-        this.totalTime = 60;
+        this.authenticateOidcSilent();
+        this.logoutCountdown = this.maxCountdownTime;
         window.clearTimeout(this.timeoutHandle);
         window.clearInterval(this.timerHandle);
-        this.eventBus.$emit(EventMessageName.IdleLogoutWarning, false);
+        this.setVisibleState(false);
     }
 
     private countdown() {
-        this.totalTime--;
+        this.logoutCountdown--;
     }
 }
 </script>
@@ -55,7 +54,7 @@ export default class IdleComponent extends Vue {
 <template>
     <b-modal
         id="idle-modal"
-        v-model="visible"
+        v-model="isVisible"
         data-testid="idleModal"
         header-bg-variant="primary"
         header-text-variant="light"
@@ -63,12 +62,13 @@ export default class IdleComponent extends Vue {
         title="Are you still there?"
         ok-title="I'm here!"
         centered
-        @ok="refresh"
-        @hidden="refresh"
+        @ok="reset"
+        @hidden="reset"
     >
         <b-row>
             <b-col data-testid="idleModalText">
-                You will be automatically logged out in {{ totalTime }} seconds.
+                You will be automatically logged out in
+                {{ logoutCountdown }} seconds.
             </b-col>
         </b-row>
     </b-modal>
