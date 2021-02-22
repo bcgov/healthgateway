@@ -104,9 +104,7 @@ export default class EntrycardTimelineComponent extends Vue {
                                 v-if="commentsCount > 1"
                                 class="pr-2"
                                 data-testid="commentCount"
-                                >{{
-                                    commentsCount > 1 ? commentsCount : ""
-                                }}</span
+                                >{{ commentsCount }}</span
                             >
                             <span v-if="commentsCount > 0">
                                 <font-awesome-icon
