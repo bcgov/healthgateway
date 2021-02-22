@@ -112,16 +112,13 @@ export default class FilterComponent extends Vue {
 
         this.eventBus.$on(
             EventMessageName.SelectedFilter,
-            (filterType: EntryType) => {
-                this.onExternalFilterSelection(filterType);
-            }
+            this.onExternalFilterSelection
         );
-        this.eventBus.$on(EventMessageName.TimelineEntryAdded, () => {
-            this.onEntryAdded();
-        });
-        this.eventBus.$on(EventMessageName.CalendarDateEventClick, () => {
-            this.toggleListView();
-        });
+        this.eventBus.$on(EventMessageName.AddedNote, this.onEntryAdded);
+        this.eventBus.$on(
+            EventMessageName.CalendarDateEventClick,
+            this.toggleListView
+        );
     }
 
     private destroyed() {

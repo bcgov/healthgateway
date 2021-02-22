@@ -84,7 +84,7 @@ namespace HealthGateway.Medication.Delegates
                     { "servicePort", servicePort! },
                 };
 
-                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData) !);
+                this.baseURL = new Uri(StringManipulator.Replace(this.odrConfig.BaseEndpoint, replacementData)!);
             }
             else
             {
@@ -194,7 +194,7 @@ namespace HealthGateway.Medication.Delegates
         {
             using (Source.StartActivity("ValidateProtectiveWord"))
             {
-                bool retVal = false;
+                bool isValid = false;
                 try
                 {
                     IHash? cacheHash = null;
@@ -223,12 +223,12 @@ namespace HealthGateway.Medication.Delegates
                             }
                         }
 
-                        retVal = this.hashDelegate.Compare(protectiveWord, hash);
+                        isValid = this.hashDelegate.Compare(protectiveWord, hash);
                     }
                     else
                     {
                         this.logger.LogDebug("Validating Cached Protective Word");
-                        retVal = this.hashDelegate.Compare(protectiveWord, cacheHash);
+                        isValid = this.hashDelegate.Compare(protectiveWord, cacheHash);
                     }
                 }
 #pragma warning disable CA1031 // We want to fail on any exception
@@ -238,7 +238,7 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogError($"Error getting protected word {e.ToString()}");
                 }
 
-                return retVal;
+                return isValid;
             }
         }
 

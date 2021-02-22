@@ -333,10 +333,7 @@ export default class ReportsView extends Vue {
                                                     variant="primary"
                                                     data-testid="applyFilterBtn"
                                                     class="mb-1 ml-2"
-                                                    :disabled="
-                                                        isLoading ||
-                                                        patientData === null
-                                                    "
+                                                    :disabled="isLoading"
                                                     @click="updateFilter"
                                                 >
                                                     Apply

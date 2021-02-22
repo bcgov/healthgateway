@@ -4,7 +4,6 @@ import { ResultType } from "@/constants/resulttype";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
-import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -15,7 +14,6 @@ import {
     IMedicationService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import RequestResultUtil from "@/utility/requestResultUtil";
 
 @injectable()
 export class RestMedicationService implements IMedicationService {
@@ -67,35 +65,6 @@ export class RestMedicationService implements IMedicationService {
                 .catch((err) => {
                     this.logger.error(
                         `getPatientMedicationStatementHistory ${this.FETCH_ERROR}: ${err}`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceName.Medication
-                        )
-                    );
-                });
-        });
-    }
-
-    public getMedicationInformation(
-        drugIdentifier: string
-    ): Promise<MedicationResult> {
-        return new Promise((resolve, reject) => {
-            return this.http
-                .get<RequestResult<MedicationResult>>(
-                    `${this.baseUri}${this.MEDICATION_BASE_URI}/${drugIdentifier}`
-                )
-                .then((requestResult) => {
-                    return RequestResultUtil.handleResult(
-                        requestResult,
-                        resolve,
-                        reject
-                    );
-                })
-                .catch((err) => {
-                    this.logger.error(
-                        `getMedicationInformation ${this.FETCH_ERROR}: ${err}`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(

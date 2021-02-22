@@ -25,7 +25,7 @@ export default class ImmunizationCardComponent extends Vue {
     })
     oidcIsAuthenticated!: boolean;
 
-    @Getter("getStoredImmunizations", { namespace: "immunization" })
+    @Getter("immunizations", { namespace: "immunization" })
     immunizations!: ImmunizationEvent[];
 
     private readonly modalId: string = "covid-card-modal";
@@ -51,13 +51,13 @@ export default class ImmunizationCardComponent extends Vue {
                 const firstDate = new DateWrapper(a.dateOfImmunization);
                 const secondDate = new DateWrapper(b.dateOfImmunization);
 
-                const vale = firstDate.isAfter(secondDate)
+                const value = firstDate.isAfter(secondDate)
                     ? 1
                     : firstDate.isBefore(secondDate)
                     ? -1
                     : 0;
 
-                return vale;
+                return value;
             });
 
         for (let index = 0; index < covidImmunizations.length; index++) {

@@ -5,18 +5,14 @@ import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ReportHeaderComponent from "@/components/report/header.vue";
-import { ResultType } from "@/constants/resulttype";
-import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder } from "@/models/laboratory";
 import PatientData from "@/models/patientData";
-import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import PDFDefinition from "@/plugins/pdfDefinition";
 import { ILogger } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {
@@ -24,108 +20,85 @@ import ErrorTranslator from "@/utility/errorTranslator";
     },
 })
 export default class COVID19ReportComponent extends Vue {
-    @Prop() private startDate?: string;
-    @Prop() private endDate?: string;
-    @Prop() private patientData?: PatientData;
+    @Prop() private startDate!: string | null;
+    @Prop() private endDate!: string | null;
+    @Prop() private patientData!: PatientData | null;
+
+    @Action("retrieve", { namespace: "laboratory" })
+    retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
+
+    @Getter("laboratoryOrders", { namespace: "laboratory" })
+    laboratoryOrders!: LaboratoryOrder[];
+
+    @Getter("isLoading", { namespace: "laboratory" })
+    isLaboratoryLoading!: boolean;
+
     @Getter("user", { namespace: "user" })
     private user!: User;
-    @Action("addError", { namespace: "errorBanner" })
-    private addError!: (error: BannerError) => void;
-    @Action("getOrders", { namespace: "laboratory" })
-    getLaboratoryOrders!: (params: {
-        hdid: string;
-    }) => Promise<RequestResult<LaboratoryOrder[]>>;
+
     @Ref("report")
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
-    private records: LaboratoryOrder[] = [];
     private isPreview = true;
-    private isLoading = false;
 
-    @Watch("isLoading")
+    @Watch("isLaboratoryLoading")
     @Emit()
     private onIsLoadingChanged() {
-        return this.isLoading;
+        return this.isLaboratoryLoading;
     }
 
-    @Watch("startDate")
-    @Watch("endDate")
-    private onDateChanged() {
-        this.fetchLaboratoryResults();
-    }
+    private get visibleRecords(): LaboratoryOrder[] {
+        let records = this.laboratoryOrders.filter((record) => {
+            let filterStart = true;
+            if (this.startDate !== null) {
+                filterStart = new DateWrapper(
+                    record.labResults[0].collectedDateTime
+                ).isAfterOrSame(new DateWrapper(this.startDate));
+            }
 
-    private fetchLaboratoryResults() {
-        this.isLoading = true;
-        this.getLaboratoryOrders({ hdid: this.user.hdid })
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.filterAndSortEntries(results.resourcePayload);
-                } else {
-                    this.logger.error(
-                        "Error returned from the LaboratoryResults call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Laboratory Results Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Fetch Laboratory Results Error",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
-
-    private filterAndSortEntries(labOrders: LaboratoryOrder[]) {
-        let records = labOrders.filter((record) => {
-            return (
-                (!this.startDate ||
-                    new DateWrapper(
-                        record.labResults[0].collectedDateTime
-                    ).isAfterOrSame(new DateWrapper(this.startDate))) &&
-                (!this.endDate ||
-                    new DateWrapper(
-                        record.labResults[0].collectedDateTime
-                    ).isBeforeOrSame(new DateWrapper(this.endDate)))
-            );
+            let filterEnd = true;
+            if (this.endDate !== null) {
+                filterEnd = new DateWrapper(
+                    record.labResults[0].collectedDateTime
+                ).isBeforeOrSame(new DateWrapper(this.endDate));
+            }
+            return filterStart && filterEnd;
         });
-        records.sort((a, b) =>
-            a.labResults[0].collectedDateTime >
-            b.labResults[0].collectedDateTime
-                ? -1
-                : a.labResults[0].collectedDateTime <
-                  b.labResults[0].collectedDateTime
-                ? 1
-                : 0
-        );
+        records.sort((a, b) => {
+            const firstDate = new DateWrapper(
+                a.labResults[0].collectedDateTime
+            );
+            const secondDate = new DateWrapper(
+                b.labResults[0].collectedDateTime
+            );
 
-        this.records = records;
+            const value = firstDate.isAfter(secondDate)
+                ? 1
+                : firstDate.isBefore(secondDate)
+                ? -1
+                : 0;
+
+            return value;
+        });
+
+        return records;
     }
 
     private get isEmpty() {
-        return this.records.length == 0;
+        return this.visibleRecords.length == 0;
+    }
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.retrieveLaboratory({ hdid: this.user.hdid }).catch((err) => {
+            this.logger.error(`Error loading Covid19 data: ${err}`);
+        });
     }
 
     private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchLaboratoryResults();
     }
 
     public async generatePdf(): Promise<void> {
@@ -192,7 +165,11 @@ export default class COVID19ReportComponent extends Vue {
                     <b-col>Test Location</b-col>
                     <b-col>Result</b-col>
                 </b-row>
-                <b-row v-for="item in records" :key="item.id" class="item py-1">
+                <b-row
+                    v-for="item in visibleRecords"
+                    :key="item.id"
+                    class="item py-1"
+                >
                     <b-col
                         data-testid="covid19ItemDate"
                         class="my-auto text-nowrap"

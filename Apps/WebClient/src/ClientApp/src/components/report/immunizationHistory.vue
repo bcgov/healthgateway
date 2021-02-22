@@ -5,7 +5,6 @@ import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ReportHeaderComponent from "@/components/report/header.vue";
-import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
@@ -14,7 +13,6 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import PDFDefinition from "@/plugins/pdfDefinition";
 import { ILogger } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {
@@ -22,41 +20,34 @@ import ErrorTranslator from "@/utility/errorTranslator";
     },
 })
 export default class ImmunizationHistoryReportComponent extends Vue {
-    @Prop() private startDate?: string;
-    @Prop() private endDate?: string;
-    @Prop() private patientData?: PatientData;
+    @Prop() private startDate!: string | null;
+    @Prop() private endDate!: string | null;
+    @Prop() private patientData!: PatientData | null;
+
     @Getter("user", { namespace: "user" })
-    private user!: User;
+    user!: User;
+
     @Getter("isDeferredLoad", { namespace: "immunization" })
     immunizationIsDeferred!: boolean;
-    @Getter("getStoredImmunizations", { namespace: "immunization" })
-    patientImmunizations!: ImmunizationEvent[];
-    @Getter("getStoredRecommendations", { namespace: "immunization" })
-    patientRecommendations!: Recommendation[];
-    @Action("addError", { namespace: "errorBanner" })
-    private addError!: (error: BannerError) => void;
+
     @Action("retrieve", { namespace: "immunization" })
-    retrieveImmunizations!: (params: {
-        hdid: string;
-    }) => Promise<ImmunizationEvent[]>;
+    retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
+
+    @Getter("isLoading", { namespace: "immunization" })
+    isImmunizationLoading!: boolean;
+
+    @Getter("immunizations", { namespace: "immunization" })
+    patientImmunizations!: ImmunizationEvent[];
+
+    @Getter("recomendations", { namespace: "immunization" })
+    patientRecommendations!: Recommendation[];
+
     @Ref("report")
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
-    private immunizationRecords: ImmunizationEvent[] = [];
-    private recommendationRecords: Recommendation[] = [];
     private isPreview = true;
-    private isLoading = false;
-
-    @Watch("immunizationIsDeferred")
-    private onImmunizationIsDeferredChanged(newVal: boolean) {
-        if (newVal) {
-            this.isLoading = true;
-        } else {
-            this.loadRecords();
-        }
-    }
 
     @Watch("isLoading")
     @Emit()
@@ -64,76 +55,60 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         return this.isLoading;
     }
 
-    @Watch("startDate")
-    @Watch("endDate")
-    private onDateChanged() {
-        this.fetchPatientImmunizations();
+    private get isLoading(): boolean {
+        return this.immunizationIsDeferred || this.isImmunizationLoading;
     }
 
-    private loadRecords() {
-        this.recommendationRecords = this.patientRecommendations;
-        this.filterAndSortEntries();
-        this.isLoading = false;
+    private get isEmpty() {
+        return this.visibleImmunizations.length === 0;
     }
 
-    private fetchPatientImmunizations() {
-        this.isLoading = true;
-        this.retrieveImmunizations({ hdid: this.user.hdid })
-            .then(() => {
-                if (!this.immunizationIsDeferred) {
-                    this.loadRecords();
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Fetch Patient Immunizations Error",
-                        err
-                    )
-                );
-                this.isLoading = false;
-            });
+    private get isRecommendationEmpty() {
+        return this.patientRecommendations.length === 0;
     }
 
-    private filterAndSortEntries() {
-        let immunizationRecords = this.patientImmunizations.filter((record) => {
-            return (
-                (!this.startDate ||
-                    new DateWrapper(record.dateOfImmunization).isAfterOrSame(
-                        new DateWrapper(this.startDate)
-                    )) &&
-                (!this.endDate ||
-                    new DateWrapper(record.dateOfImmunization).isBeforeOrSame(
-                        new DateWrapper(this.endDate)
-                    ))
-            );
+    private get visibleImmunizations(): ImmunizationEvent[] {
+        let records = this.patientImmunizations.filter((record) => {
+            let filterStart = true;
+            if (this.startDate !== null) {
+                filterStart = new DateWrapper(
+                    record.dateOfImmunization
+                ).isAfterOrSame(new DateWrapper(this.startDate));
+            }
+
+            let filterEnd = true;
+            if (this.endDate !== null) {
+                filterEnd = new DateWrapper(
+                    record.dateOfImmunization
+                ).isBeforeOrSame(new DateWrapper(this.endDate));
+            }
+            return filterStart && filterEnd;
         });
-        immunizationRecords.sort((a, b) =>
-            a.dateOfImmunization > b.dateOfImmunization
-                ? -1
-                : a.dateOfImmunization < b.dateOfImmunization
+        records.sort((a, b) => {
+            const firstDate = new DateWrapper(a.dateOfImmunization);
+            const secondDate = new DateWrapper(b.dateOfImmunization);
+
+            const value = firstDate.isAfter(secondDate)
                 ? 1
-                : 0
-        );
-        this.immunizationRecords = immunizationRecords;
+                : firstDate.isBefore(secondDate)
+                ? -1
+                : 0;
+
+            return value;
+        });
+
+        return records;
+    }
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) => {
+            this.logger.error(`Error loading immunization data: ${err}`);
+        });
     }
 
     private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
-    }
-
-    private get isEmpty() {
-        return this.immunizationRecords.length == 0;
-    }
-
-    private get isRecommendationEmpty() {
-        return this.recommendationRecords.length == 0;
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchPatientImmunizations();
     }
 
     public async generatePdf(): Promise<void> {
@@ -221,22 +196,22 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                     >
                 </b-row>
                 <b-row
-                    v-for="immzRecord in immunizationRecords"
-                    :key="immzRecord.id"
+                    v-for="record in visibleImmunizations"
+                    :key="record.id"
                     class="item py-1"
                 >
                     <b-col
                         data-testid="immunizationItemDate"
                         class="col-2 text-nowrap"
                     >
-                        {{ formatDate(immzRecord.dateOfImmunization) }}
+                        {{ formatDate(record.dateOfImmunization) }}
                     </b-col>
                     <b-col data-testid="immunizationItemName" class="col-3">
-                        {{ immzRecord.immunization.name }}
+                        {{ record.immunization.name }}
                     </b-col>
                     <b-col data-testid="immunizationItemAgent" class="col-5">
                         <b-row
-                            v-for="agent in immzRecord.immunization
+                            v-for="agent in record.immunization
                                 .immunizationAgents"
                             :key="agent.code"
                         >
@@ -255,7 +230,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         data-testid="immunizationItemProviderClinic"
                         class="col-2"
                     >
-                        {{ immzRecord.providerOrClinic }}
+                        {{ record.providerOrClinic }}
                     </b-col>
                 </b-row>
                 <b-row>
@@ -309,7 +284,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                             >
                         </b-row>
                         <b-row
-                            v-for="recommendation in recommendationRecords"
+                            v-for="recommendation in patientRecommendations"
                             :key="recommendation.recommendationId"
                             class="item py-1"
                         >

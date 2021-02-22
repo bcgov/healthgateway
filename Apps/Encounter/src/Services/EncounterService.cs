@@ -81,7 +81,7 @@ namespace HealthGateway.Encounter.Services
                         PHN = patient.PersonalHealthNumber,
                         PageSize = 20000,
                     };
-                    IPAddress address = this.httpContextAccessor.HttpContext !.Connection.RemoteIpAddress !;
+                    IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
                     string ipv4Address = address.MapToIPv4().ToString();
                     RequestResult<MSPVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
                     result.ResultStatus = response.ResultStatus;

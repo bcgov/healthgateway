@@ -1,6 +1,6 @@
 import { Module } from "vuex";
 
-import { RootState, StateType, UserState } from "@/models/storeState";
+import { LoadStatus, RootState, UserState } from "@/models/storeState";
 import User from "@/models/user";
 
 import { actions } from "./actions";
@@ -11,7 +11,7 @@ export const state: UserState = {
     statusMessage: "",
     user: new User(),
     error: false,
-    stateType: StateType.NONE,
+    status: LoadStatus.LOADED,
 };
 
 const namespaced = true;

@@ -1,21 +1,23 @@
 import { MutationTree } from "vuex";
 
 import { LaboratoryOrder } from "@/models/laboratory";
-import { LaboratoryState, StateType } from "@/models/storeState";
+import { LaboratoryState, LoadStatus } from "@/models/storeState";
 
 export const mutations: MutationTree<LaboratoryState> = {
+    setRequested(state: LaboratoryState) {
+        state.status = LoadStatus.REQUESTED;
+    },
     setLaboratoryOrders(
         state: LaboratoryState,
         laboratoryOrders: LaboratoryOrder[]
     ) {
         state.laboratoryOrders = laboratoryOrders;
-        state.error = false;
+        state.error = undefined;
         state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.status = LoadStatus.LOADED;
     },
-    laboratoryError(state: LaboratoryState, errorMessage: string) {
-        state.error = true;
-        state.statusMessage = errorMessage;
-        state.stateType = StateType.ERROR;
+    laboratoryError(state: LaboratoryState, error: Error) {
+        state.statusMessage = error.message;
+        state.status = LoadStatus.ERROR;
     },
 };
