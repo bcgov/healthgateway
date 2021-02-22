@@ -30,12 +30,8 @@ export default class EntrycardTimelineComponent extends Vue {
     @Getter("getEntryComments", { namespace: "comment" })
     entryComments!: (entyId: string) => UserComment[];
 
-    private get comments(): UserComment[] {
-        return this.entryComments(this.entry.id) || [];
-    }
-
     private get commentsCount(): number {
-        return this.comments !== undefined ? this.comments.length : 0;
+        return (this.entryComments(this.entry.id) || []).length;
     }
 
     private detailsVisible = false;
