@@ -216,8 +216,8 @@ export default class TimelineView extends Vue {
         return faSearch;
     }
 
-    private handleViewDetails() {
-        this.eventBus.$emit(EventMessageName.EntryDetails, this.timelineEntries);
+    private handleViewEntryDetails(selectedEntry: TimelineEntry) {
+        this.eventBus.$emit(EventMessageName.ViewEntryDetails, selectedEntry);
     }
 
     private get isLoading(): boolean {
