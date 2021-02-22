@@ -1,22 +1,21 @@
 import { Module } from "vuex";
 
-import { LoadStatus, RootState, UserState } from "@/models/storeState";
-import User from "@/models/user";
+import { LoadStatus, NoteState, RootState } from "@/models/storeState";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
 
-export const state: UserState = {
+export const state: NoteState = {
+    notes: [],
+    status: LoadStatus.NONE,
+    error: undefined,
     statusMessage: "",
-    user: new User(),
-    error: false,
-    status: LoadStatus.LOADED,
 };
 
 const namespaced = true;
 
-export const user: Module<UserState, RootState> = {
+export const note: Module<NoteState, RootState> = {
     namespaced,
     state,
     getters,

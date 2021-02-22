@@ -1,22 +1,21 @@
 import { Module } from "vuex";
 
-import { ExternalConfiguration } from "@/models/configData";
-import { ConfigState, LoadStatus, RootState } from "@/models/storeState";
+import { EncounterState, LoadStatus, RootState } from "@/models/storeState";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
 
-export const state: ConfigState = {
+export const state: EncounterState = {
     statusMessage: "",
-    config: new ExternalConfiguration(),
-    error: false,
+    patientEncounters: [],
+    error: undefined,
     status: LoadStatus.NONE,
 };
 
 const namespaced = true;
 
-export const config: Module<ConfigState, RootState> = {
+export const encounter: Module<EncounterState, RootState> = {
     namespaced,
     state,
     getters,

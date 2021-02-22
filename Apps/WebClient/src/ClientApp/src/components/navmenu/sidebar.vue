@@ -149,7 +149,7 @@ export default class SidebarComponent extends Vue {
 
     private createNote() {
         this.clearOverlay();
-        this.eventBus.$emit(EventMessageName.TimelineCreateNote);
+        this.eventBus.$emit(EventMessageName.CreateNote);
     }
 
     private dismissTutorial(userPreference: UserPreference) {

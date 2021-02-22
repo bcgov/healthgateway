@@ -1,6 +1,6 @@
 import { Module } from "vuex";
 
-import { ImmunizationState, RootState, StateType } from "@/models/storeState";
+import { ImmunizationState, LoadStatus, RootState } from "@/models/storeState";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
@@ -10,8 +10,8 @@ export const state: ImmunizationState = {
     statusMessage: "",
     immunizations: [],
     recommendations: [],
-    error: false,
-    stateType: StateType.NONE,
+    error: undefined,
+    status: LoadStatus.NONE,
 };
 
 const namespaced = true;
