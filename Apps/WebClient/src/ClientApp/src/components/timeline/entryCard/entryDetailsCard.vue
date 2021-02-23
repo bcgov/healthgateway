@@ -1,33 +1,20 @@
 <script lang="ts">
 import {
-    faEdit,
-    faEllipsisV,
-    faFlask,
     faLongArrowAltLeft,
-    faPills,
-    faQuestion,
-    faSyringe,
-    faUserMd,
     IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
-import { Action, Getter } from "vuex-class";
+import { Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
-import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
-import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
-import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
-import UserNote from "@/models/userNote";
 
 import EncounterTimelineComponent from "./encounter.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
@@ -47,15 +34,6 @@ import NoteTimelineComponent from "./note.vue";
     },
 })
 export default class EntryDetailsComponent extends Vue {
-    @Action("createNote", { namespace: "note" }) createNote!: (params: {
-        hdid: string;
-        note: UserNote;
-    }) => Promise<UserNote>;
-    @Action("updateNote", { namespace: "note" }) updateNote!: (params: {
-        hdid: string;
-        note: UserNote;
-    }) => Promise<UserNote>;
-
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
@@ -66,13 +44,9 @@ export default class EntryDetailsComponent extends Vue {
         return this.windowWidth < 576;
     }
 
-    private entry?: TimelineEntry;
-    private entryTitle = "";
-    private entrySubTitle = "";
+    private entry: TimelineEntry | null = null;
     private entryDate = "";
-    private entryIcon: IconDefinition = faQuestion;
 
-    private errorMessage = "";
     private eventBus = EventBus;
 
     private isVisible = false;
@@ -83,10 +57,6 @@ export default class EntryDetailsComponent extends Vue {
 
     private get modalTitle(): string {
         return "";
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
     }
 
     private mounted() {
@@ -122,42 +92,6 @@ export default class EntryDetailsComponent extends Vue {
         this.entry = entry;
         this.entryDate = this.dateString(entry.date);
         this.windowWidth = window.innerWidth;
-        if (this.entry.type == EntryType.Medication) {
-            this.entryIcon = faPills;
-            const med: MedicationTimelineEntry = this
-                .entry as MedicationTimelineEntry;
-            this.entryTitle = med.medication.brandName;
-            this.entrySubTitle =
-                med.medication.genericName != null
-                    ? med.medication.genericName
-                    : "";
-        }
-        if (this.entry.type == EntryType.Immunization) {
-            this.entryIcon = faSyringe;
-            const immunization: ImmunizationTimelineEntry = this
-                .entry as ImmunizationTimelineEntry;
-            this.entryTitle = immunization.immunization.name;
-        }
-        if (this.entry.type == EntryType.Laboratory) {
-            this.entryIcon = faFlask;
-            const lab: LaboratoryTimelineEntry = this
-                .entry as LaboratoryTimelineEntry;
-            this.entryTitle = lab.summaryTitle;
-            this.entrySubTitle =
-                lab.labResultOutcome != null ? lab.labResultOutcome : "";
-        }
-        if (this.entry.type == EntryType.Note) {
-            this.entryIcon = faEdit;
-            const note: NoteTimelineEntry = this.entry as NoteTimelineEntry;
-            this.entryTitle = note.title;
-        }
-        if (this.entry.type == EntryType.Encounter) {
-            this.entryIcon = faUserMd;
-            const encounter: EncounterTimelineEntry = this
-                .entry as EncounterTimelineEntry;
-            this.entryTitle = encounter.practitionerName;
-            this.entrySubTitle = encounter.specialtyDescription;
-        }
         this.isVisible = true;
     }
 
@@ -189,10 +123,7 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     private clear() {
-        this.entry = undefined;
-        this.entryTitle = "";
-        this.entrySubTitle = "";
-        this.entryDate = "";
+        this.entry = null;
     }
 }
 </script>
@@ -202,7 +133,7 @@ export default class EntryDetailsComponent extends Vue {
         id="entry-details-modal"
         v-model="isVisible"
         data-testid="entryDetailsModal"
-        content-class="mt-0 mobile-content"
+        content-class="mt-0 entry-details-mobile"
         size="lg"
         header-class="entry-details-modal-header"
         header-text-variant="light"
@@ -210,19 +141,6 @@ export default class EntryDetailsComponent extends Vue {
         hide-footer
         @hidden="clear"
     >
-        <b-alert
-            data-testid="entryDetailsErrorBanner"
-            variant="danger"
-            dismissible
-            class="no-print"
-            :show="!!errorMessage"
-        >
-            <p data-testid="entryDetailsErrorText">{{ errorMessage }}</p>
-            <span>
-                If you continue to have issues, please contact
-                HealthGateway@gov.bc.ca.
-            </span>
-        </b-alert>
         <template #modal-header>
             <b-row class="w-100 h-100">
                 <b-col cols="auto">
@@ -246,6 +164,7 @@ export default class EntryDetailsComponent extends Vue {
         </template>
         <component
             :is="getComponentForEntry()"
+            v-if="entry != null"
             :datekey="entryDate"
             :entry="entry"
             :index="1"
@@ -293,7 +212,7 @@ export default class EntryDetailsComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
-.mobile-content {
+.entry-details-mobile {
     position: relative;
     right: auto;
     height: 1400px;

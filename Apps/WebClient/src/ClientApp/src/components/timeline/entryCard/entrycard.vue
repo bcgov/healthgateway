@@ -6,6 +6,7 @@ import { Component, Prop } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import ScreenWidth from "@/constants/screenWidth";
+import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
@@ -28,6 +29,8 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: true }) allowComment!: boolean;
     @Prop({ default: true }) showDetailsButton!: boolean;
     @Prop() viewDetails!: boolean;
+
+    private eventBus = EventBus;
 
     private get isMobileView(): boolean {
         return window.innerWidth <= ScreenWidth.Mobile;
@@ -65,6 +68,15 @@ export default class EntrycardTimelineComponent extends Vue {
         }
     }
 
+    private handleViewEntryDetails(selectedEntry: TimelineEntry) {
+        if (window.innerWidth <= ScreenWidth.Mobile) {
+            this.eventBus.$emit(
+                EventMessageName.ViewEntryDetails,
+                selectedEntry
+            );
+        }
+    }
+
     private toggleDetails(): void {
         this.detailsVisible = !this.detailsVisible;
     }
@@ -72,7 +84,7 @@ export default class EntrycardTimelineComponent extends Vue {
 </script>
 
 <template>
-    <b-row class="cardWrapper mb-1">
+    <b-row class="cardWrapper mb-1" @click="handleViewEntryDetails(entry)">
         <b-col class="timelineCard ml-0 ml-md-2">
             <b-row class="entryHeading px-3 py-2">
                 <b-col class="leftPane">
