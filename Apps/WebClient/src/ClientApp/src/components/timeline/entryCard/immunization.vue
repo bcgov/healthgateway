@@ -20,6 +20,7 @@ export default class ImmunizationTimelineComponent extends Vue {
     @Prop() entry!: ImmunizationTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
+    @Prop() viewDetails!: boolean;
 
     private eventBus = EventBus;
     private forecastVisible = false;
@@ -50,6 +51,7 @@ export default class ImmunizationTimelineComponent extends Vue {
         :entry-icon="entryIcon"
         :title="entry.immunization.name"
         :entry="entry"
+        :view-details="viewDetails"
         :allow-comment="false"
     >
         <b-row slot="details-body" class="justify-content-between">
@@ -106,7 +108,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="detailsButton"
                                 @click="toggleDetails()"
                             >
-                                <span v-if="forecastVisible">
+                                <span v-if="displayForecast">
                                     <font-awesome-icon
                                         icon="chevron-up"
                                         aria-hidden="true"
@@ -118,7 +120,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                         aria-hidden="true"
                                     ></font-awesome-icon
                                 ></span>
-                                <span v-if="forecastVisible"
+                                <span v-if="displayForecast"
                                     >Hide Forecast</span
                                 >
                                 <span v-else>Forecast</span>

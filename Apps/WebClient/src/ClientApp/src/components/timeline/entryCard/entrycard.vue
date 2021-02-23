@@ -2,6 +2,7 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
+import ScreenWidth from "@/constants/screenWidth";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 
@@ -21,6 +22,15 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop() iconClass!: string;
     @Prop({ default: true }) allowComment!: boolean;
     @Prop({ default: true }) showDetailsButton!: boolean;
+    @Prop() viewDetails!: boolean;
+
+    private get isMobileView(): boolean {
+        return window.innerWidth <= ScreenWidth.Mobile;
+    }
+
+    private get onMobileTimeline(): boolean {
+        return this.isMobileView && !this.viewDetails;
+    }
 
     private detailsVisible = false;
 
@@ -59,7 +69,11 @@ export default class EntrycardTimelineComponent extends Vue {
                             :data-testid="entry.type.toLowerCase() + 'Title'"
                         >
                             <b-btn
-                                v-if="showDetailsButton"
+                                v-if="
+                                    !onMobileTimeline &&
+                                    !isMobileView &&
+                                    showDetailsButton
+                                "
                                 variant="link"
                                 data-testid="entryCardDetailsButton"
                                 class="detailsButton text-left"
@@ -89,7 +103,11 @@ export default class EntrycardTimelineComponent extends Vue {
                     </b-row>
                 </b-col>
             </b-row>
-            <b-collapse :id="'entryDetails-' + cardId" v-model="detailsVisible">
+            <b-collapse
+                v-if="!isMobileView"
+                :id="'entryDetails-' + cardId"
+                v-model="detailsVisible"
+            >
                 <b-row>
                     <b-col class="leftPane d-none d-md-block"></b-col>
                     <b-col class="pb-3 pt-1 px-3">
@@ -101,6 +119,13 @@ export default class EntrycardTimelineComponent extends Vue {
                     </b-col>
                 </b-row>
             </b-collapse>
+            <b-row v-else-if="!onMobileTimeline">
+                <b-col class="leftPane d-none d-md-block"></b-col>
+                <b-col class="pb-3 pt-1 px-3 teate">
+                    <slot name="details-body"></slot>
+                    <CommentSection v-if="allowComment" :parent-entry="entry" />
+                </b-col>
+            </b-row>
         </b-col>
     </b-row>
 </template>

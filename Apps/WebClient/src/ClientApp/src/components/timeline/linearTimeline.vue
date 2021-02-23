@@ -3,6 +3,7 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
+import ScreenWidth from "@/constants/screenWidth";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
@@ -175,6 +176,15 @@ export default class LinearTimelineComponent extends Vue {
                 return "";
         }
     }
+
+    private handleViewEntryDetails(selectedEntry: TimelineEntry) {
+        if (window.innerWidth <= ScreenWidth.Mobile) {
+            this.eventBus.$emit(
+                EventMessageName.ViewEntryDetails,
+                selectedEntry
+            );
+        }
+    }
 }
 </script>
 
@@ -221,15 +231,20 @@ export default class LinearTimelineComponent extends Vue {
                 :key="dateGroup.key"
                 :ref="dateGroup.key"
             >
-                <component
-                    :is="getComponentForEntry(entry.type)"
+                <div
                     v-for="(entry, index) in dateGroup.entries"
                     :key="entry.type + '-' + entry.id"
-                    :datekey="dateGroup.key"
-                    :entry="entry"
-                    :index="index"
-                    data-testid="timelineCard"
-                />
+                >
+                    <div @click="handleViewEntryDetails(entry)">
+                        <component
+                            :is="getComponentForEntry(entry.type)"
+                            :datekey="dateGroup.key"
+                            :entry="entry"
+                            :index="index"
+                            data-testid="timelineCard"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
         <div v-if="timelineIsEmpty" class="text-center pt-2">

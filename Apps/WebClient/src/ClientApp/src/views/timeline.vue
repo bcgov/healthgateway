@@ -11,9 +11,9 @@ import ImmunizationCardComponent from "@/components/modal/immunizationCard.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
+import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetailsCard.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
-import MobileEntryCardComponent from "@/components/timeline/mobileEntryCard/mobileEntryCard.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -40,7 +40,7 @@ import { ILogger } from "@/services/interfaces";
         ProtectiveWordComponent,
         CovidModalComponent,
         NoteEditComponent,
-        MobileEntryCardComponent,
+        EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
         CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
@@ -214,10 +214,6 @@ export default class TimelineView extends Vue {
 
     private get searchIcon(): IconDefinition {
         return faSearch;
-    }
-
-    private handleViewEntryDetails(selectedEntry: TimelineEntry) {
-        this.eventBus.$emit(EventMessageName.ViewEntryDetails, selectedEntry);
     }
 
     private get isLoading(): boolean {
@@ -522,7 +518,7 @@ export default class TimelineView extends Vue {
         <CovidModalComponent :is-loading="isLoading" @submit="onCovidSubmit" />
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
-        <MobileEntryCardComponent :is-loading="isLoading" />
+        <EntryDetailsComponent :is-loading="isLoading" />
         <ImmunizationCard ref="immunizationCard" />
     </div>
 </template>

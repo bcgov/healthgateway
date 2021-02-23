@@ -34,6 +34,7 @@ export default class NoteTimelineComponent extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Prop() entry!: NoteTimelineEntry;
+    @Prop() viewDetails!: boolean;
 
     private isSaving = false;
     private eventBus = EventBus;
@@ -87,6 +88,7 @@ export default class NoteTimelineComponent extends Vue {
         :entry="entry"
         :allow-comment="false"
         :show-details-button="showDetailsButton"
+        :view-details="viewDetails"
     >
         <b-navbar-nav slot="header-menu">
             <b-nav-item-dropdown
