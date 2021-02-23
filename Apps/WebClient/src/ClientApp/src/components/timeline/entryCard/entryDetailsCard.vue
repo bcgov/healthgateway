@@ -81,7 +81,6 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     public hideModal(): void {
-        this.$v.$reset();
         this.isVisible = false;
         this.entry = null;
     }
