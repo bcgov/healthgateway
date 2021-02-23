@@ -111,9 +111,15 @@ export default class EntrycardTimelineComponent extends Vue {
                                 class="detailsButton text-left"
                                 @click="toggleDetails()"
                             >
-                                <strong>{{ displayTitle }}</strong>
+                                <span data-testid="entryCardDetailsTitleDesktop"
+                                    ><strong>{{ displayTitle }}</strong></span
+                                >
                             </b-btn>
-                            <strong v-else>{{ displayTitle }}</strong>
+                            <span
+                                v-else
+                                data-testid="entryCardDetailsTitleMobile"
+                                ><strong>{{ displayTitle }}</strong></span
+                            >
                         </b-col>
                         <b-col cols="4" class="text-right">
                             <span

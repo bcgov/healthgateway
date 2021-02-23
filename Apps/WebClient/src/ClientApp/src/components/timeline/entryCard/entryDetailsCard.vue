@@ -9,7 +9,6 @@ import { Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
-import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
 
@@ -84,6 +83,10 @@ export default class EntryDetailsComponent extends Vue {
     public hideModal(): void {
         this.$v.$reset();
         this.isVisible = false;
+        this.entry = null;
+    }
+
+    private clear() {
         this.entry = null;
     }
 }
