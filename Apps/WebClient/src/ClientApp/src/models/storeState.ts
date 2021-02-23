@@ -12,6 +12,7 @@ import { UserComment } from "@/models/userComment";
 
 import Encounter from "./encounter";
 import { ResultError } from "./requestResult";
+import TimelineFilter from "./timelineFilter";
 import UserNote from "./userNote";
 
 export enum LoadStatus {
@@ -94,6 +95,12 @@ export interface NoteState {
     statusMessage: string;
     error?: ResultError;
     status: LoadStatus;
+}
+
+export interface TimelineState {
+    filter: TimelineFilter;
+    keyword: string;
+    isLinearView: boolean;
 }
 
 export interface NavbarState {

@@ -14,6 +14,7 @@ import { laboratory } from "./modules/laboratory/laboratory";
 import { medication } from "./modules/medication/medication";
 import { navbar } from "./modules/navbar/navbar";
 import { note } from "./modules/note/note";
+import { timeline } from "./modules/timeline/timeline";
 import { user } from "./modules/user/user";
 
 Vue.use(Vuex);
@@ -35,6 +36,7 @@ const storeOptions: StoreOptions<RootState> = {
         navbar,
         idle,
         errorBanner,
+        timeline,
     },
 };
 

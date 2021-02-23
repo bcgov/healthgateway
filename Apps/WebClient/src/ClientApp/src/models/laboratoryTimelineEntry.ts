@@ -1,7 +1,6 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder, LaboratoryResult } from "@/models/laboratory";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
 
 // The laboratory timeline entry model
 export default class LaboratoryTimelineEntry extends TimelineEntry {
@@ -52,10 +51,10 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.labResultOutcome = firstResult.labResultOutcome;
     }
 
-    public keywordApplies(filter: TimelineFilter): boolean {
+    public keywordApplies(keyword: string): boolean {
         let text = this.summaryTitle + this.summaryDescription;
         text = text.toUpperCase();
-        return text.includes(filter.keyword.toUpperCase());
+        return text.includes(keyword.toUpperCase());
     }
 
     private sortResults() {

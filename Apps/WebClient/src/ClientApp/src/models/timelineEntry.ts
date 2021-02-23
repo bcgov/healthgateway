@@ -50,7 +50,7 @@ export class DateGroup {
         return groupArrays;
     }
 
-    public static sortGroup(
+    public static sortGroups(
         groupArrays: DateGroup[],
         ascending = true
     ): DateGroup[] {
@@ -77,23 +77,18 @@ export default abstract class TimelineEntry {
         this.date = date;
     }
 
-    public abstract keywordApplies(filter: TimelineFilter): boolean;
-
-    public filterApplies(filter: TimelineFilter): boolean {
+    public filterApplies(keyword: string, filter: TimelineFilter): boolean {
         return (
-            this.entryTypeApplies(filter) &&
+            this.entryTypeApplies(filter.entryTypes) &&
             this.dateRangeApplies(filter) &&
-            this.keywordApplies(filter)
+            this.keywordApplies(keyword)
         );
     }
 
-    private entryTypeApplies(filter: TimelineFilter): boolean {
-        return (
-            filter.entryTypes.every((et) => !et.isSelected) ||
-            filter.entryTypes.some(
-                (et) => et.type == this.type && et.isSelected
-            )
-        );
+    protected abstract keywordApplies(keyword: string): boolean;
+
+    private entryTypeApplies(entryTypes: Set<EntryType>): boolean {
+        return entryTypes.size === 0 || entryTypes.has(this.type);
     }
 
     public dateRangeApplies(filter: TimelineFilter): boolean {

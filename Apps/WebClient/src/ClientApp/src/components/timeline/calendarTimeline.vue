@@ -4,7 +4,7 @@ import { Component, Prop, Watch } from "vue-property-decorator";
 
 import CalendarComponent from "@/components/calendar/calendar.vue";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
+
 @Component({
     components: {
         CalendarComponent,
@@ -12,32 +12,19 @@ import TimelineFilter from "@/models/timelineFilter";
 })
 export default class CalendarTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
-    @Prop() private isVisible!: boolean;
-    @Prop() private totalEntries!: number;
-    @Prop() private filter!: TimelineFilter;
 
     private filteredTimelineEntries: TimelineEntry[] = [];
     private dateGroups: DateGroup[] = [];
     private hasFilter = false;
 
-    @Watch("filter", { deep: true })
-    private applyTimelineFilter() {
-        this.hasFilter = this.filter.hasActiveFilter();
-        this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(this.filter)
-        );
-
-        this.dateGroups = DateGroup.createGroups(this.filteredTimelineEntries);
-        this.dateGroups = DateGroup.sortGroup(this.dateGroups, false);
+    private get timelineIsEmpty(): boolean {
+        return this.filteredTimelineEntries.length == 0;
     }
 
     @Watch("timelineEntries")
-    private refreshEntries() {
-        this.applyTimelineFilter();
-    }
-
-    private get timelineIsEmpty(): boolean {
-        return this.filteredTimelineEntries.length == 0;
+    private refreshTimelineGroups() {
+        this.dateGroups = DateGroup.createGroups(this.filteredTimelineEntries);
+        this.dateGroups = DateGroup.sortGroups(this.dateGroups, false);
     }
 }
 </script>
