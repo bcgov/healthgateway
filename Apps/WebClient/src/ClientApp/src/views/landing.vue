@@ -102,7 +102,7 @@ export default class LandingView extends Vue {
             description:
                 "Conveniently access your data on a computer, tablet or smartphone",
             bullets: [
-                "Dispensed Medications from community pharmacies",
+                "Dispensed Medications from Community Pharmacies",
                 "COVID-19 Test Results and COVID-19 Immunization Card",
                 "Public Health and Community Pharmacy Immunization Records",
             ],
