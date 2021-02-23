@@ -57,6 +57,9 @@
     <RemoveDir Directories="wwwroot\dist" />
   </Target>
   <ItemGroup>
+    <Content Remove="Server\Assets\Robots.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Server\Assets\Robots.txt" />
   </ItemGroup>
 
