@@ -10,13 +10,14 @@
                         </div>
                     </b-col>
                 </b-row>
-                                <b-row>
+                <b-row>
                     <b-col>
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >February 24, 2021 - v1.3.8 - Icon for Comments, Expanded Details Page,
-                                    Options Menu
+                                    >February 24, 2021 - v1.3.8 - Icon for
+                                    Comments, Expanded Details Page, Options
+                                    Menu
                                 </strong>
                             </b-col>
                         </b-row>
@@ -24,17 +25,25 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We added an icon to records which have comments that you've added so you can quickly find them. 
+                                        We added an icon to records which have
+                                        comments that you've added so you can
+                                        quickly find them.
                                     </li>
                                     <li>
-                                        We added a details page which opens as a new pane for reviewing your record details. 
+                                        We added a details page which opens as a
+                                        new pane for reviewing your record
+                                        details.
                                     </li>
                                     <li>
-                                        We updated the filter menu as it has the option of changing timeline view to a calendar view. 
+                                        We updated the filter menu as it has the
+                                        option of changing timeline view to a
+                                        calendar view.
                                     </li>
                                 </ul>
                             </b-col>
                         </b-row>
+                    </b-col>
+                </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
@@ -50,8 +59,8 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We updated the email verification flow to
-                                        simplify the registration flow and
+                                        We updated the email verification flow
+                                        to simplify the registration flow and
                                         minimize errors when verifying.
                                     </li>
                                     <li>
