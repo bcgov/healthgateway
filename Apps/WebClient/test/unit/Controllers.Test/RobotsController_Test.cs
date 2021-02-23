@@ -73,9 +73,9 @@ namespace HealthGateway.WebClient.Test.Controllers
 
             RobotsController controller = new RobotsController(configuration);
 
-            IActionResult actualResult = controller.Robots();
-            Assert.IsType<ContentResult>(actualResult);
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+            ContentResult actualResult = (ContentResult)controller.Robots();
+            Assert.Equal(actualResult.StatusCode, expectedResult.StatusCode);
+            Assert.NotEmpty(actualResult.Content);
         }
     }
 }
