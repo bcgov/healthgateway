@@ -20,7 +20,7 @@ export default class ImmunizationTimelineComponent extends Vue {
     @Prop() entry!: ImmunizationTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
-    @Prop() viewDetails!: boolean;
+    @Prop() isMobileDetails!: boolean;
 
     private eventBus = EventBus;
     private forecastVisible = false;
@@ -51,7 +51,7 @@ export default class ImmunizationTimelineComponent extends Vue {
         :entry-icon="entryIcon"
         :title="entry.immunization.name"
         :entry="entry"
-        :view-details="viewDetails"
+        :is-mobile-details="isMobileDetails"
         :allow-comment="false"
     >
         <b-row slot="details-body" class="justify-content-between">
