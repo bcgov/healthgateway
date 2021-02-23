@@ -558,6 +558,22 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
+        /// Configures Access control that allows any origin, header and method.
+        /// </summary>
+        /// <param name="services">The service collection to add forward proxies into.</param>
+        public void ConfigureAccessControl(IServiceCollection services) {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("allowAny", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+        }
+        /// <summary>
         /// Configures the app to use auth.
         /// </summary>
         /// <param name="app">The application builder provider.</param>
@@ -663,6 +679,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             });
         }
 
+        
         /// <summary>
         /// Configures the app to use swagger.
         /// </summary>

@@ -58,17 +58,7 @@ namespace HealthGateway.Laboratory
             this.startupConfig.ConfigureDelegateAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("allowAny", policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
+            this.startupConfig.ConfigureAccessControl(services);
 
             // Add services
             services.AddSingleton<ILaboratoryDelegateFactory, LaboratoryDelegateFactory>();

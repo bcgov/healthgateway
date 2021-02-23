@@ -76,7 +76,7 @@ export default class LandingView extends Vue {
         {
             name: "Immunization",
             definition: "syringe",
-            label: "Immunizations (Dec 2020)",
+            label: "Immunization Records (Dec 2020)",
             color: "",
             active: false,
         },
@@ -102,9 +102,9 @@ export default class LandingView extends Vue {
             description:
                 "Conveniently access your data on a computer, tablet or smartphone",
             bullets: [
-                "Dispensed Medications from community pharmacies",
-                "COVID-19 Test Results and Immunizations",
-                "Public Health Immunizations",
+                "Dispensed Medications from Community Pharmacies",
+                "COVID-19 Test Results and COVID-19 Immunization Card",
+                "Public Health and Community Pharmacy Immunization Records",
             ],
             imageSrc: Image03,
         },
