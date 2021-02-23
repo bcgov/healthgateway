@@ -3,10 +3,8 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
+import { DateGroup } from "@/models/timelineEntry";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -23,9 +21,12 @@ import CalendarHeader from "./header.vue";
 export default class CalendarComponent extends Vue {
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
+    @Getter("linearDate", { namespace: "timeline" }) linearDate!: DateWrapper;
+
+    @Getter("selectedDate", { namespace: "timeline" })
+    selectedDate!: DateWrapper;
+
     @Prop() dateGroups!: DateGroup[];
-    @Prop() private filter!: TimelineFilter;
-    @Prop() private isVisible!: boolean;
 
     @Prop({ default: 0, required: false }) firstDay!: number;
     @Prop({ default: "MMMM yyyy", required: false }) titleFormat!: string;
@@ -62,26 +63,23 @@ export default class CalendarComponent extends Vue {
 
     private availableMonths: DateWrapper[] = [];
     private currentMonth: DateWrapper = new DateWrapper();
-    private eventBus = EventBus;
     private logger!: ILogger;
+
+    @Watch("linearDate")
+    private onLinearDate() {
+        this.currentMonth = this.linearDate.startOf("month");
+    }
+
+    @Watch("selectedDate")
+    private onSelectedDate() {
+        this.$nextTick().then(() => {
+            this.currentMonth = this.selectedDate.startOf("month");
+        });
+    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.updateAvailableMonths();
-        this.eventBus.$on(
-            EventMessageName.TimelinePageUpdate,
-            (eventDate: DateWrapper) => {
-                this.currentMonth = eventDate.startOf("month");
-            }
-        );
-
-        this.eventBus.$on(EventMessageName.AddedNote, this.onEntryAdded);
-    }
-
-    private onEntryAdded(entry: TimelineEntry) {
-        this.$nextTick().then(() => {
-            this.currentMonth = entry.date.startOf("month");
-        });
     }
 
     @Watch("dateGroups")
@@ -133,14 +131,12 @@ export default class CalendarComponent extends Vue {
         />
         <!-- body display date day and events -->
         <CalendarBody
-            v-show="isVisible"
             class="pt-2 px-0 px-md-2"
             :current-month="currentMonth"
             :date-groups="dateGroups"
             :month-names="monthNames"
             :week-names="weekNames"
             :first-day="firstDay"
-            :is-visible="isVisible"
         >
         </CalendarBody>
     </div>

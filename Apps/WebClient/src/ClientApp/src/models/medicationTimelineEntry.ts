@@ -3,7 +3,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Pharmacy from "@/models/pharmacy";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
 
 // The medication timeline entry model
 export default class MedicationTimelineEntry extends TimelineEntry {
@@ -34,13 +33,13 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         this.directions = model.directions || "N/A";
     }
 
-    public keywordApplies(filter: TimelineFilter): boolean {
+    public keywordApplies(keyword: string): boolean {
         let text =
             (this.practitionerSurname || "") +
             (this.medication.brandName || "") +
             (this.medication.genericName || "");
         text = text.toUpperCase();
-        return text.includes(filter.keyword.toUpperCase());
+        return text.includes(keyword.toUpperCase());
     }
 }
 

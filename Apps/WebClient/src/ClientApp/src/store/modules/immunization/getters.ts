@@ -10,6 +10,9 @@ export const getters: GetterTree<ImmunizationState, RootState> = {
     recomendations(state: ImmunizationState): Recommendation[] {
         return state.recommendations;
     },
+    immunizationCount(state: ImmunizationState): number {
+        return state.immunizations.length;
+    },
     isDeferredLoad(state: ImmunizationState): boolean {
         return (
             state.status === LoadStatus.DEFERRED ||
