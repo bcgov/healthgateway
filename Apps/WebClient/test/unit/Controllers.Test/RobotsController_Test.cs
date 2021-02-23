@@ -61,7 +61,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             {
                 StatusCode = StatusCodes.Status200OK,
                 ContentType = MediaTypeNames.Text.Plain,
-                Content = RobotsController.DefaultRobotsContent,
+                Content = string.Empty,
             };
 
             var myConfiguration = new Dictionary<string, string>

@@ -25,11 +25,6 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     public class RobotsController : Controller
     {
-        /// <summary>
-        /// The Default Robots.txt content if not overriden using the robots.txt configuration value.
-        /// </summary>
-        public const string DefaultRobotsContent = "# Default robots.txt for Non-Prod\nUser-agent: *\nDisallow: /\n";
-
         private readonly IConfiguration configuration;
         private readonly string robotsContent;
 
@@ -40,7 +35,8 @@ namespace HealthGateway.WebClient.Controllers
         public RobotsController(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.robotsContent = this.configuration.GetValue("robots.txt", DefaultRobotsContent);
+            string robotsAssetContent = Common.Utils.AssetReader.Read(@"HealthGateway.WebClient.Server.Assets.Robots.txt");
+            this.robotsContent = this.configuration.GetValue("robots.txt", robotsAssetContent);
         }
 
         /// <summary>
