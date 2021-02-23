@@ -113,7 +113,9 @@ export default class EntrycardTimelineComponent extends Vue {
                             >
                                 <strong>{{ displayTitle }}</strong>
                             </b-btn>
-                            <strong v-else>{{ displayTitle }}</strong>
+                            <span v-else data-testid="entryCardDetailsButton"
+                                ><strong>{{ displayTitle }}</strong></span
+                            >
                         </b-col>
                         <b-col cols="4" class="text-right">
                             <span
