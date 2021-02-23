@@ -32,7 +32,7 @@ namespace HealthGateway.Common.Utils
         /// <returns>The read asset as a string.</returns>
         public static string Read(string asset)
         {
-            Assembly? assembly = Assembly.GetEntryAssembly();
+            Assembly? assembly = Assembly.GetCallingAssembly();
             Stream? resourceStream = assembly!.GetManifestResourceStream(asset);
             using StreamReader reader = new StreamReader(resourceStream!, Encoding.UTF8);
             return reader.ReadToEnd();
