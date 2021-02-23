@@ -5,11 +5,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { required } from "vuelidate/lib/validators";
-import { Validation } from "vuelidate/vuelidate";
 import { Getter } from "vuex-class";
 
-import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -25,7 +22,6 @@ import NoteTimelineComponent from "./note.vue";
 @Component({
     components: {
         LoadingComponent,
-        DatePickerComponent,
         MedicationComponent: MedicationTimelineComponent,
         ImmunizationComponent: ImmunizationTimelineComponent,
         LaboratoryComponent: LaboratoryTimelineComponent,
@@ -37,12 +33,6 @@ export default class EntryDetailsComponent extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
-
-    private windowWidth = 0;
-
-    private get isMobileView(): boolean {
-        return this.windowWidth < 576;
-    }
 
     private entry: TimelineEntry | null = null;
     private entryDate = "";
@@ -60,38 +50,13 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     private mounted() {
-        this.clear();
+        this.entry = null;
         this.eventBus.$on(EventMessageName.ViewEntryDetails, this.viewDetails);
     }
 
-    private validations() {
-        return {
-            title: {
-                required: required,
-            },
-        };
-    }
-
-    private isValid(param: Validation): boolean | undefined {
-        return param.$dirty ? !param.$invalid : undefined;
-    }
-
-    private dateString(entryDate: DateWrapper): string {
-        const today = new DateWrapper();
-        if (entryDate.isSame(today, "day")) {
-            return "Today";
-        } else if (entryDate.year() === today.year()) {
-            return entryDate.format("MMM d");
-        } else {
-            return entryDate.format("yyyy-MM-dd");
-        }
-    }
-
     public viewDetails(entry: TimelineEntry): void {
-        this.clear();
         this.entry = entry;
-        this.entryDate = this.dateString(entry.date);
-        this.windowWidth = window.innerWidth;
+        this.entryDate = entry.date.toISO();
         this.isVisible = true;
     }
 
@@ -119,10 +84,6 @@ export default class EntryDetailsComponent extends Vue {
     public hideModal(): void {
         this.$v.$reset();
         this.isVisible = false;
-        this.clear();
-    }
-
-    private clear() {
         this.entry = null;
     }
 }
