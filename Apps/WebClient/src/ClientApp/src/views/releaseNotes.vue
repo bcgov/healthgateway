@@ -50,7 +50,7 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We updated the email verfication flow to
+                                        We updated the email verification flow to
                                         simplify the registration flow and
                                         minimize errors when verifying.
                                     </li>
