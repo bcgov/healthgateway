@@ -1,5 +1,0 @@
-#Production Robots as of Feb 17, 2021
-User-agent: *
-Disallow: /ValidateEmail/
-Disallow: /registrationInfo
-Disallow: /api/
