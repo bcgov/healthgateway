@@ -60,7 +60,9 @@
     <Content Remove="Server\Assets\Robots.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Server\Assets\Robots.txt" />
+    <EmbeddedResource Include="Server\Assets\Robots.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
