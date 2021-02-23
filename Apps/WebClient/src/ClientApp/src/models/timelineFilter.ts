@@ -53,7 +53,7 @@ export class TimelineFilterBuilder {
         return this._endDate;
     }
 
-    public static createEmpty(): TimelineFilterBuilder {
+    public static create(): TimelineFilterBuilder {
         return new TimelineFilterBuilder();
     }
 

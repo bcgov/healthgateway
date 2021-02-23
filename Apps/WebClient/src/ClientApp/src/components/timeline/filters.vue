@@ -189,7 +189,7 @@ export default class FilterComponent extends Vue {
     }
 
     private apply() {
-        let builder = TimelineFilterBuilder.createEmpty()
+        let builder = TimelineFilterBuilder.create()
             .withStartDate(this.startDate)
             .withEndDate(this.endDate)
             .withEntryTypes(this.selectedEntryTypes);
@@ -199,6 +199,7 @@ export default class FilterComponent extends Vue {
 
         this.closeMenu();
     }
+
     private cancel() {
         this.syncWithFilter();
         this.closeMenu();

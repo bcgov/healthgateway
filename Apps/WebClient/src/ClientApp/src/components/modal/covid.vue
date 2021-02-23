@@ -96,9 +96,7 @@ export default class CovidModalComponent extends Vue {
         this.updateCovidPreference();
 
         this.setFilter(
-            TimelineFilterBuilder.createEmpty().withEntryType(
-                EntryType.Laboratory
-            )
+            TimelineFilterBuilder.create().withEntryType(EntryType.Laboratory)
         );
 
         // Trigger submit handler
