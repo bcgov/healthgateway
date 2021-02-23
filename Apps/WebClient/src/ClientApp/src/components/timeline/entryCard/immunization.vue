@@ -108,7 +108,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 class="detailsButton"
                                 @click="toggleDetails()"
                             >
-                                <span v-if="displayForecast">
+                                <span v-if="forecastVisible">
                                     <font-awesome-icon
                                         icon="chevron-up"
                                         aria-hidden="true"
@@ -120,7 +120,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                         aria-hidden="true"
                                     ></font-awesome-icon
                                 ></span>
-                                <span v-if="displayForecast"
+                                <span v-if="forecastVisible"
                                     >Hide Forecast</span
                                 >
                                 <span v-else>Forecast</span>
