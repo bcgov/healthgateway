@@ -3,7 +3,6 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
-import EventBus from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 
 import CalendarBody from "./body.vue";
@@ -20,9 +19,6 @@ export default class CalendarComponent extends Vue {
 
     private monthIndex = 0;
     private headerDate: DateWrapper = new DateWrapper();
-    private eventBus = EventBus;
-    private leftIcon = "chevron-left";
-    private rightIcon = "chevron-right";
 
     private get hasAvailableMonths() {
         return this.availableMonths.length > 0;
@@ -89,7 +85,7 @@ export default class CalendarComponent extends Vue {
                 class="arrow-icon left-button px-2 m-0"
                 @click.stop="previousMonth"
             >
-                <font-awesome-icon :icon="leftIcon" />
+                <font-awesome-icon icon="chevron-left" />
             </b-btn>
         </b-col>
         <b-col cols="col-sm-auto">
@@ -108,7 +104,7 @@ export default class CalendarComponent extends Vue {
                 class="arrow-icon right-button px-2 m-0"
                 @click.stop="nextMonth"
             >
-                <font-awesome-icon :icon="rightIcon" />
+                <font-awesome-icon icon="chevron-right" />
             </b-btn>
         </b-col>
     </b-row>

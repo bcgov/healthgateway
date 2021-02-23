@@ -1,8 +1,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
-import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
@@ -15,18 +15,28 @@ import { CalendarEntry, CalendarWeek } from "./models";
 
 @Component({})
 export default class CalendarBodyComponent extends Vue {
+    @Action("setLinearView", { namespace: "timeline" }) setLinearView!: (
+        isLinearView: boolean
+    ) => void;
+    @Action("setCalendarDate", { namespace: "timeline" }) setCalendarDate!: (
+        date: DateWrapper
+    ) => void;
+    @Action("setSelectedDate", { namespace: "timeline" }) setSelectedDate!: (
+        date: DateWrapper
+    ) => void;
+
+    @Getter("isLinearView", { namespace: "timeline" }) isLinearView!: boolean;
+
     @Prop() currentMonth!: DateWrapper;
     @Prop() dateGroups!: DateGroup[];
     @Prop() weekNames!: string[];
     @Prop() monthNames!: string[];
     @Prop() firstDay!: number;
-    @Prop() private isVisible!: boolean;
 
     private eventLimit = 4;
 
     private isHovering = false;
     private hoveringEvent: CalendarEntry | null = null;
-    private eventBus = EventBus;
 
     private monthData: CalendarWeek[] = [];
 
@@ -38,14 +48,12 @@ export default class CalendarBodyComponent extends Vue {
         }
 
         this.monthData = this.getMonthCalendar(this.currentMonth);
-        if (this.isVisible) {
+        if (!this.isLinearView) {
             let dateGroup: DateGroup = this.dateGroups.find((d) =>
                 this.currentMonth.isSame(d.date, "month")
             ) as DateGroup;
-            this.eventBus.$emit(
-                EventMessageName.CalendarMonthUpdated,
-                dateGroup.entries[0].date
-            );
+
+            this.setCalendarDate(dateGroup.entries[0].date);
         }
     }
 
@@ -171,10 +179,8 @@ export default class CalendarBodyComponent extends Vue {
 
     private eventClick(event: CalendarEntry, jsEvent: Event) {
         jsEvent.stopPropagation();
-        this.eventBus.$emit(
-            EventMessageName.CalendarDateEventClick,
-            event.entries[0].date
-        );
+        this.setSelectedDate(event.entries[0].date);
+        this.setLinearView(true);
     }
 
     private getEntryText(entry: TimelineEntry, type: EntryType): string {

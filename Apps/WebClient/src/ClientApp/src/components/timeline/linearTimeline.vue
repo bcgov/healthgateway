@@ -1,9 +1,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
-import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
@@ -24,57 +23,60 @@ import NoteTimelineComponent from "./entryCard/note.vue";
     },
 })
 export default class LinearTimelineComponent extends Vue {
+    @Action("setLinearDate", { namespace: "timeline" })
+    setLinearDate!: (linearDate: DateWrapper) => void;
+
+    @Getter("calendarDate", { namespace: "timeline" })
+    calendarDate!: DateWrapper;
+
+    @Getter("selectedDate", { namespace: "timeline" })
+    selectedDate!: DateWrapper | null;
+
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
     @Getter("filter", { namespace: "timeline" }) filter!: TimelineFilter;
 
+    @Getter("isLinearView", { namespace: "timeline" })
+    isLinearView!: TimelineFilter;
+
     @Getter("hasActiveFilter", { namespace: "timeline" })
-    hasActiveFilter!: TimelineFilter;
+    hasActiveFilter!: boolean;
 
     @Prop() private timelineEntries!: TimelineEntry[];
+
     @Prop({ default: 0 }) private totalEntries!: number;
-    @Prop() private isVisible!: boolean;
 
     private visibleTimelineEntries: TimelineEntry[] = [];
     private currentPage = 1;
-    private eventBus = EventBus;
     private dateGroups: DateGroup[] = [];
 
-    private readonly pageSize = 25;
+    private readonly pageSize = 5;
 
     @Watch("visibleTimelineEntries")
     private onVisibleEntriesUpdate() {
-        if (this.visibleTimelineEntries.length > 0) {
-            if (this.isVisible) {
-                this.eventBus.$emit(
-                    EventMessageName.TimelinePageUpdate,
-                    this.visibleTimelineEntries[0].date
-                );
-            }
-        }
-
         this.dateGroups = DateGroup.createGroups(this.visibleTimelineEntries);
         this.dateGroups = DateGroup.sortGroups(this.dateGroups);
     }
 
-    private created() {
-        this.eventBus.$on(
-            EventMessageName.CalendarDateEventClick,
-            (eventDate: DateWrapper) => {
-                this.setPageFromDate(eventDate);
-                // Wait for next render cycle until the pages have been calculated and displayed
-                this.$nextTick().then(() => {
-                    this.focusOnDate(eventDate);
-                });
-            }
-        );
+    @Watch("calendarDate")
+    private onCalendarDate() {
+        if (!this.isLinearView) {
+            this.setPageFromDate(this.calendarDate);
+        }
+    }
 
-        this.eventBus.$on(
-            EventMessageName.CalendarMonthUpdated,
-            this.setPageFromDate
-        );
+    @Watch("selectedDate")
+    private onSelectedDate() {
+        if (this.selectedDate !== null) {
+            const selectedDate = this.selectedDate as DateWrapper;
 
-        this.eventBus.$on(EventMessageName.AddedNote, this.onEntryAdded);
+            this.setPageFromDate(selectedDate);
+            // Wait for next render cycle until the pages have been calculated and displayed
+            this.$nextTick().then(() => {
+                const selectedDate = this.selectedDate as DateWrapper;
+                this.focusOnDate(selectedDate);
+            });
+        }
     }
 
     private linkGen(pageNum: number) {
@@ -100,6 +102,7 @@ export default class LinearTimelineComponent extends Vue {
         if (this.currentPage > this.numberOfPages) {
             this.currentPage = this.numberOfPages;
         }
+
         // Get the section of the array that contains the paginated section
         let lowerIndex = (this.currentPage - 1) * this.pageSize;
         let upperIndex = Math.min(
@@ -110,6 +113,11 @@ export default class LinearTimelineComponent extends Vue {
             lowerIndex,
             upperIndex
         );
+
+        if (this.isLinearView && this.visibleTimelineEntries.length > 0) {
+            // Update the store
+            this.setLinearDate(this.visibleTimelineEntries[0].date);
+        }
     }
 
     private getVisibleCount(): number {

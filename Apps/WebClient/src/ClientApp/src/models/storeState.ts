@@ -101,6 +101,9 @@ export interface TimelineState {
     filter: TimelineFilter;
     keyword: string;
     isLinearView: boolean;
+    linearDate: DateWrapper;
+    calendarDate: DateWrapper;
+    selectedDate: DateWrapper | null;
 }
 
 export interface NavbarState {

@@ -24,7 +24,7 @@ import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
@@ -115,8 +115,8 @@ export default class TimelineView extends Vue {
     @Getter("keyword", { namespace: "timeline" })
     readonly keyword!: string;
 
-    @Getter("isListView", { namespace: "timeline" })
-    readonly isListView!: boolean;
+    @Getter("isLinearView", { namespace: "timeline" })
+    readonly isLinearView!: boolean;
 
     @Getter("user", { namespace: "user" }) user!: User;
 
@@ -247,13 +247,6 @@ export default class TimelineView extends Vue {
                 ? (this.isPacificTime = false)
                 : (this.isPacificTime = true);
         }
-    }
-
-    private onCovidSubmit() {
-        this.eventBus.$emit(
-            EventMessageName.SelectedFilter,
-            EntryType.Laboratory
-        );
     }
 
     private checkTimezone(isDST: boolean): boolean {
@@ -400,30 +393,24 @@ export default class TimelineView extends Vue {
                         </b-col>
                         <b-col v-if="!isLoading" class="col-auto pl-2">
                             <Filters
-                                :is-list-view="isListView"
+                                :is-list-view="isLinearView"
                                 :filter.sync="filter"
                             />
                         </b-col>
                     </b-row>
                 </div>
                 <LinearTimeline
-                    v-show="isListView && !isLoading"
+                    v-show="isLinearView && !isLoading"
                     :timeline-entries="filteredTimelineEntries"
-                    :is-visible="isListView"
                     :total-entries="getTotalCount()"
-                    :is-list-view="isListView"
                 >
                 </LinearTimeline>
-                <!--
                 <CalendarTimeline
-                    v-show="!isListView && !isLoading"
+                    v-show="!isLinearView && !isLoading"
                     :timeline-entries="filteredTimelineEntries"
-                    :is-visible="!isListView"
                     :total-entries="getTotalCount()"
-                    :filter="filter"
-                    :is-list-view="isListView"
                 >
-                </CalendarTimeline>-->
+                </CalendarTimeline>
                 <b-row v-if="isLoading">
                     <b-col>
                         <br />
@@ -443,7 +430,7 @@ export default class TimelineView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <CovidModalComponent :is-loading="isLoading" @submit="onCovidSubmit" />
+        <CovidModalComponent :is-loading="isLoading" />
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
         <ImmunizationCard ref="immunizationCard" />

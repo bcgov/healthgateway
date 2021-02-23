@@ -1,5 +1,6 @@
 import { Module } from "vuex";
 
+import { DateWrapper } from "@/models/dateWrapper";
 import { RootState, TimelineState } from "@/models/storeState";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 
@@ -11,6 +12,9 @@ export const state: TimelineState = {
     filter: TimelineFilterBuilder.buildEmpty(),
     keyword: "",
     isLinearView: true,
+    linearDate: new DateWrapper(),
+    calendarDate: new DateWrapper(),
+    selectedDate: null,
 };
 
 const namespaced = true;

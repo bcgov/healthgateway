@@ -6,6 +6,8 @@ import { Action, Getter } from "vuex-class";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder } from "@/models/laboratory";
+import { EntryType } from "@/models/timelineEntry";
+import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 
@@ -16,12 +18,18 @@ export default class CovidModalComponent extends Vue {
         hdid: string;
         userPreference: UserPreference;
     }) => void;
+
     @Action("createUserPreference", { namespace: "user" })
     createUserPreference!: (params: {
         hdid: string;
         userPreference: UserPreference;
     }) => void;
+
+    @Action("setFilter", { namespace: "timeline" })
+    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
+
     @Getter("user", { namespace: "user" }) user!: User;
+
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: LaboratoryOrder[];
 
@@ -86,6 +94,12 @@ export default class CovidModalComponent extends Vue {
         modalEvt.preventDefault();
 
         this.updateCovidPreference();
+
+        this.setFilter(
+            TimelineFilterBuilder.createEmpty().withEntryType(
+                EntryType.Laboratory
+            )
+        );
 
         // Trigger submit handler
         this.submit();

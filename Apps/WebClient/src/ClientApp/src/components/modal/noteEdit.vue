@@ -34,6 +34,10 @@ export default class NoteEditComponent extends Vue {
         note: UserNote;
     }) => Promise<UserNote>;
 
+    @Action("setSelectedDate", { namespace: "timeline" }) setSelectedDate!: (
+        date: DateWrapper
+    ) => void;
+
     @Action("clearFilter", { namespace: "timeline" }) clearFilter!: () => void;
 
     @Getter("user", { namespace: "user" }) user!: User;
@@ -178,10 +182,7 @@ export default class NoteEditComponent extends Vue {
 
     private onNoteAdded(note: UserNote) {
         this.clearFilter();
-        this.eventBus.$emit(
-            EventMessageName.AddedNote,
-            new NoteTimelineEntry(note)
-        );
+        this.setSelectedDate(new DateWrapper(note.journalDateTime));
     }
 
     private handleOk(bvModalEvt: Event) {

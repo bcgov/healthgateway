@@ -35,7 +35,7 @@ interface EntryTypeFilter {
 })
 export default class FilterComponent extends Vue {
     @Action("setFilter", { namespace: "timeline" })
-    setFilter!: (filter: TimelineFilterBuilder) => void;
+    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
 
     @Action("setLinearView", { namespace: "timeline" })
     setLinearView!: (isLinearView: boolean) => void;
@@ -59,7 +59,7 @@ export default class FilterComponent extends Vue {
 
     @Getter("noteCount", { namespace: "note" }) noteCount!: number;
 
-    @Getter("isListView", { namespace: "timeline" }) isListView!: boolean;
+    @Getter("isLinearView", { namespace: "timeline" }) isLinearView!: boolean;
 
     @Getter("filter", { namespace: "timeline" }) activeFilter!: TimelineFilter;
 
@@ -153,12 +153,12 @@ export default class FilterComponent extends Vue {
     }
 
     @Watch("filter", { deep: true })
-    @Watch("isListView")
+    @Watch("isLinearView")
     private syncWithFilter() {
         this.startDate = this.filter.startDate;
         this.endDate = this.filter.endDate;
         this.selectedEntryTypes = Array.from(this.filter.entryTypes);
-        this.isListViewToggle = this.isListView;
+        this.isListViewToggle = this.isLinearView;
     }
 
     private handleResize() {

@@ -86,6 +86,11 @@ export class TimelineFilterBuilder {
         return this;
     }
 
+    public withEntryType(entryType: EntryType): TimelineFilterBuilder {
+        this._entryTypes.add(entryType);
+        return this;
+    }
+
     public build(): TimelineFilter {
         return new TimelineFilter(this);
     }
