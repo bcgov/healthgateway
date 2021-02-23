@@ -134,6 +134,15 @@ export default class TimelineView extends Vue {
         }
     }
 
+    @Watch("isLinearView")
+    private onIsLinearView() {
+        if (this.isLinearView) {
+            window.location.hash = "linear";
+        } else {
+            window.location.hash = "calendar";
+        }
+    }
+
     private get timelineEntries(): TimelineEntry[] {
         if (this.isLoading) {
             return [];

@@ -256,8 +256,8 @@ export default class FilterComponent extends Vue {
                 class="w-100"
                 data-testid="filterContainer"
                 placement="bottom"
+                fallback-placement="clockwise"
                 menu-class="z-index-large w-100"
-                no-flip
             >
                 <b-row class="px-4">
                     <b-col><strong>Filter</strong> </b-col>
@@ -360,7 +360,7 @@ export default class FilterComponent extends Vue {
                     <b-row class="mt-1" align-h="end">
                         <b-col cols="auto" class="pr-0">
                             <b-btn
-                                data-testid="btnCancel"
+                                data-testid="btnFilterCancel"
                                 class="btn-outline-primary px-2 m-0"
                                 @click.stop="cancel"
                             >
@@ -369,7 +369,7 @@ export default class FilterComponent extends Vue {
                         </b-col>
                         <b-col cols="auto" class="pl-2">
                             <b-btn
-                                data-testid="btnApply"
+                                data-testid="btnFilterApply"
                                 class="btn-primary px-2 m-0"
                                 @click.stop="apply"
                             >
@@ -501,7 +501,7 @@ export default class FilterComponent extends Vue {
             <b-row class="mt-1" align-h="end">
                 <b-col cols="auto" class="pr-0">
                     <b-btn
-                        data-testid="btnCancel"
+                        data-testid="btnFilterCancel"
                         class="btn-outline-primary px-2 m-0"
                         @click.stop="cancel"
                     >
@@ -510,7 +510,7 @@ export default class FilterComponent extends Vue {
                 </b-col>
                 <b-col cols="auto" class="pl-2">
                     <b-btn
-                        data-testid="btnApply"
+                        data-testid="btnFilterApply"
                         class="btn-primary px-2 m-0"
                         @click.stop="apply"
                     >
