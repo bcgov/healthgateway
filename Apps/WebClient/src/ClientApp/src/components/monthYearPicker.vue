@@ -16,7 +16,7 @@ class MonthToDisplay {
     },
 })
 export default class MonthYearPickerComponent extends Vue {
-    @Prop() currentMonth!: DateWrapper;
+    @Prop() readonly currentMonth!: DateWrapper;
     @Prop() availableMonths!: DateWrapper[];
 
     public isYearOpen = false;

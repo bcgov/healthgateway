@@ -26,6 +26,9 @@ export default class LinearTimelineComponent extends Vue {
     @Action("setLinearDate", { namespace: "timeline" })
     setLinearDate!: (linearDate: DateWrapper) => void;
 
+    @Getter("linearDate", { namespace: "timeline" })
+    linearDate!: DateWrapper;
+
     @Getter("calendarDate", { namespace: "timeline" })
     calendarDate!: DateWrapper;
 
@@ -46,16 +49,58 @@ export default class LinearTimelineComponent extends Vue {
 
     @Prop({ default: 0 }) private totalEntries!: number;
 
-    private visibleTimelineEntries: TimelineEntry[] = [];
     private currentPage = 1;
-    private dateGroups: DateGroup[] = [];
 
     private readonly pageSize = 25;
 
-    @Watch("visibleTimelineEntries")
-    private onVisibleEntriesUpdate() {
+    private get numberOfPages(): number {
+        let pageCount = 1;
+        if (this.timelineEntries.length > this.pageSize) {
+            pageCount = Math.ceil(this.timelineEntries.length / this.pageSize);
+        }
+        return pageCount;
+    }
+
+    private get timelineIsEmpty(): boolean {
+        return this.timelineEntries.length === 0;
+    }
+
+    private get visibleTimelineEntries(): TimelineEntry[] {
+        if (this.timelineIsEmpty) {
+            return [];
+        }
+
+        // Handle the current page being beyond the max number of pages
+        if (this.currentPage > this.numberOfPages) {
+            this.currentPage = this.numberOfPages;
+        }
+
+        // Get the section of the array that contains the paginated section
+        let lowerIndex = (this.currentPage - 1) * this.pageSize;
+        let upperIndex = Math.min(
+            this.currentPage * this.pageSize,
+            this.timelineEntries.length
+        );
+        let entries = this.timelineEntries.slice(lowerIndex, upperIndex);
+
+        return entries;
+    }
+
+    private get dateGroups(): DateGroup[] {
+        if (this.timelineIsEmpty) {
+            return [];
+        }
+
         let newGroupArray = DateGroup.createGroups(this.visibleTimelineEntries);
-        this.dateGroups = DateGroup.sortGroups(newGroupArray);
+        return DateGroup.sortGroups(newGroupArray);
+    }
+
+    @Watch("currentPage")
+    private onCurrentPage() {
+        if (this.isLinearView && this.visibleTimelineEntries.length > 0) {
+            // Update the store
+            this.setLinearDate(this.visibleTimelineEntries[0].date);
+        }
     }
 
     @Watch("calendarDate")
@@ -70,12 +115,13 @@ export default class LinearTimelineComponent extends Vue {
         if (this.selectedDate !== null) {
             const selectedDate = this.selectedDate as DateWrapper;
 
-            this.setPageFromDate(selectedDate);
-            // Wait for next render cycle until the pages have been calculated and displayed
-            this.$nextTick().then(() => {
-                const selectedDate = this.selectedDate as DateWrapper;
-                this.focusOnDate(selectedDate);
-            });
+            if (this.setPageFromDate(selectedDate)) {
+                // Wait for next render cycle until the pages have been calculated and displayed
+                this.$nextTick().then(() => {
+                    const selectedDate = this.selectedDate as DateWrapper;
+                    this.focusOnDate(selectedDate);
+                });
+            }
         }
     }
 
@@ -83,61 +129,25 @@ export default class LinearTimelineComponent extends Vue {
         return `?page=${pageNum}`;
     }
 
-    private get numberOfPages(): number {
-        let result = 1;
-        if (this.timelineEntries.length > this.pageSize) {
-            result = Math.ceil(this.timelineEntries.length / this.pageSize);
-        }
-        return result;
-    }
-
-    private get timelineIsEmpty(): boolean {
-        return this.timelineEntries.length == 0;
-    }
-
-    @Watch("currentPage")
-    @Watch("timelineEntries")
-    private calculateVisibleEntries() {
-        // Handle the current page being beyond the max number of pages
-        if (this.currentPage > this.numberOfPages) {
-            this.currentPage = this.numberOfPages;
-        }
-
-        // Get the section of the array that contains the paginated section
-        let lowerIndex = (this.currentPage - 1) * this.pageSize;
-        let upperIndex = Math.min(
-            this.currentPage * this.pageSize,
-            this.timelineEntries.length
-        );
-        this.visibleTimelineEntries = this.timelineEntries.slice(
-            lowerIndex,
-            upperIndex
-        );
-
-        if (this.isLinearView && this.visibleTimelineEntries.length > 0) {
-            // Update the store
-            this.setLinearDate(this.visibleTimelineEntries[0].date);
-        }
+    private mounted() {
+        this.setPageFromDate(this.linearDate);
     }
 
     private getVisibleCount(): number {
         return this.visibleTimelineEntries.length;
     }
 
-    private setPageFromDate(eventDate: DateWrapper) {
+    private setPageFromDate(eventDate: DateWrapper): boolean {
         let index = this.timelineEntries.findIndex((entry) =>
             entry.date.isSame(eventDate)
         );
-        this.currentPage = Math.floor(index / this.pageSize) + 1;
-    }
 
-    private onEntryAdded(entry: TimelineEntry) {
-        this.$nextTick().then(() => {
-            this.setPageFromDate(entry.date);
-            this.$nextTick().then(() => {
-                this.focusOnDate(entry.date);
-            });
-        });
+        if (index >= 0) {
+            this.currentPage = Math.floor(index / this.pageSize) + 1;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private focusOnDate(date: DateWrapper) {
@@ -177,7 +187,7 @@ export default class LinearTimelineComponent extends Vue {
         >
             <b-col>
                 <b-pagination-nav
-                    v-show="!timelineIsEmpty"
+                    v-if="!timelineIsEmpty"
                     v-model="currentPage"
                     :link-gen="linkGen"
                     :number-of-pages="numberOfPages"

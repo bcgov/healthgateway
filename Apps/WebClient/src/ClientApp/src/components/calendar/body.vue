@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Action } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
@@ -18,20 +18,16 @@ export default class CalendarBodyComponent extends Vue {
     @Action("setLinearView", { namespace: "timeline" }) setLinearView!: (
         isLinearView: boolean
     ) => void;
-    @Action("setCalendarDate", { namespace: "timeline" }) setCalendarDate!: (
-        date: DateWrapper
-    ) => void;
+
     @Action("setSelectedDate", { namespace: "timeline" }) setSelectedDate!: (
         date: DateWrapper
     ) => void;
 
-    @Getter("isLinearView", { namespace: "timeline" }) isLinearView!: boolean;
-
-    @Prop() currentMonth!: DateWrapper;
-    @Prop() dateGroups!: DateGroup[];
-    @Prop() weekNames!: string[];
-    @Prop() monthNames!: string[];
-    @Prop() firstDay!: number;
+    @Prop() readonly currentMonth!: DateWrapper;
+    @Prop() readonly dateGroups!: DateGroup[];
+    @Prop() readonly weekNames!: string[];
+    @Prop() readonly monthNames!: string[];
+    @Prop() readonly firstDay!: number;
 
     private eventLimit = 4;
 
@@ -48,13 +44,6 @@ export default class CalendarBodyComponent extends Vue {
         }
 
         this.monthData = this.getMonthCalendar(this.currentMonth);
-        if (!this.isLinearView) {
-            let dateGroup: DateGroup = this.dateGroups.find((d) =>
-                this.currentMonth.isSame(d.date, "month")
-            ) as DateGroup;
-
-            this.setCalendarDate(dateGroup.entries[0].date);
-        }
     }
 
     private getMonthCalendar(monthDate: DateWrapper): CalendarWeek[] {

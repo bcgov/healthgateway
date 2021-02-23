@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -14,19 +15,34 @@ import CalendarBody from "./body.vue";
     },
 })
 export default class CalendarComponent extends Vue {
-    @Prop() currentMonth!: DateWrapper;
-    @Prop() availableMonths!: DateWrapper[];
+    @Prop() readonly currentMonth!: DateWrapper;
+    @Prop() readonly availableMonths!: DateWrapper[];
+
+    @Getter("calendarDate", { namespace: "timeline" })
+    calendarDate!: DateWrapper;
+
+    @Getter("linearDate", { namespace: "timeline" }) linearDate!: DateWrapper;
+
+    @Getter("selectedDate", { namespace: "timeline" })
+    selectedDate!: DateWrapper;
 
     private monthIndex = 0;
-    private headerDate: DateWrapper = new DateWrapper();
+    private headerDate: DateWrapper | null = null;
 
     private get hasAvailableMonths() {
         return this.availableMonths.length > 0;
     }
 
-    @Watch("currentMonth")
-    public onCurrentMonthChange(currentMonth: DateWrapper): void {
-        this.dateSelected(currentMonth);
+    @Watch("linearDate")
+    private onLinearDate() {
+        this.dateSelected(this.linearDate.startOf("month"));
+    }
+
+    @Watch("selectedDate")
+    private onSelectedDate() {
+        this.$nextTick().then(() => {
+            this.dateSelected(this.selectedDate.startOf("month"));
+        });
     }
 
     @Watch("availableMonths")
@@ -45,7 +61,7 @@ export default class CalendarComponent extends Vue {
     }
 
     private created() {
-        this.dispatchEvent();
+        this.dateSelected(this.calendarDate.startOf("month"));
     }
 
     private previousMonth() {

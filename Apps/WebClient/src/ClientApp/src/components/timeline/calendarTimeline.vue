@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import CalendarComponent from "@/components/calendar/calendar.vue";
@@ -17,16 +17,17 @@ export default class CalendarTimelineComponent extends Vue {
     @Getter("hasActiveFilter", { namespace: "timeline" })
     hasActiveFilter!: boolean;
 
-    private dateGroups: DateGroup[] = [];
-
     private get timelineIsEmpty(): boolean {
         return this.timelineEntries.length === 0;
     }
 
-    @Watch("timelineEntries")
-    private refreshTimelineGroups() {
+    private get dateGroups(): DateGroup[] {
+        if (this.timelineIsEmpty) {
+            return [];
+        }
+
         let newGroupArray = DateGroup.createGroups(this.timelineEntries);
-        this.dateGroups = DateGroup.sortGroups(newGroupArray, false);
+        return DateGroup.sortGroups(newGroupArray, false);
     }
 }
 </script>
