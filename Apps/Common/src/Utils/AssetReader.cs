@@ -30,10 +30,13 @@ namespace HealthGateway.Common.Utils
         /// </summary>
         /// <param name="asset">The asset name with its namespace.</param>
         /// <returns>The read asset as a string.</returns>
-        public static string Read(string asset)
+        public static string? Read(string asset)
         {
             Assembly? assembly = Assembly.GetCallingAssembly();
             Stream? resourceStream = assembly!.GetManifestResourceStream(asset);
+            if (resourceStream == null) {
+                return null;
+            }
             using StreamReader reader = new StreamReader(resourceStream!, Encoding.UTF8);
             return reader.ReadToEnd();
         }
