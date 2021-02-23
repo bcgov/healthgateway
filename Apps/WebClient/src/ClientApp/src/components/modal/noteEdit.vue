@@ -72,7 +72,6 @@ export default class NoteEditComponent extends Vue {
 
     private mounted() {
         this.clear();
-        //To-do Leo
         this.eventBus.$on(EventMessageName.EditNote, this.editNote);
         this.eventBus.$on(EventMessageName.CreateNote, this.newNote);
 
