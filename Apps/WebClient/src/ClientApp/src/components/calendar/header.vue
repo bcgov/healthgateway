@@ -1,9 +1,9 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
-import EventBus from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 
 import CalendarBody from "./body.vue";
@@ -15,22 +15,34 @@ import CalendarBody from "./body.vue";
     },
 })
 export default class CalendarComponent extends Vue {
-    @Prop() currentMonth!: DateWrapper;
-    @Prop() availableMonths!: DateWrapper[];
+    @Prop() readonly currentMonth!: DateWrapper;
+    @Prop() readonly availableMonths!: DateWrapper[];
+
+    @Getter("calendarDate", { namespace: "timeline" })
+    calendarDate!: DateWrapper;
+
+    @Getter("linearDate", { namespace: "timeline" }) linearDate!: DateWrapper;
+
+    @Getter("selectedDate", { namespace: "timeline" })
+    selectedDate!: DateWrapper;
 
     private monthIndex = 0;
-    private headerDate: DateWrapper = new DateWrapper();
-    private eventBus = EventBus;
-    private leftIcon = "chevron-left";
-    private rightIcon = "chevron-right";
+    private headerDate: DateWrapper | null = null;
 
     private get hasAvailableMonths() {
         return this.availableMonths.length > 0;
     }
 
-    @Watch("currentMonth")
-    public onCurrentMonthChange(currentMonth: DateWrapper): void {
-        this.dateSelected(currentMonth);
+    @Watch("linearDate")
+    private onLinearDate() {
+        this.dateSelected(this.linearDate.startOf("month"));
+    }
+
+    @Watch("selectedDate")
+    private onSelectedDate() {
+        this.$nextTick().then(() => {
+            this.dateSelected(this.selectedDate.startOf("month"));
+        });
     }
 
     @Watch("availableMonths")
@@ -49,7 +61,7 @@ export default class CalendarComponent extends Vue {
     }
 
     private created() {
-        this.dispatchEvent();
+        this.dateSelected(this.calendarDate.startOf("month"));
     }
 
     private previousMonth() {
@@ -89,7 +101,7 @@ export default class CalendarComponent extends Vue {
                 class="arrow-icon left-button px-2 m-0"
                 @click.stop="previousMonth"
             >
-                <font-awesome-icon :icon="leftIcon" />
+                <font-awesome-icon icon="chevron-left" />
             </b-btn>
         </b-col>
         <b-col cols="col-sm-auto">
@@ -108,7 +120,7 @@ export default class CalendarComponent extends Vue {
                 class="arrow-icon right-button px-2 m-0"
                 @click.stop="nextMonth"
             >
-                <font-awesome-icon :icon="rightIcon" />
+                <font-awesome-icon icon="chevron-right" />
             </b-btn>
         </b-col>
     </b-row>

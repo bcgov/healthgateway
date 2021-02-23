@@ -1,6 +1,5 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
 import UserNote from "@/models/userNote";
 
 // The note timeline entry model
@@ -32,10 +31,10 @@ export default class NoteTimelineEntry extends TimelineEntry {
         this.version = model.version;
     }
 
-    public keywordApplies(filter: TimelineFilter): boolean {
+    public keywordApplies(keyword: string): boolean {
         let text = (this.title || "") + (this.text || "");
         text = text.toUpperCase();
-        return text.includes(filter.keyword.toUpperCase());
+        return text.includes(keyword.toUpperCase());
     }
 
     public toModel(): UserNote {

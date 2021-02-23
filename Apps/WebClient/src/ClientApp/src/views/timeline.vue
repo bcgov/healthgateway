@@ -14,7 +14,6 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
-import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
@@ -25,8 +24,8 @@ import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
-import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import TimelineFilter, { EntryTypeFilter } from "@/models/timelineFilter";
+import TimelineEntry from "@/models/timelineEntry";
+import TimelineFilter from "@/models/timelineFilter";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -50,12 +49,8 @@ export default class TimelineView extends Vue {
     @Ref("immunizationCard")
     readonly immunizationCard!: ImmunizationCardComponent;
 
-    @Getter("user", { namespace: "user" }) user!: User;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+    @Action("setKeyword", { namespace: "timeline" })
+    setKeyword!: (keyword: string) => void;
 
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
@@ -114,14 +109,22 @@ export default class TimelineView extends Vue {
     @Getter("notes", { namespace: "note" })
     userNotes!: UserNote[];
 
+    @Getter("filter", { namespace: "timeline" })
+    filter!: TimelineFilter;
+
+    @Getter("keyword", { namespace: "timeline" })
+    readonly keyword!: string;
+
+    @Getter("isLinearView", { namespace: "timeline" })
+    readonly isLinearView!: boolean;
+
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
+
     @Watch("filterText")
     private onFilterTextChanged() {
-        this.filter.keyword = this.filterText;
-    }
-
-    @Watch("filter", { deep: true })
-    private onFilterChanged() {
-        this.filterText = this.filter.keyword;
+        this.setKeyword(this.filterText);
     }
 
     @Watch("immunizationIsDeferred")
@@ -131,34 +134,35 @@ export default class TimelineView extends Vue {
         }
     }
 
+    @Watch("isLinearView")
+    private onIsLinearView() {
+        if (this.isLinearView) {
+            window.location.hash = "linear";
+        } else {
+            window.location.hash = "calendar";
+        }
+    }
+
     private get timelineEntries(): TimelineEntry[] {
+        if (this.isLoading) {
+            return [];
+        }
+
         let timelineEntries = [];
         // Add the medication entries to the timeline list
         for (let medication of this.medicationStatements) {
             timelineEntries.push(new MedicationTimelineEntry(medication));
         }
-        this.setFilterTypeCount(
-            EntryType.Medication,
-            this.medicationStatements.length
-        );
 
         // Add the Laboratory entries to the timeline list
         for (let order of this.laboratoryOrders) {
             timelineEntries.push(new LaboratoryTimelineEntry(order));
         }
-        this.setFilterTypeCount(
-            EntryType.Laboratory,
-            this.laboratoryOrders.length
-        );
 
         // Add the Encounter entries to the timeline list
         for (let encounter of this.patientEncounters) {
             timelineEntries.push(new EncounterTimelineEntry(encounter));
         }
-        this.setFilterTypeCount(
-            EntryType.Encounter,
-            this.patientEncounters.length
-        );
 
         // Add the Note entries to the timeline list
         for (let note of this.userNotes) {
@@ -172,25 +176,30 @@ export default class TimelineView extends Vue {
                     new ImmunizationTimelineEntry(immunization)
                 );
             }
-
-            this.setFilterTypeCount(
-                EntryType.Immunization,
-                this.patientImmunizations.length
-            );
         }
-
-        this.setFilterTypeCount(EntryType.Note, this.userNotes.length);
 
         timelineEntries = this.sortEntries(timelineEntries);
 
         return timelineEntries;
     }
 
+    public get filteredTimelineEntries(): TimelineEntry[] {
+        let filteredEntries = [];
+
+        if (this.keyword !== "" || this.filter.hasActiveFilter()) {
+            filteredEntries = this.timelineEntries.filter((entry) =>
+                entry.filterApplies(this.keyword, this.filter)
+            );
+        } else {
+            filteredEntries = this.timelineEntries;
+        }
+
+        return filteredEntries;
+    }
+
     private immunizationNeedsInput = false;
 
     private filterText = "";
-    private filter: TimelineFilter = new TimelineFilter([]);
-    private isListView = true;
 
     private isPacificTime = false;
 
@@ -231,13 +240,8 @@ export default class TimelineView extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.filterText = this.keyword;
 
-        this.eventBus.$on(
-            EventMessageName.TimelineViewUpdated,
-            (isListView: boolean) => {
-                this.isListView = isListView;
-            }
-        );
         this.eventBus.$on(
             EventMessageName.TimelineCovidCard,
             this.immunizationCard.showModal
@@ -252,52 +256,6 @@ export default class TimelineView extends Vue {
                 ? (this.isPacificTime = false)
                 : (this.isPacificTime = true);
         }
-
-        let entryTypes: EntryTypeFilter[] = [
-            {
-                type: EntryType.Immunization,
-                display: "Immunizations",
-                isEnabled: this.config.modules[EntryType.Immunization],
-                numEntries: 0,
-                isSelected: false,
-            },
-            {
-                type: EntryType.Medication,
-                display: "Medications",
-                isEnabled: this.config.modules[EntryType.Medication],
-                numEntries: 0,
-                isSelected: false,
-            },
-            {
-                type: EntryType.Laboratory,
-                display: "COVID-19 Tests",
-                isEnabled: this.config.modules[EntryType.Laboratory],
-                numEntries: 0,
-                isSelected: false,
-            },
-            {
-                type: EntryType.Encounter,
-                display: "MSP Visits",
-                isEnabled: this.config.modules[EntryType.Encounter],
-                numEntries: 0,
-                isSelected: false,
-            },
-            {
-                type: EntryType.Note,
-                display: "My Notes",
-                isEnabled: this.config.modules[EntryType.Note],
-                numEntries: 0,
-                isSelected: false,
-            },
-        ];
-        this.filter = new TimelineFilter(entryTypes);
-    }
-
-    private onCovidSubmit() {
-        this.eventBus.$emit(
-            EventMessageName.SelectedFilter,
-            EntryType.Laboratory
-        );
     }
 
     private checkTimezone(isDST: boolean): boolean {
@@ -329,29 +287,6 @@ export default class TimelineView extends Vue {
         return timelineEntries.sort((a, b) =>
             a.date.isAfter(b.date) ? -1 : a.date.isBefore(b.date) ? 1 : 0
         );
-    }
-
-    private setFilterTypeCount(entryType: EntryType, count: number) {
-        let typeFilter = this.filter.entryTypes.find(
-            (x) => x.type === entryType
-        );
-        if (typeFilter) {
-            typeFilter.numEntries = count;
-        }
-    }
-
-    private filtersChanged(newFilter: TimelineFilter) {
-        this.filter = newFilter;
-        this.filter.keyword = this.filterText;
-    }
-
-    private addFilterTypeCount(entryType: EntryType, count: number) {
-        let typeFilter = this.filter.entryTypes.find(
-            (x) => x.type === entryType
-        );
-        if (typeFilter) {
-            typeFilter.numEntries += count;
-        }
     }
 }
 </script>
@@ -467,35 +402,26 @@ export default class TimelineView extends Vue {
                         </b-col>
                         <b-col v-if="!isLoading" class="col-auto pl-2">
                             <Filters
-                                :is-list-view="isListView"
+                                :is-list-view="isLinearView"
                                 :filter.sync="filter"
                             />
                         </b-col>
                     </b-row>
                 </div>
                 <LinearTimeline
-                    v-show="isListView && !isLoading"
-                    :timeline-entries="timelineEntries"
-                    :is-visible="isListView"
+                    v-show="isLinearView && !isLoading"
+                    :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
-                    :filter="filter"
-                    :is-list-view="isListView"
                 >
                 </LinearTimeline>
                 <CalendarTimeline
-                    v-show="!isListView && !isLoading"
-                    :timeline-entries="timelineEntries"
-                    :is-visible="!isListView"
+                    v-show="!isLinearView && !isLoading"
+                    :timeline-entries="filteredTimelineEntries"
                     :total-entries="getTotalCount()"
-                    :filter="filter"
-                    :is-list-view="isListView"
                 >
                 </CalendarTimeline>
                 <b-row v-if="isLoading">
                     <b-col>
-                        <content-placeholders>
-                            <content-placeholders-text :lines="1" />
-                        </content-placeholders>
                         <br />
                         <div class="px-2">
                             <content-placeholders>
@@ -513,7 +439,7 @@ export default class TimelineView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
-        <CovidModalComponent :is-loading="isLoading" @submit="onCovidSubmit" />
+        <CovidModalComponent :is-loading="isLoading" />
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
         <ImmunizationCard ref="immunizationCard" />

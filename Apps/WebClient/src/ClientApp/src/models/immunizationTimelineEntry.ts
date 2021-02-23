@@ -6,7 +6,6 @@ import {
     ImmunizationEvent,
 } from "@/models/immunizationModel";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
@@ -21,11 +20,11 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         this.immunization = new ImmunizationViewModel(model);
     }
 
-    public keywordApplies(filter: TimelineFilter): boolean {
+    public keywordApplies(keyword: string): boolean {
         let text =
             (this.immunization.name || "") + (this.immunization.location || "");
         text = text.toUpperCase();
-        return text.includes(filter.keyword.toUpperCase());
+        return text.includes(keyword.toUpperCase());
     }
 }
 

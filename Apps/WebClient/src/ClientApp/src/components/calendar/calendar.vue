@@ -1,12 +1,10 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
-import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
+import { DateGroup } from "@/models/timelineEntry";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -21,11 +19,15 @@ import CalendarHeader from "./header.vue";
     },
 })
 export default class CalendarComponent extends Vue {
+    @Action("setCalendarDate", { namespace: "timeline" }) setCalendarDate!: (
+        date: DateWrapper
+    ) => void;
+
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
+    @Getter("isLinearView", { namespace: "timeline" }) isLinearView!: boolean;
+
     @Prop() dateGroups!: DateGroup[];
-    @Prop() private filter!: TimelineFilter;
-    @Prop() private isVisible!: boolean;
 
     @Prop({ default: 0, required: false }) firstDay!: number;
     @Prop({ default: "MMMM yyyy", required: false }) titleFormat!: string;
@@ -60,58 +62,48 @@ export default class CalendarComponent extends Vue {
     })
     weekNames!: Array<string>;
 
-    private availableMonths: DateWrapper[] = [];
     private currentMonth: DateWrapper = new DateWrapper();
-    private eventBus = EventBus;
     private logger!: ILogger;
+
+    private get availableMonths() {
+        return this.dateGroups.reduce<DateWrapper[]>((groups, entry) => {
+            const fullYear = entry.date.year();
+            if (!isNaN(fullYear)) {
+                // Get the month and year and dismiss the day
+                const monthYear = entry.date.startOf("month");
+
+                // Create a new group if it the date doesnt exist in the map
+                if (
+                    groups.findIndex(
+                        (month) =>
+                            month.year() === monthYear.year() &&
+                            month.month() === monthYear.month()
+                    ) === -1
+                ) {
+                    groups.push(monthYear);
+                }
+            } else {
+                this.logger.error(
+                    `Invalid entry date: ${JSON.stringify(entry)}`
+                );
+            }
+            return groups;
+        }, []);
+    }
+
+    @Watch("currentMonth")
+    private onCurrentMonth() {
+        if (!this.isLinearView) {
+            let dateGroup: DateGroup = this.dateGroups.find((d) =>
+                this.currentMonth.isSame(d.date, "month")
+            ) as DateGroup;
+
+            this.setCalendarDate(dateGroup.entries[0].date);
+        }
+    }
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.updateAvailableMonths();
-        this.eventBus.$on(
-            EventMessageName.TimelinePageUpdate,
-            (eventDate: DateWrapper) => {
-                this.currentMonth = eventDate.startOf("month");
-            }
-        );
-
-        this.eventBus.$on(EventMessageName.AddedNote, this.onEntryAdded);
-    }
-
-    private onEntryAdded(entry: TimelineEntry) {
-        this.$nextTick().then(() => {
-            this.currentMonth = entry.date.startOf("month");
-        });
-    }
-
-    @Watch("dateGroups")
-    private updateAvailableMonths() {
-        this.availableMonths = this.dateGroups.reduce<DateWrapper[]>(
-            (groups, entry) => {
-                const fullYear = entry.date.year();
-                if (!isNaN(fullYear)) {
-                    // Get the month and year and dismiss the day
-                    const monthYear = entry.date.startOf("month");
-
-                    // Create a new group if it the date doesnt exist in the map
-                    if (
-                        groups.findIndex(
-                            (month) =>
-                                month.year() === monthYear.year() &&
-                                month.month() === monthYear.month()
-                        ) === -1
-                    ) {
-                        groups.push(monthYear);
-                    }
-                } else {
-                    this.logger.error(
-                        `Invalid entry date: ${JSON.stringify(entry)}`
-                    );
-                }
-                return groups;
-            },
-            []
-        );
     }
 }
 </script>
@@ -133,14 +125,12 @@ export default class CalendarComponent extends Vue {
         />
         <!-- body display date day and events -->
         <CalendarBody
-            v-show="isVisible"
             class="pt-2 px-0 px-md-2"
             :current-month="currentMonth"
             :date-groups="dateGroups"
             :month-names="monthNames"
             :week-names="weekNames"
             :first-day="firstDay"
-            :is-visible="isVisible"
         >
         </CalendarBody>
     </div>

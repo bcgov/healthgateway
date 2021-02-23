@@ -8,6 +8,9 @@ export const getters: GetterTree<MedicationState, RootState> = {
     medicationStatements(state: MedicationState): MedicationStatementHistory[] {
         return state.medicationStatements;
     },
+    medicationCount(state: MedicationState): number {
+        return state.medicationStatements.length;
+    },
     medicationInformation: (state: MedicationState) => (
         din: string
     ): MedicationResult | undefined => {

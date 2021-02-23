@@ -2,7 +2,6 @@ import Clinic from "@/models/clinic";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
 
 // The encounter timeline entry model
 export default class EncounterTimelineEntry extends TimelineEntry {
@@ -22,13 +21,13 @@ export default class EncounterTimelineEntry extends TimelineEntry {
         this.clinic = new ClinicViewModel(model.clinic);
     }
 
-    public keywordApplies(filter: TimelineFilter): boolean {
+    public keywordApplies(keyword: string): boolean {
         let text =
             this.practitionerName +
             this.specialtyDescription +
             this.clinic.name;
         text = text.toUpperCase();
-        return text.includes(filter.keyword.toUpperCase());
+        return text.includes(keyword.toUpperCase());
     }
 }
 
