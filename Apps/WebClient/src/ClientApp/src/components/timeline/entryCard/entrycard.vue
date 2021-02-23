@@ -1,11 +1,16 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 
 import CommentSectionComponent from "./commentSection.vue";
+library.add(faComment);
 
 @Component({
     components: {
@@ -21,6 +26,21 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop() iconClass!: string;
     @Prop({ default: true }) allowComment!: boolean;
     @Prop({ default: true }) showDetailsButton!: boolean;
+
+    @Getter("getEntryComments", { namespace: "comment" })
+    entryComments!: (entyId: string) => UserComment[];
+
+    private get commentsCount(): number {
+        return (this.entryComments(this.entry.id) || []).length;
+    }
+
+    private get displayTitle(): string {
+        if (this.title === "") {
+            return this.entry.type.toString();
+        } else {
+            return this.title;
+        }
+    }
 
     private detailsVisible = false;
 
@@ -65,9 +85,9 @@ export default class EntrycardTimelineComponent extends Vue {
                                 class="detailsButton text-left"
                                 @click="toggleDetails()"
                             >
-                                <strong>{{ title }}</strong>
+                                <strong>{{ displayTitle }}</strong>
                             </b-btn>
-                            <strong v-else>{{ title }}</strong>
+                            <strong v-else>{{ displayTitle }}</strong>
                         </b-col>
                         <b-col cols="4" class="text-right">
                             <span
@@ -84,6 +104,18 @@ export default class EntrycardTimelineComponent extends Vue {
                             }}</slot>
                         </b-col>
                         <b-col cols="4" class="text-right align-self-center">
+                            <span
+                                v-if="commentsCount > 1"
+                                class="pr-2"
+                                data-testid="commentCount"
+                                >{{ commentsCount }}</span
+                            >
+                            <span v-if="commentsCount > 0">
+                                <font-awesome-icon
+                                    :icon="['far', 'comment']"
+                                    data-testid="commentIcon"
+                                />
+                            </span>
                             <slot name="header-menu"> </slot>
                         </b-col>
                     </b-row>

@@ -50,7 +50,7 @@ export default class LinearTimelineComponent extends Vue {
     private currentPage = 1;
     private dateGroups: DateGroup[] = [];
 
-    private readonly pageSize = 5;
+    private readonly pageSize = 25;
 
     @Watch("visibleTimelineEntries")
     private onVisibleEntriesUpdate() {
