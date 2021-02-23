@@ -25,8 +25,8 @@ export default class CalendarTimelineComponent extends Vue {
 
     @Watch("timelineEntries")
     private refreshTimelineGroups() {
-        this.dateGroups = DateGroup.createGroups(this.timelineEntries);
-        this.dateGroups = DateGroup.sortGroups(this.dateGroups, false);
+        let newGroupArray = DateGroup.createGroups(this.timelineEntries);
+        this.dateGroups = DateGroup.sortGroups(newGroupArray, false);
     }
 }
 </script>

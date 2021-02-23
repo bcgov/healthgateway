@@ -54,8 +54,8 @@ export default class LinearTimelineComponent extends Vue {
 
     @Watch("visibleTimelineEntries")
     private onVisibleEntriesUpdate() {
-        this.dateGroups = DateGroup.createGroups(this.visibleTimelineEntries);
-        this.dateGroups = DateGroup.sortGroups(this.dateGroups);
+        let newGroupArray = DateGroup.createGroups(this.visibleTimelineEntries);
+        this.dateGroups = DateGroup.sortGroups(newGroupArray);
     }
 
     @Watch("calendarDate")
