@@ -7,7 +7,6 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import LoadingComponent from "@/components/loading.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
@@ -20,7 +19,6 @@ import NoteTimelineComponent from "./note.vue";
 
 @Component({
     components: {
-        LoadingComponent,
         MedicationComponent: MedicationTimelineComponent,
         ImmunizationComponent: ImmunizationTimelineComponent,
         LaboratoryComponent: LaboratoryTimelineComponent,
