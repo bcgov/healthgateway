@@ -96,6 +96,7 @@ export default class EntryDetailsComponent extends Vue {
         id="entry-details-modal"
         v-model="isVisible"
         data-testid="entryDetailsModal"
+        modal-class="entry-details-modal"
         content-class="mt-0 entry-details-mobile"
         size="lg"
         header-class="entry-details-modal-header"
@@ -183,16 +184,19 @@ export default class EntryDetailsComponent extends Vue {
     left: 0;
     top: 60px;
     border-radius: 0px;
+    max-width: 100%;
     .modal-body {
         padding: 0em;
     }
 }
-.modal-dialog {
-    margin: 0rem;
-    max-width: 100%;
+
+.entry-details-modal {
+    .modal-dialog {
+        margin: 0rem;
+    }
 }
 
-.edit-modal-header {
+.entry-details-modal-header {
     background-color: white;
 }
 </style>
