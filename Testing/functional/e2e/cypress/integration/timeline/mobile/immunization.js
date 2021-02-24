@@ -1,7 +1,6 @@
 const { AuthMethod } = require("../../../support/constants")
 describe('Immunization', () => {
     before(() => {
-      cy.viewport('iphone-6');
       let isLoading = false;
       cy.enableModules("Immunization");
       cy.intercept('GET', "**/v1/api/Immunization/*", (req) => { 
@@ -14,6 +13,7 @@ describe('Immunization', () => {
           isLoading = !isLoading;
         })
       });
+      cy.viewport('iphone-6');
       cy.login(Cypress.env('keycloak.username'),
           Cypress.env('keycloak.password'),
           AuthMethod.KeyCloak);
@@ -34,7 +34,6 @@ describe('Immunization', () => {
     })
     
     it('Validate Card Details on Mobile', () => {
-      cy.viewport('iphone-6');
       cy.get('[data-testid=timelineCard]')
         .first()
         .click()
