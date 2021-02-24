@@ -16,4 +16,6 @@ export class EventMessageName {
 
     public static readonly TimelineViewUpdated = "timeline-view-updated";
     public static readonly TimelineCovidCard = "timeline-covid-card";
+
+    public static readonly ViewEntryDetails = "view-entry-details";
 }

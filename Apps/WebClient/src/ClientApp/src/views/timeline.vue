@@ -11,6 +11,7 @@ import ImmunizationCardComponent from "@/components/modal/immunizationCard.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
+import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetailsCard.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
@@ -39,6 +40,7 @@ import { ILogger } from "@/services/interfaces";
         ProtectiveWordComponent,
         CovidModalComponent,
         NoteEditComponent,
+        EntryDetailsComponent,
         LinearTimeline: LinearTimelineComponent,
         CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
@@ -516,6 +518,7 @@ export default class TimelineView extends Vue {
         <CovidModalComponent :is-loading="isLoading" @submit="onCovidSubmit" />
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
+        <EntryDetailsComponent :is-loading="isLoading" />
         <ImmunizationCard ref="immunizationCard" />
     </div>
 </template>
