@@ -364,7 +364,7 @@ export default class FilterComponent extends Vue {
                                 class="btn-outline-primary px-2 m-0"
                                 @click.stop="cancel"
                             >
-                                Canel
+                                Cancel
                             </b-btn>
                         </b-col>
                         <b-col cols="auto" class="pl-2">
@@ -505,7 +505,7 @@ export default class FilterComponent extends Vue {
                         class="btn-outline-primary px-2 m-0"
                         @click.stop="cancel"
                     >
-                        Canel
+                        Cancel
                     </b-btn>
                 </b-col>
                 <b-col cols="auto" class="pl-2">
