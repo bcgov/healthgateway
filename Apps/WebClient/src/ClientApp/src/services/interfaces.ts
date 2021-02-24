@@ -11,7 +11,6 @@ import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
-import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
@@ -60,7 +59,6 @@ export interface IMedicationService {
         hdid: string,
         protectiveWord?: string
     ): Promise<RequestResult<MedicationStatementHistory[]>>;
-    getMedicationInformation(drugIdentifier: string): Promise<MedicationResult>;
 }
 
 export interface IEncounterService {

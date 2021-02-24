@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System;
     using System.Net.Mime;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -25,13 +26,8 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     public class RobotsController : Controller
     {
-        /// <summary>
-        /// The Default Robots.txt content if not overriden using the robots.txt configuration value.
-        /// </summary>
-        public const string DefaultRobotsContent = "# Default robots.txt for Non-Prod\nUser-agent: *\nDisallow: /\n";
-
         private readonly IConfiguration configuration;
-        private readonly string robotsContent;
+        private readonly string? robotsContent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RobotsController"/> class.
@@ -39,8 +35,11 @@ namespace HealthGateway.WebClient.Controllers
         /// <param name="configuration">The injected configuration.</param>
         public RobotsController(IConfiguration configuration)
         {
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
             this.configuration = configuration;
-            this.robotsContent = this.configuration.GetValue("robots.txt", DefaultRobotsContent);
+            string? defaultRobotsAssetContent = Common.Utils.AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
+            string? envRobotsAssetContent = Common.Utils.AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
+            this.robotsContent = this.configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
         }
 
         /// <summary>

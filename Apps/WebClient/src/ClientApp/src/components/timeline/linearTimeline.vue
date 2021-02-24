@@ -1,9 +1,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
-import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
@@ -24,136 +23,131 @@ import NoteTimelineComponent from "./entryCard/note.vue";
     },
 })
 export default class LinearTimelineComponent extends Vue {
+    @Action("setLinearDate", { namespace: "timeline" })
+    setLinearDate!: (linearDate: DateWrapper) => void;
+
+    @Getter("linearDate", { namespace: "timeline" })
+    linearDate!: DateWrapper;
+
+    @Getter("calendarDate", { namespace: "timeline" })
+    calendarDate!: DateWrapper;
+
+    @Getter("selectedDate", { namespace: "timeline" })
+    selectedDate!: DateWrapper | null;
+
     @Getter("isHeaderShown", { namespace: "navbar" }) isHeaderShown!: boolean;
 
+    @Getter("filter", { namespace: "timeline" }) filter!: TimelineFilter;
+
+    @Getter("isLinearView", { namespace: "timeline" })
+    isLinearView!: TimelineFilter;
+
+    @Getter("hasActiveFilter", { namespace: "timeline" })
+    hasActiveFilter!: boolean;
+
     @Prop() private timelineEntries!: TimelineEntry[];
+
     @Prop({ default: 0 }) private totalEntries!: number;
-    @Prop() private isVisible!: boolean;
-    @Prop() private filter!: TimelineFilter;
 
-    private filteredTimelineEntries: TimelineEntry[] = [];
-    private visibleTimelineEntries: TimelineEntry[] = [];
     private currentPage = 1;
-    private eventBus = EventBus;
-    private dateGroups: DateGroup[] = [];
-    private hasFilter = false;
 
-    @Watch("filter", { deep: true })
-    private applyTimelineFilter() {
-        this.hasFilter = this.filter.hasActiveFilter();
-        this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(this.filter)
-        );
+    private readonly pageSize = 25;
+
+    private get numberOfPages(): number {
+        let pageCount = 1;
+        if (this.timelineEntries.length > this.pageSize) {
+            pageCount = Math.ceil(this.timelineEntries.length / this.pageSize);
+        }
+        return pageCount;
     }
 
-    @Watch("timelineEntries")
-    private refreshEntries() {
-        this.applyTimelineFilter();
+    private get timelineIsEmpty(): boolean {
+        return this.timelineEntries.length === 0;
     }
 
-    @Watch("visibleTimelineEntries")
-    private onVisibleEntriesUpdate() {
-        if (this.visibleTimelineEntries.length > 0) {
-            if (this.isVisible) {
-                this.eventBus.$emit(
-                    EventMessageName.TimelinePageUpdate,
-                    this.visibleTimelineEntries[0].date
-                );
-            }
+    private get visibleTimelineEntries(): TimelineEntry[] {
+        if (this.timelineIsEmpty) {
+            return [];
         }
 
-        this.dateGroups = DateGroup.createGroups(this.visibleTimelineEntries);
-        this.dateGroups = DateGroup.sortGroup(this.dateGroups);
+        // Handle the current page being beyond the max number of pages
+        if (this.currentPage > this.numberOfPages) {
+            this.currentPage = this.numberOfPages;
+        }
+
+        // Get the section of the array that contains the paginated section
+        let lowerIndex = (this.currentPage - 1) * this.pageSize;
+        let upperIndex = Math.min(
+            this.currentPage * this.pageSize,
+            this.timelineEntries.length
+        );
+        let entries = this.timelineEntries.slice(lowerIndex, upperIndex);
+
+        return entries;
     }
 
-    private created() {
-        this.eventBus.$on(
-            EventMessageName.CalendarDateEventClick,
-            (eventDate: DateWrapper) => {
-                this.setPageFromDate(eventDate);
+    private get dateGroups(): DateGroup[] {
+        if (this.timelineIsEmpty) {
+            return [];
+        }
+
+        let newGroupArray = DateGroup.createGroups(this.visibleTimelineEntries);
+        return DateGroup.sortGroups(newGroupArray);
+    }
+
+    @Watch("currentPage")
+    private onCurrentPage() {
+        if (this.isLinearView && this.visibleTimelineEntries.length > 0) {
+            // Update the store
+            this.setLinearDate(this.visibleTimelineEntries[0].date);
+        }
+    }
+
+    @Watch("calendarDate")
+    private onCalendarDate() {
+        if (!this.isLinearView) {
+            this.setPageFromDate(this.calendarDate);
+        }
+    }
+
+    @Watch("selectedDate")
+    private onSelectedDate() {
+        if (this.selectedDate !== null) {
+            const selectedDate = this.selectedDate as DateWrapper;
+
+            if (this.setPageFromDate(selectedDate)) {
                 // Wait for next render cycle until the pages have been calculated and displayed
                 this.$nextTick().then(() => {
-                    this.focusOnDate(eventDate);
+                    const selectedDate = this.selectedDate as DateWrapper;
+                    this.focusOnDate(selectedDate);
                 });
             }
-        );
-
-        this.eventBus.$on(
-            EventMessageName.CalendarMonthUpdated,
-            (firstEntryDate: DateWrapper) => {
-                this.setPageFromDate(firstEntryDate);
-            }
-        );
-
-        this.eventBus.$on(
-            EventMessageName.TimelineEntryAdded,
-            (entry: TimelineEntry) => {
-                this.onEntryAdded(entry);
-            }
-        );
+        }
     }
 
     private linkGen(pageNum: number) {
         return `?page=${pageNum}`;
     }
 
-    private get numberOfPages(): number {
-        let result = 1;
-        if (this.filteredTimelineEntries.length > this.filter.pageSize) {
-            result = Math.ceil(
-                this.filteredTimelineEntries.length / this.filter.pageSize
-            );
-        }
-        return result;
-    }
-
-    @Watch("currentPage")
-    @Watch("filter.pageSize")
-    @Watch("filteredTimelineEntries")
-    private calculateVisibleEntries() {
-        // Handle the current page being beyond the max number of pages
-        if (this.currentPage > this.numberOfPages) {
-            this.currentPage = this.numberOfPages;
-        }
-        // Get the section of the array that contains the paginated section
-        let lowerIndex = (this.currentPage - 1) * this.filter.pageSize;
-        let upperIndex = Math.min(
-            this.currentPage * this.filter.pageSize,
-            this.filteredTimelineEntries.length
-        );
-        this.visibleTimelineEntries = this.filteredTimelineEntries.slice(
-            lowerIndex,
-            upperIndex
-        );
-    }
-
-    @Watch("filter.pageSize")
-    private onEntriesPerPageChange() {
-        this.currentPage = 1;
+    private mounted() {
+        this.setPageFromDate(this.linearDate);
     }
 
     private getVisibleCount(): number {
         return this.visibleTimelineEntries.length;
     }
 
-    private setPageFromDate(eventDate: DateWrapper) {
-        let index = this.filteredTimelineEntries.findIndex(
-            (entry) => entry.date === eventDate
+    private setPageFromDate(eventDate: DateWrapper): boolean {
+        let index = this.timelineEntries.findIndex((entry) =>
+            entry.date.isSame(eventDate)
         );
-        this.currentPage = Math.floor(index / this.filter.pageSize) + 1;
-    }
 
-    private get timelineIsEmpty(): boolean {
-        return this.filteredTimelineEntries.length == 0;
-    }
-
-    private onEntryAdded(entry: TimelineEntry) {
-        this.$nextTick().then(() => {
-            this.setPageFromDate(entry.date);
-            this.$nextTick().then(() => {
-                this.focusOnDate(entry.date);
-            });
-        });
+        if (index >= 0) {
+            this.currentPage = Math.floor(index / this.pageSize) + 1;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private focusOnDate(date: DateWrapper) {
@@ -193,7 +187,7 @@ export default class LinearTimelineComponent extends Vue {
         >
             <b-col>
                 <b-pagination-nav
-                    v-show="!timelineIsEmpty"
+                    v-if="!timelineIsEmpty"
                     v-model="currentPage"
                     :link-gen="linkGen"
                     :number-of-pages="numberOfPages"
@@ -257,7 +251,7 @@ export default class LinearTimelineComponent extends Vue {
                         class="text-center pt-2 noTimelineEntriesText"
                         data-testid="noTimelineEntriesText"
                     >
-                        <span v-if="hasFilter"
+                        <span v-if="hasActiveFilter"
                             >No records found with the selected filters</span
                         >
                         <span v-else>No records found</span>

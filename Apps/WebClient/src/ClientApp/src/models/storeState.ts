@@ -10,11 +10,18 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 
-export enum StateType {
+import Encounter from "./encounter";
+import { ResultError } from "./requestResult";
+import TimelineFilter from "./timelineFilter";
+import UserNote from "./userNote";
+
+export enum LoadStatus {
     NONE,
-    INITIALIZED,
     REQUESTED,
+    ASYNC_REQUESTED,
+    LOADED,
     DEFERRED,
+    PROTECTED,
     ERROR,
 }
 
@@ -27,14 +34,14 @@ export interface AuthState {
     isAuthenticated: boolean;
     statusMessage: string;
     error: unknown;
-    stateType: StateType;
+    status: LoadStatus;
 }
 
 export interface ConfigState {
     config: ExternalConfiguration;
     statusMessage: string;
     error: boolean;
-    stateType: StateType;
+    status: LoadStatus;
 }
 
 export interface UserState {
@@ -42,42 +49,70 @@ export interface UserState {
     smsResendDateTime?: DateWrapper;
     statusMessage: string;
     error: boolean;
-    stateType: StateType;
+    status: LoadStatus;
 }
 
 export interface MedicationState {
     medicationStatements: MedicationStatementHistory[];
+    protectiveWordAttempts: number;
     medications: MedicationResult[];
     statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+    error?: ResultError;
+    status: LoadStatus;
 }
 
 export interface LaboratoryState {
     laboratoryOrders: LaboratoryOrder[];
     statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+    error?: ResultError;
+    status: LoadStatus;
 }
 
 export interface ImmunizationState {
     immunizations: ImmunizationEvent[];
     recommendations: Recommendation[];
     statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+    error?: ResultError;
+    status: LoadStatus;
+}
+
+export interface EncounterState {
+    patientEncounters: Encounter[];
+    statusMessage: string;
+    error?: ResultError;
+    status: LoadStatus;
 }
 
 export interface CommentState {
     profileComments: Dictionary<UserComment[]>;
     statusMessage: string;
-    error: boolean;
-    stateType: StateType;
+    error?: ResultError;
+    status: LoadStatus;
+}
+
+export interface NoteState {
+    notes: UserNote[];
+    statusMessage: string;
+    error?: ResultError;
+    status: LoadStatus;
+}
+
+export interface TimelineState {
+    filter: TimelineFilter;
+    keyword: string;
+    isLinearView: boolean;
+    linearDate: DateWrapper;
+    calendarDate: DateWrapper;
+    selectedDate: DateWrapper | null;
 }
 
 export interface NavbarState {
     isSidebarOpen: boolean;
     isHeaderShown: boolean;
+}
+
+export interface IdleState {
+    isVisible: boolean;
 }
 
 export interface ErrorBannerState {

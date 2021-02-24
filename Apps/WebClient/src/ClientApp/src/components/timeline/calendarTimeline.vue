@@ -1,10 +1,11 @@
 <script lang="ts">
 import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
+import { Component, Prop } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import CalendarComponent from "@/components/calendar/calendar.vue";
 import TimelineEntry, { DateGroup } from "@/models/timelineEntry";
-import TimelineFilter from "@/models/timelineFilter";
+
 @Component({
     components: {
         CalendarComponent,
@@ -12,43 +13,28 @@ import TimelineFilter from "@/models/timelineFilter";
 })
 export default class CalendarTimelineComponent extends Vue {
     @Prop() private timelineEntries!: TimelineEntry[];
-    @Prop() private isVisible!: boolean;
-    @Prop() private totalEntries!: number;
-    @Prop() private filter!: TimelineFilter;
 
-    private filteredTimelineEntries: TimelineEntry[] = [];
-    private dateGroups: DateGroup[] = [];
-    private hasFilter = false;
-
-    @Watch("filter", { deep: true })
-    private applyTimelineFilter() {
-        this.hasFilter = this.filter.hasActiveFilter();
-        this.filteredTimelineEntries = this.timelineEntries.filter((entry) =>
-            entry.filterApplies(this.filter)
-        );
-
-        this.dateGroups = DateGroup.createGroups(this.filteredTimelineEntries);
-        this.dateGroups = DateGroup.sortGroup(this.dateGroups, false);
-    }
-
-    @Watch("timelineEntries")
-    private refreshEntries() {
-        this.applyTimelineFilter();
-    }
+    @Getter("hasActiveFilter", { namespace: "timeline" })
+    hasActiveFilter!: boolean;
 
     private get timelineIsEmpty(): boolean {
-        return this.filteredTimelineEntries.length == 0;
+        return this.timelineEntries.length === 0;
+    }
+
+    private get dateGroups(): DateGroup[] {
+        if (this.timelineIsEmpty) {
+            return [];
+        }
+
+        let newGroupArray = DateGroup.createGroups(this.timelineEntries);
+        return DateGroup.sortGroups(newGroupArray, false);
     }
 }
 </script>
 
 <template>
     <div class="timeline-calendar">
-        <CalendarComponent
-            :date-groups="dateGroups"
-            :filter="filter"
-            :is-visible="isVisible && !timelineIsEmpty"
-        >
+        <CalendarComponent v-show="!timelineIsEmpty" :date-groups="dateGroups">
         </CalendarComponent>
         <div v-if="timelineIsEmpty" class="text-center pt-2">
             <b-row>
@@ -68,7 +54,7 @@ export default class CalendarTimelineComponent extends Vue {
                         class="text-center pt-2 noTimelineEntriesText"
                         data-testid="noTimelineEntriesText"
                     >
-                        <span v-if="hasFilter"
+                        <span v-if="hasActiveFilter"
                             >No records found with the selected filters</span
                         >
                         <span v-else>No records found</span>

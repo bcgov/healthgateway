@@ -1,32 +1,28 @@
-import { ActionTree, Commit } from "vuex";
+import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
 import { LaboratoryOrder } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
-import { LaboratoryState, RootState } from "@/models/storeState";
+import { LaboratoryState, LoadStatus, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-function handleError(commit: Commit, error: Error) {
-    logger.error(`ERROR: ${JSON.stringify(error)}`);
-    commit("laboratoryError");
-}
-
 const laboratoryService: ILaboratoryService = container.get<ILaboratoryService>(
     SERVICE_IDENTIFIER.LaboratoryService
 );
 
 export const actions: ActionTree<LaboratoryState, RootState> = {
-    getOrders(
+    retrieve(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<LaboratoryOrder[]>> {
         return new Promise((resolve, reject) => {
-            const laboratoryOrders: LaboratoryOrder[] = context.getters.getStoredLaboratoryOrders();
-            if (laboratoryOrders.length > 0) {
+            const laboratoryOrders: LaboratoryOrder[] =
+                context.getters.laboratoryOrders;
+            if (context.state.status === LoadStatus.LOADED) {
                 logger.debug(`Laboratory found stored, not quering!`);
                 resolve({
                     pageIndex: 0,
@@ -37,6 +33,7 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
                 });
             } else {
                 logger.debug(`Retrieving Laboratory Orders`);
+                context.commit("setRequested");
                 laboratoryService
                     .getOrders(params.hdid)
                     .then((result) => {
@@ -47,7 +44,8 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
                         resolve(result);
                     })
                     .catch((error) => {
-                        handleError(context.commit, error);
+                        logger.error(`ERROR: ${JSON.stringify(error)}`);
+                        context.commit("laboratoryError", error);
                         reject(error);
                     });
             }

@@ -3,18 +3,20 @@ import { MutationTree } from "vuex";
 
 import { Dictionary } from "@/models/baseTypes";
 import { DateWrapper } from "@/models/dateWrapper";
-import { CommentState, StateType } from "@/models/storeState";
+import { CommentState, LoadStatus } from "@/models/storeState";
 import { UserComment } from "@/models/userComment";
 
 export const mutations: MutationTree<CommentState> = {
+    setRequested(state: CommentState) {
+        state.status = LoadStatus.REQUESTED;
+    },
     setProfileComments(
         state: CommentState,
         profileComments: Dictionary<UserComment[]>
     ) {
         state.profileComments = profileComments;
-        state.error = false;
-        state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.error = undefined;
+        state.status = LoadStatus.LOADED;
     },
     addComment(state: CommentState, userComment: UserComment) {
         if (state.profileComments[userComment.parentEntryId] !== undefined) {
@@ -34,13 +36,13 @@ export const mutations: MutationTree<CommentState> = {
                 isUtc: true,
             });
 
-            const vale = secondDate.isAfter(firstDate)
+            const value = secondDate.isAfter(firstDate)
                 ? -1
                 : firstDate.isAfter(secondDate)
                 ? 1
                 : 0;
 
-            return vale;
+            return value;
         });
     },
     updateComment(state: CommentState, userComment: UserComment) {
@@ -71,16 +73,8 @@ export const mutations: MutationTree<CommentState> = {
         }
     },
 
-    setEntryComments(state: CommentState, entryComments: UserComment[]) {
-        state.profileComments[entryComments[0].parentEntryId] = entryComments;
-        state.error = false;
-        state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
-    },
-
-    commentError(state: CommentState, errorMessage: string) {
-        state.error = true;
-        state.statusMessage = errorMessage;
-        state.stateType = StateType.ERROR;
+    commentError(state: CommentState, error: Error) {
+        state.statusMessage = error.message;
+        state.status = LoadStatus.ERROR;
     },
 };

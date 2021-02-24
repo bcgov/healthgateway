@@ -1,16 +1,25 @@
 import { GetterTree } from "vuex";
 
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
-import { ImmunizationState, RootState, StateType } from "@/models/storeState";
+import { ImmunizationState, LoadStatus, RootState } from "@/models/storeState";
 
 export const getters: GetterTree<ImmunizationState, RootState> = {
-    getStoredImmunizations(state: ImmunizationState): ImmunizationEvent[] {
+    immunizations(state: ImmunizationState): ImmunizationEvent[] {
         return state.immunizations;
     },
-    getStoredRecommendations(state: ImmunizationState): Recommendation[] {
+    recomendations(state: ImmunizationState): Recommendation[] {
         return state.recommendations;
     },
+    immunizationCount(state: ImmunizationState): number {
+        return state.immunizations.length;
+    },
     isDeferredLoad(state: ImmunizationState): boolean {
-        return state.stateType === StateType.DEFERRED;
+        return (
+            state.status === LoadStatus.DEFERRED ||
+            state.status === LoadStatus.ASYNC_REQUESTED
+        );
+    },
+    isLoading(state: ImmunizationState): boolean {
+        return state.status === LoadStatus.REQUESTED;
     },
 };

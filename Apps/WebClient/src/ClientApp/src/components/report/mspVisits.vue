@@ -5,8 +5,6 @@ import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ReportHeaderComponent from "@/components/report/header.vue";
-import { ResultType } from "@/constants/resulttype";
-import BannerError from "@/models/bannerError";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import PatientData from "@/models/patientData";
@@ -14,9 +12,7 @@ import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import PDFDefinition from "@/plugins/pdfDefinition";
-import { IEncounterService } from "@/services/interfaces";
 import { ILogger } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
 
 @Component({
     components: {
@@ -24,21 +20,66 @@ import ErrorTranslator from "@/utility/errorTranslator";
     },
 })
 export default class MSPVisitsReportComponent extends Vue {
-    @Prop() private startDate?: string;
-    @Prop() private endDate?: string;
-    @Prop() private patientData?: PatientData;
+    @Prop() private startDate!: string | null;
+    @Prop() private endDate!: string | null;
+    @Prop() private patientData!: PatientData | null;
+
+    @Action("retrieve", { namespace: "encounter" })
+    retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
+
+    @Getter("isLoading", { namespace: "encounter" })
+    isLoading!: boolean;
+
+    @Getter("patientEncounters", { namespace: "encounter" })
+    patientEncounters!: Encounter[];
+
     @Getter("user", { namespace: "user" })
     private user!: User;
-    @Action("addError", { namespace: "errorBanner" })
-    private addError!: (error: BannerError) => void;
+
     @Ref("report")
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
-    private records: Encounter[] = [];
+
     private isPreview = true;
-    private isLoading = false;
+
+    private get visibleRecords(): Encounter[] {
+        let records = this.patientEncounters.filter((record) => {
+            let filterStart = true;
+            if (this.startDate !== null) {
+                filterStart = new DateWrapper(
+                    record.encounterDate
+                ).isAfterOrSame(new DateWrapper(this.startDate));
+            }
+
+            let filterEnd = true;
+            if (this.endDate !== null) {
+                filterEnd = new DateWrapper(
+                    record.encounterDate
+                ).isBeforeOrSame(new DateWrapper(this.endDate));
+            }
+            return filterStart && filterEnd;
+        });
+        records.sort((a, b) => {
+            const firstDate = new DateWrapper(a.encounterDate);
+            const secondDate = new DateWrapper(b.encounterDate);
+
+            const value = firstDate.isAfter(secondDate)
+                ? 1
+                : firstDate.isBefore(secondDate)
+                ? -1
+                : 0;
+
+            return value;
+        });
+
+        return records;
+    }
+
+    private get isEmpty() {
+        return this.visibleRecords.length == 0;
+    }
 
     @Watch("isLoading")
     @Emit()
@@ -46,80 +87,15 @@ export default class MSPVisitsReportComponent extends Vue {
         return this.isLoading;
     }
 
-    @Watch("startDate")
-    @Watch("endDate")
-    private onDateChanged() {
-        this.fetchEncounters();
-    }
-
-    private fetchEncounters() {
-        this.isLoading = true;
-        const encounterService: IEncounterService = container.get(
-            SERVICE_IDENTIFIER.EncounterService
-        );
-        encounterService
-            .getPatientEncounters(this.user.hdid)
-            .then((results) => {
-                if (results.resultStatus == ResultType.Success) {
-                    this.records = results.resourcePayload;
-                    this.filterAndSortEntries();
-                } else {
-                    this.logger.error(
-                        "Error returned from the encounter call: " +
-                            JSON.stringify(results.resultError)
-                    );
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Fetch Encounter Error",
-                            results.resultError
-                        )
-                    );
-                }
-            })
-            .catch((err) => {
-                this.logger.error(err);
-                this.addError(
-                    ErrorTranslator.toBannerError("Fetch Encounter Error", err)
-                );
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
-
-    private filterAndSortEntries() {
-        this.records = this.records.filter((record) => {
-            return (
-                (!this.startDate ||
-                    new DateWrapper(record.encounterDate).isAfterOrSame(
-                        new DateWrapper(this.startDate)
-                    )) &&
-                (!this.endDate ||
-                    new DateWrapper(record.encounterDate).isBeforeOrSame(
-                        new DateWrapper(this.endDate)
-                    ))
-            );
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.retrieveEncounters({ hdid: this.user.hdid }).catch((err) => {
+            this.logger.error(`Error loading encounter data: ${err}`);
         });
-        this.records.sort((a, b) =>
-            a.encounterDate > b.encounterDate
-                ? -1
-                : a.encounterDate < b.encounterDate
-                ? 1
-                : 0
-        );
-    }
-
-    private get isEmpty() {
-        return this.records.length == 0;
     }
 
     private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchEncounters();
     }
 
     public async generatePdf(): Promise<void> {
@@ -185,7 +161,11 @@ export default class MSPVisitsReportComponent extends Vue {
                     <b-col>Specialty Description</b-col>
                     <b-col>Clinic Location</b-col>
                 </b-row>
-                <b-row v-for="item in records" :key="item.id" class="item py-1">
+                <b-row
+                    v-for="item in visibleRecords"
+                    :key="item.id"
+                    class="item py-1"
+                >
                     <b-col class="my-auto text-nowrap">
                         {{ formatDate(item.encounterDate) }}
                     </b-col>

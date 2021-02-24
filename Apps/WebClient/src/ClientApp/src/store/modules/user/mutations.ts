@@ -3,7 +3,7 @@ import Vue from "vue";
 import { MutationTree } from "vuex";
 
 import { DateWrapper } from "@/models/dateWrapper";
-import { StateType, UserState } from "@/models/storeState";
+import { LoadStatus, UserState } from "@/models/storeState";
 import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
 import type { UserPreference } from "@/models/userPreference";
@@ -19,7 +19,7 @@ export const mutations: MutationTree<UserState> = {
         Vue.set(state.user, "hdid", oidcUser.profile.hdid);
         state.error = false;
         state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.status = LoadStatus.LOADED;
     },
     setProfileUserData(state: UserState, userProfile: UserProfile) {
         Vue.set(
@@ -46,7 +46,7 @@ export const mutations: MutationTree<UserState> = {
         logger.verbose(`state.user: ${JSON.stringify(state.user)}`);
         state.error = false;
         state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.status = LoadStatus.LOADED;
     },
     setValidatedEmail(state: UserState, userEmailInvite: UserEmailInvite) {
         if (userEmailInvite) {
@@ -59,7 +59,7 @@ export const mutations: MutationTree<UserState> = {
 
         state.error = false;
         state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.status = LoadStatus.LOADED;
     },
     setValidatedSMS(state: UserState, userSMSInvite: UserSMSInvite) {
         if (userSMSInvite) {
@@ -71,13 +71,13 @@ export const mutations: MutationTree<UserState> = {
         }
         state.error = false;
         state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.status = LoadStatus.LOADED;
     },
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper) {
         Vue.set(state, "smsResendDateTime", dateTime);
         state.error = false;
         state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.status = LoadStatus.LOADED;
     },
     setUserPreference(state: UserState, userPreference: UserPreference) {
         logger.debug(
@@ -88,17 +88,17 @@ export const mutations: MutationTree<UserState> = {
         state.user.preferences[userPreference.preference] = userPreference;
         state.error = false;
         state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.status = LoadStatus.LOADED;
     },
     clearUserData(state: UserState) {
         state.user = new User();
         state.error = false;
         state.statusMessage = "success";
-        state.stateType = StateType.INITIALIZED;
+        state.status = LoadStatus.LOADED;
     },
     userError(state: UserState, errorMessage: string) {
         state.error = true;
         state.statusMessage = errorMessage;
-        state.stateType = StateType.ERROR;
+        state.status = LoadStatus.ERROR;
     },
 };

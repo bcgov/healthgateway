@@ -76,5 +76,17 @@ describe('Immunization', () => {
       cy.get('[data-testid=doseDate]')
         .last()
         .contains('Sep 20, 2013')        
-   })
+    })
+
+    it('Validate Empty Title', () => {
+      cy.enableModules("Immunization");
+      cy.intercept('GET', "**/v1/api/Immunization/*", { fixture: "ImmunizationService/immunizationEmptyName.json" });
+      cy.login(Cypress.env('keycloak.username'),
+          Cypress.env('keycloak.password'),
+          AuthMethod.KeyCloak);
+      cy.checkTimelineHasLoaded();  
+      cy.get('[data-testid=immunizationTitle]')
+        .should('be.visible')
+        .should('have.text', 'Immunization')
+    })
 })

@@ -14,6 +14,9 @@ describe('Calendar View', () => {
         cy.get('[data-testid=monthViewToggle]')
             .first()
             .click();
+        cy.get('[data-testid=btnFilterApply]')
+            .click();
+
         cy.get('#currentDate')
             .should('be.visible');
         cy.location('hash')
@@ -25,6 +28,9 @@ describe('Calendar View', () => {
         cy.get('[data-testid=monthViewToggle]')
             .first()
             .click();
+        cy.get('[data-testid=btnFilterApply]')
+            .click();
+
         cy.get('#currentDate').click();
         cy.get('#currentDate').click();
         cy.get('.years')
@@ -56,6 +62,9 @@ describe('Calendar View', () => {
         cy.get('[data-testid=monthViewToggle]')
             .first()
             .click();
+        cy.get('[data-testid=btnFilterApply]')
+            .click();
+
         cy.location('hash')
             .should('eq', '#calendar');
         cy.get('#currentDate').click();

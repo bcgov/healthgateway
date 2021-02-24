@@ -52,11 +52,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\DumpHeaders\" />
-    <Folder Include="Views\Robots\" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
   </Target>
+  <ItemGroup>
+    <Content Remove="Server\Assets\Robots.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Server\Assets\Robots.txt" />
+  </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

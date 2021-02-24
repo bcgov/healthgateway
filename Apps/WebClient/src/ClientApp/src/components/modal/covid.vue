@@ -1,15 +1,15 @@
 ﻿<script lang="ts">
 import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { LaboratoryOrder } from "@/models/laboratory";
+import { EntryType } from "@/models/timelineEntry";
+import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class CovidModalComponent extends Vue {
@@ -18,109 +18,117 @@ export default class CovidModalComponent extends Vue {
         hdid: string;
         userPreference: UserPreference;
     }) => void;
+
     @Action("createUserPreference", { namespace: "user" })
     createUserPreference!: (params: {
         hdid: string;
         userPreference: UserPreference;
     }) => void;
+
+    @Action("setFilter", { namespace: "timeline" })
+    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
+
     @Getter("user", { namespace: "user" }) user!: User;
 
-    @Prop() error!: boolean;
+    @Getter("laboratoryOrders", { namespace: "laboratory" })
+    laboratoryOrders!: LaboratoryOrder[];
+
+    @Getter("getPreference", { namespace: "user" })
+    getPreference!: (preferenceName: string) => UserPreference | undefined;
+
     @Prop({ default: false }) isLoading!: boolean;
 
-    private logger!: ILogger;
+    private isDismissed = false;
 
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private get isVisible(): boolean {
+        if (this.isLoading || this.isDismissed) {
+            return false;
+        } else if (this.laboratoryOrders.length > 0) {
+            const preference = this.getPreference(
+                UserPreferenceType.ActionedCovidModalAt
+            );
+            if (preference != undefined) {
+                const actionedCovidModalAt = new DateWrapper(preference.value);
+                const mostRecentLabTime = new DateWrapper(
+                    this.laboratoryOrders[0].messageDateTime
+                );
+                if (actionedCovidModalAt.isAfter(mostRecentLabTime)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
-    public isVisible = false;
-    public show = false;
-
-    private actionCovidModal() {
-        this.logger.debug("Actioning Covid Modal...");
-        const actionedCovidPreference = UserPreferenceType.ActionedCovidModalAt;
+    private updateCovidPreference() {
+        const preferenceName = UserPreferenceType.ActionedCovidModalAt;
         let isoNow = new DateWrapper().toISO();
-        if (this.user.preferences[actionedCovidPreference] != undefined) {
-            this.user.preferences[actionedCovidPreference].value = isoNow;
+        if (this.user.preferences[preferenceName] != undefined) {
+            this.user.preferences[preferenceName].value = isoNow;
             this.updateUserPreference({
                 hdid: this.user.hdid,
-                userPreference: this.user.preferences[actionedCovidPreference],
+                userPreference: this.user.preferences[preferenceName],
             });
         } else {
-            this.user.preferences[actionedCovidPreference] = {
+            this.user.preferences[preferenceName] = {
                 hdId: this.user.hdid,
-                preference: actionedCovidPreference,
+                preference: preferenceName,
                 value: isoNow,
                 version: 0,
                 createdDateTime: new DateWrapper().toISO(),
             };
             this.createUserPreference({
                 hdid: this.user.hdid,
-                userPreference: this.user.preferences[actionedCovidPreference],
+                userPreference: this.user.preferences[preferenceName],
             });
         }
     }
 
-    public showModal(): void {
-        this.show = true;
-        if (!this.isLoading) {
-            this.isVisible = true;
-        }
-    }
-
-    public hideModal(): void {
-        this.show = false;
-        this.isVisible = false;
-    }
-
-    @Watch("isLoading")
-    private onIsLoading() {
-        if (!this.isLoading && this.show) {
-            this.isVisible = true;
-        }
-    }
-
-    @Emit()
-    private submit() {
-        this.show = false;
-        this.isVisible = false;
-        return;
-    }
-
-    @Emit()
-    private cancel() {
-        this.actionCovidModal();
-        this.hideModal();
-        return;
-    }
-
-    private handleSubmit(bvModalEvt: Event) {
+    private handleSubmit(modalEvt: Event) {
         // Prevent modal from closing
-        bvModalEvt.preventDefault();
+        modalEvt.preventDefault();
 
-        this.actionCovidModal();
+        this.updateCovidPreference();
+
+        this.setFilter(
+            TimelineFilterBuilder.create().withEntryType(EntryType.Laboratory)
+        );
 
         // Trigger submit handler
         this.submit();
 
         // Hide the modal manually
         this.$nextTick(() => {
-            this.hideModal();
+            this.isDismissed = true;
         });
     }
 
-    private handleCancel(bvModalEvt: Event) {
+    private handleCancel(modalEvt: Event) {
         // Prevent modal from closing
-        bvModalEvt.preventDefault();
+        modalEvt.preventDefault();
 
         // Trigger cancel handler
         this.cancel();
 
         // Hide the modal manually
         this.$nextTick(() => {
-            this.hideModal();
+            this.isDismissed = true;
         });
+    }
+
+    @Emit()
+    private submit() {
+        return;
+    }
+
+    @Emit()
+    private cancel() {
+        return;
     }
 }
 </script>
@@ -136,36 +144,28 @@ export default class CovidModalComponent extends Vue {
         footer-class="modal-footer"
         :no-close-on-backdrop="true"
         centered
-        @close="cancel"
+        @close="handleCancel"
     >
-        <b-row>
-            <b-col>
-                <form @submit.stop.prevent="handleSubmit">
-                    <b-row data-testid="covidModalText">
-                        <b-col>
-                            <span
-                                >Check the status of your COVID-19 test and view
-                                your result when it is available</span
-                            >
-                        </b-col>
-                    </b-row>
-                </form>
-            </b-col>
-        </b-row>
+        <form @submit.stop.prevent="handleSubmit">
+            <b-row data-testid="covidModalText">
+                <b-col>
+                    <span
+                        >Check the status of your COVID-19 test and view your
+                        result when it is available</span
+                    >
+                </b-col>
+            </b-row>
+        </form>
         <template #modal-footer>
             <b-row>
                 <b-col>
-                    <b-row>
-                        <b-col>
-                            <b-button
-                                data-testid="covidViewResultBtn"
-                                variant="outline-primary"
-                                @click="handleSubmit($event)"
-                            >
-                                View Result
-                            </b-button>
-                        </b-col>
-                    </b-row>
+                    <b-button
+                        data-testid="covidViewResultBtn"
+                        variant="outline-primary"
+                        @click="handleSubmit($event)"
+                    >
+                        View Result
+                    </b-button>
                 </b-col>
             </b-row>
         </template>

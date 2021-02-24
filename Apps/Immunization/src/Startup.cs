@@ -57,17 +57,7 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureAuthorizationServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("allowAny", policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
+            this.startupConfig.ConfigureAccessControl(services);
 
             // Add Services
             services.AddTransient<IImmunizationService, ImmunizationService>();
