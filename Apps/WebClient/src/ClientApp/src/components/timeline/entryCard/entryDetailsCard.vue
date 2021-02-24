@@ -1,0 +1,200 @@
+<script lang="ts">
+import {
+    faLongArrowAltLeft,
+    IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
+import Vue from "vue";
+import { Component } from "vue-property-decorator";
+import { Getter } from "vuex-class";
+
+import EventBus, { EventMessageName } from "@/eventbus";
+import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import User from "@/models/user";
+
+import EncounterTimelineComponent from "./encounter.vue";
+import ImmunizationTimelineComponent from "./immunization.vue";
+import LaboratoryTimelineComponent from "./laboratory.vue";
+import MedicationTimelineComponent from "./medication.vue";
+import NoteTimelineComponent from "./note.vue";
+
+@Component({
+    components: {
+        MedicationComponent: MedicationTimelineComponent,
+        ImmunizationComponent: ImmunizationTimelineComponent,
+        LaboratoryComponent: LaboratoryTimelineComponent,
+        EncounterComponent: EncounterTimelineComponent,
+        NoteComponent: NoteTimelineComponent,
+    },
+})
+export default class EntryDetailsComponent extends Vue {
+    @Getter("user", { namespace: "user" }) user!: User;
+
+    @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
+
+    private entry: TimelineEntry | null = null;
+    private entryDate = "";
+
+    private eventBus = EventBus;
+
+    private isVisible = false;
+
+    private get backButtonIcon(): IconDefinition {
+        return faLongArrowAltLeft;
+    }
+
+    private get modalTitle(): string {
+        return "";
+    }
+
+    private mounted() {
+        this.entry = null;
+        this.eventBus.$on(EventMessageName.ViewEntryDetails, this.viewDetails);
+    }
+
+    public viewDetails(entry: TimelineEntry): void {
+        this.entry = entry;
+        this.entryDate = entry.date.toISO();
+        this.isVisible = true;
+    }
+
+    private getComponentForEntry(): string {
+        switch (this.entry?.type) {
+            case EntryType.Medication:
+                return "MedicationComponent";
+
+            case EntryType.Immunization:
+                return "ImmunizationComponent";
+
+            case EntryType.Laboratory:
+                return "LaboratoryComponent";
+
+            case EntryType.Encounter:
+                return "EncounterComponent";
+
+            case EntryType.Note:
+                return "NoteComponent";
+            default:
+                return "";
+        }
+    }
+
+    public hideModal(): void {
+        this.isVisible = false;
+        this.entry = null;
+    }
+
+    private clear() {
+        this.entry = null;
+    }
+}
+</script>
+
+<template>
+    <b-modal
+        id="entry-details-modal"
+        v-model="isVisible"
+        data-testid="entryDetailsModal"
+        modal-class="entry-details-modal"
+        content-class="mt-0 entry-details-mobile"
+        size="lg"
+        header-class="entry-details-modal-header"
+        header-text-variant="light"
+        centered
+        hide-footer
+        @hidden="clear"
+    >
+        <template #modal-header>
+            <b-row class="w-100 h-100">
+                <b-col cols="auto">
+                    <b-button
+                        data-testid="backBtn"
+                        variant="link"
+                        size="sm"
+                        class="back-button-icon"
+                        @click="hideModal"
+                    >
+                        <font-awesome-icon
+                            :icon="backButtonIcon"
+                            size="lg"
+                        ></font-awesome-icon>
+                    </b-button>
+                </b-col>
+                <b-col>
+                    <h5>{{ modalTitle }}</h5>
+                </b-col>
+            </b-row>
+        </template>
+        <component
+            :is="getComponentForEntry()"
+            v-if="entry != null"
+            :datekey="entryDate"
+            :entry="entry"
+            :index="1"
+            :is-mobile-details="true"
+            data-testid="entryDetailsCard"
+        />
+    </b-modal>
+</template>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/_variables.scss";
+
+.entryTitle {
+    background-color: $soft_background;
+    color: $primary;
+    font-weight: bold;
+    width: 100%;
+    margin-right: -1px;
+}
+
+.entryDate {
+    font-size: 0.8rem;
+}
+
+.icon,
+.back-button-icon {
+    text-align: center;
+    border-radius: 50%;
+    height: 60px;
+    width: 60px;
+    padding-top: 17px;
+    font-size: 1.2em;
+}
+
+.back-button-icon {
+    color: grey;
+    background-color: white;
+}
+
+.icon {
+    color: white;
+    background-color: $primary;
+}
+</style>
+
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.entry-details-mobile {
+    position: relative;
+    right: auto;
+    height: 1400px;
+    border: 0px;
+    left: 0;
+    top: 60px;
+    border-radius: 0px;
+    max-width: 100%;
+    .modal-body {
+        padding: 0em;
+    }
+}
+
+.entry-details-modal {
+    .modal-dialog {
+        margin: 0rem;
+    }
+}
+
+.entry-details-modal-header {
+    background-color: white;
+}
+</style>
