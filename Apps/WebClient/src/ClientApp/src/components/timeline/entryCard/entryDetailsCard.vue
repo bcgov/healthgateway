@@ -5,14 +5,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { required } from "vuelidate/lib/validators";
-import { Validation } from "vuelidate/vuelidate";
 import { Getter } from "vuex-class";
 
-import DatePickerComponent from "@/components/datePicker.vue";
-import LoadingComponent from "@/components/loading.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
-import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
 
@@ -24,8 +19,6 @@ import NoteTimelineComponent from "./note.vue";
 
 @Component({
     components: {
-        LoadingComponent,
-        DatePickerComponent,
         MedicationComponent: MedicationTimelineComponent,
         ImmunizationComponent: ImmunizationTimelineComponent,
         LaboratoryComponent: LaboratoryTimelineComponent,
@@ -37,12 +30,6 @@ export default class EntryDetailsComponent extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
-
-    private windowWidth = 0;
-
-    private get isMobileView(): boolean {
-        return this.windowWidth < 576;
-    }
 
     private entry: TimelineEntry | null = null;
     private entryDate = "";
@@ -60,38 +47,13 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     private mounted() {
-        this.clear();
+        this.entry = null;
         this.eventBus.$on(EventMessageName.ViewEntryDetails, this.viewDetails);
     }
 
-    private validations() {
-        return {
-            title: {
-                required: required,
-            },
-        };
-    }
-
-    private isValid(param: Validation): boolean | undefined {
-        return param.$dirty ? !param.$invalid : undefined;
-    }
-
-    private dateString(entryDate: DateWrapper): string {
-        const today = new DateWrapper();
-        if (entryDate.isSame(today, "day")) {
-            return "Today";
-        } else if (entryDate.year() === today.year()) {
-            return entryDate.format("MMM d");
-        } else {
-            return entryDate.format("yyyy-MM-dd");
-        }
-    }
-
     public viewDetails(entry: TimelineEntry): void {
-        this.clear();
         this.entry = entry;
-        this.entryDate = this.dateString(entry.date);
-        this.windowWidth = window.innerWidth;
+        this.entryDate = entry.date.toISO();
         this.isVisible = true;
     }
 
@@ -117,9 +79,8 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     public hideModal(): void {
-        this.$v.$reset();
         this.isVisible = false;
-        this.clear();
+        this.entry = null;
     }
 
     private clear() {
@@ -133,6 +94,7 @@ export default class EntryDetailsComponent extends Vue {
         id="entry-details-modal"
         v-model="isVisible"
         data-testid="entryDetailsModal"
+        modal-class="entry-details-modal"
         content-class="mt-0 entry-details-mobile"
         size="lg"
         header-class="entry-details-modal-header"
@@ -168,7 +130,7 @@ export default class EntryDetailsComponent extends Vue {
             :datekey="entryDate"
             :entry="entry"
             :index="1"
-            :view-details="true"
+            :is-mobile-details="true"
             data-testid="entryDetailsCard"
         />
     </b-modal>
@@ -220,15 +182,19 @@ export default class EntryDetailsComponent extends Vue {
     left: 0;
     top: 60px;
     border-radius: 0px;
+    max-width: 100%;
     .modal-body {
         padding: 0em;
     }
 }
-.modal-dialog {
-    margin: 0rem;
+
+.entry-details-modal {
+    .modal-dialog {
+        margin: 0rem;
+    }
 }
 
-.edit-modal-header {
+.entry-details-modal-header {
     background-color: white;
 }
 </style>

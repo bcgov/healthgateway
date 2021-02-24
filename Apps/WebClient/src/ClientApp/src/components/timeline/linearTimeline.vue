@@ -221,18 +221,15 @@ export default class LinearTimelineComponent extends Vue {
                 :key="dateGroup.key"
                 :ref="dateGroup.key"
             >
-                <div
+                <component
+                    :is="getComponentForEntry(entry.type)"
                     v-for="(entry, index) in dateGroup.entries"
                     :key="entry.type + '-' + entry.id"
-                >
-                    <component
-                        :is="getComponentForEntry(entry.type)"
-                        :datekey="dateGroup.key"
-                        :entry="entry"
-                        :index="index"
-                        data-testid="timelineCard"
-                    />
-                </div>
+                    :datekey="dateGroup.key"
+                    :entry="entry"
+                    :index="index"
+                    data-testid="timelineCard"
+                />
             </div>
         </div>
         <div v-if="timelineIsEmpty" class="text-center pt-2">

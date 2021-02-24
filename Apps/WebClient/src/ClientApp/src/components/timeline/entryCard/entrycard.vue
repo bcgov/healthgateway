@@ -2,7 +2,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import ScreenWidth from "@/constants/screenWidth";
@@ -28,17 +28,9 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop() iconClass!: string;
     @Prop({ default: true }) allowComment!: boolean;
     @Prop({ default: true }) showDetailsButton!: boolean;
-    @Prop() viewDetails!: boolean;
+    @Prop({ default: false }) isMobileDetails!: boolean;
 
     private eventBus = EventBus;
-
-    private get isMobileView(): boolean {
-        return window.innerWidth <= ScreenWidth.Mobile;
-    }
-
-    private get onMobileTimeline(): boolean {
-        return this.isMobileView && !this.viewDetails;
-    }
 
     @Getter("getEntryComments", { namespace: "comment" })
     entryComments!: (entyId: string) => UserComment[];
@@ -56,6 +48,7 @@ export default class EntrycardTimelineComponent extends Vue {
     }
 
     private detailsVisible = false;
+    private windowWidth = 0;
 
     private get dateString(): string {
         const today = new DateWrapper();
@@ -78,7 +71,37 @@ export default class EntrycardTimelineComponent extends Vue {
     }
 
     private toggleDetails(): void {
-        this.detailsVisible = !this.detailsVisible;
+        if (!this.isMobileWidth) {
+            this.detailsVisible = !this.detailsVisible;
+        }
+    }
+
+    private get isMobileWidth(): boolean {
+        return this.windowWidth < ScreenWidth.Mobile;
+    }
+
+    @Watch("isMobileWidth")
+    private onMobileWidthChanged() {
+        if (this.isMobileWidth && !this.isMobileDetails) {
+            this.detailsVisible = false;
+        }
+    }
+
+    private onResize() {
+        this.windowWidth = window.innerWidth;
+    }
+
+    private created() {
+        this.windowWidth = window.innerWidth;
+        this.$nextTick(() => {
+            window.addEventListener("resize", this.onResize);
+        });
+    }
+
+    private mounted() {
+        if (this.isMobileDetails) {
+            this.detailsVisible = true;
+        }
     }
 }
 </script>
@@ -101,19 +124,19 @@ export default class EntrycardTimelineComponent extends Vue {
                             :data-testid="entry.type.toLowerCase() + 'Title'"
                         >
                             <b-btn
-                                v-if="
-                                    !onMobileTimeline &&
-                                    !isMobileView &&
-                                    showDetailsButton
-                                "
+                                v-if="!isMobileDetails && showDetailsButton"
                                 variant="link"
                                 data-testid="entryCardDetailsButton"
                                 class="detailsButton text-left"
                                 @click="toggleDetails()"
                             >
-                                <strong>{{ displayTitle }}</strong>
+                                <span data-testid="entryCardDetailsTitleDesktop"
+                                    ><strong>{{ displayTitle }}</strong></span
+                                >
                             </b-btn>
-                            <span v-else data-testid="entryCardDetailsButton"
+                            <span
+                                v-else
+                                data-testid="entryCardDetailsTitleMobile"
                                 ><strong>{{ displayTitle }}</strong></span
                             >
                         </b-col>
@@ -149,11 +172,7 @@ export default class EntrycardTimelineComponent extends Vue {
                     </b-row>
                 </b-col>
             </b-row>
-            <b-collapse
-                v-if="!isMobileView"
-                :id="'entryDetails-' + cardId"
-                v-model="detailsVisible"
-            >
+            <b-collapse :id="'entryDetails-' + cardId" v-model="detailsVisible">
                 <b-row>
                     <b-col class="leftPane d-none d-md-block"></b-col>
                     <b-col class="pb-3 pt-1 px-3">
@@ -165,13 +184,6 @@ export default class EntrycardTimelineComponent extends Vue {
                     </b-col>
                 </b-row>
             </b-collapse>
-            <b-row v-else-if="!onMobileTimeline">
-                <b-col class="leftPane d-none d-md-block"></b-col>
-                <b-col class="pb-3 pt-1 px-3 teate">
-                    <slot name="details-body"></slot>
-                    <CommentSection v-if="allowComment" :parent-entry="entry" />
-                </b-col>
-            </b-row>
         </b-col>
     </b-row>
 </template>

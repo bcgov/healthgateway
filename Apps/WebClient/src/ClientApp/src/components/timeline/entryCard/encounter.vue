@@ -17,7 +17,7 @@ export default class EncounterTimelineComponent extends Vue {
     @Prop() entry!: EncounterTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
-    @Prop() viewDetails!: boolean;
+    @Prop() isMobileDetails!: boolean;
 
     private get entryIcon(): IconDefinition {
         return faUserMd;
@@ -35,7 +35,7 @@ export default class EncounterTimelineComponent extends Vue {
         :entry-icon="entryIcon"
         :title="entry.practitionerName"
         :entry="entry"
-        :view-details="viewDetails"
+        :is-mobile-details="isMobileDetails"
     >
         <div slot="header-description">
             {{ entry.specialtyDescription }}
