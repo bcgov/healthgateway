@@ -107,7 +107,7 @@ export default class EntryDetailsComponent extends Vue {
             <b-row class="w-100 h-100">
                 <b-col cols="auto">
                     <b-button
-                        data-testid="noNeedBtn"
+                        data-testid="backBtn"
                         variant="link"
                         size="sm"
                         class="back-button-icon"
