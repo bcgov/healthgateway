@@ -131,7 +131,7 @@ export default class EntryDetailsComponent extends Vue {
             :datekey="entryDate"
             :entry="entry"
             :index="1"
-            :view-details="true"
+            :is-mobile-details="true"
             data-testid="entryDetailsCard"
         />
     </b-modal>
@@ -189,6 +189,7 @@ export default class EntryDetailsComponent extends Vue {
 }
 .modal-dialog {
     margin: 0rem;
+    max-width: 100%;
 }
 
 .edit-modal-header {

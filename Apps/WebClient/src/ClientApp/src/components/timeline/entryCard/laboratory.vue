@@ -28,7 +28,7 @@ export default class LaboratoryTimelineComponent extends Vue {
     @Prop() entry!: LaboratoryTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
-    @Prop() viewDetails!: boolean;
+    @Prop() isMobileDetails!: boolean;
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Ref("messageModal")
@@ -93,7 +93,7 @@ export default class LaboratoryTimelineComponent extends Vue {
         :entry-icon="entryIcon"
         :title="entry.summaryTitle"
         :entry="entry"
-        :view-details="viewDetails"
+        :is-mobile-details="isMobileDetails"
     >
         <div slot="header-description">
             <strong v-show="entry.isStatusFinal">

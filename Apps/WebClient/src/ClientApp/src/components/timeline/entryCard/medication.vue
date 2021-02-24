@@ -17,7 +17,7 @@ export default class MedicationTimelineComponent extends Vue {
     @Prop() entry!: MedicationTimelineEntry;
     @Prop() index!: number;
     @Prop() datekey!: string;
-    @Prop() viewDetails!: boolean;
+    @Prop() isMobileDetails!: boolean;
 
     private get entryIcon(): IconDefinition {
         return faPills;
@@ -36,7 +36,7 @@ export default class MedicationTimelineComponent extends Vue {
         :title="entry.medication.brandName"
         :subtitle="entry.medication.genericName"
         :entry="entry"
-        :view-details="viewDetails"
+        :is-mobile-details="isMobileDetails"
     >
         <b-row slot="details-body" class="justify-content-between">
             <b-col>
