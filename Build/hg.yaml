@@ -66,7 +66,7 @@ variables:
       BuildPrefix: "$(SourceBranchName)"    
     
 jobs:
-    - job: "Gold Cluster"
+    - job: "GoldCluster"
       pool:
         name: "HealthGateway"
       displayName: "Build ${{ parameters.Application }} in Gold Cluster"
@@ -76,7 +76,7 @@ jobs:
           parameters:
             toolsNamespace: "q6qfzk"
 
-    - job: "Silver Cluster"
+    - job: "SilverCluster"
       pool:
         name: "HealthGateway"
       displayName: "Build ${{ parameters.Application }} in Silver Cluster"
