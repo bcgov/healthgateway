@@ -1,10 +1,10 @@
 parameters:
   - name: 'toolsNamespace'  # defaults for any parameters that aren't specified
     type: string 
-    default: q6qfzk
+    default: 0bd5ad
     values:
     - q6qfzk #OCP3 Namespace
-    - 0bd5ad #OCP4 Namespace
+    - 0bd5ad #Silver Cluster Namespace
 
   - name: publish
     type: boolean
