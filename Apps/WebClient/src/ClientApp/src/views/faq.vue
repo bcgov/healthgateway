@@ -137,8 +137,4 @@
         font-weight: bold;
     }
 }
-.faqQuestionTitle {
-    padding: 0px;
-    color: $primary;
-}
 </style>
