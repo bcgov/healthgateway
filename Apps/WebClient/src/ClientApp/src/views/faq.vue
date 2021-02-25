@@ -1,15 +1,11 @@
 <template>
     <div class="mx-sm-3 px-sm-4">
-        <b-row>
+        <b-row class="m-1 fluid">
             <b-col>
-                <b-row class="m-1 fluid">
-                    <b-col>
-                        <div id="pageTitle">
-                            <h1 id="subject">Frequently Asked Questions</h1>
-                            <hr />
-                        </div>
-                    </b-col>
-                </b-row>
+                <div id="pageTitle">
+                    <h1 id="subject">Frequently Asked Questions</h1>
+                    <hr />
+                </div>
             </b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
