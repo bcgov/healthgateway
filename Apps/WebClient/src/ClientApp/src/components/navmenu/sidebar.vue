@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faStream } from "@fortawesome/free-solid-svg-icons";
+import { faQuestion, faStream } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -15,7 +15,7 @@ import type { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
-library.add(faStream);
+library.add(faStream, faQuestion);
 
 const auth = "auth";
 const user = "user";
@@ -502,6 +502,39 @@ export default class SidebarComponent extends Vue {
                                 class="button-title"
                             >
                                 <span>Health Insights</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
+
+                    <!-- FAQ button -->
+                    <router-link
+                        id="menuBtnFAQ"
+                        data-testid="menuBtnFAQ"
+                        to="/faq"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isFAQ }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col title="FAQ" :class="{ 'col-3': isOpen }">
+                                <font-awesome-icon
+                                    icon="question"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-show="isOpen"
+                                cols="7"
+                                class="button-title"
+                            >
+                                <span>FAQ</span>
                             </b-col>
                         </b-row>
                     </router-link>
