@@ -12,7 +12,7 @@
                 </b-row>
             </b-col>
         </b-row>
-        <b-card no-body class="mb-1">
+        <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
                 class="p-1 faq-header"
@@ -80,7 +80,7 @@
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-card no-body class="mb-1">
+        <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
                 class="p-1 faq-header"
@@ -128,9 +128,14 @@
 #pageTitle hr {
     border-top: 2px solid $primary;
 }
-.faq-header button {
-    background-color: $soft_background !important;
-    border-color: $soft_background !important;
+.faq-header {
+    button {
+        background-color: $soft_background !important;
+        border-color: $soft_background !important;
+        color: $primary;
+        text-decoration-line: underline;
+        font-weight: bold;
+    }
 }
 .faqQuestionTitle {
     padding: 0px;
