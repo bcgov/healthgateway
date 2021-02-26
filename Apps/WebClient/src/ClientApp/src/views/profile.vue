@@ -390,6 +390,7 @@ export default class ProfileView extends Vue {
                 this.emailConfirmation = "";
                 this.tempEmail = "";
                 this.getUserEmail({ hdid: this.user.hdid });
+                this.showCheckEmailAlert = true;
                 this.$v.$reset();
             })
             .catch((err) => {
@@ -400,7 +401,6 @@ export default class ProfileView extends Vue {
             })
             .finally(() => {
                 this.isLoading = false;
-                this.showCheckEmailAlert = true;
             });
     }
 
