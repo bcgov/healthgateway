@@ -1,5 +1,4 @@
 <script lang="ts">
-import html2pdf from "html2pdf.js";
 import Vue from "vue";
 import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -11,8 +10,8 @@ import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import PDFDefinition from "@/plugins/pdfDefinition";
 import { ILogger } from "@/services/interfaces";
+import PDFUtil from "@/utility/pdfUtil";
 
 @Component({
     components: {
@@ -115,42 +114,12 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         this.logger.debug("generating Immunization History PDF...");
         this.isPreview = false;
 
-        let opt = {
-            margin: [25, 15],
-            filename: `HealthGateway_ImmunizationHistory.pdf`,
-            image: { type: "jpeg", quality: 1 },
-            html2canvas: { dpi: 96, scale: 2, letterRendering: true },
-            jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
-            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-        };
-        return html2pdf()
-            .set(opt)
-            .from(this.report)
-            .toPdf()
-            .get("pdf")
-            .then((pdf: PDFDefinition) => {
-                // Add footer with page numbers
-                var totalPages = pdf.internal.getNumberOfPages();
-                for (let i = 1; i <= totalPages; i++) {
-                    pdf.setPage(i);
-                    pdf.setFontSize(10);
-                    pdf.setTextColor(150);
-                    pdf.text(
-                        `Page ${i} of ${totalPages}`,
-                        pdf.internal.pageSize.getWidth() / 2 - 55,
-                        pdf.internal.pageSize.getHeight() - 10
-                    );
-                }
-            })
-            .save()
-            .output("bloburl")
-            .then((pdfBlobUrl: RequestInfo) => {
-                fetch(pdfBlobUrl).then((res) => {
-                    res.blob().then(() => {
-                        this.isPreview = true;
-                    });
-                });
-            });
+        PDFUtil.generatePdf(
+            "HealthGateway_ImmunizationHistory.pdf",
+            this.report
+        ).then(() => {
+            this.isPreview = true;
+        });
     }
 }
 </script>
