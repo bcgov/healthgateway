@@ -232,13 +232,23 @@ export default class RegistrationView extends Vue {
                     this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
                         (isRegistered: boolean) => {
                             if (isRegistered) {
-                                if (this.smsNumber === "")
+                                if (this.smsNumber === "" && this.email === "")
                                     this.$router.push({ path: "/timeline" });
-                                else
+                                else {
                                     this.$router.push({
                                         path: "/profile",
-                                        query: { toVerifyPhone: "true" },
+                                        query: {
+                                            toVerifyPhone:
+                                                this.smsNumber === ""
+                                                    ? "false"
+                                                    : "true",
+                                            toVerifyEmail:
+                                                this.email === ""
+                                                    ? "false"
+                                                    : "true",
+                                        },
                                     });
+                                }
                             } else {
                                 this.addError({
                                     title: "User profile creation",
