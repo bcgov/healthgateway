@@ -1,15 +1,15 @@
 module.exports = {
   root: true,
   env: {
-    node: true
+    node: true,
   },
   extends: [
     "plugin:vue/recommended",
     "plugin:prettier-vue/recommended",
-    "prettier/vue",
+    "prettier",
     "@vue/typescript/recommended",
     "@vue/prettier",
-    "@vue/prettier/@typescript-eslint"
+    "@vue/prettier/@typescript-eslint",
   ],
   rules: {
     "no-console": "off",
@@ -17,10 +17,10 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     "linebreak-style": ["error", "unix"],
     "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error"
+    "simple-import-sort/exports": "error",
   },
   parserOptions: {
-    parser: "@typescript-eslint/parser"
+    parser: "@typescript-eslint/parser",
   },
-  plugins: ["prettier", "simple-import-sort"]
+  plugins: ["prettier", "simple-import-sort"],
 };
