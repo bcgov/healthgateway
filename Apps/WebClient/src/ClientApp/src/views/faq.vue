@@ -16,6 +16,7 @@
             >
                 <b-button
                     v-b-toggle.accordion-faqAnswer1
+                    data-testid="questionBtn"
                     block
                     variant="info"
                     class="text-left"
@@ -26,7 +27,7 @@
             <b-collapse id="accordion-faqAnswer1" role="tabpanel">
                 <b-card-body>
                     <b-card-text
-                        ><div>
+                        ><div data-testid="answerTxt">
                             <p>
                                 A: The Health Gateway provides access to the
                                 following health information from our provincial
@@ -84,6 +85,7 @@
             >
                 <b-button
                     v-b-toggle.accordion-faqAnswer2
+                    data-testid="questionBtn"
                     block
                     variant="info"
                     class="text-left"
@@ -94,7 +96,7 @@
             <b-collapse id="accordion-faqAnswer2" role="tabpanel">
                 <b-card-body>
                     <b-card-text
-                        ><div>
+                        ><div data-testid="answerTxt">
                             <p>
                                 A: No. The Health Gateway provides a digital
                                 record of your COVID-19 immunization once you
