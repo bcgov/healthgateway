@@ -33,7 +33,7 @@ namespace HealthGateway.DrugMaintainer
         public PackagingMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            this.Map(m => m.DrugProductId).Convert(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First().Id);
+            this.Map(m => m.DrugProductId).Convert(row => drugProducts.Where(d => d.DrugCode == row.Row.GetField(0)).First().Id);
 
             // UPC
             this.Map(m => m.UPC).Index(1);
