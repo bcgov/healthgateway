@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Services
     using System.Collections.Generic;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Service that provides functionality to access and create requests for beta access.
@@ -29,7 +28,7 @@ namespace HealthGateway.Admin.Services
         /// Retrieves the beta requests where the user does not have an invite yet.
         /// </summary>
         /// <returns>returns the beta request for the user if found.</returns>
-        RequestResult<List<UserFeedbackView>> GetUserFeedback();
+        RequestResult<IList<UserFeedbackView>> GetUserFeedback();
 
         /// <summary>
         /// Updates the user feedback.

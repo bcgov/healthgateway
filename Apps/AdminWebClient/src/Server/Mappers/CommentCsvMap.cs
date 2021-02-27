@@ -31,7 +31,7 @@ namespace HealthGateway.Admin.Server.Mappers
         public CommentCsvMap()
         {
             this.Map(m => m.Id);
-            this.Map(m => m.UserProfileId).ConvertUsing(o => o.UserProfileId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
+            this.Map(m => m.UserProfileId).Convert(o => o.Value.UserProfileId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
             this.Map(m => m.EntryTypeCode);
             this.Map(m => m.ParentEntryId);
             this.Map(m => m.CreatedDateTime);

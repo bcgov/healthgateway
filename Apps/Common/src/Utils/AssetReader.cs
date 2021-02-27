@@ -34,7 +34,8 @@ namespace HealthGateway.Common.Utils
         {
             Assembly? assembly = Assembly.GetCallingAssembly();
             Stream? resourceStream = assembly!.GetManifestResourceStream(asset);
-            if (resourceStream == null) {
+            if (resourceStream == null)
+            {
                 return null;
             }
             using StreamReader reader = new StreamReader(resourceStream!, Encoding.UTF8);

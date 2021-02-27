@@ -71,7 +71,7 @@ namespace HealthGateway.Admin.Services
         public RequestResult<IEnumerable<AdminEmail>> GetEmails()
         {
             int pageIndex = 0;
-            DBResult<List<Email>> dbEmail = this.emailDelegate.GetEmails(pageIndex, this.maxEmails);
+            DBResult<IList<Email>> dbEmail = this.emailDelegate.GetEmails(pageIndex, this.maxEmails);
             IEnumerable<MessagingVerification> emailInvites = this.emailInviteDelegate.GetAllEmail();
             RequestResult<IEnumerable<AdminEmail>> result = new RequestResult<IEnumerable<AdminEmail>>()
             {

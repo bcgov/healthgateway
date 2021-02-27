@@ -41,7 +41,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload fileDownload)
+        public IList<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload fileDownload)
         {
             this.logger.LogInformation("Parsing Drug file");
             using var reader = new StreamReader(GetFileMatching(sourceFolder, "drug*.txt"));
@@ -49,12 +49,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             DrugProductMapper mapper = new DrugProductMapper(fileDownload);
             csv.Configuration.RegisterClassMap(mapper);
-            List<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
+            IList<DrugProduct> records = csv.GetRecords<DrugProduct>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Ingredients file");
             using var reader = new StreamReader(GetFileMatching(filePath, "ingred*.txt"));
@@ -62,12 +62,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             ActiveIngredientMapper mapper = new ActiveIngredientMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<ActiveIngredient> records = csv.GetRecords<ActiveIngredient>().ToList();
+            IList<ActiveIngredient> records = csv.GetRecords<ActiveIngredient>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Company file");
             using var reader = new StreamReader(GetFileMatching(filePath, "comp*.txt"));
@@ -75,12 +75,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             CompanyMapper mapper = new CompanyMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<Company> records = csv.GetRecords<Company>().ToList();
+            IList<Company> records = csv.GetRecords<Company>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Status file");
             using var reader = new StreamReader(GetFileMatching(filePath, "status*.txt"));
@@ -88,12 +88,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             StatusMapper mapper = new StatusMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<Status> records = csv.GetRecords<Status>().ToList();
+            IList<Status> records = csv.GetRecords<Status>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Form file");
             using var reader = new StreamReader(GetFileMatching(filePath, "form*.txt"));
@@ -101,12 +101,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             FormMapper mapper = new FormMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<Form> records = csv.GetRecords<Form>().ToList();
+            IList<Form> records = csv.GetRecords<Form>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Package file");
             using var reader = new StreamReader(GetFileMatching(filePath, "package*.txt"));
@@ -114,12 +114,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             PackagingMapper mapper = new PackagingMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<Packaging> records = csv.GetRecords<Packaging>().ToList();
+            IList<Packaging> records = csv.GetRecords<Packaging>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Pharmaceutical file");
             using var reader = new StreamReader(GetFileMatching(filePath, "pharm*.txt"));
@@ -127,12 +127,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             PharmaceuticalStdMapper mapper = new PharmaceuticalStdMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<PharmaceuticalStd> records = csv.GetRecords<PharmaceuticalStd>().ToList();
+            IList<PharmaceuticalStd> records = csv.GetRecords<PharmaceuticalStd>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Route file");
             using var reader = new StreamReader(GetFileMatching(filePath, "route*.txt"));
@@ -140,12 +140,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             RouteMapper mapper = new RouteMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<Route> records = csv.GetRecords<Route>().ToList();
+            IList<Route> records = csv.GetRecords<Route>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Schedule file");
             using var reader = new StreamReader(GetFileMatching(filePath, "schedule*.txt"));
@@ -153,12 +153,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             ScheduleMapper mapper = new ScheduleMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<Schedule> records = csv.GetRecords<Schedule>().ToList();
+            IList<Schedule> records = csv.GetRecords<Schedule>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Therapeutical file");
             using var reader = new StreamReader(GetFileMatching(filePath, "ther*.txt"));
@@ -166,12 +166,12 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             TherapeuticMapper mapper = new TherapeuticMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<TherapeuticClass> records = csv.GetRecords<TherapeuticClass>().ToList();
+            IList<TherapeuticClass> records = csv.GetRecords<TherapeuticClass>().ToList();
             return records;
         }
 
         /// <inheritdoc/>
-        public List<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Veterinary file");
             using var reader = new StreamReader(GetFileMatching(filePath, "vet*.txt"));
@@ -179,7 +179,7 @@ namespace HealthGateway.DrugMaintainer
             csv.Configuration.HasHeaderRecord = false;
             VeterinarySpeciesMapper mapper = new VeterinarySpeciesMapper(drugProducts);
             csv.Configuration.RegisterClassMap(mapper);
-            List<VeterinarySpecies> records = csv.GetRecords<VeterinarySpecies>().ToList();
+            IList<VeterinarySpecies> records = csv.GetRecords<VeterinarySpecies>().ToList();
             return records;
         }
 

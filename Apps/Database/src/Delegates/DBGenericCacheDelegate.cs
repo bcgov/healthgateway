@@ -79,15 +79,16 @@ namespace HealthGateway.Database.Delegates
             {
                 Status = DBStatusCode.NotFound,
             };
-            result.Payload = this.dbContext.GenericCache
+            GenericCache? cache = this.dbContext.GenericCache
                                     .Where(p => p.HdId == hdid &&
                                                 p.Domain == domain &&
                                                 p.ExpiryDateTime >= DateTime.UtcNow)
                                     .OrderByDescending(o => o.CreatedDateTime)
                                     .FirstOrDefault();
-            if (result.Payload != null)
+            if (cache != null)
             {
                 result.Status = DBStatusCode.Read;
+                result.Payload = cache;
             }
 
             return result;
@@ -109,15 +110,16 @@ namespace HealthGateway.Database.Delegates
                 Status = DBStatusCode.NotFound,
             };
 
-            result.Payload = this.dbContext.GenericCache
+            GenericCache? cache = this.dbContext.GenericCache
                                     .Where(p => p.JSON!.RootElement.GetProperty(propertyName).GetString() == propertyValue &&
                                                 p.Domain == domain &&
                                                 p.ExpiryDateTime >= DateTime.UtcNow)
                                     .OrderByDescending(o => o.ExpiryDateTime)
                                     .FirstOrDefault();
-            if (result.Payload != null)
+            if (cache != null)
             {
                 result.Status = DBStatusCode.Read;
+                result.Payload = cache;
             }
 
             return result;

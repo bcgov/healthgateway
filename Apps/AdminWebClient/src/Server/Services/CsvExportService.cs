@@ -92,7 +92,7 @@ namespace HealthGateway.Admin.Services
 #pragma warning disable CA2000 // Dispose objects before losing scope
                 var csv = new CsvWriter(writeFile, CultureInfo.CurrentCulture, leaveOpen: true);
 #pragma warning restore CA2000 // Dispose objects before losing scope
-                csv.Configuration.RegisterClassMap<TMap>();
+                csv.Context.RegisterClassMap<TMap>();
                 csv.WriteRecords(obj);
             }
 
