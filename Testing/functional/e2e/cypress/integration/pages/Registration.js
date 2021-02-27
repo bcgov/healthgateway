@@ -39,7 +39,7 @@ describe("Registration Page", () => {
         cy.get('[data-testid="sidebar"]').should('not.be.visible');
     });
 
-    it("Registration goes to Verify Phone", () => {
+    it("Registration goes to Verify Phone and Email", () => {
         cy.enableModules("Medication");
         cy.login(Cypress.env('keycloak.unregistered.username'), 
                     Cypress.env('keycloak.password'), 
@@ -47,7 +47,10 @@ describe("Registration Page", () => {
         cy.url().should("include", registrationPage);
         cy.get('[data-testid="emailCheckbox"]')
             .should('be.enabled')
-            .uncheck({ force: true });
+            .check({ force: true });
+        cy.get('[data-testid="emailInput"]')
+            .should('be.visible', 'be.enabled')
+            .type(Cypress.env('emailAddress'));            
         cy.get('[data-testid="smsNumberInput"]')
             .should('be.visible', 'be.enabled')
             .type(Cypress.env('phoneNumber'));
@@ -59,6 +62,8 @@ describe("Registration Page", () => {
             .click();
         cy.url().should("include", profilePage);
         cy.get('[data-testid="verifySMSModalText"]')
+            .should('be.visible');
+        cy.get('[data-testid="verifyEmailTxt"]')
             .should('be.visible');
     });
 });
