@@ -23,7 +23,7 @@ export default class EncounterTimelineEntry extends TimelineEntry {
         this.clinic = new ClinicViewModel(model.clinic);
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public containsText(keyword: string): boolean {
         let text =
             this.practitionerName +
             this.specialtyDescription +

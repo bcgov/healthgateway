@@ -21,7 +21,7 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         this.immunization = new ImmunizationViewModel(model);
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public containsText(keyword: string): boolean {
         let text =
             (this.immunization.name || "") + (this.immunization.location || "");
         text = text.toUpperCase();

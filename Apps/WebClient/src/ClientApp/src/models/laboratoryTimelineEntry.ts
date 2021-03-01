@@ -53,7 +53,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.labResultOutcome = firstResult.labResultOutcome;
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public containsText(keyword: string): boolean {
         let text = this.summaryTitle + this.summaryDescription;
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());

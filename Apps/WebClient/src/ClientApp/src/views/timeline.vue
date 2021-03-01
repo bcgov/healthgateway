@@ -158,24 +158,27 @@ export default class TimelineView extends Vue {
         // Add the medication entries to the timeline list
         for (let medication of this.medicationStatements) {
             timelineEntries.push(
-                new MedicationTimelineEntry(medication),
-                this.entryComments(medication.prescriptionIdentifier)
+                new MedicationTimelineEntry(
+                    medication,
+                    this.entryComments(medication.prescriptionIdentifier)
+                )
             );
         }
 
         // Add the Laboratory entries to the timeline list
         for (let order of this.laboratoryOrders) {
             timelineEntries.push(
-                new LaboratoryTimelineEntry(order),
-                this.entryComments(order.id)
+                new LaboratoryTimelineEntry(order, this.entryComments(order.id))
             );
         }
 
         // Add the Encounter entries to the timeline list
         for (let encounter of this.patientEncounters) {
             timelineEntries.push(
-                new EncounterTimelineEntry(encounter),
-                this.entryComments(encounter.id)
+                new EncounterTimelineEntry(
+                    encounter,
+                    this.entryComments(encounter.id)
+                )
             );
         }
 

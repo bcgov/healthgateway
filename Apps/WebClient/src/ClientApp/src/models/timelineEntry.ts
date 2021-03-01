@@ -93,13 +93,26 @@ export default abstract class TimelineEntry {
         );
     }
 
-    protected abstract keywordApplies(keyword: string): boolean;
+    protected abstract containsText(keyword: string): boolean;
+
+    private keywordApplies(keyword: string): boolean {
+        return (
+            !keyword ||
+            this.containsText(keyword) ||
+            this.commentApplies(keyword)
+        );
+    }
+    private commentApplies(keyword: string): boolean {
+        return this.comments.some((comment) =>
+            comment.text.toUpperCase().includes(keyword.toUpperCase())
+        );
+    }
 
     private entryTypeApplies(entryTypes: Set<EntryType>): boolean {
         return entryTypes.size === 0 || entryTypes.has(this.type);
     }
 
-    public dateRangeApplies(filter: TimelineFilter): boolean {
+    private dateRangeApplies(filter: TimelineFilter): boolean {
         const startDateWapper = new DateWrapper(filter.startDate);
         const endDateWapper = new DateWrapper(filter.endDate + "T23:59:59.999");
         return (

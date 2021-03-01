@@ -38,7 +38,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         this.directions = model.directions || "N/A";
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public containsText(keyword: string): boolean {
         let text =
             (this.practitionerSurname || "") +
             (this.medication.brandName || "") +
