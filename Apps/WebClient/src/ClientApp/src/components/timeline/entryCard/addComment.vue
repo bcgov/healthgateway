@@ -1,5 +1,9 @@
 <script lang="ts">
-import { faLock, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowCircleUp,
+    faLock,
+    IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -35,6 +39,10 @@ export default class AddCommentComponent extends Vue {
 
     private get lockIcon(): IconDefinition {
         return faLock;
+    }
+
+    private get postIcon(): IconDefinition {
+        return faArrowCircleUp;
     }
 
     private onSubmit(): void {
@@ -113,17 +121,18 @@ export default class AddCommentComponent extends Vue {
                 ></b-form-textarea>
             </b-form>
         </b-col>
-        <b-col
-            class="pl-2 pr-0 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
-        >
+        <b-col cols="auto pr-1">
             <b-button
                 data-testid="postCommentBtn"
-                class="mr-2 px-4"
-                variant="primary"
+                class="btn-circle"
+                variant="link"
                 :disabled="commentInput === '' || isSaving"
                 @click="onSubmit"
             >
-                Post
+                <font-awesome-icon
+                    :icon="postIcon"
+                    size="2x"
+                ></font-awesome-icon>
             </b-button>
         </b-col>
     </b-row>
@@ -145,5 +154,23 @@ export default class AddCommentComponent extends Vue {
 
 .single-line {
     height: 38px !important;
+}
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    padding: 0px 0px;
+    border-radius: 15px;
+    text-align: center;
+    align-content: center;
+    color: $aquaBlue;
+}
+
+.btn-circle:disabled {
+    color: grey;
+}
+
+.btn-circle:hover {
+    color: $primary;
 }
 </style>
