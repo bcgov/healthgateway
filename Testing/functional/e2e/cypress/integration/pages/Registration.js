@@ -51,6 +51,9 @@ describe("Registration Page", () => {
         cy.get('[data-testid="emailInput"]')
             .should('be.visible', 'be.enabled')
             .type(Cypress.env('emailAddress'));            
+            cy.get('[data-testid="emailConfirmationInput"]')
+            .should('be.visible', 'be.enabled')
+            .type(Cypress.env('emailAddress'));            
         cy.get('[data-testid="smsNumberInput"]')
             .should('be.visible', 'be.enabled')
             .type(Cypress.env('phoneNumber'));
