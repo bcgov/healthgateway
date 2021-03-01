@@ -3,13 +3,11 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
 
 import ScreenWidth from "@/constants/screenWidth";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
-import { UserComment } from "@/models/userComment";
 
 import CommentSectionComponent from "./commentSection.vue";
 library.add(faComment);
@@ -31,13 +29,6 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: false }) isMobileDetails!: boolean;
 
     private eventBus = EventBus;
-
-    @Getter("getEntryComments", { namespace: "comment" })
-    entryComments!: (entyId: string) => UserComment[];
-
-    private get commentsCount(): number {
-        return (this.entryComments(this.entry.id) || []).length;
-    }
 
     private get displayTitle(): string {
         if (this.title === "") {
@@ -156,12 +147,12 @@ export default class EntrycardTimelineComponent extends Vue {
                         </b-col>
                         <b-col cols="4" class="text-right align-self-center">
                             <span
-                                v-if="commentsCount > 1"
+                                v-if="entry.comments.length > 1"
                                 class="pr-2"
                                 data-testid="commentCount"
-                                >{{ commentsCount }}</span
+                                >{{ entry.comments.length }}</span
                             >
-                            <span v-if="commentsCount > 0">
+                            <span v-if="entry.comments.length > 0">
                                 <font-awesome-icon
                                     :icon="['far', 'comment']"
                                     data-testid="commentIcon"

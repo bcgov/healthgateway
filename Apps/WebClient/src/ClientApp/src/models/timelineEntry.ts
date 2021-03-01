@@ -1,5 +1,6 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter from "@/models/timelineFilter";
+import { UserComment } from "@/models/userComment";
 
 export enum EntryType {
     Medication = "Medication",
@@ -70,11 +71,18 @@ export default abstract class TimelineEntry {
     public readonly id: string;
     public readonly type: EntryType;
     public readonly date: DateWrapper;
+    public readonly comments: UserComment[];
 
-    public constructor(id: string, type: EntryType, date: DateWrapper) {
+    public constructor(
+        id: string,
+        type: EntryType,
+        date: DateWrapper,
+        comments: UserComment[]
+    ) {
         this.id = id;
         this.type = type;
         this.date = date;
+        this.comments = comments;
     }
 
     public filterApplies(keyword: string, filter: TimelineFilter): boolean {

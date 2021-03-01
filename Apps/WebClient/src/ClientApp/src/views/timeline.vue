@@ -28,6 +28,7 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import TimelineEntry from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 import User from "@/models/user";
+import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -111,6 +112,9 @@ export default class TimelineView extends Vue {
     @Getter("notes", { namespace: "note" })
     userNotes!: UserNote[];
 
+    @Getter("getEntryComments", { namespace: "comment" })
+    entryComments!: (entyId: string) => UserComment[];
+
     @Getter("filter", { namespace: "timeline" })
     filter!: TimelineFilter;
 
@@ -153,17 +157,26 @@ export default class TimelineView extends Vue {
         let timelineEntries = [];
         // Add the medication entries to the timeline list
         for (let medication of this.medicationStatements) {
-            timelineEntries.push(new MedicationTimelineEntry(medication));
+            timelineEntries.push(
+                new MedicationTimelineEntry(medication),
+                this.entryComments(medication.prescriptionIdentifier)
+            );
         }
 
         // Add the Laboratory entries to the timeline list
         for (let order of this.laboratoryOrders) {
-            timelineEntries.push(new LaboratoryTimelineEntry(order));
+            timelineEntries.push(
+                new LaboratoryTimelineEntry(order),
+                this.entryComments(order.id)
+            );
         }
 
         // Add the Encounter entries to the timeline list
         for (let encounter of this.patientEncounters) {
-            timelineEntries.push(new EncounterTimelineEntry(encounter));
+            timelineEntries.push(
+                new EncounterTimelineEntry(encounter),
+                this.entryComments(encounter.id)
+            );
         }
 
         // Add the Note entries to the timeline list
