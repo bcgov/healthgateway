@@ -51,6 +51,6 @@ namespace HealthGateway.Database.Delegates
         /// Fetches the UserFeedback from the database with email attached for administratie purposes.
         /// </summary>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DBResult<List<UserFeedbackAdmin>> GetAllUserFeedbackEntries();
+        DBResult<IList<UserFeedbackAdmin>> GetAllUserFeedbackEntries();
     }
 }
