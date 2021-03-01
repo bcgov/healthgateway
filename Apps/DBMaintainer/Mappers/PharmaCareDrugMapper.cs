@@ -65,7 +65,7 @@ namespace HealthGateway.DrugMaintainer
             // Map(m => m.).Name("BGTS Max Annual Qty");
 
             // Map the Filedownload to each object
-            this.Map(m => m.FileDownload).ConvertUsing(row => filedownload);
+            this.Map(m => m.FileDownload).Convert(row => filedownload);
         }
     }
 }
