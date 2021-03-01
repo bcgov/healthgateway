@@ -498,6 +498,7 @@ export default class ProfileView extends Vue {
                     dismissible
                     variant="info"
                     class="no-print"
+                    data-testid="verifyEmailTxt"
                     @dismissed="showCheckEmailAlert = false"
                 >
                     <h4>Please check your email</h4>

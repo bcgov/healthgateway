@@ -25,7 +25,8 @@
     "keycloak.protected.username": "protected",
     "idir.username": "hgateway",
     "idir.password": "",
-    "phoneNumber": ""
+    "phoneNumber": "",
+    "emailAddress": "fakeemail@healthgateway.gov.bc.ca"
   },
   "projectId": "ofnepc"
 }
