@@ -54,6 +54,8 @@ export default class FooterComponent extends Vue {
                 target="_blank"
                 >About Us
             </b-nav-item>
+
+            <b-nav-item class="nav-link" to="/faq">FAQ</b-nav-item>
         </b-navbar-nav>
     </b-navbar>
 </template>
