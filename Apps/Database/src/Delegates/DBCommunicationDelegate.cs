@@ -53,16 +53,17 @@ namespace HealthGateway.Database.Delegates
             {
                 Status = DBStatusCode.NotFound,
             };
-            result.Payload = this.dbContext.Communication
+            Communication? communication = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
                 .Where(c => c.CommunicationTypeCode == CommunicationType.Banner)
                 .Where(c => c.CommunicationStatusCode == CommunicationStatus.New)
                 .Where(c => DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime)
                 .FirstOrDefault();
 
-            if (result.Payload != null)
+            if (communication != null)
             {
                 result.Status = DBStatusCode.Read;
+                result.Payload = communication;
             }
 
             return result;

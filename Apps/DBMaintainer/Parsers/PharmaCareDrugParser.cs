@@ -42,7 +42,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload)
+        public IList<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload)
         {
             this.logger.LogInformation("Parsing PharmaCare Drug file");
             using var reader = new StreamReader(filename);

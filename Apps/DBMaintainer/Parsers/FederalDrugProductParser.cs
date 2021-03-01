@@ -42,7 +42,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload fileDownload)
+        public IList<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload fileDownload)
         {
             this.logger.LogInformation("Parsing Drug file");
             using var reader = new StreamReader(GetFileMatching(sourceFolder, "drug*.txt"));
@@ -58,7 +58,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Ingredients file");
             using var reader = new StreamReader(GetFileMatching(filePath, "ingred*.txt"));
@@ -74,7 +74,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Company file");
             using var reader = new StreamReader(GetFileMatching(filePath, "comp*.txt"));
@@ -90,7 +90,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Status file");
             using var reader = new StreamReader(GetFileMatching(filePath, "status*.txt"));
@@ -106,7 +106,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Form file");
             using var reader = new StreamReader(GetFileMatching(filePath, "form*.txt"));
@@ -122,7 +122,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Package file");
             using var reader = new StreamReader(GetFileMatching(filePath, "package*.txt"));
@@ -138,7 +138,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Pharmaceutical file");
             using var reader = new StreamReader(GetFileMatching(filePath, "pharm*.txt"));
@@ -154,7 +154,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Route file");
             using var reader = new StreamReader(GetFileMatching(filePath, "route*.txt"));
@@ -170,7 +170,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Schedule file");
             using var reader = new StreamReader(GetFileMatching(filePath, "schedule*.txt"));
@@ -186,7 +186,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Therapeutical file");
             using var reader = new StreamReader(GetFileMatching(filePath, "ther*.txt"));
@@ -202,7 +202,7 @@ namespace HealthGateway.DrugMaintainer
         }
 
         /// <inheritdoc/>
-        public List<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts)
+        public IList<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts)
         {
             this.logger.LogInformation("Parsing Veterinary file");
             using var reader = new StreamReader(GetFileMatching(filePath, "vet*.txt"));

@@ -29,6 +29,6 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filename">The file to parse.</param>
         /// <param name="filedownload">The related download file to associate with.</param>
         /// <returns>a list of pharmacare durgs.</returns>
-        List<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload);
+        IList<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload);
     }
 }
