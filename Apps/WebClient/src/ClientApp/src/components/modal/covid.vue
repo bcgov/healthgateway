@@ -108,19 +108,6 @@ export default class CovidModalComponent extends Vue {
         });
     }
 
-    private handleCancel(modalEvt: Event) {
-        // Prevent modal from closing
-        modalEvt.preventDefault();
-
-        // Trigger cancel handler
-        this.cancel();
-
-        // Hide the modal manually
-        this.$nextTick(() => {
-            this.isDismissed = true;
-        });
-    }
-
     @Emit()
     private submit() {
         return;
@@ -144,7 +131,7 @@ export default class CovidModalComponent extends Vue {
         footer-class="modal-footer"
         :no-close-on-backdrop="true"
         centered
-        @close="handleCancel"
+        @close="handleSubmit"
     >
         <form @submit.stop.prevent="handleSubmit">
             <b-row data-testid="covidModalText">

@@ -68,6 +68,16 @@ describe('Validate Modals Popup', () => {
         cy.get('[data-testid=covidModal] header:first')
           .find('button').should('have.text', '×').click()
         cy.get('[data-testid=covidModal]').should('not.exist')
+
+        // Verify that only COVID-19 Tests filter is selected. 
+        cy.get("[data-testid=encounterTitle]").should("not.exist");
+        cy.get("[data-testid=noteTitle]").should("not.exist");
+        cy.get("[data-testid=immunizationTitle]").should("not.exist");
+        cy.get("[data-testid=laboratoryTitle]").should("be.visible");
+        cy.get("[data-testid=medicationTitle]").should("not.exist");
+        cy.get('[data-testid=filterDropdown] > span').contains('1'); 
+
+        // Verify that Covid Modal doens't display after reload the timeline.
         cy.reload()
         cy.get('[data-testid=covidModal]').should('not.exist')
         cy.get('[data-testid=timelineLabel]').should('be.visible');
