@@ -351,7 +351,11 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="immunizationNeedsInput"
+                        :show="
+                            immunizationNeedsInput &&
+                            (immunizationIsDeferred ||
+                                patientImmunizations.length > 0)
+                        "
                         variant="info"
                         class="no-print"
                     >
