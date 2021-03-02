@@ -249,6 +249,10 @@ export default class SidebarComponent extends Vue {
     private get isDependents(): boolean {
         return this.$route.path == "/dependents";
     }
+
+    private get isFAQ(): boolean {
+        return this.$route.path == "/faq";
+    }
 }
 </script>
 
