@@ -122,7 +122,6 @@ export default class EntryDetailsComponent extends Vue {
         header-class="entry-details-modal-header"
         dialog-class="entry-details-modal-dialog"
         content-class="entry-details-modal-content"
-        class="bla_bla"
         size="lg"
         centered
         hide-footer
