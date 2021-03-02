@@ -10,6 +10,30 @@
                         </div>
                     </b-col>
                 </b-row>
+                                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >March 3, 2021 - v1.3.9 - FAQ Page, Download COVID Card, Comments
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added an FAQ page which publishes the most frequent questions we've had about the application. 
+                                    </li>
+                                    <li>
+                                        We added the ability to download a PDF copy of the COVID Immunization Card. 
+                                    </li>
+                                    <li>
+                                        We added the ability to filter for words in the comments that are uploaded, so you can find them faster. 
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
