@@ -15,12 +15,13 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         super(
             model.id,
             EntryType.Immunization,
-            new DateWrapper(model.dateOfImmunization)
+            new DateWrapper(model.dateOfImmunization),
+            []
         );
         this.immunization = new ImmunizationViewModel(model);
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public containsText(keyword: string): boolean {
         let text =
             (this.immunization.name || "") + (this.immunization.location || "");
         text = text.toUpperCase();

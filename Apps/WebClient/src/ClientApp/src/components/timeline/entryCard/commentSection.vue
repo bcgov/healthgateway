@@ -6,7 +6,7 @@ import { Action, Getter } from "vuex-class";
 import AddCommentComponent from "@/components/timeline/entryCard/addComment.vue";
 import CommentComponent from "@/components/timeline/entryCard/comment.vue";
 import { DateWrapper } from "@/models/dateWrapper";
-import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
+import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 import {
     CommentEntryType,
@@ -24,7 +24,7 @@ import { ILogger } from "@/services/interfaces";
     },
 })
 export default class CommentSectionComponent extends Vue {
-    @Prop() parentEntry!: MedicationTimelineEntry;
+    @Prop() parentEntry!: TimelineEntry;
     @Getter("user", { namespace: "user" }) user!: User;
     @Getter("getEntryComments", { namespace: "comment" })
     entryComments!: (entyId: string) => UserComment[];
@@ -56,7 +56,7 @@ export default class CommentSectionComponent extends Vue {
 
         // Some comments dont have entry type. This code updates them if they dont.
         let commentsToUpdate: UserComment[] = [];
-        this.comments.forEach((x) => {
+        this.parentEntry.comments.forEach((x) => {
             if (x.entryTypeCode === CommentEntryType.None) {
                 x.entryTypeCode = EntryTypeMapper.toCommentEntryType(
                     this.parentEntry.type
@@ -72,12 +72,10 @@ export default class CommentSectionComponent extends Vue {
         });
     }
 
-    private get comments(): UserComment[] {
-        return this.entryComments(this.parentEntry.id) || [];
-    }
-
     private get hasComments(): boolean {
-        return this.comments !== undefined ? this.comments.length > 0 : false;
+        return this.parentEntry.comments !== undefined
+            ? this.parentEntry.comments.length > 0
+            : false;
     }
 
     private onAdd() {
@@ -95,12 +93,14 @@ export default class CommentSectionComponent extends Vue {
                         <b-btn
                             variant="link"
                             class="py-2"
+                            data-testid="showCommentsBtn"
                             @click="showComments = !showComments"
                         >
                             <span>
                                 {{
-                                    comments.length > 1
-                                        ? comments.length + " Comments"
+                                    parentEntry.comments.length > 1
+                                        ? parentEntry.comments.length +
+                                          " Comments"
                                         : "1 Comment"
                                 }}</span
                             >
@@ -119,7 +119,10 @@ export default class CommentSectionComponent extends Vue {
                         v-model="showComments"
                     >
                         <div v-if="!isLoadingComments">
-                            <div v-for="comment in comments" :key="comment.id">
+                            <div
+                                v-for="comment in parentEntry.comments"
+                                :key="comment.id"
+                            >
                                 <Comment :comment="comment"></Comment>
                             </div>
                         </div>

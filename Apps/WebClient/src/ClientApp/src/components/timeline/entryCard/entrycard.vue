@@ -8,7 +8,6 @@ import { Getter } from "vuex-class";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
-import { UserComment } from "@/models/userComment";
 
 import CommentSectionComponent from "./commentSection.vue";
 library.add(faComment);
@@ -30,15 +29,9 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: false }) isMobileDetails!: boolean;
 
     @Getter("isMobile") isMobileWidth!: boolean;
-    @Getter("getEntryComments", { namespace: "comment" })
-    entryComments!: (entyId: string) => UserComment[];
 
-    private detailsVisible = false;
     private eventBus = EventBus;
-
-    private get commentsCount(): number {
-        return (this.entryComments(this.entry.id) || []).length;
-    }
+    private detailsVisible = false;
 
     private get displayTitle(): string {
         if (this.title === "") {
@@ -74,7 +67,12 @@ export default class EntrycardTimelineComponent extends Vue {
 
     private handleCardClick() {
         if (this.isMobileWidth) {
-            this.eventBus.$emit(EventMessageName.ViewEntryDetails, this.entry);
+            if (!this.isMobileDetails) {
+                this.eventBus.$emit(
+                    EventMessageName.ViewEntryDetails,
+                    this.entry
+                );
+            }
         } else {
             if (this.canShowDetails) {
                 this.detailsVisible = !this.detailsVisible;
@@ -85,11 +83,12 @@ export default class EntrycardTimelineComponent extends Vue {
 </script>
 
 <template>
-    <b-row class="cardWrapper mb-1" @click="handleCardClick()">
+    <b-row class="cardWrapper mb-1">
         <b-col class="timelineCard ml-0 ml-md-2">
             <b-row
                 class="entryHeading px-3 py-2"
                 :class="{ mobileDetail: isMobileDetails }"
+                @click="handleCardClick()"
             >
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
@@ -124,12 +123,12 @@ export default class EntrycardTimelineComponent extends Vue {
                         </b-col>
                         <b-col cols="4" class="text-right align-self-center">
                             <span
-                                v-if="commentsCount > 1"
+                                v-if="entry.comments.length > 1"
                                 class="pr-2"
                                 data-testid="commentCount"
-                                >{{ commentsCount }}</span
+                                >{{ entry.comments.length }}</span
                             >
-                            <span v-if="commentsCount > 0">
+                            <span v-if="entry.comments.length > 0">
                                 <font-awesome-icon
                                     :icon="['far', 'comment']"
                                     data-testid="commentIcon"

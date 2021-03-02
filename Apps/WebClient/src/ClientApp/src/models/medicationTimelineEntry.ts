@@ -3,6 +3,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Pharmacy from "@/models/pharmacy";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 
 // The medication timeline entry model
 export default class MedicationTimelineEntry extends TimelineEntry {
@@ -12,11 +13,15 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     public practitionerSurname: string;
     public prescriptionIdentifier: string;
 
-    public constructor(model: MedicationStatementHistory) {
+    public constructor(
+        model: MedicationStatementHistory,
+        comments: UserComment[]
+    ) {
         super(
             model.prescriptionIdentifier,
             EntryType.Medication,
-            new DateWrapper(model.dispensedDate)
+            new DateWrapper(model.dispensedDate),
+            comments
         );
 
         this.medication = new MedicationViewModel(model.medicationSummary);
@@ -33,7 +38,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         this.directions = model.directions || "N/A";
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public containsText(keyword: string): boolean {
         let text =
             (this.practitionerSurname || "") +
             (this.medication.brandName || "") +
