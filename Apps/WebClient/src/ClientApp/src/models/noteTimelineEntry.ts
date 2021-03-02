@@ -15,7 +15,8 @@ export default class NoteTimelineEntry extends TimelineEntry {
         super(
             model.id ?? "TEMP_ID",
             EntryType.Note,
-            new DateWrapper(model.journalDateTime ?? "")
+            new DateWrapper(model.journalDateTime ?? ""),
+            []
         );
         this.text = model.text || "";
         this.title = model.title || "No Title";
@@ -31,7 +32,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
         this.version = model.version;
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public containsText(keyword: string): boolean {
         let text = (this.title || "") + (this.text || "");
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
