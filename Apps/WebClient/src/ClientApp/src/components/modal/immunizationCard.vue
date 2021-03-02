@@ -143,7 +143,7 @@ export default class ImmunizationCardComponent extends Vue {
     private downloadPdf() {
         PDFUtil.generatePdf(
             "HealthGateway_ImmunizationHistory.pdf",
-            <HTMLElement>this.cardModal.$refs.content
+            this.cardModal.$refs.content as HTMLElement
         );
     }
 }
