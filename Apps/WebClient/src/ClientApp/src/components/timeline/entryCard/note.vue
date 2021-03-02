@@ -47,13 +47,6 @@ export default class NoteTimelineComponent extends Vue {
         return faEllipsisV;
     }
 
-    private get canShowDetails(): boolean {
-        return (
-            this.entry.text.length > 0 &&
-            this.entry.text !== this.entry.textSummary
-        );
-    }
-
     private handleDelete(): void {
         if (confirm("Are you sure you want to delete this note?")) {
             this.isSaving = true;
@@ -87,45 +80,50 @@ export default class NoteTimelineComponent extends Vue {
         :subtitle="entry.textSummary"
         :entry="entry"
         :allow-comment="false"
-        :can-show-details="canShowDetails"
         :is-mobile-details="isMobileDetails"
     >
-        <b-navbar-nav slot="header-menu">
-            <b-nav-item-dropdown
-                right
-                text=""
-                :no-caret="true"
-                :disabled="isSaving"
-            >
-                <!-- Using 'button-content' slot -->
-                <template slot="button-content">
-                    <font-awesome-icon
-                        data-testid="noteMenuBtn"
-                        class="noteMenu"
-                        :icon="menuIcon"
-                        size="1x"
-                    ></font-awesome-icon>
-                </template>
-                <b-dropdown-item
-                    data-testid="editNoteMenuBtn"
-                    class="menuItem"
-                    @click="handleEdit()"
-                >
-                    Edit
-                </b-dropdown-item>
-                <b-dropdown-item
-                    data-testid="deleteNoteMenuBtn"
-                    class="menuItem"
-                    @click="handleDelete()"
-                >
-                    Delete
-                </b-dropdown-item>
-            </b-nav-item-dropdown>
-        </b-navbar-nav>
-
-        <span slot="details-body">
-            {{ entry.text }}
-        </span>
+        <b-row slot="details-body" class="justify-content-between">
+            <b-col class="pt-1">
+                <span>
+                    {{ entry.text }}
+                </span>
+            </b-col>
+            <b-col class="col-1">
+                <b-navbar-nav class="justify-content-end">
+                    <b-nav-item-dropdown
+                        toggle-class="d-flex justify-content-end"
+                        right
+                        text=""
+                        :no-caret="true"
+                        :disabled="isSaving"
+                    >
+                        <!-- Using 'button-content' slot -->
+                        <template slot="button-content">
+                            <font-awesome-icon
+                                data-testid="noteMenuBtn"
+                                class="noteMenu"
+                                :icon="menuIcon"
+                                size="1x"
+                            ></font-awesome-icon>
+                        </template>
+                        <b-dropdown-item
+                            data-testid="editNoteMenuBtn"
+                            class="menuItem"
+                            @click="handleEdit()"
+                        >
+                            Edit
+                        </b-dropdown-item>
+                        <b-dropdown-item
+                            data-testid="deleteNoteMenuBtn"
+                            class="menuItem"
+                            @click="handleDelete()"
+                        >
+                            Delete
+                        </b-dropdown-item>
+                    </b-nav-item-dropdown>
+                </b-navbar-nav>
+            </b-col>
+        </b-row>
     </EntryCard>
 </template>
 
