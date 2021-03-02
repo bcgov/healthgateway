@@ -98,19 +98,20 @@ export default class LandingView extends Vue {
 
     private tiles: Tile[] = [
         {
-            title: "All in one place",
+            title: "No Passwords Required",
             description:
-                "Conveniently access your data on a computer, tablet or smartphone",
-            bullets: [
-                "Dispensed Medications from Community Pharmacies",
-                "COVID-19 Test Results and COVID-19 Immunization Card",
-                "Public Health and Community Pharmacy Immunization Records",
-            ],
+                "Securely access your data using your BC Services Card on a mobile device",
+          
             imageSrc: Image03,
         },
         {
             title: "Take control of your health",
             description: "Look at historical information captured over time.",
+              bullets: [
+                "Dispensed Medications from Community Pharmacies",
+                "COVID-19 Test Results and COVID-19 Immunization Card",
+                "Public Health and Community Pharmacy Immunization Records",
+            ],
 
             imageSrc: Image04,
         },
