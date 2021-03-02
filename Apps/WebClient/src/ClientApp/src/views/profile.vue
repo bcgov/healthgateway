@@ -99,6 +99,7 @@ export default class ProfileView extends Vue {
 
     private isLoading = true;
 
+    private showCheckEmailAlert = false;
     private emailVerified = false;
     private email = "";
     private emailConfirmation = "";
@@ -198,6 +199,7 @@ export default class ProfileView extends Vue {
             this.calculateTimeForDeletion();
         }, 1000);
         this.checkToVerifyPhone();
+        this.checkToVerifyEmail();
     }
 
     private checkToVerifyPhone() {
@@ -205,9 +207,20 @@ export default class ProfileView extends Vue {
         this.logger.debug(
             `toVerifyPhone: ${toVerifyPhone}; smsVerified: ${this.smsVerified}`
         );
-        if (toVerifyPhone && !this.smsVerified) {
+        if (toVerifyPhone === "true" && !this.smsVerified) {
             this.logger.debug(`display Verifying SMS popup`);
             this.verifySMS();
+        }
+    }
+
+    private checkToVerifyEmail() {
+        let toVerifyEmail = this.$route.query.toVerifyEmail;
+        this.logger.debug(
+            `toVerifyEmail: ${toVerifyEmail}; emailVerified: ${this.emailVerified}`
+        );
+        if (toVerifyEmail === "true" && !this.emailVerified) {
+            this.logger.debug(`display Verification Email`);
+            this.showCheckEmailAlert = true;
         }
     }
 
@@ -377,6 +390,7 @@ export default class ProfileView extends Vue {
                 this.emailConfirmation = "";
                 this.tempEmail = "";
                 this.getUserEmail({ hdid: this.user.hdid });
+                this.showCheckEmailAlert = true;
                 this.$v.$reset();
             })
             .catch((err) => {
@@ -479,6 +493,20 @@ export default class ProfileView extends Vue {
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-row class="py-1 my-3 py-md-5 fluid">
             <div class="col-12 col-lg-9 column-wrapper">
+                <b-alert
+                    :show="showCheckEmailAlert"
+                    dismissible
+                    variant="info"
+                    class="no-print"
+                    data-testid="verifyEmailTxt"
+                    @dismissed="showCheckEmailAlert = false"
+                >
+                    <h4>Please check your email</h4>
+                    <span>
+                        Please check your email for an email verification link.
+                        If you didn't receive one, please check your junk mail.
+                    </span>
+                </b-alert>
                 <div id="pageTitle">
                     <h1 id="subject">Profile</h1>
                     <hr />
