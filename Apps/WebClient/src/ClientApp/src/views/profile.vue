@@ -572,11 +572,9 @@ export default class ProfileView extends Vue {
                                         :disabled="!isEmailEditable"
                                         :state="
                                             isValid($v.email) ||
-                                            (emailVerified &&
-                                            !isEmailEditable &&
-                                            !!email
-                                                ? true
-                                                : undefined)
+                                            !isEmailEditable
+                                                ? undefined
+                                                : false
                                         "
                                     />
                                     <div
@@ -626,7 +624,11 @@ export default class ProfileView extends Vue {
                                     data-testid="emailConfirmationInput"
                                     type="email"
                                     placeholder="Confirm your email address"
-                                    :state="isValid($v.emailConfirmation)"
+                                    :state="
+                                        isValid($v.emailConfirmation)
+                                            ? undefined
+                                            : false
+                                    "
                                 />
                                 <b-form-invalid-feedback
                                     :state="$v.emailConfirmation.sameAsEmail"
