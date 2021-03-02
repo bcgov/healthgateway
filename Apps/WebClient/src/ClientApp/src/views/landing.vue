@@ -8,7 +8,6 @@ import Image02 from "@/assets/images/landing/002_Devices.png";
 import Image03 from "@/assets/images/landing/003_AdobeStock_143856492-edited_shoes.jpg";
 import Image04 from "@/assets/images/landing/004_AdobeStock_216356596.jpeg";
 import Image05 from "@/assets/images/landing/005_AdobeStock_243861557.jpeg";
-import Image06 from "@/assets/images/landing/006_AdobeStock_223963895.jpeg";
 import Image07 from "@/assets/images/landing/007_Hero-02_Duotone.png";
 import CommunicationComponent from "@/components/communication.vue";
 import { RegistrationStatus } from "@/constants/registrationStatus";
@@ -98,33 +97,28 @@ export default class LandingView extends Vue {
 
     private tiles: Tile[] = [
         {
-            title: "All in one place",
+            title: "One card, many services",
             description:
-                "Conveniently access your data on a computer, tablet or smartphone",
-            bullets: [
-                "Dispensed Medications from Community Pharmacies",
-                "COVID-19 Test Results and COVID-19 Immunization Card",
-                "Public Health and Community Pharmacy Immunization Records",
-            ],
+                "Securely access your data using your BC Services Card on a mobile device.",
+
             imageSrc: Image03,
         },
         {
             title: "Take control of your health",
-            description: "Look at historical information captured over time.",
+            description: "Look at historical information.",
+            bullets: [
+                "Dispensed Medications",
+                "COVID-19 Test Results",
+                "COVID-19 Immunization Records",
+            ],
 
             imageSrc: Image04,
         },
         {
-            title: "Manage family records",
+            title: "Guardian access",
             description:
-                "Care for the needs of your children and those who depend on you.",
+                "Access COVID-19 test results for children eleven and under.",
             imageSrc: Image05,
-        },
-        {
-            title: "Collaborate with others",
-            description:
-                "Become an active participant by sharing and discussing your data with health care providers.",
-            imageSrc: Image06,
         },
     ];
 
