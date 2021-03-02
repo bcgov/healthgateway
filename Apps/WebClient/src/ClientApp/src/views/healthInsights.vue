@@ -56,7 +56,9 @@ export default class HealthInsightsView extends Vue {
         if (this.medicationStatements.length > 0) {
             // Add the medication entries to the timeline list
             for (let medication of this.medicationStatements) {
-                timelineEntries.push(new MedicationTimelineEntry(medication));
+                timelineEntries.push(
+                    new MedicationTimelineEntry(medication, [])
+                );
             }
 
             timelineEntries = this.sortEntries(timelineEntries);
