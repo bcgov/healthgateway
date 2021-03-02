@@ -11,6 +11,7 @@ export const state: NoteState = {
     status: LoadStatus.NONE,
     error: undefined,
     statusMessage: "",
+    lastOperation: null,
 };
 
 const namespaced = true;

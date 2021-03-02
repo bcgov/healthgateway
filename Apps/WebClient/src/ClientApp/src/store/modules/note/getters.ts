@@ -1,6 +1,11 @@
 import { GetterTree } from "vuex";
 
-import { LoadStatus, NoteState, RootState } from "@/models/storeState";
+import {
+    LoadStatus,
+    NoteState,
+    Operation,
+    RootState,
+} from "@/models/storeState";
 import UserNote from "@/models/userNote";
 
 export const getters: GetterTree<NoteState, RootState> = {
@@ -9,6 +14,9 @@ export const getters: GetterTree<NoteState, RootState> = {
     },
     noteCount(state: NoteState): number {
         return state.notes.length;
+    },
+    lastOperation(state: NoteState): Operation | null {
+        return state.lastOperation;
     },
     isLoading(state: NoteState): boolean {
         return state.status === LoadStatus.REQUESTED;

@@ -5,7 +5,6 @@ import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import ScreenWidth from "@/constants/screenWidth";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
@@ -27,13 +26,15 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop() entryIcon!: string;
     @Prop() iconClass!: string;
     @Prop({ default: true }) allowComment!: boolean;
-    @Prop({ default: true }) showDetailsButton!: boolean;
+    @Prop({ default: true }) canShowDetails!: boolean;
     @Prop({ default: false }) isMobileDetails!: boolean;
 
-    private eventBus = EventBus;
-
+    @Getter("isMobile") isMobileWidth!: boolean;
     @Getter("getEntryComments", { namespace: "comment" })
     entryComments!: (entyId: string) => UserComment[];
+
+    private detailsVisible = false;
+    private eventBus = EventBus;
 
     private get commentsCount(): number {
         return (this.entryComments(this.entry.id) || []).length;
@@ -47,9 +48,6 @@ export default class EntrycardTimelineComponent extends Vue {
         }
     }
 
-    private detailsVisible = false;
-    private windowWidth = 0;
-
     private get dateString(): string {
         const today = new DateWrapper();
         if (this.entry.date.isSame(today, "day")) {
@@ -61,25 +59,6 @@ export default class EntrycardTimelineComponent extends Vue {
         }
     }
 
-    private handleViewEntryDetails(selectedEntry: TimelineEntry) {
-        if (window.innerWidth <= ScreenWidth.Mobile) {
-            this.eventBus.$emit(
-                EventMessageName.ViewEntryDetails,
-                selectedEntry
-            );
-        }
-    }
-
-    private toggleDetails(): void {
-        if (!this.isMobileWidth) {
-            this.detailsVisible = !this.detailsVisible;
-        }
-    }
-
-    private get isMobileWidth(): boolean {
-        return this.windowWidth < ScreenWidth.Mobile;
-    }
-
     @Watch("isMobileWidth")
     private onMobileWidthChanged() {
         if (this.isMobileWidth && !this.isMobileDetails) {
@@ -87,29 +66,31 @@ export default class EntrycardTimelineComponent extends Vue {
         }
     }
 
-    private onResize() {
-        this.windowWidth = window.innerWidth;
-    }
-
-    private created() {
-        this.windowWidth = window.innerWidth;
-        this.$nextTick(() => {
-            window.addEventListener("resize", this.onResize);
-        });
-    }
-
     private mounted() {
         if (this.isMobileDetails) {
             this.detailsVisible = true;
+        }
+    }
+
+    private handleCardClick() {
+        if (this.isMobileWidth) {
+            this.eventBus.$emit(EventMessageName.ViewEntryDetails, this.entry);
+        } else {
+            if (this.canShowDetails) {
+                this.detailsVisible = !this.detailsVisible;
+            }
         }
     }
 }
 </script>
 
 <template>
-    <b-row class="cardWrapper mb-1" @click="handleViewEntryDetails(entry)">
+    <b-row class="cardWrapper mb-1" @click="handleCardClick()">
         <b-col class="timelineCard ml-0 ml-md-2">
-            <b-row class="entryHeading px-3 py-2">
+            <b-row
+                class="entryHeading px-3 py-2"
+                :class="{ mobileDetail: isMobileDetails }"
+            >
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
                         <font-awesome-icon
@@ -123,20 +104,7 @@ export default class EntrycardTimelineComponent extends Vue {
                         <b-col
                             :data-testid="entry.type.toLowerCase() + 'Title'"
                         >
-                            <b-btn
-                                v-if="!isMobileDetails && showDetailsButton"
-                                variant="link"
-                                data-testid="entryCardDetailsButton"
-                                class="detailsButton text-left"
-                                @click="toggleDetails()"
-                            >
-                                <span data-testid="entryCardDetailsTitleDesktop"
-                                    ><strong>{{ displayTitle }}</strong></span
-                                >
-                            </b-btn>
-                            <span
-                                v-else
-                                data-testid="entryCardDetailsTitleMobile"
+                            <span data-testid="entryCardDetailsTitle"
                                 ><strong>{{ displayTitle }}</strong></span
                             >
                         </b-col>
@@ -175,12 +143,17 @@ export default class EntrycardTimelineComponent extends Vue {
             <b-collapse :id="'entryDetails-' + cardId" v-model="detailsVisible">
                 <b-row>
                     <b-col class="leftPane d-none d-md-block"></b-col>
-                    <b-col class="pb-3 pt-1 px-3">
+                    <b-col class="pb-1 pt-1 px-3">
                         <slot name="details-body"></slot>
-                        <CommentSection
-                            v-if="allowComment"
-                            :parent-entry="entry"
-                        />
+                    </b-col>
+                </b-row>
+                <b-row
+                    v-if="allowComment"
+                    :class="{ 'sticky-bottom': isMobileDetails }"
+                >
+                    <b-col class="leftPane d-none d-md-block"></b-col>
+                    <b-col class="pb-1 pt-1 px-3">
+                        <CommentSection :parent-entry="entry" />
                     </b-col>
                 </b-row>
             </b-collapse>
@@ -230,6 +203,9 @@ div[class*=" row"] {
 .entryHeading {
     background-color: $soft_background;
 }
+.mobileDetail {
+    background-color: white;
+}
 
 .entryTitleWrapper {
     color: $primary;
@@ -250,5 +226,12 @@ div[class*=" row"] {
 .detailsButton {
     padding: 0px;
     color: $primary;
+}
+
+.sticky-bottom {
+    border-top: 1px $primary solid;
+    position: sticky;
+    bottom: 0px;
+    background-color: white;
 }
 </style>

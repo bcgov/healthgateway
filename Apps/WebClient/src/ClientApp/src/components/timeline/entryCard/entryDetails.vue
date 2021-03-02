@@ -4,10 +4,11 @@ import {
     IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Component, Watch } from "vue-property-decorator";
+import { Action, Getter } from "vuex-class";
 
 import EventBus, { EventMessageName } from "@/eventbus";
+import { Operation } from "@/models/storeState";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
 
@@ -27,9 +28,15 @@ import NoteTimelineComponent from "./note.vue";
     },
 })
 export default class EntryDetailsComponent extends Vue {
-    @Getter("user", { namespace: "user" }) user!: User;
+    @Action("setHeaderState", { namespace: "navbar" }) setHeaderState!: (
+        isOpen: boolean
+    ) => void;
 
+    @Getter("isMobile") isMobile!: boolean;
+    @Getter("user", { namespace: "user" }) user!: User;
     @Getter("isVisible", { namespace: "idle" }) isIdleWarningVisible!: boolean;
+    @Getter("lastOperation", { namespace: "note" })
+    lastNoteOperation!: Operation | null;
 
     private entry: TimelineEntry | null = null;
     private entryDate = "";
@@ -46,6 +53,22 @@ export default class EntryDetailsComponent extends Vue {
         return "";
     }
 
+    @Watch("isMobile")
+    private onIsMobile() {
+        if (!this.isMobile) {
+            this.hideModal();
+        }
+    }
+
+    @Watch("lastNoteOperation")
+    private onLastNoteOperation() {
+        if (this.lastNoteOperation !== null && this.entry !== null) {
+            if (this.lastNoteOperation.id === this.entry.id) {
+                this.hideModal();
+            }
+        }
+    }
+
     private mounted() {
         this.entry = null;
         this.eventBus.$on(EventMessageName.ViewEntryDetails, this.viewDetails);
@@ -55,6 +78,7 @@ export default class EntryDetailsComponent extends Vue {
         this.entry = entry;
         this.entryDate = entry.date.toISO();
         this.isVisible = true;
+        this.setHeaderState(false);
     }
 
     private getComponentForEntry(): string {
@@ -95,12 +119,13 @@ export default class EntryDetailsComponent extends Vue {
         v-model="isVisible"
         data-testid="entryDetailsModal"
         modal-class="entry-details-modal"
-        content-class="mt-0 entry-details-mobile"
-        size="lg"
         header-class="entry-details-modal-header"
-        header-text-variant="light"
+        dialog-class="entry-details-modal-dialog"
+        content-class="entry-details-modal-content"
+        size="lg"
         centered
         hide-footer
+        scrollable
         @hidden="clear"
     >
         <template #modal-header>
@@ -174,27 +199,24 @@ export default class EntryDetailsComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
-.entry-details-mobile {
-    position: relative;
-    right: auto;
-    height: 1400px;
+.entry-details-modal-content {
+    min-height: 100vh;
     border: 0px;
-    left: 0;
-    top: 60px;
     border-radius: 0px;
-    max-width: 100%;
     .modal-body {
         padding: 0em;
     }
 }
 
-.entry-details-modal {
-    .modal-dialog {
-        margin: 0rem;
-    }
+.entry-details-modal-dialog {
+    min-height: 100vh;
+    min-width: 100%;
+    margin: 0rem;
 }
 
 .entry-details-modal-header {
     background-color: white;
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
 </style>
