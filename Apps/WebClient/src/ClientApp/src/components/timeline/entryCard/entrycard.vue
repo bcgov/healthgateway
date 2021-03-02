@@ -3,13 +3,13 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 
 import CommentSectionComponent from "./commentSection.vue";
-import { Getter } from "vuex-class";
 library.add(faComment);
 
 @Component({
@@ -67,7 +67,12 @@ export default class EntrycardTimelineComponent extends Vue {
 
     private handleCardClick() {
         if (this.isMobileWidth) {
-            this.eventBus.$emit(EventMessageName.ViewEntryDetails, this.entry);
+            if (!this.isMobileDetails) {
+                this.eventBus.$emit(
+                    EventMessageName.ViewEntryDetails,
+                    this.entry
+                );
+            }
         } else {
             if (this.canShowDetails) {
                 this.detailsVisible = !this.detailsVisible;
@@ -78,11 +83,12 @@ export default class EntrycardTimelineComponent extends Vue {
 </script>
 
 <template>
-    <b-row class="cardWrapper mb-1" @click="handleCardClick()">
+    <b-row class="cardWrapper mb-1">
         <b-col class="timelineCard ml-0 ml-md-2">
             <b-row
                 class="entryHeading px-3 py-2"
                 :class="{ mobileDetail: isMobileDetails }"
+                @click="handleCardClick()"
             >
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">

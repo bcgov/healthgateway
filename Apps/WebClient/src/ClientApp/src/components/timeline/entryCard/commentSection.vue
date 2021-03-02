@@ -93,6 +93,7 @@ export default class CommentSectionComponent extends Vue {
                         <b-btn
                             variant="link"
                             class="py-2"
+                            data-testid="showCommentsBtn"
                             @click="showComments = !showComments"
                         >
                             <span>
