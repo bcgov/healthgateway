@@ -8,6 +8,8 @@
                 </div>
             </b-col>
         </b-row>
+         <p style="text-align:right;"> Last updated: <strong>March 3, 2021</strong>
+        </p>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
