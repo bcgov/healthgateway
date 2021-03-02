@@ -69,7 +69,7 @@ describe('Reports', () => {
             .should('not.exist');
     })
 
-    it('Validate Service Selection', () => {       
+    it('Validate Service Selection', () => {
         cy.get('[data-testid=exportRecordBtn]')
             .should('be.disabled', 'be.visible')
 

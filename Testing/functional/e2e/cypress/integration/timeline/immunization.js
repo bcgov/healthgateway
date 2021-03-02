@@ -64,7 +64,7 @@ describe('Immunization', () => {
       cy.get('[data-testid=forecastFollowDirections]').first().contains('or contact your local Public Health Unit.');
     })
 
-    it('Validate Proof of Immunization Card', () => {
+    it('Validate Proof of Immunization Card & Download', () => {
       cy.get('[data-testid=cardBtn')
         .first()
         .click()
@@ -75,7 +75,18 @@ describe('Immunization', () => {
         .contains('Mar 28, 2010')
       cy.get('[data-testid=doseDate]')
         .last()
-        .contains('Sep 20, 2013')        
+        .contains('Sep 20, 2013')
+        
+      cy.get('[data-testid=exportCardBtn]')
+        .should('be.enabled', 'be.visible')
+        .click();cy.get('[data-testid=genericMessageModal]')
+        .should('be.visible');
+
+      cy.get('[data-testid=genericMessageSubmitBtn]')
+          .click();
+          
+      cy.get('[data-testid=genericMessageModal]')
+          .should('not.exist');
     })
 
     it('Validate Empty Title', () => {
