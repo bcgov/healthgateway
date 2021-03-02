@@ -43,6 +43,8 @@ export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Getter("isMobile") isMobileView!: boolean;
+
     @Getter("isSidebarOpen", { namespace: "navbar" }) isSidebarOpen!: boolean;
 
     @Getter("medicationCount", { namespace: "medication" })
@@ -67,7 +69,6 @@ export default class FilterComponent extends Vue {
 
     private logger!: ILogger;
     private isModalVisible = false;
-    private windowWidth = 0;
     private isMenuVisible = false;
 
     private isListViewToggle = true;
@@ -76,10 +77,6 @@ export default class FilterComponent extends Vue {
     private selectedEntryTypes: EntryType[] = [];
 
     private entryTypes: EntryTypeFilter[] = [];
-
-    private get isMobileView(): boolean {
-        return this.windowWidth < 576;
-    }
 
     private get enabledEntryTypes(): EntryTypeFilter[] {
         return this.entryTypes.filter(
@@ -103,11 +100,6 @@ export default class FilterComponent extends Vue {
     @Watch("isSidebarOpen")
     private onIsSidebarOpen() {
         this.isModalVisible = false;
-    }
-
-    private created() {
-        window.addEventListener("resize", this.handleResize);
-        this.handleResize();
     }
 
     private mounted() {
@@ -148,10 +140,6 @@ export default class FilterComponent extends Vue {
         ];
     }
 
-    private destroyed() {
-        window.removeEventListener("handleResize", this.handleResize);
-    }
-
     @Watch("filter", { deep: true })
     @Watch("isLinearView")
     private syncWithFilter() {
@@ -159,10 +147,6 @@ export default class FilterComponent extends Vue {
         this.endDate = this.filter.endDate;
         this.selectedEntryTypes = Array.from(this.filter.entryTypes);
         this.isListViewToggle = this.isLinearView;
-    }
-
-    private handleResize() {
-        this.windowWidth = window.innerWidth;
     }
 
     private toggleMenu() {
@@ -222,7 +206,7 @@ export default class FilterComponent extends Vue {
 
 <template>
     <div class="filters-wrapper">
-        <div class="filters-width d-none d-sm-block">
+        <div class="filters-width d-none d-md-block">
             <b-button
                 id="filterBtn"
                 class="w-100"
@@ -384,7 +368,7 @@ export default class FilterComponent extends Vue {
         <!-- Mobile view specific modal-->
         <b-button
             data-testid="mobileFilterDropdown"
-            class="d-d-sm-inline d-sm-none"
+            class="d-sm-inline d-md-none"
             :class="{ 'filter-selected': hasFilterSelected }"
             variant="outline-primary"
             @click.stop="toggleMobileView"

@@ -47,7 +47,7 @@ export default class NoteTimelineComponent extends Vue {
         return faEllipsisV;
     }
 
-    private get showDetailsButton(): boolean {
+    private get canShowDetails(): boolean {
         return (
             this.entry.text.length > 0 &&
             this.entry.text !== this.entry.textSummary
@@ -87,7 +87,7 @@ export default class NoteTimelineComponent extends Vue {
         :subtitle="entry.textSummary"
         :entry="entry"
         :allow-comment="false"
-        :show-details-button="showDetailsButton"
+        :can-show-details="canShowDetails"
         :is-mobile-details="isMobileDetails"
     >
         <b-navbar-nav slot="header-menu">
