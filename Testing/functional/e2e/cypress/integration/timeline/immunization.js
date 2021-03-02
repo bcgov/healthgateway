@@ -33,7 +33,7 @@ describe('Immunization', () => {
     })
 
     it('Validate Card Details', () => {
-      cy.get('[data-testid=entryCardDetailsButton')
+      cy.get('[data-testid=timelineCard')
         .first()
         .click()
       cy.get('[data-testid=immunizationTitle]')

@@ -15,7 +15,7 @@ describe('MSP Visits', () => {
         const entryDetailsModal = cy.get('[data-testid=entryDetailsModal]')
         entryDetailsModal.get('[data-testid=backBtn]')
           .should('be.visible')
-        entryDetailsModal.get('[data-testid=entryCardDetailsButton]')
+        entryDetailsModal.get('[data-testid=entryCardDetailsTitle]')
           .should('be.visible')
         entryDetailsModal.get('[data-testid=entryCardDate]')
             .should('be.visible')

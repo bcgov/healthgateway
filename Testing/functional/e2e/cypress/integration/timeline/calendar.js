@@ -79,7 +79,8 @@ describe('Calendar View', () => {
         cy.get('[data-testid=event-monthday-10]').click();
         cy.location('hash')
             .should('eq', '#linear');
-        cy.focused()
+        cy.get('[data-testid=entryCardDetailsTitle]')
+            .first()
             .should('have.text', 'Methadone (Maintenance) 1mg/Ml');
         cy.contains('[data-testid=entryCardDate]', '2019-04-10')
             .should('be.visible');

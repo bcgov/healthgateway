@@ -1,6 +1,6 @@
 const { AuthMethod } = require("../../../support/constants")
 describe('Immunization', () => {
-    before(() => {
+  beforeEach(() => {
       let isLoading = false;
       cy.enableModules("Immunization");
       cy.intercept('GET', "**/v1/api/Immunization/*", (req) => { 
@@ -34,13 +34,16 @@ describe('Immunization', () => {
     })
     
     it('Validate Card Details on Mobile', () => {
+      cy.get('[data-testid=immunizationBtnReady]')
+      .first()
+      .click()
       cy.get('[data-testid=timelineCard]')
         .first()
         .click()
       const entryDetailsModal = cy.get('[data-testid=entryDetailsModal]')
       entryDetailsModal.get('[data-testid=backBtn]')
         .should('be.visible')
-      entryDetailsModal.get('[data-testid=entryCardDetailsButton]')
+      entryDetailsModal.get('[data-testid=entryCardDetailsTitle]')
         .should('be.visible')
       entryDetailsModal.get('[data-testid=entryCardDate]')
           .should('be.visible')
