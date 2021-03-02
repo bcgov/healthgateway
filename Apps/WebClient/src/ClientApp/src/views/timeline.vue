@@ -178,6 +178,11 @@ export default class TimelineView extends Vue {
                     new ImmunizationTimelineEntry(immunization)
                 );
             }
+        } else if (
+            !this.immunizationIsDeferred &&
+            this.patientImmunizations.length == 0
+        ) {
+            this.immunizationNeedsInput = false;
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
@@ -351,11 +356,7 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="
-                            immunizationNeedsInput &&
-                            (immunizationIsDeferred ||
-                                patientImmunizations.length > 0)
-                        "
+                        :show="immunizationNeedsInput"
                         variant="info"
                         class="no-print"
                     >
