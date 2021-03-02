@@ -5,7 +5,7 @@ import PDFDefinition from "@/plugins/pdfDefinition";
 export default abstract class PDFUtil {
     public static async generatePdf(
         fileName: string,
-        element: HTMLElement | Vue | Element,
+        element: HTMLElement,
         footerText?: string
     ): Promise<void> {
         // Fixes a possible bug with html2canvas where if the page is scrolled it could cut off the image.
