@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop, Watch } from "vue-property-decorator";
+import { Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
@@ -63,8 +63,6 @@ export default class FilterComponent extends Vue {
 
     @Getter("filter", { namespace: "timeline" }) activeFilter!: TimelineFilter;
 
-    @Prop() private filter!: TimelineFilter;
-
     private logger!: ILogger;
     private isModalVisible = false;
     private windowWidth = 0;
@@ -88,11 +86,11 @@ export default class FilterComponent extends Vue {
     }
 
     private get activeFilterCount(): number {
-        return this.filter.getActiveFilterCount();
+        return this.activeFilter.getActiveFilterCount();
     }
 
     private get hasFilterSelected(): boolean {
-        return this.filter.hasActiveFilter();
+        return this.activeFilter.hasActiveFilter();
     }
 
     @Watch("isMobileView")
@@ -155,9 +153,9 @@ export default class FilterComponent extends Vue {
     @Watch("filter", { deep: true })
     @Watch("isLinearView")
     private syncWithFilter() {
-        this.startDate = this.filter.startDate;
-        this.endDate = this.filter.endDate;
-        this.selectedEntryTypes = Array.from(this.filter.entryTypes);
+        this.startDate = this.activeFilter.startDate;
+        this.endDate = this.activeFilter.endDate;
+        this.selectedEntryTypes = Array.from(this.activeFilter.entryTypes);
         this.isListViewToggle = this.isLinearView;
     }
 
@@ -450,7 +448,7 @@ export default class FilterComponent extends Vue {
                     <b-col>
                         <DatePickerComponent
                             id="start-date"
-                            v-model="filter.startDate"
+                            v-model="startDate"
                             data-testid="filterStartDateInput"
                         />
                     </b-col>
@@ -459,7 +457,7 @@ export default class FilterComponent extends Vue {
                     <b-col>
                         <DatePickerComponent
                             id="end-date"
-                            v-model="filter.endDate"
+                            v-model="endDate"
                             data-testid="filterEndDateInput"
                         />
                     </b-col>

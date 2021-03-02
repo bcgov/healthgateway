@@ -112,7 +112,7 @@ export default class CommentComponent extends Vue {
                     class="comment-body py-2 mr-0 ml-3 my-1"
                     align-v="center"
                 >
-                    <b-col data-testid="commentText" class="comment-text">
+                    <b-col data-testid="commentText" class="comment-text pl-3">
                         {{ comment.text }}
                         <p class="m-0 timestamp">
                             {{ formatDate(comment.createdDateTime) }}

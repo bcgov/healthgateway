@@ -105,35 +105,39 @@ export default class AddCommentComponent extends Vue {
             </b-tooltip>
         </b-col>
         <b-col>
-            <b-form @submit.prevent>
+            <b-input-group>
                 <b-form-textarea
                     :id="'comment-input-' + comment.parentEntryId"
                     v-model="commentInput"
                     data-testid="addCommentTextArea"
-                    class="comment-input-style"
-                    :class="commentInput.length <= 30 ? 'single-line' : ''"
+                    class="comment-input"
+                    :class="[
+                        { 'single-line': commentInput.length <= 30 },
+                        { faded: commentInput.length === 0 },
+                    ]"
                     rows="2"
                     max-rows="10"
-                    no-resize
+                    :no-resize="true"
                     placeholder="Write a comment"
                     maxlength="1000"
+                    style="overflow: auto"
                     :disabled="isSaving"
                 ></b-form-textarea>
-            </b-form>
-        </b-col>
-        <b-col cols="auto pr-1">
-            <b-button
-                data-testid="postCommentBtn"
-                class="btn-circle"
-                variant="link"
-                :disabled="commentInput === '' || isSaving"
-                @click="onSubmit"
-            >
-                <font-awesome-icon
-                    :icon="postIcon"
-                    size="2x"
-                ></font-awesome-icon>
-            </b-button>
+                <b-input-group-append>
+                    <b-button
+                        variant="link"
+                        data-testid="postCommentBtn"
+                        class="btn-circle"
+                        :disabled="commentInput === '' || isSaving"
+                        @click="onSubmit"
+                        ><font-awesome-icon
+                            :icon="postIcon"
+                            size="lg"
+                            fixed-width
+                        ></font-awesome-icon
+                    ></b-button>
+                </b-input-group-append>
+            </b-input-group>
         </b-col>
     </b-row>
 </template>
@@ -148,29 +152,33 @@ export default class AddCommentComponent extends Vue {
     padding: 0;
     margin: 0px;
 }
-.comment-input-style:not(:focus) {
-    background-color: $soft_background;
-}
-
-.single-line {
-    height: 38px !important;
+.comment-input {
+    border-right: 0px;
+    &.faded {
+        background-color: $soft-background;
+    }
+    &.single-line {
+        height: 38px !important;
+    }
 }
 
 .btn-circle {
-    width: 30px;
-    height: 30px;
-    padding: 0px 0px;
-    border-radius: 15px;
     text-align: center;
     align-content: center;
     color: $aquaBlue;
+    background-color: white;
+
+    border: 1px solid rgb(206, 212, 218);
+    border-left: 0px;
 }
 
 .btn-circle:disabled {
     color: grey;
+    background-color: $soft-background;
+    opacity: 1;
 }
 
-.btn-circle:hover {
+.btn-circle:hover:enabled {
     color: $primary;
 }
 </style>

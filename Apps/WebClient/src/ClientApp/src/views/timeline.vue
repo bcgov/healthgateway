@@ -403,10 +403,7 @@ export default class TimelineView extends Vue {
                             </div>
                         </b-col>
                         <b-col v-if="!isLoading" class="col-auto pl-2">
-                            <Filters
-                                :is-list-view="isLinearView"
-                                :filter.sync="filter"
-                            />
+                            <Filters />
                         </b-col>
                     </b-row>
                 </div>
