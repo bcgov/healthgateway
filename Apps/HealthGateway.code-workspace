@@ -64,6 +64,9 @@
     },
     {
       "path": "../Tools/Design/sampler"
+    },
+    {
+      "path": "../Tools/Design"
     }
   ],
   "settings": {

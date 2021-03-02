@@ -1,4 +1,6 @@
-# sampler
+# Design Sampler
+
+Simple projects that provides a live example of the implementation of the design system
 
 ## Project setup
 ```
