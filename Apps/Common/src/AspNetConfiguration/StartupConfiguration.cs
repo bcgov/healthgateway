@@ -429,7 +429,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
             services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
-            var xmlFile = $"{Assembly.GetCallingAssembly() !.GetName().Name}.xml";
+            var xmlFile = $"{Assembly.GetCallingAssembly()!.GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             services
                 .AddApiVersionWithExplorer()
@@ -561,7 +561,8 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Configures Access control that allows any origin, header and method.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>
-        public void ConfigureAccessControl(IServiceCollection services) {
+        public void ConfigureAccessControl(IServiceCollection services)
+        {
             services.AddCors(options =>
             {
                 options.AddPolicy("allowAny", policy =>
@@ -573,6 +574,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 });
             });
         }
+
         /// <summary>
         /// Configures the app to use auth.
         /// </summary>
@@ -679,7 +681,6 @@ namespace HealthGateway.Common.AspNetConfiguration
             });
         }
 
-        
         /// <summary>
         /// Configures the app to use swagger.
         /// </summary>

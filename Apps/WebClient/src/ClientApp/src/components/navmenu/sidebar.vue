@@ -6,7 +6,6 @@ import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import FeedbackComponent from "@/components/feedback.vue";
-import ScreenWidth from "@/constants/screenWidth";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -45,6 +44,8 @@ export default class SidebarComponent extends Vue {
         isOpen: boolean
     ) => void;
 
+    @Getter("isMobile") isMobileWidth!: boolean;
+
     @Getter("isSidebarOpen", { namespace: navbar }) isOpen!: boolean;
 
     @Getter("oidcIsAuthenticated", {
@@ -80,7 +81,6 @@ export default class SidebarComponent extends Vue {
     private eventBus = EventBus;
 
     private logger!: ILogger;
-    private windowWidth = 0;
 
     private isNoteTutorialEnabled = false;
     private isExportTutorialEnabled = false;
@@ -124,17 +124,11 @@ export default class SidebarComponent extends Vue {
     }
 
     private created() {
-        this.windowWidth = window.innerWidth;
         this.$nextTick(() => {
-            window.addEventListener("resize", this.onResize);
             if (!this.isMobileWidth) {
                 this.setSidebarState(true);
             }
         });
-    }
-
-    private beforeDestroy() {
-        window.removeEventListener("resize", this.onResize);
     }
 
     private toggleOpen() {
@@ -169,10 +163,6 @@ export default class SidebarComponent extends Vue {
                 userPreference: userPreference,
             });
         }
-    }
-
-    private onResize() {
-        this.windowWidth = window.innerWidth;
     }
 
     private isPreferenceActive(tutorialPopover: UserPreference): boolean {
@@ -214,10 +204,6 @@ export default class SidebarComponent extends Vue {
         return this.isOpen && this.isMobileWidth;
     }
 
-    private get isMobileWidth(): boolean {
-        return this.windowWidth < ScreenWidth.Mobile;
-    }
-
     private get isTimeline(): boolean {
         return this.$route.path == "/timeline";
     }
@@ -248,6 +234,10 @@ export default class SidebarComponent extends Vue {
 
     private get isDependents(): boolean {
         return this.$route.path == "/dependents";
+    }
+
+    private get isFAQ(): boolean {
+        return this.$route.path == "/faq";
     }
 }
 </script>

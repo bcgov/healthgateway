@@ -91,7 +91,7 @@ import {
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import VueTheMask from "vue-the-mask";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import Process, { EnvironmentType } from "@/constants/process";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -136,6 +136,8 @@ import FooterComponent from "@/components/navmenu/navFooter.vue";
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
 
+import ScreenWidth from "./constants/screenWidth";
+
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 @Component({
@@ -149,6 +151,8 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 })
 export default class App extends Vue {
     @Ref("idleModal") readonly idleModal!: IdleComponent;
+    @Action("setIsMobile") setIsMobile!: (isMobile: boolean) => void;
+    @Getter("isMobile") isMobile!: boolean;
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated?: boolean;
 
@@ -157,6 +161,8 @@ export default class App extends Vue {
         Process.NODE_ENV == EnvironmentType.production &&
         (this.host.startsWith("HEALTHGATEWAY") ||
             this.host.startsWith("WWW.HEALTHGATEWAY"));
+
+    private windowWidth = 0;
 
     constructor() {
         super();
@@ -171,6 +177,32 @@ export default class App extends Vue {
     private onIsAppIdleChanged(idle: boolean) {
         if (idle && this.oidcIsAuthenticated) {
             this.idleModal.show();
+        }
+    }
+
+    private created() {
+        this.windowWidth = window.innerWidth;
+        this.$nextTick(() => {
+            window.addEventListener("resize", this.onResize);
+            this.onResize();
+        });
+    }
+
+    private beforeDestroy() {
+        window.removeEventListener("resize", this.onResize);
+    }
+
+    private onResize() {
+        this.windowWidth = window.innerWidth;
+
+        if (this.windowWidth < ScreenWidth.Mobile) {
+            if (!this.isMobile) {
+                this.setIsMobile(true);
+            }
+        } else {
+            if (this.isMobile) {
+                this.setIsMobile(false);
+            }
         }
     }
 }
@@ -254,6 +286,6 @@ main {
 }
 
 .devBanner {
-    z-index: $z_top_layer;
+    z-index: $z_header;
 }
 </style>

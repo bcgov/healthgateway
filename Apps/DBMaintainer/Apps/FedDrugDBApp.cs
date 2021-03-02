@@ -46,7 +46,7 @@ namespace HealthGateway.DrugMaintainer.Apps
         public override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
         {
             this.Logger.LogInformation("Parsing Drug File and adding to DB Context");
-            List<DrugProduct> drugProducts = this.Parser.ParseDrugFile(sourceFolder, downloadedFile);
+            IList<DrugProduct> drugProducts = this.Parser.ParseDrugFile(sourceFolder, downloadedFile);
             this.DrugDbContext.DrugProduct.AddRange(drugProducts);
             this.Logger.LogInformation("Parsing Other files and adding to DB Context");
             this.DrugDbContext.ActiveIngredient.AddRange(this.Parser.ParseActiveIngredientFile(sourceFolder, drugProducts));

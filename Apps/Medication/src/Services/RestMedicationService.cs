@@ -50,7 +50,7 @@ namespace HealthGateway.Medication.Services
             Dictionary<string, MedicationResult> result = new Dictionary<string, MedicationResult>();
 
             // Retrieve drug information from the Federal soruce
-            List<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
+            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDIN(medicationDinList);
             foreach (DrugProduct drugProduct in drugProducts)
             {
                 FederalDrugSource federalData = new FederalDrugSource()
@@ -62,7 +62,7 @@ namespace HealthGateway.Medication.Services
             }
 
             // Retrieve drug information from the Provincial source and append it to the result if previously added.
-            List<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
+            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDIN(medicationDinList);
             foreach (PharmaCareDrug pharmaCareDrug in pharmaCareDrugs)
             {
                 ProvincialDrugSource provincialData = new ProvincialDrugSource()

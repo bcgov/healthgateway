@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
@@ -77,7 +78,7 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPost]
-        public IActionResult ResendEmail(List<Guid> emailIds)
+        public IActionResult ResendEmail(Collection<Guid> emailIds)
         {
             if (emailIds == null)
             {
@@ -86,10 +87,10 @@ namespace HealthGateway.Admin.Controllers
 
             try
             {
-                emailIds.ForEach(id =>
+                foreach (var id in emailIds)
                 {
                     this.emailQueueService.CloneAndQueue(id);
-                });
+                }
             }
             catch (ArgumentException e)
             {

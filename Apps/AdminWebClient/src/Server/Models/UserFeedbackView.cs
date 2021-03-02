@@ -83,9 +83,9 @@ namespace HealthGateway.Admin.Models
         /// </summary>
         /// <param name="models">List of user feedback models.</param>
         /// <returns>A list of UserFeedbackView.</returns>
-        public static List<UserFeedbackView> CreateListFromDbModel(List<UserFeedbackAdmin> models)
+        public static IList<UserFeedbackView> CreateListFromDbModel(IList<UserFeedbackAdmin> models)
         {
-            List<UserFeedbackView> newList = new List<UserFeedbackView>();
+            IList<UserFeedbackView> newList = new List<UserFeedbackView>();
             foreach (UserFeedbackAdmin model in models)
             {
                 newList.Add(UserFeedbackView.CreateFromDbModel(model));

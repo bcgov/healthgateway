@@ -46,13 +46,13 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<List<UserFeedbackView>> GetUserFeedback()
+        public RequestResult<IList<UserFeedbackView>> GetUserFeedback()
         {
             this.logger.LogTrace($"Retrieving pending beta requests");
-            DBResult<List<UserFeedbackAdmin>> userfeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            DBResult<IList<UserFeedbackAdmin>> userfeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
             this.logger.LogDebug($"Finished retrieving user feedback: {JsonConvert.SerializeObject(userfeedbackResult)}");
-            List<UserFeedbackView> userFeedback = UserFeedbackView.CreateListFromDbModel(userfeedbackResult.Payload);
-            return new RequestResult<List<UserFeedbackView>>()
+            IList<UserFeedbackView> userFeedback = UserFeedbackView.CreateListFromDbModel(userfeedbackResult.Payload);
+            return new RequestResult<IList<UserFeedbackView>>()
             {
                 ResourcePayload = userFeedback,
                 ResultStatus = ResultType.Success,

@@ -73,7 +73,7 @@ namespace HealthGateway.DrugMaintainer
             this.Map(m => m.DescriptorFrench).Index(13);
 
             // Map the Filedownload to each object
-            this.Map(m => m.FileDownload).ConvertUsing(row => filedownload);
+            this.Map(m => m.FileDownload).Convert(row => filedownload);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace HealthGateway.Admin.Server.Mappers
         public NoteCsvMap()
         {
             this.Map(m => m.Id);
-            this.Map(m => m.HdId).ConvertUsing(o => o.HdId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
+            this.Map(m => m.HdId).Convert(o => o.Value.HdId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
             this.Map(m => m.CreatedDateTime);
             this.Map(m => m.UpdatedDateTime);
         }
