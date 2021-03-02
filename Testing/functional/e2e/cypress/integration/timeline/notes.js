@@ -31,6 +31,9 @@ describe('Notes', () => {
     });
 
     it('Validate Edit', () => {
+        cy.get('[data-testid=timelineCard]')
+            .first()
+            .click();
         cy.get('[data-testid=noteMenuBtn]')
             .first()
             .click();
@@ -48,6 +51,9 @@ describe('Notes', () => {
     });
 
     it('Validate Delete', () => {
+        cy.get('[data-testid=timelineCard]')
+            .first()
+            .click();
         cy.get('[data-testid=noteMenuBtn]')
             .last()
             .click();
