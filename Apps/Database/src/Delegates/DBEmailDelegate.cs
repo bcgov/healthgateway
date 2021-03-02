@@ -65,10 +65,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<Email> GetLowPriorityEmail(int maxRows)
+        public IList<Email> GetLowPriorityEmail(int maxRows)
         {
             this.logger.LogTrace($"Getting list of low priority emails from DB... {maxRows}");
-            List<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
+            IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
                                                    p.Priority < EmailPriority.Standard)
                                         .OrderByDescending(s => s.Priority)
                                         .Take(maxRows)
@@ -78,10 +78,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<Email> GetStandardPriorityEmail(int maxRows)
+        public IList<Email> GetStandardPriorityEmail(int maxRows)
         {
             this.logger.LogTrace($"Getting list of standard priority emails from DB... {maxRows}");
-            List<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
+            IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
                                                    p.Priority >= EmailPriority.Standard && p.Priority < EmailPriority.High)
                                         .OrderByDescending(s => s.Priority)
                                         .Take(maxRows)
@@ -91,10 +91,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<Email> GetHighPriorityEmail(int maxRows)
+        public IList<Email> GetHighPriorityEmail(int maxRows)
         {
             this.logger.LogTrace($"Getting list of high priority emails from DB... {maxRows}");
-            List<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
+            IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
                                                    p.Priority >= EmailPriority.High && p.Priority < EmailPriority.Urgent)
                                         .OrderByDescending(s => s.Priority)
                                         .Take(maxRows)
@@ -104,10 +104,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<Email> GetUrgentPriorityEmail(int maxRows)
+        public IList<Email> GetUrgentPriorityEmail(int maxRows)
         {
             this.logger.LogTrace($"Getting list of urgent priority emails from DB... {maxRows}");
-            List<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
+            IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New &&
                                                    p.Priority >= EmailPriority.Urgent)
                                         .OrderByDescending(s => s.Priority)
                                         .Take(maxRows)
@@ -153,10 +153,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<List<Email>> GetEmails(int offset = 0, int pagesize = 1000)
+        public DBResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000)
         {
             this.logger.LogTrace("Getting Emails...");
-            DBResult<List<Email>> result = new DBResult<List<Email>>();
+            DBResult<IList<Email>> result = new DBResult<IList<Email>>();
             result.Payload = this.dbContext.Email
                     .OrderByDescending(o => o.CreatedBy)
                     .Skip(offset)
@@ -169,7 +169,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public int Delete(uint daysAgo, int maxRows, bool shouldCommit = true)
         {
-            List<Email> oldIds = this.dbContext.Email
+            IList<Email> oldIds = this.dbContext.Email
                                 .Where(email => email.EmailStatusCode == EmailStatus.Processed &&
                                                 email.CreatedDateTime.Date <= DateTime.UtcNow.AddDays(daysAgo * -1).Date)
                                 .Where(email => !this.dbContext.CommunicationEmail.Any(commEmail => commEmail.EmailId == email.Id))

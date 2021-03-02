@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Server.Mappers
             this.Map(m => m.UpdatedBy).Ignore();
             this.Map(m => m.CreatedBy).Ignore();
             this.Map(m => m.EncryptionKey).Ignore();
-            this.Map(m => m.HdId).ConvertUsing(o => o.HdId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
+            this.Map(m => m.HdId).Convert(o => o.Value.HdId.GetHashCode(StringComparison.CurrentCulture).ToString(CultureInfo.CurrentCulture));
         }
     }
 }
