@@ -93,7 +93,7 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import VueTheMask from "vue-the-mask";
 import { Getter } from "vuex-class";
 
-import Process, { EnvironmentType } from "@/constants/process.ts";
+import Process, { EnvironmentType } from "@/constants/process";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
