@@ -178,6 +178,11 @@ export default class TimelineView extends Vue {
                     new ImmunizationTimelineEntry(immunization)
                 );
             }
+        } else if (
+            !this.immunizationIsDeferred &&
+            this.patientImmunizations.length == 0
+        ) {
+            this.immunizationNeedsInput = false;
         }
 
         timelineEntries = this.sortEntries(timelineEntries);

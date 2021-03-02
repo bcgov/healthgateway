@@ -74,37 +74,8 @@ export default class FilterComponent extends Vue {
     private endDate: StringISODate = "";
     private selectedEntryTypes: EntryType[] = [];
 
-    private entryTypes: EntryTypeFilter[] = [];
-
-    private get enabledEntryTypes(): EntryTypeFilter[] {
-        return this.entryTypes.filter(
-            (filter: EntryTypeFilter) => filter.isEnabled
-        );
-    }
-
-    private get activeFilterCount(): number {
-        return this.activeFilter.getActiveFilterCount();
-    }
-
-    private get hasFilterSelected(): boolean {
-        return this.activeFilter.hasActiveFilter();
-    }
-
-    @Watch("isMobileView")
-    private onIsMobileView() {
-        this.isModalVisible = false;
-    }
-
-    @Watch("isSidebarOpen")
-    private onIsSidebarOpen() {
-        this.isModalVisible = false;
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.syncWithFilter();
-
-        this.entryTypes = [
+    private get entryTypes(): EntryTypeFilter[] {
+        return [
             {
                 type: EntryType.Immunization,
                 display: "Immunizations",
@@ -136,6 +107,35 @@ export default class FilterComponent extends Vue {
                 numEntries: this.noteCount,
             },
         ];
+    }
+
+    private get enabledEntryTypes(): EntryTypeFilter[] {
+        return this.entryTypes.filter(
+            (filter: EntryTypeFilter) => filter.isEnabled
+        );
+    }
+
+    private get activeFilterCount(): number {
+        return this.activeFilter.getActiveFilterCount();
+    }
+
+    private get hasFilterSelected(): boolean {
+        return this.activeFilter.hasActiveFilter();
+    }
+
+    @Watch("isMobileView")
+    private onIsMobileView() {
+        this.isModalVisible = false;
+    }
+
+    @Watch("isSidebarOpen")
+    private onIsSidebarOpen() {
+        this.isModalVisible = false;
+    }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.syncWithFilter();
     }
 
     @Watch("filter", { deep: true })
