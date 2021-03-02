@@ -100,7 +100,7 @@ export default class LandingView extends Vue {
         {
             title: "No Passwords Required",
             description:
-                "Securely access your data using your BC Services Card on a mobile device",
+                "Securely access your data using your BC Services Card on a mobile device.",
           
             imageSrc: Image03,
         },
