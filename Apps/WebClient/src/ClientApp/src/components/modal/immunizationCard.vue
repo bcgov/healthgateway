@@ -187,12 +187,16 @@ export default class ImmunizationCardComponent extends Vue {
         </template>
         <b-row>
             <b-col>
-                <b-row class="pb-3 title">
-                    <b-col cols="2" class="px-1 label">Name</b-col>
+                <b-row class="pb-3 title d-flex">
+                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                        >Name</b-col
+                    >
                     <b-col class="value">{{ userName }}</b-col>
                 </b-row>
-                <b-row class="pb-4 title" align-h="between">
-                    <b-col cols="4" class="px-1 label">Immunization</b-col>
+                <b-row class="pb-4 title">
+                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                        >Immunization</b-col
+                    >
                     <b-col class="value">COVID-19</b-col>
                 </b-row>
                 <b-row
@@ -298,18 +302,16 @@ div[class*=" row"] {
 
 .title {
     color: $primary;
-    .label {
-        font-size: 1.3em;
-    }
 
+    .label {
+        min-width: 75px;
+        max-width: 75px;
+        font-size: 0.9em;
+    }
     .value {
+        margin-left: 10px;
         border-bottom: 1px solid $muted-color;
-        font-size: 1.3em;
         font-weight: bold;
-        margin-left: 1em;
-        @media (max-width: 360px) {
-            margin-left: 3em;
-        }
     }
 }
 
@@ -335,7 +337,8 @@ div[class*=" row"] {
         padding-left: 15px;
 
         .field {
-            padding: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
             .value {
                 min-height: 1em;
                 color: $primary;
