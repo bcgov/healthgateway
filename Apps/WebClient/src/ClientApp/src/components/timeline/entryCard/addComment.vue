@@ -1,5 +1,9 @@
 <script lang="ts">
-import { faLock, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowCircleUp,
+    faLock,
+    IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -35,6 +39,10 @@ export default class AddCommentComponent extends Vue {
 
     private get lockIcon(): IconDefinition {
         return faLock;
+    }
+
+    private get postIcon(): IconDefinition {
+        return faArrowCircleUp;
     }
 
     private onSubmit(): void {
@@ -97,34 +105,39 @@ export default class AddCommentComponent extends Vue {
             </b-tooltip>
         </b-col>
         <b-col>
-            <b-form @submit.prevent>
+            <b-input-group>
                 <b-form-textarea
                     :id="'comment-input-' + comment.parentEntryId"
                     v-model="commentInput"
                     data-testid="addCommentTextArea"
-                    class="comment-input-style"
-                    :class="commentInput.length <= 30 ? 'single-line' : ''"
+                    class="comment-input"
+                    :class="[
+                        { 'single-line': commentInput.length <= 30 },
+                        { faded: commentInput.length === 0 },
+                    ]"
                     rows="2"
                     max-rows="10"
-                    no-resize
+                    :no-resize="true"
                     placeholder="Write a comment"
                     maxlength="1000"
+                    style="overflow: auto"
                     :disabled="isSaving"
                 ></b-form-textarea>
-            </b-form>
-        </b-col>
-        <b-col
-            class="pl-2 pr-0 mt-1 mt-md-0 mt-lg-0 col-12 col-md-auto col-lg-auto text-right"
-        >
-            <b-button
-                data-testid="postCommentBtn"
-                class="mr-2 px-4"
-                variant="primary"
-                :disabled="commentInput === '' || isSaving"
-                @click="onSubmit"
-            >
-                Post
-            </b-button>
+                <b-input-group-append>
+                    <b-button
+                        variant="link"
+                        data-testid="postCommentBtn"
+                        class="btn-circle"
+                        :disabled="commentInput === '' || isSaving"
+                        @click="onSubmit"
+                        ><font-awesome-icon
+                            :icon="postIcon"
+                            size="lg"
+                            fixed-width
+                        ></font-awesome-icon
+                    ></b-button>
+                </b-input-group-append>
+            </b-input-group>
         </b-col>
     </b-row>
 </template>
@@ -139,11 +152,33 @@ export default class AddCommentComponent extends Vue {
     padding: 0;
     margin: 0px;
 }
-.comment-input-style:not(:focus) {
-    background-color: $soft_background;
+.comment-input {
+    border-right: 0px;
+    &.faded {
+        background-color: $soft-background;
+    }
+    &.single-line {
+        height: 38px !important;
+    }
 }
 
-.single-line {
-    height: 38px !important;
+.btn-circle {
+    text-align: center;
+    align-content: center;
+    color: $aquaBlue;
+    background-color: white;
+
+    border: 1px solid rgb(206, 212, 218);
+    border-left: 0px;
+}
+
+.btn-circle:disabled {
+    color: grey;
+    background-color: $soft-background;
+    opacity: 1;
+}
+
+.btn-circle:hover:enabled {
+    color: $primary;
 }
 </style>
