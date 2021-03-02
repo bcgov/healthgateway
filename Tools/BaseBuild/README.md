@@ -7,9 +7,13 @@ Documents our OpenShift Build and Deployment process templates.
 A Network Security Policy needs to be deployed into each namespace prior to anything being executed.  In order to create this, please execute the following:
 
 ```console
+oc project 0bd5ad-tools
 oc process -f ./nsp.yaml -p NAMESPACE_PREFIX=0bd5ad -p ENVIRONMENT=tools | oc apply -f -
+oc project 0bd5ad-dev
 oc process -f ./nsp.yaml -p NAMESPACE_PREFIX=0bd5ad -p ENVIRONMENT=dev | oc apply -f -
+oc project 0bd5ad-test
 oc process -f ./nsp.yaml -p NAMESPACE_PREFIX=0bd5ad -p ENVIRONMENT=test | oc apply -f -
+oc project 0bd5ad-prod
 oc process -f ./nsp.yaml -p NAMESPACE_PREFIX=0bd5ad -p ENVIRONMENT=prod | oc apply -f -```
 
 Please ensure that the AzureAgents have been deployed into the OpenShift tools namespace.
