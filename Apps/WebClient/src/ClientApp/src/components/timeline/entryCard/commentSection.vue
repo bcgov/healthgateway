@@ -87,7 +87,7 @@ export default class CommentSectionComponent extends Vue {
 </script>
 
 <template>
-    <b-row class="py-2">
+    <b-row class="pt-2">
         <b-col>
             <b-row class="pt-2">
                 <b-col>

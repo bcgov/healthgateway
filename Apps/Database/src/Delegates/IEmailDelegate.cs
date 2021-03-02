@@ -49,7 +49,7 @@ namespace HealthGateway.Database.Delegates
         /// The list will be ordered by the Priority in descending order.</summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
-        List<Email> GetLowPriorityEmail(int maxRows);
+        IList<Email> GetLowPriorityEmail(int maxRows);
 
         /// <summary>
         /// Gets a sorted list of new standard priority emails to process.
@@ -61,7 +61,7 @@ namespace HealthGateway.Database.Delegates
         /// The list will be ordered by the Priority in descending order.</summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
-        List<Email> GetStandardPriorityEmail(int maxRows);
+        IList<Email> GetStandardPriorityEmail(int maxRows);
 
         /// <summary>
         /// Gets a sorted list of new high priority emails to process.
@@ -73,7 +73,7 @@ namespace HealthGateway.Database.Delegates
         /// The list will be ordered by the Priority in descending order.</summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
-        List<Email> GetHighPriorityEmail(int maxRows);
+        IList<Email> GetHighPriorityEmail(int maxRows);
 
         /// <summary>
         /// Gets a sorted list of new urgent priority emails to process.
@@ -85,7 +85,7 @@ namespace HealthGateway.Database.Delegates
         /// The list will be ordered by the Priority in descending order.</summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
-        List<Email> GetUrgentPriorityEmail(int maxRows);
+        IList<Email> GetUrgentPriorityEmail(int maxRows);
 
         /// <summary>
         /// Inserts an email using a populated Email object.
@@ -114,7 +114,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="offset">The starting offset for the query.</param>
         /// <param name="pagesize">The maximum amount of rows to return.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        public DBResult<List<Email>> GetEmails(int offset = 0, int pagesize = 1000);
+        DBResult<IList<Email>> GetEmails(int offset = 0, int pagesize = 1000);
 
         /// <summary>
         /// Deletes email records that were created after n days ago.
@@ -123,6 +123,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="maxRows">The maximum amount of emails to delete at one time.</param>
         /// <param name="shouldCommit">If true, the records will be deleted from the DB immediately.</param>
         /// <returns>The number of rows deleted.</returns>
-        public int Delete(uint daysAgo, int maxRows, bool shouldCommit = true);
+        int Delete(uint daysAgo, int maxRows, bool shouldCommit = true);
     }
 }

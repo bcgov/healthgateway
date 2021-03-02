@@ -29,7 +29,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="sourceFolder">The source folder of the extracted files.</param>
         /// <param name="fileDownload">The file download to assoicate to the parsed records.</param>
         /// <returns>A list of Drug Products.</returns>
-        List<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload fileDownload);
+        IList<DrugProduct> ParseDrugFile(string sourceFolder, FileDownload fileDownload);
 
         /// <summary>
         /// Parses the Active Ingredient file.
@@ -37,7 +37,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>A list of Active ingredients.</returns>
-        List<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<ActiveIngredient> ParseActiveIngredientFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the company file.
@@ -45,7 +45,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>The list of companies.</returns>
-        List<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<Company> ParseCompanyFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the status file.
@@ -53,7 +53,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>the list of drug statuses.</returns>
-        List<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<Status> ParseStatusFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the form file.
@@ -61,7 +61,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>The list of drug forms.</returns>
-        List<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<Form> ParseFormFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the Packaging file.
@@ -69,7 +69,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>A list of drug packaging.</returns>
-        List<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<Packaging> ParsePackagingFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the pharmaceutical standard file.
@@ -77,7 +77,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>A list of pharmaceutical std.</returns>
-        List<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<PharmaceuticalStd> ParsePharmaceuticalStdFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the route file.
@@ -85,7 +85,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>A list of drug routes.</returns>
-        List<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<Route> ParseRouteFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the schedule file.
@@ -93,7 +93,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>A list of drug schedules.</returns>
-        List<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<Schedule> ParseScheduleFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the Therapeutic class file.
@@ -101,7 +101,7 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>A list of drug therapeutic classes.</returns>
-        List<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<TherapeuticClass> ParseTherapeuticFile(string filePath, IEnumerable<DrugProduct> drugProducts);
 
         /// <summary>
         /// Parses the verterinary species file.
@@ -109,6 +109,6 @@ namespace HealthGateway.DrugMaintainer
         /// <param name="filePath">The path to the file.</param>
         /// <param name="drugProducts">The Drug products to link.</param>
         /// <returns>A list of veterinary species.</returns>
-        List<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts);
+        IList<VeterinarySpecies> ParseVeterinarySpeciesFile(string filePath, IEnumerable<DrugProduct> drugProducts);
     }
 }

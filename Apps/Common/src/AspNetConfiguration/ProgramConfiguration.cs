@@ -44,7 +44,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
-                    logging.AddConsole(options =>
+                    logging.AddSimpleConsole(options =>
                     {
                         options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
                         options.IncludeScopes = true;

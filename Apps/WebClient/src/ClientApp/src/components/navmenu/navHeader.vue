@@ -6,7 +6,6 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import RatingComponent from "@/components/modal/rating.vue";
-import ScreenWidth from "@/constants/screenWidth";
 import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -30,6 +29,7 @@ export default class HeaderComponent extends Vue {
         isOpen: boolean
     ) => void;
 
+    @Getter("isMobile") isMobileWidth!: boolean;
     @Getter("isSidebarOpen", { namespace: navbar }) isSidebarOpen!: boolean;
     @Getter("isHeaderShown", { namespace: navbar }) isHeaderShown!: boolean;
     @Getter("isOffline", {
@@ -65,7 +65,6 @@ export default class HeaderComponent extends Vue {
     private logger!: ILogger;
     private authenticationService!: IAuthenticationService;
 
-    private windowWidth = 0;
     private lastScrollTop = 0;
     private static minimunScrollChange = 2;
 
@@ -76,10 +75,6 @@ export default class HeaderComponent extends Vue {
             this.userIsRegistered &&
             this.userIsActive
         );
-    }
-
-    private get isMobileWidth(): boolean {
-        return this.windowWidth < ScreenWidth.Mobile;
     }
 
     private get userName(): string {
@@ -115,10 +110,8 @@ export default class HeaderComponent extends Vue {
     }
 
     private created() {
-        this.windowWidth = window.innerWidth;
         this.$nextTick(() => {
             window.addEventListener("scroll", this.onScroll);
-            window.addEventListener("resize", this.onResize);
             if (!this.isMobileWidth) {
                 this.setHeaderState(false);
             }
@@ -127,7 +120,6 @@ export default class HeaderComponent extends Vue {
 
     private destroyed() {
         window.removeEventListener("scroll", this.onScroll);
-        window.removeEventListener("resize", this.onResize);
     }
 
     private onScroll() {
@@ -151,10 +143,6 @@ export default class HeaderComponent extends Vue {
         }
         // For Mobile or negative scrolling
         this.lastScrollTop = st <= 0 ? 0 : st;
-    }
-
-    private onResize() {
-        this.windowWidth = window.innerWidth;
     }
 
     private handleToggleClick() {

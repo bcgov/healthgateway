@@ -84,7 +84,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void SendLowPriorityEmails()
         {
             this.logger.LogDebug($"Sending low priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
+            IList<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug($"Finished sending low priority emails. {JsonConvert.SerializeObject(resendEmails)}");
         }
@@ -94,7 +94,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void SendStandardPriorityEmails()
         {
             this.logger.LogDebug($"Sending standard priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
+            IList<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug($"Finished sending standard priority emails. {JsonConvert.SerializeObject(resendEmails)}");
         }
@@ -104,7 +104,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void SendHighPriorityEmails()
         {
             this.logger.LogDebug($"Sending high priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
+            IList<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug($"Finished sending high priority emails. {JsonConvert.SerializeObject(resendEmails)}");
         }
@@ -114,7 +114,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void SendUrgentPriorityEmails()
         {
             this.logger.LogDebug($"Sending urgent priority emails... Looking for up to {this.retryFetchSize} emails to send");
-            List<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
+            IList<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug($"Finished sending urgent priority emails. {JsonConvert.SerializeObject(resendEmails)}");
         }
@@ -132,7 +132,7 @@ namespace Healthgateway.JobScheduler.Jobs
             return msg;
         }
 
-        private void ProcessEmails(List<Email> resendEmails)
+        private void ProcessEmails(IList<Email> resendEmails)
         {
             if (resendEmails.Count > 0)
             {

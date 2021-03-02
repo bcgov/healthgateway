@@ -1,12 +1,11 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faStream } from "@fortawesome/free-solid-svg-icons";
+import { faQuestion, faStream } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import FeedbackComponent from "@/components/feedback.vue";
-import ScreenWidth from "@/constants/screenWidth";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -15,7 +14,7 @@ import type { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
-library.add(faStream);
+library.add(faStream, faQuestion);
 
 const auth = "auth";
 const user = "user";
@@ -44,6 +43,8 @@ export default class SidebarComponent extends Vue {
     @Action("setSidebarState", { namespace: navbar }) setSidebarState!: (
         isOpen: boolean
     ) => void;
+
+    @Getter("isMobile") isMobileWidth!: boolean;
 
     @Getter("isSidebarOpen", { namespace: navbar }) isOpen!: boolean;
 
@@ -80,7 +81,6 @@ export default class SidebarComponent extends Vue {
     private eventBus = EventBus;
 
     private logger!: ILogger;
-    private windowWidth = 0;
 
     private isNoteTutorialEnabled = false;
     private isExportTutorialEnabled = false;
@@ -124,17 +124,11 @@ export default class SidebarComponent extends Vue {
     }
 
     private created() {
-        this.windowWidth = window.innerWidth;
         this.$nextTick(() => {
-            window.addEventListener("resize", this.onResize);
             if (!this.isMobileWidth) {
                 this.setSidebarState(true);
             }
         });
-    }
-
-    private beforeDestroy() {
-        window.removeEventListener("resize", this.onResize);
     }
 
     private toggleOpen() {
@@ -169,10 +163,6 @@ export default class SidebarComponent extends Vue {
                 userPreference: userPreference,
             });
         }
-    }
-
-    private onResize() {
-        this.windowWidth = window.innerWidth;
     }
 
     private isPreferenceActive(tutorialPopover: UserPreference): boolean {
@@ -214,10 +204,6 @@ export default class SidebarComponent extends Vue {
         return this.isOpen && this.isMobileWidth;
     }
 
-    private get isMobileWidth(): boolean {
-        return this.windowWidth < ScreenWidth.Mobile;
-    }
-
     private get isTimeline(): boolean {
         return this.$route.path == "/timeline";
     }
@@ -248,6 +234,10 @@ export default class SidebarComponent extends Vue {
 
     private get isDependents(): boolean {
         return this.$route.path == "/dependents";
+    }
+
+    private get isFAQ(): boolean {
+        return this.$route.path == "/faq";
     }
 }
 </script>
@@ -502,6 +492,39 @@ export default class SidebarComponent extends Vue {
                                 class="button-title"
                             >
                                 <span>Health Insights</span>
+                            </b-col>
+                        </b-row>
+                    </router-link>
+
+                    <!-- FAQ button -->
+                    <router-link
+                        id="menuBtnFAQ"
+                        data-testid="menuBtnFAQ"
+                        to="/faq"
+                        class="my-4"
+                    >
+                        <b-row
+                            class="align-items-center name-wrapper my-4 button-container"
+                            :class="{ selected: isFAQ }"
+                        >
+                            <b-col
+                                v-show="isOpen"
+                                cols="1"
+                                class="button-spacer"
+                            ></b-col>
+                            <b-col title="FAQ" :class="{ 'col-3': isOpen }">
+                                <font-awesome-icon
+                                    icon="question"
+                                    class="button-icon"
+                                    size="3x"
+                                />
+                            </b-col>
+                            <b-col
+                                v-show="isOpen"
+                                cols="7"
+                                class="button-title"
+                            >
+                                <span>FAQ</span>
                             </b-col>
                         </b-row>
                     </router-link>

@@ -244,7 +244,7 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.ResendEmail(System.Collections.Generic.List{System.Guid})">
+        <member name="M:HealthGateway.Admin.Controllers.EmailAdminController.ResendEmail(System.Collections.ObjectModel.Collection{System.Guid})">
             <summary>
             Creates a clone of the emails and requeues it for sending.
             </summary>
@@ -643,7 +643,7 @@
             <param name="model">A user feedback request models.</param>
             <returns>A new UserFeedbackView.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateListFromDbModel(System.Collections.Generic.List{HealthGateway.Database.Models.UserFeedbackAdmin})">
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateListFromDbModel(System.Collections.Generic.IList{HealthGateway.Database.Models.UserFeedbackAdmin})">
             <summary>
             Constructs a List of UserFeedbackView from a list of UserFeedback models.
             </summary>

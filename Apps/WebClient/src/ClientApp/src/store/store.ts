@@ -22,6 +22,22 @@ Vue.use(Vuex);
 const storeOptions: StoreOptions<RootState> = {
     state: {
         version: "1.0.0",
+        isMobile: false,
+    },
+    actions: {
+        setIsMobile(context, isMobile: boolean) {
+            context.commit("setIsMobile", isMobile);
+        },
+    },
+    getters: {
+        isMobile: (state) => {
+            return state.isMobile;
+        },
+    },
+    mutations: {
+        setIsMobile(state, isMobile: boolean) {
+            state.isMobile = isMobile;
+        },
     },
     modules: {
         auth,
