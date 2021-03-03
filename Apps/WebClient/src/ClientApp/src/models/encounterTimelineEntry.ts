@@ -9,18 +9,26 @@ export default class EncounterTimelineEntry extends TimelineEntry {
     public practitionerName: string;
     public specialtyDescription: string;
     public clinic: ClinicViewModel;
+    private getComments: (entyId: string) => UserComment[] | null;
 
-    public constructor(model: Encounter, comments: UserComment[]) {
+    public constructor(
+        model: Encounter,
+        getComments: (entyId: string) => UserComment[] | null
+    ) {
         super(
             model.id,
             EntryType.Encounter,
-            new DateWrapper(model.encounterDate),
-            comments
+            new DateWrapper(model.encounterDate)
         );
         this.practitionerName =
             model.practitionerName || "Unknown Practitioner";
         this.specialtyDescription = model.specialtyDescription || "";
         this.clinic = new ClinicViewModel(model.clinic);
+        this.getComments = getComments;
+    }
+
+    public get comments(): UserComment[] | null {
+        return this.getComments(this.id);
     }
 
     public containsText(keyword: string): boolean {

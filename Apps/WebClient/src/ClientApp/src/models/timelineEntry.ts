@@ -71,19 +71,14 @@ export default abstract class TimelineEntry {
     public readonly id: string;
     public readonly type: EntryType;
     public readonly date: DateWrapper;
-    public readonly comments: UserComment[];
 
-    public constructor(
-        id: string,
-        type: EntryType,
-        date: DateWrapper,
-        comments: UserComment[]
-    ) {
+    public constructor(id: string, type: EntryType, date: DateWrapper) {
         this.id = id;
         this.type = type;
         this.date = date;
-        this.comments = comments;
     }
+
+    public abstract get comments(): UserComment[] | null;
 
     public filterApplies(keyword: string, filter: TimelineFilter): boolean {
         return (
@@ -103,9 +98,13 @@ export default abstract class TimelineEntry {
         );
     }
     private commentApplies(keyword: string): boolean {
-        return this.comments.some((comment) =>
-            comment.text.toUpperCase().includes(keyword.toUpperCase())
-        );
+        if (this.comments !== null) {
+            return this.comments.some((comment) =>
+                comment.text.toUpperCase().includes(keyword.toUpperCase())
+            );
+        } else {
+            return false;
+        }
     }
 
     private entryTypeApplies(entryTypes: Set<EntryType>): boolean {

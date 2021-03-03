@@ -20,14 +20,18 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 
     public resultList: LaboratoryResultViewModel[];
 
-    public constructor(model: LaboratoryOrder, comments: UserComment[]) {
+    private getComments: (entyId: string) => UserComment[] | null;
+
+    public constructor(
+        model: LaboratoryOrder,
+        getComments: (entyId: string) => UserComment[] | null
+    ) {
         super(
             model.id,
             EntryType.Laboratory,
             new DateWrapper(model.labResults[0].collectedDateTime, {
                 hasTime: true,
-            }),
-            comments
+            })
         );
 
         this.orderingProviderIds = model.orderingProviderIds;
@@ -51,6 +55,12 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.summaryStatus = firstResult.testStatus || "";
         this.isStatusFinal = this.summaryStatus == "Final";
         this.labResultOutcome = firstResult.labResultOutcome;
+
+        this.getComments = getComments;
+    }
+
+    public get comments(): UserComment[] | null {
+        return this.getComments(this.id);
     }
 
     public containsText(keyword: string): boolean {

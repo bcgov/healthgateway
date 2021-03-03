@@ -22,8 +22,9 @@ export const mutations: MutationTree<CommentState> = {
         if (state.profileComments[userComment.parentEntryId] !== undefined) {
             state.profileComments[userComment.parentEntryId].push(userComment);
         } else {
-            Vue.set(state.profileComments, userComment.parentEntryId, []);
-            state.profileComments[userComment.parentEntryId].push(userComment);
+            Vue.set(state.profileComments, userComment.parentEntryId, [
+                userComment,
+            ]);
         }
 
         state.profileComments[

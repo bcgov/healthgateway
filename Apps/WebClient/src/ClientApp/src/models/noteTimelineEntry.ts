@@ -1,5 +1,6 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
 
 // The note timeline entry model
@@ -15,8 +16,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
         super(
             model.id ?? "TEMP_ID",
             EntryType.Note,
-            new DateWrapper(model.journalDateTime ?? ""),
-            []
+            new DateWrapper(model.journalDateTime ?? "")
         );
         this.text = model.text || "";
         this.title = model.title || "No Title";
@@ -30,6 +30,10 @@ export default class NoteTimelineEntry extends TimelineEntry {
 
         this.hdid = model.hdId || "";
         this.version = model.version;
+    }
+
+    public get comments(): UserComment[] | null {
+        return null;
     }
 
     public containsText(keyword: string): boolean {

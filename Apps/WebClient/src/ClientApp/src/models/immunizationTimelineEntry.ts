@@ -6,6 +6,7 @@ import {
     ImmunizationEvent,
 } from "@/models/immunizationModel";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
@@ -15,10 +16,13 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         super(
             model.id,
             EntryType.Immunization,
-            new DateWrapper(model.dateOfImmunization),
-            []
+            new DateWrapper(model.dateOfImmunization)
         );
         this.immunization = new ImmunizationViewModel(model);
+    }
+
+    public get comments(): UserComment[] | null {
+        return null;
     }
 
     public containsText(keyword: string): boolean {

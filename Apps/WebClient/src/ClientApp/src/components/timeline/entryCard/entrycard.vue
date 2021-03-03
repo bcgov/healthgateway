@@ -52,6 +52,10 @@ export default class EntrycardTimelineComponent extends Vue {
         }
     }
 
+    private get commentCount(): number {
+        return this.entry.comments !== null ? this.entry.comments.length : 0;
+    }
+
     @Watch("isMobileWidth")
     private onMobileWidthChanged() {
         if (this.isMobileWidth && !this.isMobileDetails) {
@@ -123,12 +127,12 @@ export default class EntrycardTimelineComponent extends Vue {
                         </b-col>
                         <b-col cols="4" class="text-right align-self-center">
                             <span
-                                v-if="entry.comments.length > 1"
+                                v-if="commentCount > 1"
                                 class="pr-2"
                                 data-testid="commentCount"
-                                >{{ entry.comments.length }}</span
+                                >{{ commentCount }}</span
                             >
-                            <span v-if="entry.comments.length > 0">
+                            <span v-if="commentCount > 0">
                                 <font-awesome-icon
                                     :icon="['far', 'comment']"
                                     data-testid="commentIcon"
