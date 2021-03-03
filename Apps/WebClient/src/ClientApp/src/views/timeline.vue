@@ -1,7 +1,7 @@
 <script lang="ts">
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/errorCard.vue";
@@ -14,7 +14,6 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
-import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
@@ -49,9 +48,6 @@ import { ILogger } from "@/services/interfaces";
     },
 })
 export default class TimelineView extends Vue {
-    @Ref("immunizationCard")
-    readonly immunizationCard!: ImmunizationCardComponent;
-
     @Action("setKeyword", { namespace: "timeline" })
     setKeyword!: (keyword: string) => void;
 
@@ -222,8 +218,6 @@ export default class TimelineView extends Vue {
 
     private isPacificTime = false;
 
-    private eventBus = EventBus;
-
     private logger!: ILogger;
 
     private get unverifiedEmail(): boolean {
@@ -254,17 +248,12 @@ export default class TimelineView extends Vue {
     }
 
     private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchTimelineData();
     }
 
     private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.filterText = this.keyword;
-
-        this.eventBus.$on(
-            EventMessageName.TimelineCovidCard,
-            this.immunizationCard.showModal
-        );
 
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
@@ -459,7 +448,7 @@ export default class TimelineView extends Vue {
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
         <EntryDetailsComponent :is-loading="isLoading" />
-        <ImmunizationCard ref="immunizationCard" />
+        <ImmunizationCard />
     </div>
 </template>
 

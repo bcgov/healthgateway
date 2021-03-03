@@ -36,10 +36,6 @@ export default class ProtectiveWordComponent extends Vue {
 
     private logger!: ILogger;
 
-    private created() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
     private get isVisible(): boolean {
         return this.isProtected && !this.isLoading && !this.isDismissed;
     }
@@ -50,6 +46,10 @@ export default class ProtectiveWordComponent extends Vue {
 
     private get error(): boolean {
         return this.protectedWordAttempts > 1;
+    }
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
     private handleOk(bvModalEvt: Event) {

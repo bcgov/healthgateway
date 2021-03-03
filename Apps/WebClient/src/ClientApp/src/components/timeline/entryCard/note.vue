@@ -109,14 +109,14 @@ export default class NoteTimelineComponent extends Vue {
                 <b-dropdown-item
                     data-testid="editNoteMenuBtn"
                     class="menuItem"
-                    @click="handleEdit()"
+                    @click.stop="handleEdit()"
                 >
                     Edit
                 </b-dropdown-item>
                 <b-dropdown-item
                     data-testid="deleteNoteMenuBtn"
                     class="menuItem"
-                    @click="handleDelete()"
+                    @click.stop="handleDelete()"
                 >
                     Delete
                 </b-dropdown-item>

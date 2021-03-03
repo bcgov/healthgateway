@@ -54,26 +54,29 @@ export default class VerifySMSComponent extends Vue {
     private isValid = false;
     public error = false;
 
+    @Watch("smsResendDateTime")
+    private onSMSResendDateTimeChanged() {
+        this.setResendTimeout();
+    }
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.userProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+    }
+
+    private mounted() {
+        this.getVerification();
+        this.setResendTimeout();
+    }
+
     public showModal(): void {
         this.isVisible = true;
     }
 
     public hideModal(): void {
         this.isVisible = false;
-    }
-
-    @Watch("smsResendDateTime")
-    private onSMSResendDateTimeChanged() {
-        this.setResendTimeout();
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-        this.getVerification();
-        this.setResendTimeout();
     }
 
     private getVerification() {

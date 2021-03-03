@@ -13,17 +13,20 @@ export default class CommunicationComponent extends Vue {
     private isLoaded = false;
     private communication!: Communication;
 
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchCommunication();
-    }
-
     private get hasCommunication(): boolean {
         return this.isLoaded && this.communication != null;
     }
 
     private get text(): string {
         return this.communication ? this.communication.text : "";
+    }
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
+    private mounted() {
+        this.fetchCommunication();
     }
 
     private fetchCommunication() {

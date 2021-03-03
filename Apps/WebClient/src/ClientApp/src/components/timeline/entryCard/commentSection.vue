@@ -49,9 +49,11 @@ export default class CommentSectionComponent extends Vue {
         version: 0,
     };
 
-    private mounted() {
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
 
+    private mounted() {
         // Some comments dont have entry type. This code updates them if they dont.
         let commentsToUpdate: UserComment[] = [];
         if (this.parentEntry.comments !== null) {

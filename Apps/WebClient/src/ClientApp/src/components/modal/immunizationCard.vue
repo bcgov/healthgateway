@@ -4,6 +4,7 @@ import { Component, Ref, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import { OidcUserProfile } from "@/models/user";
@@ -33,6 +34,8 @@ export default class ImmunizationCardComponent extends Vue {
 
     @Getter("immunizations", { namespace: "immunization" })
     immunizations!: ImmunizationEvent[];
+
+    private eventBus = EventBus;
 
     private readonly modalId: string = "covid-card-modal";
     private isVisible = false;
@@ -111,10 +114,14 @@ export default class ImmunizationCardComponent extends Vue {
         }
     }
 
-    private mounted() {
+    private created() {
+        this.eventBus.$on(EventMessageName.TimelineCovidCard, this.showModal);
         this.authenticationService = container.get<IAuthenticationService>(
             SERVICE_IDENTIFIER.AuthenticationService
         );
+    }
+
+    private mounted() {
         if (this.oidcIsAuthenticated) {
             this.loadOidcUser();
         }

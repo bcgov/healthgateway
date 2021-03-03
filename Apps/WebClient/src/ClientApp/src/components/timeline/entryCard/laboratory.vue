@@ -39,19 +39,19 @@ export default class LaboratoryTimelineComponent extends Vue {
     private isLoadingDocument = false;
     private logger!: ILogger;
 
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.laboratoryService = container.get<ILaboratoryService>(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
-    }
-
     private get entryIcon(): IconDefinition {
         return faFlask;
     }
 
     private get reportAvailable(): boolean {
         return this.entry.reportAvailable;
+    }
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
     }
 
     private formatDate(date: DateWrapper): string {
