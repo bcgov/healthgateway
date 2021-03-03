@@ -11,7 +11,7 @@ import ImmunizationCardComponent from "@/components/modal/immunizationCard.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
-import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetailsCard.vue";
+import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
@@ -28,6 +28,7 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import TimelineEntry from "@/models/timelineEntry";
 import TimelineFilter from "@/models/timelineFilter";
 import User from "@/models/user";
+import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -111,6 +112,9 @@ export default class TimelineView extends Vue {
     @Getter("notes", { namespace: "note" })
     userNotes!: UserNote[];
 
+    @Getter("getEntryComments", { namespace: "comment" })
+    getEntryComments!: (entyId: string) => UserComment[] | null;
+
     @Getter("filter", { namespace: "timeline" })
     filter!: TimelineFilter;
 
@@ -150,20 +154,28 @@ export default class TimelineView extends Vue {
             return [];
         }
 
+        this.logger.debug("Updating timeline Entries");
+
         let timelineEntries = [];
         // Add the medication entries to the timeline list
         for (let medication of this.medicationStatements) {
-            timelineEntries.push(new MedicationTimelineEntry(medication));
+            timelineEntries.push(
+                new MedicationTimelineEntry(medication, this.getEntryComments)
+            );
         }
 
         // Add the Laboratory entries to the timeline list
         for (let order of this.laboratoryOrders) {
-            timelineEntries.push(new LaboratoryTimelineEntry(order));
+            timelineEntries.push(
+                new LaboratoryTimelineEntry(order, this.getEntryComments)
+            );
         }
 
         // Add the Encounter entries to the timeline list
         for (let encounter of this.patientEncounters) {
-            timelineEntries.push(new EncounterTimelineEntry(encounter));
+            timelineEntries.push(
+                new EncounterTimelineEntry(encounter, this.getEntryComments)
+            );
         }
 
         // Add the Note entries to the timeline list
@@ -178,6 +190,11 @@ export default class TimelineView extends Vue {
                     new ImmunizationTimelineEntry(immunization)
                 );
             }
+        } else if (
+            !this.immunizationIsDeferred &&
+            this.patientImmunizations.length == 0
+        ) {
+            this.immunizationNeedsInput = false;
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
@@ -403,10 +420,7 @@ export default class TimelineView extends Vue {
                             </div>
                         </b-col>
                         <b-col v-if="!isLoading" class="col-auto pl-2">
-                            <Filters
-                                :is-list-view="isLinearView"
-                                :filter.sync="filter"
-                            />
+                            <Filters />
                         </b-col>
                     </b-row>
                 </div>

@@ -112,6 +112,8 @@ export default class CovidModalComponent extends Vue {
         // Prevent modal from closing
         modalEvt.preventDefault();
 
+        this.updateCovidPreference();
+
         // Trigger cancel handler
         this.cancel();
 

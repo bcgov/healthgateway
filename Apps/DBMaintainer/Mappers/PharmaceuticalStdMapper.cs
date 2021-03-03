@@ -33,7 +33,7 @@ namespace HealthGateway.DrugMaintainer
         public PharmaceuticalStdMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            this.Map(m => m.DrugProduct).ConvertUsing(row => drugProducts.Where(d => d.DrugCode == row.GetField(0)).First());
+            this.Map(m => m.DrugProduct).Convert(converter => drugProducts.Where(d => d.DrugCode == converter.Row.GetField(0)).First());
 
             // PHARMACEUTICAL_STD
             this.Map(m => m.PharmaceuticalStdDesc).Index(1);

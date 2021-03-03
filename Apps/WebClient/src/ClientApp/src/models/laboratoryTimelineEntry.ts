@@ -1,6 +1,7 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder, LaboratoryResult } from "@/models/laboratory";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 
 // The laboratory timeline entry model
 export default class LaboratoryTimelineEntry extends TimelineEntry {
@@ -19,7 +20,12 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
 
     public resultList: LaboratoryResultViewModel[];
 
-    public constructor(model: LaboratoryOrder) {
+    private getComments: (entyId: string) => UserComment[] | null;
+
+    public constructor(
+        model: LaboratoryOrder,
+        getComments: (entyId: string) => UserComment[] | null
+    ) {
         super(
             model.id,
             EntryType.Laboratory,
@@ -49,9 +55,15 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.summaryStatus = firstResult.testStatus || "";
         this.isStatusFinal = this.summaryStatus == "Final";
         this.labResultOutcome = firstResult.labResultOutcome;
+
+        this.getComments = getComments;
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public get comments(): UserComment[] | null {
+        return this.getComments(this.id);
+    }
+
+    public containsText(keyword: string): boolean {
         let text = this.summaryTitle + this.summaryDescription;
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());

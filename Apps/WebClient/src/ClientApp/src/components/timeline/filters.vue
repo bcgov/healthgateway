@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop, Watch } from "vue-property-decorator";
+import { Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
@@ -43,6 +43,8 @@ export default class FilterComponent extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Getter("isMobile") isMobileView!: boolean;
+
     @Getter("isSidebarOpen", { namespace: "navbar" }) isSidebarOpen!: boolean;
 
     @Getter("medicationCount", { namespace: "medication" })
@@ -63,11 +65,8 @@ export default class FilterComponent extends Vue {
 
     @Getter("filter", { namespace: "timeline" }) activeFilter!: TimelineFilter;
 
-    @Prop() private filter!: TimelineFilter;
-
     private logger!: ILogger;
     private isModalVisible = false;
-    private windowWidth = 0;
     private isMenuVisible = false;
 
     private isListViewToggle = true;
@@ -75,46 +74,8 @@ export default class FilterComponent extends Vue {
     private endDate: StringISODate = "";
     private selectedEntryTypes: EntryType[] = [];
 
-    private entryTypes: EntryTypeFilter[] = [];
-
-    private get isMobileView(): boolean {
-        return this.windowWidth < 576;
-    }
-
-    private get enabledEntryTypes(): EntryTypeFilter[] {
-        return this.entryTypes.filter(
-            (filter: EntryTypeFilter) => filter.isEnabled
-        );
-    }
-
-    private get activeFilterCount(): number {
-        return this.filter.getActiveFilterCount();
-    }
-
-    private get hasFilterSelected(): boolean {
-        return this.filter.hasActiveFilter();
-    }
-
-    @Watch("isMobileView")
-    private onIsMobileView() {
-        this.isModalVisible = false;
-    }
-
-    @Watch("isSidebarOpen")
-    private onIsSidebarOpen() {
-        this.isModalVisible = false;
-    }
-
-    private created() {
-        window.addEventListener("resize", this.handleResize);
-        this.handleResize();
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.syncWithFilter();
-
-        this.entryTypes = [
+    private get entryTypes(): EntryTypeFilter[] {
+        return [
             {
                 type: EntryType.Immunization,
                 display: "Immunizations",
@@ -148,21 +109,42 @@ export default class FilterComponent extends Vue {
         ];
     }
 
-    private destroyed() {
-        window.removeEventListener("handleResize", this.handleResize);
+    private get enabledEntryTypes(): EntryTypeFilter[] {
+        return this.entryTypes.filter(
+            (filter: EntryTypeFilter) => filter.isEnabled
+        );
+    }
+
+    private get activeFilterCount(): number {
+        return this.activeFilter.getActiveFilterCount();
+    }
+
+    private get hasFilterSelected(): boolean {
+        return this.activeFilter.hasActiveFilter();
+    }
+
+    @Watch("isMobileView")
+    private onIsMobileView() {
+        this.isModalVisible = false;
+    }
+
+    @Watch("isSidebarOpen")
+    private onIsSidebarOpen() {
+        this.isModalVisible = false;
+    }
+
+    private mounted() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.syncWithFilter();
     }
 
     @Watch("filter", { deep: true })
     @Watch("isLinearView")
     private syncWithFilter() {
-        this.startDate = this.filter.startDate;
-        this.endDate = this.filter.endDate;
-        this.selectedEntryTypes = Array.from(this.filter.entryTypes);
+        this.startDate = this.activeFilter.startDate;
+        this.endDate = this.activeFilter.endDate;
+        this.selectedEntryTypes = Array.from(this.activeFilter.entryTypes);
         this.isListViewToggle = this.isLinearView;
-    }
-
-    private handleResize() {
-        this.windowWidth = window.innerWidth;
     }
 
     private toggleMenu() {
@@ -222,7 +204,7 @@ export default class FilterComponent extends Vue {
 
 <template>
     <div class="filters-wrapper">
-        <div class="filters-width d-none d-sm-block">
+        <div class="filters-width d-none d-md-block">
             <b-button
                 id="filterBtn"
                 class="w-100"
@@ -384,7 +366,7 @@ export default class FilterComponent extends Vue {
         <!-- Mobile view specific modal-->
         <b-button
             data-testid="mobileFilterDropdown"
-            class="d-d-sm-inline d-sm-none"
+            class="d-sm-inline d-md-none"
             :class="{ 'filter-selected': hasFilterSelected }"
             variant="outline-primary"
             @click.stop="toggleMobileView"
@@ -450,7 +432,7 @@ export default class FilterComponent extends Vue {
                     <b-col>
                         <DatePickerComponent
                             id="start-date"
-                            v-model="filter.startDate"
+                            v-model="startDate"
                             data-testid="filterStartDateInput"
                         />
                     </b-col>
@@ -459,7 +441,7 @@ export default class FilterComponent extends Vue {
                     <b-col>
                         <DatePickerComponent
                             id="end-date"
-                            v-model="filter.endDate"
+                            v-model="endDate"
                             data-testid="filterEndDateInput"
                         />
                     </b-col>

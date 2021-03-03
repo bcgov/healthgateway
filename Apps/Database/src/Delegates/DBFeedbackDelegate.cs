@@ -91,10 +91,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<List<UserFeedbackAdmin>> GetAllUserFeedbackEntries()
+        public DBResult<IList<UserFeedbackAdmin>> GetAllUserFeedbackEntries()
         {
             this.logger.LogTrace($"Getting all user feedback entries");
-            List<UserFeedbackAdmin> feedback = this.dbContext.UserFeedback
+            IList<UserFeedbackAdmin> feedback = this.dbContext.UserFeedback
                 .Select(x => new UserFeedbackAdmin
                 {
                     Id = x.Id,
@@ -124,7 +124,7 @@ namespace HealthGateway.Database.Delegates
                 }
             }
 
-            DBResult<List<UserFeedbackAdmin>> result = new DBResult<List<UserFeedbackAdmin>>();
+            DBResult<IList<UserFeedbackAdmin>> result = new DBResult<IList<UserFeedbackAdmin>>();
             result.Payload = feedback;
             result.Status = feedback != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             this.logger.LogDebug($"Finished getting user feedback from DB... {JsonSerializer.Serialize(result)}");

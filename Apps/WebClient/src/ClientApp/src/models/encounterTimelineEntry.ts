@@ -2,14 +2,19 @@ import Clinic from "@/models/clinic";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 
 // The encounter timeline entry model
 export default class EncounterTimelineEntry extends TimelineEntry {
     public practitionerName: string;
     public specialtyDescription: string;
     public clinic: ClinicViewModel;
+    private getComments: (entyId: string) => UserComment[] | null;
 
-    public constructor(model: Encounter) {
+    public constructor(
+        model: Encounter,
+        getComments: (entyId: string) => UserComment[] | null
+    ) {
         super(
             model.id,
             EntryType.Encounter,
@@ -19,9 +24,14 @@ export default class EncounterTimelineEntry extends TimelineEntry {
             model.practitionerName || "Unknown Practitioner";
         this.specialtyDescription = model.specialtyDescription || "";
         this.clinic = new ClinicViewModel(model.clinic);
+        this.getComments = getComments;
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public get comments(): UserComment[] | null {
+        return this.getComments(this.id);
+    }
+
+    public containsText(keyword: string): boolean {
         let text =
             this.practitionerName +
             this.specialtyDescription +

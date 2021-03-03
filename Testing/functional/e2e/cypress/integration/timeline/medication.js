@@ -25,7 +25,7 @@ describe('Medication', () => {
             .should('be.visible');
         cy.get('[data-testid=medicationPractitioner]')
             .should('not.be.visible');
-        cy.get('[data-testid=entryCardDetailsButton]')
+        cy.get('[data-testid=entryCardDetailsTitle]')
             .first()
             .click();
         cy.get('[data-testid=medicationPractitioner]')

@@ -35,11 +35,11 @@ parameters:
     type: boolean
     default: false
 
-  - name: EnableOCP3
+  - name: EnableGoldCluster
     type: boolean
     default: false
 
-  - name: EnableOCP4
+  - name: EnableSilverCluster
     type: boolean
     default: true
 
@@ -50,8 +50,8 @@ variables:
   NPMTests: ${{ parameters.NPMTests }}
   UnitTests: ${{ parameters.DotNetTests }}
   Library: ${{ parameters.Library }}
-  EnableOCP3: ${{ parameters.EnableOCP3 }}
-  EnableOCP4: ${{ parameters.EnableOCP4 }}
+  EnableGold: ${{ parameters.EnableGoldCluster }}
+  EnableSilver: ${{ parameters.EnableSilverCluster }}
   App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
   ${{ if parameters.OpenShiftName }}:
       OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
@@ -66,21 +66,21 @@ variables:
       BuildPrefix: "$(SourceBranchName)"    
     
 jobs:
-    - job: "OCP3"
+    - job: "GoldCluster"
       pool:
         name: "HealthGateway"
-      displayName: "Build ${{ parameters.Application }} in OCP3"
-      condition: eq(variables['EnableOCP3'], true)
+      displayName: "Build ${{ parameters.Application }} in Gold Cluster"
+      condition: eq(variables['EnableGold'], true)
       steps:
         - template: /Build/hg-steps-template.yaml
           parameters:
             toolsNamespace: "q6qfzk"
 
-    - job: "OCP4"
+    - job: "SilverCluster"
       pool:
         name: "HealthGateway"
-      displayName: "Build ${{ parameters.Application }} in OCP4"
-      condition: eq(variables['EnableOCP4'], true)
+      displayName: "Build ${{ parameters.Application }} in Silver Cluster"
+      condition: eq(variables['EnableSilver'], true)
       steps:
         - template: /Build/hg-steps-template.yaml
           parameters:

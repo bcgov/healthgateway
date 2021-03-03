@@ -3,6 +3,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Pharmacy from "@/models/pharmacy";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 
 // The medication timeline entry model
 export default class MedicationTimelineEntry extends TimelineEntry {
@@ -12,7 +13,12 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     public practitionerSurname: string;
     public prescriptionIdentifier: string;
 
-    public constructor(model: MedicationStatementHistory) {
+    private getComments: (entyId: string) => UserComment[] | null;
+
+    public constructor(
+        model: MedicationStatementHistory,
+        getComments: (entyId: string) => UserComment[] | null
+    ) {
         super(
             model.prescriptionIdentifier,
             EntryType.Medication,
@@ -31,9 +37,13 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         this.practitionerSurname = model.practitionerSurname || "N/A";
         this.prescriptionIdentifier = model.prescriptionIdentifier || "N/A";
         this.directions = model.directions || "N/A";
+        this.getComments = getComments;
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public get comments(): UserComment[] | null {
+        return this.getComments(this.id);
+    }
+    public containsText(keyword: string): boolean {
         let text =
             (this.practitionerSurname || "") +
             (this.medication.brandName || "") +

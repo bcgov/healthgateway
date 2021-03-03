@@ -55,6 +55,7 @@ const ContactUsView = () =>
     import(/* webpackChunkName: "contactUs" */ "@/views/contactUs.vue");
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
+const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
 
 enum UserState {
     unauthenticated = "unauthenticated",
@@ -214,6 +215,11 @@ const routes = [
                 UserState.pendingDeletion,
             ],
         },
+    },
+    {
+        path: "/faq",
+        component: FAQView,
+        meta: { stateless: true },
     },
     {
         path: "/login",

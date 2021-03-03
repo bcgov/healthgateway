@@ -1,5 +1,4 @@
 <script lang="ts">
-import html2pdf from "html2pdf.js";
 import Vue from "vue";
 import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -12,8 +11,8 @@ import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import PDFDefinition from "@/plugins/pdfDefinition";
 import { ILogger } from "@/services/interfaces";
+import PDFUtil from "@/utility/pdfUtil";
 
 @Component({
     components: {
@@ -44,18 +43,14 @@ export default class MedicationHistoryReportComponent extends Vue {
     private logger!: ILogger;
     private notFoundText = "Not Found";
     private fileMaxRecords = 1000;
-
-    private recordsPage: MedicationStatementHistory[] = [];
+    private fileIndex = 0;
+    private totalFiles = 1;
     private isPreview = true;
 
     @Watch("isLoading")
     @Emit()
     private onIsLoadingChanged() {
         return this.isLoading;
-    }
-
-    private get totalFiles(): number {
-        return Math.ceil(this.visibleRecords.length / this.fileMaxRecords);
     }
 
     private get isEmpty() {
@@ -92,10 +87,15 @@ export default class MedicationHistoryReportComponent extends Vue {
             return value;
         });
 
-        // Required for the sample page
-        this.recordsPage = records;
-
-        return records;
+        if (this.isPreview) {
+            return records;
+        } else {
+            // Breaks records into chunks for multiple files.
+            return records.slice(
+                this.fileIndex * this.fileMaxRecords,
+                (this.fileIndex + 1) * this.fileMaxRecords
+            );
+        }
     }
 
     private created() {
@@ -109,59 +109,30 @@ export default class MedicationHistoryReportComponent extends Vue {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 
-    public async generatePdf(fileIndex = 0): Promise<void> {
+    public async generatePdf(): Promise<void> {
         this.logger.debug("generating Medication History PDF...");
-        this.isPreview = false;
-        // Breaks records into chunks for multiple files.
-        this.recordsPage = this.visibleRecords.slice(
-            fileIndex * this.fileMaxRecords,
-            (fileIndex + 1) * this.fileMaxRecords
+        this.totalFiles = Math.ceil(
+            this.visibleRecords.length / this.fileMaxRecords
         );
+        this.isPreview = false;
 
-        let opt = {
-            margin: [25, 15],
-            filename: `HealthGateway_MedicationHistory_File${
-                fileIndex + 1
-            }.pdf`,
-            image: { type: "jpeg", quality: 1 },
-            html2canvas: { dpi: 192, scale: 1.1, letterRendering: true },
-            jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
-            pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-        };
-        return html2pdf()
-            .set(opt)
-            .from(this.report)
-            .toPdf()
-            .get("pdf")
-            .then((pdf: PDFDefinition) => {
-                // Add footer with page numbers
-                var totalPages = pdf.internal.getNumberOfPages();
-                for (let i = 1; i <= totalPages; i++) {
-                    pdf.setPage(i);
-                    pdf.setFontSize(10);
-                    pdf.setTextColor(150);
-                    pdf.text(
-                        `Page ${i} of ${totalPages} - File ${
-                            fileIndex + 1
-                        } of ${this.totalFiles}`,
-                        pdf.internal.pageSize.getWidth() / 2 - 55,
-                        pdf.internal.pageSize.getHeight() - 10
-                    );
-                }
-            })
-            .save()
-            .output("bloburl")
-            .then((pdfBlobUrl: RequestInfo) => {
-                fetch(pdfBlobUrl).then((res) => {
-                    res.blob().then(() => {
-                        if (fileIndex + 1 < this.totalFiles) {
-                            this.generatePdf(fileIndex + 1);
-                        } else {
-                            this.isPreview = true;
-                        }
-                    });
-                });
-            });
+        this.generatePdfFile().then(() => {
+            if (this.fileIndex + 1 < this.totalFiles) {
+                this.fileIndex++;
+                this.generatePdfFile();
+            } else {
+                this.isPreview = true;
+                this.fileIndex = 0;
+            }
+        });
+    }
+
+    private generatePdfFile(): Promise<void> {
+        return PDFUtil.generatePdf(
+            `HealthGateway_MedicationHistory_File${this.fileIndex + 1}.pdf`,
+            this.report,
+            `File ${this.fileIndex + 1} of ${this.totalFiles}`
+        );
     }
 }
 </script>
@@ -192,7 +163,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                     <b-col class="col-1">Manufacturer</b-col>
                 </b-row>
                 <b-row
-                    v-for="item in recordsPage"
+                    v-for="item in visibleRecords"
                     :key="item.prescriptionIdentifier + item.dispensedDate"
                     class="item py-1"
                 >

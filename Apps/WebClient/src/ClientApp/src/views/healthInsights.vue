@@ -12,6 +12,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
+import { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -39,6 +40,9 @@ export default class HealthInsightsView extends Vue {
 
     @Getter("user", { namespace: "user" }) user!: User;
 
+    @Getter("getEntryComments", { namespace: "comment" })
+    getEntryComments!: (entyId: string) => UserComment[] | null;
+
     private logger!: ILogger;
 
     private startDate: DateWrapper | null = null;
@@ -56,7 +60,12 @@ export default class HealthInsightsView extends Vue {
         if (this.medicationStatements.length > 0) {
             // Add the medication entries to the timeline list
             for (let medication of this.medicationStatements) {
-                timelineEntries.push(new MedicationTimelineEntry(medication));
+                timelineEntries.push(
+                    new MedicationTimelineEntry(
+                        medication,
+                        this.getEntryComments
+                    )
+                );
             }
 
             timelineEntries = this.sortEntries(timelineEntries);

@@ -1,14 +1,16 @@
 ﻿<script lang="ts">
 import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
+import { Component, Ref, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
+import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IAuthenticationService } from "@/services/interfaces";
+import PDFUtil from "@/utility/pdfUtil";
 
 interface Dose {
     product: string;
@@ -18,7 +20,11 @@ interface Dose {
     provider: string;
 }
 
-@Component
+@Component({
+    components: {
+        MessageModalComponent,
+    },
+})
 export default class ImmunizationCardComponent extends Vue {
     @Getter("oidcIsAuthenticated", {
         namespace: "auth",
@@ -41,6 +47,12 @@ export default class ImmunizationCardComponent extends Vue {
             ? this.oidcUser.given_name + " " + this.oidcUser.family_name
             : "";
     }
+
+    @Ref("messageModal")
+    readonly messageModal!: MessageModalComponent;
+
+    @Ref("cardModal")
+    readonly cardModal!: Vue;
 
     @Watch("immunizations", { deep: true })
     private onImmunizationsChange() {
@@ -123,12 +135,24 @@ export default class ImmunizationCardComponent extends Vue {
             }
         });
     }
+
+    private showConfirmationModal() {
+        this.messageModal.showModal();
+    }
+
+    private downloadPdf() {
+        PDFUtil.generatePdf(
+            "HealthGateway_ImmunizationHistory.pdf",
+            this.cardModal.$refs.content as HTMLElement
+        );
+    }
 }
 </script>
 
 <template>
     <b-modal
         id="covidImmunizationCard"
+        ref="cardModal"
         v-model="isVisible"
         data-testid="covidImmunizationCard"
         header-text-variant="light"
@@ -143,7 +167,7 @@ export default class ImmunizationCardComponent extends Vue {
                 <b-col>
                     <img
                         class="img-fluid"
-                        src="@/assets/images/gov/bcid-logo-rev-en.svg"
+                        src="@/assets/images/gov/bcid-logo-rev-en.png"
                         width="181"
                         height="44"
                         alt="Go to healthgateway home page"
@@ -151,6 +175,7 @@ export default class ImmunizationCardComponent extends Vue {
                 <b-col cols="auto" class="align-self-center">
                     <!-- Emulate built in modal header close button action -->
                     <b-button
+                        data-html2canvas-ignore="true"
                         type="button"
                         class="close text-light"
                         aria-label="Close"
@@ -162,12 +187,16 @@ export default class ImmunizationCardComponent extends Vue {
         </template>
         <b-row>
             <b-col>
-                <b-row class="pb-3 title">
-                    <b-col cols="2" class="px-1 label">Name</b-col>
+                <b-row class="pb-3 title d-flex">
+                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                        >Name</b-col
+                    >
                     <b-col class="value">{{ userName }}</b-col>
                 </b-row>
-                <b-row class="pb-4 title" align-h="between">
-                    <b-col cols="4" class="px-1 label">Immunization</b-col>
+                <b-row class="pb-4 title">
+                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                        >Immunization</b-col
+                    >
                     <b-col class="value">COVID-19</b-col>
                 </b-row>
                 <b-row
@@ -233,6 +262,24 @@ export default class ImmunizationCardComponent extends Vue {
                 </b-row>
             </b-col>
         </b-row>
+        <b-row data-html2canvas-ignore="true" class="mt-2">
+            <b-col class="d-flex justify-content-center">
+                <b-button
+                    variant="outline-primary"
+                    data-testid="exportCardBtn"
+                    class="mb-1"
+                    @click="showConfirmationModal"
+                >
+                    Download PDF
+                </b-button>
+            </b-col>
+        </b-row>
+        <MessageModalComponent
+            ref="messageModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="downloadPdf"
+        />
     </b-modal>
 </template>
 
@@ -255,18 +302,16 @@ div[class*=" row"] {
 
 .title {
     color: $primary;
-    .label {
-        font-size: 1.3em;
-    }
 
+    .label {
+        min-width: 75px;
+        max-width: 75px;
+        font-size: 0.9em;
+    }
     .value {
+        margin-left: 10px;
         border-bottom: 1px solid $muted-color;
-        font-size: 1.3em;
         font-weight: bold;
-        margin-left: 1em;
-        @media (max-width: 360px) {
-            margin-left: 3em;
-        }
     }
 }
 
@@ -292,7 +337,8 @@ div[class*=" row"] {
         padding-left: 15px;
 
         .field {
-            padding: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
             .value {
                 min-height: 1em;
                 color: $primary;

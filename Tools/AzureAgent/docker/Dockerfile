@@ -49,8 +49,7 @@ ENV NODE_HOME=/opt/node-${NODE_VERSION}-linux-x64
 ENV PATH=$PATH:/opt/az/agent/bin:/opt/node-${NODE_VERSION}-linux-x64/bin:/opt/bin:$HOME/.local/bin/:$HOME/.dotnet/tools
 
 # Update the version of `npm` that came with the packages above
-# and install a few additional tools.
-RUN npm i -g npm@latest yarn@latest nsp@latest nodemon@latest && \
+RUN npm i -g npm@latest && \
     rm -rf ~/.npm && \
     node -v && \
     npm -v

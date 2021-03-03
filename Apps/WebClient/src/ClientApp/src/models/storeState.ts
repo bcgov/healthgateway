@@ -25,8 +25,26 @@ export enum LoadStatus {
     ERROR,
 }
 
+export enum OperationType {
+    ADD,
+    UPDATE,
+    DELETE,
+}
+
+export class Operation {
+    public readonly id: string;
+    public readonly operationType: OperationType;
+    public readonly date: DateWrapper;
+    constructor(id: string, operationType: OperationType) {
+        this.id = id;
+        this.operationType = operationType;
+        this.date = new DateWrapper();
+    }
+}
+
 export interface RootState {
     version: string;
+    isMobile: boolean;
 }
 
 export interface AuthState {
@@ -95,6 +113,7 @@ export interface NoteState {
     statusMessage: string;
     error?: ResultError;
     status: LoadStatus;
+    lastOperation: Operation | null;
 }
 
 export interface TimelineState {

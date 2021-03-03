@@ -6,6 +6,7 @@ import {
     ImmunizationEvent,
 } from "@/models/immunizationModel";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
+import { UserComment } from "@/models/userComment";
 
 // The immunization timeline entry model
 export default class ImmunizationTimelineEntry extends TimelineEntry {
@@ -20,7 +21,11 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         this.immunization = new ImmunizationViewModel(model);
     }
 
-    public keywordApplies(keyword: string): boolean {
+    public get comments(): UserComment[] | null {
+        return null;
+    }
+
+    public containsText(keyword: string): boolean {
         let text =
             (this.immunization.name || "") + (this.immunization.location || "");
         text = text.toUpperCase();
