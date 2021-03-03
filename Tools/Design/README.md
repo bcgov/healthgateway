@@ -1,34 +1,71 @@
 # Design System
 
-## Elements
+The Design System helps developers and designers build better digital products and services
 
-Describe the desgin system elements
+## Header
+
+Headers help people understand what the product or service is about while providing a consistent look, feel, and functionality across government sites.
+BC vertical logo is used for tablet and mobile header.
+height of the heaeder is **fixed** and **65px** on all devices.
+
+<img src="images/header-desktop.png" alt="Header-Desktop" width="70%" />
+
+<img src="images/header-tablet.png" alt="Header-Tablet" width="50%" />
+
+<img src="images/header-mobile.png" alt="Header-Mobile" width="20%" />
 
 ### Typography
 
-Describe the typography used
+BC Sans is an open source font family, and is a modified version of Noto Sans, developed by Google. BC Sans includes modifications to support Indigenous languages in British Columbia.
 
-### Colors
+- BC Sans Regular - 400
+- BC Sans Italic - 400
+- BC Sans Bold - 700
+- BC Sans Bold Italic - 700
 
-Describe the colors
+### Colour Palette
 
-<img src="images/colours.png" alt="Colors" width="100%" />
+The B.C. Government colour palette ensures all public facing government services have consistent branding
+
+#### Brand Colours
+
+<img src="images/primary.png" alt="Colors" width="70" />
+<img src="images/secondary.png" alt="Colors" width="70" />
+<img src="images/heading-text.png" alt="Colors" width="70" />
+<img src="images/input-text.png" alt="Colors" width="70" />
+<img src="images/accent.png" alt="Colors" width="70" />
+<img src="images/success.png" alt="Colors" width="70" />
+<img src="images/error.png" alt="Colors" width="70" />
+<img src="images/links.png" alt="Colors" width="70" />
+<img src="images/background.png" alt="Colors" width="70" />
+<img src="images/navigation-bar.png" alt="Colors" width="70" />
+<img src="images/comment-icons.png" alt="Colors" width="70" />
+
+#### State Colours
+
+<img src="images/error.png" alt="Colors" width="70" />
+<img src="images/links.png" alt="Colors" width="70" />
+<img src="images/background.png" alt="Colors" width="70" />
+<img src="images/navigation-bar.png" alt="Colors" width="70" />
+<img src="images/comment-icons.png" alt="Colors" width="70" />
 
 Color Codes
 
 ```
-Primary #abc123
-Secondary #123FF
+Primary #003366
+Secondary #0092F1
+Success #2E8540
+Error #D72E3D
+Heading Text #313132
+Input Text #606060
+Accent #FCBA19
+Links #1A5A96
+Navigation Bar #38598A
+Secondary Text #0092F1
+Background #F2F2F2
 ```
 
 Or color live examples
-
-<div style="background-color:white">
-    <ul>
-        <li style="color: #036">Primary</li>
-        <li style="color: #d93e45">Danger</li>
-    </ul>
-</div>
 
 ### Buttons
 
