@@ -35,17 +35,19 @@ The B.C. Government colour palette ensures all public facing government services
     <img src="images/heading-text.png" alt="Heading Color" width="100" />
     <img src="images/input-text.png" alt="Input Text Color" width="100" />
     <img src="images/accent.png" alt="Accent Color" width="100" />
+</p>
+
+#### State Colours
+
+<p float="left">
     <img src="images/success.png" alt="Success Color" width="100" />
     <img src="images/error.png" alt="Error Color" width="100" />
     <img src="images/links.png" alt="Link Color" width="100" />
     <img src="images/background.png" alt="Background Color" width="100" />
     <img src="images/navigation-bar.png" alt="Navigation bar Color" width="100" />
     <img src="images/comment-icons.png" alt="Comment icons Color" width="100" />
+
 </p>
-
-#### State Colours
-
-Color Codes
 
 ```
 Primary #003366
