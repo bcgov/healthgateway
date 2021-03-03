@@ -26,8 +26,6 @@ import { ILogger } from "@/services/interfaces";
 export default class CommentSectionComponent extends Vue {
     @Prop() parentEntry!: TimelineEntry;
     @Getter("user", { namespace: "user" }) user!: User;
-    @Getter("getEntryComments", { namespace: "comment" })
-    entryComments!: (entyId: string) => UserComment[];
     @Action("updateComment", { namespace: "comment" })
     updateComment!: (params: {
         hdid: string;
@@ -56,15 +54,17 @@ export default class CommentSectionComponent extends Vue {
 
         // Some comments dont have entry type. This code updates them if they dont.
         let commentsToUpdate: UserComment[] = [];
-        this.parentEntry.comments.forEach((x) => {
-            if (x.entryTypeCode === CommentEntryType.None) {
-                x.entryTypeCode = EntryTypeMapper.toCommentEntryType(
-                    this.parentEntry.type
-                );
-                x.updatedBy = "System_Backfill";
-                commentsToUpdate.push(x);
-            }
-        });
+        if (this.parentEntry.comments !== null) {
+            this.parentEntry.comments.forEach((x) => {
+                if (x.entryTypeCode === CommentEntryType.None) {
+                    x.entryTypeCode = EntryTypeMapper.toCommentEntryType(
+                        this.parentEntry.type
+                    );
+                    x.updatedBy = "System_Backfill";
+                    commentsToUpdate.push(x);
+                }
+            });
+        }
 
         commentsToUpdate.forEach((x) => {
             this.logger.info("Updating comment " + x.id);
@@ -73,7 +73,7 @@ export default class CommentSectionComponent extends Vue {
     }
 
     private get hasComments(): boolean {
-        return this.parentEntry.comments !== undefined
+        return this.parentEntry.comments !== null
             ? this.parentEntry.comments.length > 0
             : false;
     }

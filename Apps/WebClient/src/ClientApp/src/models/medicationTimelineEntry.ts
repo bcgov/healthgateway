@@ -13,15 +13,16 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     public practitionerSurname: string;
     public prescriptionIdentifier: string;
 
+    private getComments: (entyId: string) => UserComment[] | null;
+
     public constructor(
         model: MedicationStatementHistory,
-        comments: UserComment[]
+        getComments: (entyId: string) => UserComment[] | null
     ) {
         super(
             model.prescriptionIdentifier,
             EntryType.Medication,
-            new DateWrapper(model.dispensedDate),
-            comments
+            new DateWrapper(model.dispensedDate)
         );
 
         this.medication = new MedicationViewModel(model.medicationSummary);
@@ -36,8 +37,12 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         this.practitionerSurname = model.practitionerSurname || "N/A";
         this.prescriptionIdentifier = model.prescriptionIdentifier || "N/A";
         this.directions = model.directions || "N/A";
+        this.getComments = getComments;
     }
 
+    public get comments(): UserComment[] | null {
+        return this.getComments(this.id);
+    }
     public containsText(keyword: string): boolean {
         let text =
             (this.practitionerSurname || "") +

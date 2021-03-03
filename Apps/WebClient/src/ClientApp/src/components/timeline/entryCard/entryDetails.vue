@@ -56,7 +56,7 @@ export default class EntryDetailsComponent extends Vue {
     @Watch("isMobile")
     private onIsMobile() {
         if (!this.isMobile) {
-            this.hideModal();
+            this.handleClose();
         }
     }
 
@@ -64,9 +64,15 @@ export default class EntryDetailsComponent extends Vue {
     private onLastNoteOperation() {
         if (this.lastNoteOperation !== null && this.entry !== null) {
             if (this.lastNoteOperation.id === this.entry.id) {
-                this.hideModal();
+                this.handleClose();
             }
         }
+    }
+    private created() {
+        window.onpopstate = (event: PopStateEvent) => {
+            this.hideModal();
+            event.preventDefault();
+        };
     }
 
     private mounted() {
@@ -75,6 +81,8 @@ export default class EntryDetailsComponent extends Vue {
     }
 
     public viewDetails(entry: TimelineEntry): void {
+        // Simulate a history push
+        history.pushState({}, "Entry Details", "?details");
         this.entry = entry;
         this.entryDate = entry.date.toISO();
         this.isVisible = true;
@@ -102,9 +110,13 @@ export default class EntryDetailsComponent extends Vue {
         }
     }
 
+    public handleClose(): void {
+        history.back();
+    }
+
     public hideModal(): void {
-        this.isVisible = false;
         this.entry = null;
+        this.isVisible = false;
     }
 
     private clear() {
@@ -136,7 +148,7 @@ export default class EntryDetailsComponent extends Vue {
                         variant="link"
                         size="sm"
                         class="back-button-icon"
-                        @click="hideModal"
+                        @click="handleClose"
                     >
                         <font-awesome-icon
                             :icon="backButtonIcon"

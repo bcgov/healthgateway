@@ -10,8 +10,12 @@ export const getters: GetterTree<CommentState, RootState> = {
     },
     getEntryComments: (state: CommentState) => (
         entryId: string
-    ): UserComment[] | undefined => {
-        return state.profileComments[entryId] || [];
+    ): UserComment[] | null => {
+        if (state.profileComments[entryId] !== undefined) {
+            return state.profileComments[entryId];
+        } else {
+            return null;
+        }
     },
     entryHasComments: (state: CommentState) => (entryId: string): boolean => {
         return entryId in state.profileComments;
