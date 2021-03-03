@@ -43,12 +43,6 @@ The B.C. Government colour palette ensures all public facing government services
 
 #### State Colours
 
-<img src="images/error.png" alt="Colors" width="70" />
-<img src="images/links.png" alt="Colors" width="70" />
-<img src="images/background.png" alt="Colors" width="70" />
-<img src="images/navigation-bar.png" alt="Colors" width="70" />
-<img src="images/comment-icons.png" alt="Colors" width="70" />
-
 Color Codes
 
 ```
@@ -61,7 +55,7 @@ Input Text #606060
 Accent #FCBA19
 Links #1A5A96
 Navigation Bar #38598A
-Secondary Text #0092F1
+Secondary Text #606060
 Background #F2F2F2
 ```
 
@@ -71,7 +65,7 @@ Or color live examples
 
 Describe the buttons
 
-<img src="images/buttons.png" alt="Buttons" width="70%" />
+<img src="images/buttons.png" alt="Buttons" width="100%" />
 
 ### Icons
 
@@ -80,5 +74,3 @@ Describe the icons
 <img src="images/icon-typeface.png" alt="Icon and Typeface" width="100%" />
 
 ## Other examples
-
-<img src="images/mobile-sample.png" alt="Mobile Example" width="50%" />
