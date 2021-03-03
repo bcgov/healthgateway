@@ -67,10 +67,6 @@ export default class DependentCardComponent extends Vue {
     private isDataLoaded = false;
 
     private selectedLabOrder!: LaboratoryOrder;
-    private showSensitiveDocumentDownloadModal(labOrder: LaboratoryOrder) {
-        this.selectedLabOrder = labOrder;
-        this.sensitivedocumentDownloadModal.showModal();
-    }
 
     private get isExpired() {
         let birthDate = new DateWrapper(
@@ -87,7 +83,7 @@ export default class DependentCardComponent extends Vue {
         return faEllipsisV;
     }
 
-    private mounted() {
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
@@ -95,6 +91,11 @@ export default class DependentCardComponent extends Vue {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );
+    }
+
+    private showSensitiveDocumentDownloadModal(labOrder: LaboratoryOrder) {
+        this.selectedLabOrder = labOrder;
+        this.sensitivedocumentDownloadModal.showModal();
     }
 
     private fetchLaboratoryResults() {

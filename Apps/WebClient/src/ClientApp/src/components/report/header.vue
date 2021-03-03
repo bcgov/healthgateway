@@ -17,16 +17,16 @@ export default class ReportHeaderComponent extends Vue {
 
     private logger!: ILogger;
 
-    private formatDateLong(date: string): string {
-        return new DateWrapper(date).formatDateMed();
-    }
-
     private get currentDate() {
         return this.formatDateLong(new DateWrapper().toISO());
     }
 
-    private mounted() {
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
+    private formatDateLong(date: string): string {
+        return new DateWrapper(date).formatDateMed();
     }
 }
 </script>

@@ -34,16 +34,16 @@ export default class CommentComponent extends Vue {
     private isEditMode = false;
     private isLoading = false;
 
-    private mounted() {
+    private get menuIcon(): IconDefinition {
+        return faEllipsisV;
+    }
+
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
     private formatDate(date: string): string {
         return new DateWrapper(date, { isUtc: true }).format("DDD, t");
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
     }
 
     private onSubmit(): void {

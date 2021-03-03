@@ -28,14 +28,8 @@ export default class AddCommentComponent extends Vue {
     }) => Promise<UserComment | undefined>;
 
     private commentInput = "";
-
     private logger!: ILogger;
-
     private isSaving = false;
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
 
     private get lockIcon(): IconDefinition {
         return faLock;
@@ -43,6 +37,10 @@ export default class AddCommentComponent extends Vue {
 
     private get postIcon(): IconDefinition {
         return faArrowCircleUp;
+    }
+
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
     private onSubmit(): void {
