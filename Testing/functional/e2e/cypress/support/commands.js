@@ -232,6 +232,10 @@ Cypress.Commands.add("setupDownloads", () => {
 });
 
 Cypress.Commands.add("restoreAuthCookies", () => {
-  var names = globalStorage.authCookies.map((x) => x.name);
-  Cypress.Cookies.preserveOnce(...names);
+    globalStorage.authCookies.forEach(cookie => {
+        cy.setCookie(cookie.name, cookie.value);
+    });
+    var names = globalStorage.authCookies.map((x) => x.name);
+  
+    Cypress.Cookies.preserveOnce(...names);
 });
