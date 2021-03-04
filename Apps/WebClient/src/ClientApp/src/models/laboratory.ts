@@ -35,3 +35,10 @@ export interface LaboratoryReport {
     encoding: string;
     data: string;
 }
+
+export abstract class LaboratoryUtil {
+    public static isTestResultReady(testStatus: string | null): boolean {
+        if (testStatus == null) return false;
+        else return ["Final", "Corrected", "Amended"].includes(testStatus);
+    }
+}

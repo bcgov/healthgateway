@@ -1,5 +1,9 @@
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryOrder, LaboratoryResult } from "@/models/laboratory";
+import {
+    LaboratoryOrder,
+    LaboratoryResult,
+    LaboratoryUtil,
+} from "@/models/laboratory";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
@@ -12,7 +16,7 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
     public labResultOutcome: string | null;
     public displayDate: DateWrapper;
     public reportAvailable: boolean;
-    public isStatusFinal: boolean;
+    public isTestResultReady: boolean;
 
     public summaryTitle: string;
     public summaryDescription: string;
@@ -53,7 +57,10 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.summaryTitle = firstResult.loincName || "";
         this.summaryDescription = firstResult.testType || "";
         this.summaryStatus = firstResult.testStatus || "";
-        this.isStatusFinal = this.summaryStatus == "Final";
+        this.isTestResultReady = LaboratoryUtil.isTestResultReady(
+            this.summaryStatus
+        );
+        console.log(`isTestResultReady: ${this.isTestResultReady}`);
         this.labResultOutcome = firstResult.labResultOutcome;
 
         this.getComments = getComments;

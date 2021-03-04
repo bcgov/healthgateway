@@ -96,7 +96,7 @@ export default class LaboratoryTimelineComponent extends Vue {
         :is-mobile-details="isMobileDetails"
     >
         <div slot="header-description">
-            <strong v-show="entry.isStatusFinal">
+            <strong v-show="entry.isTestResultReady">
                 Result:
                 <span :class="entry.labResultOutcome"
                     >{{ entry.labResultOutcome }}
