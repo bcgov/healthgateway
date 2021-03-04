@@ -60,7 +60,6 @@ export default class LaboratoryTimelineEntry extends TimelineEntry {
         this.isTestResultReady = LaboratoryUtil.isTestResultReady(
             this.summaryStatus
         );
-        console.log(`isTestResultReady: ${this.isTestResultReady}`);
         this.labResultOutcome = firstResult.labResultOutcome;
 
         this.getComments = getComments;
