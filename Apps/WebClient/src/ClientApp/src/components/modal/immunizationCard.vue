@@ -1,16 +1,17 @@
 ﻿<script lang="ts">
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
+import PatientData from "@/models/patientData";
 import { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { IAuthenticationService } from "@/services/interfaces";
+import { IAuthenticationService, ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
 
 interface Dose {
@@ -27,16 +28,23 @@ interface Dose {
     },
 })
 export default class ImmunizationCardComponent extends Vue {
+    @Action("retrieve", { namespace: "patient" })
+    retrievePatientData!: (params: { hdid: string }) => Promise<void>;
+
     @Getter("oidcIsAuthenticated", {
         namespace: "auth",
     })
     oidcIsAuthenticated!: boolean;
+
+    @Getter("patientData", { namespace: "patient" })
+    patientData!: PatientData;
 
     @Getter("immunizations", { namespace: "immunization" })
     immunizations!: ImmunizationEvent[];
 
     private eventBus = EventBus;
 
+    private logger!: ILogger;
     private readonly modalId: string = "covid-card-modal";
     private isVisible = false;
 
@@ -46,8 +54,11 @@ export default class ImmunizationCardComponent extends Vue {
     private doses: Dose[] = [];
 
     private get userName(): string {
-        return this.oidcUser
-            ? this.oidcUser.given_name + " " + this.oidcUser.family_name
+        return this.patientData
+            ? this.patientData.firstname +
+                  " " +
+                  this.patientData.lastname +
+                  "ThisIsASuperDuperLongLastName"
             : "";
     }
 
@@ -81,10 +92,7 @@ export default class ImmunizationCardComponent extends Vue {
                 covidImmunizations[index].immunization.immunizationAgents[0];
             this.doses.push({
                 product: agent.productName,
-                date: DateWrapper.format(
-                    element.dateOfImmunization,
-                    "MMM dd, yyyy"
-                ),
+                date: this.formatDate(element.dateOfImmunization),
                 agent: agent.name,
                 lot: agent.lotNumber,
                 provider: element.providerOrClinic,
@@ -119,6 +127,13 @@ export default class ImmunizationCardComponent extends Vue {
         this.authenticationService = container.get<IAuthenticationService>(
             SERVICE_IDENTIFIER.AuthenticationService
         );
+
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.retrievePatientData({
+            hdid: this.oidcUser?.hdid === undefined ? "" : this.oidcUser?.hdid,
+        }).catch((err) => {
+            this.logger.error(`Error loading patient data: ${err}`);
+        });
     }
 
     private mounted() {
@@ -141,6 +156,10 @@ export default class ImmunizationCardComponent extends Vue {
                 this.oidcUser = oidcUser;
             }
         });
+    }
+
+    private formatDate(date: string): string {
+        return DateWrapper.format(date, "yyyy-MMM-dd");
     }
 
     private showConfirmationModal() {
@@ -198,7 +217,17 @@ export default class ImmunizationCardComponent extends Vue {
                     <b-col class="ml-1 label col-3 d-flex justify-content-end"
                         >Name</b-col
                     >
-                    <b-col class="value">{{ userName }}</b-col>
+                    <b-col class="value text-wrap text-break">{{
+                        userName
+                    }}</b-col>
+                </b-row>
+                <b-row class="pb-4 title">
+                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                        >Date of Birth</b-col
+                    >
+                    <b-col class="value">{{
+                        formatDate(patientData.birthdate)
+                    }}</b-col>
                 </b-row>
                 <b-row class="pb-4 title">
                     <b-col class="ml-1 label col-3 d-flex justify-content-end"
@@ -327,8 +356,8 @@ div[class*=" row"] {
     border-radius: 15px 0px 0px 15px;
 
     .left-pane {
-        max-width: 75px;
-        padding: 20px;
+        max-width: 65px;
+        padding: 10px;
         @media (max-width: 360px) {
             padding: 10px;
             max-width: 60px;

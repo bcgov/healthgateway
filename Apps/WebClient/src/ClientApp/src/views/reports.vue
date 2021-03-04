@@ -19,8 +19,7 @@ import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILogger, IPatientService } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
+import { ILogger } from "@/services/interfaces";
 Vue.component("BFormTag", BFormTag);
 
 @Component({
@@ -36,10 +35,15 @@ Vue.component("BFormTag", BFormTag);
     },
 })
 export default class ReportsView extends Vue {
+    @Action("retrieve", { namespace: "patient" })
+    retrievePatientData!: (params: { hdid: string }) => Promise<void>;
+
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
     @Getter("user", { namespace: "user" })
     private user!: User;
+    @Getter("patientData", { namespace: "patient" })
+    patientData!: PatientData;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -65,7 +69,6 @@ export default class ReportsView extends Vue {
     private selectedEndDate: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
     private retryCount = 2;
-    private patientData: PatientData | null = null;
 
     private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
@@ -91,8 +94,13 @@ export default class ReportsView extends Vue {
                 text: "Immunizations",
             });
         }
+    }
 
-        this.fetchPatientData();
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.retrievePatientData({ hdid: this.user.hdid }).catch((err) => {
+            this.logger.error(`Error loading patient data: ${err}`);
+        });
     }
 
     private clearFilter() {
@@ -142,45 +150,6 @@ export default class ReportsView extends Vue {
         generatePromise.then(() => {
             this.isGeneratingReport = false;
         });
-    }
-
-    private fetchPatientData() {
-        const patientService: IPatientService = container.get<IPatientService>(
-            SERVICE_IDENTIFIER.PatientService
-        );
-
-        patientService
-            .getPatientData(this.user.hdid)
-            .then((result) => {
-                // Load patient data
-                if (result) {
-                    this.patientData = new PatientData();
-                    this.patientData.personalhealthnumber =
-                        result.resourcePayload.personalhealthnumber;
-                    this.patientData.firstname =
-                        result.resourcePayload.firstname;
-                    this.patientData.lastname = result.resourcePayload.lastname;
-                    if (result.resourcePayload.birthdate != null) {
-                        this.patientData.birthdate = this.formatDate(
-                            result.resourcePayload.birthdate
-                        );
-                    }
-                }
-            })
-            .catch((err) => {
-                this.logger.error(`Error fetching Patient Data: ${err}`);
-                if (this.retryCount > 0) {
-                    this.retryCount--;
-                    this.fetchPatientData();
-                } else {
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Unable to retrieve patient data for generating report",
-                            undefined
-                        )
-                    );
-                }
-            });
     }
 }
 </script>

@@ -1,3 +1,4 @@
+import PatientData from "@/model/patient";
 import { LaboratoryOrder } from "@/models//laboratory";
 import AuthenticationData from "@/models/authenticationData";
 import BannerError from "@/models/bannerError";
@@ -67,6 +68,13 @@ export interface UserState {
     smsResendDateTime?: DateWrapper;
     statusMessage: string;
     error: boolean;
+    status: LoadStatus;
+}
+
+export interface PatientState {
+    patientData: PatientData;
+    statusMessage: string;
+    error?: ResultError;
     status: LoadStatus;
 }
 

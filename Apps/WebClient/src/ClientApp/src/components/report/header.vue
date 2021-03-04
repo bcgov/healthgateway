@@ -28,6 +28,10 @@ export default class ReportHeaderComponent extends Vue {
     private formatDateLong(date: string): string {
         return new DateWrapper(date).formatDateMed();
     }
+
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format("yyyy-MM-dd");
+    }
 }
 </script>
 
@@ -80,7 +84,9 @@ export default class ReportHeaderComponent extends Vue {
             <b-col>
                 <strong>Date of Birth:</strong>
                 <span class="px-1">{{
-                    patientData !== null ? patientData.birthdate : ""
+                    patientData !== null
+                        ? formatDate(patientData.birthdate)
+                        : ""
                 }}</span>
             </b-col>
         </b-row>
