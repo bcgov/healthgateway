@@ -49,16 +49,13 @@ export default class ImmunizationCardComponent extends Vue {
     private isVisible = false;
 
     private authenticationService!: IAuthenticationService;
-    private oidcUser: OidcUserProfile | null = null;
+    private oidcUser!: OidcUserProfile;
 
     private doses: Dose[] = [];
 
     private get userName(): string {
         return this.patientData
-            ? this.patientData.firstname +
-                  " " +
-                  this.patientData.lastname +
-                  "ThisIsASuperDuperLongLastName"
+            ? this.patientData.firstname + " " + this.patientData.lastname
             : "";
     }
 
@@ -123,17 +120,11 @@ export default class ImmunizationCardComponent extends Vue {
     }
 
     private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.eventBus.$on(EventMessageName.TimelineCovidCard, this.showModal);
         this.authenticationService = container.get<IAuthenticationService>(
             SERVICE_IDENTIFIER.AuthenticationService
         );
-
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrievePatientData({
-            hdid: this.oidcUser?.hdid === undefined ? "" : this.oidcUser?.hdid,
-        }).catch((err) => {
-            this.logger.error(`Error loading patient data: ${err}`);
-        });
     }
 
     private mounted() {
@@ -154,6 +145,11 @@ export default class ImmunizationCardComponent extends Vue {
         this.authenticationService.getOidcUserProfile().then((oidcUser) => {
             if (oidcUser) {
                 this.oidcUser = oidcUser;
+                this.retrievePatientData({
+                    hdid: this.oidcUser.hdid,
+                }).catch((err) => {
+                    this.logger.error(`Error loading patient data: ${err}`);
+                });
             }
         });
     }
@@ -356,8 +352,8 @@ div[class*=" row"] {
     border-radius: 15px 0px 0px 15px;
 
     .left-pane {
-        max-width: 65px;
-        padding: 10px;
+        max-width: 55px;
+        padding: 5px;
         @media (max-width: 360px) {
             padding: 10px;
             max-width: 60px;
