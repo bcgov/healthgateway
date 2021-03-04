@@ -210,15 +210,15 @@ export default class ImmunizationCardComponent extends Vue {
         <b-row>
             <b-col>
                 <b-row class="pb-3 title d-flex">
-                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Name</b-col
                     >
                     <b-col class="value text-wrap text-break">{{
                         userName
                     }}</b-col>
                 </b-row>
-                <b-row class="pb-4 title">
-                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                <b-row class="pb-3 title d-flex">
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Date of Birth</b-col
                     >
                     <b-col class="value">{{
@@ -226,7 +226,7 @@ export default class ImmunizationCardComponent extends Vue {
                     }}</b-col>
                 </b-row>
                 <b-row class="pb-4 title">
-                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Immunization</b-col
                     >
                     <b-col class="value">COVID-19</b-col>
@@ -337,7 +337,7 @@ div[class*=" row"] {
 
     .label {
         min-width: 75px;
-        max-width: 75px;
+        max-width: 80px;
         font-size: 0.9em;
     }
     .value {
@@ -355,8 +355,8 @@ div[class*=" row"] {
         max-width: 55px;
         padding: 5px;
         @media (max-width: 360px) {
-            padding: 10px;
-            max-width: 60px;
+            padding: 5px;
+            max-width: 55px;
         }
         .dose-label {
             color: white;
