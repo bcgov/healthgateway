@@ -109,7 +109,11 @@ export default class LaboratoryTimelineComponent extends Vue {
                 <b-spinner v-if="isLoadingDocument"></b-spinner>
                 <span v-else>
                     <strong>Report:</strong>
-                    <b-btn variant="link" @click="showConfirmationModal()">
+                    <b-btn
+                        v-if="entry.isTestResultReady"
+                        variant="link"
+                        @click="showConfirmationModal()"
+                    >
                         <font-awesome-icon
                             icon="file-download"
                             aria-hidden="true"
