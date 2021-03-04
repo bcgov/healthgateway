@@ -49,25 +49,18 @@ describe("Immunization", () => {
   });
 
   it("Validate Card Details on Mobile", () => {
-    cy.get("[data-testid=timelineCard]").first().click();
-    cy.get("[data-testid=entryDetailsModal]").then(($entryDetailsModal) => {
-      $entryDetailsModal.get("[data-testid=backBtn]").should("be.visible");
-      $entryDetailsModal
-        .get("[data-testid=entryCardDetailsTitle]")
-        .should("be.visible");
-      $entryDetailsModal
-        .get("[data-testid=entryCardDate]")
-        .should("be.visible");
-      $entryDetailsModal
-        .get("[data-testid=immunizationProductTitle]")
-        .should("be.visible");
-      $entryDetailsModal
-        .get("[data-testid=immunizationProviderTitle]")
-        .should("be.visible");
-      $entryDetailsModal
-        .get("[data-testid=immunizationLotTitle]")
-        .should("be.visible");
-      $entryDetailsModal.get("[data-testid=cardBtn]").should("be.visible");
-    });
+    cy.get("[data-testid=timelineCard]")
+      .first()
+      .click()
+      .then(() => {
+        cy.get("[data-testid=entryDetailsModal]").should("exist");
+        cy.get("[data-testid=backBtn]").should("be.visible");
+        cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
+        cy.get("[data-testid=entryCardDate]").should("be.visible");
+        cy.get("[data-testid=immunizationProductTitle]").should("be.visible");
+        cy.get("[data-testid=immunizationProviderTitle]").should("be.visible");
+        cy.get("[data-testid=immunizationLotTitle]").should("be.visible");
+        cy.get("[data-testid=cardBtn]").should("be.visible");
+      });
   });
 });
