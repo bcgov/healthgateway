@@ -97,7 +97,7 @@ export default class LaboratoryTimelineComponent extends Vue {
     >
         <div slot="header-description">
             <strong
-                v-show="entry.isStatusFinal"
+                v-show="entry.isTestResultReady"
                 data-testid="laboratoryHeaderDescription"
             >
                 Result:
@@ -112,7 +112,11 @@ export default class LaboratoryTimelineComponent extends Vue {
                 <b-spinner v-if="isLoadingDocument"></b-spinner>
                 <span v-else data-testid="laboratoryReport">
                     <strong>Report:</strong>
-                    <b-btn variant="link" @click="showConfirmationModal()">
+                    <b-btn
+                        v-if="entry.isTestResultReady"
+                        variant="link"
+                        @click="showConfirmationModal()"
+                    >
                         <font-awesome-icon
                             icon="file-download"
                             aria-hidden="true"
