@@ -12,8 +12,9 @@ before(() => {
   );
 });
 describe("Laboratory", () => {
-  it("Validate Card Details on Mobile", () => {
+  it("Validate Card", () => {
     cy.viewport("iphone-6");
+    cy.log("Verifying card data");
     cy.get("[data-testid=timelineCard]")
       .first()
       .click()
@@ -28,101 +29,107 @@ describe("Laboratory", () => {
         cy.get("[data-testid=laboratoryTestType]").should("be.visible");
         cy.get("[data-testid=laboratoryTestStatus]").should("be.visible");
       });
-  });
 
-  it("Validate Final status", () => {
-    cy.viewport("iphone-6");
-    const summaryText = "Result: Negative";
+    cy.get("[data-testid=backBtn]").click();
+    cy.get("[data-testid=filterTextInput]").should("be.visible");
+
+    cy.log("Verifying final status");
+    const negativeSummary = "Result: Negative";
+    const finalStatus = "Test Status: Final";
     cy.get("[data-testid=timelineCard]")
       .first()
       .within(() => {
         cy.get("[data-testid=laboratoryHeaderDescription]").should(
           "be.visible"
         );
-        cy.get("[data-testid=laboratoryHeaderDescription]", {
+        cy.get("[data-testid=laboratoryHeaderDescription]").should(($div) => {
+          expect($div.text().trim()).equal(negativeSummary);
+        });
+        cy.get("[data-testid=entryCardDetailsTitle]").click();
+      });
+    cy.get("[id=entry-details-modal]")
+      .should("be.visible")
+      .within(() => {
+        cy.get("[data-testid=laboratoryTestStatus]").should("be.visible");
+        cy.get("[data-testid=laboratoryTestStatus]", {
           timeout: 1000,
         }).should(($div) => {
-          expect($div.text()).equal(summaryText);
+          expect($div.text().trim()).equal(finalStatus);
         });
-        cy.get("[data-testid=entryCardDetailsTitle]")
-          .click()
-          .then(() => {
-            const testStatus = "Test Status: Final";
-            cy.get("[data-testid=laboratoryTestStatus]", {
-              timeout: 1000,
-            }).should(($div) => {
-              expect($div.text()).equal(testStatus);
-            });
-          });
+        cy.get("[data-testid=backBtn]").click();
       });
-  });
+    cy.get("[data-testid=filterTextInput]").should("be.visible");
 
-  it("Validate Amended status", () => {
-    cy.viewport("iphone-6");
-    const summaryText = "Result: Positive";
+    const otherStatus = "Test Status: SomeOtherState";
+    cy.log("Verifying not ready state");
     cy.get("[data-testid=timelineCard]")
       .eq(1)
       .within(() => {
         cy.get("[data-testid=laboratoryHeaderDescription]").should(
-          "be.visible"
+          "not.be.visible"
         );
-        cy.get("[data-testid=laboratoryHeaderDescription]", {
-          timeout: 1000,
-        }).should(($div) => {
-          expect($div.text()).equal(summaryText);
-        });
-        cy.get("[data-testid=entryCardDetailsTitle]")
-          .click()
-          .then(() => {
-            const testStatus = "Test Status: Amended";
-            cy.get("[data-testid=laboratoryTestStatus]", {
-              timeout: 1000,
-            }).should(($div) => {
-              expect($div.text()).equal(testStatus);
-            });
-          });
+        cy.get("[data-testid=entryCardDetailsTitle]").click();
       });
-  });
+    cy.get("[id=entry-details-modal]")
+      .should("be.visible")
+      .within(() => {
+        cy.get("[data-testid=laboratoryTestStatus]").should("be.visible");
+        cy.get("[data-testid=laboratoryTestStatus]").should(($div) => {
+          expect($div.text().trim()).equal(otherStatus);
+        });
+        cy.get("[data-testid=backBtn]").click();
+      });
+    cy.get("[data-testid=filterTextInput]").should("be.visible");
 
-  it("Validate Corrected status", () => {
-    cy.viewport("iphone-6");
-    const summaryText = "Result: Positive";
+    const positiveSummary = "Result: Positive";
+    cy.log("Verifying Corrected state");
     cy.get("[data-testid=timelineCard]")
       .eq(2)
       .within(() => {
         cy.get("[data-testid=laboratoryHeaderDescription]").should(
           "be.visible"
         );
-        cy.get("[data-testid=laboratoryHeaderDescription]").should(($div) => {
-          expect($div.text()).equal(summaryText);
+        cy.get("[data-testid=laboratoryHeaderDescription]", {
+          timeout: 1000,
+        }).should(($div) => {
+          expect($div.text().trim()).equal(positiveSummary);
         });
-        cy.get("[data-testid=entryCardDetailsTitle]")
-          .click()
-          .then(() => {
-            const testStatus = "Test Status: Corrected";
-            cy.get("[data-testid=laboratoryTestStatus]").should(($div) => {
-              expect($div.text()).equal(testStatus);
-            });
-          });
+        cy.get("[data-testid=entryCardDetailsTitle]").click();
       });
-  });
 
-  it("Validate Other statuses", () => {
-    cy.viewport("iphone-6");
+    const correctedStatus = "Test Status: Corrected";
+    cy.get("[id=entry-details-modal]")
+      .should("be.visible")
+      .within(() => {
+        cy.get("[data-testid=laboratoryTestStatus]").should("be.visible");
+        cy.get("[data-testid=laboratoryTestStatus]").should(($div) => {
+          expect($div.text().trim()).equal(correctedStatus);
+        });
+        cy.get("[data-testid=backBtn]").click();
+      });
+    cy.get("[data-testid=filterTextInput]").should("be.visible");
+
+    cy.log("Verifying ammended state");
     cy.get("[data-testid=timelineCard]")
       .eq(3)
       .within(() => {
         cy.get("[data-testid=laboratoryHeaderDescription]").should(
-          "note.be.visible"
+          "be.visible"
         );
-        cy.get("[data-testid=entryCardDetailsTitle]")
-          .click()
-          .then(() => {
-            const testStatus = "Test Status: SomeOtherState";
-            cy.get("[data-testid=laboratoryTestStatus]").should(($div) => {
-              expect($div.text()).equal(testStatus);
-            });
-          });
+        cy.get("[data-testid=laboratoryHeaderDescription]").should(($div) => {
+          expect($div.text().trim()).equal(positiveSummary);
+        });
+        cy.get("[data-testid=entryCardDetailsTitle]").click();
+      });
+
+    const amendedStatus = "Test Status: Amended";
+    cy.get("[id=entry-details-modal]")
+      .should("be.visible")
+      .within(() => {
+        cy.get("[data-testid=laboratoryTestStatus]").should("be.visible");
+        cy.get("[data-testid=laboratoryTestStatus]").should(($div) => {
+          expect($div.text().trim()).equal(amendedStatus);
+        });
       });
   });
 });
