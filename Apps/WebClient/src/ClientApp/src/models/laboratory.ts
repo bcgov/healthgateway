@@ -38,7 +38,10 @@ export interface LaboratoryReport {
 
 export abstract class LaboratoryUtil {
     public static isTestResultReady(testStatus: string | null): boolean {
-        if (testStatus == null) return false;
-        else return ["Final", "Corrected", "Amended"].includes(testStatus);
+        if (testStatus == null) {
+            return false;
+        } else {
+            return ["Final", "Corrected", "Amended"].includes(testStatus);
+        }
     }
 }
