@@ -95,7 +95,7 @@ export const mutations: MutationTree<UserState> = {
         state.patientData = patientData;
         state.error = false;
         state.statusMessage = "success";
-        state.status = LoadStatus.LOADED;
+        state.status = LoadStatus.PARTIALLY_LOADED;
     },
     clearUserData(state: UserState) {
         state.user = new User();
