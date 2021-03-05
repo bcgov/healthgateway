@@ -11,6 +11,7 @@ import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 
 import Encounter from "./encounter";
+import MedicationRequest from "./MedicationRequest";
 import { ResultError } from "./requestResult";
 import TimelineFilter from "./timelineFilter";
 import UserNote from "./userNote";
@@ -74,6 +75,12 @@ export interface MedicationState {
     medicationStatements: MedicationStatementHistory[];
     protectiveWordAttempts: number;
     medications: MedicationResult[];
+    statusMessage: string;
+    error?: ResultError;
+    status: LoadStatus;
+}
+export interface MedicationRequestState {
+    medicationRequests: MedicationRequest[];
     statusMessage: string;
     error?: ResultError;
     status: LoadStatus;
