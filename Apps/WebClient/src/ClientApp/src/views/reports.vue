@@ -16,7 +16,6 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
-import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -35,14 +34,9 @@ Vue.component("BFormTag", BFormTag);
     },
 })
 export default class ReportsView extends Vue {
-    @Action("retrieve", { namespace: "patient" })
-    retrievePatientData!: (params: { hdid: string }) => Promise<void>;
-
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-    @Getter("user", { namespace: "user" })
-    private user!: User;
-    @Getter("patientData", { namespace: "patient" })
+    @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
 
     @Ref("messageModal")
@@ -94,13 +88,6 @@ export default class ReportsView extends Vue {
                 text: "Immunizations",
             });
         }
-    }
-
-    private created() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrievePatientData({ hdid: this.user.hdid }).catch((err) => {
-            this.logger.error(`Error loading patient data: ${err}`);
-        });
     }
 
     private clearFilter() {
@@ -327,7 +314,6 @@ export default class ReportsView extends Vue {
                             ref="medicationHistoryReport"
                             :start-date="startDate"
                             :end-date="endDate"
-                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -340,7 +326,6 @@ export default class ReportsView extends Vue {
                             ref="mspVisitsReport"
                             :start-date="startDate"
                             :end-date="endDate"
-                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -353,7 +338,6 @@ export default class ReportsView extends Vue {
                             ref="covid19Report"
                             :start-date="startDate"
                             :end-date="endDate"
-                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -366,7 +350,6 @@ export default class ReportsView extends Vue {
                             ref="immunizationHistoryReport"
                             :start-date="startDate"
                             :end-date="endDate"
-                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
