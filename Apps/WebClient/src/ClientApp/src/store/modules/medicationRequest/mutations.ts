@@ -2,39 +2,38 @@ import { MutationTree } from "vuex";
 
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationRequest from "@/models/MedicationRequest";
 import RequestResult from "@/models/requestResult";
-import { LoadStatus, MedicationState } from "@/models/storeState";
+import { LoadStatus, MedicationRequestState } from "@/models/storeState";
 
-export const mutations: MutationTree<MedicationState> = {
-    setRequested(state: MedicationState) {
+export const mutations: MutationTree<MedicationRequestState> = {
+    setRequested(state: MedicationRequestState) {
         state.status = LoadStatus.REQUESTED;
     },
-    setMedicationResult(
-        state: MedicationState,
-        medicationResult: RequestResult<MedicationStatementHistory[]>
+    setMedicationRequestResult(
+        state: MedicationRequestState,
+        medicationRequestResult: RequestResult<MedicationRequest[]>
     ) {
-        if (medicationResult.resultStatus == ResultType.Success) {
-            state.protectiveWordAttempts = 0;
-            state.medicationStatements = medicationResult.resourcePayload;
+        if (medicationRequestResult.resultStatus == ResultType.Success) {
+            state.medicationRequests = medicationRequestResult.resourcePayload;
             state.statusMessage = "success";
             state.error = undefined;
             state.status = LoadStatus.LOADED;
         } else if (
-            medicationResult.resultStatus == ResultType.ActionRequired &&
-            medicationResult.resultError?.actionCode == ActionType.Protected
+            medicationRequestResult.resultStatus == ResultType.ActionRequired &&
+            medicationRequestResult.resultError?.actionCode ==
+                ActionType.Protected
         ) {
-            state.protectiveWordAttempts++;
             state.error = undefined;
             state.status = LoadStatus.PROTECTED;
         } else {
             state.status = LoadStatus.ERROR;
             state.statusMessage =
                 "Error returned from the medication statements call";
-            state.error = medicationResult.resultError;
+            state.error = medicationRequestResult.resultError;
         }
     },
-    medicationError(state: MedicationState, error: Error) {
+    medicationRequestError(state: MedicationRequestState, error: Error) {
         state.statusMessage = error.message;
         state.status = LoadStatus.ERROR;
     },
