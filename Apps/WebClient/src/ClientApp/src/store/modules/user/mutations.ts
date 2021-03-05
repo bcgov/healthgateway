@@ -3,6 +3,7 @@ import Vue from "vue";
 import { MutationTree } from "vuex";
 
 import { DateWrapper } from "@/models/dateWrapper";
+import PatientData from "@/models/patientData";
 import { LoadStatus, UserState } from "@/models/storeState";
 import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
@@ -86,6 +87,12 @@ export const mutations: MutationTree<UserState> = {
             )}, preference.value: ${JSON.stringify(userPreference.value)}`
         );
         state.user.preferences[userPreference.preference] = userPreference;
+        state.error = false;
+        state.statusMessage = "success";
+        state.status = LoadStatus.LOADED;
+    },
+    setPatientData(state: UserState, patientData: PatientData) {
+        state.patientData = patientData;
         state.error = false;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;

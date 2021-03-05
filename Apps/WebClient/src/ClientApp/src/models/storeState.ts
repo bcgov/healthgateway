@@ -1,4 +1,3 @@
-import PatientData from "@/model/patient";
 import { LaboratoryOrder } from "@/models//laboratory";
 import AuthenticationData from "@/models/authenticationData";
 import BannerError from "@/models/bannerError";
@@ -12,6 +11,7 @@ import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 
 import Encounter from "./encounter";
+import PatientData from "./patientData";
 import { ResultError } from "./requestResult";
 import TimelineFilter from "./timelineFilter";
 import UserNote from "./userNote";
@@ -65,16 +65,10 @@ export interface ConfigState {
 
 export interface UserState {
     user: User;
+    patientData: PatientData;
     smsResendDateTime?: DateWrapper;
     statusMessage: string;
     error: boolean;
-    status: LoadStatus;
-}
-
-export interface PatientState {
-    patientData: PatientData;
-    statusMessage: string;
-    error?: ResultError;
     status: LoadStatus;
 }
 

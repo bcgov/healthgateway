@@ -1,5 +1,6 @@
 import { ActionTree, Commit } from "vuex";
 
+import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { RootState, UserState } from "@/models/storeState";
@@ -8,7 +9,11 @@ import { UserPreference } from "@/models/userPreference";
 import UserSMSInvite from "@/models/userSMSInvite";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILogger, IUserProfileService } from "@/services/interfaces";
+import {
+    ILogger,
+    IPatientService,
+    IUserProfileService,
+} from "@/services/interfaces";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -19,6 +24,10 @@ function handleError(commit: Commit, error: Error) {
 
 const userProfileService: IUserProfileService = container.get<IUserProfileService>(
     SERVICE_IDENTIFIER.UserProfileService
+);
+
+const patientService: IPatientService = container.get<IPatientService>(
+    SERVICE_IDENTIFIER.PatientService
 );
 
 export const actions: ActionTree<UserState, RootState> = {
@@ -237,6 +246,29 @@ export const actions: ActionTree<UserState, RootState> = {
                 })
                 .catch((error) => {
                     handleError(context.commit, error);
+                    reject(error);
+                });
+        });
+    },
+    getPatientData(context, params: { hdid: string }): Promise<void> {
+        return new Promise((resolve, reject) => {
+            logger.debug(`Retrieving Patient Data`);
+            patientService
+                .getPatientData(params.hdid)
+                .then((result) => {
+                    if (result.resultStatus === ResultType.Error) {
+                        context.dispatch("handleError", result.resultError);
+                        reject(result.resultError);
+                    } else {
+                        context.commit(
+                            "setPatientData",
+                            result.resourcePayload
+                        );
+                        resolve();
+                    }
+                })
+                .catch((error) => {
+                    context.dispatch("handleError", error);
                     reject(error);
                 });
         });

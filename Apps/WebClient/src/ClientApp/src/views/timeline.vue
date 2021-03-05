@@ -51,8 +51,8 @@ export default class TimelineView extends Vue {
     @Action("setKeyword", { namespace: "timeline" })
     setKeyword!: (keyword: string) => void;
 
-    @Action("retrieve", { namespace: "patient" })
-    retrievePatientData!: (params: { hdid: string }) => Promise<void>;
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
@@ -74,9 +74,6 @@ export default class TimelineView extends Vue {
 
     @Action("retrieve", { namespace: "comment" })
     retrieveComments!: (params: { hdid: string }) => Promise<void>;
-
-    @Getter("isLoading", { namespace: "patient" })
-    isPatientLoading!: boolean;
 
     @Getter("isLoading", { namespace: "medication" })
     isMedicationLoading!: boolean;
@@ -200,7 +197,6 @@ export default class TimelineView extends Vue {
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
-
         return timelineEntries;
     }
 
@@ -244,7 +240,6 @@ export default class TimelineView extends Vue {
 
     private get isLoading(): boolean {
         return (
-            this.isPatientLoading ||
             this.isMedicationLoading ||
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
@@ -283,7 +278,7 @@ export default class TimelineView extends Vue {
 
     private fetchTimelineData() {
         Promise.all([
-            this.retrievePatientData({ hdid: this.user.hdid }),
+            this.getPatientData({ hdid: this.user.hdid }),
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
             this.retrieveLaboratory({ hdid: this.user.hdid }),

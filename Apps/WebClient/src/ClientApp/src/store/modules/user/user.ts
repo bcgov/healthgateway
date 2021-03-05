@@ -1,5 +1,6 @@
 import { Module } from "vuex";
 
+import PatientData from "@/models/patientData";
 import { LoadStatus, RootState, UserState } from "@/models/storeState";
 import User from "@/models/user";
 
@@ -10,6 +11,7 @@ import { mutations } from "./mutations";
 export const state: UserState = {
     statusMessage: "",
     user: new User(),
+    patientData: new PatientData(),
     error: false,
     status: LoadStatus.LOADED,
 };
