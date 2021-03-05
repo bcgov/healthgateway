@@ -202,12 +202,18 @@ export default class DependentCardComponent extends Vue {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
 
-    private checkResultReady(labResult: LaboratoryResult): boolean {
-        return LaboratoryUtil.isTestResultReady(labResult.testStatus);
+    private checkResultReady(
+        labResult: LaboratoryResult,
+        reportAvailable: boolean
+    ): boolean {
+        return (
+            reportAvailable &&
+            LaboratoryUtil.isTestResultReady(labResult.testStatus)
+        );
     }
 
     private formatResult(labResult: LaboratoryResult): string {
-        if (this.checkResultReady(labResult)) {
+        if (this.checkResultReady(labResult, true)) {
             return labResult?.labResultOutcome ?? "";
         } else {
             return "";
@@ -343,7 +349,12 @@ export default class DependentCardComponent extends Vue {
                             </td>
                             <td>
                                 <b-btn
-                                    v-if="checkResultReady(item.labResults[0])"
+                                    v-if="
+                                        checkResultReady(
+                                            item.labResults[0],
+                                            item.reportAvailable
+                                        )
+                                    "
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
                                     @click="
