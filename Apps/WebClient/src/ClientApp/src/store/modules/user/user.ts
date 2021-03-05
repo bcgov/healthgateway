@@ -13,7 +13,7 @@ export const state: UserState = {
     user: new User(),
     patientData: new PatientData(),
     error: false,
-    status: LoadStatus.LOADED,
+    status: LoadStatus.NONE,
 };
 
 const namespaced = true;
