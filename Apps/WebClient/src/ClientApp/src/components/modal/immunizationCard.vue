@@ -8,7 +8,6 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
-import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -28,8 +27,6 @@ interface Dose {
     },
 })
 export default class ImmunizationCardComponent extends Vue {
-    @Getter("user", { namespace: "user" }) user!: User;
-
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
 
