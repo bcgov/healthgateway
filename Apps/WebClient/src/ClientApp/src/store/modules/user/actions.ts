@@ -252,25 +252,26 @@ export const actions: ActionTree<UserState, RootState> = {
     },
     getPatientData(context, params: { hdid: string }): Promise<void> {
         return new Promise((resolve, reject) => {
-            logger.debug(`Retrieving Patient Data`);
-            patientService
-                .getPatientData(params.hdid)
-                .then((result) => {
-                    if (result.resultStatus === ResultType.Error) {
-                        context.dispatch("handleError", result.resultError);
-                        reject(result.resultError);
-                    } else {
-                        context.commit(
-                            "setPatientData",
-                            result.resourcePayload
-                        );
-                        resolve();
-                    }
-                })
-                .catch((error) => {
-                    context.dispatch("handleError", error);
-                    reject(error);
-                });
+            if (context.getters.patientData.hdid === undefined) {
+                patientService
+                    .getPatientData(params.hdid)
+                    .then((result) => {
+                        if (result.resultStatus === ResultType.Error) {
+                            context.dispatch("handleError", result.resultError);
+                            reject(result.resultError);
+                        } else {
+                            context.commit(
+                                "setPatientData",
+                                result.resourcePayload
+                            );
+                            resolve();
+                        }
+                    })
+                    .catch((error) => {
+                        context.dispatch("handleError", error);
+                        reject(error);
+                    });
+            }
         });
     },
 };
