@@ -5,7 +5,7 @@ import { Action, Getter } from "vuex-class";
 
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryOrder } from "@/models/laboratory";
+import { LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
 import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -96,6 +96,10 @@ export default class COVID19ReportComponent extends Vue {
         });
     }
 
+    private checkResultReady(testStatus: string | null): boolean {
+        return LaboratoryUtil.isTestResultReady(testStatus);
+    }
+
     private formatDate(date: string): string {
         return new DateWrapper(date).format("yyyy-MM-dd");
     }
@@ -151,7 +155,12 @@ export default class COVID19ReportComponent extends Vue {
                         {{ item.location }}
                     </b-col>
                     <b-col data-testid="covid19ItemResult" class="my-auto">
-                        {{ item.labResults[0].labResultOutcome }}
+                        <span
+                            v-if="
+                                checkResultReady(item.labResults[0].testStatus)
+                            "
+                            >{{ item.labResults[0].labResultOutcome }}</span
+                        >
                     </b-col>
                 </b-row>
             </section>
