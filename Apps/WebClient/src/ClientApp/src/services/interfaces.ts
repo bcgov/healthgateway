@@ -11,6 +11,7 @@ import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import PatientData from "@/models/patientData";
 import RequestResult from "@/models/requestResult";
@@ -24,7 +25,6 @@ import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import UserSMSInvite from "@/models/userSMSInvite";
-import MedicationRequest from "@/models/MedicationRequest";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;

@@ -29,7 +29,7 @@ export const mutations: MutationTree<MedicationRequestState> = {
         } else {
             state.status = LoadStatus.ERROR;
             state.statusMessage =
-                "Error returned from the medication statements call";
+                "Error returned from the medication requests call";
             state.error = medicationRequestResult.resultError;
         }
     },

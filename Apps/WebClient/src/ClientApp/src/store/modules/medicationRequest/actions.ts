@@ -21,7 +21,7 @@ const medicationService: IMedicationService = container.get<IMedicationService>(
 export const actions: ActionTree<MedicationRequestState, RootState> = {
     retrieve(
         context,
-        params: { hdid: string; protectiveWord?: string }
+        params: { hdid: string }
     ): Promise<RequestResult<MedicationRequest[]>> {
         return new Promise((resolve, reject) => {
             const medicationRequests: MedicationRequest[] =
@@ -45,7 +45,10 @@ export const actions: ActionTree<MedicationRequestState, RootState> = {
                             context.dispatch("handleError", result.resultError);
                             reject(result.resultError);
                         } else {
-                            context.commit("setMedicationRequest", result);
+                            context.commit(
+                                "setMedicationRequestResult",
+                                result
+                            );
                             resolve(result);
                         }
                     })

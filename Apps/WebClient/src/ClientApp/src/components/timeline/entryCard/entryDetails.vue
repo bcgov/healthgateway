@@ -16,10 +16,12 @@ import EncounterTimelineComponent from "./encounter.vue";
 import ImmunizationTimelineComponent from "./immunization.vue";
 import LaboratoryTimelineComponent from "./laboratory.vue";
 import MedicationTimelineComponent from "./medication.vue";
+import MedicationRequestTimelineComponent from "./medicationRequest.vue";
 import NoteTimelineComponent from "./note.vue";
 
 @Component({
     components: {
+        MedicationRequestComponent: MedicationRequestTimelineComponent,
         MedicationComponent: MedicationTimelineComponent,
         ImmunizationComponent: ImmunizationTimelineComponent,
         LaboratoryComponent: LaboratoryTimelineComponent,
@@ -91,6 +93,9 @@ export default class EntryDetailsComponent extends Vue {
 
     private getComponentForEntry(): string {
         switch (this.entry?.type) {
+            case EntryType.MedicationRequest:
+                return "MedicationRequestComponent";
+
             case EntryType.Medication:
                 return "MedicationComponent";
 
