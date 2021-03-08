@@ -37,6 +37,6 @@
     <None Include="..\..\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis" Version="3.8.0" />
+    <PackageReference Update="Microsoft.CodeAnalysis" Version="3.9.0" />
   </ItemGroup>
 </Project>
