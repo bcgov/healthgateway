@@ -3,6 +3,7 @@ import Vue from "vue";
 import { MutationTree } from "vuex";
 
 import { DateWrapper } from "@/models/dateWrapper";
+import PatientData from "@/models/patientData";
 import { LoadStatus, UserState } from "@/models/storeState";
 import User from "@/models/user";
 import UserEmailInvite from "@/models/userEmailInvite";
@@ -46,7 +47,11 @@ export const mutations: MutationTree<UserState> = {
         logger.verbose(`state.user: ${JSON.stringify(state.user)}`);
         state.error = false;
         state.statusMessage = "success";
-        state.status = LoadStatus.LOADED;
+        if (state.patientData.hdid !== undefined) {
+            state.status = LoadStatus.LOADED;
+        } else {
+            state.status = LoadStatus.PARTIALLY_LOADED;
+        }
     },
     setValidatedEmail(state: UserState, userEmailInvite: UserEmailInvite) {
         if (userEmailInvite) {
@@ -89,6 +94,16 @@ export const mutations: MutationTree<UserState> = {
         state.error = false;
         state.statusMessage = "success";
         state.status = LoadStatus.LOADED;
+    },
+    setPatientData(state: UserState, patientData: PatientData) {
+        state.patientData = patientData;
+        state.error = false;
+        state.statusMessage = "success";
+        if (state.user.hdid !== undefined) {
+            state.status = LoadStatus.LOADED;
+        } else {
+            state.status = LoadStatus.PARTIALLY_LOADED;
+        }
     },
     clearUserData(state: UserState) {
         state.user = new User();

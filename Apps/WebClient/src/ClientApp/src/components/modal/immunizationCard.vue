@@ -1,17 +1,16 @@
 ﻿<script lang="ts">
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
-import { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { IAuthenticationService, ILogger } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
 
 interface Dose {
@@ -28,15 +27,7 @@ interface Dose {
     },
 })
 export default class ImmunizationCardComponent extends Vue {
-    @Action("retrieve", { namespace: "patient" })
-    retrievePatientData!: (params: { hdid: string }) => Promise<void>;
-
-    @Getter("oidcIsAuthenticated", {
-        namespace: "auth",
-    })
-    oidcIsAuthenticated!: boolean;
-
-    @Getter("patientData", { namespace: "patient" })
+    @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
 
     @Getter("immunizations", { namespace: "immunization" })
@@ -48,19 +39,7 @@ export default class ImmunizationCardComponent extends Vue {
     private readonly modalId: string = "covid-card-modal";
     private isVisible = false;
 
-    private authenticationService!: IAuthenticationService;
-    private oidcUser: OidcUserProfile | null = null;
-
     private doses: Dose[] = [];
-
-    private get userName(): string {
-        return this.patientData
-            ? this.patientData.firstname +
-                  " " +
-                  this.patientData.lastname +
-                  "ThisIsASuperDuperLongLastName"
-            : "";
-    }
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -115,31 +94,17 @@ export default class ImmunizationCardComponent extends Vue {
         }
     }
 
-    @Watch("oidcIsAuthenticated")
-    private onPropertyChanged() {
-        if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
-        }
+    private get userName(): string {
+        return this.patientData.firstname + " " + this.patientData.lastname;
+    }
+
+    private get birthdate(): string {
+        return this.formatDate(this.patientData.birthdate);
     }
 
     private created() {
-        this.eventBus.$on(EventMessageName.TimelineCovidCard, this.showModal);
-        this.authenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrievePatientData({
-            hdid: this.oidcUser?.hdid === undefined ? "" : this.oidcUser?.hdid,
-        }).catch((err) => {
-            this.logger.error(`Error loading patient data: ${err}`);
-        });
-    }
-
-    private mounted() {
-        if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
-        }
+        this.eventBus.$on(EventMessageName.TimelineCovidCard, this.showModal);
     }
 
     public showModal(): void {
@@ -150,16 +115,10 @@ export default class ImmunizationCardComponent extends Vue {
         this.isVisible = false;
     }
 
-    private loadOidcUser(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
-            if (oidcUser) {
-                this.oidcUser = oidcUser;
-            }
-        });
-    }
-
-    private formatDate(date: string): string {
-        return DateWrapper.format(date, "yyyy-MMM-dd");
+    private formatDate(date: string | undefined): string {
+        return date === undefined
+            ? ""
+            : DateWrapper.format(date, "yyyy-MMM-dd");
     }
 
     private showConfirmationModal() {
@@ -214,23 +173,21 @@ export default class ImmunizationCardComponent extends Vue {
         <b-row>
             <b-col>
                 <b-row class="pb-3 title d-flex">
-                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Name</b-col
                     >
                     <b-col class="value text-wrap text-break">{{
                         userName
                     }}</b-col>
                 </b-row>
-                <b-row class="pb-4 title">
-                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                <b-row class="pb-3 title d-flex">
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Date of Birth</b-col
                     >
-                    <b-col class="value" data-testid="patientBirthdate">{{
-                        formatDate(patientData.birthdate)
-                    }}</b-col>
+                    <b-col class="value">{{ birthdate }}</b-col>
                 </b-row>
                 <b-row class="pb-4 title">
-                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Immunization</b-col
                     >
                     <b-col class="value">COVID-19</b-col>
@@ -341,7 +298,7 @@ div[class*=" row"] {
 
     .label {
         min-width: 75px;
-        max-width: 75px;
+        max-width: 80px;
         font-size: 0.9em;
     }
     .value {
@@ -356,11 +313,11 @@ div[class*=" row"] {
     border-radius: 15px 0px 0px 15px;
 
     .left-pane {
-        max-width: 65px;
-        padding: 10px;
+        max-width: 55px;
+        padding: 5px;
         @media (max-width: 360px) {
-            padding: 10px;
-            max-width: 60px;
+            padding: 5px;
+            max-width: 55px;
         }
         .dose-label {
             color: white;

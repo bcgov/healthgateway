@@ -14,7 +14,6 @@ import { laboratory } from "./modules/laboratory/laboratory";
 import { medication } from "./modules/medication/medication";
 import { navbar } from "./modules/navbar/navbar";
 import { note } from "./modules/note/note";
-import { patient } from "./modules/patient/patient";
 import { timeline } from "./modules/timeline/timeline";
 import { user } from "./modules/user/user";
 
@@ -44,7 +43,6 @@ const storeOptions: StoreOptions<RootState> = {
         auth,
         config,
         user,
-        patient,
         medication,
         laboratory,
         comment,
