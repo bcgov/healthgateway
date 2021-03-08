@@ -7,10 +7,10 @@ import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
-import { OidcUserProfile } from "@/models/user";
+import PatientData from "@/models/patientData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { IAuthenticationService } from "@/services/interfaces";
+import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
 
 interface Dose {
@@ -27,29 +27,19 @@ interface Dose {
     },
 })
 export default class ImmunizationCardComponent extends Vue {
-    @Getter("oidcIsAuthenticated", {
-        namespace: "auth",
-    })
-    oidcIsAuthenticated!: boolean;
+    @Getter("patientData", { namespace: "user" })
+    patientData!: PatientData;
 
     @Getter("immunizations", { namespace: "immunization" })
     immunizations!: ImmunizationEvent[];
 
     private eventBus = EventBus;
 
+    private logger!: ILogger;
     private readonly modalId: string = "covid-card-modal";
     private isVisible = false;
 
-    private authenticationService!: IAuthenticationService;
-    private oidcUser: OidcUserProfile | null = null;
-
     private doses: Dose[] = [];
-
-    private get userName(): string {
-        return this.oidcUser
-            ? this.oidcUser.given_name + " " + this.oidcUser.family_name
-            : "";
-    }
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -81,10 +71,7 @@ export default class ImmunizationCardComponent extends Vue {
                 covidImmunizations[index].immunization.immunizationAgents[0];
             this.doses.push({
                 product: agent.productName,
-                date: DateWrapper.format(
-                    element.dateOfImmunization,
-                    "MMM dd, yyyy"
-                ),
+                date: this.formatDate(element.dateOfImmunization),
                 agent: agent.name,
                 lot: agent.lotNumber,
                 provider: element.providerOrClinic,
@@ -107,24 +94,17 @@ export default class ImmunizationCardComponent extends Vue {
         }
     }
 
-    @Watch("oidcIsAuthenticated")
-    private onPropertyChanged() {
-        if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
-        }
+    private get userName(): string {
+        return this.patientData.firstname + " " + this.patientData.lastname;
+    }
+
+    private get birthdate(): string {
+        return this.formatDate(this.patientData.birthdate);
     }
 
     private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.eventBus.$on(EventMessageName.TimelineCovidCard, this.showModal);
-        this.authenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
-    }
-
-    private mounted() {
-        if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
-        }
     }
 
     public showModal(): void {
@@ -135,12 +115,10 @@ export default class ImmunizationCardComponent extends Vue {
         this.isVisible = false;
     }
 
-    private loadOidcUser(): void {
-        this.authenticationService.getOidcUserProfile().then((oidcUser) => {
-            if (oidcUser) {
-                this.oidcUser = oidcUser;
-            }
-        });
+    private formatDate(date: string | undefined): string {
+        return date === undefined
+            ? ""
+            : DateWrapper.format(date, "yyyy-MMM-dd");
     }
 
     private showConfirmationModal() {
@@ -195,13 +173,21 @@ export default class ImmunizationCardComponent extends Vue {
         <b-row>
             <b-col>
                 <b-row class="pb-3 title d-flex">
-                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Name</b-col
                     >
-                    <b-col class="value">{{ userName }}</b-col>
+                    <b-col class="value text-wrap text-break">{{
+                        userName
+                    }}</b-col>
+                </b-row>
+                <b-row class="pb-3 title d-flex">
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
+                        >Date of Birth</b-col
+                    >
+                    <b-col class="value">{{ birthdate }}</b-col>
                 </b-row>
                 <b-row class="pb-4 title">
-                    <b-col class="ml-1 label col-3 d-flex justify-content-end"
+                    <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Immunization</b-col
                     >
                     <b-col class="value">COVID-19</b-col>
@@ -312,7 +298,7 @@ div[class*=" row"] {
 
     .label {
         min-width: 75px;
-        max-width: 75px;
+        max-width: 80px;
         font-size: 0.9em;
     }
     .value {
@@ -327,11 +313,11 @@ div[class*=" row"] {
     border-radius: 15px 0px 0px 15px;
 
     .left-pane {
-        max-width: 75px;
-        padding: 20px;
+        max-width: 55px;
+        padding: 5px;
         @media (max-width: 360px) {
-            padding: 10px;
-            max-width: 60px;
+            padding: 5px;
+            max-width: 55px;
         }
         .dose-label {
             color: white;

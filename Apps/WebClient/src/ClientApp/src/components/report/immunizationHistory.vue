@@ -6,7 +6,6 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
-import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -21,7 +20,6 @@ import PDFUtil from "@/utility/pdfUtil";
 export default class ImmunizationHistoryReportComponent extends Vue {
     @Prop() private startDate!: string | null;
     @Prop() private endDate!: string | null;
-    @Prop() private patientData!: PatientData | null;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -134,7 +132,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         :start-date="startDate"
                         :end-date="endDate"
                         title="Health Gateway Immunization Record"
-                        :patient-data="patientData"
                     />
                     <hr />
                 </div>

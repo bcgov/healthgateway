@@ -6,7 +6,6 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder } from "@/models/laboratory";
-import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -21,7 +20,6 @@ import PDFUtil from "@/utility/pdfUtil";
 export default class COVID19ReportComponent extends Vue {
     @Prop() private startDate!: string | null;
     @Prop() private endDate!: string | null;
-    @Prop() private patientData!: PatientData | null;
 
     @Action("retrieve", { namespace: "laboratory" })
     retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
@@ -122,7 +120,6 @@ export default class COVID19ReportComponent extends Vue {
                     :start-date="startDate"
                     :end-date="endDate"
                     title="Health Gateway COVID-19 Test Result History"
-                    :patient-data="patientData"
                 />
                 <b-row v-if="isEmpty && (!isLaboratoryLoading || !isPreview)">
                     <b-col>No records found.</b-col>
