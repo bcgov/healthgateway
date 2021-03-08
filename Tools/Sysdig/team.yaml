@@ -1,0 +1,18 @@
+apiVersion: ops.gov.bc.ca/v1alpha1
+kind: SysdigTeam
+metadata:
+  name: 0bd5ad-sysdigteam
+spec:
+  team: 
+    description: The Sysdig Team for the Health Gateway Namespaces
+    users:
+    - name: nino.samson@gov.bc.ca
+      role: ROLE_TEAM_MANAGER
+    - name: stephen.laws@nomostech.com
+      role: ROLE_TEAM_MANAGER
+    - name: marobej@gmail.com
+      role: ROLE_TEAM_MANAGER
+    - name: mikelyttle@gmail.com
+      role: ROLE_TEAM_MANAGER
+    - name: tiago.graf@aot-technologies.com
+      role: ROLE_TEAM_MANAGER
