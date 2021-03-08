@@ -24,6 +24,7 @@ import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import UserSMSInvite from "@/models/userSMSInvite";
+import MedicationRequest from "@/models/MedicationRequest";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -59,6 +60,9 @@ export interface IMedicationService {
         hdid: string,
         protectiveWord?: string
     ): Promise<RequestResult<MedicationStatementHistory[]>>;
+    getPatientMedicationRequest(
+        hdid: string
+    ): Promise<RequestResult<MedicationRequest[]>>;
 }
 
 export interface IEncounterService {
