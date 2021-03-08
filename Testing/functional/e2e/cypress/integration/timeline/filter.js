@@ -43,6 +43,7 @@ describe("Filters", () => {
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
 
         // Validate "No records found with the selected filters" for a Date Range Filter
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get('[data-testid=filterDropdown]').click();
         cy.get("[data-testid=filterStartDateInput] input")
             .clear()
@@ -57,6 +58,7 @@ describe("Filters", () => {
         cy.get("[data-testid=noTimelineEntriesText]").children().first().should("have.text", "No records found with the selected filters");
         
         // Select 06/14/2020 to 06/14/2020 should display data for this date range.
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get('[data-testid=filterDropdown]').click();
         cy.get("[data-testid=filterStartDateInput] input")
             .focus()
@@ -77,6 +79,7 @@ describe("Filters", () => {
     });
 
     it("No Records on Calendar Timeline", () => {
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get('[data-testid=filterDropdown]').click();
         cy.get("[data-testid=monthViewToggle]").first().click();
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
@@ -86,6 +89,7 @@ describe("Filters", () => {
     });
 
     it("Filter Checkboxes are Visible", () => {
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=Medication-filter]")
             .should("not.to.be.checked");
@@ -101,6 +105,7 @@ describe("Filters", () => {
     });
 
     it("Filter Immunization", () => {
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Immunization-filter]").click({ force: true });
@@ -115,6 +120,7 @@ describe("Filters", () => {
     });
 
     it("Filter Medication", () => {
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Medication-filter]").click({ force: true });
@@ -129,6 +135,7 @@ describe("Filters", () => {
     });
 
     it("Filter Encounter", () => {
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Encounter-filter]").click({ force: true });
@@ -143,6 +150,7 @@ describe("Filters", () => {
     });
 
     it("Filter Laboratory", () => {
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Laboratory-filter]").click({ force: true });
@@ -157,7 +165,8 @@ describe("Filters", () => {
     });
 
     it("Validate Apply and Cancel buttons", () => {
-        cy.get("[data-testid=filterDropdown]").click({ force: true })
+        cy.get('[data-testid=filterContainer]').should("not.exist");
+        cy.get("[data-testid=filterDropdown]").click()
         cy.get('[data-testid=filterContainer]').should("be.visible");
         cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Medication-filter]").should("not.to.be.checked");
@@ -168,7 +177,7 @@ describe("Filters", () => {
         cy.get('[data-testid=btnFilterApply]').click();
         cy.get('[data-testid=filterContainer]').should("not.exist");
 
-        cy.get("[data-testid=filterDropdown]").click({ force: true })
+        cy.get("[data-testid=filterDropdown]").click()
         cy.get('[data-testid=filterContainer]').should("be.visible");
         cy.get('[data-testid=filterContainer]').contains("Clear").click();
         cy.get("[data-testid=Immunization-filter]").click({ force: true });
@@ -184,7 +193,7 @@ describe("Filters", () => {
         cy.get('[data-testid=btnFilterCancel]').click();
         cy.get('[data-testid=filterContainer]').should("not.exist");
 
-        cy.get("[data-testid=filterDropdown]").click({ force: true })
+        cy.get("[data-testid=filterDropdown]").click()
         cy.get('[data-testid=filterContainer]').should("be.visible");
         cy.get("[data-testid=Medication-filter]").should("not.to.be.checked");
         cy.get("[data-testid=Note-filter]").should("not.to.be.checked");
@@ -202,6 +211,7 @@ describe("Filters", () => {
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak
         );
+        cy.get('[data-testid=filterContainer]').should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=MedicationCount]").should("be.visible");
         cy.get("[data-testid=ImmunizationCount]").should("not.exist");
