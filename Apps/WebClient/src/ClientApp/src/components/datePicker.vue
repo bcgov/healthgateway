@@ -9,7 +9,6 @@ import {
     Ref,
     Watch,
 } from "vue-property-decorator";
-import { minLength } from "vuelidate/lib/validators";
 import { Validation } from "vuelidate/vuelidate";
 
 import { DateWrapper } from "@/models/dateWrapper";
@@ -20,10 +19,11 @@ export default class DatePickerComponent extends Vue {
     @Prop() state?: boolean;
     @Ref("datePicker") datePicker!: BFormDatepicker;
 
+    private value = "";
     private inputValue = "";
 
     private mounted() {
-        this.inputValue = this.model;
+        this.value = this.model;
     }
 
     private onFocus() {
@@ -33,22 +33,31 @@ export default class DatePickerComponent extends Vue {
         // (this.datePicker.$refs.control as any).show();
     }
 
-    @Watch("model")
-    private onModelChanged() {
-        this.inputValue = this.model;
+    @Watch("value")
+    private onValueChanged() {
+        this.inputValue = this.value
+            ? new DateWrapper(this.value).format().toUpperCase()
+            : "";
+        this.updateModel();
     }
 
-    @Watch("inputValue")
+    @Watch("model")
+    private onModelChanged() {
+        this.value = this.model;
+    }
+
     private onInputChanged() {
         this.$v.inputValue.$touch();
         if (this.isValid(this.$v.inputValue)) {
-            this.updateModel();
+            this.value = this.inputValue
+                ? DateWrapper.fromStringFormat(this.inputValue).toISO()
+                : "";
         }
     }
 
     @Emit("change")
     private updateModel() {
-        return this.inputValue;
+        return this.value;
     }
 
     @Emit("blur")
@@ -67,13 +76,14 @@ export default class DatePickerComponent extends Vue {
     private validations() {
         return {
             inputValue: {
-                minLength: minLength(10),
                 minValue: (value: string) =>
-                    new DateWrapper(value).isAfter(
+                    !value ||
+                    DateWrapper.fromStringFormat(value).isAfter(
                         new DateWrapper("1900-01-01")
                     ),
                 maxValue: (value: string) =>
-                    new DateWrapper(value).isBefore(
+                    !value ||
+                    DateWrapper.fromStringFormat(value).isBefore(
                         new DateWrapper("2100-01-01")
                     ),
             },
@@ -90,19 +100,20 @@ export default class DatePickerComponent extends Vue {
     <b-input-group>
         <b-form-input
             v-model="inputValue"
-            v-mask="'####-##-##'"
+            v-mask="'####-AAA-##'"
             type="text"
-            placeholder="YYYY-MM-DD"
+            placeholder="YYYY-MMM-DD"
             autocomplete="off"
             :state="getState"
             @focus.native="onFocus"
             @blur.native="onBlur"
             @click.native.capture.stop
+            @change="onInputChanged"
         ></b-form-input>
         <b-input-group-append>
             <b-form-datepicker
                 ref="datePicker"
-                v-model="inputValue"
+                v-model="value"
                 menu-class="datepicker-style"
                 button-only
                 right
