@@ -49,7 +49,7 @@
                                     <strong>Immunization records</strong>
                                     <div>
                                         Access immunization records for vaccines
-                                        administered by health
+                                        administered by public health
                                         and pharmacies. The Health
                                         Gateway also provides digital the
                                         digital COVID-19 immunization card,
