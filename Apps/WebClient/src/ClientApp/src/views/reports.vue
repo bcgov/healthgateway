@@ -65,7 +65,7 @@ export default class ReportsView extends Vue {
     private retryCount = 2;
 
     private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 
     private mounted() {
@@ -108,7 +108,7 @@ export default class ReportsView extends Vue {
     }
 
     private formatDateLong(date: string): string {
-        return new DateWrapper(date).formatDateMed();
+        return new DateWrapper(date).format();
     }
 
     private showConfirmationModal() {

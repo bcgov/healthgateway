@@ -71,7 +71,7 @@ export default class ImmunizationCardComponent extends Vue {
                 covidImmunizations[index].immunization.immunizationAgents[0];
             this.doses.push({
                 product: agent.productName,
-                date: this.formatDate(element.dateOfImmunization),
+                date: DateWrapper.format(element.dateOfImmunization),
                 agent: agent.name,
                 lot: agent.lotNumber,
                 provider: element.providerOrClinic,

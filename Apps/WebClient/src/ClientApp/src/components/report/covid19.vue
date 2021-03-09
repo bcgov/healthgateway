@@ -99,7 +99,7 @@ export default class COVID19ReportComponent extends Vue {
     }
 
     private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 
     public async generatePdf(): Promise<void> {
