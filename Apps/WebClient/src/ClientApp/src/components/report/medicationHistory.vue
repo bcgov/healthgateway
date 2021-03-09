@@ -7,7 +7,6 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -23,7 +22,6 @@ import PDFUtil from "@/utility/pdfUtil";
 export default class MedicationHistoryReportComponent extends Vue {
     @Prop() private startDate!: string | null;
     @Prop() private endDate!: string | null;
-    @Prop() private patientData!: PatientData | null;
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -146,7 +144,6 @@ export default class MedicationHistoryReportComponent extends Vue {
                     :start-date="startDate"
                     :end-date="endDate"
                     title="Health Gateway Medication History"
-                    :patient-data="patientData"
                 />
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>

@@ -128,9 +128,8 @@ import {
 import { extend, ValidationProvider } from "vee-validate";
 import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
 
-import Communication, {
-    CommunicationStatus
-} from "@/models/adminCommunication";
+import type Communication from "@/models/adminCommunication";
+import { CommunicationStatus } from "@/models/adminCommunication";
 
 extend("dateValid", {
     validate(value: unknown, args: unknown[] | Record<string, Date>) {
@@ -206,7 +205,7 @@ export default class BannerModal extends Vue {
         return "dateValid:" + effective.toString() + "," + expiry.toString();
     }
 
-    private dateTimeValid(): boolean {
+     private dateTimeValid(): boolean {
         return moment(this.editedItem.effectiveDateTime).isBefore(
             moment(this.editedItem.expiryDateTime)
         );

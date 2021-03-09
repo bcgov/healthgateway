@@ -46,10 +46,7 @@ namespace HealthGateway.DrugMaintainer
         {
             this.logger.LogInformation("Parsing PharmaCare Drug file");
             using var reader = new StreamReader(filename);
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                HasHeaderRecord = false,
-            };
+            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture);
             using var csv = new CsvReader(reader, csvConfig);
             csv.Context.TypeConverterOptionsCache.GetOptions<DateTime>().Formats = new[] { "yyyyMMdd" };
             PharmaCareDrugMapper mapper = new PharmaCareDrugMapper(filedownload);

@@ -12,6 +12,7 @@ import { UserComment } from "@/models/userComment";
 
 import Encounter from "./encounter";
 import MedicationRequest from "./MedicationRequest";
+import PatientData from "./patientData";
 import { ResultError } from "./requestResult";
 import TimelineFilter from "./timelineFilter";
 import UserNote from "./userNote";
@@ -20,6 +21,7 @@ export enum LoadStatus {
     NONE,
     REQUESTED,
     ASYNC_REQUESTED,
+    PARTIALLY_LOADED,
     LOADED,
     DEFERRED,
     PROTECTED,
@@ -65,6 +67,7 @@ export interface ConfigState {
 
 export interface UserState {
     user: User;
+    patientData: PatientData;
     smsResendDateTime?: DateWrapper;
     statusMessage: string;
     error: boolean;

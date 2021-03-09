@@ -53,6 +53,9 @@ export default class TimelineView extends Vue {
     @Action("setKeyword", { namespace: "timeline" })
     setKeyword!: (keyword: string) => void;
 
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: (params: { hdid: string }) => Promise<void>;
+
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
 
@@ -215,7 +218,6 @@ export default class TimelineView extends Vue {
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
-
         return timelineEntries;
     }
 
@@ -298,6 +300,7 @@ export default class TimelineView extends Vue {
 
     private fetchTimelineData() {
         Promise.all([
+            this.getPatientData({ hdid: this.user.hdid }),
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveMedicationRequests({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),

@@ -343,7 +343,10 @@ export default class DependentCardComponent extends Vue {
                             </td>
                             <td>
                                 <b-btn
-                                    v-if="checkResultReady(item.labResults[0])"
+                                    v-if="
+                                        item.reportAvailable &&
+                                        checkResultReady(item.labResults[0])
+                                    "
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
                                     @click="
