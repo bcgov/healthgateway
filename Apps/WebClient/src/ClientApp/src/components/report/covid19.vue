@@ -6,7 +6,6 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
-import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
