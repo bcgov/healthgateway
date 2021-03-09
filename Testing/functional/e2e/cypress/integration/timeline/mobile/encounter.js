@@ -12,18 +12,18 @@ describe('MSP Visits', () => {
         cy.get('[data-testid=timelineCard]')
           .first()
           .click()
-        const entryDetailsModal = cy.get('[data-testid=entryDetailsModal]')
-        entryDetailsModal.get('[data-testid=backBtn]')
+        const entryDetails = cy.get('[data-testid=entryDetailsCard]')
+        cy.get('[data-testid=backBtn]')
           .should('be.visible')
-        entryDetailsModal.get('[data-testid=entryCardDetailsTitle]')
+        entryDetails.get('[data-testid=entryCardDetailsTitle]')
           .should('be.visible')
-        entryDetailsModal.get('[data-testid=entryCardDate]')
-            .should('be.visible')
-        entryDetailsModal.get('[data-testid=encounterClinicLabel')
-            .should('be.visible');
-        entryDetailsModal.get('[data-testid=encounterClinicName')
-            .should('be.visible');
-        entryDetailsModal.get('[data-testid=encounterClinicAddress')
-            .should('be.visible');
+        entryDetails.get('[data-testid=entryCardDate]')
+          .should('be.visible')
+        entryDetails.get('[data-testid=encounterClinicLabel')
+          .should('be.visible');
+        entryDetails.get('[data-testid=encounterClinicName')
+          .should('be.visible');
+        entryDetails.get('[data-testid=encounterClinicAddress')
+          .should('be.visible');
     })
 })

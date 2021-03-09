@@ -25,19 +25,19 @@ describe('Medication', () => {
         cy.get('[data-testid=timelineCard]')
           .first()
           .click()
-        const entryDetailsModal = cy.get('[data-testid=entryDetailsModal]')
-        entryDetailsModal.get('[data-testid=backBtn]')
+        const entryDetails = cy.get('[data-testid=entryDetailsCard]')
+        cy.get('[data-testid=backBtn]')
           .should('be.visible')
-        entryDetailsModal.get('[data-testid=entryCardDetailsTitle]')
+        entryDetails.get('[data-testid=entryCardDetailsTitle]')
           .should('be.visible')
-        entryDetailsModal.get('[data-testid=entryCardDate]')
+        entryDetails.get('[data-testid=entryCardDate]')
             .should('be.visible')
         
-        entryDetailsModal.get('[data-testid=medicationTitle]')
+        entryDetails.get('[data-testid=medicationTitle]')
             .should('be.visible');
-        entryDetailsModal.get('[data-testid=medicationPractitioner]')
+        entryDetails.get('[data-testid=medicationPractitioner]')
             .should('be.visible');
-        entryDetailsModal.get('[data-testid=medicationPractitioner]')
+        entryDetails.get('[data-testid=medicationPractitioner]')
             .should('be.visible');
     })
 })
