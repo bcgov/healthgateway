@@ -53,7 +53,7 @@ describe("Immunization", () => {
       .first()
       .click()
       .then(() => {
-        cy.get("[data-testid=entryDetailsModal]").should("exist");
+        cy.get("[data-testid=entryDetailsCard]").should("be.visible");
         cy.get("[data-testid=backBtn]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
         cy.get("[data-testid=entryCardDate]").should("be.visible");

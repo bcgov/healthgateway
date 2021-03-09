@@ -129,6 +129,7 @@ export default class EntryDetailsComponent extends Vue {
     <b-modal
         id="entry-details-modal"
         v-model="isVisible"
+        data-testid="entryDetailsModal"
         modal-class="entry-details-modal"
         header-class="entry-details-modal-header"
         dialog-class="entry-details-modal-dialog"
