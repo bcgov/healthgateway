@@ -29,11 +29,12 @@ describe('Reports', () => {
         .click()
         .focus()
         .type("2021-FEB-05")
+        .focus()
 
         cy.get('[data-testid=applyFilterBtn]')
             .click()
         cy.get('[data-testid=selectedDatesFilter]')
-            .contains('From Feb 3, 2021 To Feb 5, 2021')
+            .contains('From 2021-Feb-03 To 2021-Feb-05')
 
         // Validate filters - Cancel  button
         cy.get('[data-testid=advancedBtn]')
@@ -166,7 +167,7 @@ describe('Reports', () => {
             .should('be.visible')
         cy.get('[data-testid=covid19ItemDate]')
             .last()
-            .contains(/\d{4}-\d{2}-\d{2}/);
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
         
         cy.viewport('iphone-6');
         cy.get('[data-testid=covid19ReportSample]')
@@ -199,7 +200,7 @@ describe('Reports', () => {
             .should('be.visible')
         cy.get('[data-testid=immunizationItemDate]')
             .last()
-            .contains(/\d{4}-\d{2}-\d{2}/);
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
         
         cy.viewport('iphone-6');
         cy.get('[data-testid=immunizationHistoryReportSample]')

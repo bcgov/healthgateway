@@ -6,17 +6,17 @@ describe('dependents', () => {
         firstName: "Sam",
         lastName: "Testfive",
         wrongLastName: "Testfive2",
-        invalidDoB: "2007-08-05",
-        doB: "2014-03-15",
-        testDate: "2020-03-21",
+        invalidDoB: "2007-Aug-05",
+        doB: "2014-Mar-15",
+        testDate: "2020-Mar-21",
         phn: "9874307168"
     }
    
     const noHdidDependent = {
         firstName: "Baby Girl",
         lastName: "Reid",
-        doB: "2018-02-04",
-        testDate: "2020-03-21",
+        doB: "2018-Feb-04",
+        testDate: "2020-Mar-21",
         phn: "9879187222"
     }
 
@@ -222,7 +222,7 @@ describe('dependents', () => {
             .click();
         cy.get('[data-testid=dependentCovidTestDate]')
             .first()
-            .contains(/\d{4}-\d{2}-\d{2}/);
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
         cy.get('[data-testid=dependentCovidReportDownloadBtn]')
             .first()
             .click();
@@ -241,7 +241,7 @@ describe('dependents', () => {
             .click();
         cy.get('[data-testid=dependentCovidTestDate]')
             .last()
-            .contains(/\d{4}-\d{2}-\d{2}/);
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
         expect(cy.get('[data-testid=dependentCovidTestLocation]').last())
             .not.to.be.empty
         expect(cy.get('[data-testid=dependentCovidTestLabResult]').last())
