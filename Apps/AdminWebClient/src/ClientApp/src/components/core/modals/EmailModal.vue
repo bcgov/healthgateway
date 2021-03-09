@@ -95,151 +95,148 @@
 </template>
 <script lang="ts">
 import {
-    Blockquote,
-    Bold,
-    BulletList,
-    Code,
-    HardBreak,
-    Heading,
-    History,
-    Italic,
-    Link,
-    ListItem,
-    OrderedList,
-    Paragraph,
-    Strike,
-    TiptapVuetify,
-    Underline
+  Blockquote,
+  Bold,
+  BulletList,
+  Code,
+  HardBreak,
+  Heading,
+  History,
+  Italic,
+  Link,
+  ListItem,
+  OrderedList,
+  Paragraph,
+  Strike,
+  TiptapVuetify,
+  Underline,
 } from "tiptap-vuetify";
 import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
 
-import Communication, {
-    CommunicationStatus
-} from "@/models/adminCommunication";
+import type Communication from "@/models/adminCommunication";
+import { CommunicationStatus } from "@/models/adminCommunication";
 
 @Component({
-    components: {
-        TiptapVuetify
-    }
+  components: {
+    TiptapVuetify,
+  },
 })
 export default class EmailModal extends Vue {
-    @Prop() editedItem!: Communication;
-    @Prop() isNew!: number;
+  @Prop() editedItem!: Communication;
+  @Prop() isNew!: number;
 
-    private dialogState = false;
-    private priorityItems = [
-        { text: "Urgent", number: 1000 },
-        { text: "High", number: 100 },
-        { text: "Standard", number: 10 },
-        { text: "Low", number: 1 }
-    ];
-    private extensions = [
-        History,
-        Blockquote,
-        Link,
-        Underline,
-        Strike,
-        Bold,
-        Italic,
-        ListItem,
-        BulletList,
-        OrderedList,
-        [
-            Heading,
-            {
-                options: {
-                    levels: [1, 2, 3, 4]
-                }
-            }
-        ],
-        Bold,
-        Code,
-        Paragraph,
-        HardBreak
-    ];
+  private dialogState = false;
+  private priorityItems = [
+    { text: "Urgent", number: 1000 },
+    { text: "High", number: 100 },
+    { text: "Standard", number: 10 },
+    { text: "Low", number: 1 },
+  ];
 
-    @Watch("editedItem")
-    private onPropChange() {
-        if (!this.isNew) {
-            this.dialogState = true;
-        }
+  private extensions = [
+    History,
+    Blockquote,
+    Link,
+    Underline,
+    Strike,
+    Bold,
+    Italic,
+    ListItem,
+    BulletList,
+    OrderedList,
+    [
+      Heading,
+      {
+        options: {
+          levels: [1, 2, 3, 4],
+        },
+      },
+    ],
+    Bold,
+    Code,
+    Paragraph,
+    HardBreak,
+  ];
+
+  @Watch("editedItem")
+  private onPropChange() {
+    if (!this.isNew) {
+      this.dialogState = true;
     }
+  }
 
-    private get formTitle(): string {
-        return this.isNew ? "New Email" : "Edit Email";
-    }
+  private get formTitle(): string {
+    return this.isNew ? "New Email" : "Edit Email";
+  }
 
-    @Watch("dialogState")
-    private onDialogChange(dialogIsOpen: boolean) {
-        dialogIsOpen || this.close();
-    }
+  @Watch("dialogState")
+  private onDialogChange(dialogIsOpen: boolean) {
+    dialogIsOpen || this.close();
+  }
 
-    private close() {
-        this.$nextTick(() => {
-            (this.$refs.form as Vue & {
-                resetValidation: () => void;
-            }).resetValidation();
-            this.dialogState = false;
-            this.emitClose();
-        });
-    }
+  private close() {
+    this.$nextTick(() => {
+      (this.$refs.form as Vue & {
+        resetValidation: () => void;
+      }).resetValidation();
+      this.dialogState = false;
+      this.emitClose();
+    });
+  }
 
-    private contentValid(): boolean {
-        return this.editedItem.text.replace("<[^>]*>", "") !== ""
-            ? true
-            : false;
-    }
+  private contentValid(): boolean {
+    return this.editedItem.text.replace("<[^>]*>", "") !== "" ? true : false;
+  }
 
-    private saveChanges() {
-        if (
-            (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
-            this.contentValid()
-        ) {
-            if (this.isNew) {
-                this.emitSend();
-            } else {
-                this.emitUpdate();
-            }
-            this.close();
-            (this.$refs.form as Vue & {
-                resetValidation: () => void;
-            }).resetValidation();
-        }
+  private saveChanges() {
+    if (
+      (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+      this.contentValid()
+    ) {
+      if (this.isNew) {
+        this.emitSend();
+      } else {
+        this.emitUpdate();
+      }
+      this.close();
+      (this.$refs.form as Vue & {
+        resetValidation: () => void;
+      }).resetValidation();
     }
+  }
 
-    private get isDraft(): boolean {
-        return (
-            this.editedItem.communicationStatusCode ===
-            CommunicationStatus.Draft
-        );
-    }
+  private get isDraft(): boolean {
+    return (
+      this.editedItem.communicationStatusCode === CommunicationStatus.Draft
+    );
+  }
 
-    private get publishingStatus(): string {
-        return this.isDraft ? "Publish" : "Draft";
-    }
+  private get publishingStatus(): string {
+    return this.isDraft ? "Publish" : "Draft";
+  }
 
-    private togglePublish() {
-        if (this.isDraft) {
-            this.editedItem.communicationStatusCode = CommunicationStatus.New;
-        } else {
-            this.editedItem.communicationStatusCode = CommunicationStatus.Draft;
-        }
-        this.saveChanges();
+  private togglePublish() {
+    if (this.isDraft) {
+      this.editedItem.communicationStatusCode = CommunicationStatus.New;
+    } else {
+      this.editedItem.communicationStatusCode = CommunicationStatus.Draft;
     }
+    this.saveChanges();
+  }
 
-    @Emit()
-    private emitSend() {
-        return this.editedItem;
-    }
+  @Emit()
+  private emitSend() {
+    return this.editedItem;
+  }
 
-    @Emit()
-    private emitUpdate() {
-        return this.editedItem;
-    }
+  @Emit()
+  private emitUpdate() {
+    return this.editedItem;
+  }
 
-    @Emit()
-    private emitClose() {
-        return;
-    }
+  @Emit()
+  private emitClose() {
+    return;
+  }
 }
 </script>
