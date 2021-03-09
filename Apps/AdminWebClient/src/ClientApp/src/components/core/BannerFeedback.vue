@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 import { ResultType } from "@/constants/resulttype";
-import BannerFeedback from "@/models/bannerFeedback";
+import type BannerFeedback from "@/models/bannerFeedback";
 
 @Component
 export default class BannerFeedbackComponent extends Vue {
