@@ -92,7 +92,7 @@ namespace HealthGateway.Immunization.Models
         public static IEnumerable<ImmunizationAgent> FromPHSACodesModel(IEnumerable<SystemCode>? vaccineCodes)
         {
             List<ImmunizationAgent> immunizationAgents = new List<ImmunizationAgent>();
-            foreach (SystemCode systemCode in vaccineCodes)
+            foreach (SystemCode systemCode in vaccineCodes!)
             {
                 immunizationAgents.Add(
                     new ImmunizationAgent()

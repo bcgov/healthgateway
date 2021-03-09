@@ -3,7 +3,6 @@
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>9.0</LangVersion>
-        <WarningsAsErrors>CS8600;CS8602;CS8603</WarningsAsErrors>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     </PropertyGroup>
 
