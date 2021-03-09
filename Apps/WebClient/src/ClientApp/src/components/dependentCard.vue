@@ -199,7 +199,7 @@ export default class DependentCardComponent extends Vue {
     }
 
     private formatDate(date: StringISODate): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 
     private checkResultReady(labResult: LaboratoryResult): boolean {
