@@ -21,14 +21,14 @@ describe('Reports', () => {
         .should('have.value','')
         .click()
         .focus()
-        .type("2021-02-03")
+        .type("2021-FEB-03")
     
         cy.get('[data-testid=endDateInput] input')
         .should('be.enabled', 'be.visible')
         .should('have.value','')
         .click()
         .focus()
-        .type("2021-02-05")
+        .type("2021-FEB-05")
 
         cy.get('[data-testid=applyFilterBtn]')
             .click()
@@ -41,16 +41,16 @@ describe('Reports', () => {
         
         // Cancel button should not set the newly entered values
         cy.get('[data-testid=startDateInput] input')
-            .type("2020-02-03")
+            .type("2020-FEB-03")
         cy.get('[data-testid=endDateInput] input')
-            .type("2020-02-05")
+            .type("2020-FEB-05")
         cy.get('[data-testid=clearBtn]')
             .should('be.enabled', 'be.visible')
             .click();
         cy.get('[data-testid=startDateInput] input')
-            .should('have.value','2021-02-03')
+            .should('have.value','2021-FEB-03')
         cy.get('[data-testid=endDateInput] input')
-            .should('have.value','2021-02-05')
+            .should('have.value','2021-FEB-05')
 
         cy.get('[data-testid=clearBtn]')
             .should('not.be.visible')
