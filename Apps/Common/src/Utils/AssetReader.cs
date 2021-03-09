@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,6 +38,7 @@ namespace HealthGateway.Common.Utils
             {
                 return null;
             }
+
             using StreamReader reader = new StreamReader(resourceStream!, Encoding.UTF8);
             return reader.ReadToEnd();
         }

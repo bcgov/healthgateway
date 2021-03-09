@@ -43,7 +43,7 @@ namespace HealthGateway.Immunization.Models
             return new ImmunizationDefinition()
             {
                 Name = model.VaccineCodeText,
-                ImmunizationAgents = ImmunizationAgent.FromPHSACodesModel(model.VaccineCodes)
+                ImmunizationAgents = ImmunizationAgent.FromPHSACodesModel(model.VaccineCodes),
             };
         }
     }

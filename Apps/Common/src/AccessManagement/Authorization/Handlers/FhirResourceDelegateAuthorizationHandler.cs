@@ -154,7 +154,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 return await this.patientService.GetPatient(resourceHDID, PatientIdentifierType.HDID).ConfigureAwait(true);
             }).Result;
 
-            return patientResult.ResourcePayload.Birthdate.AddYears(this.maxDependentAge.Value) < DateTime.Now;
+            return patientResult.ResourcePayload!.Birthdate.AddYears(this.maxDependentAge.Value) < DateTime.Now;
         }
     }
 }

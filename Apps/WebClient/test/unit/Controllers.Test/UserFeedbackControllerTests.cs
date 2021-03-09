@@ -191,7 +191,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 .ReturnsAsync(authResult);
 
             httpContextAccessorMock
-                .Setup(x => x.HttpContext.RequestServices.GetService(typeof(IAuthenticationService)))
+                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
             return httpContextAccessorMock;
         }
