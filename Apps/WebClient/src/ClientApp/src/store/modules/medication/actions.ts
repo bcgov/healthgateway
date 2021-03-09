@@ -23,7 +23,10 @@ export const actions: ActionTree<MedicationState, RootState> = {
         return new Promise((resolve, reject) => {
             const medicationStatements: MedicationStatementHistory[] =
                 context.getters.medicationStatements;
-            if (context.state.status === LoadStatus.LOADED) {
+            if (
+                context.state.status === LoadStatus.LOADED ||
+                medicationStatements.length > 0
+            ) {
                 logger.debug(
                     "Medication Statements found stored, not quering!"
                 );
@@ -65,7 +68,10 @@ export const actions: ActionTree<MedicationState, RootState> = {
         return new Promise((resolve, reject) => {
             const medicationRequests: MedicationRequest[] =
                 context.getters.medicationRequests;
-            if (context.state.status === LoadStatus.LOADED) {
+            if (
+                context.state.status === LoadStatus.LOADED ||
+                medicationRequests.length > 0
+            ) {
                 logger.debug("Medication Requests found stored, not quering!");
                 resolve({
                     pageIndex: 0,
