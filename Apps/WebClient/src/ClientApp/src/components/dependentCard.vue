@@ -13,7 +13,11 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import {
+    LaboratoryOrder,
+    LaboratoryReport,
+    LaboratoryUtil,
+} from "@/models/laboratory";
 import { LaboratoryResult } from "@/models/laboratory";
 import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
@@ -199,7 +203,7 @@ export default class DependentCardComponent extends Vue {
     }
 
     private checkResultReady(labResult: LaboratoryResult): boolean {
-        return labResult.testStatus == "Final";
+        return LaboratoryUtil.isTestResultReady(labResult.testStatus);
     }
 
     private formatResult(labResult: LaboratoryResult): string {
@@ -339,7 +343,10 @@ export default class DependentCardComponent extends Vue {
                             </td>
                             <td>
                                 <b-btn
-                                    v-if="checkResultReady(item.labResults[0])"
+                                    v-if="
+                                        item.reportAvailable &&
+                                        checkResultReady(item.labResults[0])
+                                    "
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
                                     @click="
