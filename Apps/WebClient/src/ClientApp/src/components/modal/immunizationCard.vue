@@ -184,7 +184,9 @@ export default class ImmunizationCardComponent extends Vue {
                     <b-col class="ml-1 label col-4 d-flex justify-content-end"
                         >Date of Birth</b-col
                     >
-                    <b-col class="value">{{ birthdate }}</b-col>
+                    <b-col class="value" data-testid="patientBirthdate">{{
+                        birthdate
+                    }}</b-col>
                 </b-row>
                 <b-row class="pb-4 title">
                     <b-col class="ml-1 label col-4 d-flex justify-content-end"
