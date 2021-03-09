@@ -78,7 +78,7 @@ export default class MedicationRequestTimelineComponent extends Vue {
     margin: 0px;
 }
 .row {
-    padding: 0;
+    padding: 0px;
     margin: 0px;
 }
 

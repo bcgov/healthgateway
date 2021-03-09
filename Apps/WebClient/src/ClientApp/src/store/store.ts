@@ -12,7 +12,6 @@ import { idle } from "./modules/idle/idle";
 import { immunization } from "./modules/immunization/immunization";
 import { laboratory } from "./modules/laboratory/laboratory";
 import { medication } from "./modules/medication/medication";
-import { medicationRequest } from "./modules/medicationRequest/medicationRequest";
 import { navbar } from "./modules/navbar/navbar";
 import { note } from "./modules/note/note";
 import { timeline } from "./modules/timeline/timeline";
@@ -45,7 +44,6 @@ const storeOptions: StoreOptions<RootState> = {
         config,
         user,
         medication,
-        medicationRequest,
         laboratory,
         comment,
         immunization,

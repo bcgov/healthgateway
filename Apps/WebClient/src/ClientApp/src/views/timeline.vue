@@ -65,13 +65,13 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "laboratory" })
     retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "medication" })
+    @Action("retrieveMedicationStatements", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "medicationRequest" })
+    @Action("retrieveMedicationRequests", { namespace: "medication" })
     retrieveMedicationRequests!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieve", { namespace: "comment" })
@@ -80,7 +80,7 @@ export default class TimelineView extends Vue {
     @Getter("isLoading", { namespace: "medication" })
     isMedicationLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "medicationRequest" })
+    @Getter("isLoading", { namespace: "medication" })
     isMedicationRequestLoading!: boolean;
 
     @Getter("isLoading", { namespace: "comment" })
@@ -110,7 +110,7 @@ export default class TimelineView extends Vue {
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
 
-    @Getter("medicationRequests", { namespace: "medicationRequest" })
+    @Getter("medicationRequests", { namespace: "medication" })
     medicationRequests!: MedicationRequest[];
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })

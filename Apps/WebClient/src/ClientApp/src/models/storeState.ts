@@ -75,11 +75,6 @@ export interface MedicationState {
     medicationStatements: MedicationStatementHistory[];
     protectiveWordAttempts: number;
     medications: MedicationResult[];
-    statusMessage: string;
-    error?: ResultError;
-    status: LoadStatus;
-}
-export interface MedicationRequestState {
     medicationRequests: MedicationRequest[];
     statusMessage: string;
     error?: ResultError;

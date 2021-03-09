@@ -6,10 +6,10 @@ import MedicationRequest from "./MedicationRequest";
 
 // The medication timeline entry model
 export default class MedicationRequestTimelineEntry extends TimelineEntry {
-    public drugName: string;
-    public requestStatus: string;
-    public prescriberFirstName: string;
-    public prescriberLastName: string;
+    public drugName?: string;
+    public requestStatus?: string;
+    public prescriberFirstName?: string;
+    public prescriberLastName?: string;
     public effectiveDate: DateWrapper;
     public expiryDate: DateWrapper;
     public referenceNumber: string;
@@ -21,7 +21,7 @@ export default class MedicationRequestTimelineEntry extends TimelineEntry {
         getComments: (entyId: string) => UserComment[] | null
     ) {
         super(
-            model.id,
+            model.referenceNumber,
             EntryType.MedicationRequest,
             new DateWrapper(model.requestedDate)
         );
