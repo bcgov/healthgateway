@@ -37,10 +37,6 @@ export default class ReportHeaderComponent extends Vue {
     private formatDate(date: string): string {
         return new DateWrapper(date).format();
     }
-
-    private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
-    }
 }
 </script>
 
