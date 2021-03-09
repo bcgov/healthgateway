@@ -98,14 +98,11 @@ namespace HealthGateway.Immunization.Models
                     new ImmunizationAgent()
                     {
                         Code = systemCode.Code,
-                        Name = systemCode.Display
-                    }
-                );
+                        Name = systemCode.Display,
+                    });
             }
 
             return immunizationAgents;
         }
-
-
     }
 }

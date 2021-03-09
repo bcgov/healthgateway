@@ -286,8 +286,7 @@ namespace HealthGateway.LaboratoryTests
                    .Setup<Task<HttpResponseMessage>>(
                       "SendAsync",
                       ItExpr.IsAny<HttpRequestMessage>(),
-                      ItExpr.IsAny<CancellationToken>()
-                   )
+                      ItExpr.IsAny<CancellationToken>())
                    .ReturnsAsync(httpResponseMessage)
                    .Verifiable();
                 using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());

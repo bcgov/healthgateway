@@ -76,6 +76,7 @@ namespace HealthGateway.WebClient
             this.startupConfig.ConfigurePatientAccess(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
+
             // Add services
             services.AddMemoryCache();
             services.AddTransient<IConfigurationService, ConfigurationService>();

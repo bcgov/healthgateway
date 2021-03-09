@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\src\Common.csproj", "{8660083F-F582-47C6-BC98-6DCF0F4AC851}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\src\Common.csproj", "{8660083F-F582-47C6-BC98-6DCF0F4AC851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBMaintainer", "DBMaintainer\DBMaintainer.csproj", "{98359C43-F35C-45BB-850E-8E098D482709}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBMaintainer", "DBMaintainer\DBMaintainer.csproj", "{98359C43-F35C-45BB-850E-8E098D482709}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Immunization", "Immunization\src\Immunization.csproj", "{1842E377-23AD-4A52-881E-F0B82E7893A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immunization", "Immunization\src\Immunization.csproj", "{1842E377-23AD-4A52-881E-F0B82E7893A8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonTests", "Common\test\unit\CommonTests.csproj", "{D55428F4-B07E-46AF-AB09-0F526701173F}"
 EndProject
@@ -17,36 +17,36 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseTests", "Database\t
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClientTests", "WebClient\test\unit\WebClientTests.csproj", "{622DA0CD-5DF2-4FF1-9BE6-524CA0549976}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedicationTests", "Medication\test\unit\MedicationTests.csproj", "{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patient", "Patient\src\Patient.csproj", "{F70FE4EA-45C1-43FD-9844-E6538F5EB084}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Patient", "Patient\src\Patient.csproj", "{F70FE4EA-45C1-43FD-9844-E6538F5EB084}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatientTests", "Patient\test\unit\PatientTests.csproj", "{66487699-BD22-4707-99F8-CBDE347ECE94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobScheduler", "JobScheduler\src\JobScheduler.csproj", "{7919D2B4-49C0-4638-A325-76642AC1289E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobScheduler", "JobScheduler\src\JobScheduler.csproj", "{7919D2B4-49C0-4638-A325-76642AC1289E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C8C17BF5-0961-4BEC-BC89-73D79D6B1C96}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Laboratory", "Laboratory\src\Laboratory.csproj", "{A23D2835-87F7-4521-B10F-8E78DAD02929}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laboratory", "Laboratory\src\Laboratory.csproj", "{A23D2835-87F7-4521-B10F-8E78DAD02929}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaboratoryTests", "Laboratory\test\unit\LaboratoryTests.csproj", "{01C73638-BCE4-4336-9849-54D7CB6E7DF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaboratoryTests", "Laboratory\test\unit\LaboratoryTests.csproj", "{01C73638-BCE4-4336-9849-54D7CB6E7DF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\src\Database.csproj", "{45D9118F-76B1-4D72-BE8C-B589F5AE0CC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\src\Database.csproj", "{45D9118F-76B1-4D72-BE8C-B589F5AE0CC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminWebClientTests", "AdminWebClient\test\unit\AdminWebClientTests.csproj", "{62D7B7CE-05C2-4997-A346-6088DD33A5E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminWebClientTests", "AdminWebClient\test\unit\AdminWebClientTests.csproj", "{62D7B7CE-05C2-4997-A346-6088DD33A5E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClient", "WebClient\src\WebClient.csproj", "{624D65DD-D459-4470-9294-803A1B7E7AC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClient", "WebClient\src\WebClient.csproj", "{624D65DD-D459-4470-9294-803A1B7E7AC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminWebClient", "AdminWebClient\src\AdminWebClient.csproj", "{B1967C76-1BE6-4BAD-AB75-767606BB1B56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminWebClient", "AdminWebClient\src\AdminWebClient.csproj", "{B1967C76-1BE6-4BAD-AB75-767606BB1B56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Encounter", "Encounter\src\Encounter.csproj", "{A7AB198A-F94C-410A-8832-38404780F2D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Encounter", "Encounter\src\Encounter.csproj", "{A7AB198A-F94C-410A-8832-38404780F2D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncounterTests", "Encounter\test\unit\EncounterTests.csproj", "{AE9BCF9A-C2F8-4122-8C46-4FEF1EC4D676}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EncounterTests", "Encounter\test\unit\EncounterTests.csproj", "{AE9BCF9A-C2F8-4122-8C46-4FEF1EC4D676}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
