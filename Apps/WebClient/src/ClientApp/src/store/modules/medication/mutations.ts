@@ -20,7 +20,11 @@ export const mutations: MutationTree<MedicationState> = {
             state.medicationStatements = medicationResult.resourcePayload;
             state.statusMessage = "success";
             state.error = undefined;
-            state.status = LoadStatus.LOADED;
+            if (state.medicationRequests.length > 0) {
+                state.status = LoadStatus.LOADED;
+            } else {
+                state.status = LoadStatus.PARTIALLY_LOADED;
+            }
         } else if (
             medicationResult.resultStatus == ResultType.ActionRequired &&
             medicationResult.resultError?.actionCode == ActionType.Protected
@@ -43,8 +47,11 @@ export const mutations: MutationTree<MedicationState> = {
             state.medicationRequests = medicationRequestResult.resourcePayload;
             state.statusMessage = "success";
             state.error = undefined;
-            //Todo:
-            state.status = LoadStatus.LOADED;
+            if (state.medicationStatements.length > 0) {
+                state.status = LoadStatus.LOADED;
+            } else {
+                state.status = LoadStatus.PARTIALLY_LOADED;
+            }
         } else if (
             medicationRequestResult.resultStatus == ResultType.ActionRequired &&
             medicationRequestResult.resultError?.actionCode ==
