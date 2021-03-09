@@ -48,12 +48,14 @@ describe("Filters", () => {
         cy.get("[data-testid=filterStartDateInput] input")
             .clear()
             .focus()
-            .type("2020-10-01");
+            .type("2020-OCT-01");
         cy.get("[data-testid=filterEndDateInput] input")
             .clear()
             .focus()
-            .type("2020-10-02");
-        cy.get('[data-testid=btnFilterApply]').click();
+            .type("2020-OCT-02");
+        cy.get('[data-testid=btnFilterApply]')
+            .focus()
+            .click();
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
         cy.get("[data-testid=noTimelineEntriesText]").children().first().should("have.text", "No records found with the selected filters");
         
@@ -63,11 +65,11 @@ describe("Filters", () => {
         cy.get("[data-testid=filterStartDateInput] input")
             .focus()
             .clear()
-            .type("2020-06-14");
+            .type("2020-JUN-14");
         cy.get("[data-testid=filterEndDateInput] input")
             .focus()
             .clear()
-            .type("2020-06-14");
+            .type("2020-JUN-14");
         cy.get('[data-testid=btnFilterApply]').click();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
         verifyActiveFilter('2');
