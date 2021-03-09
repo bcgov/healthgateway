@@ -171,7 +171,6 @@ export default class FilterComponent extends Vue {
     }
 
     private apply() {
-        debugger;
         let builder = TimelineFilterBuilder.create()
             .withStartDate(this.startDate)
             .withEndDate(this.endDate)
