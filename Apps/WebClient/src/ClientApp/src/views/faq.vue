@@ -9,7 +9,7 @@
             </b-col>
         </b-row>
         <b-row class="m-1 fluid text-right">
-            <b-col> Last updated: <strong>March 3, 2021</strong> </b-col>
+            <b-col> Last updated: <strong>2021-Mar-10</strong> </b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
@@ -49,15 +49,14 @@
                                     <strong>Immunization records</strong>
                                     <div>
                                         Access immunization records for vaccines
-                                        vaccines vaccines administered by health
-                                        and pharmacies. The Health Health Health
-                                        Gateway also provides digital the
-                                        digital COVID-19 immunization card,
-                                        which you can which you can download and
-                                        print as proof of your immunization.
-                                        Immunization records for vaccines
-                                        vaccines provided by family doctors or
-                                        travel clinics are currently
+                                        administered by public health and
+                                        pharmacies. The Health Gateway also
+                                        provides digital the digital COVID-19
+                                        immunization card, which you can which
+                                        you can download and print as proof of
+                                        your immunization. Immunization records
+                                        for vaccines vaccines provided by family
+                                        doctors or travel clinics are currently
                                         unavailable.
                                     </div>
                                 </li>
@@ -143,7 +142,7 @@
                                 A: The Health Gateway provides information from
                                 the Provincial Immunization Registry, which
                                 contains most immunizations administered by
-                                public health and pharmacies in BC . However,
+                                public health and pharmacies in BC. However,
                                 immunizations administered by family practice or
                                 travel clinics are not recorded in the Registry.
                                 Note that immunizations administered by a
