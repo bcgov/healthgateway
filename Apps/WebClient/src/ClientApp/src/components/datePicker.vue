@@ -50,7 +50,7 @@ export default class DatePickerComponent extends Vue {
         this.$v.inputValue.$touch();
         if (this.isValid(this.$v.inputValue)) {
             this.value = this.inputValue
-                ? DateWrapper.fromStringFormat(this.inputValue).toISO()
+                ? DateWrapper.fromStringFormat(this.inputValue).toISODate()
                 : "";
         }
     }
