@@ -15,6 +15,27 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
+                                    >March 10, 2021 - v1.3.10 - COVID-19 Immunization Card, Date Formats                                    
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added date of birth to the COVID-19 Immunization Card, to support identity validation. 
+                                    </li>
+                                    <li>
+                                        We updated the date formats in the Health Gateway so that they are consistent and clear. 
+                                    </li>
+                                 </ul>
+                            </b-col>
+                        </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
                                     >March 3, 2021 - v1.3.9 - FAQ Page, Download
                                     COVID Card, Comments
                                 </strong>
