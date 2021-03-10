@@ -105,6 +105,7 @@ export default class ImmunizationCardComponent extends Vue {
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.eventBus.$on(EventMessageName.TimelineCovidCard, this.showModal);
+        this.onImmunizationsChange();
     }
 
     public showModal(): void {
