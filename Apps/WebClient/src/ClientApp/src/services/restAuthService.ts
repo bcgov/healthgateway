@@ -46,16 +46,7 @@ export class RestAuthenticationService implements IAuthenticationService {
                 ),
             }),
             stateStore: new WebStorageStateStore({
-                store: new FragmentedStorage(
-                    new CookieStorage({
-                        domain: null,
-                        expires: null,
-                        path: "/",
-                        secure: true,
-                        sameSite: "Strict",
-                    }),
-                    2000
-                ),
+                store: window.sessionStorage,
             }),
             authority: config.authority,
             client_id: config.clientId,
