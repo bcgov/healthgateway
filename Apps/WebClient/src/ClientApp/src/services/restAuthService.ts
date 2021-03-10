@@ -46,7 +46,7 @@ export class RestAuthenticationService implements IAuthenticationService {
                 ),
             }),
             stateStore: new WebStorageStateStore({
-                store: window.localStorage,
+                store: window.sessionStorage,
             }),
             authority: config.authority,
             client_id: config.clientId,
@@ -61,8 +61,30 @@ export class RestAuthenticationService implements IAuthenticationService {
         this.http = httpDelegate;
         this.authorityUri = config.authority;
         this.oidcUserManager = new UserManager(oidcConfig);
+
+        this.oidcUserManager.events.addUserLoaded(() => {
+            this.logger.verbose("OIDC: User Loaded");
+        });
+        this.oidcUserManager.events.addUserUnloaded(() => {
+            this.logger.verbose("OIDC: User Unloaded");
+        });
         this.oidcUserManager.events.addAccessTokenExpiring(() => {
-            this.logger.debug("Token expiring...");
+            this.logger.verbose("OIDC: Access Token Expiring");
+        });
+        this.oidcUserManager.events.addAccessTokenExpired(() => {
+            this.logger.verbose("OIDC: Access Token Expired");
+        });
+        this.oidcUserManager.events.addSilentRenewError(() => {
+            this.logger.verbose("OIDC: Silent Renew Error");
+        });
+        this.oidcUserManager.events.addUserSignedIn(() => {
+            this.logger.verbose("OIDC: User Signed In");
+        });
+        this.oidcUserManager.events.addUserSignedOut(() => {
+            this.logger.verbose("OIDC: User Signed Out");
+        });
+        this.oidcUserManager.events.addUserSessionChanged(() => {
+            this.logger.verbose("OIDC: User Session Changed");
         });
     }
 

@@ -98,24 +98,24 @@ export default class HeaderComponent extends Vue {
         }
     }
 
-    private mounted() {
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         // Load the user name and current email
         this.authenticationService = container.get<IAuthenticationService>(
             SERVICE_IDENTIFIER.AuthenticationService
         );
-        if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
-        }
-    }
-
-    private created() {
         this.$nextTick(() => {
             window.addEventListener("scroll", this.onScroll);
             if (!this.isMobileWidth) {
                 this.setHeaderState(false);
             }
         });
+    }
+
+    private mounted() {
+        if (this.oidcIsAuthenticated) {
+            this.loadOidcUser();
+        }
     }
 
     private destroyed() {

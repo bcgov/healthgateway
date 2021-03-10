@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
+import { Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
@@ -10,23 +11,31 @@ import { ILogger } from "@/services/interfaces";
 
 @Component
 export default class ReportHeaderComponent extends Vue {
+    @Getter("patientData", { namespace: "user" })
+    patientData!: PatientData;
+
     @Prop() private title!: string;
     @Prop() private startDate?: string;
     @Prop() private endDate?: string;
-    @Prop() private patientData?: PatientData;
 
     private logger!: ILogger;
 
-    private formatDateLong(date: string): string {
-        return new DateWrapper(date).formatDateMed();
-    }
-
     private get currentDate() {
-        return this.formatDateLong(new DateWrapper().toISO());
+        return this.formatDate(new DateWrapper().toISO());
     }
 
-    private mounted() {
+    private get userName(): string {
+        return this.patientData
+            ? this.patientData.firstname + " " + this.patientData.lastname
+            : "";
+    }
+
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
+    private formatDate(date: string): string {
+        return new DateWrapper(date).format();
     }
 }
 </script>
@@ -66,21 +75,16 @@ export default class ReportHeaderComponent extends Vue {
         <b-row class="py-1 text-primary small">
             <b-col>
                 <strong>Name:</strong>
-                <span class="px-1"
-                    >{{ patientData !== null ? patientData.firstname : "" }}
-                    {{ patientData !== null ? patientData.lastname : "" }}</span
-                >
+                <span class="px-1">{{ userName }}</span>
             </b-col>
             <b-col>
                 <strong>PHN:</strong>
-                <span class="px-1">{{
-                    patientData !== null ? patientData.personalhealthnumber : ""
-                }}</span>
+                <span class="px-1">{{ patientData.personalhealthnumber }}</span>
             </b-col>
             <b-col>
                 <strong>Date of Birth:</strong>
                 <span class="px-1">{{
-                    patientData !== null ? patientData.birthdate : ""
+                    formatDate(patientData.birthdate)
                 }}</span>
             </b-col>
         </b-row>
@@ -88,9 +92,9 @@ export default class ReportHeaderComponent extends Vue {
             <b-col>
                 <span class="text-muted">
                     Displaying records
-                    {{ startDate ? `since ${formatDateLong(startDate)}` : "" }}
+                    {{ startDate ? `since ${formatDate(startDate)}` : "" }}
                     until
-                    {{ endDate ? formatDateLong(endDate) : currentDate }}
+                    {{ endDate ? formatDate(endDate) : currentDate }}
                 </span>
             </b-col>
         </b-row>

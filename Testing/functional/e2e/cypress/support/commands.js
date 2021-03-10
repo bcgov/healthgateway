@@ -98,14 +98,15 @@ Cypress.Commands.add(
                 "https://idtest.gov.bc.ca/login/entry#start"
             );
             cy.get("#tile_btn_virtual_device_div_id > h2").click();
-            cy.get("#csn").click();
+            cy.get("#csn")
+                .click({ force: true });
             cy.get("#csn").type(username);
             cy.get("#continue").click();
             cy.url().should(
                 "contains",
                 "https://idtest.gov.bc.ca/login/identify"
             );
-            cy.get("#passcode").click();
+            cy.get("#passcode").click({ force: true });
             cy.get("#passcode").type(password);
             cy.get("#btnSubmit").click();
             cy.get("#btnSubmit").click();
@@ -235,4 +236,7 @@ Cypress.Commands.add("restoreAuthCookies", () => {
     globalStorage.authCookies.forEach(cookie => {
         cy.setCookie(cookie.name, cookie.value);
     });
+    var names = globalStorage.authCookies.map((x) => x.name);
+  
+    Cypress.Cookies.preserveOnce(...names);
 });

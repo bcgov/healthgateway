@@ -1,7 +1,7 @@
 <script lang="ts">
 import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import ErrorCardComponent from "@/components/errorCard.vue";
@@ -14,7 +14,6 @@ import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vu
 import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
 import LinearTimelineComponent from "@/components/timeline/linearTimeline.vue";
-import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
@@ -49,11 +48,11 @@ import { ILogger } from "@/services/interfaces";
     },
 })
 export default class TimelineView extends Vue {
-    @Ref("immunizationCard")
-    readonly immunizationCard!: ImmunizationCardComponent;
-
     @Action("setKeyword", { namespace: "timeline" })
     setKeyword!: (keyword: string) => void;
+
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieve", { namespace: "immunization" })
     retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
@@ -198,7 +197,6 @@ export default class TimelineView extends Vue {
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
-
         return timelineEntries;
     }
 
@@ -221,8 +219,6 @@ export default class TimelineView extends Vue {
     private filterText = "";
 
     private isPacificTime = false;
-
-    private eventBus = EventBus;
 
     private logger!: ILogger;
 
@@ -254,17 +250,12 @@ export default class TimelineView extends Vue {
     }
 
     private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.fetchTimelineData();
     }
 
     private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.filterText = this.keyword;
-
-        this.eventBus.$on(
-            EventMessageName.TimelineCovidCard,
-            this.immunizationCard.showModal
-        );
 
         if (new DateWrapper().isInDST()) {
             !this.checkTimezone(true)
@@ -287,6 +278,7 @@ export default class TimelineView extends Vue {
 
     private fetchTimelineData() {
         Promise.all([
+            this.getPatientData({ hdid: this.user.hdid }),
             this.retrieveMedications({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
             this.retrieveLaboratory({ hdid: this.user.hdid }),
@@ -459,7 +451,7 @@ export default class TimelineView extends Vue {
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
         <EntryDetailsComponent :is-loading="isLoading" />
-        <ImmunizationCard ref="immunizationCard" />
+        <ImmunizationCard />
     </div>
 </template>
 

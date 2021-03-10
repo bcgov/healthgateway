@@ -82,7 +82,7 @@ namespace HealthGateway.Laboratory.Delegates
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                var query = new Dictionary<string, string>
+                var query = new Dictionary<string, string?>
                 {
                     ["limit"] = this.labConfig.FetchSize,
                     ["subjectHdid"] = hdid,

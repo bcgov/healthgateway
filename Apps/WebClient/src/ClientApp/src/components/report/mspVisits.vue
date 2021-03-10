@@ -6,7 +6,6 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
-import PatientData from "@/models/patientData";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -21,7 +20,6 @@ import PDFUtil from "@/utility/pdfUtil";
 export default class MSPVisitsReportComponent extends Vue {
     @Prop() private startDate!: string | null;
     @Prop() private endDate!: string | null;
-    @Prop() private patientData!: PatientData | null;
 
     @Action("retrieve", { namespace: "encounter" })
     retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
@@ -94,7 +92,7 @@ export default class MSPVisitsReportComponent extends Vue {
     }
 
     private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 
     public async generatePdf(): Promise<void> {
@@ -119,7 +117,6 @@ export default class MSPVisitsReportComponent extends Vue {
                     :start-date="startDate"
                     :end-date="endDate"
                     title="Health Gateway MSP Visit History"
-                    :patient-data="patientData"
                 />
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>

@@ -13,7 +13,11 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
+import {
+    LaboratoryOrder,
+    LaboratoryReport,
+    LaboratoryUtil,
+} from "@/models/laboratory";
 import { LaboratoryResult } from "@/models/laboratory";
 import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
@@ -67,10 +71,6 @@ export default class DependentCardComponent extends Vue {
     private isDataLoaded = false;
 
     private selectedLabOrder!: LaboratoryOrder;
-    private showSensitiveDocumentDownloadModal(labOrder: LaboratoryOrder) {
-        this.selectedLabOrder = labOrder;
-        this.sensitivedocumentDownloadModal.showModal();
-    }
 
     private get isExpired() {
         let birthDate = new DateWrapper(
@@ -87,7 +87,7 @@ export default class DependentCardComponent extends Vue {
         return faEllipsisV;
     }
 
-    private mounted() {
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.laboratoryService = container.get<ILaboratoryService>(
             SERVICE_IDENTIFIER.LaboratoryService
@@ -95,6 +95,11 @@ export default class DependentCardComponent extends Vue {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );
+    }
+
+    private showSensitiveDocumentDownloadModal(labOrder: LaboratoryOrder) {
+        this.selectedLabOrder = labOrder;
+        this.sensitivedocumentDownloadModal.showModal();
     }
 
     private fetchLaboratoryResults() {
@@ -194,11 +199,11 @@ export default class DependentCardComponent extends Vue {
     }
 
     private formatDate(date: StringISODate): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 
     private checkResultReady(labResult: LaboratoryResult): boolean {
-        return labResult.testStatus == "Final";
+        return LaboratoryUtil.isTestResultReady(labResult.testStatus);
     }
 
     private formatResult(labResult: LaboratoryResult): string {
@@ -338,7 +343,10 @@ export default class DependentCardComponent extends Vue {
                             </td>
                             <td>
                                 <b-btn
-                                    v-if="checkResultReady(item.labResults[0])"
+                                    v-if="
+                                        item.reportAvailable &&
+                                        checkResultReady(item.labResults[0])
+                                    "
                                     data-testid="dependentCovidReportDownloadBtn"
                                     variant="link"
                                     @click="

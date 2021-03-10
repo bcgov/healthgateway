@@ -16,11 +16,9 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
-import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ILogger, IPatientService } from "@/services/interfaces";
-import ErrorTranslator from "@/utility/errorTranslator";
+import { ILogger } from "@/services/interfaces";
 Vue.component("BFormTag", BFormTag);
 
 @Component({
@@ -38,8 +36,8 @@ Vue.component("BFormTag", BFormTag);
 export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-    @Getter("user", { namespace: "user" })
-    private user!: User;
+    @Getter("patientData", { namespace: "user" })
+    patientData!: PatientData;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -65,10 +63,9 @@ export default class ReportsView extends Vue {
     private selectedEndDate: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
     private retryCount = 2;
-    private patientData: PatientData | null = null;
 
     private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 
     private mounted() {
@@ -91,8 +88,6 @@ export default class ReportsView extends Vue {
                 text: "Immunizations",
             });
         }
-
-        this.fetchPatientData();
     }
 
     private clearFilter() {
@@ -113,7 +108,7 @@ export default class ReportsView extends Vue {
     }
 
     private formatDateLong(date: string): string {
-        return new DateWrapper(date).formatDateMed();
+        return new DateWrapper(date).format();
     }
 
     private showConfirmationModal() {
@@ -142,45 +137,6 @@ export default class ReportsView extends Vue {
         generatePromise.then(() => {
             this.isGeneratingReport = false;
         });
-    }
-
-    private fetchPatientData() {
-        const patientService: IPatientService = container.get<IPatientService>(
-            SERVICE_IDENTIFIER.PatientService
-        );
-
-        patientService
-            .getPatientData(this.user.hdid)
-            .then((result) => {
-                // Load patient data
-                if (result) {
-                    this.patientData = new PatientData();
-                    this.patientData.personalhealthnumber =
-                        result.resourcePayload.personalhealthnumber;
-                    this.patientData.firstname =
-                        result.resourcePayload.firstname;
-                    this.patientData.lastname = result.resourcePayload.lastname;
-                    if (result.resourcePayload.birthdate != null) {
-                        this.patientData.birthdate = this.formatDate(
-                            result.resourcePayload.birthdate
-                        );
-                    }
-                }
-            })
-            .catch((err) => {
-                this.logger.error(`Error fetching Patient Data: ${err}`);
-                if (this.retryCount > 0) {
-                    this.retryCount--;
-                    this.fetchPatientData();
-                } else {
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "Unable to retrieve patient data for generating report",
-                            undefined
-                        )
-                    );
-                }
-            });
     }
 }
 </script>
@@ -358,7 +314,6 @@ export default class ReportsView extends Vue {
                             ref="medicationHistoryReport"
                             :start-date="startDate"
                             :end-date="endDate"
-                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -371,7 +326,6 @@ export default class ReportsView extends Vue {
                             ref="mspVisitsReport"
                             :start-date="startDate"
                             :end-date="endDate"
-                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -384,7 +338,6 @@ export default class ReportsView extends Vue {
                             ref="covid19Report"
                             :start-date="startDate"
                             :end-date="endDate"
-                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -397,7 +350,6 @@ export default class ReportsView extends Vue {
                             ref="immunizationHistoryReport"
                             :start-date="startDate"
                             :end-date="endDate"
-                            :patient-data="patientData"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>

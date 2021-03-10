@@ -19,6 +19,10 @@ export default class RatingComponent extends Vue {
     private isVisible = false;
     private logger!: ILogger;
 
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    }
+
     public showModal(): void {
         this.isVisible = true;
         setTimeout(() => {
@@ -30,10 +34,6 @@ export default class RatingComponent extends Vue {
 
     public hideModal(): void {
         this.isVisible = false;
-    }
-
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
     private handleRating(value: number, skip = false) {

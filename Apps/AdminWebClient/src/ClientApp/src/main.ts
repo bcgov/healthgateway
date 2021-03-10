@@ -1,6 +1,4 @@
 import "core-js/stable";
-import "regenerator-runtime/runtime";
-import "@/registerServiceWorker";
 import "tiptap-vuetify/dist/main.css";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";

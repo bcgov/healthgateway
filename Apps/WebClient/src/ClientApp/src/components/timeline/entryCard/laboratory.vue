@@ -39,13 +39,6 @@ export default class LaboratoryTimelineComponent extends Vue {
     private isLoadingDocument = false;
     private logger!: ILogger;
 
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.laboratoryService = container.get<ILaboratoryService>(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
-    }
-
     private get entryIcon(): IconDefinition {
         return faFlask;
     }
@@ -54,8 +47,15 @@ export default class LaboratoryTimelineComponent extends Vue {
         return this.entry.reportAvailable;
     }
 
+    private created() {
+        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.laboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
+    }
+
     private formatDate(date: DateWrapper): string {
-        return date.format("LLL dd, yyyy t");
+        return date.format("yyyy-MMM-dd, t");
     }
 
     private showConfirmationModal(): void {
@@ -96,7 +96,10 @@ export default class LaboratoryTimelineComponent extends Vue {
         :is-mobile-details="isMobileDetails"
     >
         <div slot="header-description">
-            <strong v-show="entry.isStatusFinal">
+            <strong
+                v-show="entry.isTestResultReady"
+                data-testid="laboratoryHeaderDescription"
+            >
                 Result:
                 <span :class="entry.labResultOutcome"
                     >{{ entry.labResultOutcome }}
@@ -107,9 +110,13 @@ export default class LaboratoryTimelineComponent extends Vue {
         <div slot="details-body">
             <div v-if="reportAvailable">
                 <b-spinner v-if="isLoadingDocument"></b-spinner>
-                <span v-else>
+                <span v-else data-testid="laboratoryReport">
                     <strong>Report:</strong>
-                    <b-btn variant="link" @click="showConfirmationModal()">
+                    <b-btn
+                        v-if="entry.isTestResultReady"
+                        variant="link"
+                        @click="showConfirmationModal()"
+                    >
                         <font-awesome-icon
                             icon="file-download"
                             aria-hidden="true"
@@ -127,7 +134,7 @@ export default class LaboratoryTimelineComponent extends Vue {
                     <strong>Ordering Providers:</strong>
                     {{ entry.orderingProviders }}
                 </div>
-                <div>
+                <div data-testid="laboratoryReportingLab">
                     <strong>Reporting Lab:</strong>
                     {{ entry.reportingLab }}
                 </div>
@@ -144,7 +151,7 @@ export default class LaboratoryTimelineComponent extends Vue {
                     :key="result.id"
                     class="border p-1"
                 >
-                    <div>
+                    <div data-testid="laboratoryTestType">
                         <strong>Test Type:</strong>
                         {{ result.testType }}
                     </div>
@@ -152,7 +159,7 @@ export default class LaboratoryTimelineComponent extends Vue {
                         <strong>Out Of Range:</strong>
                         {{ result.outOfRange }}
                     </div>
-                    <div>
+                    <div data-testid="laboratoryTestStatus">
                         <strong>Test Status:</strong>
                         {{ result.testStatus }}
                     </div>

@@ -37,20 +37,6 @@ export default class FeedbackComponent extends Vue {
     private isLoading = false;
     private userFeedbackService!: IUserFeedbackService;
 
-    @Watch("isSidebarOpen")
-    private onIsSidebarOpen(newValue: boolean) {
-        // Make sure it closes if the sidebar is closing and reset state
-        if (!newValue) {
-            this.resetFeedback();
-        }
-    }
-
-    private mounted() {
-        this.userFeedbackService = container.get(
-            SERVICE_IDENTIFIER.UserFeedbackService
-        );
-    }
-
     private get isValid() {
         return this.comment.length > 1;
     }
@@ -79,6 +65,20 @@ export default class FeedbackComponent extends Vue {
 
     private get hasEmail(): boolean {
         return this.user.verifiedEmail && this.user.hasEmail;
+    }
+
+    @Watch("isSidebarOpen")
+    private onIsSidebarOpen(newValue: boolean) {
+        // Make sure it closes if the sidebar is closing and reset state
+        if (!newValue) {
+            this.resetFeedback();
+        }
+    }
+
+    private created() {
+        this.userFeedbackService = container.get(
+            SERVICE_IDENTIFIER.UserFeedbackService
+        );
     }
 
     private toggleExpanded() {

@@ -99,7 +99,7 @@ export default class NewDependentComponent extends Vue {
         this.isVisible = false;
     }
 
-    private mounted() {
+    private created() {
         this.dependentService = container.get<IDependentService>(
             SERVICE_IDENTIFIER.DependentService
         );

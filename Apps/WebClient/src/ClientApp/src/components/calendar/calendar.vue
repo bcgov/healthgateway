@@ -102,7 +102,7 @@ export default class CalendarComponent extends Vue {
         }
     }
 
-    private mounted() {
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 }

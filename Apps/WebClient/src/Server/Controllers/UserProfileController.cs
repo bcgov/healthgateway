@@ -103,7 +103,7 @@ namespace HealthGateway.WebClient.Controllers
                 if (accessToken != null)
                 {
                     ClaimsPrincipal user = httpContext.User;
-                    DateTime jwtAuthTime = GetAuthDateTime(user);
+                    DateTime jwtAuthTime = this.GetAuthDateTime(user);
                     RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), accessToken, jwtAuthTime).ConfigureAwait(true);
                     return new JsonResult(result);
                 }
@@ -133,7 +133,7 @@ namespace HealthGateway.WebClient.Controllers
 
             this.logger.LogTrace($"HTTP context user: {JsonConvert.SerializeObject(user, jsonSettings)}");
 
-            DateTime jwtAuthTime = GetAuthDateTime(user);
+            DateTime jwtAuthTime = this.GetAuthDateTime(user);
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
 
@@ -183,7 +183,7 @@ namespace HealthGateway.WebClient.Controllers
 
             // Retrieve the user identity id from the claims
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier) !.Value);
 
             RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId, referer);
             return new JsonResult(result);

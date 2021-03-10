@@ -96,9 +96,16 @@ export default class SidebarComponent extends Vue {
         this.isExportTutorialEnabled = false;
     }
 
-    private mounted() {
+    private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.$nextTick(() => {
+            if (!this.isMobileWidth) {
+                this.setSidebarState(true);
+            }
+        });
+    }
 
+    private mounted() {
         // Setup the transition listener to avoid text wrapping
         var transition = document.querySelector("#sidebar");
         transition?.addEventListener("transitionend", (event: Event) => {
@@ -120,14 +127,6 @@ export default class SidebarComponent extends Vue {
                     button?.classList.remove("d-none");
                 }
             });
-        });
-    }
-
-    private created() {
-        this.$nextTick(() => {
-            if (!this.isMobileWidth) {
-                this.setSidebarState(true);
-            }
         });
     }
 

@@ -5,8 +5,7 @@ import { Action, Getter } from "vuex-class";
 
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryOrder } from "@/models/laboratory";
-import PatientData from "@/models/patientData";
+import { LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -21,7 +20,6 @@ import PDFUtil from "@/utility/pdfUtil";
 export default class COVID19ReportComponent extends Vue {
     @Prop() private startDate!: string | null;
     @Prop() private endDate!: string | null;
-    @Prop() private patientData!: PatientData | null;
 
     @Action("retrieve", { namespace: "laboratory" })
     retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
@@ -96,8 +94,12 @@ export default class COVID19ReportComponent extends Vue {
         });
     }
 
+    private checkResultReady(testStatus: string | null): boolean {
+        return LaboratoryUtil.isTestResultReady(testStatus);
+    }
+
     private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 
     public async generatePdf(): Promise<void> {
@@ -122,7 +124,6 @@ export default class COVID19ReportComponent extends Vue {
                     :start-date="startDate"
                     :end-date="endDate"
                     title="Health Gateway COVID-19 Test Result History"
-                    :patient-data="patientData"
                 />
                 <b-row v-if="isEmpty && (!isLaboratoryLoading || !isPreview)">
                     <b-col>No records found.</b-col>
@@ -151,7 +152,12 @@ export default class COVID19ReportComponent extends Vue {
                         {{ item.location }}
                     </b-col>
                     <b-col data-testid="covid19ItemResult" class="my-auto">
-                        {{ item.labResults[0].labResultOutcome }}
+                        <span
+                            v-if="
+                                checkResultReady(item.labResults[0].testStatus)
+                            "
+                            >{{ item.labResults[0].labResultOutcome }}</span
+                        >
                     </b-col>
                 </b-row>
             </section>
