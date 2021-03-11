@@ -38,7 +38,7 @@ Cypress.Commands.add(
                     extraTokenParams: {}
                 }
                 cy.log("Creating OIDC StateStore in Local storage")
-                window.localStorage.setItem(`oidc.${stateStore.id}`, JSON.stringify(stateStore))
+                window.sessionStorage.setItem(`oidc.${stateStore.id}`, JSON.stringify(stateStore))
 
                 cy.log(`Creating OIDC Active Route: ${path} in Session storage`)
                 window.sessionStorage.setItem('vuex_oidc_active_route', path)
