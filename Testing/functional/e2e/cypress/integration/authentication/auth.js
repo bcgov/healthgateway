@@ -58,27 +58,27 @@ describe('Authentication', () => {
         }
     })
 
-    it('IDIR Blocked', () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-        cy.visit('/login');
-        cy.log(`Authenticating as IDIR user ${Cypress.env('idir.username')}`);
-        cy.get('[data-testid=IDIRBtn]')
-            .should('be.visible')
-            .should('not.be.disabled')
-            .click();
-        cy.get('#user')
-            .type(Cypress.env('idir.username'));
-        cy.get('#password')
-            .type(Cypress.env('idir.password'));
-        cy.get('input[name="btnSubmit"')
-            .click();
-        cy.contains('h1', '403');
-        cy.contains('h2', 'IDIR Login');
-    }
-    else {
-        cy.log("Skipped Logout Test as running locally")
-    }
-    })
+    // it('IDIR Blocked', () => {
+    //     if (Cypress.config().baseUrl != localDevUri) {
+    //         cy.visit('/login');
+    //         cy.log(`Authenticating as IDIR user ${Cypress.env('idir.username')}`);
+    //         cy.get('[data-testid=IDIRBtn]')
+    //             .should('be.visible')
+    //             .should('not.be.disabled')
+    //             .click();
+    //         cy.get('#user')
+    //             .type(Cypress.env('idir.username'));
+    //         cy.get('#password')
+    //             .type(Cypress.env('idir.password'));
+    //         cy.get('input[name="btnSubmit"')
+    //             .click();
+    //         // cy.contains('h1', '403');
+    //         // cy.contains('h2', 'IDIR Login');
+    //     }
+    //     else {
+    //         cy.log("Skipped Logout Test as running locally")
+    //     }
+    // })
 
     it('KeyCloak Login', () => {
         cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
