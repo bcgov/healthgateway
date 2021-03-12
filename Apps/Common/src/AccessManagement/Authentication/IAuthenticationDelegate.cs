@@ -16,7 +16,7 @@
 namespace HealthGateway.Common.AccessManagement.Authentication
 {
     using System;
-
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
 
     /// <summary>
@@ -27,25 +27,20 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     public interface IAuthenticationDelegate
     {
         /// <summary>
-        /// Gets or sets the Client Credentials Grant Token Request parameters (Open ID Connect standard).
-        /// </summary>
-        ClientCredentialsTokenRequest TokenRequest { get; set; }
-
-        /// <summary>
-        /// Gets the OAuth2 Auth Token URI.
-        /// </summary>
-        Uri? TokenUri { get; }
-
-        /// <summary>
         /// Authenticates as a 'system admin account' concept, using OAuth 2.0 Client Credentials Grant.
         /// </summary>
+        /// <param name="tokenUri">Uri to request the the token from.</param>
+        /// <param name="tokenRequest">Token request configuration.</param>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
-        JWTModel AuthenticateAsSystem();
+        JWTModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
 
         /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.
         /// </summary>
+        /// <param name="tokenUri">Uri to request the the token from.</param>
+        /// <param name="tokenRequest">Token request configuration.</param>
+        /// <param name="credentialsInBody">Sets the authentication credentials in the request body.</param>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
-        JWTModel AuthenticateAsUser();
+        JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool credentialsInBody);
     }
 }

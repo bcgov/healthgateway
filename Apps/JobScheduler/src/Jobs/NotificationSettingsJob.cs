@@ -20,6 +20,7 @@ namespace Healthgateway.JobScheduler.Jobs
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
@@ -31,16 +32,18 @@ namespace Healthgateway.JobScheduler.Jobs
     /// <inheritdoc />
     public class NotificationSettingsJob : INotificationSettingsJob
     {
-        private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
+        private const int concurrencyTimeout = 5 * 60; // 5 minutes
         private const string JobConfigKey = "NotificationSettings";
         private const string JobEnabledKey = "Enabled";
-
+        private const string authConfigSectionName = "ClientAuthentication";
         private readonly IConfiguration configuration;
         private readonly ILogger<NotificationSettingsJob> logger;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IEventLogDelegate eventLogDelegate;
         private readonly bool jobEnabled;
+        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsJob"/> class.
@@ -57,10 +60,16 @@ namespace Healthgateway.JobScheduler.Jobs
             this.authDelegate = authDelegate;
             this.eventLogDelegate = eventLogDelegate;
             this.jobEnabled = this.configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, true);
+
+            IConfigurationSection? configSection = configuration?.GetSection(authConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"AuthTokenUri");
+
+            this.tokenRequest = new ClientCredentialsTokenRequest();
+            configSection.Bind(this.tokenRequest); // Client ID, Client Secret, Audience, Username, Password
         }
 
         /// <inheritdoc />
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
+        [DisableConcurrentExecution(concurrencyTimeout)]
         public void PushNotificationSettings(string notificationSettingsJSON)
         {
             this.logger.LogDebug($"Queueing Notification Settings push to PHSA...");
@@ -76,7 +85,7 @@ namespace Healthgateway.JobScheduler.Jobs
                 NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJSON, options);
                 if (notificationSettings != null)
                 {
-                    string? accessToken = this.authDelegate.AuthenticateAsUser().AccessToken;
+                    string? accessToken = this.authDelegate.AuthenticateAsUser(this.tokenUri, this.tokenRequest).AccessToken;
 
                     if (string.IsNullOrEmpty(accessToken))
                     {
@@ -89,7 +98,7 @@ namespace Healthgateway.JobScheduler.Jobs
                                         this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
                         if (retVal.ResultStatus == HealthGateway.Common.Constants.ResultType.ActionRequired)
                         {
-                            EventLog eventLog = new EventLog()
+                            EventLog eventLog = new ()
                             {
                                 EventSource = this.notificationSettingsDelegate.GetType().Name,
                                 EventName = "SMS Rejected",

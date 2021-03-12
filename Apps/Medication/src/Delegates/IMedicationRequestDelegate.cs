@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,30 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Models
+namespace HealthGateway.Medication.Delegates
 {
-    using System;
     using System.Collections.Generic;
-    using HealthGateway.Database.Models;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The medications data model.
+    /// Interface to retrieve Medication Requests.
     /// </summary>
-    public class MedicationResult
+    public interface IMedicationRequestDelegate
     {
         /// <summary>
-        /// Gets or sets the Drug Identification Number for the prescribed medication.
+        /// Returns a set of MedicationRequests for the given hdid.
         /// </summary>
-        public string? DIN { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Federal Drug Data Source.
-        /// </summary>
-        public FederalDrugSource? FederalData { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Provincial Drug Data Source.
-        /// </summary>
-        public ProvincialDrugSource? ProvincialData { get; set; }
+        /// <param name="hdid">The HDID of the user querying.</param>
+        /// <returns>The MedicationRequest result.</returns>
+        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string hdid);
     }
 }

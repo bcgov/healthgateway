@@ -39,6 +39,7 @@ export default class MedicationRequestTimelineEntry extends TimelineEntry {
     public get comments(): UserComment[] | null {
         return this.getComments(this.id);
     }
+
     public containsText(keyword: string): boolean {
         let text =
             (this.drugName || "") +
