@@ -70,7 +70,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.logger.LogDebug($"Authenticating Service... {this.TokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsGrant();
 
-            JWTModel jwtModel = (authenticating.Result as JWTModel)!;
+            JWTModel jwtModel = (authenticating.Result as JWTModel) !;
             this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
             return jwtModel;
         }
@@ -81,7 +81,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.logger.LogDebug($"Authenticating Direct Grant as User: {this.TokenRequest.Username}");
             Task<IAuthModel> authenticating = this.ResourceOwnerPasswordGrant();
 
-            JWTModel jwtModel = (authenticating.Result as JWTModel)!;
+            JWTModel jwtModel = (authenticating.Result as JWTModel) !;
             this.logger.LogDebug($"Finished authenticating User: {this.TokenRequest.Username}");
 
             return jwtModel;
@@ -110,7 +110,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
+                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse) !;
             }
             catch (HttpRequestException e)
             {
@@ -147,7 +147,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
+                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse) !;
             }
             catch (HttpRequestException e)
             {

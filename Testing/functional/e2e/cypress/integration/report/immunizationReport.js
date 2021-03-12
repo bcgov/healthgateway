@@ -48,7 +48,7 @@ describe('Immunization History Report', () => {
 
         cy.get('[data-testid=immunizationItemDate]')
             .last()
-            .contains(/\d{4}-\d{2}-\d{2}/);
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
         cy.get('[data-testid=immunizationItemName]')
             .should('be.visible')
         cy.get('[data-testid=immunizationItemProviderClinic]')
@@ -70,7 +70,7 @@ describe('Immunization History Report', () => {
             .should('be.visible')
         cy.get('[data-testid=recommendationDate]')
             .last()
-            .contains(/\d{4}-\d{2}-\d{2}/);
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
         cy.get('[data-testid=recommendationStatus]')
             .should('be.visible')
 

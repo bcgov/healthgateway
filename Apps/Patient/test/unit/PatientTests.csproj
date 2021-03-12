@@ -24,7 +24,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
-    <PackageReference Include="XunitXml.TestLogger" Version="3.0.62" />
+    <PackageReference Include="XunitXml.TestLogger" Version="3.0.66" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
   </ItemGroup>
 

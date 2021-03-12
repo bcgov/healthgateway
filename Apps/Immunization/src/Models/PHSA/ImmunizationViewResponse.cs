@@ -70,14 +70,12 @@ namespace HealthGateway.Immunization.Models.PHSA
         /// Gets or sets the Immunization Forecasts.
         /// </summary>
         [JsonPropertyName("immunizationForecast")]
-        public ImmunizationRorecastResponse? ImmunizationForecast { get; set; } = null;
+        public ImmunizationForecastResponse? ImmunizationForecast { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the Immunization Agents.
         /// </summary>
         [JsonPropertyName("immunizationAgents")]
         public IEnumerable<ImmunizationAgentResponse> ImmunizationAgents { get; set; } = new List<ImmunizationAgentResponse>();
-
-
     }
 }

@@ -17,14 +17,14 @@ describe('Notes', () => {
         cy.get('[data-testid=noteDateInput] input')
             .focus()
             .clear()
-            .type('1950-01-01');
+            .type('1950-Jan-01');
         cy.get('[data-testid=noteTextInput]')
             .type('Test');
         cy.get('[data-testid=saveNoteBtn]')
             .click();
         cy.get('[data-testid=entryCardDate]')
             .last()
-            .should('have.text', '1950-01-01');
+            .should('have.text', '1950-Jan-01');
         cy.get('[data-testid=noteTitle]')
             .last()
             .should('have.text', 'Note Title!');

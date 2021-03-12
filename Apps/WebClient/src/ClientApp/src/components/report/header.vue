@@ -21,7 +21,7 @@ export default class ReportHeaderComponent extends Vue {
     private logger!: ILogger;
 
     private get currentDate() {
-        return this.formatDateLong(new DateWrapper().toISO());
+        return this.formatDate(new DateWrapper().toISO());
     }
 
     private get userName(): string {
@@ -34,12 +34,8 @@ export default class ReportHeaderComponent extends Vue {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
-    private formatDateLong(date: string): string {
-        return new DateWrapper(date).formatDateMed();
-    }
-
     private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 }
 </script>
@@ -96,9 +92,9 @@ export default class ReportHeaderComponent extends Vue {
             <b-col>
                 <span class="text-muted">
                     Displaying records
-                    {{ startDate ? `since ${formatDateLong(startDate)}` : "" }}
+                    {{ startDate ? `since ${formatDate(startDate)}` : "" }}
                     until
-                    {{ endDate ? formatDateLong(endDate) : currentDate }}
+                    {{ endDate ? formatDate(endDate) : currentDate }}
                 </span>
             </b-col>
         </b-row>

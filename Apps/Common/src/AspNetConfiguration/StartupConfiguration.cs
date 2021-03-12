@@ -429,7 +429,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
             services.Configure<SwaggerSettings>(this.configuration.GetSection(nameof(SwaggerSettings)));
-            var xmlFile = $"{Assembly.GetCallingAssembly()!.GetName().Name}.xml";
+            var xmlFile = $"{Assembly.GetCallingAssembly() !.GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             services
                 .AddApiVersionWithExplorer()
@@ -544,7 +544,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                      {
                          tracing.AddZipkinExporter(options =>
                          {
-                             options.ServiceName = config.ServiceName;
                              options.Endpoint = config.ZipkinUri;
                          });
                      }

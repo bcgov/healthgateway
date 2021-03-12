@@ -21,7 +21,7 @@ namespace HealthGateway.Immunization.Models
     /// <summary>
     /// Represents Immunization Forecast.
     /// </summary>
-    public class ImmunizationRorecastResponse
+    public class ImmunizationForecastResponse
     {
         /// <summary>
         /// Gets or sets the Imms Id.

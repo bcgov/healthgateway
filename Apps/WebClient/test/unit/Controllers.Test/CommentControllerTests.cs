@@ -109,7 +109,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
             RequestResult<UserComment> actualRequestResult = (RequestResult<UserComment>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
-            Assert.Equal(Hdid, actualRequestResult.ResourcePayload.UpdatedBy);
+            Assert.Equal(Hdid, actualRequestResult.ResourcePayload!.UpdatedBy);
         }
 
         /// <summary>
@@ -282,7 +282,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 .ReturnsAsync(authResult);
 
             httpContextAccessorMock
-                .Setup(x => x.HttpContext.RequestServices.GetService(typeof(IAuthenticationService)))
+                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
                 .Returns(authenticationMock.Object);
             return httpContextAccessorMock;
         }

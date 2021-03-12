@@ -23,23 +23,18 @@ Create a cypress.env.json and update with passwords or any other environment var
 
 ```bash
 {
+    "baseUrl": "https://dev.healthgateway.gov.bc.ca",
     "bcsc.password": "THE PASSWORD",
     "keycloak.password": "THE PASSWORD",
     "idir.password": "THE PASSWORD",
     "keycloak.unregistered.password": "THE PASSWORD"
+    "phoneNumber": "2505084843"    
 }
 ```
 
 ### Running Interactively
 
 While creating and debugging tests you will want to run Cypress interactively.  
-
-```bash
-export CYPRESS_BASE_URL=http://localhost:5000 
-npm run launch
-```
-
-or
 
 ```bash
 export CYPRESS_BASE_URL=http://localhost:5000
@@ -53,13 +48,19 @@ If you want to verify the tests againt https://dev.healthgateway.gov.bc.ca then 
 You can run Cypress on the CLI and have the system record videos.
 
 ```bash
-npm run e2e
+npx cypress run
 ```
 
-You can also run Cypress as a specific browser by executing although this will launch and close Chrome many times. 
+You can also run Cypress as a specific browser by executing although this will launch and close Chrome many times.
 
 ```bash
 npx cypress run --browser chrome
+```
+
+You can run a specific test
+
+```bash
+npx cypress run --spec "cypress/integration/user/emailValidation.js"
 ```
 
 Run and record the results to the Cypress dashboard

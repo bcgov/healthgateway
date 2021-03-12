@@ -181,7 +181,7 @@ export default class ProfileView extends Vue {
                     );
                     this.lastLoginDateString = new DateWrapper(
                         this.userProfile.lastLoginDateTime
-                    ).format("LLL d, yyyy");
+                    ).format();
                 }
 
                 this.isLoading = false;

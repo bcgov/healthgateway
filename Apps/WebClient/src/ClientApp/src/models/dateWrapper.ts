@@ -30,6 +30,7 @@ export interface ParseOptions {
  * Centralizes date operations and modifications while abstracting library specific implementations.
  */
 export class DateWrapper {
+    static defaultFormat = "yyyy-MMM-dd";
     /**
      * Value for reference purpouses only. Stores the raw value if initialized as a string, ISO datetime otherwise.
      */
@@ -123,13 +124,29 @@ export class DateWrapper {
     }
 
     /**
+     * Creates a new DateWrapper from a custom date format.
+     * @param param The date string
+     * @param format The format string
+     * @returns a new DateWrapper object
+     */
+    public static fromStringFormat(
+        param: string,
+        format?: string
+    ): DateWrapper {
+        return new DateWrapper(
+            DateTime.fromFormat(param, format || this.defaultFormat)
+        );
+    }
+    /**
      * Formats the date using the given a set of tokens
      * See https://moment.github.io/luxon/docs/manual/formatting.html for the rules
      * @param formatString The tokens to format the string as.
      * @returns a string representation of the datetime with the given format.
      */
-    public format(formatString: string): string {
-        return this.internalDate.toFormat(formatString);
+    public format(formatString?: string): string {
+        return this.internalDate.toFormat(
+            formatString || DateWrapper.defaultFormat
+        );
     }
 
     /**
@@ -139,16 +156,10 @@ export class DateWrapper {
      * @param formatString The tokens to format the string as.
      * @returns a string representation of the datetime with the given format.
      */
-    public static format(dateString: string, formatString: string): string {
-        return new DateWrapper(dateString).format(formatString);
-    }
-
-    /**
-     * Formats the date to abbreviated date (MMM dd, YYYY)
-     * @returns the formated string representation
-     */
-    public formatDateMed(): string {
-        return this.internalDate.toLocaleString(DateTime.DATE_MED);
+    public static format(dateString: string, formatString?: string): string {
+        return new DateWrapper(dateString).format(
+            formatString || DateWrapper.defaultFormat
+        );
     }
 
     /**
