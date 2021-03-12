@@ -25,7 +25,8 @@ export class RestMedicationService implements IMedicationService {
         "v1/api/MedicationRequest";
     private baseUri = "";
     private http!: IHttpDelegate;
-    private isEnabled = false;
+    private isMedicationEnabled = false;
+    private isMedicationRequestEnabled = false;
     private readonly FETCH_ERROR = "Fetch error:";
 
     public initialize(
@@ -34,7 +35,9 @@ export class RestMedicationService implements IMedicationService {
     ): void {
         this.baseUri = config.serviceEndpoints["Medication"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Medication"];
+        this.isMedicationEnabled = config.webClient.modules["Medication"];
+        this.isMedicationRequestEnabled =
+            config.webClient.modules["SpecialAuthorityRequests"];
     }
 
     public getPatientMedicationStatementHistory(
@@ -46,7 +49,7 @@ export class RestMedicationService implements IMedicationService {
             headers["protectiveWord"] = protectiveWord;
         }
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isMedicationEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -82,7 +85,7 @@ export class RestMedicationService implements IMedicationService {
         hdid: string
     ): Promise<RequestResult<MedicationRequest[]>> {
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isMedicationRequestEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
