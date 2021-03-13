@@ -53,8 +53,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             this.logger.LogDebug($"Authenticating Service... {tokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsGrant(tokenUri, tokenRequest);
 
+<<<<<<< HEAD
             JWTModel jwtModel = (authenticating.Result as JWTModel)!;
             this.logger.LogDebug($"Finished authenticating Service. {tokenRequest.ClientId}");
+=======
+            JWTModel jwtModel = (authenticating.Result as JWTModel) !;
+            this.logger.LogDebug($"Finished authenticating Service. {this.TokenRequest.ClientId}");
+>>>>>>> features/9710
             return jwtModel;
         }
 
@@ -93,7 +98,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
+                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse) !;
             }
             catch (HttpRequestException e)
             {
@@ -130,7 +135,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse)!;
+                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse) !;
             }
             catch (HttpRequestException e)
             {

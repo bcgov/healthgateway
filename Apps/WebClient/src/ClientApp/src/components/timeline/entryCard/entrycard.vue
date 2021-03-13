@@ -48,7 +48,7 @@ export default class EntrycardTimelineComponent extends Vue {
         } else if (this.entry.date.year() === today.year()) {
             return this.entry.date.format("MMM d");
         } else {
-            return this.entry.date.format("yyyy-MM-dd");
+            return this.entry.date.format();
         }
     }
 

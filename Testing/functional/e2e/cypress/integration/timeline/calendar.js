@@ -82,7 +82,7 @@ describe('Calendar View', () => {
         cy.get('[data-testid=entryCardDetailsTitle]')
             .first()
             .should('have.text', 'Methadone (Maintenance) 1mg/Ml');
-        cy.contains('[data-testid=entryCardDate]', '2019-04-10')
+        cy.contains('[data-testid=entryCardDate]', '2019-Apr-10')
             .should('be.visible');
             
     })

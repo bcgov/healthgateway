@@ -105,7 +105,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private formatDate(date: string): string {
-        return new DateWrapper(date).format("yyyy-MM-dd");
+        return new DateWrapper(date).format();
     }
 
     public async generatePdf(): Promise<void> {

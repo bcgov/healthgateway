@@ -71,7 +71,7 @@ export default class ImmunizationCardComponent extends Vue {
                 covidImmunizations[index].immunization.immunizationAgents[0];
             this.doses.push({
                 product: agent.productName,
-                date: this.formatDate(element.dateOfImmunization),
+                date: DateWrapper.format(element.dateOfImmunization),
                 agent: agent.name,
                 lot: agent.lotNumber,
                 provider: element.providerOrClinic,
@@ -105,6 +105,7 @@ export default class ImmunizationCardComponent extends Vue {
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.eventBus.$on(EventMessageName.TimelineCovidCard, this.showModal);
+        this.onImmunizationsChange();
     }
 
     public showModal(): void {

@@ -43,7 +43,7 @@ export default class CommentComponent extends Vue {
     }
 
     private formatDate(date: string): string {
-        return new DateWrapper(date, { isUtc: true }).format("DDD, t");
+        return new DateWrapper(date, { isUtc: true }).format("yyyy-MMM-dd, t");
     }
 
     private onSubmit(): void {

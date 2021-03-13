@@ -55,7 +55,7 @@ export default class LaboratoryTimelineComponent extends Vue {
     }
 
     private formatDate(date: DateWrapper): string {
-        return date.format("LLL dd, yyyy t");
+        return date.format("yyyy-MMM-dd, t");
     }
 
     private showConfirmationModal(): void {

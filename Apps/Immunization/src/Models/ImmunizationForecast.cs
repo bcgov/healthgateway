@@ -64,7 +64,7 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         /// <param name="model">The immunization forecast object to convert.</param>
         /// <returns>The newly created ImmunizationForecast object.</returns>
-        public static ImmunizationForecast FromPHSAModel(ImmunizationRorecastResponse model)
+        public static ImmunizationForecast FromPHSAModel(ImmunizationForecastResponse model)
         {
             return new ImmunizationForecast()
             {
@@ -73,7 +73,7 @@ namespace HealthGateway.Immunization.Models
                 Status = model.ForecastStatus,
                 DisplayName = model.DisplayName,
                 EligibleDate = model.EligibleDate,
-                DueDate = model.DueDate
+                DueDate = model.DueDate,
             };
         }
     }

@@ -55,7 +55,9 @@ namespace HealthGateway.LaboratoryTests
             foreach (LaboratoryModel model in actualResult.Result!.ResourcePayload!)
             {
                 count++;
-                Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));};
+                Assert.True(model.MessageID.Equals(MockedMessageID + count, StringComparison.Ordinal));
+            }
+
             Assert.True(count == 2);
         }
 
