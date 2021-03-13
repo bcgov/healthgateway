@@ -16,19 +16,21 @@
 namespace HealthGateway.Medication.Models.Salesforce
 {
     using System;
-    using System.Text.Json.Serialization;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
 
     /// <summary>
-    /// Provides configuration data for the Laboratory Delegate.
+    /// Provides configuration data for the Salesforce delegate.
     /// </summary>
     public class Config
     {
         /// <summary>
-        /// Gets or sets the Lab external endpoint.
+        /// Gets or sets the Salesforce external endpoint.
         /// </summary>
         public string Endpoint { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets the Salesforce token Uri.
+        /// </summary>
         public Uri TokenUri { get; set; }
 
         /// <summary>

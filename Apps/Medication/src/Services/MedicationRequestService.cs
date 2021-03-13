@@ -52,7 +52,7 @@ namespace HealthGateway.Medication.Services
             this.medicationRequestDelegate = medicationRequestDelegate;
         }
 
-        private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMedicationStatementService));
+        private static ActivitySource Source { get; } = new ActivitySource(nameof(MedicationRequestService));
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)
