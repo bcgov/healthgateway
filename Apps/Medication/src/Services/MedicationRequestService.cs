@@ -43,7 +43,7 @@ namespace HealthGateway.Medication.Services
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="medicationRequestDelegate">Injected medication statement delegate.</param>
         public MedicationRequestService(
-            ILogger<RestMedicationStatementService> logger,
+            ILogger<MedicationRequestService> logger,
             IPatientService patientService,
             IMedicationRequestDelegate medicationRequestDelegate)
         {

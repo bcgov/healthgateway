@@ -59,12 +59,12 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool credentialsInBody = false)
+        public JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             this.logger.LogDebug($"Authenticating Direct Grant as User: {tokenRequest.Username}");
-            Task<IAuthModel> authenticating = this.ResourceOwnerPasswordGrant(tokenUri, tokenRequest, credentialsInBody);
+            Task<IAuthModel> authenticating = this.ResourceOwnerPasswordGrant(tokenUri, tokenRequest);
 
-            JWTModel jwtModel = (authenticating.Result as JWTModel) !;
+            JWTModel jwtModel = (authenticating.Result as JWTModel)!;
             this.logger.LogDebug($"Finished authenticating User: {tokenRequest.Username}");
 
             return jwtModel;
@@ -103,7 +103,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return authModel;
         }
 
-        private async Task<IAuthModel> ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool credentialsInBody)
+        private async Task<IAuthModel> ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             JWTModel authModel = new ();
             try

@@ -97,7 +97,7 @@ namespace HealthGateway.Medication.Controllers.Test
             MedicationController controller = new MedicationController(serviceMock.Object);
 
             // Act
-            RequestResult<Dictionary<string, MedicationInformation>> actual = controller.GetMedications(drugIdentifiers);
+            RequestResult<IDictionary<string, MedicationInformation>> actual = controller.GetMedications(drugIdentifiers);
 
             // Verify
             serviceMock.Verify(s => s.GetMedications(paddedDinList), Times.Once());

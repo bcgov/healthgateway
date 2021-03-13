@@ -39,8 +39,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// </summary>
         /// <param name="tokenUri">Uri to request the the token from.</param>
         /// <param name="tokenRequest">Token request configuration.</param>
-        /// <param name="credentialsInBody">Sets the authentication credentials in the request body.</param>
         /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
-        JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool credentialsInBody);
+        JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
     }
 }

@@ -26,10 +26,10 @@ namespace HealthGateway.Medication.Delegates
     public interface IMedicationRequestDelegate
     {
         /// <summary>
-        /// Returns a set of MedicationRequests for the given hdid.
+        /// Returns a set of MedicationRequests for the given phn.
         /// </summary>
-        /// <param name="hdid">The HDID of the user querying.</param>
+        /// <param name="phn">The PHN of the user querying.</param>
         /// <returns>The MedicationRequest result.</returns>
-        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string hdid);
+        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn);
     }
 }

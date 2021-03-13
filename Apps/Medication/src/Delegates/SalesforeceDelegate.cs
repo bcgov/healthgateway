@@ -21,10 +21,10 @@ namespace HealthGateway.Medication.Delegates
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -55,7 +55,7 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authDelegate">The delegate responsible authentication.</param>
         public SalesforeceDelegate(
-            ILogger<RestMedStatementDelegate> logger,
+            ILogger<SalesforeceDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate)
@@ -81,11 +81,13 @@ namespace HealthGateway.Medication.Delegates
                     ResultStatus = Common.Constants.ResultType.Error,
                 };
 
-                string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication, true).AccessToken;
+                string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogError($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
-                    throw new FormatException($"Authenticated as User System access token is null or emtpy, Error:\n{accessToken}");
+                    retVal.ResultStatus = Common.Constants.ResultType.Error;
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to authenticate to retrieve Medication Requests", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
+                    return retVal;
                 }
                 else
                 {
@@ -93,8 +95,7 @@ namespace HealthGateway.Medication.Delegates
                     using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    /*client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));*/
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
                     client.DefaultRequestHeaders.Add("phn", phn);
                     try
                     {
@@ -134,10 +135,10 @@ namespace HealthGateway.Medication.Delegates
                                 retVal.PageSize = 0;
                                 break;
                             case HttpStatusCode.Forbidden:
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
                                 break;
                             default:
-                                retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Medication Requests endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                                retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to Medication Requests endpoint, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
                                 this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                                 break;
                         }
@@ -146,7 +147,7 @@ namespace HealthGateway.Medication.Delegates
                     catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                     {
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Medication Requests: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Medication Requests: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.SF) };
                         this.logger.LogError($"Unexpected exception in GetMedicationRequestsAsync {e}");
                     }
                 }
