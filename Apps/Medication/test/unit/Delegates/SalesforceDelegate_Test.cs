@@ -330,7 +330,7 @@ namespace HealthGateway.Medication.Delegates.Test
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(
                       x => x.Headers.GetValues("phn").FirstOrDefault() == expectedPHN &&
-                       x.Headers.Authorization.Parameter == authorizationToken),
+                       (x.Headers.Authorization != null ? x.Headers.Authorization.Parameter : string.Empty) == authorizationToken),
                   ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(stubResponse)
                .Verifiable();
