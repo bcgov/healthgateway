@@ -110,7 +110,7 @@ export default class FilterComponent extends Vue {
                 numEntries: this.noteCount,
             },
             {
-                type: EntryType.Note,
+                type: EntryType.MedicationRequest,
                 display: "Special Authority",
                 isEnabled: this.config.modules[EntryType.MedicationRequest],
                 numEntries: this.medicationRequestCount,
