@@ -74,25 +74,14 @@ export default class LaboratoryTimelineComponent extends Vue {
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`
                 )
-                    .then((res) => res.blob())
-                    .then((b) => {
+                    .then((response) => response.blob())
+                    .then((blob) => {
                         // It is necessary to create a new blob object with mime-type explicitly set
                         // otherwise only Chrome works like it should
-                        var newBlob = new Blob([b], {
+                        var newBlob = new Blob([blob], {
                             type: "application/pdf",
                         });
 
-                        // IE doesn't allow using a blob object directly as link href
-                        // instead it is necessary to use msSaveOrOpenBlob
-                        if (
-                            window.navigator &&
-                            window.navigator.msSaveOrOpenBlob
-                        ) {
-                            window.navigator.msSaveOrOpenBlob(newBlob);
-                            return;
-                        }
-
-                        // For other browsers:
                         // Create a link pointing to the ObjectURL containing the blob.
                         const data = window.URL.createObjectURL(newBlob);
                         var link = document.createElement("a");
