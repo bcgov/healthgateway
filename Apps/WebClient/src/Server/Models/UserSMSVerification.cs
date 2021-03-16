@@ -20,17 +20,17 @@ namespace HealthGateway.WebClient.Models
     using HealthGateway.WebClient.Services;
 
     /// <summary>
-    /// Model that provides a user representation of a sms verification invite.
+    /// Model that provides a user representation of a sms verification.
     /// </summary>
-    public class UserSMSInvite
+    public class UserSMSVerification
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the invite was validated.
+        /// Gets or sets a value indicating whether the sms was validated.
         /// </summary>
         public bool Validated { get; set; }
 
         /// <summary>
-        /// Gets or sets the sms number for the invite.
+        /// Gets or sets the sms number for the verification.
         /// </summary>
         public string? SMSNumber { get; set; }
 
@@ -49,14 +49,14 @@ namespace HealthGateway.WebClient.Models
         /// </summary>
         /// <param name="model">The database messaging verification model.</param>
         /// <returns>The UserSMSInvite model.</returns>
-        public static UserSMSInvite? CreateFromDbModel(MessagingVerification? model)
+        public static UserSMSVerification? CreateFromDbModel(MessagingVerification? model)
         {
             if (model == null)
             {
                 return null;
             }
 
-            return new UserSMSInvite()
+            return new UserSMSVerification()
             {
                 Validated = model.Validated,
                 SMSNumber = model.SMSNumber,

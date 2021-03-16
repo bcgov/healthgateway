@@ -17,7 +17,6 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using Hangfire;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Jobs;
@@ -25,7 +24,6 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -36,7 +34,6 @@ namespace HealthGateway.Common.Services
     public class EmailQueueService : IEmailQueueService
     {
         private readonly IEmailDelegate emailDelegate;
-        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly IWebHostEnvironment environment;
         private readonly ILogger logger;
         private readonly IBackgroundJobClient jobClient;
@@ -47,20 +44,16 @@ namespace HealthGateway.Common.Services
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="jobClient">The JobScheduler queue client.</param>
         /// <param name="emailDelegate">Email delegate to be used.</param>
-        /// <param name="emailInviteDelegate">Invite email delegate to be used.</param>
         /// <param name="environment">The injected environment configuration.</param>
         public EmailQueueService(
             ILogger<EmailQueueService> logger,
             IBackgroundJobClient jobClient,
             IEmailDelegate emailDelegate,
-            IMessagingVerificationDelegate emailInviteDelegate,
             IWebHostEnvironment environment)
         {
             this.logger = logger;
-            this.configuration = configuration;
             this.jobClient = jobClient;
             this.emailDelegate = emailDelegate;
-            this.messageVerificationDelegate = emailInviteDelegate;
             this.environment = environment;
         }
 

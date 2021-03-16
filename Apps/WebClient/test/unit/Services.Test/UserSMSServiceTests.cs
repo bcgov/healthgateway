@@ -65,7 +65,7 @@ namespace HealthGateway.WebClient.Test.Services
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode, "bearerTokenMock");
+            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode);
 
             Assert.True(actualResult);
         }
@@ -103,34 +103,9 @@ namespace HealthGateway.WebClient.Test.Services
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode, "bearerTokenMock");
+            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode);
 
             Assert.True(!actualResult);
-        }
-
-        /// <summary>
-        /// RetrieveLastInvite - Happy path scenario.
-        /// </summary>
-        [Fact]
-        public void ShouldRetrieveLastInvite()
-        {
-            MessagingVerification expectedResult = new MessagingVerification
-            {
-                HdId = HdIdMock,
-            };
-
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
-
-            IUserSMSService service = new UserSMSService(
-                new Mock<ILogger<UserSMSService>>().Object,
-                messagingVerificationDelegate.Object,
-                new Mock<IUserProfileDelegate>().Object,
-                new Mock<INotificationSettingsService>().Object);
-
-            MessagingVerification? actualResult = service.RetrieveLastInvite(HdIdMock);
-
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
         }
     }
 }

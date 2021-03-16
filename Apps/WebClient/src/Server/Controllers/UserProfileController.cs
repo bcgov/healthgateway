@@ -94,14 +94,9 @@ namespace HealthGateway.WebClient.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                string referer = httpContext.Request
-                                             .GetTypedHeaders()
-                                             .Referer
-                                             .GetLeftPart(UriPartial.Authority);
-
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = GetAuthDateTime(user);
-                RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), jwtAuthTime).ConfigureAwait(true);
+                RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime).ConfigureAwait(true);
                 return new JsonResult(result);
             }
 
@@ -172,16 +167,11 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult CloseUserProfile(string hdid)
         {
-            string referer = this.httpContextAccessor.HttpContext!.Request
-                .GetTypedHeaders()
-                .Referer
-                .GetLeftPart(UriPartial.Authority);
-
             // Retrieve the user identity id from the claims
-            ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
+            ClaimsPrincipal user = this.httpContextAccessor.HttpContext!.User;
             Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId, referer);
+            RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId);
             return new JsonResult(result);
         }
 
@@ -198,12 +188,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public IActionResult RecoverUserProfile(string hdid)
         {
-            string referer = this.httpContextAccessor.HttpContext!.Request
-                .GetTypedHeaders()
-                .Referer
-                .GetLeftPart(UriPartial.Authority);
-
-            RequestResult<UserProfileModel> result = this.userProfileService.RecoverUserProfile(hdid, referer);
+            RequestResult<UserProfileModel> result = this.userProfileService.RecoverUserProfile(hdid);
             return new JsonResult(result);
         }
 
@@ -225,18 +210,18 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Validates an email invite.
+        /// Validates a user email verification.
         /// </summary>
         /// <returns>The an empty response.</returns>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="inviteKey">The email invite key.</param>
+        /// <param name="verificationKey">The email verification key.</param>
         /// <response code="200">The email was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="404">The invite key was not found.</response>
+        /// <response code="404">The verification key was not found.</response>
         [HttpGet]
-        [Route("{hdid}/email/validate/{inviteKey}")]
+        [Route("{hdid}/email/validate/{verificationKey}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> ValidateEmail(string hdid, Guid inviteKey)
+        public async Task<IActionResult> ValidateEmail(string hdid, Guid verificationKey)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -245,7 +230,7 @@ namespace HealthGateway.WebClient.Controllers
 
                 if (accessToken != null)
                 {
-                    PrimitiveRequestResult<bool> result = this.userEmailService.ValidateEmail(hdid, inviteKey);
+                    PrimitiveRequestResult<bool> result = this.userEmailService.ValidateEmail(hdid, verificationKey);
                     return new JsonResult(result);
                 }
             }
@@ -254,14 +239,14 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Validates a sms invite.
+        /// Validates a sms verification.
         /// </summary>
         /// <returns>An empty response.</returns>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="validationCode">The sms invite validation code.</param>
+        /// <param name="validationCode">The sms validation code.</param>
         /// <response code="200">The sms was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="404">The invite key was not found.</response>
+        /// <response code="404">The validation code was not found.</response>
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
@@ -296,21 +281,10 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> UpdateUserEmail(string hdid, [FromBody] string emailAddress)
+        public IActionResult UpdateUserEmail(string hdid, [FromBody] string emailAddress)
         {
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                string referer = httpContext.Request
-                                            .GetTypedHeaders()
-                                            .Referer
-                                            .GetLeftPart(UriPartial.Authority);
-
-                bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer));
-                return new JsonResult(result);
-            }
-
-            return this.Unauthorized();
+            bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress);
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -327,19 +301,8 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<IActionResult> UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
         {
-            HttpContext? httpContext = this.httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                string referer = httpContext.Request
-                                            .GetTypedHeaders()
-                                            .Referer
-                                            .GetLeftPart(UriPartial.Authority);
-
-                bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer));
-                return new JsonResult(result);
-            }
-
-            return this.Unauthorized();
+            bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber);
+            return new JsonResult(result);
         }
 
         /// <summary>

@@ -36,8 +36,6 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
-
-
         private readonly ILogger logger;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IUserPreferenceDelegate userPreferenceDelegate;
@@ -46,9 +44,9 @@ namespace HealthGateway.WebClient.Services
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly IPatientService patientService;
-
         private readonly IUserEmailService userEmailService;
         private readonly IUserSMSService userSMSService;
+        private readonly INotificationSettingsService notificationSettingsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -61,6 +59,8 @@ namespace HealthGateway.WebClient.Services
         /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="patientService">The patient service.</param>
+        /// <param name="userEmailService">The User Email service.</param>
+        /// <param name="userSMSService">The User SMS service.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IUserProfileDelegate userProfileDelegate,
@@ -71,7 +71,8 @@ namespace HealthGateway.WebClient.Services
             ICryptoDelegate cryptoDelegate,
             IPatientService patientService,
             IUserEmailService userEmailService,
-            IUserSMSService userSMSService)
+            IUserSMSService userSMSService,
+            INotificationSettingsService notificationSettingsService)
         {
             this.logger = logger;
             this.userProfileDelegate = userProfileDelegate;
@@ -84,6 +85,8 @@ namespace HealthGateway.WebClient.Services
 
             this.userEmailService = userEmailService;
             this.userSMSService = userSMSService;
+
+            this.notificationSettingsService = notificationSettingsService;
         }
 
         /// <inheritdoc />
@@ -125,7 +128,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, DateTime lastLogin)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime lastLogin)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
@@ -187,20 +190,23 @@ namespace HealthGateway.WebClient.Services
 
             if (insertResult.Status == DBStatusCode.Created)
             {
+                UserProfile createdProfile = insertResult.Payload;
                 string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
                 string? requestedEmail = createProfileRequest.Profile.Email;
 
                 // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
-                    this.userEmailService.UpdateUserEmail(hdid, requestedEmail, hostUri);
+                    this.userEmailService.CreateUserEmail(hdid, requestedEmail);
                 }
 
                 // Add SMS verification
                 if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
                 {
-                    this.userSMSService.UpdateUserSMS(hdid, requestedSMSNumber, hostUri);
+                    this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
                 }
+
+                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(createdProfile, requestedEmail, requestedSMSNumber));
 
                 this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
                 return new RequestResult<UserProfileModel>()
@@ -226,7 +232,7 @@ namespace HealthGateway.WebClient.Services
 
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
-        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl)
+        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId)
         {
             this.logger.LogTrace($"Closing user profile... {hdid}");
 
@@ -273,7 +279,7 @@ namespace HealthGateway.WebClient.Services
 
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
-        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl)
+        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
         {
             this.logger.LogTrace($"Recovering user profile... {hdid}");
 
@@ -431,14 +437,6 @@ namespace HealthGateway.WebClient.Services
                     ResourcePayload = birthDate.AddYears(minAge.Value) < DateTime.Now,
                 };
             }
-        }
-
-        private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)
-        {
-            // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, userProfile.Email, smsNumber);
-            this.notificationSettingsService.QueueNotificationSettings(request);
-            return request;
         }
     }
 }

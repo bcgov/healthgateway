@@ -60,7 +60,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc />
-        public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings)
+        public NotificationSettingsRequest QueueNotificationSettings(NotificationSettingsRequest notificationSettings)
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
             var options = new JsonSerializerOptions
@@ -69,17 +69,21 @@ namespace HealthGateway.Common.Services
                 IgnoreNullValues = true,
                 WriteIndented = true,
             };
-            string json = JsonSerializer.Serialize(ValidateVerificationCode(notificationSettings), options);
+            string json = JsonSerializer.Serialize(ValidateSMSVerificationCode(notificationSettings), options);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
+
+            // Retrieve and update each delegate notification setting
             DBResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid, 0, 500);
             foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
             {
                 this.logger.LogDebug($"Queueing Dependent Notification Settings.");
-                NotificationSettingsRequest dependentNotificationSettings = new NotificationSettingsRequest();
-                dependentNotificationSettings.SubjectHdid = resourceDelegate.ProfileHdid;
-                dependentNotificationSettings.EmailAddress = notificationSettings.EmailAddress;
-                dependentNotificationSettings.EmailEnabled = notificationSettings.EmailEnabled;
-                dependentNotificationSettings.EmailScope = notificationSettings.EmailScope;
+                NotificationSettingsRequest dependentNotificationSettings = new()
+                {
+                    SubjectHdid = resourceDelegate.ProfileHdid,
+                    EmailAddress = notificationSettings.EmailAddress,
+                    EmailEnabled = notificationSettings.EmailEnabled,
+                    EmailScope = notificationSettings.EmailScope,
+                };
 
                 // Only send dependents sms number if it has been verified
                 if (notificationSettings.SMSVerified)
@@ -95,6 +99,7 @@ namespace HealthGateway.Common.Services
             }
 
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
+            return notificationSettings;
         }
 
         /// <inheritdoc />
@@ -102,13 +107,13 @@ namespace HealthGateway.Common.Services
         {
             this.logger.LogTrace($"Queueing Notification Settings push to PHSA...");
             RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.
-                            SetNotificationSettings(ValidateVerificationCode(notificationSettings), bearerToken).ConfigureAwait(true);
+                            SetNotificationSettings(ValidateSMSVerificationCode(notificationSettings), bearerToken).ConfigureAwait(true);
             this.logger.LogDebug($"Finished queueing Notification Settings push.");
             return retVal;
         }
 
         [SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Team decision")]
-        private static NotificationSettingsRequest ValidateVerificationCode(NotificationSettingsRequest notificationSettings)
+        private static NotificationSettingsRequest ValidateSMSVerificationCode(NotificationSettingsRequest notificationSettings)
         {
             if (notificationSettings.SMSEnabled && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
             {

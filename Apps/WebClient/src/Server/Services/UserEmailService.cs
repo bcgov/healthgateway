@@ -114,7 +114,7 @@ namespace HealthGateway.WebClient.Services
                 this.profileDelegate.Update(userProfile);
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile);
+                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
 
                 retVal.ResultStatus = ResultType.Success;
             }
@@ -124,21 +124,34 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool UpdateUserEmail(string hdid, string emailAddress, Uri hostUri)
+        public bool CreateUserEmail(string hdid, string emailAddress)
+        {
+            this.logger.LogTrace($"Creating user email...");
+            this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid());
+            this.logger.LogDebug($"Finished creating user email");
+            return true;
+        }
+
+        /// <inheritdoc />
+        public bool UpdateUserEmail(string hdid, string emailAddress)
         {
             this.logger.LogTrace($"Updating user email...");
+
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             this.logger.LogInformation($"Removing email from user ${hdid}");
-            userProfile.Email = null;
             this.profileDelegate.Update(userProfile);
+            userProfile.Email = null;
+
+            // Update the notification settings
+            this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
 
             MessagingVerification? lastEmailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
             if (lastEmailVerification != null)
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
-                bool isEmailRemoved = string.IsNullOrEmpty(emailAddress);
-                this.messageVerificationDelegate.Expire(lastEmailVerification, isEmailRemoved);
-                if (!isEmailRemoved)
+                bool isDeleted = string.IsNullOrEmpty(emailAddress);
+                this.messageVerificationDelegate.Expire(lastEmailVerification, isDeleted);
+                if (!isDeleted)
                 {
                     this.logger.LogInformation($"Sending new email invite for user ${hdid}");
 
@@ -146,34 +159,24 @@ namespace HealthGateway.WebClient.Services
                         && !string.IsNullOrEmpty(lastEmailVerification.Email.To)
                         && emailAddress.Equals(lastEmailVerification.Email.To, StringComparison.OrdinalIgnoreCase))
                     {
-                        this.QueueVerificationEmail(hdid, emailAddress, hostUri, lastEmailVerification.InviteKey);
+                        this.AddVerificationEmail(hdid, emailAddress, lastEmailVerification.InviteKey);
                     }
                     else
                     {
-                        this.QueueVerificationEmail(hdid, emailAddress, hostUri, Guid.NewGuid());
+                        this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid());
                     }
                 }
             }
             else
             {
-                this.QueueVerificationEmail(hdid, emailAddress, hostUri, Guid.NewGuid());
+                this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid());
             }
-
-            // Update the notification settings
-            this.UpdateNotificationSettings(userProfile);
 
             this.logger.LogDebug($"Finished updating user email");
             return true;
         }
 
-        private void UpdateNotificationSettings(UserProfile userProfile)
-        {
-            // Update the notification settings
-            NotificationSettingsRequest request = new(userProfile, userProfile.Email, userProfile.SMSNumber);
-            this.notificationSettingsService.QueueNotificationSettings(request);
-        }
-
-        private void QueueVerificationEmail(string hdid, string toEmail, Uri activationHost, Guid inviteKey)
+        private void AddVerificationEmail(string hdid, string toEmail, Guid inviteKey)
         {
             float verificationExpiryHours = this.emailVerificationExpirySeconds / 3600;
             string hostUrl = activationHost.ToString();
