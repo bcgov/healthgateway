@@ -59,5 +59,12 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <returns>A list of email invites.</returns>
         IEnumerable<MessagingVerification> GetAllEmail();
+
+        /// <summary>
+        /// Expire a MessageingVerificatio.
+        /// </summary>
+        /// <param name="messageVerification">The message verification to expire.</param>
+        /// <param name="markDeleted">Mark the verification as deleted.</param>
+        void Expire(MessagingVerification messageVerification, bool markDeleted);
     }
 }

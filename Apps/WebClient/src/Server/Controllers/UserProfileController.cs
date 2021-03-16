@@ -98,15 +98,11 @@ namespace HealthGateway.WebClient.Controllers
                                              .GetTypedHeaders()
                                              .Referer
                                              .GetLeftPart(UriPartial.Authority);
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
 
-                if (accessToken != null)
-                {
-                    ClaimsPrincipal user = httpContext.User;
-                    DateTime jwtAuthTime = this.GetAuthDateTime(user);
-                    RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), accessToken, jwtAuthTime).ConfigureAwait(true);
-                    return new JsonResult(result);
-                }
+                ClaimsPrincipal user = httpContext.User;
+                DateTime jwtAuthTime = GetAuthDateTime(user);
+                RequestResult<UserProfileModel> result = await this.userProfileService.CreateUserProfile(createUserRequest, new Uri(referer), jwtAuthTime).ConfigureAwait(true);
+                return new JsonResult(result);
             }
 
             return this.Unauthorized();
@@ -133,7 +129,7 @@ namespace HealthGateway.WebClient.Controllers
 
             this.logger.LogTrace($"HTTP context user: {JsonConvert.SerializeObject(user, jsonSettings)}");
 
-            DateTime jwtAuthTime = this.GetAuthDateTime(user);
+            DateTime jwtAuthTime = GetAuthDateTime(user);
 
             RequestResult<UserProfileModel> result = this.userProfileService.GetUserProfile(hdid, jwtAuthTime);
 
@@ -183,7 +179,7 @@ namespace HealthGateway.WebClient.Controllers
 
             // Retrieve the user identity id from the claims
             ClaimsPrincipal user = this.httpContextAccessor.HttpContext.User;
-            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier) !.Value);
+            Guid userId = new Guid(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             RequestResult<UserProfileModel> result = this.userProfileService.CloseUserProfile(hdid, userId, referer);
             return new JsonResult(result);
@@ -249,7 +245,7 @@ namespace HealthGateway.WebClient.Controllers
 
                 if (accessToken != null)
                 {
-                    PrimitiveRequestResult<bool> result = this.userEmailService.ValidateEmail(hdid, inviteKey, accessToken);
+                    PrimitiveRequestResult<bool> result = this.userEmailService.ValidateEmail(hdid, inviteKey);
                     return new JsonResult(result);
                 }
             }
@@ -269,64 +265,23 @@ namespace HealthGateway.WebClient.Controllers
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> ValidateSMS(string hdid, string validationCode)
+        public IActionResult ValidateSMS(string hdid, string validationCode)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-                if (accessToken != null)
+                if (this.userSMSService.ValidateSMS(hdid, validationCode))
                 {
-                    if (this.userSMSService.ValidateSMS(hdid, validationCode, accessToken))
-                    {
-                        return new OkResult();
-                    }
-                    else
-                    {
-                        System.Threading.Thread.Sleep(5000);
-                        return new NotFoundResult();
-                    }
+                    return new OkResult();
+                }
+                else
+                {
+                    System.Threading.Thread.Sleep(5000);
+                    return new NotFoundResult();
                 }
             }
 
             return this.Unauthorized();
-        }
-
-        /// <summary>
-        /// Validates an email invite.
-        /// </summary>
-        /// <returns>The invite email.</returns>
-        /// <param name="hdid">The user hdid.</param>
-        /// <response code="200">Returns the user email invite json.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("{hdid}/email/invite")]
-        [Authorize(Policy = UserProfilePolicy.Read)]
-        public IActionResult GetUserEmailInvite(string hdid)
-        {
-            MessagingVerification? emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
-            UserEmailInvite? result = UserEmailInvite.CreateFromDbModel(emailInvite);
-            return new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Validates an email invite.
-        /// </summary>
-        /// <returns>The invite email.</returns>
-        /// <param name="hdid">The user hdid.</param>
-        /// <response code="200">Returns the user email invite json.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("{hdid}/sms/invite")]
-        [Authorize(Policy = UserProfilePolicy.Read)]
-        public IActionResult GetUserSMSInvite(string hdid)
-        {
-            MessagingVerification? smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
-            UserSMSInvite? result = UserSMSInvite.CreateFromDbModel(smsInvite);
-            return new JsonResult(result);
         }
 
         /// <summary>
@@ -346,18 +301,13 @@ namespace HealthGateway.WebClient.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                string referer = httpContext.Request
+                                            .GetTypedHeaders()
+                                            .Referer
+                                            .GetLeftPart(UriPartial.Authority);
 
-                if (accessToken != null)
-                {
-                    string referer = httpContext.Request
-                                                .GetTypedHeaders()
-                                                .Referer
-                                                .GetLeftPart(UriPartial.Authority);
-
-                    bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer), accessToken);
-                    return new JsonResult(result);
-                }
+                bool result = this.userEmailService.UpdateUserEmail(hdid, emailAddress, new Uri(referer));
+                return new JsonResult(result);
             }
 
             return this.Unauthorized();
@@ -385,14 +335,8 @@ namespace HealthGateway.WebClient.Controllers
                                             .Referer
                                             .GetLeftPart(UriPartial.Authority);
 
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
-
-                if (accessToken != null)
-                {
-
-                    bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer), accessToken);
-                    return new JsonResult(result);
-                }
+                bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber, new Uri(referer));
+                return new JsonResult(result);
             }
 
             return this.Unauthorized();
@@ -453,7 +397,7 @@ namespace HealthGateway.WebClient.Controllers
             return new JsonResult(result);
         }
 
-        private DateTime GetAuthDateTime(ClaimsPrincipal claimsPrincipal)
+        private static DateTime GetAuthDateTime(ClaimsPrincipal claimsPrincipal)
         {
             // auth_time is not mandatory in a Bearer token.
             string rowAuthTime = claimsPrincipal.FindFirstValue("auth_time");

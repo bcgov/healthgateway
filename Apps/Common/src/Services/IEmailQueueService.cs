@@ -72,35 +72,20 @@ namespace HealthGateway.Common.Services
         void CloneAndQueue(Guid emailId, bool shouldCommit = true);
 
         /// <summary>
-        /// Queues a new email invite.
-        /// Template will be looked up in the DB.
-        /// A new invite email will be added to the database.
-        /// </summary>
-        /// <param name="hdid">The users hdid to associate the invite with.</param>
-        /// <param name="toEmail">The To email address.</param>
-        /// <param name="activationHost">The host of the email validation endpoint.</param>
-        /// <param name="inviteKey">The email invite key to be sent.</param>
-        void QueueNewInviteEmail(string hdid, string toEmail, Uri activationHost, Guid inviteKey);
-
-        /// <summary>
-        /// Queues a new email using a populated Email object.
-        /// A new invite email will be added to the database.
-        /// </summary>
-        /// <param name="invite">The populated invite with associated email to send.</param>
-        void QueueNewInviteEmail(MessagingVerification invite);
-
-        /// <summary>
-        /// Queues an email to be sent.
-        /// </summary>
-        /// <param name="inviteEmailId">The id of the email to send.</param>
-        void QueueInviteEmail(Guid inviteEmailId);
-
-        /// <summary>
         /// Looks up an Email Template in the database.
         /// </summary>
         /// <param name="templateName">The name of the template.</param>
         /// <returns>The populated Email template or null if not found.</returns>
         EmailTemplate GetEmailTemplate(string templateName);
+
+        /// <summary>
+        /// Given an Email template it will swap the dictionary key/values in the Subject and Body.
+        /// </summary>
+        /// <param name="toEmail">The To email address.</param>
+        /// <param name="templateName">The name of the email template.</param>
+        /// <param name="keyValues">A dictionary of key/value pairs for replacement.</param>
+        /// <returns>The populated email object.</returns>
+        Email ProcessTemplate(string toEmail, string templateName, Dictionary<string, string> keyValues);
 
         /// <summary>
         /// Given an Email template it will swap the dictionary key/values in the Subject and Body.

@@ -94,6 +94,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
+        public void Update(MessagingVerification messageVerification)
+        {
+            this.logger.LogTrace($"Updating email invite in DB... {JsonSerializer.Serialize(messageVerification)}");
+            this.dbContext.Update<MessagingVerification>(messageVerification);
+            this.dbContext.SaveChanges();
+            this.logger.LogDebug($"Finished updating email invite in DB. {messageVerification.Id}");
+        }
+
+        /// <inheritdoc />
         public MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType)
         {
             this.logger.LogTrace($"Getting last messaging verification from DB for user... {hdid}");
@@ -114,12 +123,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public void Update(MessagingVerification messageVerification)
+        public void Expire(MessagingVerification messageVerification, bool markDeleted)
         {
-            this.logger.LogTrace($"Updating email invite in DB... {JsonSerializer.Serialize(messageVerification)}");
-            this.dbContext.Update<MessagingVerification>(messageVerification);
-            this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished updating email invite in DB. {messageVerification.Id}");
+            messageVerification.ExpireDate = DateTime.UtcNow;
+            messageVerification.Deleted = markDeleted;
+            this.Update(messageVerification);
+
+            this.logger.LogDebug("Finished Expiring messaging verification from DB.");
         }
     }
 }

@@ -57,7 +57,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool ValidateSMS(string hdid, string validationCode, string bearerToken)
+        public bool ValidateSMS(string hdid, string validationCode)
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
             bool retVal = false;
@@ -97,7 +97,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken)
+        public bool UpdateUserSMS(string hdid, string sms, Uri hostUri)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
