@@ -217,6 +217,8 @@ export default class TimelineView extends Vue {
 
     private logger!: ILogger;
 
+    private readonly alertExpirySeconds = 5;
+
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
     }
@@ -357,7 +359,7 @@ export default class TimelineView extends Vue {
                     <b-alert
                         :show="
                             showImmunizationAlert && immunizationIsDeferred
-                                ? 5
+                                ? alertExpirySeconds
                                 : false
                         "
                         dismissible
@@ -371,7 +373,7 @@ export default class TimelineView extends Vue {
                     <b-alert
                         :show="
                             showImmunizationAlert && !immunizationIsDeferred
-                                ? 5
+                                ? alertExpirySeconds
                                 : false
                         "
                         dismissible
