@@ -32,10 +32,10 @@ namespace Healthgateway.JobScheduler.Jobs
     /// <inheritdoc />
     public class NotificationSettingsJob : INotificationSettingsJob
     {
-        private const int concurrencyTimeout = 5 * 60; // 5 minutes
+        private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
         private const string JobConfigKey = "NotificationSettings";
         private const string JobEnabledKey = "Enabled";
-        private const string authConfigSectionName = "ClientAuthentication";
+        private const string AuthConfigSectionName = "ClientAuthentication";
         private readonly IConfiguration configuration;
         private readonly ILogger<NotificationSettingsJob> logger;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
@@ -52,7 +52,13 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="logger">The logger to use.</param>
         /// <param name="notificationSettingsDelegate">The email delegate to use.</param>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
-        public NotificationSettingsJob(IConfiguration configuration, ILogger<NotificationSettingsJob> logger, INotificationSettingsDelegate notificationSettingsDelegate, IAuthenticationDelegate authDelegate, IEventLogDelegate eventLogDelegate)
+        /// <param name="eventLogDelegate">The Eventlog delegate.</param>
+        public NotificationSettingsJob(
+            IConfiguration configuration,
+            ILogger<NotificationSettingsJob> logger,
+            INotificationSettingsDelegate notificationSettingsDelegate,
+            IAuthenticationDelegate authDelegate,
+            IEventLogDelegate eventLogDelegate)
         {
             this.configuration = configuration!;
             this.logger = logger;
@@ -61,7 +67,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.eventLogDelegate = eventLogDelegate;
             this.jobEnabled = this.configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, true);
 
-            IConfigurationSection? configSection = configuration?.GetSection(authConfigSectionName);
+            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"AuthTokenUri");
 
             this.tokenRequest = new ClientCredentialsTokenRequest();
@@ -69,7 +75,7 @@ namespace Healthgateway.JobScheduler.Jobs
         }
 
         /// <inheritdoc />
-        [DisableConcurrentExecution(concurrencyTimeout)]
+        [DisableConcurrentExecution(ConcurrencyTimeout)]
         public void PushNotificationSettings(string notificationSettingsJSON)
         {
             this.logger.LogDebug($"Queueing Notification Settings push to PHSA...");
@@ -98,7 +104,7 @@ namespace Healthgateway.JobScheduler.Jobs
                                         this.notificationSettingsDelegate.SetNotificationSettings(notificationSettings, accessToken).ConfigureAwait(true)).Result;
                         if (retVal.ResultStatus == HealthGateway.Common.Constants.ResultType.ActionRequired)
                         {
-                            EventLog eventLog = new ()
+                            EventLog eventLog = new()
                             {
                                 EventSource = this.notificationSettingsDelegate.GetType().Name,
                                 EventName = "SMS Rejected",

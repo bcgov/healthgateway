@@ -31,11 +31,11 @@ namespace HealthGateway.Medication.Models.Salesforce
         /// <summary>
         /// Gets or sets the Salesforce token Uri.
         /// </summary>
-        public Uri TokenUri { get; set; }
+        public Uri TokenUri { get; set; } = new Uri("about:blank");
 
         /// <summary>
         /// Gets or sets the total number of records to retrieve in one call.
         /// </summary>
-        public ClientCredentialsTokenRequest ClientAuthentication { get; set; }
+        public ClientCredentialsTokenRequest ClientAuthentication { get; set; } = new ClientCredentialsTokenRequest();
     }
 }

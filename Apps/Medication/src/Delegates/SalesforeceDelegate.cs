@@ -38,8 +38,7 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class SalesforeceDelegate : IMedicationRequestDelegate
     {
-        private const string AuthConfigSectionName = "ClientAuthentication";
-        private const string SalesForceConfigSectionKey = "Salesforce";
+        private const string SalesforceConfigSectionKey = "Salesforce";
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
@@ -66,7 +65,7 @@ namespace HealthGateway.Medication.Delegates
             this.authDelegate = authDelegate;
 
             this.salesforceConfig = new Models.Salesforce.Config();
-            this.configuration.Bind(SalesForceConfigSectionKey, this.salesforceConfig);
+            this.configuration.Bind(SalesforceConfigSectionKey, this.salesforceConfig);
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(ClientRegistriesDelegate));

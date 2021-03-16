@@ -18,24 +18,20 @@ namespace HealthGateway.Medication.Delegates.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Http;
     using System.Net;
+    using System.Net.Http;
     using System.Text.Json;
-    using System.Threading.Tasks;
     using System.Threading;
-
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Medication.Models;
-
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-
-    using Moq.Protected;
     using Moq;
-
+    using Moq.Protected;
     using Xunit;
 
     public class SalesforceDelegate_Test
@@ -65,7 +61,7 @@ namespace HealthGateway.Medication.Delegates.Test
                 { "Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId },
                 { "Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret },
                 { "Salesforce:ClientAuthentication:Username", tokenRequest.Username },
-                {"Salesforce:ClientAuthentication:Password", tokenRequest.Password },
+                { "Salesforce:ClientAuthentication:Password", tokenRequest.Password },
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -95,11 +91,8 @@ namespace HealthGateway.Medication.Delegates.Test
                 configuration,
                 mockAuthenticationDelegate.Object);
 
-
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () =>
-                                                                    await medDelegate.GetMedicationRequestsAsync(phn)).Result;
-
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Success, response.ResultStatus);
@@ -132,7 +125,7 @@ namespace HealthGateway.Medication.Delegates.Test
                 { "Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId },
                 { "Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret },
                 { "Salesforce:ClientAuthentication:Username", tokenRequest.Username },
-                {"Salesforce:ClientAuthentication:Password", tokenRequest.Password },
+                { "Salesforce:ClientAuthentication:Password", tokenRequest.Password },
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -152,8 +145,7 @@ namespace HealthGateway.Medication.Delegates.Test
                 mockAuthenticationDelegate.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () =>
-                                                                    await medDelegate.GetMedicationRequestsAsync(phn)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Error, response.ResultStatus);
@@ -216,8 +208,7 @@ namespace HealthGateway.Medication.Delegates.Test
                 mockAuthenticationDelegate.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () =>
-                                                                    await medDelegate.GetMedicationRequestsAsync(phn)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Error, response.ResultStatus);
@@ -250,7 +241,7 @@ namespace HealthGateway.Medication.Delegates.Test
                 { "Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId },
                 { "Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret },
                 { "Salesforce:ClientAuthentication:Username", tokenRequest.Username },
-                {"Salesforce:ClientAuthentication:Password", tokenRequest.Password },
+                { "Salesforce:ClientAuthentication:Password", tokenRequest.Password },
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -279,10 +270,8 @@ namespace HealthGateway.Medication.Delegates.Test
                 configuration,
                 mockAuthenticationDelegate.Object);
 
-
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () =>
-                                                                    await medDelegate.GetMedicationRequestsAsync(phn)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Common.Constants.ResultType.Success, response.ResultStatus);

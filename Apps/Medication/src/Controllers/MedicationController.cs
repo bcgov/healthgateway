@@ -82,7 +82,7 @@ namespace HealthGateway.Medication.Controllers
         /// <response code="200">Returns the medication statement bundle.</response>
         [HttpGet("")]
         [Produces("application/json")]
-        public RequestResult<IDictionary<string, MedicationInformation>> GetMedications([FromQuery]List<string> drugIdentifiers)
+        public RequestResult<IDictionary<string, MedicationInformation>> GetMedications([FromQuery]IList<string> drugIdentifiers)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             IList<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();

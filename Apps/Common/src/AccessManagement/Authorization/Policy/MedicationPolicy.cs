@@ -21,7 +21,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Policy
     public static class MedicationPolicy
     {
         /// <summary>
-        /// Policy which allows the reading medication statements.
+        /// Policy which allows the reading of medication statements.
         /// </summary>
         public const string MedicationStatementRead = "MedicationStatementRead";
 
