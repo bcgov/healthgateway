@@ -34,7 +34,6 @@ namespace Healthgateway.JobScheduler.Jobs
     public class EmailJob : IEmailJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
-        private readonly IConfiguration configuration;
         private readonly ILogger<EmailJob> logger;
         private readonly IEmailDelegate emailDelegate;
         private readonly string host;
@@ -51,7 +50,6 @@ namespace Healthgateway.JobScheduler.Jobs
         public EmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IEmailDelegate emailDelegate)
         {
             Contract.Requires((configuration != null) && (emailDelegate != null));
-            this.configuration = configuration!;
             this.logger = logger;
             this.emailDelegate = emailDelegate!;
             IConfigurationSection section = configuration!.GetSection("Smtp");

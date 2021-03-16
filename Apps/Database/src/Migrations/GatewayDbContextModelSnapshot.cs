@@ -17,9 +17,9 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.3");
+                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.HasSequence("gateway.trace_seq")
                 .HasMin(1L)
@@ -1772,7 +1772,8 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("SMSNumber")
-                        .HasColumnType("text");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("SMSValidationCode")
                         .HasMaxLength(6)

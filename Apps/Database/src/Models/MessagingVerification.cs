@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,6 +72,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the SMS number for this verification.
         /// Required if the VerificationType = MessagingVerificationType.SMS.
         /// </summary>
+        [MaxLength(10)]
         public string? SMSNumber { get; set; }
 
         /// <summary>

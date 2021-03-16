@@ -2,6 +2,7 @@ import { MutationTree } from "vuex";
 
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
+import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus, MedicationState } from "@/models/storeState";
@@ -19,7 +20,11 @@ export const mutations: MutationTree<MedicationState> = {
             state.medicationStatements = medicationResult.resourcePayload;
             state.statusMessage = "success";
             state.error = undefined;
-            state.status = LoadStatus.LOADED;
+            if (state.medicationRequests.length > 0) {
+                state.status = LoadStatus.LOADED;
+            } else {
+                state.status = LoadStatus.PARTIALLY_LOADED;
+            }
         } else if (
             medicationResult.resultStatus == ResultType.ActionRequired &&
             medicationResult.resultError?.actionCode == ActionType.Protected
@@ -32,6 +37,33 @@ export const mutations: MutationTree<MedicationState> = {
             state.statusMessage =
                 "Error returned from the medication statements call";
             state.error = medicationResult.resultError;
+        }
+    },
+    setMedicationRequestResult(
+        state: MedicationState,
+        medicationRequestResult: RequestResult<MedicationRequest[]>
+    ) {
+        if (medicationRequestResult.resultStatus == ResultType.Success) {
+            state.medicationRequests = medicationRequestResult.resourcePayload;
+            state.statusMessage = "success";
+            state.error = undefined;
+            if (state.medicationStatements.length > 0) {
+                state.status = LoadStatus.LOADED;
+            } else {
+                state.status = LoadStatus.PARTIALLY_LOADED;
+            }
+        } else if (
+            medicationRequestResult.resultStatus == ResultType.ActionRequired &&
+            medicationRequestResult.resultError?.actionCode ==
+                ActionType.Protected
+        ) {
+            state.error = undefined;
+            state.status = LoadStatus.PROTECTED;
+        } else {
+            state.status = LoadStatus.ERROR;
+            state.statusMessage =
+                "Error returned from the medication requests call";
+            state.error = medicationRequestResult.resultError;
         }
     },
     medicationError(state: MedicationState, error: Error) {

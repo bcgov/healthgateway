@@ -3,10 +3,9 @@ import { ActionTree, Commit } from "vuex";
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/requestResult";
 import { RootState, UserState } from "@/models/storeState";
-import UserEmailInvite from "@/models/userEmailInvite";
 import { UserPreference } from "@/models/userPreference";
-import UserSMSInvite from "@/models/userSMSInvite";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import {
@@ -39,9 +38,7 @@ export const actions: ActionTree<UserState, RootState> = {
                     logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
-                    let isRegistered: boolean;
                     if (userProfile) {
-                        isRegistered = userProfile.acceptedTermsOfService;
                         const notePreference =
                             UserPreferenceType.TutorialMenuNote;
                         // If there are no preferences, set the default popover state
@@ -71,82 +68,10 @@ export const actions: ActionTree<UserState, RootState> = {
                                 createdDateTime: new DateWrapper().toISO(),
                             };
                         }
-                    } else {
-                        isRegistered = false;
                     }
 
                     context.commit("setProfileUserData", userProfile);
-
-                    // If registered retrieve the invite as well
-                    if (isRegistered) {
-                        const latestEmailPromise = userProfileService.getLatestEmailInvite(
-                            params.hdid
-                        );
-                        const latestSMSPromise = userProfileService.getLatestSMSInvite(
-                            params.hdid
-                        );
-
-                        return Promise.all([
-                            latestEmailPromise,
-                            latestSMSPromise,
-                        ])
-                            .then((results) => {
-                                // Latest Email invite
-                                if (results[0]) {
-                                    context.commit(
-                                        "setValidatedEmail",
-                                        results[0]
-                                    );
-                                }
-                                // Latest SMS invite
-                                if (results[1]) {
-                                    context.commit(
-                                        "setValidatedSMS",
-                                        results[1]
-                                    );
-                                }
-                                resolve(isRegistered);
-                            })
-                            .catch((error) => {
-                                handleError(context.commit, error);
-                                reject(error);
-                            });
-                    } else {
-                        context.commit("setValidatedEmail", undefined);
-                        context.commit("setValidatedSMS", undefined);
-                        resolve(isRegistered);
-                    }
-                })
-                .catch((error) => {
-                    handleError(context.commit, error);
-                    reject(error);
-                });
-        });
-    },
-    getUserEmail(context, params: { hdid: string }): Promise<UserEmailInvite> {
-        return new Promise((resolve, reject) => {
-            userProfileService
-                .getLatestEmailInvite(params.hdid)
-                .then((userEmailInvite) => {
-                    context.commit("setValidatedEmail", userEmailInvite);
-                    resolve(userEmailInvite);
-                })
-                .catch((error) => {
-                    handleError(context.commit, error);
-                    reject(error);
-                });
-        });
-    },
-    getUserSMS(
-        context,
-        params: { hdid: string }
-    ): Promise<UserSMSInvite | null> {
-        return new Promise((resolve, reject) => {
-            userProfileService
-                .getLatestSMSInvite(params.hdid)
-                .then((userSMSInvite) => {
-                    context.commit("setValidatedSMS", userSMSInvite);
-                    resolve(userSMSInvite);
+                    resolve(userProfile.acceptedTermsOfService);
                 })
                 .catch((error) => {
                     handleError(context.commit, error);
@@ -273,5 +198,15 @@ export const actions: ActionTree<UserState, RootState> = {
                     });
             }
         });
+    },
+    handleError(context, error: ResultError) {
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("userError", error);
+
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch User Error", error },
+            { root: true }
+        );
     },
 };

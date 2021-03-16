@@ -81,7 +81,7 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning disable CA1031 //We want to catch exception.
                     try
                     {
-                        List<UserProfile> usersToSendCommEmails = new List<UserProfile>();
+                        IList<UserProfile> usersToSendCommEmails = new List<UserProfile>();
                         bool moreUsersToCreateCommunicationEmails = false;
 
                         if (communication.CommunicationStatusCode != CommunicationStatus.Processing)

@@ -21,6 +21,8 @@ import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { LaboratoryOrder } from "@/models/laboratory";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -66,17 +68,23 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "laboratory" })
     retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "medication" })
+    @Action("retrieveMedicationStatements", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<void>;
+
+    @Action("retrieveMedicationRequests", { namespace: "medication" })
+    retrieveMedicationRequests!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieve", { namespace: "comment" })
     retrieveComments!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("isLoading", { namespace: "medication" })
     isMedicationLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "medication" })
+    isMedicationRequestLoading!: boolean;
 
     @Getter("isLoading", { namespace: "comment" })
     isCommentLoading!: boolean;
@@ -104,6 +112,9 @@ export default class TimelineView extends Vue {
 
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
+
+    @Getter("medicationRequests", { namespace: "medication" })
+    medicationRequests!: MedicationRequest[];
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: LaboratoryOrder[];
@@ -135,7 +146,7 @@ export default class TimelineView extends Vue {
     @Watch("immunizationIsDeferred")
     private whenImmunizationIsDeferred(isDeferred: boolean) {
         if (isDeferred) {
-            this.immunizationNeedsInput = true;
+            this.showImmunizationAlert = true;
         }
     }
 
@@ -156,6 +167,16 @@ export default class TimelineView extends Vue {
         this.logger.debug("Updating timeline Entries");
 
         let timelineEntries = [];
+        // Add the medication request entries to the timeline list
+        for (let medicationRequest of this.medicationRequests) {
+            timelineEntries.push(
+                new MedicationRequestTimelineEntry(
+                    medicationRequest,
+                    this.getEntryComments
+                )
+            );
+        }
+
         // Add the medication entries to the timeline list
         for (let medication of this.medicationStatements) {
             timelineEntries.push(
@@ -183,17 +204,12 @@ export default class TimelineView extends Vue {
         }
 
         // Add the immunization entries to the timeline list
-        if (!this.immunizationIsDeferred && !this.immunizationNeedsInput) {
+        if (!this.immunizationIsDeferred) {
             for (let immunization of this.patientImmunizations) {
                 timelineEntries.push(
                     new ImmunizationTimelineEntry(immunization)
                 );
             }
-        } else if (
-            !this.immunizationIsDeferred &&
-            this.patientImmunizations.length == 0
-        ) {
-            this.immunizationNeedsInput = false;
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
@@ -214,13 +230,15 @@ export default class TimelineView extends Vue {
         return filteredEntries;
     }
 
-    private immunizationNeedsInput = false;
+    private showImmunizationAlert = false;
 
     private filterText = "";
 
     private isPacificTime = false;
 
     private logger!: ILogger;
+
+    private readonly alertExpirySeconds = 5;
 
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
@@ -240,6 +258,7 @@ export default class TimelineView extends Vue {
 
     private get isLoading(): boolean {
         return (
+            this.isMedicationRequestLoading ||
             this.isMedicationLoading ||
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
@@ -280,6 +299,7 @@ export default class TimelineView extends Vue {
         Promise.all([
             this.getPatientData({ hdid: this.user.hdid }),
             this.retrieveMedications({ hdid: this.user.hdid }),
+            this.retrieveMedicationRequests({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
             this.retrieveLaboratory({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),
@@ -360,28 +380,41 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="immunizationNeedsInput"
+                        :show="
+                            showImmunizationAlert && immunizationIsDeferred
+                                ? alertExpirySeconds
+                                : false
+                        "
+                        dismissible
                         variant="info"
                         class="no-print"
                     >
-                        <span v-if="immunizationIsDeferred">
-                            <h4 data-testid="immunizationLoading">
-                                Still searching for immunization records
+                        <h4 data-testid="immunizationLoading">
+                            Still searching for immunization records
+                        </h4>
+                    </b-alert>
+                    <b-alert
+                        :show="
+                            showImmunizationAlert && !immunizationIsDeferred
+                                ? alertExpirySeconds
+                                : false
+                        "
+                        dismissible
+                        variant="info"
+                        class="no-print"
+                    >
+                        <span
+                            v-if="patientImmunizations.length > 0"
+                            data-testid="immunizationReady"
+                        >
+                            <h4>
+                                Additional immunization records found. Loading
+                                into timeline
                             </h4>
                         </span>
-                        <span v-else data-testid="immunizationReady">
-                            <h4 data-testid="immunizationReadyHeader">
-                                Your immunization records are ready
-                            </h4>
-                            <b-btn
-                                data-testid="immunizationBtnReady"
-                                variant="link"
-                                class="detailsButton px-0"
-                                @click="immunizationNeedsInput = false"
-                            >
-                                Load to timeline.
-                            </b-btn></span
-                        >
+                        <span v-else data-testid="immunizationEmpty">
+                            <h4>No additional records found</h4>
+                        </span>
                     </b-alert>
                 </div>
 

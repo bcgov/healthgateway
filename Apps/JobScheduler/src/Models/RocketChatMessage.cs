@@ -47,7 +47,7 @@ namespace Healthgateway.JobScheduler.Models
         /// </summary>
         [JsonPropertyName("attachments")]
 #pragma warning disable CA2227 // Collection properties should be read only
-        public List<RocketChatAttachment>? Attachments { get; set; }
+        public IList<RocketChatAttachment>? Attachments { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
     }
 }
