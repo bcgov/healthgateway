@@ -384,15 +384,13 @@ export default class TimelineView extends Vue {
                             v-if="patientImmunizations.length > 0"
                             data-testid="immunizationReady"
                         >
-                            <h4 data-testid="immunizationReadyHeader">
+                            <h4>
                                 Additional immunization records found. Loading
                                 into timeline
                             </h4>
                         </span>
-                        <span v-else data-testid="immunizationReady">
-                            <h4 data-testid="immunizationReadyHeader">
-                                No additional records found
-                            </h4>
+                        <span v-else data-testid="immunizationEmpty">
+                            <h4>No additional records found</h4>
                         </span>
                     </b-alert>
                 </div>
