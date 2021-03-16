@@ -22,14 +22,10 @@ describe('Immunization', () => {
     it('Validate Immunization Loading', () => {
       cy.get('[data-testid=immunizationLoading]')
         .should('be.visible')
-        .contains('Still searching for immunization records')
       cy.get('[data-testid=immunizationLoading]')
         .should('not.exist')
       cy.get('[data-testid=immunizationReady]')
         .should('be.visible')
-        .find('[data-testid=immunizationBtnReady]')
-        .should('be.visible')
-        .click()
     })
 
     it('Validate Card Details', () => {
