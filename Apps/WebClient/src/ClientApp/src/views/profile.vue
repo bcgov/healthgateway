@@ -24,9 +24,7 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import User, { OidcUserProfile } from "@/models/user";
-import UserEmailInvite from "@/models/userEmailInvite";
 import UserProfile from "@/models/userProfile";
-import UserSMSInvite from "@/models/userSMSInvite";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import {

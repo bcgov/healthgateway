@@ -4,10 +4,8 @@ import { Dictionary } from "@/models/baseTypes";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
-import UserEmailInvite from "@/models/userEmailInvite";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
-import UserSMSInvite from "@/models/userSMSInvite";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import {
