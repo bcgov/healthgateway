@@ -53,12 +53,6 @@ export default class ProfileView extends Vue {
     })
     oidcIsAuthenticated!: boolean;
 
-    @Action("getUserEmail", { namespace: userNamespace })
-    getUserEmail!: ({ hdid }: { hdid: string }) => Promise<UserEmailInvite>;
-
-    @Action("getUserSMS", { namespace: userNamespace })
-    getUserSMS!: ({ hdid }: { hdid: string }) => Promise<UserSMSInvite>;
-
     @Action("updateUserEmail", { namespace: userNamespace })
     updateUserEmail!: ({
         hdid,
@@ -140,8 +134,6 @@ export default class ProfileView extends Vue {
 
         this.isLoading = true;
         var oidcUserPromise = authenticationService.getOidcUserProfile();
-        var userEmailPromise = this.getUserEmail({ hdid: this.user.hdid });
-        var userSMSPromise = this.getUserSMS({ hdid: this.user.hdid });
         var userProfilePromise = this.userProfileService.getProfile(
             this.user.hdid
         );

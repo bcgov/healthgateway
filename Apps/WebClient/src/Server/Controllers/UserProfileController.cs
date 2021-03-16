@@ -294,42 +294,6 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Validates an email invite.
-        /// </summary>
-        /// <returns>The invite email.</returns>
-        /// <param name="hdid">The user hdid.</param>
-        /// <response code="200">Returns the user email invite json.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("{hdid}/email/invite")]
-        [Authorize(Policy = UserProfilePolicy.Read)]
-        public IActionResult GetUserEmailInvite(string hdid)
-        {
-            MessagingVerification? emailInvite = this.userEmailService.RetrieveLastInvite(hdid);
-            UserEmailInvite? result = UserEmailInvite.CreateFromDbModel(emailInvite);
-            return new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Validates an email invite.
-        /// </summary>
-        /// <returns>The invite email.</returns>
-        /// <param name="hdid">The user hdid.</param>
-        /// <response code="200">Returns the user email invite json.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
-        [HttpGet]
-        [Route("{hdid}/sms/invite")]
-        [Authorize(Policy = UserProfilePolicy.Read)]
-        public IActionResult GetUserSMSInvite(string hdid)
-        {
-            MessagingVerification? smsInvite = this.userSMSService.RetrieveLastInvite(hdid);
-            UserSMSInvite? result = UserSMSInvite.CreateFromDbModel(smsInvite);
-            return new JsonResult(result);
-        }
-
-        /// <summary>
         /// Updates the user email.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>

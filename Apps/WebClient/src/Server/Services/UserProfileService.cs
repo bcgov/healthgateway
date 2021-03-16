@@ -124,6 +124,22 @@ namespace HealthGateway.WebClient.Services
             UserProfileModel userProfile = UserProfileModel.CreateFromDbModel(retVal.Payload);
             userProfile.HasTermsOfServiceUpdated = termsOfServiceResult.ResourcePayload?.EffectiveDate > previousLastLogin;
 
+            if (!userProfile.IsEmailVerified)
+            {
+                this.logger.LogTrace($"Retrieving last email invite... {hdid}");
+                MessagingVerification? emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
+                this.logger.LogDebug($"Finished retrieving email: {JsonSerializer.Serialize(emailInvite)}");
+                userProfile.Email = emailInvite?.Email?.To;
+            }
+
+            if (!userProfile.IsSMSNumberVerified)
+            {
+                this.logger.LogTrace($"Retrieving last email invite... {hdid}");
+                MessagingVerification? smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+                this.logger.LogDebug($"Finished retrieving email: {JsonSerializer.Serialize(smsInvite)}");
+                userProfile.SMSNumber = smsInvite?.SMSNumber;
+            }
+
             return new RequestResult<UserProfileModel>()
             {
                 ResultStatus = retVal.Status != DBStatusCode.Error ? ResultType.Success : ResultType.Error,

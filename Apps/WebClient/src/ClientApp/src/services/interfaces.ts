@@ -88,8 +88,6 @@ export interface IUserProfileService {
     getTermsOfService(): Promise<TermsOfService>;
     closeAccount(hdid: string): Promise<UserProfile>;
     recoverAccount(hdid: string): Promise<UserProfile>;
-    getLatestEmailInvite(hdid: string): Promise<UserEmailInvite>;
-    getLatestSMSInvite(hdid: string): Promise<UserSMSInvite | null>;
     validateEmail(
         hdid: string,
         inviteKey: string

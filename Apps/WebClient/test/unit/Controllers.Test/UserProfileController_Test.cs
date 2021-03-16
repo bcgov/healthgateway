@@ -260,51 +260,6 @@ namespace HealthGateway.WebClient.Test.Controllers
         }
 
         [Fact]
-        public void ShouldGetUserEmailInvite()
-        {
-            // Setup
-            UserEmailInvite emailInvite = new UserEmailInvite()
-            {
-                Id = Guid.NewGuid(),
-                HdId = hdid,
-                EmailAddress = "unit.test@hgw.ca",
-                EmailId = Guid.NewGuid()
-            };
-            MessagingVerification expectedResult = new MessagingVerification()
-            {
-                HdId = hdid,
-                InviteKey = Guid.NewGuid(),
-                EmailId = Guid.NewGuid(),
-                Email = new Email()
-                {
-                    To = "to@hgw.ca.user"
-                }
-            };
-            Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();
-            emailServiceMock.Setup(s => s.RetrieveLastInvite(It.IsAny<string>())).Returns(expectedResult);
-
-            Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
-            Mock<IUserSMSService> smsServiceMock = new Mock<IUserSMSService>();
-
-            UserProfileController service = new UserProfileController(
-                new Mock<ILogger<UserProfileController>>().Object,
-                userProfileServiceMock.Object,
-                httpContextAccessorMock.Object,
-                emailServiceMock.Object,
-                smsServiceMock.Object
-            );
-
-            var actualResult = service.GetUserEmailInvite(hdid);
-
-            Assert.IsType<JsonResult>(actualResult);
-
-            UserEmailInvite reqResult = ((JsonResult)actualResult).Value as UserEmailInvite;
-            Assert.NotNull(reqResult);
-            Assert.Equal(expectedResult.Email.To, reqResult.EmailAddress);
-        }
-
-        [Fact]
         public async void ShouldUpdateUserEmail()
         {
             Mock<IUserEmailService> emailServiceMock = new Mock<IUserEmailService>();

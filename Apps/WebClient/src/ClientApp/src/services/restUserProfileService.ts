@@ -202,38 +202,6 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
-    public getLatestEmailInvite(hdid: string): Promise<UserEmailInvite> {
-        return new Promise((resolve) => {
-            this.http
-                .get<UserEmailInvite>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/email/invite/`
-                )
-                .then((userEmailInvite) => {
-                    return resolve(userEmailInvite);
-                })
-                .catch((err) => {
-                    this.logger.error(`getLatestEmailInvite error: ${err}`);
-                    return resolve(err);
-                });
-        });
-    }
-
-    public getLatestSMSInvite(hdid: string): Promise<UserSMSInvite | null> {
-        return new Promise((resolve) => {
-            this.http
-                .get<UserSMSInvite>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/sms/invite/`
-                )
-                .then((userSMSInvite) => {
-                    return resolve(userSMSInvite);
-                })
-                .catch((err) => {
-                    this.logger.error(`getLatestSMSInvite error: ${err}`);
-                    return resolve(err);
-                });
-        });
-    }
-
     public updateEmail(hdid: string, email: string): Promise<boolean> {
         return new Promise((resolve) => {
             const headers: Dictionary<string> = {};

@@ -44,6 +44,15 @@ export const mutations: MutationTree<UserState> = {
             "preferences",
             userProfile ? userProfile.preferences : {}
         );
+
+        Vue.set(state.user, "hasEmail", !!userProfile.email);
+
+        Vue.set(state.user, "verifiedEmail", userProfile.isEmailVerified);
+
+        Vue.set(state.user, "hasSMS", !!userProfile.smsNumber);
+
+        Vue.set(state.user, "verifiedSMS", userProfile.isSMSNumberVerified);
+
         logger.verbose(`state.user: ${JSON.stringify(state.user)}`);
         state.error = false;
         state.statusMessage = "success";
@@ -52,31 +61,6 @@ export const mutations: MutationTree<UserState> = {
         } else {
             state.status = LoadStatus.PARTIALLY_LOADED;
         }
-    },
-    setValidatedEmail(state: UserState, userEmailInvite: UserEmailInvite) {
-        if (userEmailInvite) {
-            Vue.set(state.user, "hasEmail", true);
-            Vue.set(state.user, "verifiedEmail", userEmailInvite.validated);
-        } else {
-            Vue.set(state.user, "hasEmail", false);
-            Vue.set(state.user, "verifiedEmail", false);
-        }
-
-        state.error = false;
-        state.statusMessage = "success";
-        state.status = LoadStatus.LOADED;
-    },
-    setValidatedSMS(state: UserState, userSMSInvite: UserSMSInvite) {
-        if (userSMSInvite) {
-            Vue.set(state.user, "hasSMS", true);
-            Vue.set(state.user, "verifiedSMS", userSMSInvite.validated);
-        } else {
-            Vue.set(state.user, "hasSMS", false);
-            Vue.set(state.user, "verifiedSMS", false);
-        }
-        state.error = false;
-        state.statusMessage = "success";
-        state.status = LoadStatus.LOADED;
     },
     setSMSResendDateTime(state: UserState, dateTime: DateWrapper) {
         Vue.set(state, "smsResendDateTime", dateTime);
