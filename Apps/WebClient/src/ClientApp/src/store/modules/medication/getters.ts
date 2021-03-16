@@ -28,7 +28,7 @@ export const getters: GetterTree<MedicationState, RootState> = {
     medicationRequests(state: MedicationState): MedicationRequest[] {
         return state.medicationRequests;
     },
-    medicationRequestCount(state: MedicationState): MedicationRequest[] {
+    medicationRequestCount(state: MedicationState): number {
         return state.medicationRequests.length;
     },
     isLoading(state: MedicationState): boolean {
