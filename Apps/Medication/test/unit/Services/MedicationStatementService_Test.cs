@@ -25,7 +25,6 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Medication.Constants;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Services;
     using HealthGateway.Medication.Delegates;
@@ -38,7 +37,6 @@ namespace HealthGateway.Medication.Services.Test
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using System;
-    using System.Linq;
     using HealthGateway.Common.Services;
 
     public class MedicationStatementService_Test
@@ -105,7 +103,7 @@ namespace HealthGateway.Medication.Services.Test
                 medStatementDelegateMock.Object);
 
             // Run and Verify protective word too long
-            RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, "TOOLONG4U");
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, "TOOLONG4U");
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
             Assert.Equal(ActionType.Protected, actual.ResultError.ActionCode);
             Assert.Equal(ErrorMessages.ProtectiveWordTooLong, actual.ResultError.ResultMessage);
@@ -220,7 +218,7 @@ namespace HealthGateway.Medication.Services.Test
                 medStatementDelegateMock.Object);
 
             // Run and Verify
-            RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, protectiveWord);
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, protectiveWord);
             Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success);
         }
 
@@ -329,7 +327,7 @@ namespace HealthGateway.Medication.Services.Test
                 medStatementDelegateMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success && actual.ResourcePayload.Count == 1);
@@ -426,7 +424,7 @@ namespace HealthGateway.Medication.Services.Test
                 medStatementDelegateMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success && actual.ResourcePayload.Count == 1);
@@ -522,7 +520,7 @@ namespace HealthGateway.Medication.Services.Test
                 medStatementDelegateMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.True(actual.ResultStatus == Common.Constants.ResultType.Success && actual.ResourcePayload.Count == 1);
@@ -598,7 +596,7 @@ namespace HealthGateway.Medication.Services.Test
                 medStatementDelegateMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual.ResourcePayload.Count == 0);
@@ -664,7 +662,7 @@ namespace HealthGateway.Medication.Services.Test
                 medStatementDelegateMock.Object);
 
             // Act
-            RequestResult<List<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(hdid, null).ConfigureAwait(true);
 
             // Verify
             Assert.True(actual.ResultStatus == Common.Constants.ResultType.Error);

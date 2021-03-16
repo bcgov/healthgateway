@@ -75,14 +75,14 @@ namespace HealthGateway.Medication.Services
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMedicationStatementService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<List<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
+        public async Task<RequestResult<IList<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
         {
             using (Source.StartActivity("GetMedicationStatementsHistory"))
             {
                 this.logger.LogDebug("Getting history of medication statements");
                 this.logger.LogTrace($"User hdid: {hdid}");
 
-                RequestResult<List<MedicationStatementHistory>> result = new RequestResult<List<MedicationStatementHistory>>();
+                RequestResult<IList<MedicationStatementHistory>> result = new RequestResult<IList<MedicationStatementHistory>>();
                 var validationResult = ValidateProtectiveWord(protectiveWord);
                 bool okProtectiveWord = validationResult.Item1;
                 if (okProtectiveWord)

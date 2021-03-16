@@ -38,8 +38,9 @@ namespace Healthgateway.JobScheduler.Jobs
         private const string ProfilesPageSizeKey = "ProfilesPageSize";
         private const string HoursDeletionKey = "HoursBeforeDeletion";
         private const string EmailTemplateKey = "EmailTemplate";
-        private const string HostKey = "Host";
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
+
+        private const string AuthConfigSectionName = "ClientAuthentication";
 
         private readonly IConfiguration configuration;
         private readonly ILogger<CloseAccountJob> logger;
@@ -54,7 +55,8 @@ namespace Healthgateway.JobScheduler.Jobs
         private readonly int profilesPageSize;
         private readonly int hoursBeforeDeletion;
         private readonly string emailTemplate;
-        private readonly string host;
+        private readonly ClientCredentialsTokenRequest tokenRequest;
+        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloseAccountJob"/> class.
@@ -83,9 +85,14 @@ namespace Healthgateway.JobScheduler.Jobs
             this.userAdminDelegate = userAdminDelegate;
             this.dbContext = dbContext;
             this.profilesPageSize = this.configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
-            this.host = this.configuration.GetValue<string>($"{HostKey}");
             this.hoursBeforeDeletion = this.configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
             this.emailTemplate = this.configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}");
+
+            IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
+            this.tokenUri = configSection.GetValue<Uri>(@"AuthTokenUri");
+
+            this.tokenRequest = new ClientCredentialsTokenRequest();
+            configSection.Bind(this.tokenRequest);
         }
 
         /// <summary>
@@ -109,7 +116,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
                     }
 
-                    JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem();
+                    JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
                     bool deleted = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel);
                 }
