@@ -155,4 +155,67 @@ describe("Medication Service", () => {
             });
         });
     });
+
+    it("Verify MedicationRequest Unauthorized", () => {
+        const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+        cy.get("@config").then((config) => {
+            cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+            cy.request({
+                url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
+                followRedirect: false,
+                failOnStatusCode: false,
+            }).should((response) => {
+                expect(response.status).to.eq(401);
+            });
+        });
+    });
+
+    it("Verify MedicationRequest Forbidden", () => {
+        const HDID = "BOGUSHDID";
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+                cy.request({
+                    url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
+                    followRedirect: false,
+                    failOnStatusCode: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(403);
+                });
+            });
+        });
+    });
+
+    it("Verify MedicationRequest Authorized", () => {
+        const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
+        cy.get("@tokens").then((tokens) => {
+            cy.log("Tokens", tokens);
+            cy.get("@config").then((config) => {
+                cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+                cy.request({
+                    url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
+                    followRedirect: false,
+                    auth: {
+                        bearer: tokens.access_token,
+                    },
+                    headers: {
+                        accept: "application/json",
+                    },
+                }).should((response) => {
+                    expect(response.status).to.eq(200);
+                    expect(response.body).to.not.be.null;
+                    cy.log(`response.body: ${response.body}`);
+                    expect(response.body.resourcePayload.length).to.be.greaterThan(1);
+                    expect(response.body.resourcePayload[0].referenceNumber).to.not.be.empty;
+                });
+            });
+        });
+    });
 });
