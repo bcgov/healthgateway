@@ -38,10 +38,16 @@ namespace HealthGateway.Common.Constants
         public const string Immunization = "Immunization";
 
         /// <summary>
-        /// Information about the believed state of a medication.
+        /// Information about a medication statement.
         /// See <a href="http://www.hl7.org/fhir/stu3/medicationstatement.html"/>.
         /// </summary>
         public const string MedicationStatement = "MedicationStatement";
+
+        /// <summary>
+        /// Information about a medication request.
+        /// See <a href="http://www.hl7.org/fhir/stu3/medicationrequest.html"/>.
+        /// </summary>
+        public const string MedicationRequest = "MedicationRequest";
 
         /// <summary>
         /// Demographic information about the patient.

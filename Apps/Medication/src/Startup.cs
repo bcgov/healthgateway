@@ -73,15 +73,18 @@ namespace HealthGateway.Medication
             });
 
             // Add services
-            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
             services.AddTransient<IMedicationService, RestMedicationService>();
-            services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
-            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
-            services.AddTransient<IHashDelegate, HMACHashDelegate>();
+            services.AddTransient<IMedicationStatementService, RestMedicationStatementService>();
+            services.AddTransient<IMedicationRequestService, MedicationRequestService>();
 
             // Add delegates
             services.AddTransient<IDrugLookupDelegate, DBDrugLookupDelegate>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
+            services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
+            services.AddTransient<IHashDelegate, HMACHashDelegate>();
+            services.AddTransient<IMedicationRequestDelegate, SalesforeceDelegate>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
         }
 
         /// <summary>

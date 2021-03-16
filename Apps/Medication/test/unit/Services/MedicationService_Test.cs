@@ -60,11 +60,11 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            Dictionary<string, Models.MedicationResult> expected = new Dictionary<string, Models.MedicationResult>()
+            Dictionary<string, Models.MedicationInformation> expected = new Dictionary<string, Models.MedicationInformation>()
             {
                 {
                     DIN,
-                    new Models.MedicationResult()
+                    new Models.MedicationInformation()
                     {
                         DIN = DIN,
                         FederalData = new FederalDrugSource()
@@ -111,11 +111,11 @@ namespace HealthGateway.Medication.Services.Test
                 },
             };
 
-            Dictionary<string, Models.MedicationResult> expected = new Dictionary<string, Models.MedicationResult>()
+            Dictionary<string, Models.MedicationInformation> expected = new Dictionary<string, Models.MedicationInformation>()
             {
                 {
                     DIN,
-                    new Models.MedicationResult()
+                    new Models.MedicationInformation()
                     {
                         DIN = DIN,
 

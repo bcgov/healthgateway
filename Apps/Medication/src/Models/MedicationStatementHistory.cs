@@ -90,9 +90,9 @@ namespace HealthGateway.Medication.Models
         /// </summary>
         /// <param name="models">The list of ODR models to convert.</param>
         /// <returns>A list of MedicationStatementHistory objects.</returns>
-        public static List<MedicationStatementHistory> FromODRModelList(List<ODR.MedicationResult> models)
+        public static IList<MedicationStatementHistory> FromODRModelList(IList<ODR.MedicationResult> models)
         {
-            List<MedicationStatementHistory> objects = new List<MedicationStatementHistory>();
+            IList<MedicationStatementHistory> objects = new List<MedicationStatementHistory>();
 
             foreach (ODR.MedicationResult medicationModel in models)
             {

@@ -139,10 +139,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<Communication> GetEmailCommunicationsToSend()
+        public IList<Communication> GetEmailCommunicationsToSend()
         {
             this.logger.LogTrace($"Getting Communications by Type and Status Code from DB...");
-            List<Communication> retVal = this.dbContext.Communication.Where(c =>
+            IList<Communication> retVal = this.dbContext.Communication.Where(c =>
                 c.CommunicationTypeCode == CommunicationType.Email &&
                 c.CommunicationStatusCode != CommunicationStatus.Draft &&
                 c.CommunicationStatusCode != CommunicationStatus.Processed &&
