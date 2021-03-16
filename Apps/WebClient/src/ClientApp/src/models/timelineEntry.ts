@@ -3,7 +3,7 @@ import TimelineFilter from "@/models/timelineFilter";
 import { UserComment } from "@/models/userComment";
 
 export enum EntryType {
-    MedicationRequest = "MedicationRequest",
+    MedicationRequest = "SpecialAuthorityRequests",
     Medication = "Medication",
     Immunization = "Immunization",
     Laboratory = "Laboratory",
