@@ -180,7 +180,7 @@ export default class CalendarBodyComponent extends Vue {
         } else if (type == EntryType.Encounter) {
             return (entry as EncounterTimelineEntry).practitionerName;
         } else if (type == EntryType.MedicationRequest) {
-            return (entry as MedicationRequestTimelineEntry).drugName;
+            return (entry as MedicationRequestTimelineEntry).drugName || "";
         }
 
         return "N/A";
