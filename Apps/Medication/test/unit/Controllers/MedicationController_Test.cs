@@ -33,14 +33,14 @@ namespace HealthGateway.Medication.Controllers.Test
         {
             // Setup
             Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
-            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationResult>());
+            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationInformation>());
 
             string drugIdentifier = "000001";
             string paddedDin = drugIdentifier.PadLeft(8, '0');
             MedicationController controller = new MedicationController(serviceMock.Object);
 
             // Act
-            RequestResult<MedicationResult> actual = controller.GetMedication(drugIdentifier);
+            RequestResult<MedicationInformation> actual = controller.GetMedication(drugIdentifier);
 
             // Verify
             serviceMock.Verify(s => s.GetMedications(new List<string> { paddedDin }), Times.Once());
@@ -52,11 +52,11 @@ namespace HealthGateway.Medication.Controllers.Test
         {
             // Setup
             string drugIdentifier = "00000001";
-            Dictionary<string, MedicationResult> expectedResult = new Dictionary<string, MedicationResult>()
+            Dictionary<string, MedicationInformation> expectedResult = new Dictionary<string, MedicationInformation>()
             {
                 {
                     drugIdentifier,
-                    new MedicationResult()
+                    new MedicationInformation()
                     {
                         DIN = drugIdentifier,
                         FederalData = new FederalDrugSource()
@@ -78,7 +78,7 @@ namespace HealthGateway.Medication.Controllers.Test
             MedicationController controller = new MedicationController(serviceMock.Object);
 
             // Act
-            RequestResult<MedicationResult> actual = controller.GetMedication(drugIdentifier);
+            RequestResult<MedicationInformation> actual = controller.GetMedication(drugIdentifier);
 
             // Verify
             serviceMock.Verify(s => s.GetMedications(new List<string> { paddedDin }), Times.Once());
@@ -90,14 +90,14 @@ namespace HealthGateway.Medication.Controllers.Test
         {
             // Setup
             Mock<IMedicationService> serviceMock = new Mock<IMedicationService>();
-            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationResult>());
+            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationInformation>());
 
             List<string> drugIdentifiers = new List<string>() { "000001", "000003", "000003" };
             List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
             MedicationController controller = new MedicationController(serviceMock.Object);
 
             // Act
-            RequestResult<Dictionary<string, MedicationResult>> actual = controller.GetMedications(drugIdentifiers);
+            RequestResult<IDictionary<string, MedicationInformation>> actual = controller.GetMedications(drugIdentifiers);
 
             // Verify
             serviceMock.Verify(s => s.GetMedications(paddedDinList), Times.Once());

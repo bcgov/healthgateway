@@ -21,13 +21,23 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Policy
     public static class MedicationPolicy
     {
         /// <summary>
-        /// Policy which allows the reading of the identified patient.
+        /// Policy which allows the reading of medication statements.
         /// </summary>
         public const string MedicationStatementRead = "MedicationStatementRead";
 
         /// <summary>
-        /// Policy which allows writing of the identified patient.
+        /// Policy which allows writing of medication statements.
         /// </summary>
         public const string MedicationStatementWrite = "MedicationStatementWrite";
+
+        /// <summary>
+        /// Policy which allows the reading of medication requests.
+        /// </summary>
+        public const string MedicationRequestRead = "MedicationRequestRead";
+
+        /// <summary>
+        /// Policy which allows writing of medication requests.
+        /// </summary>
+        public const string MedicationRequestWrite = "MedicationRequestWrite";
     }
 }

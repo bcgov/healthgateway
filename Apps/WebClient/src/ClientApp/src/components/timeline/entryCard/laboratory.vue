@@ -67,15 +67,32 @@ export default class LaboratoryTimelineComponent extends Vue {
         this.laboratoryService
             .getReportDocument(this.entry.id, this.user.hdid)
             .then((result) => {
-                const link = document.createElement("a");
                 let dateString = this.entry.displayDate.format(
                     "YYYY_MM_DD-HH_mm"
                 );
                 let report: LaboratoryReport = result.resourcePayload;
-                link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${dateString}.pdf`;
-                link.click();
-                URL.revokeObjectURL(link.href);
+                fetch(
+                    `data:${report.mediaType};${report.encoding},${report.data}`
+                )
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        // It is necessary to create a new blob object with mime-type explicitly set
+                        // otherwise only Chrome works like it should
+                        var newBlob = new Blob([blob], {
+                            type: "application/pdf",
+                        });
+
+                        // Create a link pointing to the ObjectURL containing the blob.
+                        const data = window.URL.createObjectURL(newBlob);
+                        var link = document.createElement("a");
+                        link.href = data;
+                        link.download = `COVID_Result_${dateString}.pdf`;
+                        link.click();
+                        setTimeout(function () {
+                            // For Firefox it is necessary to delay revoking the ObjectURL
+                            window.URL.revokeObjectURL(data);
+                        }, 100);
+                    });
             })
             .catch((err) => {
                 this.logger.error(err);

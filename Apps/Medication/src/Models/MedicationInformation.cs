@@ -22,7 +22,7 @@ namespace HealthGateway.Medication.Models
     /// <summary>
     /// The medications data model.
     /// </summary>
-    public class MedicationResult
+    public class MedicationInformation
     {
         /// <summary>
         /// Gets or sets the Drug Identification Number for the prescribed medication.

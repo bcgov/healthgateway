@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Medication.Services
+namespace HealthGateway.Medication.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -21,16 +21,15 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The Medication data service.
+    /// Interface to retrieve Medication Requests.
     /// </summary>
-    public interface IMedicationStatementService
+    public interface IMedicationRequestDelegate
     {
         /// <summary>
-        /// Gets the patient medication history.
+        /// Returns a set of MedicationRequests for the given phn.
         /// </summary>
-        /// <param name="hdid">The hdid to retrieve records for.</param>
-        /// <param name="protectiveWord">The protective word.</param>
-        /// <returns>A MedicationHistoryResponse models.</returns>
-        Task<RequestResult<IList<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord);
+        /// <param name="phn">The PHN of the user querying.</param>
+        /// <returns>The MedicationRequest result.</returns>
+        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn);
     }
 }

@@ -22,44 +22,43 @@ namespace HealthGateway.Medication.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Controller that handles requests for medication statements.
+    /// Controller that handles requets for Medication Requests.
     /// </summary>
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [Authorize]
-    public class MedicationStatementController : ControllerBase
+    public class MedicationRequestController : ControllerBase
     {
         /// <summary>
-        /// The medication statement data service.
+        /// The medication request data service.
         /// </summary>
-        private readonly IMedicationStatementService medicationStatementService;
+        private readonly IMedicationRequestService medicationRequestService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
+        /// Initializes a new instance of the <see cref="MedicationRequestController"/> class.
         /// </summary>
-        /// <param name="medicationStatementService">The injected medication data service.</param>
-        public MedicationStatementController(IMedicationStatementService medicationStatementService)
+        /// <param name="medicationRequestService">The injected medication request data service.</param>
+        public MedicationRequestController(IMedicationRequestService medicationRequestService)
         {
-            this.medicationStatementService = medicationStatementService;
+            this.medicationRequestService = medicationRequestService;
         }
 
         /// <summary>
-        /// Gets a json of medication record.
+        /// Gets a json of medication request.
         /// </summary>
         /// <returns>The medication statement records.</returns>
         /// <param name="hdid">The patient hdid.</param>
-        /// <param name="protectiveWord">The clients protective word for Pharmanet.</param>
         /// <response code="200">Returns the medication statement bundle.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{hdid}")]
-        [Authorize(Policy = MedicationPolicy.MedicationStatementRead)]
-        public async Task<IActionResult> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null)
+        [Authorize(Policy = MedicationPolicy.MedicationRequestRead)]
+        public async Task<IActionResult> GetMedicationRequests(string hdid)
         {
-            return new JsonResult(await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true));
+            return new JsonResult(await this.medicationRequestService.GetMedicationRequests(hdid).ConfigureAwait(true));
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Healthgateway.JobScheduler.Jobs
         public void CreateCommunicationEmailsForNewCommunications()
         {
             this.logger.LogDebug($"Creating emails & communication emails...");
-            List<Communication> communications = this.communicationDelegate.GetEmailCommunicationsToSend();
+            IList<Communication> communications = this.communicationDelegate.GetEmailCommunicationsToSend();
 
             if (communications.Count > 0)
             {
@@ -81,7 +81,7 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning disable CA1031 //We want to catch exception.
                     try
                     {
-                        List<UserProfile> usersToSendCommEmails = new List<UserProfile>();
+                        IList<UserProfile> usersToSendCommEmails = new List<UserProfile>();
                         bool moreUsersToCreateCommunicationEmails = false;
 
                         if (communication.CommunicationStatusCode != CommunicationStatus.Processing)
