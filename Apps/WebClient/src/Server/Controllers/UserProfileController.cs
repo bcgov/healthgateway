@@ -299,7 +299,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
+        public IActionResult UpdateUserSMSNumber(string hdid, [FromBody] string smsNumber)
         {
             bool result = this.userSMSService.UpdateUserSMS(hdid, smsNumber);
             return new JsonResult(result);

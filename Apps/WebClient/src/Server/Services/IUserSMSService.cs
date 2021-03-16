@@ -25,7 +25,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="validationCode">The sms validation code.</param>
-        /// <returns>returns true if the sms invite was found and validated.</returns>
+        /// <returns>returns true if the sms verification was found and validated.</returns>
         bool ValidateSMS(string hdid, string validationCode);
 
         /// <summary>

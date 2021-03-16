@@ -32,11 +32,11 @@ namespace HealthGateway.WebClient.Services
         PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey);
 
         /// <summary>
-        /// Creates the user email.
+        /// Creates the a non-validated email.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">Email address to be set for the user.</param>
-        /// <returns>returns true if the email invite was sucessfully created.</returns>
+        /// <returns>returns true if the email was sucessfully created.</returns>
         bool CreateUserEmail(string hdid, string emailAddress);
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">Email address to be set for the user.</param>
-        /// <returns>returns true if the email invite was sucessfully created.</returns>
+        /// <returns>returns true if the email was sucessfully created.</returns>
         bool UpdateUserEmail(string hdid, string emailAddress);
     }
 }

@@ -19,7 +19,7 @@ namespace HealthGateway.WebClient.Models
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Model that provides a user representation of an EmailInvite.
+    /// Model that provides Terms of service model.
     /// </summary>
     public class TermsOfServiceModel
     {

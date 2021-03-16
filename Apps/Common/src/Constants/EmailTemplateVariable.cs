@@ -29,7 +29,5 @@ namespace HealthGateway.Common.Constants
         public const string EMAIL_TEMPLATE_EXPIRY_HOURS = "ExpiryHours";
 
         public const string HostTemplateVariable = "host";
-
-
     }
 }

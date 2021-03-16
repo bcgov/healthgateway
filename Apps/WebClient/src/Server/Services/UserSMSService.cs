@@ -62,20 +62,20 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
             bool isValid = false;
-            MessagingVerification? smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
 
-            if (smsInvite != null &&
-                smsInvite.HdId == hdid &&
-                !smsInvite.Validated &&
-                !smsInvite.Deleted &&
-                smsInvite.VerificationAttempts < MaxVerificationAttempts &&
-                smsInvite.SMSValidationCode == validationCode &&
-                smsInvite.ExpireDate >= DateTime.UtcNow)
+            if (smsVerification != null &&
+                smsVerification.HdId == hdid &&
+                !smsVerification.Validated &&
+                !smsVerification.Deleted &&
+                smsVerification.VerificationAttempts < MaxVerificationAttempts &&
+                smsVerification.SMSValidationCode == validationCode &&
+                smsVerification.ExpireDate >= DateTime.UtcNow)
             {
-                smsInvite.Validated = true;
-                this.messageVerificationDelegate.Update(smsInvite);
+                smsVerification.Validated = true;
+                this.messageVerificationDelegate.Update(smsVerification);
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.SMSNumber = smsInvite.SMSNumber; // Gets the user sms number from the message sent.
+                userProfile.SMSNumber = smsVerification.SMSNumber; // Gets the user sms number from the message sent.
                 this.profileDelegate.Update(userProfile);
                 isValid = true;
 
@@ -84,12 +84,12 @@ namespace HealthGateway.WebClient.Services
             }
             else
             {
-                smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
-                if (smsInvite != null &&
-                    !smsInvite.Validated)
+                smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+                if (smsVerification != null &&
+                    !smsVerification.Validated)
                 {
-                    smsInvite.VerificationAttempts++;
-                    this.messageVerificationDelegate.Update(smsInvite);
+                    smsVerification.VerificationAttempts++;
+                    this.messageVerificationDelegate.Update(smsVerification);
                 }
             }
 
@@ -100,7 +100,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public bool CreateUserSMS(string hdid, string sms)
         {
-            this.logger.LogInformation($"Sending new sms invite for user ${hdid}");
+            this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
             string verificationCode = new Random().Next(0, 999999).ToString("D6", CultureInfo.InvariantCulture);
             this.AddVerificationSMS(hdid, sms, verificationCode);
             this.logger.LogDebug($"Finished updating user sms");
@@ -116,7 +116,7 @@ namespace HealthGateway.WebClient.Services
             this.profileDelegate.Update(userProfile);
 
             // Update the notification settings
-            NotificationSettingsRequest queuedNotification = this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
+            NotificationSettingsRequest queuedNotification = this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, sms));
 
             bool isDeleted = string.IsNullOrEmpty(sms);
             MessagingVerification? lastSMSVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
@@ -128,7 +128,7 @@ namespace HealthGateway.WebClient.Services
 
             if (!isDeleted)
             {
-                this.logger.LogInformation($"Sending new sms invite for user ${hdid}");
+                this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
                 this.AddVerificationSMS(hdid, sms, queuedNotification.SMSVerificationCode);
             }
 
@@ -138,7 +138,7 @@ namespace HealthGateway.WebClient.Services
 
         private void AddVerificationSMS(string hdid, string sms, string smsVerificationCode)
         {
-            this.logger.LogInformation($"Sending new sms invite for user ${hdid}");
+            this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
             MessagingVerification messagingVerification = new()
             {
                 HdId = hdid,

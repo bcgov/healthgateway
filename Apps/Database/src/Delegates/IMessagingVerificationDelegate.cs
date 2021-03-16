@@ -17,11 +17,10 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Delegate that performs operations for the EmailInvite model.
+    /// Delegate that performs operations for the MessageVerification model.
     /// </summary>
     public interface IMessagingVerificationDelegate
     {
@@ -55,13 +54,13 @@ namespace HealthGateway.Database.Delegates
         void Update(MessagingVerification messageVerification);
 
         /// <summary>
-        /// Gets all email invites from the database.
+        /// Gets all email message verifications from the database.
         /// </summary>
-        /// <returns>A list of email invites.</returns>
+        /// <returns>A list of message verifications.</returns>
         IEnumerable<MessagingVerification> GetAllEmail();
 
         /// <summary>
-        /// Expire a MessageingVerificatio.
+        /// Expire a MessageingVerification.
         /// </summary>
         /// <param name="messageVerification">The message verification to expire.</param>
         /// <param name="markDeleted">Mark the verification as deleted.</param>

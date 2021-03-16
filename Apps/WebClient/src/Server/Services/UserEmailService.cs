@@ -25,6 +25,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -41,6 +42,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IUserProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailQueueService;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserEmailService"/> class.
@@ -51,13 +53,15 @@ namespace HealthGateway.WebClient.Services
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
         /// <param name="configuration">Configuration settings.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public UserEmailService(
             ILogger<UserEmailService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IUserProfileDelegate profileDelegate,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
@@ -65,6 +69,8 @@ namespace HealthGateway.WebClient.Services
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
             this.emailVerificationExpirySeconds = configuration.GetSection(this.webClientConfigSection).GetValue<int>(this.emailConfigExpirySecondsKey, 5);
+
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc />
@@ -73,19 +79,19 @@ namespace HealthGateway.WebClient.Services
             this.logger.LogTrace($"Validating email... {inviteKey}");
             PrimitiveRequestResult<bool> retVal = new();
 
-            MessagingVerification? emailInvite = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
-            if (emailInvite == null ||
-                emailInvite.HdId != hdid ||
-                emailInvite.Validated == true ||
-                emailInvite.Deleted == true)
+            MessagingVerification? emailVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
+            if (emailVerification == null ||
+                emailVerification.HdId != hdid ||
+                emailVerification.Validated == true ||
+                emailVerification.Deleted == true)
             {
                 // Invalid Verification Attempt
-                emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
-                if (emailInvite != null &&
-                    !emailInvite.Validated)
+                emailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
+                if (emailVerification != null &&
+                    !emailVerification.Validated)
                 {
-                    emailInvite.VerificationAttempts++;
-                    this.messageVerificationDelegate.Update(emailInvite);
+                    emailVerification.VerificationAttempts++;
+                    this.messageVerificationDelegate.Update(emailVerification);
                 }
 
                 return new PrimitiveRequestResult<bool>()
@@ -93,24 +99,24 @@ namespace HealthGateway.WebClient.Services
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError()
                     {
-                        ResultMessage = "Invalid Email Invite",
+                        ResultMessage = "Invalid Email Verification",
                         ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
                     },
                 };
             }
-            else if (emailInvite.VerificationAttempts >= this.maxVerificationAttempts ||
-                     emailInvite.ExpireDate < DateTime.UtcNow)
+            else if (emailVerification.VerificationAttempts >= this.maxVerificationAttempts ||
+                     emailVerification.ExpireDate < DateTime.UtcNow)
             {
                 // Verification Expired
                 retVal.ResultStatus = ResultType.ActionRequired;
-                retVal.ResultError = ErrorTranslator.ActionRequired("Email Invite Expired", ActionType.Expired);
+                retVal.ResultError = ErrorTranslator.ActionRequired("Email Verification Expired", ActionType.Expired);
             }
             else
             {
-                emailInvite.Validated = true;
-                this.messageVerificationDelegate.Update(emailInvite);
+                emailVerification.Validated = true;
+                this.messageVerificationDelegate.Update(emailVerification);
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.Email = emailInvite.Email!.To; // Gets the user email from the email sent.
+                userProfile.Email = emailVerification.Email!.To; // Gets the user email from the email sent.
                 this.profileDelegate.Update(userProfile);
 
                 // Update the notification settings
@@ -153,7 +159,7 @@ namespace HealthGateway.WebClient.Services
                 this.messageVerificationDelegate.Expire(lastEmailVerification, isDeleted);
                 if (!isDeleted)
                 {
-                    this.logger.LogInformation($"Sending new email invite for user ${hdid}");
+                    this.logger.LogInformation($"Sending new email verification for user ${hdid}");
 
                     if (lastEmailVerification.Email != null
                         && !string.IsNullOrEmpty(lastEmailVerification.Email.To)
@@ -179,8 +185,12 @@ namespace HealthGateway.WebClient.Services
         private void AddVerificationEmail(string hdid, string toEmail, Guid inviteKey)
         {
             float verificationExpiryHours = this.emailVerificationExpirySeconds / 3600;
+
+            string activationHost = this.httpContextAccessor.HttpContext!.Request
+                                             .GetTypedHeaders()
+                                             .Referer
+                                             .GetLeftPart(UriPartial.Authority);
             string hostUrl = activationHost.ToString();
-            hostUrl = hostUrl.Remove(hostUrl.Length - 1, 1); // Strips last slash
 
             Dictionary<string, string> keyValues = new()
             {

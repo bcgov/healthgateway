@@ -28,7 +28,7 @@ namespace HealthGateway.Common.Services
         /// Will use access_token acquired from system account authenication.
         /// </summary>
         /// <param name="notificationSettings">The Notification Settings Request object.</param>
-        /// <returns>The notification settings request queued</returns>
+        /// <returns>The notification settings request queued.</returns>
         NotificationSettingsRequest QueueNotificationSettings(NotificationSettingsRequest notificationSettings);
 
         /// <summary>

@@ -85,7 +85,11 @@ namespace HealthGateway.Common.Services
             }
 
             this.logger.LogTrace($"Queueing email... {JsonConvert.SerializeObject(email)}");
-            this.emailDelegate.InsertEmail(email, shouldCommit);
+            if (email.Id == Guid.Empty)
+            {
+                this.emailDelegate.InsertEmail(email, shouldCommit);
+            }
+
             if (shouldCommit)
             {
                 this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));

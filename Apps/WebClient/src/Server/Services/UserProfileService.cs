@@ -31,6 +31,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -47,6 +48,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IUserEmailService userEmailService;
         private readonly IUserSMSService userSMSService;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -61,6 +63,8 @@ namespace HealthGateway.WebClient.Services
         /// <param name="patientService">The patient service.</param>
         /// <param name="userEmailService">The User Email service.</param>
         /// <param name="userSMSService">The User SMS service.</param>
+        /// <param name="notificationSettingsService">The Notifications Settings service.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IUserProfileDelegate userProfileDelegate,
@@ -72,7 +76,8 @@ namespace HealthGateway.WebClient.Services
             IPatientService patientService,
             IUserEmailService userEmailService,
             IUserSMSService userSMSService,
-            INotificationSettingsService notificationSettingsService)
+            INotificationSettingsService notificationSettingsService,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.userProfileDelegate = userProfileDelegate;
@@ -87,6 +92,8 @@ namespace HealthGateway.WebClient.Services
             this.userSMSService = userSMSService;
 
             this.notificationSettingsService = notificationSettingsService;
+
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc />
@@ -256,8 +263,7 @@ namespace HealthGateway.WebClient.Services
                 DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
-                    Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.HostTemplateVariable] = hostUrl };
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountClosedTemplate, keyValues);
+                    this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
                 }
 
                 this.logger.LogDebug($"Finished closing user profile. {JsonSerializer.Serialize(updateResult)}");
@@ -304,8 +310,7 @@ namespace HealthGateway.WebClient.Services
                 DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
-                    Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.HostTemplateVariable] = hostUrl };
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate, keyValues);
+                    this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
                 }
 
                 this.logger.LogDebug($"Finished recovering user profile. {JsonSerializer.Serialize(updateResult)}");
@@ -314,7 +319,6 @@ namespace HealthGateway.WebClient.Services
                     ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload),
                     ResultStatus = ResultType.Success,
                 };
-
             }
             else
             {
@@ -437,6 +441,18 @@ namespace HealthGateway.WebClient.Services
                     ResourcePayload = birthDate.AddYears(minAge.Value) < DateTime.Now,
                 };
             }
+        }
+
+        private void QueueEmail(string toEmail, string templateName)
+        {
+            string activationHost = this.httpContextAccessor.HttpContext!.Request
+                                             .GetTypedHeaders()
+                                             .Referer
+                                             .GetLeftPart(UriPartial.Authority);
+            string hostUrl = activationHost.ToString();
+
+            Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.HostTemplateVariable] = hostUrl };
+            this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);
         }
     }
 }
