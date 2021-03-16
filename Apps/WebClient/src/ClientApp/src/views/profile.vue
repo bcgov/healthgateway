@@ -62,6 +62,9 @@ export default class ProfileView extends Vue {
         emailAddress: string;
     }) => Promise<void>;
 
+    @Action("checkRegistration", { namespace: "user" })
+    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+
     @Action("closeUserAccount", { namespace: userNamespace })
     closeUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
 
@@ -138,12 +141,7 @@ export default class ProfileView extends Vue {
             this.user.hdid
         );
 
-        Promise.all([
-            oidcUserPromise,
-            userEmailPromise,
-            userSMSPromise,
-            userProfilePromise,
-        ])
+        Promise.all([oidcUserPromise, userProfilePromise])
             .then((results) => {
                 // Load oidc user details
                 if (results[0]) {
@@ -151,29 +149,21 @@ export default class ProfileView extends Vue {
                 }
 
                 if (results[1]) {
-                    // Load user email
-                    var userEmail = results[1];
-                    this.email = userEmail.emailAddress;
-                    this.emailVerified = userEmail.validated;
-                    this.emailVerificationSent = this.emailVerified;
-                }
-
-                if (results[2]) {
-                    // Load user sms
-                    var userSMS = results[2];
-                    this.smsNumber = userSMS.smsNumber;
-                    this.smsVerified = userSMS.validated;
-                }
-
-                if (results[3]) {
                     // Load user profile
-                    this.userProfile = results[3];
                     this.logger.verbose(
                         `User Profile: ${JSON.stringify(this.userProfile)}`
                     );
+                    this.userProfile = results[1];
                     this.lastLoginDateString = new DateWrapper(
                         this.userProfile.lastLoginDateTime
                     ).format();
+
+                    this.email = this.userProfile.email;
+                    this.emailVerified = this.userProfile.isEmailVerified;
+                    this.emailVerificationSent = this.emailVerified;
+                    // Load user sms
+                    this.smsNumber = this.userProfile.smsNumber;
+                    this.smsVerified = this.userProfile.isSMSNumberVerified;
                 }
 
                 this.isLoading = false;
@@ -381,7 +371,7 @@ export default class ProfileView extends Vue {
                 this.emailVerificationSent = true;
                 this.emailConfirmation = "";
                 this.tempEmail = "";
-                this.getUserEmail({ hdid: this.user.hdid });
+                this.checkRegistration({ hdid: this.user.hdid });
                 this.showCheckEmailAlert = true;
                 this.$v.$reset();
             })
