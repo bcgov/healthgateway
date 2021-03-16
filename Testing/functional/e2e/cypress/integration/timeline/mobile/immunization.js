@@ -25,11 +25,39 @@ describe("Immunization Async", () => {
       .should("be.visible")
       .contains("Still searching for immunization records");
     cy.get("[data-testid=immunizationLoading]").should("not.exist");
-    cy.get("[data-testid=immunizationReady]")
+    cy.get("[data-testid=immunizationReady]").should("be.visible");
+  });
+});
+
+describe("Immunization Async No Records", () => {
+  beforeEach(() => {
+    let isLoading = false;
+    cy.enableModules("Immunization");
+    cy.intercept("GET", "**/v1/api/Immunization/*", (req) => {
+      if (!isLoading) {
+        req.reply({ fixture: "ImmunizationService/immunizationrefresh.json" });
+      } else {
+        req.reply({
+          fixture: "ImmunizationService/immunizationNoRecords.json",
+        });
+      }
+      isLoading = !isLoading;
+    });
+    cy.viewport("iphone-6");
+    cy.login(
+      Cypress.env("keycloak.username"),
+      Cypress.env("keycloak.password"),
+      AuthMethod.KeyCloak
+    );
+    cy.checkTimelineHasLoaded();
+  });
+
+  it("Validate Immunization Loading", () => {
+    cy.get("[data-testid=immunizationLoading]")
       .should("be.visible")
-      .find("[data-testid=immunizationBtnReady]")
-      .should("be.visible")
-      .click();
+      .contains("Still searching for immunization records");
+    cy.get("[data-testid=immunizationLoading]").should("not.exist");
+    cy.get("[data-testid=immunizationEmpty]").should("be.visible");
   });
 });
 

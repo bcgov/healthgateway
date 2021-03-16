@@ -15,6 +15,34 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
+                                    >March 17, 2021 - v1.3.11 - Special
+                                    Authority Request Prep, Immunization Loading
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We started integration to a new data
+                                        source to provide access to the status
+                                        of special drug requests.
+                                    </li>
+                                    <li>
+                                        We updated the loading of immunizations
+                                        to automatically add new immunizations
+                                        to the timeline when they are available.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
                                     >March 10, 2021 - v1.3.10 - COVID-19
                                     Immunization Card, Date Formats
                                 </strong>

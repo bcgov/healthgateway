@@ -7,6 +7,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
@@ -147,23 +148,18 @@ export default class CalendarBodyComponent extends Vue {
         if (event.type == EntryType.Encounter) {
             return "user-md";
         }
+        if (event.type == EntryType.MedicationRequest) {
+            return "clipboard-list";
+        }
         return "";
     }
 
     private getBackground(event: CalendarEntry) {
-        if (event.type == EntryType.Medication) {
-            return "medication";
-        } else if (event.type == EntryType.Immunization) {
-            return "immunization";
-        } else if (event.type == EntryType.Laboratory) {
-            return "laboratory";
-        } else if (event.type == EntryType.Note) {
+        if (event.type == EntryType.Note) {
             return "note";
-        } else if (event.type == EntryType.Encounter) {
-            return "encounter";
+        } else {
+            return "default";
         }
-
-        return "";
     }
 
     private eventClick(event: CalendarEntry, jsEvent: Event) {
@@ -183,6 +179,8 @@ export default class CalendarBodyComponent extends Vue {
             return (entry as NoteTimelineEntry).title;
         } else if (type == EntryType.Encounter) {
             return (entry as EncounterTimelineEntry).practitionerName;
+        } else if (type == EntryType.MedicationRequest) {
+            return (entry as MedicationRequestTimelineEntry).drugName || "";
         }
 
         return "N/A";
@@ -316,19 +314,10 @@ export default class CalendarBodyComponent extends Vue {
                         padding: 2px;
                         margin: 2px;
                         color: white !important;
-                        .medication {
-                            background-color: $primary !important;
-                        }
-                        .laboratory {
-                            background-color: $primary !important;
-                        }
                         .note {
                             background-color: $bcgold !important;
                         }
-                        .immunization {
-                            background-color: $primary !important;
-                        }
-                        .encounter {
+                        .default {
                             background-color: $primary !important;
                         }
 

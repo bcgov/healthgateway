@@ -15,18 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Controllers
 {
-    using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Medication.Services;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// The Medication controller.
+    /// Controller that handles requests for medication statements.
     /// </summary>
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
@@ -40,19 +36,12 @@ namespace HealthGateway.Medication.Controllers
         private readonly IMedicationStatementService medicationStatementService;
 
         /// <summary>
-        /// The Configuration injected.
-        /// </summary>
-        private readonly IConfiguration configuration;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
-        /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="medicationStatementService">The injected medication data service.</param>
-        public MedicationStatementController(IConfiguration configuration, IMedicationStatementService medicationStatementService)
+        public MedicationStatementController(IMedicationStatementService medicationStatementService)
         {
             this.medicationStatementService = medicationStatementService;
-            this.configuration = configuration;
         }
 
         /// <summary>

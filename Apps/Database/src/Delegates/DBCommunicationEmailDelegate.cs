@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public List<UserProfile> GetProfilesForCommunication(Guid communicationId, int maxRows)
+        public IList<UserProfile> GetProfilesForCommunication(Guid communicationId, int maxRows)
         {
             this.logger.LogTrace($"Getting active user profiles to send emails from DB...");
 

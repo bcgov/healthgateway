@@ -4,6 +4,7 @@ import { ResultType } from "@/constants/resulttype";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { ServiceName } from "@/models/errorInterfaces";
+import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -20,10 +21,12 @@ export class RestMedicationService implements IMedicationService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     private readonly MEDICATION_STATEMENT_BASE_URI: string =
         "v1/api/MedicationStatement";
-    private readonly MEDICATION_BASE_URI: string = "v1/api/Medication";
+    private readonly MEDICATION_REQUEST_BASE_URI: string =
+        "v1/api/MedicationRequest";
     private baseUri = "";
     private http!: IHttpDelegate;
-    private isEnabled = false;
+    private isMedicationEnabled = false;
+    private isMedicationRequestEnabled = false;
     private readonly FETCH_ERROR = "Fetch error:";
 
     public initialize(
@@ -32,7 +35,9 @@ export class RestMedicationService implements IMedicationService {
     ): void {
         this.baseUri = config.serviceEndpoints["Medication"];
         this.http = http;
-        this.isEnabled = config.webClient.modules["Medication"];
+        this.isMedicationEnabled = config.webClient.modules["Medication"];
+        this.isMedicationRequestEnabled =
+            config.webClient.modules["MedicationRequest"];
     }
 
     public getPatientMedicationStatementHistory(
@@ -44,7 +49,7 @@ export class RestMedicationService implements IMedicationService {
             headers["protectiveWord"] = protectiveWord;
         }
         return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
+            if (!this.isMedicationEnabled) {
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
@@ -65,6 +70,41 @@ export class RestMedicationService implements IMedicationService {
                 .catch((err) => {
                     this.logger.error(
                         `getPatientMedicationStatementHistory ${this.FETCH_ERROR}: ${err}`
+                    );
+                    reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.Medication
+                        )
+                    );
+                });
+        });
+    }
+
+    public getPatientMedicationRequest(
+        hdid: string
+    ): Promise<RequestResult<MedicationRequest[]>> {
+        return new Promise((resolve, reject) => {
+            if (!this.isMedicationRequestEnabled) {
+                resolve({
+                    pageIndex: 0,
+                    pageSize: 0,
+                    resourcePayload: [],
+                    resultStatus: ResultType.Success,
+                    totalResultCount: 0,
+                });
+                return;
+            }
+            this.http
+                .get<RequestResult<MedicationRequest[]>>(
+                    `${this.baseUri}${this.MEDICATION_REQUEST_BASE_URI}/${hdid}`
+                )
+                .then((requestResult) => {
+                    resolve(requestResult);
+                })
+                .catch((err) => {
+                    this.logger.error(
+                        `getPatientMedicationRequest ${this.FETCH_ERROR}: ${err}`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(

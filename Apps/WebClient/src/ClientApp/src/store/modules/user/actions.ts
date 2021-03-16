@@ -3,6 +3,7 @@ import { ActionTree, Commit } from "vuex";
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/requestResult";
 import { RootState, UserState } from "@/models/storeState";
 import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -197,5 +198,15 @@ export const actions: ActionTree<UserState, RootState> = {
                     });
             }
         });
+    },
+    handleError(context, error: ResultError) {
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("userError", error);
+
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch User Error", error },
+            { root: true }
+        );
     },
 };
