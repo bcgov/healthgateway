@@ -2,6 +2,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
@@ -71,28 +72,10 @@ export default class LaboratoryTimelineComponent extends Vue {
                     "YYYY_MM_DD-HH_mm"
                 );
                 let report: LaboratoryReport = result.resourcePayload;
-                fetch(
-                    `data:${report.mediaType};${report.encoding},${report.data}`
-                )
-                    .then((response) => response.blob())
-                    .then((blob) => {
-                        // It is necessary to create a new blob object with mime-type explicitly set
-                        // otherwise only Chrome works like it should
-                        var newBlob = new Blob([blob], {
-                            type: "application/pdf",
-                        });
-
-                        // Create a link pointing to the ObjectURL containing the blob.
-                        const data = window.URL.createObjectURL(newBlob);
-                        var link = document.createElement("a");
-                        link.href = data;
-                        link.download = `COVID_Result_${dateString}.pdf`;
-                        link.click();
-                        setTimeout(function () {
-                            // For Firefox it is necessary to delay revoking the ObjectURL
-                            window.URL.revokeObjectURL(data);
-                        }, 100);
-                    });
+                saveAs(
+                    `data:${report.mediaType};${report.encoding},${report.data}`,
+                    `COVID_Result_${dateString}.pdf`
+                );
             })
             .catch((err) => {
                 this.logger.error(err);
