@@ -17,13 +17,11 @@ import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import { OidcUserProfile } from "@/models/user";
 import type { UserComment } from "@/models/userComment";
-import UserEmailInvite from "@/models/userEmailInvite";
 import UserFeedback from "@/models/userFeedback";
 import UserNote from "@/models/userNote";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
-import UserSMSInvite from "@/models/userSMSInvite";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -88,8 +86,6 @@ export interface IUserProfileService {
     getTermsOfService(): Promise<TermsOfService>;
     closeAccount(hdid: string): Promise<UserProfile>;
     recoverAccount(hdid: string): Promise<UserProfile>;
-    getLatestEmailInvite(hdid: string): Promise<UserEmailInvite>;
-    getLatestSMSInvite(hdid: string): Promise<UserSMSInvite | null>;
     validateEmail(
         hdid: string,
         inviteKey: string
