@@ -135,7 +135,7 @@ export default class TimelineView extends Vue {
     @Watch("immunizationIsDeferred")
     private whenImmunizationIsDeferred(isDeferred: boolean) {
         if (isDeferred) {
-            this.immunizationNeedsInput = true;
+            this.showImmunizationAlert = true;
         }
     }
 
@@ -183,17 +183,12 @@ export default class TimelineView extends Vue {
         }
 
         // Add the immunization entries to the timeline list
-        if (!this.immunizationIsDeferred && !this.immunizationNeedsInput) {
+        if (!this.immunizationIsDeferred) {
             for (let immunization of this.patientImmunizations) {
                 timelineEntries.push(
                     new ImmunizationTimelineEntry(immunization)
                 );
             }
-        } else if (
-            !this.immunizationIsDeferred &&
-            this.patientImmunizations.length == 0
-        ) {
-            this.immunizationNeedsInput = false;
         }
 
         timelineEntries = this.sortEntries(timelineEntries);
@@ -214,7 +209,7 @@ export default class TimelineView extends Vue {
         return filteredEntries;
     }
 
-    private immunizationNeedsInput = false;
+    private showImmunizationAlert = false;
 
     private filterText = "";
 
@@ -360,28 +355,43 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="immunizationNeedsInput"
+                        :show="
+                            showImmunizationAlert && immunizationIsDeferred
+                                ? 5
+                                : false
+                        "
+                        dismissible
                         variant="info"
                         class="no-print"
                     >
-                        <span v-if="immunizationIsDeferred">
-                            <h4 data-testid="immunizationLoading">
-                                Still searching for immunization records
+                        <h4 data-testid="immunizationLoading">
+                            Still searching for immunization records
+                        </h4>
+                    </b-alert>
+                    <b-alert
+                        :show="
+                            showImmunizationAlert && !immunizationIsDeferred
+                                ? 5
+                                : false
+                        "
+                        dismissible
+                        variant="info"
+                        class="no-print"
+                    >
+                        <span
+                            v-if="patientImmunizations.length > 0"
+                            data-testid="immunizationReady"
+                        >
+                            <h4 data-testid="immunizationReadyHeader">
+                                Additional immunization records found. Loading
+                                into timeline
                             </h4>
                         </span>
                         <span v-else data-testid="immunizationReady">
                             <h4 data-testid="immunizationReadyHeader">
-                                Your immunization records are ready
+                                No additional records found
                             </h4>
-                            <b-btn
-                                data-testid="immunizationBtnReady"
-                                variant="link"
-                                class="detailsButton px-0"
-                                @click="immunizationNeedsInput = false"
-                            >
-                                Load to timeline.
-                            </b-btn></span
-                        >
+                        </span>
                     </b-alert>
                 </div>
 
