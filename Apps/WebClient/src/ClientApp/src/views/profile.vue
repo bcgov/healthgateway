@@ -354,7 +354,7 @@ export default class ProfileView extends Vue {
     }
 
     private onVerifySMSSubmit(): void {
-        this.getUserSMS({ hdid: this.user.hdid });
+        this.checkRegistration({ hdid: this.user.hdid });
         this.smsVerified = true;
     }
     private sendUserEmailUpdate(): void {
@@ -400,7 +400,7 @@ export default class ProfileView extends Vue {
                 this.isSMSEditable = false;
                 this.smsVerified = false;
                 this.tempSMS = "";
-                this.getUserSMS({ hdid: this.user.hdid });
+                this.checkRegistration({ hdid: this.user.hdid });
                 if (this.smsNumber) {
                     this.verifySMS();
                 }
