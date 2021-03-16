@@ -17,7 +17,7 @@ export default class ProtectiveWordComponent extends Vue {
     @Action("addError", { namespace: "errorBanner" })
     addError!: (error: BannerError) => void;
 
-    @Action("retrieve", { namespace: med })
+    @Action("retrieveMedicationStatements", { namespace: med })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;

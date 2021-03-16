@@ -56,13 +56,13 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{drugIdentifier}")]
-        public RequestResult<MedicationResult> GetMedication(string drugIdentifier)
+        public RequestResult<MedicationInformation> GetMedication(string drugIdentifier)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier!.PadLeft(8, '0');
-            Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });
+            IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(new List<string>() { paddedDin });
 
-            RequestResult<MedicationResult> result = new RequestResult<MedicationResult>()
+            RequestResult<MedicationInformation> result = new RequestResult<MedicationInformation>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = medications.ContainsKey(paddedDin) ? medications[paddedDin] : null,
@@ -82,13 +82,13 @@ namespace HealthGateway.Medication.Controllers
         /// <response code="200">Returns the medication statement bundle.</response>
         [HttpGet("")]
         [Produces("application/json")]
-        public RequestResult<Dictionary<string, MedicationResult>> GetMedications([FromQuery]List<string> drugIdentifiers)
+        public RequestResult<IDictionary<string, MedicationInformation>> GetMedications([FromQuery]IList<string> drugIdentifiers)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
-            List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
-            Dictionary<string, MedicationResult> medications = this.medicationService.GetMedications(paddedDinList);
+            IList<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
+            IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(paddedDinList);
 
-            RequestResult<Dictionary<string, MedicationResult>> result = new RequestResult<Dictionary<string, MedicationResult>>()
+            RequestResult<IDictionary<string, MedicationInformation>> result = new RequestResult<IDictionary<string, MedicationInformation>>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = medications,

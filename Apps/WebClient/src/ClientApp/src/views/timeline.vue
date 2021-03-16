@@ -21,6 +21,8 @@ import { ImmunizationEvent } from "@/models/immunizationModel";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 import { LaboratoryOrder } from "@/models/laboratory";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
+import MedicationRequest from "@/models/MedicationRequest";
+import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
@@ -66,17 +68,23 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "laboratory" })
     retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
 
-    @Action("retrieve", { namespace: "medication" })
+    @Action("retrieveMedicationStatements", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<void>;
+
+    @Action("retrieveMedicationRequests", { namespace: "medication" })
+    retrieveMedicationRequests!: (params: { hdid: string }) => Promise<void>;
 
     @Action("retrieve", { namespace: "comment" })
     retrieveComments!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("isLoading", { namespace: "medication" })
     isMedicationLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "medication" })
+    isMedicationRequestLoading!: boolean;
 
     @Getter("isLoading", { namespace: "comment" })
     isCommentLoading!: boolean;
@@ -104,6 +112,9 @@ export default class TimelineView extends Vue {
 
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
+
+    @Getter("medicationRequests", { namespace: "medication" })
+    medicationRequests!: MedicationRequest[];
 
     @Getter("laboratoryOrders", { namespace: "laboratory" })
     laboratoryOrders!: LaboratoryOrder[];
@@ -156,6 +167,16 @@ export default class TimelineView extends Vue {
         this.logger.debug("Updating timeline Entries");
 
         let timelineEntries = [];
+        // Add the medication request entries to the timeline list
+        for (let medicationRequest of this.medicationRequests) {
+            timelineEntries.push(
+                new MedicationRequestTimelineEntry(
+                    medicationRequest,
+                    this.getEntryComments
+                )
+            );
+        }
+
         // Add the medication entries to the timeline list
         for (let medication of this.medicationStatements) {
             timelineEntries.push(
@@ -240,6 +261,7 @@ export default class TimelineView extends Vue {
 
     private get isLoading(): boolean {
         return (
+            this.isMedicationRequestLoading ||
             this.isMedicationLoading ||
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
@@ -280,6 +302,7 @@ export default class TimelineView extends Vue {
         Promise.all([
             this.getPatientData({ hdid: this.user.hdid }),
             this.retrieveMedications({ hdid: this.user.hdid }),
+            this.retrieveMedicationRequests({ hdid: this.user.hdid }),
             this.retrieveImmunizations({ hdid: this.user.hdid }),
             this.retrieveLaboratory({ hdid: this.user.hdid }),
             this.retrieveEncounters({ hdid: this.user.hdid }),

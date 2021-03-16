@@ -1,5 +1,6 @@
 import { GetterTree } from "vuex";
 
+import MedicationRequest from "@/models/MedicationRequest";
 import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { LoadStatus, MedicationState, RootState } from "@/models/storeState";
@@ -23,6 +24,9 @@ export const getters: GetterTree<MedicationState, RootState> = {
     },
     isProtected(state: MedicationState): boolean {
         return state.status === LoadStatus.PROTECTED;
+    },
+    medicationRequests(state: MedicationState): MedicationRequest[] {
+        return state.medicationRequests;
     },
     isLoading(state: MedicationState): boolean {
         return state.status === LoadStatus.REQUESTED;
