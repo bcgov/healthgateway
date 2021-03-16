@@ -50,6 +50,9 @@ export default class FilterComponent extends Vue {
     @Getter("medicationCount", { namespace: "medication" })
     medicationCount!: number;
 
+    @Getter("medicationRequestCount", { namespace: "medication" })
+    medicationRequestCount!: number;
+
     @Getter("immunizationCount", { namespace: "immunization" })
     immunizationCount!: number;
 
@@ -105,6 +108,12 @@ export default class FilterComponent extends Vue {
                 display: "My Notes",
                 isEnabled: this.config.modules[EntryType.Note],
                 numEntries: this.noteCount,
+            },
+            {
+                type: EntryType.MedicationRequest,
+                display: "Special Authority",
+                isEnabled: this.config.modules[EntryType.MedicationRequest],
+                numEntries: this.medicationRequestCount,
             },
         ];
     }

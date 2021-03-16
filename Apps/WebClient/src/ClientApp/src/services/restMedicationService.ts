@@ -37,7 +37,7 @@ export class RestMedicationService implements IMedicationService {
         this.http = http;
         this.isMedicationEnabled = config.webClient.modules["Medication"];
         this.isMedicationRequestEnabled =
-            config.webClient.modules["SpecialAuthorityRequests"];
+            config.webClient.modules["MedicationRequest"];
     }
 
     public getPatientMedicationStatementHistory(
