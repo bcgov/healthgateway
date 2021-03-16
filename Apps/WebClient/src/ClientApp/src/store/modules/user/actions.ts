@@ -70,6 +70,7 @@ export const actions: ActionTree<UserState, RootState> = {
                     }
 
                     context.commit("setProfileUserData", userProfile);
+                    resolve(userProfile.acceptedTermsOfService);
                 })
                 .catch((error) => {
                     handleError(context.commit, error);
