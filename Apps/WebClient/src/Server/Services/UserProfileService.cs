@@ -198,7 +198,7 @@ namespace HealthGateway.WebClient.Services
             }
 
             // Create profile
-            UserProfile newProfile = new()
+            UserProfile newProfile = new ()
             {
                 HdId = hdid,
                 IdentityManagementId = createProfileRequest.Profile.IdentityManagementId,
@@ -451,7 +451,7 @@ namespace HealthGateway.WebClient.Services
             }
             else
             {
-                DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? new DateTime();
+                DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? default(DateTime);
                 return new PrimitiveRequestResult<bool>()
                 {
                     ResultStatus = patientResult.ResultStatus,
@@ -468,7 +468,7 @@ namespace HealthGateway.WebClient.Services
                                              .GetLeftPart(UriPartial.Authority);
             string hostUrl = activationHost.ToString();
 
-            Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.HostTemplateVariable] = hostUrl };
+            Dictionary<string, string> keyValues = new () { [EmailTemplateVariable.Host] = hostUrl };
             this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);
         }
     }

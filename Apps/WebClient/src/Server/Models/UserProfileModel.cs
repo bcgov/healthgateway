@@ -41,7 +41,7 @@ namespace HealthGateway.WebClient.Models
         public string? Email { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user email was verified.
+        /// Gets or sets a value indicating whether the user email was verified.
         /// </summary>
         public bool IsEmailVerified { get; set; }
 
@@ -51,7 +51,7 @@ namespace HealthGateway.WebClient.Models
         public string? SMSNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the user sms number was verified.
+        /// Gets or sets a value indicating whether the user sms number was verified.
         /// </summary>
         public bool IsSMSNumberVerified { get; set; }
 

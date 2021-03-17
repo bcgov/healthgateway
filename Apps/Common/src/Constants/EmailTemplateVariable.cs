@@ -20,14 +20,29 @@ namespace HealthGateway.Common.Constants
     /// </summary>
     public static class EmailTemplateVariable
     {
-        public const string ENVIRONMENT_VARIABLE = "Environment";
+        /// <summary>
+        /// The environment variable for email templates.
+        /// </summary>
+        public const string Environment = "Environment";
 
-        public const string INVITE_KEY_VARIABLE = "InviteKey";
+        /// <summary>
+        /// The invite key variable for email templates.
+        /// </summary>
+        public const string InviteKey = "InviteKey";
 
-        public const string ACTIVATION_HOST_VARIABLE = "ActivationHost";
+        /// <summary>
+        /// The activation host variable for email templates.
+        /// </summary>
+        public const string ActivationHost = "ActivationHost";
 
-        public const string EMAIL_TEMPLATE_EXPIRY_HOURS = "ExpiryHours";
+        /// <summary>
+        /// The expiry hours variable for email templates.
+        /// </summary>
+        public const string ExpiryHours = "ExpiryHours";
 
-        public const string HostTemplateVariable = "host";
+        /// <summary>
+        /// The host variable for email templates.
+        /// </summary>
+        public const string Host = "host";
     }
 }

@@ -148,9 +148,9 @@ namespace HealthGateway.Common.Services
 
         private Email ParseTemplate(EmailTemplate emailTemplate, Dictionary<string, string> keyValues)
         {
-            if (!keyValues.ContainsKey(EmailTemplateVariable.ENVIRONMENT_VARIABLE))
+            if (!keyValues.ContainsKey(EmailTemplateVariable.Environment))
             {
-                keyValues.Add(EmailTemplateVariable.ENVIRONMENT_VARIABLE, this.environment.IsProduction() ? string.Empty : this.environment.EnvironmentName);
+                keyValues.Add(EmailTemplateVariable.Environment, this.environment.IsProduction() ? string.Empty : this.environment.EnvironmentName);
             }
 
             return new Email()

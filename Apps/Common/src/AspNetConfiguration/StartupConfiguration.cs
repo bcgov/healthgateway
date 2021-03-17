@@ -578,6 +578,8 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The service collection to add forward proxies into.</param>
         public void ConfigureAccessControl(IServiceCollection services)
         {
+            this.Logger.LogDebug("Configure Access Control...");
+
             services.AddCors(options =>
             {
                 options.AddPolicy("allowAny", policy =>

@@ -139,7 +139,7 @@ namespace HealthGateway.WebClient.Services
         private void AddVerificationSMS(string hdid, string sms, string smsVerificationCode)
         {
             this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
-            MessagingVerification messagingVerification = new()
+            MessagingVerification messagingVerification = new ()
             {
                 HdId = hdid,
                 SMSNumber = sms,

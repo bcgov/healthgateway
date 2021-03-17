@@ -77,7 +77,7 @@ namespace HealthGateway.WebClient.Services
         public PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey)
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
-            PrimitiveRequestResult<bool> retVal = new();
+            PrimitiveRequestResult<bool> retVal = new ();
 
             MessagingVerification? emailVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
             if (emailVerification == null ||
@@ -192,14 +192,14 @@ namespace HealthGateway.WebClient.Services
                                              .GetLeftPart(UriPartial.Authority);
             string hostUrl = activationHost.ToString();
 
-            Dictionary<string, string> keyValues = new()
+            Dictionary<string, string> keyValues = new ()
             {
-                [EmailTemplateVariable.INVITE_KEY_VARIABLE] = inviteKey.ToString(),
-                [EmailTemplateVariable.ACTIVATION_HOST_VARIABLE] = hostUrl,
-                [EmailTemplateVariable.EMAIL_TEMPLATE_EXPIRY_HOURS] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
+                [EmailTemplateVariable.InviteKey] = inviteKey.ToString(),
+                [EmailTemplateVariable.ActivationHost] = hostUrl,
+                [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 
-            MessagingVerification messageVerification = new()
+            MessagingVerification messageVerification = new ()
             {
                 InviteKey = inviteKey,
                 HdId = hdid,
