@@ -178,19 +178,11 @@ namespace HealthGateway.WebClient.Test.Services
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
 
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
-            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(new DBResult<UserProfile>
+            profileDelegateMock.Setup(s => s.InsertUserProfile(It.Is<UserProfile>(x => x.HdId == userProfile.HdId))).Returns(new DBResult<UserProfile>
             {
                 Payload = userProfile,
                 Status = DBStatusCode.Created
             });
-
-            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
-
-            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            if (messagingVerification == null)
-                messagingVerification = new MessagingVerification();
-            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(messagingVerification);
 
             Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
             configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration() { WebClient = new WebClientConfiguration() { RegistrationStatus = registrationStatus } });
@@ -201,7 +193,6 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
             notificationServiceMock.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
 
-            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
@@ -211,9 +202,9 @@ namespace HealthGateway.WebClient.Test.Services
                 new Mock<IEmailQueueService>().Object,
                 notificationServiceMock.Object,
                 profileDelegateMock.Object,
-                preferenceDelegateMock.Object,
+                new Mock<IUserPreferenceDelegate>().Object,
                 new Mock<ILegalAgreementDelegate>().Object,
-                messageVerificationDelegateMock.Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
                 cryptoDelegateMock.Object,
                 new Mock<IHttpContextAccessor>().Object);
 
@@ -316,11 +307,17 @@ namespace HealthGateway.WebClient.Test.Services
                 Birthdate = DateTime.Now.AddYears(-15)
             };
             Mock<IPatientService> patientServiceMock = new Mock<IPatientService>();
-            patientServiceMock.Setup(s => s.GetPatient(hdid, PatientIdentifierType.HDID)).ReturnsAsync(new RequestResult<PatientModel> { ResultStatus = ResultType.Success, ResourcePayload = patientModel });
+            patientServiceMock
+                .Setup(s => s.GetPatient(hdid, PatientIdentifierType.HDID))
+                .ReturnsAsync(new RequestResult<PatientModel>
+                {
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = patientModel
+                });
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
-                new Mock<IPatientService>().Object,
+                patientServiceMock.Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
                 configServiceMock.Object,
@@ -575,74 +572,45 @@ namespace HealthGateway.WebClient.Test.Services
 
         private Tuple<RequestResult<UserProfileModel>, UserProfileModel> ExecuteCloseUserProfile(UserProfile userProfile, Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Read)
         {
+            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
+
             DBResult<UserProfile> userProfileDBResult = new DBResult<UserProfile>
             {
                 Payload = userProfile,
                 Status = dbResultStatus
             };
 
-            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
-
-            LegalAgreement termsOfService = new LegalAgreement()
-            {
-                Id = Guid.NewGuid(),
-                LegalText = "",
-                EffectiveDate = DateTime.Now
-            };
-
-            Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
-            emailer.Setup(s => s.QueueNewEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), false));
-
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
             profileDelegateMock.Setup(s => s.Update(userProfile, true)).Returns(userProfileDBResult);
 
-            UserPreference dbUserPreference = new UserPreference
-            {
-                HdId = hdid,
-                Preference = "TutorialPopover",
-                Value = true.ToString(),
-            };
-            List<UserPreference> userPreferences = new List<UserPreference>();
-            userPreferences.Add(dbUserPreference);
-            DBResult<IEnumerable<UserPreference>> readResult = new DBResult<IEnumerable<UserPreference>>
-            {
-                Payload = userPreferences,
-                Status = DBStatusCode.Read
-            };
-            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
-            preferenceDelegateMock.Setup(s => s.GetUserPreferences(hdid)).Returns(readResult);
+            Mock<IEmailQueueService> emailQueueServiceMock = new Mock<IEmailQueueService>();
+            emailQueueServiceMock
+                .Setup(s => s.QueueNewEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), false));
 
-            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
-
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
-            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
-
-            Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new Mock<ILegalAgreementDelegate>();
-            legalAgreementDelegateMock
-                .Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService))
-                .Returns(new DBResult<LegalAgreement>() { Payload = termsOfService });
-
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
-            Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
-            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary();
+            headerDictionary.Add("referer", "http://localhost/");
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                configServiceMock.Object,
-                new Mock<IEmailQueueService>().Object,
-                notificationServiceMock.Object,
+                new Mock<IConfigurationService>().Object,
+                emailQueueServiceMock.Object,
+                new Mock<INotificationSettingsService>().Object,
                 profileDelegateMock.Object,
-                preferenceDelegateMock.Object,
+                new Mock<IUserPreferenceDelegate>().Object,
                 new Mock<ILegalAgreementDelegate>().Object,
-                messageVerificationDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IMessagingVerificationDelegate>().Object,
+                new Mock<ICryptoDelegate>().Object,
+                httpContextAccessorMock.Object);
 
             RequestResult<UserProfileModel> actualResult = service.CloseUserProfile(hdid, Guid.NewGuid());
 
@@ -710,66 +678,37 @@ namespace HealthGateway.WebClient.Test.Services
 
             UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
 
-            LegalAgreement termsOfService = new LegalAgreement()
-            {
-                Id = Guid.NewGuid(),
-                LegalText = "",
-                EffectiveDate = DateTime.Now
-            };
-
-            Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
-            emailer.Setup(s => s.QueueNewEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), false));
-
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDBResult);
             profileDelegateMock.Setup(s => s.Update(userProfile, true)).Returns(userProfileDBResult);
 
-            UserPreference dbUserPreference = new UserPreference
-            {
-                HdId = hdid,
-                Preference = "TutorialPopover",
-                Value = true.ToString(),
-            };
-            List<UserPreference> userPreferences = new List<UserPreference>();
-            userPreferences.Add(dbUserPreference);
-            DBResult<IEnumerable<UserPreference>> readResult = new DBResult<IEnumerable<UserPreference>>
-            {
-                Payload = userPreferences,
-                Status = DBStatusCode.Read
-            };
-            Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
-            preferenceDelegateMock.Setup(s => s.GetUserPreferences(hdid)).Returns(readResult);
+            Mock<IEmailQueueService> emailQueueServiceMock = new Mock<IEmailQueueService>();
+            emailQueueServiceMock
+                .Setup(s => s.QueueNewEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), false));
 
-            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
-            Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
-            emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
-
-            Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
-            configServiceMock.Setup(s => s.GetConfiguration()).Returns(new ExternalConfiguration());
-
-            Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new Mock<ILegalAgreementDelegate>();
-            legalAgreementDelegateMock
-                .Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsofService))
-                .Returns(new DBResult<LegalAgreement>() { Payload = termsOfService });
-
-            Mock<ICryptoDelegate> cryptoDelegateMock = new Mock<ICryptoDelegate>();
-            Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
-            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
+            IHeaderDictionary headerDictionary = new HeaderDictionary();
+            headerDictionary.Add("referer", "http://localhost/");
+            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
+            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object,
-                configServiceMock.Object,
-                new Mock<IEmailQueueService>().Object,
-                notificationServiceMock.Object,
+                new Mock<IConfigurationService>().Object,
+                emailQueueServiceMock.Object,
+                new Mock<INotificationSettingsService>().Object,
                 profileDelegateMock.Object,
-                preferenceDelegateMock.Object,
+                new Mock<IUserPreferenceDelegate>().Object,
                 new Mock<ILegalAgreementDelegate>().Object,
-                messageVerificationDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IMessagingVerificationDelegate>().Object,
+                new Mock<ICryptoDelegate>().Object,
+                httpContextAccessorMock.Object);
 
             RequestResult<UserProfileModel> actualResult = service.RecoverUserProfile(hdid);
 
