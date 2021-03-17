@@ -10,6 +10,7 @@ export const state: MedicationState = {
     medicationStatements: [],
     medications: [],
     protectiveWordAttempts: 0,
+    medicationRequests: [],
     status: LoadStatus.NONE,
     error: undefined,
     statusMessage: "",

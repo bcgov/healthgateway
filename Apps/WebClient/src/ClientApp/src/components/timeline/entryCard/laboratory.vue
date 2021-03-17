@@ -1,7 +1,11 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import {
+    faFileDownload,
+    faFlask,
+    IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
+import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
@@ -67,15 +71,14 @@ export default class LaboratoryTimelineComponent extends Vue {
         this.laboratoryService
             .getReportDocument(this.entry.id, this.user.hdid)
             .then((result) => {
-                const link = document.createElement("a");
                 let dateString = this.entry.displayDate.format(
                     "YYYY_MM_DD-HH_mm"
                 );
                 let report: LaboratoryReport = result.resourcePayload;
-                link.href = `data:${report.mediaType};${report.encoding},${report.data}`;
-                link.download = `COVID_Result_${dateString}.pdf`;
-                link.click();
-                URL.revokeObjectURL(link.href);
+                saveAs(
+                    `data:${report.mediaType};${report.encoding},${report.data}`,
+                    `COVID_Result_${dateString}.pdf`
+                );
             })
             .catch((err) => {
                 this.logger.error(err);

@@ -38,7 +38,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="application">The name of the application.</param>
         /// <param name="component">The name of the component.</param>
         /// <returns>The list of application settings fetched.</returns>
-        List<ApplicationSetting> GetApplicationSettings(string application, string component);
+        IList<ApplicationSetting> GetApplicationSettings(string application, string component);
 
         /// <summary>
         /// Inserts a new application setting.

@@ -65,6 +65,7 @@ namespace HealthGateway.Common.AspNetConfiguration
     using Microsoft.IdentityModel.Logging;
     using Microsoft.IdentityModel.Tokens;
     using Newtonsoft.Json;
+    using OpenTelemetry.Resources;
     using OpenTelemetry.Trace;
     using ServiceReference;
 
@@ -244,6 +245,20 @@ namespace HealthGateway.Common.AspNetConfiguration
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
                     policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
+                });
+
+                // MedicationRequest Policies
+                options.AddPolicy(MedicationPolicy.MedicationRequestRead, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read));
+                });
+                options.AddPolicy(MedicationPolicy.MedicationRequestWrite, policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new FhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Write));
                 });
 
                 // Encounter Policies
@@ -529,29 +544,29 @@ namespace HealthGateway.Common.AspNetConfiguration
             this.configuration.GetSection("OpenTelemetry").Bind(config);
             if (config.Enabled)
             {
-                services.AddOpenTelemetryTracing(tracing =>
+                services.AddOpenTelemetryTracing(builder =>
                  {
-                     tracing.AddAspNetCoreInstrumentation(options =>
-                     {
-                         options.Filter = (httpContext) =>
-                         {
-                             return !config.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
-                         };
-                     })
+                     builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(config.ServiceName))
+                            .AddAspNetCoreInstrumentation(options =>
+                             {
+                                 options.Filter = (httpContext) =>
+                                 {
+                                     return !config.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
+                                 };
+                             })
                             .AddHttpClientInstrumentation()
                             .AddSource(config.Sources);
                      if (config.ZipkinEnabled)
                      {
-                         tracing.AddZipkinExporter(options =>
+                         builder.AddZipkinExporter(options =>
                          {
-                             options.ServiceName = config.ServiceName;
                              options.Endpoint = config.ZipkinUri;
                          });
                      }
 
                      if (config.ConsoleEnabled)
                      {
-                         tracing.AddConsoleExporter();
+                         builder.AddConsoleExporter();
                      }
                  });
             }
