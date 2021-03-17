@@ -77,7 +77,8 @@ namespace HealthGateway.WebClient.Services
             IUserEmailService userEmailService,
             IUserSMSService userSMSService,
             INotificationSettingsService notificationSettingsService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IMessagingVerificationDelegate messageVerificationDelegate)
         {
             this.logger = logger;
             this.userProfileDelegate = userProfileDelegate;
