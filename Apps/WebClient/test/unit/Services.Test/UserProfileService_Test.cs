@@ -32,6 +32,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -87,7 +88,6 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
             preferenceDelegateMock.Setup(s => s.GetUserPreferences(hdid)).Returns(readResult);
 
-            Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
             Mock<IMessagingVerificationDelegate> emailInviteDelegateMock = new Mock<IMessagingVerificationDelegate>();
             emailInviteDelegateMock.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(new MessagingVerification());
 
@@ -105,14 +105,19 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationServiceMock.Object,
                 profileDelegateMock.Object,
                 preferenceDelegateMock.Object,
-                configServiceMock.Object,
                 legalAgreementDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
                 messageVerificationDelegateMock.Object,
-                new Mock<IPatientService>().Object);
+                cryptoDelegateMock.Object,
+                new Mock<IHttpContextAccessor>().Object
+                );
 
             RequestResult<UserProfileModel> actualResult = service.GetUserProfile(hdid, DateTime.Now);
 
@@ -170,17 +175,15 @@ namespace HealthGateway.WebClient.Test.Services
                 Email = "unit.test@hgw.ca"
             };
 
-            DBResult<UserProfile> insertResult = new DBResult<UserProfile>
+            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
+
+            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
+            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(new DBResult<UserProfile>
             {
                 Payload = userProfile,
                 Status = DBStatusCode.Created
-            };
+            });
 
-            UserProfileModel expected = UserProfileModel.CreateFromDbModel(userProfile);
-
-            Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
-            Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
-            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
@@ -201,19 +204,20 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationServiceMock.Object,
                 profileDelegateMock.Object,
                 preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
                 new Mock<ILegalAgreementDelegate>().Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
                 messageVerificationDelegateMock.Object,
-                new Mock<IPatientService>().Object);
+                cryptoDelegateMock.Object,
+                new Mock<IHttpContextAccessor>().Object);
 
-            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token", DateTime.Today);
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, DateTime.Today);
 
             return new Tuple<RequestResult<UserProfileModel>, UserProfileModel>(actualResult, expected);
         }
@@ -259,7 +263,7 @@ namespace HealthGateway.WebClient.Test.Services
 
             Mock<IEmailQueueService> emailer = new Mock<IEmailQueueService>();
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
-            profileDelegateMock.Setup(s => s.InsertUserProfile(userProfile)).Returns(insertResult);
+            profileDelegateMock.Setup(s => s.InsertUserProfile(It.Is<UserProfile>(x => x.HdId == userProfile.HdId))).Returns(insertResult);
             Mock<IUserPreferenceDelegate> preferenceDelegateMock = new Mock<IUserPreferenceDelegate>();
 
             Mock<IEmailDelegate> emailDelegateMock = new Mock<IEmailDelegate>();
@@ -275,23 +279,25 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<INotificationSettingsService> notificationServiceMock = new Mock<INotificationSettingsService>();
             notificationServiceMock.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
 
-            Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new Mock<IMessagingVerificationDelegate>();
-
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationServiceMock.Object,
                 profileDelegateMock.Object,
                 preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
                 new Mock<ILegalAgreementDelegate>().Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
                 cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
-                messageVerificationDelegateMock.Object,
-                new Mock<IPatientService>().Object);
+                new Mock<IHttpContextAccessor>().Object);
 
-            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, new Uri("http://localhost/"), "bearer_token", DateTime.Today);
+            // Execute
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(new CreateUserRequest() { Profile = userProfile }, DateTime.Today);
+
+            // Verify
             notificationServiceMock.Verify(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()), Times.Once());
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(expected.HdId, actualResult.ResourcePayload.HdId);
@@ -314,17 +320,18 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
-                new Mock<IUserProfileDelegate>().Object,
-                new Mock<IUserPreferenceDelegate>().Object,
-                new Mock<IEmailDelegate>().Object,
-                new Mock<IMessagingVerificationDelegate>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
                 configServiceMock.Object,
                 new Mock<IEmailQueueService>().Object,
-                new Mock<ILegalAgreementDelegate>().Object,
-                new Mock<ICryptoDelegate>().Object,
                 new Mock<INotificationSettingsService>().Object,
+                new Mock<IUserProfileDelegate>().Object,
+                new Mock<IUserPreferenceDelegate>().Object,
+                new Mock<ILegalAgreementDelegate>().Object,
                 new Mock<IMessagingVerificationDelegate>().Object,
-                patientServiceMock.Object
+                new Mock<ICryptoDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object
             );
 
             PrimitiveRequestResult<bool> expected = new PrimitiveRequestResult<bool>() { ResultStatus = ResultType.Success, ResourcePayload = false };
@@ -400,17 +407,18 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationServiceMock.Object,
                 profileDelegateMock.Object,
                 preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
-                legalAgreementDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
+                new Mock<ILegalAgreementDelegate>().Object,
                 messageVerificationDelegateMock.Object,
-                new Mock<IPatientService>().Object);
+                cryptoDelegateMock.Object,
+                new Mock<IHttpContextAccessor>().Object);
 
             RequestResult<Dictionary<string, UserPreferenceModel>> actualResult = service.GetUserPreferences(hdid);
 
@@ -469,17 +477,18 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationServiceMock.Object,
                 profileDelegateMock.Object,
                 preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
-                legalAgreementDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
+                new Mock<ILegalAgreementDelegate>().Object,
                 messageVerificationDelegateMock.Object,
-                new Mock<IPatientService>().Object);
+                cryptoDelegateMock.Object,
+                new Mock<IHttpContextAccessor>().Object);
 
             return service.CreateUserPreference(userPreferenceModel);
         }
@@ -531,17 +540,18 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationServiceMock.Object,
                 profileDelegateMock.Object,
                 preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
-                legalAgreementDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
+                new Mock<ILegalAgreementDelegate>().Object,
                 messageVerificationDelegateMock.Object,
-                new Mock<IPatientService>().Object);
+                cryptoDelegateMock.Object,
+                new Mock<IHttpContextAccessor>().Object);
 
             return service.UpdateUserPreference(userPreferenceModel);
         }
@@ -621,19 +631,20 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationServiceMock.Object,
                 profileDelegateMock.Object,
                 preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
-                legalAgreementDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
+                new Mock<ILegalAgreementDelegate>().Object,
                 messageVerificationDelegateMock.Object,
-                new Mock<IPatientService>().Object);
+                cryptoDelegateMock.Object,
+                new Mock<IHttpContextAccessor>().Object);
 
-            RequestResult<UserProfileModel> actualResult = service.CloseUserProfile(hdid, Guid.NewGuid(), "127.0.0.1");
+            RequestResult<UserProfileModel> actualResult = service.CloseUserProfile(hdid, Guid.NewGuid());
 
             return new Tuple<RequestResult<UserProfileModel>, UserProfileModel>(actualResult, expected);
         }
@@ -747,19 +758,20 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserProfileService service = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSMSService>().Object,
+                configServiceMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationServiceMock.Object,
                 profileDelegateMock.Object,
                 preferenceDelegateMock.Object,
-                emailDelegateMock.Object,
-                emailInviteDelegateMock.Object,
-                configServiceMock.Object,
-                emailer.Object,
-                legalAgreementDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                notificationServiceMock.Object,
+                new Mock<ILegalAgreementDelegate>().Object,
                 messageVerificationDelegateMock.Object,
-                new Mock<IPatientService>().Object);
+                cryptoDelegateMock.Object,
+                new Mock<IHttpContextAccessor>().Object);
 
-            RequestResult<UserProfileModel> actualResult = service.RecoverUserProfile(hdid, "127.0.0.1");
+            RequestResult<UserProfileModel> actualResult = service.RecoverUserProfile(hdid);
 
             return new Tuple<RequestResult<UserProfileModel>, UserProfileModel>(actualResult, expected);
         }

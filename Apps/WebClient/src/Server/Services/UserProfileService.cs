@@ -38,62 +38,62 @@ namespace HealthGateway.WebClient.Services
     public class UserProfileService : IUserProfileService
     {
         private readonly ILogger logger;
-        private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IUserPreferenceDelegate userPreferenceDelegate;
-        private readonly IConfigurationService configurationService;
-        private readonly IEmailQueueService emailQueueService;
-        private readonly ILegalAgreementDelegate legalAgreementDelegate;
-        private readonly ICryptoDelegate cryptoDelegate;
         private readonly IPatientService patientService;
         private readonly IUserEmailService userEmailService;
         private readonly IUserSMSService userSMSService;
+        private readonly IConfigurationService configurationService;
+        private readonly IEmailQueueService emailQueueService;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IUserPreferenceDelegate userPreferenceDelegate;
+        private readonly ILegalAgreementDelegate legalAgreementDelegate;
+        private readonly IMessagingVerificationDelegate messageVerificationDelegate;
+        private readonly ICryptoDelegate cryptoDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
-        /// <param name="userPreferenceDelegate">The preference delegate to interact with the DB.</param>
-        /// <param name="configuration">The configuration service.</param>
-        /// <param name="emailQueueService">The email service to queue emails.</param>
-        /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
-        /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="patientService">The patient service.</param>
         /// <param name="userEmailService">The User Email service.</param>
         /// <param name="userSMSService">The User SMS service.</param>
+        /// <param name="configurationService">The configuration service.</param>
+        /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">The Notifications Settings service.</param>
+        /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
+        /// <param name="userPreferenceDelegate">The preference delegate to interact with the DB.</param>
+        /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
+        /// <param name="messageVerificationDelegate">The message verification delegate.</param>
+        /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
         /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
-            IUserProfileDelegate userProfileDelegate,
-            IUserPreferenceDelegate userPreferenceDelegate,
-            IConfigurationService configuration,
-            ILegalAgreementDelegate legalAgreementDelegate,
-            IEmailQueueService emailQueueService,
-            ICryptoDelegate cryptoDelegate,
             IPatientService patientService,
             IUserEmailService userEmailService,
             IUserSMSService userSMSService,
+            IConfigurationService configurationService,
+            IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
-            IHttpContextAccessor httpContextAccessor,
-            IMessagingVerificationDelegate messageVerificationDelegate)
+            IUserProfileDelegate userProfileDelegate,
+            IUserPreferenceDelegate userPreferenceDelegate,
+            ILegalAgreementDelegate legalAgreementDelegate,
+            IMessagingVerificationDelegate messageVerificationDelegate,
+            ICryptoDelegate cryptoDelegate,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
-            this.userProfileDelegate = userProfileDelegate;
-            this.userPreferenceDelegate = userPreferenceDelegate;
-            this.configurationService = configuration;
-            this.emailQueueService = emailQueueService;
-            this.legalAgreementDelegate = legalAgreementDelegate;
-            this.cryptoDelegate = cryptoDelegate;
             this.patientService = patientService;
-
             this.userEmailService = userEmailService;
             this.userSMSService = userSMSService;
-
+            this.configurationService = configurationService;
+            this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
-
+            this.userProfileDelegate = userProfileDelegate;
+            this.userPreferenceDelegate = userPreferenceDelegate;
+            this.legalAgreementDelegate = legalAgreementDelegate;
+            this.messageVerificationDelegate = messageVerificationDelegate;
+            this.cryptoDelegate = cryptoDelegate;
             this.httpContextAccessor = httpContextAccessor;
         }
 
@@ -152,7 +152,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime lastLogin)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
@@ -207,7 +207,7 @@ namespace HealthGateway.WebClient.Services
                 SMSNumber = null,
                 CreatedBy = hdid,
                 UpdatedBy = hdid,
-                LastLoginDateTime = lastLogin,
+                LastLoginDateTime = jwtAuthTime,
                 EncryptionKey = this.cryptoDelegate.GenerateKey(),
             };
             DBResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
