@@ -96,7 +96,6 @@ namespace HealthGateway.WebClient.Controllers
         /// Deletes a note from the database.
         /// </summary>
         /// <returns>The deleted Note wrapped in a RequestResult.</returns>
-        /// <param name="hdid">The user hdid.</param>
         /// <param name="note">The patient note.</param>
         /// <response code="200">The note was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -104,7 +103,7 @@ namespace HealthGateway.WebClient.Controllers
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult DeleteNote(string hdid, [FromBody] UserNote note)
+        public IActionResult DeleteNote([FromBody] UserNote note)
         {
             RequestResult<UserNote> result = this.noteService.DeleteNote(note);
             return new JsonResult(result);

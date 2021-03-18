@@ -28,7 +28,8 @@ namespace HealthGateway.Common.Services
         /// Will use access_token acquired from system account authenication.
         /// </summary>
         /// <param name="notificationSettings">The Notification Settings Request object.</param>
-        void QueueNotificationSettings(NotificationSettingsRequest notificationSettings);
+        /// <returns>The notification settings request queued.</returns>
+        NotificationSettingsRequest QueueNotificationSettings(NotificationSettingsRequest notificationSettings);
 
         /// <summary>
         /// Sends the Notifications Settings to PHSA immediately.

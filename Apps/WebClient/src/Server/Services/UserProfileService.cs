@@ -31,67 +31,70 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Wrapper;
     using HealthGateway.WebClient.Constants;
     using HealthGateway.WebClient.Models;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
     public class UserProfileService : IUserProfileService
     {
-        private const string HostTemplateVariable = "host";
-
         private readonly ILogger logger;
-        private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IUserPreferenceDelegate userPreferenceDelegate;
-        private readonly IEmailDelegate emailDelegate;
-        private readonly IMessagingVerificationDelegate emailInviteDelegate;
+        private readonly IPatientService patientService;
+        private readonly IUserEmailService userEmailService;
+        private readonly IUserSMSService userSMSService;
         private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
-        private readonly ILegalAgreementDelegate legalAgreementDelegate;
-        private readonly ICryptoDelegate cryptoDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IUserPreferenceDelegate userPreferenceDelegate;
+        private readonly ILegalAgreementDelegate legalAgreementDelegate;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
-        private readonly IPatientService patientService;
+        private readonly ICryptoDelegate cryptoDelegate;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="patientService">The patient service.</param>
+        /// <param name="userEmailService">The User Email service.</param>
+        /// <param name="userSMSService">The User SMS service.</param>
+        /// <param name="configurationService">The configuration service.</param>
+        /// <param name="emailQueueService">The email service to queue emails.</param>
+        /// <param name="notificationSettingsService">The Notifications Settings service.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="userPreferenceDelegate">The preference delegate to interact with the DB.</param>
-        /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
-        /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
-        /// <param name="configuration">The configuration service.</param>
-        /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
+        /// <param name="messageVerificationDelegate">The message verification delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
-        /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
-        /// <param name="patientService">The patient service.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
+            IPatientService patientService,
+            IUserEmailService userEmailService,
+            IUserSMSService userSMSService,
+            IConfigurationService configurationService,
+            IEmailQueueService emailQueueService,
+            INotificationSettingsService notificationSettingsService,
             IUserProfileDelegate userProfileDelegate,
             IUserPreferenceDelegate userPreferenceDelegate,
-            IEmailDelegate emailDelegate,
-            IMessagingVerificationDelegate emailInviteDelegate,
-            IConfigurationService configuration,
-            IEmailQueueService emailQueueService,
             ILegalAgreementDelegate legalAgreementDelegate,
-            ICryptoDelegate cryptoDelegate,
-            INotificationSettingsService notificationSettingsService,
             IMessagingVerificationDelegate messageVerificationDelegate,
-            IPatientService patientService)
+            ICryptoDelegate cryptoDelegate,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
+            this.patientService = patientService;
+            this.userEmailService = userEmailService;
+            this.userSMSService = userSMSService;
+            this.configurationService = configurationService;
+            this.emailQueueService = emailQueueService;
+            this.notificationSettingsService = notificationSettingsService;
             this.userProfileDelegate = userProfileDelegate;
             this.userPreferenceDelegate = userPreferenceDelegate;
-            this.emailDelegate = emailDelegate;
-            this.emailInviteDelegate = emailInviteDelegate;
-            this.configurationService = configuration;
-            this.emailQueueService = emailQueueService;
             this.legalAgreementDelegate = legalAgreementDelegate;
-            this.cryptoDelegate = cryptoDelegate;
-            this.notificationSettingsService = notificationSettingsService;
             this.messageVerificationDelegate = messageVerificationDelegate;
-            this.patientService = patientService;
+            this.cryptoDelegate = cryptoDelegate;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc />
@@ -149,90 +152,113 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken, DateTime lastLogin)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime)
         {
             this.logger.LogTrace($"Creating user profile... {JsonSerializer.Serialize(createProfileRequest)}");
 
             string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
 
-            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
-
             if (registrationStatus == RegistrationStatus.Closed)
             {
-                requestResult.ResultStatus = ResultType.Error;
-                requestResult.ResultError = new RequestResultError() { ResultMessage = "Registration is closed", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
                 this.logger.LogWarning($"Registration is closed. {JsonSerializer.Serialize(createProfileRequest)}");
-                return requestResult;
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Registration is closed",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
+                };
             }
 
+            // Validate registration age
             string hdid = createProfileRequest.Profile.HdId;
             PrimitiveRequestResult<bool> isMimimunAgeResult = await this.ValidateMinimumAge(hdid).ConfigureAwait(true);
-
             if (isMimimunAgeResult.ResultStatus != ResultType.Success)
             {
-                requestResult.ResultStatus = isMimimunAgeResult.ResultStatus;
-                requestResult.ResultError = isMimimunAgeResult.ResultError;
-                return requestResult;
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = isMimimunAgeResult.ResultStatus,
+                    ResultError = isMimimunAgeResult.ResultError,
+                };
             }
             else if (!isMimimunAgeResult.ResourcePayload)
             {
-                requestResult.ResultStatus = ResultType.Error;
-                requestResult.ResultError = new RequestResultError() { ResultMessage = "Patient under minimum age", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
                 this.logger.LogWarning($"Patient under minimum age. {JsonSerializer.Serialize(createProfileRequest)}");
-                return requestResult;
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Patient under minimum age",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
+                };
             }
 
-            string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
-            string? requestedEmail = createProfileRequest.Profile.Email;
-            UserProfile newProfile = createProfileRequest.Profile;
-            newProfile.Email = string.Empty;
-            newProfile.SMSNumber = null;
-            newProfile.CreatedBy = hdid;
-            newProfile.UpdatedBy = hdid;
-            newProfile.LastLoginDateTime = lastLogin;
-            newProfile.EncryptionKey = this.cryptoDelegate.GenerateKey();
-
+            // Create profile
+            UserProfile newProfile = new ()
+            {
+                HdId = hdid,
+                IdentityManagementId = createProfileRequest.Profile.IdentityManagementId,
+                AcceptedTermsOfService = createProfileRequest.Profile.AcceptedTermsOfService,
+                Email = string.Empty,
+                SMSNumber = null,
+                CreatedBy = hdid,
+                UpdatedBy = hdid,
+                LastLoginDateTime = jwtAuthTime,
+                EncryptionKey = this.cryptoDelegate.GenerateKey(),
+            };
             DBResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
 
             if (insertResult.Status == DBStatusCode.Created)
             {
-                // Update the notification settings
-                NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(newProfile, requestedSMSNumber);
+                UserProfile createdProfile = insertResult.Payload;
+                string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
+                string? requestedEmail = createProfileRequest.Profile.Email;
 
+                // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
-                    this.emailQueueService.QueueNewInviteEmail(hdid, requestedEmail, hostUri, Guid.NewGuid());
+                    this.userEmailService.CreateUserEmail(hdid, requestedEmail);
                 }
 
+                // Add SMS verification
                 if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
                 {
-                    this.logger.LogInformation($"Sending sms invite for user ${hdid}");
-                    MessagingVerification messagingVerification = new MessagingVerification();
-                    messagingVerification.HdId = hdid;
-                    messagingVerification.SMSNumber = requestedSMSNumber;
-                    messagingVerification.SMSValidationCode = notificationRequest.SMSVerificationCode;
-                    messagingVerification.VerificationType = MessagingVerificationType.SMS;
-                    messagingVerification.ExpireDate = DateTime.MaxValue;
-                    this.messageVerificationDelegate.Insert(messagingVerification);
+                    this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
                 }
 
-                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload);
-                requestResult.ResultStatus = ResultType.Success;
-            }
+                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(createdProfile, requestedEmail, requestedSMSNumber));
 
-            this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
-            return requestResult;
+                this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(insertResult.Payload),
+                    ResultStatus = ResultType.Success,
+                };
+            }
+            else
+            {
+                this.logger.LogError($"Error creating user profile. {JsonSerializer.Serialize(insertResult)}");
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = insertResult.Message,
+                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
+                    },
+                };
+            }
         }
 
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
-        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl)
+        public RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId)
         {
             this.logger.LogTrace($"Closing user profile... {hdid}");
-
-            string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
-
-            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
 
             DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
@@ -242,9 +268,11 @@ namespace HealthGateway.WebClient.Services
                 if (profile.ClosedDateTime != null)
                 {
                     this.logger.LogTrace("Finished. Profile already Closed");
-                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profile);
-                    requestResult.ResultStatus = ResultType.Success;
-                    return requestResult;
+                    return new RequestResult<UserProfileModel>()
+                    {
+                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile),
+                        ResultStatus = ResultType.Success,
+                    };
                 }
 
                 profile.ClosedDateTime = DateTime.UtcNow;
@@ -252,28 +280,31 @@ namespace HealthGateway.WebClient.Services
                 DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
-                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HostTemplateVariable, hostUrl);
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountClosedTemplate, keyValues);
+                    this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
                 }
 
-                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
-                requestResult.ResultStatus = ResultType.Success;
                 this.logger.LogDebug($"Finished closing user profile. {JsonSerializer.Serialize(updateResult)}");
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload),
+                    ResultStatus = ResultType.Success,
+                };
             }
-
-            return requestResult;
+            else
+            {
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = retrieveResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                };
+            }
         }
 
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team decision")]
-        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl)
+        public RequestResult<UserProfileModel> RecoverUserProfile(string hdid)
         {
             this.logger.LogTrace($"Recovering user profile... {hdid}");
-
-            string registrationStatus = this.configurationService.GetConfiguration().WebClient.RegistrationStatus;
-
-            RequestResult<UserProfileModel> requestResult = new RequestResult<UserProfileModel>();
 
             DBResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
@@ -283,9 +314,11 @@ namespace HealthGateway.WebClient.Services
                 if (profile.ClosedDateTime == null)
                 {
                     this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
-                    requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(profile);
-                    requestResult.ResultStatus = ResultType.Success;
-                    return requestResult;
+                    return new RequestResult<UserProfileModel>()
+                    {
+                        ResourcePayload = UserProfileModel.CreateFromDbModel(profile),
+                        ResultStatus = ResultType.Success,
+                    };
                 }
 
                 // Remove values set for deletion
@@ -294,17 +327,24 @@ namespace HealthGateway.WebClient.Services
                 DBResult<UserProfile> updateResult = this.userProfileDelegate.Update(profile);
                 if (!string.IsNullOrWhiteSpace(profile.Email))
                 {
-                    Dictionary<string, string> keyValues = new Dictionary<string, string>();
-                    keyValues.Add(HostTemplateVariable, hostUrl);
-                    this.emailQueueService.QueueNewEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate, keyValues);
+                    this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
                 }
 
-                requestResult.ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload);
-                requestResult.ResultStatus = ResultType.Success;
                 this.logger.LogDebug($"Finished recovering user profile. {JsonSerializer.Serialize(updateResult)}");
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResourcePayload = UserProfileModel.CreateFromDbModel(updateResult.Payload),
+                    ResultStatus = ResultType.Success,
+                };
             }
-
-            return requestResult;
+            else
+            {
+                return new RequestResult<UserProfileModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = retrieveResult.Message, ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database) },
+                };
+            }
         }
 
         /// <inheritdoc />
@@ -411,7 +451,7 @@ namespace HealthGateway.WebClient.Services
             }
             else
             {
-                DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? new DateTime();
+                DateTime birthDate = patientResult.ResourcePayload?.Birthdate ?? default(DateTime);
                 return new PrimitiveRequestResult<bool>()
                 {
                     ResultStatus = patientResult.ResultStatus,
@@ -420,12 +460,16 @@ namespace HealthGateway.WebClient.Services
             }
         }
 
-        private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? smsNumber)
+        private void QueueEmail(string toEmail, string templateName)
         {
-            // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, userProfile.Email, smsNumber);
-            this.notificationSettingsService.QueueNotificationSettings(request);
-            return request;
+            string activationHost = this.httpContextAccessor.HttpContext!.Request
+                                             .GetTypedHeaders()
+                                             .Referer
+                                             .GetLeftPart(UriPartial.Authority);
+            string hostUrl = activationHost.ToString();
+
+            Dictionary<string, string> keyValues = new () { [EmailTemplateVariable.Host] = hostUrl };
+            this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);
         }
     }
 }
