@@ -1,7 +1,10 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faFlask, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
+import {
+    faFileDownload,
+    faFlask,
+    IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";

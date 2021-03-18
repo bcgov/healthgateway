@@ -45,6 +45,7 @@ export default class MedicationRequestTimelineEntry extends TimelineEntry {
             (this.drugName || "") +
             (this.prescriberFirstName || "") +
             (this.prescriberLastName || "") +
+            (this.requestStatus || "") +
             (this.referenceNumber || "");
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());

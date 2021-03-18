@@ -2,7 +2,7 @@ const { AuthMethod } = require("../../support/constants")
 
 describe('Medication Request', () => {
     beforeEach(() => {
-        cy.enableModules("SpecialAuthorityRequests");
+        cy.enableModules("MedicationRequest");
         cy.intercept('GET', "**/v1/api/MedicationRequest/*", { fixture: "MedicationService/medicationRequest.json" });
         cy.login(Cypress.env('keycloak.username'), 
                  Cypress.env('keycloak.password'), 
