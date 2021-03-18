@@ -119,7 +119,11 @@ describe("Filters", () => {
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get("[data-testid=immunizationTitle]").should("be.visible");        
+<<<<<<< HEAD
         cy.get("[data-testid=medicationRequestTitle]").should("not.exist");
+=======
+        cy.get("[data-testid=MedicationRequestTitle]").should("not.exist");
+>>>>>>> master
         verifyActiveFilter('1');
     });
 
@@ -135,7 +139,11 @@ describe("Filters", () => {
         cy.get("[data-testid=encounterTitle]").should("not.exist");
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("be.visible");
+<<<<<<< HEAD
         cy.get("[data-testid=medicationRequestTitle]").should("not.exist");
+=======
+        cy.get("[data-testid=MedicationRequestTitle]").should("not.exist");
+>>>>>>> master
         verifyActiveFilter('1');
     });
 
@@ -151,7 +159,11 @@ describe("Filters", () => {
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
+<<<<<<< HEAD
         cy.get("[data-testid=medicationRequestTitle]").should("not.exist");
+=======
+        cy.get("[data-testid=MedicationRequestTitle]").should("not.exist");
+>>>>>>> master
         verifyActiveFilter('1');
     });
 
@@ -167,7 +179,11 @@ describe("Filters", () => {
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=laboratoryTitle]").should("be.visible");
         cy.get("[data-testid=medicationTitle]").should("not.exist");        
+<<<<<<< HEAD
         cy.get("[data-testid=medicationRequestTitle]").should("not.exist");
+=======
+        cy.get("[data-testid=MedicationRequestTitle]").should("not.exist");
+>>>>>>> master
         verifyActiveFilter('1');
     });
 
@@ -183,7 +199,11 @@ describe("Filters", () => {
         cy.get("[data-testid=immunizationTitle]").should("not.exist");
         cy.get("[data-testid=medicationTitle]").should("not.exist");
         cy.get("[data-testid=laboratoryTitle]").should("not.exist");
+<<<<<<< HEAD
         cy.get("[data-testid=medicationRequestTitle]").should("be.visible");
+=======
+        cy.get("[data-testid=MedicationRequestTitle]").should("be.visible");
+>>>>>>> master
         verifyActiveFilter('1');
     });
 

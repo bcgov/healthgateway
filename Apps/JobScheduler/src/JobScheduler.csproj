@@ -11,7 +11,11 @@
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.19" />
     <PackageReference Include="Hangfire.MaximumConcurrentExecutions" Version="1.1.0" />
     <PackageReference Include="Hangfire.Postgresql" Version="1.8.2" />
+<<<<<<< HEAD
     <PackageReference Include="mailkit" Version="2.11.1" />
+=======
+    <PackageReference Include="mailkit" Version="2.11.0" />
+>>>>>>> master
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
