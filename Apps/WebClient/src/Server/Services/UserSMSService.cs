@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Globalization;
+    using System.Text.RegularExpressions;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -33,6 +34,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         public const int MaxVerificationAttempts = 5;
         private const int VerificationExpiryDays = 5;
+        private readonly Regex validSMSRegex;
         private readonly ILogger logger;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
@@ -55,6 +57,8 @@ namespace HealthGateway.WebClient.Services
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.profileDelegate = profileDelegate;
             this.notificationSettingsService = notificationSettingsService;
+
+            this.validSMSRegex = new Regex("[^0-9]");
         }
 
         /// <inheritdoc />
@@ -100,7 +104,8 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc />
         public bool CreateUserSMS(string hdid, string sms)
         {
-            this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
+            this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
+            sms = this.SanitizeSMS(sms);
             string verificationCode = new Random().Next(0, 999999).ToString("D6", CultureInfo.InvariantCulture);
             this.AddVerificationSMS(hdid, sms, verificationCode);
             this.logger.LogDebug($"Finished updating user sms");
@@ -111,6 +116,7 @@ namespace HealthGateway.WebClient.Services
         public bool UpdateUserSMS(string hdid, string sms)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
+            sms = this.SanitizeSMS(sms);
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             userProfile.SMSNumber = null;
             this.profileDelegate.Update(userProfile);
@@ -134,6 +140,11 @@ namespace HealthGateway.WebClient.Services
 
             this.logger.LogDebug($"Finished updating user sms");
             return true;
+        }
+
+        private string SanitizeSMS(string smsNumber)
+        {
+            return this.validSMSRegex.Replace(smsNumber, string.Empty);
         }
 
         private void AddVerificationSMS(string hdid, string sms, string smsVerificationCode)
