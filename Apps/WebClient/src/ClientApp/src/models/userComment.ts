@@ -25,6 +25,8 @@ export interface UserComment {
 export const enum CommentEntryType {
     // The code represeting no entry type set.
     None = "NA",
+    // The code representing Special Authority Requests.
+    MedicationRequest = "SAR",
     // The code representing Medication.
     Medication = "Med",
     // The code representing Immunization.
@@ -38,6 +40,8 @@ export const enum CommentEntryType {
 export class EntryTypeMapper {
     public static toCommentEntryType(entryType: EntryType): CommentEntryType {
         switch (entryType) {
+            case EntryType.MedicationRequest:
+                return CommentEntryType.MedicationRequest;
             case EntryType.Medication:
                 return CommentEntryType.Medication;
             case EntryType.Immunization:
