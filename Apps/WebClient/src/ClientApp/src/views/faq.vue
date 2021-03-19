@@ -9,7 +9,7 @@
             </b-col>
         </b-row>
         <b-row class="m-1 fluid text-right">
-            <b-col> Last updated: <strong>2021-Mar-10</strong> </b-col>
+            <b-col> Last updated: <strong>2021-Mar-24</strong> </b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
@@ -23,7 +23,7 @@
                     block
                     variant="info"
                     class="text-left"
-                    >Q: What health information is available in the Health
+                    >What health information is available in the Health
                     Gateway?</b-button
                 >
             </b-card-header>
@@ -32,7 +32,7 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                A: The Health Gateway provides access to the
+                                The Health Gateway provides access to the
                                 following health information from our provincial
                                 health repositories:
                             </p>
@@ -55,7 +55,7 @@
                                         immunization card, which you can which
                                         you can download and print as proof of
                                         your immunization. Immunization records
-                                        for vaccines vaccines provided by family
+                                        for vaccines provided by family
                                         doctors or travel clinics are currently
                                         unavailable.
                                     </div>
@@ -68,10 +68,16 @@
                                         children 11 years and younger.
                                     </div>
                                 </li>
+                                <li>
+                                    <strong>Health Visits</strong>
+                                    <div>
+                                        View the last seven years of your health visits, consultations and procedures billed to the BC Medical Services Plan. 
+                                    </div>
+                                </li>
                             </ul>
                             <p>
-                                Future data sets will include hospital and
-                                outpatient visits, laboratory test results, and
+                                Future data sets will include health authority visits,
+                                laboratory test results, and
                                 diagnostic imaging reports.
                             </p>
                         </div></b-card-text
@@ -79,7 +85,7 @@
                 </b-card-body>
             </b-collapse>
         </b-card>
-        <b-card no-body class="mb-1 border-0">
+                <b-card no-body class="mb-1 border-0">
             <b-card-header
                 header-tag="header"
                 class="p-1 faq-header"
@@ -91,8 +97,7 @@
                     block
                     variant="info"
                     class="text-left"
-                    >Q: Do I use the Health Gateway for COVID-19 immunization
-                    registration and booking?</b-button
+                    >Why does my health visit record show a different practitioner or clinic address than the one I went to?</b-button
                 >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer2" role="tabpanel">
@@ -100,17 +105,9 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                A: No. The Health Gateway provides a digital
-                                record of your COVID-19 immunization once you
-                                have received it, but it is not used for
-                                registration or booking. Visit the
-                                <a
-                                    href="https://www2.gov.bc.ca/gov/content/safety/emergency-preparedness-response-recovery/covid-19-provincial-support/vaccines"
-                                    target="blank_"
-                                    >COVID-19 Immunization Plan</a
-                                >
-                                page for more information on the COVID-19
-                                immunization registration and booking process.
+                                The Health Gateway shows your health visits billed to the BC Medical Services Plan (MSP). 
+                                For administrative purposes, in some cases the visit may have been billed to a different practitioner 
+                                or the address may be the financial office of a healthcare facility.
                             </p>
                         </div></b-card-text
                     >
@@ -129,17 +126,54 @@
                     block
                     variant="info"
                     class="text-left"
-                    >Q: I see immunizations that I received in the pharmacy,
-                    like flu shots, but I don’t see immunizations from my family
-                    doctor or travel clinic. Why is that?
-                </b-button>
+                    >Do I use the Health Gateway for COVID-19 immunization
+                    registration and booking?</b-button
+                >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer3" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                A: The Health Gateway provides information from
+                                No. Visit the
+                                <a
+                                    href="https://www2.gov.bc.ca/gov/content/safety/emergency-preparedness-response-recovery/covid-19-provincial-support/vaccines"
+                                    target="blank_"
+                                    >COVID-19 Immunization Plan</a
+                                >
+                                page for more information on the COVID-19
+                                immunization registration and booking process. The Health Gateway provides a digital
+                                record of your COVID-19 immunization once you
+                                have received it.
+                            </p>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse>
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer4
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
+                    >I see immunizations that I received in the pharmacy,
+                    like flu shots, but I don’t see immunizations from my family
+                    doctor or travel clinic. Why is that?
+                </b-button>
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer4" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
+                                The Health Gateway provides information from
                                 the Provincial Immunization Registry, which
                                 contains most immunizations administered by
                                 public health and pharmacies in BC. However,
@@ -163,21 +197,21 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer4
+                    v-b-toggle.accordion-faqAnswer5
                     data-testid="questionBtn"
                     block
                     variant="info"
                     class="text-left"
-                    >Q: What is the difference between the Health Gateway and
+                    >What is the difference between the Health Gateway and
                     other portals, such as My Health?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer4" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer5" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                A: The Health Gateway is a provincial service
+                                The Health Gateway is a provincial service
                                 which provides British Columbians with access to
                                 information, regardless of where they received
                                 care or services.
@@ -201,22 +235,22 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer5
+                    v-b-toggle.accordion-faqAnswer6
                     data-testid="questionBtn"
                     block
                     variant="info"
                     class="text-left"
-                    >Q: I manage my elderly parent’s health care. Can I access
+                    >I manage my elderly parent’s health care. Can I access
                     their information through the Health Gateway?
                 </b-button>
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer5" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer6" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                The Health Gateway currently provides guardians
-                                with access to their children’s COVID-19 test
+                                Currently, only parents or guardians of children 11 years or younger can 
+                                access their children’s COVID-19 test
                                 results. We are working to enable family and
                                 caregiver access in the future.
                             </p>
@@ -232,15 +266,15 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer6
+                    v-b-toggle.accordion-faqAnswer7
                     data-testid="questionBtn"
                     block
                     variant="info"
                     class="text-left"
-                    >Q: How frequently do you add new features?</b-button
+                    >How frequently do you add new features?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer6" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer7" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -249,7 +283,7 @@
                                 features and information. We prioritize our
                                 enhancements based on your feedback, and we
                                 encourage you to provide suggestions by
-                                e-mailing HealthGateway@gov.bc.ca
+                                e-mailing <a href="HealthGateway@gov.bc.ca">HealthGateway@gov.bc.ca</a>. 
                             </p>
                         </div></b-card-text
                     >
