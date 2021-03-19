@@ -26,7 +26,7 @@ export default class MedicationHistoryReportComponent extends Vue {
     @Getter("user", { namespace: "user" })
     private user!: User;
 
-    @Action("retrieve", { namespace: "medication" })
+    @Action("retrieveMedicationStatements", { namespace: "medication" })
     private retrieveMedications!: (params: { hdid: string }) => Promise<void>;
 
     @Getter("isLoading", { namespace: "medication" })
@@ -104,7 +104,7 @@ export default class MedicationHistoryReportComponent extends Vue {
     }
 
     private formatDate(date: string): string {
-        return new DateWrapper(date).format();
+        return DateWrapper.format(date);
     }
 
     public async generatePdf(): Promise<void> {

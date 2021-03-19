@@ -43,7 +43,6 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
-    private notFoundText = "Not Found";
     private isPreview = true;
 
     @Watch("isLoading")
