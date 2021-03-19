@@ -17,7 +17,6 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// The User Email service.
@@ -29,25 +28,23 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
-        /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>Returns a request result with appropriate result status..</returns>
-        PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey, string bearerToken);
+        PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey);
 
         /// <summary>
-        /// Retrieves the last invite email.
+        /// Creates the a non-validated email.
         /// </summary>
-        /// <param name="hdid">The requested user hdid.</param>
-        /// <returns>returns the last email invite if found.</returns>
-        MessagingVerification? RetrieveLastInvite(string hdid);
+        /// <param name="hdid">The user hdid.</param>
+        /// <param name="emailAddress">Email address to be set for the user.</param>
+        /// <returns>returns true if the email was sucessfully created.</returns>
+        bool CreateUserEmail(string hdid, string emailAddress);
 
         /// <summary>
         /// Updates the user email.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
-        /// <param name="email">Email to be set for the user.</param>
-        /// <param name="hostUri">The host uri for referal purposes.</param>
-        /// <param name="bearerToken">The security token representing the authenticated user.</param>
-        /// <returns>returns true if the email invite was sucessfully created.</returns>
-        bool UpdateUserEmail(string hdid, string email, Uri hostUri, string bearerToken);
+        /// <param name="emailAddress">Email address to be set for the user.</param>
+        /// <returns>returns true if the email was sucessfully created.</returns>
+        bool UpdateUserEmail(string hdid, string emailAddress);
     }
 }

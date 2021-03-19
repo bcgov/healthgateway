@@ -16,6 +16,8 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
@@ -23,18 +25,24 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     /// <inheritdoc />
     public class UserEmailService : IUserEmailService
     {
-        private const int MaxVerificationAttempts = 5;
+        private readonly string webClientConfigSection = "WebClient";
+        private readonly string emailConfigExpirySecondsKey = "EmailVerificationExpirySeconds";
+        private readonly int emailVerificationExpirySeconds;
+        private readonly int maxVerificationAttempts = 5;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly IEmailQueueService emailQueueService;
         private readonly INotificationSettingsService notificationSettingsService;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserEmailService"/> class.
@@ -44,65 +52,75 @@ namespace HealthGateway.WebClient.Services
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
+        /// <param name="configuration">Configuration settings.</param>
+        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public UserEmailService(
             ILogger<UserEmailService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IUserProfileDelegate profileDelegate,
             IEmailQueueService emailQueueService,
-            INotificationSettingsService notificationSettingsService)
+            INotificationSettingsService notificationSettingsService,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.profileDelegate = profileDelegate;
             this.emailQueueService = emailQueueService;
             this.notificationSettingsService = notificationSettingsService;
+            this.emailVerificationExpirySeconds = configuration.GetSection(this.webClientConfigSection).GetValue<int>(this.emailConfigExpirySecondsKey, 5);
+
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc />
-        public PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey, string bearerToken)
+        public PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey)
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
-            PrimitiveRequestResult<bool> retVal = new PrimitiveRequestResult<bool>();
-            MessagingVerification? emailInvite = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
+            PrimitiveRequestResult<bool> retVal = new ();
 
-            if (emailInvite == null ||
-                emailInvite.HdId != hdid ||
-                emailInvite.Validated == true ||
-                emailInvite.Deleted == true)
+            MessagingVerification? emailVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
+            if (emailVerification == null ||
+                emailVerification.HdId != hdid ||
+                emailVerification.Validated == true ||
+                emailVerification.Deleted == true)
             {
                 // Invalid Verification Attempt
-                emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
-                if (emailInvite != null &&
-                    !emailInvite.Validated)
+                emailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
+                if (emailVerification != null &&
+                    !emailVerification.Validated)
                 {
-                    emailInvite.VerificationAttempts++;
-                    this.messageVerificationDelegate.Update(emailInvite);
+                    emailVerification.VerificationAttempts++;
+                    this.messageVerificationDelegate.Update(emailVerification);
                 }
 
-                retVal.ResultStatus = ResultType.Error;
-                retVal.ResultError = new RequestResultError()
+                return new PrimitiveRequestResult<bool>()
                 {
-                    ResultMessage = "Invalid Email Invite",
-                    ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Invalid Email Verification",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
                 };
             }
-            else if (emailInvite.VerificationAttempts >= MaxVerificationAttempts ||
-                     emailInvite.ExpireDate < DateTime.UtcNow)
+            else if (emailVerification.VerificationAttempts >= this.maxVerificationAttempts ||
+                     emailVerification.ExpireDate < DateTime.UtcNow)
             {
                 // Verification Expired
                 retVal.ResultStatus = ResultType.ActionRequired;
-                retVal.ResultError = ErrorTranslator.ActionRequired("Email Invite Expired", ActionType.Expired);
+                retVal.ResultError = ErrorTranslator.ActionRequired("Email Verification Expired", ActionType.Expired);
             }
             else
             {
-                emailInvite.Validated = true;
-                this.messageVerificationDelegate.Update(emailInvite);
+                emailVerification.Validated = true;
+                this.messageVerificationDelegate.Update(emailVerification);
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.Email = emailInvite.Email!.To; // Gets the user email from the email sent.
+                userProfile.Email = emailVerification.Email!.To; // Gets the user email from the email sent.
                 this.profileDelegate.Update(userProfile);
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile);
+                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
 
                 retVal.ResultStatus = ResultType.Success;
             }
@@ -112,60 +130,86 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public MessagingVerification? RetrieveLastInvite(string hdid)
+        public bool CreateUserEmail(string hdid, string emailAddress)
         {
-            this.logger.LogTrace($"Retrieving last invite for {hdid}");
-            MessagingVerification? emailInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
-            this.logger.LogDebug($"Finished retrieving email: {JsonConvert.SerializeObject(emailInvite)}");
-            return emailInvite;
+            this.logger.LogTrace($"Creating user email...");
+            this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid());
+            this.logger.LogDebug($"Finished creating user email");
+            return true;
         }
 
         /// <inheritdoc />
-        public bool UpdateUserEmail(string hdid, string email, Uri hostUri, string bearerToken)
+        public bool UpdateUserEmail(string hdid, string emailAddress)
         {
             this.logger.LogTrace($"Updating user email...");
-            UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-            MessagingVerification? emailInvite = this.RetrieveLastInvite(hdid);
 
+            UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             this.logger.LogInformation($"Removing email from user ${hdid}");
-            userProfile.Email = null;
             this.profileDelegate.Update(userProfile);
+            userProfile.Email = null;
 
             // Update the notification settings
-            this.UpdateNotificationSettings(userProfile);
-            if (emailInvite != null)
+            this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
+
+            MessagingVerification? lastEmailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
+            if (lastEmailVerification != null)
             {
                 this.logger.LogInformation($"Expiring old email validation for user ${hdid}");
-                emailInvite.ExpireDate = DateTime.UtcNow;
-                emailInvite.Deleted = string.IsNullOrEmpty(email);
-                this.messageVerificationDelegate.Update(emailInvite);
-            }
-
-            Guid inviteKey = Guid.NewGuid();
-            if (!string.IsNullOrEmpty(email))
-            {
-                this.logger.LogInformation($"Sending new email invite for user ${hdid}");
-
-                if (emailInvite != null
-                    && emailInvite.Email != null
-                    && !string.IsNullOrEmpty(emailInvite.Email.To)
-                    && email.Equals(emailInvite.Email.To, StringComparison.OrdinalIgnoreCase))
+                bool isDeleted = string.IsNullOrEmpty(emailAddress);
+                this.messageVerificationDelegate.Expire(lastEmailVerification, isDeleted);
+                if (!isDeleted)
                 {
-                    inviteKey = emailInvite.InviteKey;
-                }
+                    this.logger.LogInformation($"Sending new email verification for user ${hdid}");
 
-                this.emailQueueService.QueueNewInviteEmail(hdid, email, hostUri, inviteKey);
+                    if (lastEmailVerification.Email != null
+                        && !string.IsNullOrEmpty(lastEmailVerification.Email.To)
+                        && emailAddress.Equals(lastEmailVerification.Email.To, StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.AddVerificationEmail(hdid, emailAddress, lastEmailVerification.InviteKey);
+                    }
+                    else
+                    {
+                        this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid());
+                    }
+                }
+            }
+            else
+            {
+                this.AddVerificationEmail(hdid, emailAddress, Guid.NewGuid());
             }
 
             this.logger.LogDebug($"Finished updating user email");
             return true;
         }
 
-        private void UpdateNotificationSettings(UserProfile userProfile)
+        private void AddVerificationEmail(string hdid, string toEmail, Guid inviteKey)
         {
-            // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber);
-            this.notificationSettingsService.QueueNotificationSettings(request);
+            float verificationExpiryHours = this.emailVerificationExpirySeconds / 3600;
+
+            string activationHost = this.httpContextAccessor.HttpContext!.Request
+                                             .GetTypedHeaders()
+                                             .Referer
+                                             .GetLeftPart(UriPartial.Authority);
+            string hostUrl = activationHost.ToString();
+
+            Dictionary<string, string> keyValues = new ()
+            {
+                [EmailTemplateVariable.InviteKey] = inviteKey.ToString(),
+                [EmailTemplateVariable.ActivationHost] = hostUrl,
+                [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
+            };
+
+            MessagingVerification messageVerification = new ()
+            {
+                InviteKey = inviteKey,
+                HdId = hdid,
+                ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds),
+                Email = this.emailQueueService.ProcessTemplate(toEmail, EmailTemplateName.RegistrationTemplate, keyValues),
+            };
+
+            this.messageVerificationDelegate.Insert(messageVerification);
+
+            this.emailQueueService.QueueNewEmail(messageVerification.Email);
         }
     }
 }

@@ -4,10 +4,8 @@ import { Dictionary } from "@/models/baseTypes";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
-import UserEmailInvite from "@/models/userEmailInvite";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
-import UserSMSInvite from "@/models/userSMSInvite";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import {
@@ -198,38 +196,6 @@ export class RestUserProfileService implements IUserProfileService {
                 .catch((err) => {
                     this.logger.error(`validateSMS error: ${err}`);
                     return resolve(false);
-                });
-        });
-    }
-
-    public getLatestEmailInvite(hdid: string): Promise<UserEmailInvite> {
-        return new Promise((resolve) => {
-            this.http
-                .get<UserEmailInvite>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/email/invite/`
-                )
-                .then((userEmailInvite) => {
-                    return resolve(userEmailInvite);
-                })
-                .catch((err) => {
-                    this.logger.error(`getLatestEmailInvite error: ${err}`);
-                    return resolve(err);
-                });
-        });
-    }
-
-    public getLatestSMSInvite(hdid: string): Promise<UserSMSInvite | null> {
-        return new Promise((resolve) => {
-            this.http
-                .get<UserSMSInvite>(
-                    `${this.USER_PROFILE_BASE_URI}/${hdid}/sms/invite/`
-                )
-                .then((userSMSInvite) => {
-                    return resolve(userSMSInvite);
-                })
-                .catch((err) => {
-                    this.logger.error(`getLatestSMSInvite error: ${err}`);
-                    return resolve(err);
                 });
         });
     }

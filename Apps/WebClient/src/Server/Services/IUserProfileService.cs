@@ -38,30 +38,26 @@ namespace HealthGateway.WebClient.Services
         /// Saves the user profile to the database.
         /// </summary>
         /// <param name="createProfileRequest">The request to create a user profile model.</param>
-        /// <param name="hostUri">The host of the email validation endpoint.</param>
-        /// <param name="bearerToken">The access token of the authenticated user.</param>
         /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
         /// <returns>The wrapped user profile.</returns>
-        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, Uri hostUri, string bearerToken, DateTime jwtAuthTime);
+        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime);
 
         /// <summary>
         /// Closed the user profile.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="userId">The user id.</param>
-        /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
-        RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId, string hostUrl);
+        RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId);
 
         /// <summary>
         /// Recovers the user profile.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
-        /// <param name="hostUrl">The host of the email validation endpoint.</param>
         /// <returns>The wrapped user profile.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:Uri parameters should not be strings", Justification = "Team Decision")]
-        RequestResult<UserProfileModel> RecoverUserProfile(string hdid, string hostUrl);
+        RequestResult<UserProfileModel> RecoverUserProfile(string hdid);
 
         /// <summary>
         /// Gets the most recent active terms of service.

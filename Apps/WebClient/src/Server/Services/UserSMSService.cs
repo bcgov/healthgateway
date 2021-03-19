@@ -16,6 +16,8 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Globalization;
+    using System.Text.RegularExpressions;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -32,6 +34,7 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         public const int MaxVerificationAttempts = 5;
         private const int VerificationExpiryDays = 5;
+        private readonly Regex validSMSRegex;
         private readonly ILogger logger;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
@@ -54,97 +57,109 @@ namespace HealthGateway.WebClient.Services
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.profileDelegate = profileDelegate;
             this.notificationSettingsService = notificationSettingsService;
+
+            this.validSMSRegex = new Regex("[^0-9]");
         }
 
         /// <inheritdoc />
-        public bool ValidateSMS(string hdid, string validationCode, string bearerToken)
+        public bool ValidateSMS(string hdid, string validationCode)
         {
             this.logger.LogTrace($"Validating sms... {validationCode}");
-            bool retVal = false;
-            MessagingVerification? smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            bool isValid = false;
+            MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
 
-            if (smsInvite != null &&
-                smsInvite.HdId == hdid &&
-                !smsInvite.Validated &&
-                !smsInvite.Deleted &&
-                smsInvite.VerificationAttempts < MaxVerificationAttempts &&
-                smsInvite.SMSValidationCode == validationCode &&
-                smsInvite.ExpireDate >= DateTime.UtcNow)
+            if (smsVerification != null &&
+                smsVerification.HdId == hdid &&
+                !smsVerification.Validated &&
+                !smsVerification.Deleted &&
+                smsVerification.VerificationAttempts < MaxVerificationAttempts &&
+                smsVerification.SMSValidationCode == validationCode &&
+                smsVerification.ExpireDate >= DateTime.UtcNow)
             {
-                smsInvite.Validated = true;
-                this.messageVerificationDelegate.Update(smsInvite);
+                smsVerification.Validated = true;
+                this.messageVerificationDelegate.Update(smsVerification);
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.SMSNumber = smsInvite.SMSNumber; // Gets the user sms number from the message sent.
+                userProfile.SMSNumber = smsVerification.SMSNumber; // Gets the user sms number from the message sent.
                 this.profileDelegate.Update(userProfile);
-                retVal = true;
+                isValid = true;
 
                 // Update the notification settings
-                this.UpdateNotificationSettings(userProfile, userProfile.Email, userProfile.SMSNumber);
+                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
             }
             else
             {
-                smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
-                if (smsInvite != null &&
-                    !smsInvite.Validated)
+                smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+                if (smsVerification != null &&
+                    !smsVerification.Validated)
                 {
-                    smsInvite.VerificationAttempts++;
-                    this.messageVerificationDelegate.Update(smsInvite);
+                    smsVerification.VerificationAttempts++;
+                    this.messageVerificationDelegate.Update(smsVerification);
                 }
             }
 
-            this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(retVal)}");
-            return retVal;
+            this.logger.LogDebug($"Finished validating sms: {JsonConvert.SerializeObject(isValid)}");
+            return isValid;
         }
 
         /// <inheritdoc />
-        public bool UpdateUserSMS(string hdid, string sms, Uri hostUri, string bearerToken)
+        public bool CreateUserSMS(string hdid, string sms)
+        {
+            this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
+            sms = this.SanitizeSMS(sms);
+            string verificationCode = new Random().Next(0, 999999).ToString("D6", CultureInfo.InvariantCulture);
+            this.AddVerificationSMS(hdid, sms, verificationCode);
+            this.logger.LogDebug($"Finished updating user sms");
+            return true;
+        }
+
+        /// <inheritdoc />
+        public bool UpdateUserSMS(string hdid, string sms)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
+            sms = this.SanitizeSMS(sms);
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             userProfile.SMSNumber = null;
             this.profileDelegate.Update(userProfile);
-            MessagingVerification? smsInvite = this.RetrieveLastInvite(hdid);
 
             // Update the notification settings
-            NotificationSettingsRequest notificationRequest = this.UpdateNotificationSettings(userProfile, userProfile.Email, sms);
+            NotificationSettingsRequest queuedNotification = this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, sms));
 
-            if (smsInvite != null)
+            bool isDeleted = string.IsNullOrEmpty(sms);
+            MessagingVerification? lastSMSVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
+            if (lastSMSVerification != null)
             {
                 this.logger.LogInformation($"Expiring old sms validation for user ${hdid}");
-                smsInvite.ExpireDate = DateTime.UtcNow;
-                smsInvite.Deleted = string.IsNullOrEmpty(sms);
-                this.messageVerificationDelegate.Update(smsInvite);
+                this.messageVerificationDelegate.Expire(lastSMSVerification, isDeleted);
             }
 
-            if (!string.IsNullOrEmpty(sms))
+            if (!isDeleted)
             {
-                this.logger.LogInformation($"Sending new sms invite for user ${hdid}");
-                MessagingVerification messagingVerification = new MessagingVerification();
-                messagingVerification.HdId = hdid;
-                messagingVerification.SMSNumber = sms;
-                messagingVerification.SMSValidationCode = notificationRequest.SMSVerificationCode;
-                messagingVerification.VerificationType = MessagingVerificationType.SMS;
-                messagingVerification.ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays);
-                this.messageVerificationDelegate.Insert(messagingVerification);
+                this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
+                this.AddVerificationSMS(hdid, sms, queuedNotification.SMSVerificationCode);
             }
 
             this.logger.LogDebug($"Finished updating user sms");
             return true;
         }
 
-        /// <inheritdoc />
-        public MessagingVerification? RetrieveLastInvite(string hdid)
+        private string SanitizeSMS(string smsNumber)
         {
-            MessagingVerification? smsInvite = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
-            return smsInvite;
+            return this.validSMSRegex.Replace(smsNumber, string.Empty);
         }
 
-        private NotificationSettingsRequest UpdateNotificationSettings(UserProfile userProfile, string? email, string? smsNumber)
+        private void AddVerificationSMS(string hdid, string sms, string smsVerificationCode)
         {
-            // Update the notification settings
-            NotificationSettingsRequest request = new NotificationSettingsRequest(userProfile, email, smsNumber);
-            this.notificationSettingsService.QueueNotificationSettings(request);
-            return request;
+            this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
+            MessagingVerification messagingVerification = new ()
+            {
+                HdId = hdid,
+                SMSNumber = sms,
+                SMSValidationCode = smsVerificationCode,
+                VerificationType = MessagingVerificationType.SMS,
+                ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays),
+            };
+
+            this.messageVerificationDelegate.Insert(messagingVerification);
         }
     }
 }

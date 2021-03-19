@@ -68,7 +68,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public MessagingVerification? GetLastByInviteKey(Guid inviteKey)
         {
-            this.logger.LogTrace($"Getting email invite from DB... {inviteKey}");
+            this.logger.LogTrace($"Getting email message verification from DB... {inviteKey}");
             MessagingVerification? retVal = this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
@@ -76,21 +76,30 @@ namespace HealthGateway.Database.Delegates
                 .OrderByDescending(mv => mv.CreatedDateTime)
                 .FirstOrDefault();
 
-            this.logger.LogDebug($"Finished getting email invite from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug($"Finished getting email message verification from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
         }
 
         /// <inheritdoc />
         public IEnumerable<MessagingVerification> GetAllEmail()
         {
-            this.logger.LogTrace($"Getting all email invites from DB...");
+            this.logger.LogTrace($"Getting all email message verifications from DB...");
             IEnumerable<MessagingVerification> retVal = this.dbContext
                 .MessagingVerification
                 .Where(p => p.VerificationType == MessagingVerificationType.Email)
                 .ToList();
 
-            this.logger.LogDebug($"Finished getting all email invites from DB. {JsonSerializer.Serialize(retVal)}");
+            this.logger.LogDebug($"Finished getting all email message verifications from DB. {JsonSerializer.Serialize(retVal)}");
             return retVal;
+        }
+
+        /// <inheritdoc />
+        public void Update(MessagingVerification messageVerification)
+        {
+            this.logger.LogTrace($"Updating email message verification in DB... {JsonSerializer.Serialize(messageVerification)}");
+            this.dbContext.Update<MessagingVerification>(messageVerification);
+            this.dbContext.SaveChanges();
+            this.logger.LogDebug($"Finished updating email message verification in DB. {messageVerification.Id}");
         }
 
         /// <inheritdoc />
@@ -114,12 +123,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public void Update(MessagingVerification messageVerification)
+        public void Expire(MessagingVerification messageVerification, bool markDeleted)
         {
-            this.logger.LogTrace($"Updating email invite in DB... {JsonSerializer.Serialize(messageVerification)}");
-            this.dbContext.Update<MessagingVerification>(messageVerification);
-            this.dbContext.SaveChanges();
-            this.logger.LogDebug($"Finished updating email invite in DB. {messageVerification.Id}");
+            messageVerification.ExpireDate = DateTime.UtcNow;
+            messageVerification.Deleted = markDeleted;
+            this.Update(messageVerification);
+
+            this.logger.LogDebug("Finished Expiring messaging verification from DB.");
         }
     }
 }
