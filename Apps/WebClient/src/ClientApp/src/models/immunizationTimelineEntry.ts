@@ -27,7 +27,9 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
 
     public containsText(keyword: string): boolean {
         let text =
-            (this.immunization.name || "") + (this.immunization.location || "");
+            (this.immunization.name || "") +
+            (this.immunization.agentsSercheableText || "") +
+            (this.immunization.providerOrClinic || "");
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
     }
@@ -79,6 +81,8 @@ class ImmunizationViewModel {
     public forecast?: ForecastViewModel;
     public targetedDisease: string;
 
+    public agentsSercheableText: string;
+
     constructor(model: ImmunizationEvent) {
         this.id = model.id;
         this.isSelfReported = model.isSelfReported;
@@ -97,5 +101,14 @@ class ImmunizationViewModel {
         }
 
         this.targetedDisease = model.targetedDisease;
+
+        this.agentsSercheableText = this.immunizationAgents.reduce(
+            (accumulator: string, current: ImmunizationAgentViewModel) =>
+                (accumulator +=
+                    (current.lotNumber || "") +
+                    (current.name || "") +
+                    (current.productName || "")),
+            ""
+        );
     }
 }
