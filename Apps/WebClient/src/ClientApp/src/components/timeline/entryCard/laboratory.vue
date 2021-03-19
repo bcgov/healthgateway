@@ -75,10 +75,13 @@ export default class LaboratoryTimelineComponent extends Vue {
                     "YYYY_MM_DD-HH_mm"
                 );
                 let report: LaboratoryReport = result.resourcePayload;
-                saveAs(
-                    `data:${report.mediaType};${report.encoding},${report.data}`,
-                    `COVID_Result_${dateString}.pdf`
-                );
+                fetch(
+                    `data:${report.mediaType};${report.encoding},${report.data}`
+                )
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        saveAs(blob, `COVID_Result_${dateString}.pdf`);
+                    });
             })
             .catch((err) => {
                 this.logger.error(err);
