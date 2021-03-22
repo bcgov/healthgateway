@@ -125,9 +125,21 @@ export const actions: ActionTree<AuthState, RootState> = {
                 authService.clearStaleState();
             });
     },
-    signOutOidc(context): void {
-        authService.logout().then(() => {
-            context.dispatch("clearStorage");
+    signOutOidc(): void {
+        authService.logout();
+    },
+    signOutOidcCallback(context): Promise<string> {
+        return new Promise((resolve, reject) => {
+            authService
+                .signoutRedirectCallback()
+                .then((signoutResponse) => {
+                    console.log(signoutResponse);
+                    context.dispatch("clearStorage");
+                })
+                .catch((err) => {
+                    context.commit("setOidcError", err);
+                    reject(err);
+                });
         });
     },
     clearStorage(context): void {
