@@ -154,13 +154,36 @@ namespace HealthGateway.Common.Delegates
             {
                 this.logger.LogDebug($"Parsing patient response... {JsonSerializer.Serialize(reply)}");
 
-                // Verify that the reply contains a result
                 string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
+                if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
+                {
+                    // BCHCIM.GD.2.0018 Not found
+                    this.logger.LogWarning($"Client Registry did not find any records. Returned message code: {responseCode}");
+                    this.logger.LogDebug($"Finished getting patient.");
+                    return new RequestResult<PatientModel>()
+                    {
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = new RequestResultError() { ResultMessage = "Client Registry did not find any records", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                    };
+                }
+
+                if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
+                {
+                    // Returned BCHCIM.GD.2.0006 Invalid PHN
+                    this.logger.LogWarning($"Personal Health Number is invalid. Returned message code: {responseCode}");
+                    this.logger.LogDebug($"Finished getting patient.");
+                    return new RequestResult<PatientModel>()
+                    {
+                        ResultStatus = ResultType.ActionRequired,
+                        ResultError = new RequestResultError() { ResultMessage = "Personal Health Number is invalid", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                    };
+                }
+
+                // Verify that the reply contains a result
                 if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
                 {
-                    PatientModel emptyPatient = new PatientModel();
                     this.logger.LogWarning($"Client Registry did not return a person. Returned message code: {responseCode}");
-                    this.logger.LogDebug($"Finished getting patient. {JsonSerializer.Serialize(emptyPatient)}");
+                    this.logger.LogDebug($"Finished getting patient.");
                     return new RequestResult<PatientModel>()
                     {
                         ResultStatus = ResultType.Error,
