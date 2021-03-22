@@ -132,8 +132,7 @@ export const actions: ActionTree<AuthState, RootState> = {
         return new Promise((resolve, reject) => {
             authService
                 .signoutRedirectCallback()
-                .then((signoutResponse) => {
-                    console.log(signoutResponse);
+                .then(() => {
                     context.dispatch("clearStorage");
                 })
                 .catch((err) => {
