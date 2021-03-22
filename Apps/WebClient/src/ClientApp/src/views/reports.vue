@@ -74,7 +74,10 @@ export default class ReportsView extends Vue {
             this.reportTypeOptions.push({ value: "MED", text: "Medications" });
         }
         if (this.config.modules["Encounter"]) {
-            this.reportTypeOptions.push({ value: "MSP", text: "MSP Visits" });
+            this.reportTypeOptions.push({
+                value: "MSP",
+                text: "Health Visits",
+            });
         }
         if (this.config.modules["Laboratory"]) {
             this.reportTypeOptions.push({
