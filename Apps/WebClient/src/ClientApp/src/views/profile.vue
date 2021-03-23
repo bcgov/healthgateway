@@ -559,6 +559,7 @@ export default class ProfileView extends Vue {
                                             </b-form-invalid-feedback>
                                             <b-form-invalid-feedback
                                                 :state="$v.email.newEmail"
+                                                data-testid="emailInvalidNewEqualsOld"
                                             >
                                                 New email must be different from
                                                 the previous one
@@ -573,7 +574,7 @@ export default class ProfileView extends Vue {
                                                 </span>
                                                 <span
                                                     v-if="emailVerified"
-                                                    id="emailStatusVerified"
+                                                    data-testid="emailStatusVerified"
                                                     class="text-success"
                                                     >Verified</span
                                                 >
@@ -582,13 +583,13 @@ export default class ProfileView extends Vue {
                                                         email == null ||
                                                         email === ''
                                                     "
-                                                    id="emailStatusOptedOut"
+                                                    data-testid="emailStatusOptedOut"
                                                     class="text-warning"
                                                     >Opted Out</span
                                                 >
                                                 <span
                                                     v-else
-                                                    id="emailStatusNotVerified"
+                                                    data-testid="emailStatusNotVerified"
                                                     class="text-danger"
                                                     >Not Verified</span
                                                 >
@@ -596,7 +597,11 @@ export default class ProfileView extends Vue {
                                         </b-form-group>
                                     </b-col></b-row
                                 >
-                                <b-row v-if="!email && tempEmail" class="mb-3">
+                                <b-row
+                                    v-if="!email && tempEmail"
+                                    class="mb-3"
+                                    data-testid="emailOptOutMessage"
+                                >
                                     <b-col
                                         class="font-weight-bold text-primary text-center"
                                     >
@@ -710,6 +715,7 @@ export default class ProfileView extends Vue {
                                                 Valid SMS number is required
                                             </b-form-invalid-feedback>
                                             <b-form-invalid-feedback
+                                                data-testid="smsInvalidNewEqualsOld"
                                                 :state="
                                                     $v.smsNumber.newSMSNumber
                                                 "
@@ -727,7 +733,7 @@ export default class ProfileView extends Vue {
                                                 </span>
                                                 <span
                                                     v-if="smsVerified"
-                                                    id="smsStatusVerified"
+                                                    data-testid="smsStatusVerified"
                                                     class="text-success"
                                                     >Verified</span
                                                 >
@@ -736,13 +742,13 @@ export default class ProfileView extends Vue {
                                                         smsNumber == null ||
                                                         smsNumber === ''
                                                     "
-                                                    id="smsStatusOptedOut"
+                                                    data-testid="smsStatusOptedOut"
                                                     class="text-warning"
                                                     >Opted Out</span
                                                 >
                                                 <span
                                                     v-else
-                                                    id="smsStatusNotVerified"
+                                                    data-testid="smsStatusNotVerified"
                                                     class="text-danger"
                                                     >Not Verified</span
                                                 >
@@ -752,6 +758,7 @@ export default class ProfileView extends Vue {
                                 </b-row>
                                 <b-row
                                     v-if="!smsNumber && tempSMS"
+                                    data-testid="smsOptOutMessage"
                                     class="mb-3"
                                 >
                                     <b-col
