@@ -126,10 +126,15 @@ describe("Filters", () => {
     it("Filter Immunization By Text", () => {
         cy.get("[data-testid=filterTextInput]").type("COVID");
         cy.get("[data-testid=immunizationTitle]").should("be.visible");
+        cy.get("[data-testid=filterTextInput]").clear();
+        
         cy.get("[data-testid=filterTextInput]").type("EK4241");
         cy.get("[data-testid=immunizationTitle]").should("be.visible");
+        cy.get("[data-testid=filterTextInput]").clear();
+
         cy.get("[data-testid=filterTextInput]").type("StubLastName");
         cy.get("[data-testid=immunizationTitle]").should("be.visible");
+        cy.get("[data-testid=filterTextInput]").clear();
     });
 
     it("Filter Medication", () => {
