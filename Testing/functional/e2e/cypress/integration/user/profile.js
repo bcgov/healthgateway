@@ -6,42 +6,70 @@ describe('User Profile', () => {
         cy.enableModules("Medication");
         cy.login(Cypress.env('keycloak.username'),
             Cypress.env('keycloak.password'),
-            AuthMethod.KeyCloak);
-        cy.checkTimelineHasLoaded();
+            AuthMethod.KeyCloak, "/profile");
     })
 
-    it('Validate email fields', () => {
-        cy.get('[data-testid=headerDropdownBtn]').click()
-        cy.get('[data-testid=profileBtn]').click()
+    it('Edit email address', () => {
         cy.get('[data-testid=editEmailBtn]').click()
-        let emailInput = cy.get('[data-testid=emailInput]')
-        emailInput.clear()
-        emailInput.type(emailAddress)
-        let emailConfirmationInput = cy.get('[data-testid=emailConfirmationInput]')
-        emailConfirmationInput.clear()
-        emailConfirmationInput.type('diff' + emailAddress)
-        cy.contains('.invalid-feedback', ' Emails must match ')
-    })
-
-    it('Edit and Save email address', () => {
-        let emailConfirmationInput = cy.get('[data-testid=emailConfirmationInput]')
-        emailConfirmationInput.clear()
-        emailConfirmationInput.type(emailAddress)
+        cy.get('[data-testid=emailInput]').type(Cypress.env('emailAddress'))
         cy.get('[data-testid=editEmailSaveBtn]').click()
+        cy.get('[data-testid=emailStatusNotVerified]')
+            .should('be.visible')
+        cy.get('[data-testid=resendEmailBtn]')
+            .should('be.visible')
+    });
+
+    it('Invalid email address', () => {
+        cy.get('[data-testid=editEmailBtn]').click()
+        cy.get('[data-testid=editEmailSaveBtn]').should("be.disabled")
+        cy.get('[data-testid=emailInvalidNewEqualsOld]').should('be.visible');
+        cy.get('[data-testid=editEmailCancelBtn]').click()
+        cy.get('[data-testid=emailInput]')
+            .should('be.disabled')
+            .should('have.value', Cypress.env('emailAddress'))
     })
 
-    it('Verify Phone Countdown timer', () => {
-        cy.get('[data-testid=headerDropdownBtn]').click()
-        cy.get('[data-testid=profileBtn]').click()
+    it('Clear/OptOut email address', () => { 
+        cy.get('[data-testid=editEmailBtn]').click()
+        cy.get('[data-testid=emailInput]').clear();
+        cy.get('[data-testid=emailOptOutMessage]').should('be.visible');
+        cy.get('[data-testid=editEmailSaveBtn]').click()
+        cy.get('[data-testid=emailStatusOptedOut]')
+            .should('be.visible')
+    });
+
+    it('Edit sms number', () => {
         cy.get('[data-testid=editSMSBtn]').click()
-        let cellPhoneInput = cy.get('[data-testid=smsNumberInput]')
-        cellPhoneInput.clear()
-        const minm = 10000;
-        const phonePostfix = Math.floor(Math 
-            .random() * (99999 - minm + 1)) + minm; // auto-generate 5 digits number
-        cellPhoneInput.type("60465" + phonePostfix)
+        cy.get('[data-testid=smsNumberInput]').type(Cypress.env('phoneNumber'))
         cy.get('[data-testid=saveSMSEditBtn]').click()
         cy.get('[data-testid="countdownText"]')
             .contains(/\d{1,2}s$/) // has 1 or 2 digits before the last 's' character
+
+        cy.get('[data-testid=verifySMSModal] button.close').click()
+        cy.get('[data-testid=smsStatusNotVerified]')
+            .should('be.visible')
+        cy.get('[data-testid=verifySMSBtn]')
+            .should('be.visible')
+            .should('be.enabled')
+    });
+
+    it('Invalid sms number', () => {
+        cy.get('[data-testid=editSMSBtn]').click()
+        cy.get('[data-testid=saveSMSEditBtn]').should('be.disabled');
+        cy.get('[data-testid=smsInvalidNewEqualsOld]').should('be.visible');
+        cy.get('[data-testid=cancelSMSEditBtn]').click()
+        cy.get('[data-testid=smsNumberInput]')
+            .should('be.disabled')
+            .invoke('val')
+            .then(value => expect(value.replace(/\D+/g, '')).to.eq(Cypress.env('phoneNumber')));
     })
+
+    it('Clear/OptOut sms number', () => { 
+        cy.get('[data-testid=editSMSBtn]').click()
+        cy.get('[data-testid=smsNumberInput]').clear();
+        cy.get('[data-testid=smsOptOutMessage]').should('be.visible');
+        cy.get('[data-testid=saveSMSEditBtn]').click()
+        cy.get('[data-testid=smsStatusOptedOut]')
+            .should('be.visible')
+    });
 })
