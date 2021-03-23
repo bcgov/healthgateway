@@ -61,7 +61,7 @@ describe('User Profile', () => {
         cy.get('[data-testid=smsNumberInput]')
             .should('be.disabled')
             .invoke('val')
-            .then(value => expect(value.replace(/\D+/g, '')).to.eq(Cypress.env('phoneNumber')));
+            .then(value => expect(value.replace(/\D+/g, '')).to.eq(Cypress.env('phoneNumber').toString()));
     })
 
     it('Clear/OptOut sms number', () => { 

@@ -169,6 +169,9 @@ export default class ProfileView extends Vue {
                     this.smsVerified = this.userProfile.isSMSNumberVerified;
                 }
 
+                this.checkToVerifyPhone();
+                this.checkToVerifyEmail();
+
                 this.isLoading = false;
             })
             .catch((err) => {
@@ -183,8 +186,6 @@ export default class ProfileView extends Vue {
         this.intervalHandler = window.setInterval(() => {
             this.calculateTimeForDeletion();
         }, 1000);
-        this.checkToVerifyPhone();
-        this.checkToVerifyEmail();
     }
 
     private checkToVerifyPhone() {
