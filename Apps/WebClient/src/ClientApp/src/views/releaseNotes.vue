@@ -15,7 +15,9 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
-                                    >March 24, 2021 - v1.3.12 - Update Profile Page, Health Visits, Immunization Text Filter 
+                                    >March 24, 2021 - v1.3.12 - Update Profile
+                                    Page, Health Visits, Immunization Text
+                                    Filter
                                 </strong>
                             </b-col>
                         </b-row>
@@ -23,16 +25,20 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We updated the profile page to add clarity on 
-                                        phone and email verification. 
+                                        We updated the profile page to add
+                                        clarity on phone and email verification.
                                     </li>
                                     <li>
-                                        We added Health Visits which show 7 years of health visits, consultations 
-                                        and procedures billed to the Medical Services Program. 
+                                        We added Health Visits which show 7
+                                        years of health visits, consultations
+                                        and procedures billed to the Medical
+                                        Services Program.
                                     </li>
                                     <li>
-                                        We updated the text filter so that immunization details such as 
-                                        product name, lot number and provider/clinic information are filterable. 
+                                        We updated the text filter so that
+                                        immunization details such as product
+                                        name, lot number and provider/clinic
+                                        information are filterable.
                                     </li>
                                 </ul>
                             </b-col>
