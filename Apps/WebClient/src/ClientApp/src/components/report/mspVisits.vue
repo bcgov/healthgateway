@@ -105,6 +105,13 @@ export default class MSPVisitsReportComponent extends Vue {
         ].join(" ");
     }
 
+    private formatCityProvince(encounter: Encounter): string {
+        var clinic = encounter.clinic;
+        return `${clinic.city || ""} ${clinic.province || ""}, ${
+            clinic.postalCode || ""
+        }`;
+    }
+
     public async generatePdf(): Promise<void> {
         this.logger.debug("generating Health Visits PDF...");
         this.isPreview = false;
@@ -157,6 +164,8 @@ export default class MSPVisitsReportComponent extends Vue {
                     </b-col>
                     <b-col class="my-auto">
                         {{ formatAddress(item) }}
+                        <br />
+                        {{ formatCityProvince(item) }}
                     </b-col>
                 </b-row>
             </section>
