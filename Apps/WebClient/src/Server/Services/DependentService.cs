@@ -101,7 +101,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<DependentModel>()
                 {
                     ResultStatus = ResultType.ActionRequired,
-                    ResultError = patientResult.ResultError,
+                    ResultError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch),
                 };
             }
 

@@ -11,6 +11,7 @@ import PageTitleComponent from "@/components/pageTitle.vue";
 import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
+import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -19,6 +20,7 @@ import PatientData from "@/models/patientData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
+
 Vue.component("BFormTag", BFormTag);
 
 @Component({
@@ -30,6 +32,7 @@ Vue.component("BFormTag", BFormTag);
         MSPVisitsReportComponent,
         COVID19ReportComponent,
         ImmunizationHistoryReportComponent,
+        MedicationRequestReportComponent,
         DatePickerComponent,
     },
 })
@@ -49,6 +52,8 @@ export default class ReportsView extends Vue {
     readonly covid19Report!: COVID19ReportComponent;
     @Ref("immunizationHistoryReport")
     readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
+    @Ref("medicationRequestReport")
+    readonly medicationRequestReport!: MedicationRequestReportComponent;
 
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
@@ -89,6 +94,12 @@ export default class ReportsView extends Vue {
             this.reportTypeOptions.push({
                 value: "Immunization",
                 text: "Immunizations",
+            });
+        }
+        if (this.config.modules["MedicationRequest"]) {
+            this.reportTypeOptions.push({
+                value: "MedicationRequest",
+                text: "Special Authority Requests",
             });
         }
     }
@@ -133,6 +144,9 @@ export default class ReportsView extends Vue {
                 break;
             case "Immunization":
                 generatePromise = this.immunizationHistoryReport.generatePdf();
+                break;
+            case "MedicationRequest":
+                generatePromise = this.medicationRequestReport.generatePdf();
                 break;
             default:
                 generatePromise = Promise.resolve();
@@ -351,6 +365,18 @@ export default class ReportsView extends Vue {
                     >
                         <ImmunizationHistoryReportComponent
                             ref="immunizationHistoryReport"
+                            :start-date="startDate"
+                            :end-date="endDate"
+                            @on-is-loading-changed="isLoading = $event"
+                        />
+                    </div>
+                    <div
+                        v-else-if="reportType == 'MedicationRequest'"
+                        data-testid="medicationRequestReportSample"
+                        class="sample d-none d-md-block"
+                    >
+                        <MedicationRequestReportComponent
+                            ref="medicationRequestReport"
                             :start-date="startDate"
                             :end-date="endDate"
                             @on-is-loading-changed="isLoading = $event"

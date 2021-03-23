@@ -1,4 +1,8 @@
-import { User as OidcUser, UserManagerSettings } from "oidc-client";
+import {
+    SignoutResponse,
+    User as OidcUser,
+    UserManagerSettings,
+} from "oidc-client";
 
 import AddDependentRequest from "@/models/addDependentRequest";
 import { Dictionary } from "@/models/baseTypes";
@@ -31,6 +35,7 @@ export interface IAuthenticationService {
     signinSilent(): Promise<OidcUser | null>;
     signinRedirect(idphint: string, redirectPath: string): Promise<void>;
     signinRedirectCallback(): Promise<OidcUser>;
+    signoutRedirectCallback(): Promise<SignoutResponse>;
     checkOidcUserSize(user: OidcUser): number;
 
     getOidcConfig(): UserManagerSettings;

@@ -63,10 +63,10 @@
       "path": "../Testing/functional/e2e"
     },
     {
-      "path": "../Tools/Design/sampler"
+      "path": "../Tools/Dev/Design/sampler"
     },
     {
-      "path": "../Tools/Design"
+      "path": "../Tools/Dev/Design"
     }
   ],
   "settings": {
