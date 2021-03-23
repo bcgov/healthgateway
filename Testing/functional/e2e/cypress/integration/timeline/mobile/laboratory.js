@@ -1,5 +1,6 @@
 const { AuthMethod } = require("../../../support/constants");
 before(() => {
+  cy.viewport("iphone-6");
   cy.restoreAuthCookies();
   cy.enableModules("Laboratory");
   cy.intercept("GET", "**/v1/api/Laboratory*", {
@@ -13,7 +14,6 @@ before(() => {
 });
 describe("Laboratory", () => {
   it("Validate Card", () => {
-    cy.viewport("iphone-6");
     cy.log("Verifying card data");
     cy.get("[data-testid=timelineCard]")
       .first()
