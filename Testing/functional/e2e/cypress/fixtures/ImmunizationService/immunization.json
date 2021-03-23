@@ -67,6 +67,12 @@
                 "name": "DTaP-IPV",
                 "lotNumber": "123456",
                 "productName": "COVID"
+              },
+              {
+                "code": "777003004",
+                "name": "Another Agent",
+                "lotNumber": "1234567789",
+                "productName": "COVID 2"
               }
             ]
           },
