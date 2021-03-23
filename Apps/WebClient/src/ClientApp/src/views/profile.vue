@@ -701,24 +701,20 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <div
+                                                <b-button
                                                     v-if="
                                                         !smsVerified &&
                                                         !isSMSEditable &&
                                                         smsNumber
                                                     "
+                                                    id="verifySMS"
+                                                    data-testid="verifySMSBtn"
+                                                    variant="outline-primary"
                                                     class="ml-3"
+                                                    @click="verifySMS()"
                                                 >
-                                                    <b-button
-                                                        id="verifySMS"
-                                                        data-testid="verifySMSBtn"
-                                                        variant="outline-primary"
-                                                        class="ml-3"
-                                                        @click="verifySMS()"
-                                                    >
-                                                        Verify
-                                                    </b-button>
-                                                </div>
+                                                    Verify
+                                                </b-button>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.smsNumber.sms"
