@@ -122,6 +122,12 @@ export default class ProfileView extends Vue {
 
     private intervalHandler = 0;
 
+    private get isEmptyEmail(): boolean {
+        return (
+            this.email === null || this.email === undefined || this.email === ""
+        );
+    }
+
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.userProfileService = container.get<IUserProfileService>(
@@ -198,7 +204,11 @@ export default class ProfileView extends Vue {
         this.logger.debug(
             `toVerifyEmail: ${toVerifyEmail}; emailVerified: ${this.emailVerified}`
         );
-        if (toVerifyEmail === "true" && !this.emailVerified) {
+        if (
+            toVerifyEmail === "true" &&
+            !this.emailVerified &&
+            !this.isEmptyEmail
+        ) {
             this.logger.debug(`display Verification Email`);
             this.showCheckEmailAlert = true;
         }
@@ -226,7 +236,7 @@ export default class ProfileView extends Vue {
             },
             email: {
                 required: requiredIf(() => {
-                    return this.isEmailEditable && this.email !== "";
+                    return this.isEmailEditable && !this.isEmptyEmail;
                 }),
                 newEmail: not(sameAs("tempEmail")),
                 email,
@@ -370,8 +380,8 @@ export default class ProfileView extends Vue {
                 this.emailConfirmation = "";
                 this.tempEmail = "";
                 this.checkRegistration({ hdid: this.user.hdid });
-                this.showCheckEmailAlert = true;
                 this.$v.$reset();
+                this.showCheckEmailAlert = !this.isEmptyEmail;
             })
             .catch((err) => {
                 this.logger.error(err);
