@@ -1,0 +1,93 @@
+<script lang="ts">
+import { BFormTag, BFormTags } from "bootstrap-vue";
+import Vue from "vue";
+import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
+
+@Component({
+    components: {
+        BFormTags,
+        BFormTag,
+    },
+})
+export default class MultiSelectComponent extends Vue {
+    @Prop({ default: "Choose a tag..." }) placeholder: string;
+    @Prop() options: string[];
+    @Model("change", { type: Array }) public model!: string[];
+
+    private values = [];
+
+    private get availableOptions() {
+        return this.options.filter((opt) => this.values.indexOf(opt) === -1);
+    }
+
+    @Watch("values")
+    private onValueChanged() {
+        this.updateModel();
+    }
+
+    @Watch("model")
+    private onModelChanged() {
+        this.values = this.model;
+    }
+
+    @Emit("change")
+    private updateModel() {
+        return this.values;
+    }
+
+    private mounted() {
+        this.values = this.model;
+    }
+}
+</script>
+
+<template>
+    <div>
+        <!-- Prop `add-on-change` is needed to enable adding tags vie the `change` event -->
+        <b-form-tags
+            id="tags-component-select"
+            v-model="values"
+            size="lg"
+            class="mb-2"
+            add-on-change
+            no-outer-focus
+        >
+            <template
+                #default="{
+                    tags,
+                    inputAttrs,
+                    inputHandlers,
+                    disabled,
+                    removeTag,
+                }"
+            >
+                <ul
+                    v-if="tags.length > 0"
+                    class="list-inline d-inline-block mb-2"
+                >
+                    <li v-for="tag in tags" :key="tag" class="list-inline-item">
+                        <b-form-tag
+                            :disabled="disabled"
+                            :title="tag"
+                            variant="danger"
+                            @remove="removeTag(tag)"
+                        >
+                            {{ tag }}
+                        </b-form-tag>
+                    </li>
+                </ul>
+                <b-form-select
+                    v-bind="inputAttrs"
+                    :disabled="disabled || availableOptions.length === 0"
+                    :options="availableOptions"
+                    v-on="inputHandlers"
+                >
+                    <template #first>
+                        <!-- This is required to prevent bugs with Safari -->
+                        <option disabled value="">{{ placeholder }}</option>
+                    </template>
+                </b-form-select>
+            </template>
+        </b-form-tags>
+    </div>
+</template>

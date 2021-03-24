@@ -21,8 +21,6 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
 
-Vue.component("BFormTag", BFormTag);
-
 @Component({
     components: {
         LoadingComponent,
@@ -34,6 +32,7 @@ Vue.component("BFormTag", BFormTag);
         ImmunizationHistoryReportComponent,
         MedicationRequestReportComponent,
         DatePickerComponent,
+        BFormTag,
     },
 })
 export default class ReportsView extends Vue {
