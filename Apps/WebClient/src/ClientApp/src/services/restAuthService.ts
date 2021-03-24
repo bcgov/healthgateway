@@ -1,6 +1,7 @@
 import { CookieStorage } from "cookie-storage";
 import { injectable } from "inversify";
 import {
+    SignoutResponse,
     User as OidcUser,
     UserManager,
     UserManagerSettings,
@@ -73,6 +74,7 @@ export class RestAuthenticationService implements IAuthenticationService {
         });
         this.oidcUserManager.events.addAccessTokenExpired(() => {
             this.logger.verbose("OIDC: Access Token Expired");
+            this.logout();
         });
         this.oidcUserManager.events.addSilentRenewError(() => {
             this.logger.verbose("OIDC: Silent Renew Error");
@@ -132,6 +134,10 @@ export class RestAuthenticationService implements IAuthenticationService {
 
     public signinRedirectCallback(): Promise<OidcUser> {
         return this.oidcUserManager.signinRedirectCallback();
+    }
+
+    public signoutRedirectCallback(): Promise<SignoutResponse> {
+        return this.oidcUserManager.signoutRedirectCallback();
     }
 
     public removeUser(): Promise<void> {

@@ -16,7 +16,7 @@
 namespace HealthGateway.WebClient.Test.Services
 {
     using System;
-    using DeepEqual.Syntax;
+    using System.Linq;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -65,7 +65,7 @@ namespace HealthGateway.WebClient.Test.Services
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode, "bearerTokenMock");
+            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode);
 
             Assert.True(actualResult);
         }
@@ -103,34 +103,52 @@ namespace HealthGateway.WebClient.Test.Services
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode, "bearerTokenMock");
+            bool actualResult = service.ValidateSMS(HdIdMock, smsValidationCode);
 
             Assert.True(!actualResult);
         }
 
         /// <summary>
-        /// RetrieveLastInvite - Happy path scenario.
+        /// ValidateSMS - Happy path scenario.
         /// </summary>
         [Fact]
-        public void ShouldRetrieveLastInvite()
+        public void ShouldSanitizeSMS()
         {
-            MessagingVerification expectedResult = new MessagingVerification
-            {
-                HdId = HdIdMock,
-            };
+            string smsNumber = "1234561234";
 
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new Mock<IMessagingVerificationDelegate>();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new ();
+            messagingVerificationDelegateMock
+                .Setup(
+                    s => s.Insert(It.IsAny<MessagingVerification>())).Returns(default(Guid));
 
             IUserSMSService service = new UserSMSService(
                 new Mock<ILogger<UserSMSService>>().Object,
-                messagingVerificationDelegate.Object,
+                messagingVerificationDelegateMock.Object,
                 new Mock<IUserProfileDelegate>().Object,
                 new Mock<INotificationSettingsService>().Object);
 
-            MessagingVerification? actualResult = service.RetrieveLastInvite(HdIdMock);
+            service.CreateUserSMS(HdIdMock, smsNumber);
+            messagingVerificationDelegateMock
+                .Verify(
+                    s => s.Insert(It.Is<MessagingVerification>(x => x.HdId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
 
-            Assert.True(actualResult.IsDeepEqual(expectedResult));
+            smsNumber = "(123)4561234";
+            service.CreateUserSMS(HdIdMock, smsNumber);
+            messagingVerificationDelegateMock
+                .Verify(
+                    s => s.Insert(It.Is<MessagingVerification>(x => x.HdId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
+
+            smsNumber = "123 456 1234";
+            service.CreateUserSMS(HdIdMock, smsNumber);
+            messagingVerificationDelegateMock
+                .Verify(
+                    s => s.Insert(It.Is<MessagingVerification>(x => x.HdId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
+
+            smsNumber = "+1 123-456-1234";
+            service.CreateUserSMS(HdIdMock, smsNumber);
+            messagingVerificationDelegateMock
+                .Verify(
+                    s => s.Insert(It.Is<MessagingVerification>(x => x.HdId == HdIdMock && x.SMSNumber.All(char.IsDigit))));
         }
     }
 }

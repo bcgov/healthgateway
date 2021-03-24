@@ -19,6 +19,8 @@ const LoginView = () =>
     import(/* webpackChunkName: "login" */ "@/views/login.vue");
 const LogoutView = () =>
     import(/* webpackChunkName: "logout" */ "@/views/logout.vue");
+const LogoutCompleteView = () =>
+    import(/* webpackChunkName: "logout" */ "@/views/logoutComplete.vue");
 const UnauthorizedView = () =>
     import(
         /* webpackChunkName: "unauthorized" */ "@/views/errors/unauthorized.vue"
@@ -240,6 +242,11 @@ const routes = [
     {
         path: "/logout",
         component: LogoutView,
+        meta: { stateless: true },
+    },
+    {
+        path: "/logoutComplete",
+        component: LogoutCompleteView,
         meta: { stateless: true },
     },
     {

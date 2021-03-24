@@ -110,7 +110,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             noteServiceMock.Setup(s => s.DeleteNote(It.IsAny<UserNote>())).Returns(expectedResult);
 
             NoteController controller = new NoteController(noteServiceMock.Object, httpContextAccessorMock.Object);
-            var actualResult = controller.DeleteNote(Hdid, expectedResult.ResourcePayload);
+            var actualResult = controller.DeleteNote(expectedResult.ResourcePayload);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
 

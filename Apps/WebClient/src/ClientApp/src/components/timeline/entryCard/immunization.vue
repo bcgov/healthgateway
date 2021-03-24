@@ -56,28 +56,33 @@ export default class ImmunizationTimelineComponent extends Vue {
     >
         <b-row slot="details-body" class="justify-content-between">
             <b-col>
-                <b-row
-                    v-for="agent in entry.immunization.immunizationAgents"
-                    :key="agent.code"
-                    class="my-2"
-                >
+                <b-row>
                     <b-col>
-                        <div data-testid="immunizationProductTitle">
-                            <strong> Product: </strong>
-                            {{ agent.productName }}
-                        </div>
-                        <div data-testid="immunizationAgentNameTitle">
-                            <strong> Immunizing Agent: </strong>
-                            {{ agent.name }}
-                        </div>
-                        <div data-testid="immunizationProviderTitle">
-                            <strong> Provider / Clinic: </strong>
-                            {{ entry.immunization.providerOrClinic }}
-                        </div>
-                        <div data-testid="immunizationLotTitle">
-                            <strong> Lot Number: </strong>
-                            {{ agent.lotNumber }}
-                        </div>
+                        <b-row
+                            v-for="agent in entry.immunization
+                                .immunizationAgents"
+                            :key="agent.code"
+                            class="my-2"
+                        >
+                            <b-col>
+                                <div data-testid="immunizationProductTitle">
+                                    <strong> Product: </strong>
+                                    {{ agent.productName }}
+                                </div>
+                                <div data-testid="immunizationAgentNameTitle">
+                                    <strong> Immunizing Agent: </strong>
+                                    {{ agent.name }}
+                                </div>
+                                <div data-testid="immunizationProviderTitle">
+                                    <strong> Provider / Clinic: </strong>
+                                    {{ entry.immunization.providerOrClinic }}
+                                </div>
+                                <div data-testid="immunizationLotTitle">
+                                    <strong> Lot Number: </strong>
+                                    {{ agent.lotNumber }}
+                                </div>
+                            </b-col>
+                        </b-row>
                     </b-col>
                     <b-col
                         v-if="isCovidImmunization"

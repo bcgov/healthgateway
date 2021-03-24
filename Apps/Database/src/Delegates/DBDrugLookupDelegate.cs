@@ -74,7 +74,7 @@ namespace HealthGateway.Database.Delegates
             DateTime now = DateTime.UtcNow;
             IList<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
                 .Where(dp => uniqueDrugIdentifers.Contains(dp.DINPIN) && (now > dp.EffectiveDate && now <= dp.EndDate)).ToList()
-                .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).FirstOrDefault())
+                .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).First())
                 .ToList();
 
             this.logger.LogDebug("Finished getting list of pharmacare drug products from DB");

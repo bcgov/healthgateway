@@ -204,33 +204,6 @@ describe('WebClient UserProfile Service', () => {
         })
     })
 
-    it('Verify Get UserProfile Email Invite Unauthorized', () => {
-        cy.request({
-            url: `${BASEURL}${HDID}/email/invite`,
-            followRedirect: false,
-            failOnStatusCode: false
-        })
-            .should((response) => { expect(response.status).to.eq(401) })
-    })
-
-    it('Verify Get UserProfile Email Invite Forbidden', () => {
-        cy.get("@tokens").then(tokens => {
-            cy.log('Tokens', tokens)
-            cy.request({
-                url: `${BASEURL}${BOGUSHDID}/email/invite`,
-                followRedirect: false,
-                failOnStatusCode: false,
-                auth: {
-                    bearer: tokens.access_token
-                },
-                headers: {
-                    accept: 'application/json'
-                }
-            })
-                .should((response) => { expect(response.status).to.eq(403) })
-        })
-    })
-
     it('Verify Put UserProfile Email Unauthorized', () => {
         cy.request({
             method: 'PUT',
@@ -274,33 +247,6 @@ describe('WebClient UserProfile Service', () => {
             cy.log('Tokens', tokens)
             cy.request({
                 url: `${BASEURL}${BOGUSHDID}/sms/validate/123`,
-                followRedirect: false,
-                failOnStatusCode: false,
-                auth: {
-                    bearer: tokens.access_token
-                },
-                headers: {
-                    accept: 'application/json'
-                }
-            })
-                .should((response) => { expect(response.status).to.eq(403) })
-        })
-    })
-
-    it('Verify Get UserProfile SMS Invite Unauthorized', () => {
-        cy.request({
-            url: `${BASEURL}${HDID}/sms/invite`,
-            followRedirect: false,
-            failOnStatusCode: false
-        })
-            .should((response) => { expect(response.status).to.eq(401) })
-    })
-
-    it('Verify Get UserProfile SMS Invite Forbidden', () => {
-        cy.get("@tokens").then(tokens => {
-            cy.log('Tokens', tokens)
-            cy.request({
-                url: `${BASEURL}${BOGUSHDID}/sms/invite`,
                 followRedirect: false,
                 failOnStatusCode: false,
                 auth: {

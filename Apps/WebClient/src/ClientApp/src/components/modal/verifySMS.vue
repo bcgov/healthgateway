@@ -8,7 +8,6 @@ import LoadingComponent from "@/components/loading.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
-import UserSMSInvite from "@/models/userSMSInvite";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
@@ -26,9 +25,6 @@ export default class VerifySMSComponent extends Vue {
 
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
-
-    @Action("getUserSMS", { namespace: "user" })
-    getUserSMS!: (params: { hdid: string }) => Promise<UserSMSInvite | null>;
 
     @Action("updateSMSResendDateTime", { namespace: "user" })
     updateSMSResendDateTime!: ({
@@ -67,7 +63,6 @@ export default class VerifySMSComponent extends Vue {
     }
 
     private mounted() {
-        this.getVerification();
         this.setResendTimeout();
     }
 
@@ -77,18 +72,6 @@ export default class VerifySMSComponent extends Vue {
 
     public hideModal(): void {
         this.isVisible = false;
-    }
-
-    private getVerification() {
-        this.getUserSMS({ hdid: this.user.hdid }).then((result) => {
-            this.tooManyRetries = result ? result.tooManyFailedAttempts : false;
-            if (this.tooManyRetries) {
-                this.error = false;
-            }
-            if (result !== null && result.expired && !result.validated) {
-                this.sendUserSMSUpdate();
-            }
-        });
     }
 
     private setResendTimeout(): void {
@@ -148,7 +131,6 @@ export default class VerifySMSComponent extends Vue {
             .validateSMS(this.user.hdid, this.smsVerificationCode)
             .then((result) => {
                 this.error = !result;
-                this.getVerification();
                 if (!this.error) {
                     this.handleSubmit();
                 }
@@ -168,7 +150,6 @@ export default class VerifySMSComponent extends Vue {
         this.userProfileService
             .updateSMSNumber(this.user.hdid, this.smsNumber)
             .then(() => {
-                this.getVerification();
                 setTimeout(() => {
                     this.smsVerificationSent = false;
                 }, 5000);

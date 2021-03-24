@@ -12,8 +12,14 @@ export default interface UserProfile {
     // The user email.
     email: string;
 
+    // Indicates whether the email was verified.
+    isEmailVerified: boolean;
+
     // The user SMS number.
     smsNumber: string;
+
+    // Indicates whether the sms number was verified.
+    isSMSNumberVerified: boolean;
 
     // Flag to know if the terms of service have been updated since last login
     hasTermsOfServiceUpdated?: boolean;

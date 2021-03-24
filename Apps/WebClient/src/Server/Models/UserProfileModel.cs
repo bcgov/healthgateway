@@ -41,9 +41,19 @@ namespace HealthGateway.WebClient.Models
         public string? Email { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the user email was verified.
+        /// </summary>
+        public bool IsEmailVerified { get; set; }
+
+        /// <summary>
         /// Gets or sets the user SMS number.
         /// </summary>
         public string? SMSNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user sms number was verified.
+        /// </summary>
+        public bool IsSMSNumberVerified { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user needs to be notified about new terms of service.
@@ -64,7 +74,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the user preference.
         /// </summary>
-        public Dictionary<string, UserPreferenceModel> Preferences { get; set; } = new Dictionary<string, UserPreferenceModel>();
+        public IDictionary<string, UserPreferenceModel> Preferences { get; set; } = new Dictionary<string, UserPreferenceModel>();
 
         /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.
@@ -78,7 +88,9 @@ namespace HealthGateway.WebClient.Models
                 HdId = model.HdId,
                 AcceptedTermsOfService = model.AcceptedTermsOfService,
                 Email = model.Email,
+                IsEmailVerified = !string.IsNullOrEmpty(model.Email),
                 SMSNumber = model.SMSNumber,
+                IsSMSNumberVerified = !string.IsNullOrEmpty(model.SMSNumber),
                 LastLoginDateTime = model.LastLoginDateTime,
                 ClosedDateTime = model.ClosedDateTime,
             };

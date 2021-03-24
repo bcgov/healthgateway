@@ -99,7 +99,7 @@ export default class FilterComponent extends Vue {
             },
             {
                 type: EntryType.Encounter,
-                display: "MSP Visits",
+                display: "Health Visits",
                 isEnabled: this.config.modules[EntryType.Encounter],
                 numEntries: this.encounterCount,
             },
