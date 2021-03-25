@@ -5,13 +5,21 @@ import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
 @Component
 export default class MultiSelectComponent extends Vue {
     @Prop({ default: "Choose a tag..." }) placeholder!: string;
-    @Prop({ default: [] }) options!: string[];
-    @Model("change", { type: Array }) public model!: string[];
+    @Prop({ default: [] }) options!: [
+        {
+            value: unknown;
+            text: string;
+            disabled: boolean;
+        }
+    ];
+    @Model("change", { type: Array }) public model!: unknown[];
 
-    private values: string[] = [];
+    private values: unknown[] = [];
 
     private get availableOptions() {
-        return this.options.filter((opt) => this.values.indexOf(opt) === -1);
+        return this.options.filter(
+            (opt) => this.values.indexOf(opt.value || opt) === -1
+        );
     }
 
     @Watch("values")
@@ -27,6 +35,13 @@ export default class MultiSelectComponent extends Vue {
     @Emit("change")
     private updateModel() {
         return this.values;
+    }
+
+    private getValueText(value: unknown) {
+        const option = this.options.find(
+            (opt) => opt.value === value || opt === value
+        );
+        return option?.text || option;
     }
 
     private mounted() {
@@ -66,7 +81,7 @@ export default class MultiSelectComponent extends Vue {
                             variant="danger"
                             @remove="removeTag(tag)"
                         >
-                            {{ tag }}
+                            {{ getValueText(tag) }}
                         </b-form-tag>
                     </li>
                 </ul>
