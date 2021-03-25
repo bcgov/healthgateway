@@ -17,9 +17,6 @@ export default class PageTitleComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.column-wrapper {
-    border: 1px;
-}
 
 #pageTitle {
     color: $primary;
