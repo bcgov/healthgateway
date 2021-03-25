@@ -20,6 +20,7 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
+import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -43,6 +44,7 @@ const authNamespace = "auth";
     components: {
         LoadingComponent,
         VerifySMSComponent,
+        PageTitleComponent,
     },
 })
 export default class ProfileView extends Vue {
@@ -475,10 +477,7 @@ export default class ProfileView extends Vue {
                         If you didn't receive one, please check your junk mail.
                     </span>
                 </b-alert>
-                <div id="pageTitle">
-                    <h1 id="subject">Profile</h1>
-                    <hr />
-                </div>
+                <PageTitleComponent title="Profile" />
                 <div v-if="!isLoading">
                     <div v-if="isActiveProfile">
                         <b-row class="mb-3">
@@ -921,14 +920,6 @@ export default class ProfileView extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
 
 label {
     font-weight: bold;
