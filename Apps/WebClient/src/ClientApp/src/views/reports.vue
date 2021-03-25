@@ -1,5 +1,4 @@
 <script lang="ts">
-import { BFormTag } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -32,7 +31,6 @@ import { ILogger } from "@/services/interfaces";
         ImmunizationHistoryReportComponent,
         MedicationRequestReportComponent,
         DatePickerComponent,
-        BFormTag,
     },
 })
 export default class ReportsView extends Vue {

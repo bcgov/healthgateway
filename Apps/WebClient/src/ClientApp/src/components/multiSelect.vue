@@ -1,14 +1,8 @@
 <script lang="ts">
-import { BFormTag, BFormTags } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
 
-@Component({
-    components: {
-        BFormTags,
-        BFormTag,
-    },
-})
+@Component
 export default class MultiSelectComponent extends Vue {
     @Prop({ default: "Choose a tag..." }) placeholder: string;
     @Prop() options: string[];
