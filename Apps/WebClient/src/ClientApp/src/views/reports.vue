@@ -1,5 +1,4 @@
 <script lang="ts">
-import { BFormTag } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -20,8 +19,6 @@ import PatientData from "@/models/patientData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
-
-Vue.component("BFormTag", BFormTag);
 
 @Component({
     components: {
