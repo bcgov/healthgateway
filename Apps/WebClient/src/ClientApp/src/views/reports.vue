@@ -7,12 +7,12 @@ import { Action, Getter } from "vuex-class";
 import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import PageTitleComponent from "@/components/pageTitle.vue";
 import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -163,7 +163,7 @@ export default class ReportsView extends Vue {
         <div>
             <b-row>
                 <b-col class="col-12 col-md-10 col-lg-9 column-wrapper">
-                    <PageTitleComponent :title="`Export Records`" />
+                    <PageTitleComponent title="Export Records" />
                     <div class="my-3 px-3 py-4 form">
                         <b-row>
                             <b-col>
