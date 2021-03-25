@@ -4,11 +4,11 @@ import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
 
 @Component
 export default class MultiSelectComponent extends Vue {
-    @Prop({ default: "Choose a tag..." }) placeholder: string;
-    @Prop() options: string[];
+    @Prop({ default: "Choose a tag..." }) placeholder!: string;
+    @Prop({ default: [] }) options!: string[];
     @Model("change", { type: Array }) public model!: string[];
 
-    private values = [];
+    private values: string[] = [];
 
     private get availableOptions() {
         return this.options.filter((opt) => this.values.indexOf(opt) === -1);
