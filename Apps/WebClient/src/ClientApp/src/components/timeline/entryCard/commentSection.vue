@@ -25,6 +25,8 @@ import { ILogger } from "@/services/interfaces";
 })
 export default class CommentSectionComponent extends Vue {
     @Prop() parentEntry!: TimelineEntry;
+    @Prop({ default: false }) isMobileDetails!: boolean;
+
     @Getter("user", { namespace: "user" }) user!: User;
     @Action("updateComment", { namespace: "comment" })
     updateComment!: (params: {
@@ -72,6 +74,14 @@ export default class CommentSectionComponent extends Vue {
             this.logger.info("Updating comment " + x.id);
             this.updateComment({ hdid: this.user.hdid, comment: x });
         });
+
+        var commentsSection = (this.$refs[
+            "entryComments" + this.parentEntry.id
+        ] as Vue).$el;
+        commentsSection?.addEventListener(
+            "transitionend",
+            this.onSectionExpand
+        );
     }
 
     private get hasComments(): boolean {
@@ -82,6 +92,22 @@ export default class CommentSectionComponent extends Vue {
 
     private onAdd() {
         this.showComments = true;
+    }
+
+    private onSectionExpand(event: Event) {
+        if (this.isMobileDetails && this.showComments) {
+            var commentsSection = (this.$refs[
+                "entryComments" + this.parentEntry.id
+            ] as Vue).$el;
+            let transitionEvent = event as TransitionEvent;
+            if (
+                commentsSection !== transitionEvent.target ||
+                transitionEvent.propertyName !== "height"
+            ) {
+                return;
+            }
+            commentsSection.scrollIntoView({ behavior: "smooth" });
+        }
     }
 }
 </script>
@@ -110,14 +136,11 @@ export default class CommentSectionComponent extends Vue {
                     </div>
                 </b-col>
             </b-row>
-            <AddComment
-                :comment="newComment"
-                @on-comment-added="onAdd"
-            ></AddComment>
-            <b-row class="pt-2">
+            <b-row class="py-2">
                 <b-col>
                     <b-collapse
                         :id="'entryComments-' + parentEntry.id"
+                        :ref="'entryComments' + parentEntry.id"
                         v-model="showComments"
                     >
                         <div v-if="!isLoadingComments">
@@ -137,6 +160,19 @@ export default class CommentSectionComponent extends Vue {
                     </b-collapse>
                 </b-col>
             </b-row>
+            <div
+                :class="{
+                    push: isMobileDetails,
+                }"
+            ></div>
+            <AddComment
+                class="pb-2"
+                :class="{
+                    'fixed-bottom p-3 comment-input': isMobileDetails,
+                }"
+                :comment="newComment"
+                @on-comment-added="onAdd"
+            ></AddComment>
         </b-col>
     </b-row>
 </template>
@@ -156,5 +192,13 @@ export default class CommentSectionComponent extends Vue {
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
     display: none;
+}
+.comment-input {
+    border-top: 1px $primary solid;
+    background-color: white;
+}
+
+.push {
+    height: 60px;
 }
 </style>
