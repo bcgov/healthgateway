@@ -23,3 +23,39 @@ $header-height: 65px;
 $timeline-filter-height: 54px;
 $timeline-pagination-height: 54px;
 $timeline-dates-height: 54px;
+
+// Design System: Common Colours
+$hg-brand-primary: #003366;
+$hg-brand-secondary: #0092f1;
+$hg-brand-accent: #fcba19;
+$hg-text-primary: #313132;
+$hg-text-secondary: #606060;
+$hg-text-input: #606060;
+$hg-state-success: #2e8540;
+$hg-state-error: #d72e3d;
+$hg-link: #1a5a96;
+$hg-background: #f2f2f2;
+$hg-background-navigation: #38598a;
+
+// Design System: Buttons
+$hg-button-disabled: #b8c2d0;
+
+$hg-button-primary: $hg-brand-primary;
+$hg-button-primary-border: $hg-button-primary;
+$hg-button-primary-text: white;
+$hg-button-primary-hover: #396497;
+$hg-button-primary-hover-border: $hg-button-primary-hover;
+$hg-button-primary-hover-text: white;
+$hg-button-primary-disabled: $hg-button-disabled;
+$hg-button-primary-disabled-border: $hg-button-primary-disabled;
+$hg-button-primary-disabled-text: white;
+
+$hg-button-secondary: white;
+$hg-button-secondary-border: $hg-button-primary;
+$hg-button-secondary-text: $hg-button-primary;
+$hg-button-secondary-hover: #3b5a84;
+$hg-button-secondary-hover-border: $hg-button-secondary-hover;
+$hg-button-secondary-hover-text: white;
+$hg-button-secondary-disabled: white;
+$hg-button-secondary-disabled-border: $hg-button-disabled;
+$hg-button-secondary-disabled-text: $hg-button-disabled;
