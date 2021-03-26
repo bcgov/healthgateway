@@ -20,6 +20,7 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
+import BaseButtonComponent from "@/components/shared/baseButton.vue";
 import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -42,6 +43,7 @@ const authNamespace = "auth";
 
 @Component({
     components: {
+        BaseButtonComponent,
         LoadingComponent,
         VerifySMSComponent,
         PageTitleComponent,
@@ -542,7 +544,7 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <b-button
+                                                <BaseButtonComponent
                                                     v-if="
                                                         !emailVerified &&
                                                         !isEmailEditable &&
@@ -550,7 +552,7 @@ export default class ProfileView extends Vue {
                                                     "
                                                     id="resendEmail"
                                                     data-testid="resendEmailBtn"
-                                                    variant="outline-primary"
+                                                    button-type="secondary"
                                                     class="ml-3"
                                                     :disabled="
                                                         emailVerificationSent
@@ -560,7 +562,7 @@ export default class ProfileView extends Vue {
                                                     "
                                                 >
                                                     Resend Verification
-                                                </b-button>
+                                                </BaseButtonComponent>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.email.email"
@@ -626,20 +628,22 @@ export default class ProfileView extends Vue {
                                 </b-row>
                                 <b-row v-if="isEmailEditable" class="mb-3">
                                     <b-col>
-                                        <b-button
+                                        <BaseButtonComponent
                                             id="editEmailCancelBtn"
                                             data-testid="editEmailCancelBtn"
-                                            variant="outline-primary"
-                                            class="mx-2 actionButton"
+                                            button-type="secondary"
+                                            size="small"
+                                            class="mr-2"
                                             @click="cancelEmailEdit()"
                                         >
                                             Cancel
-                                        </b-button>
-                                        <b-button
+                                        </BaseButtonComponent>
+                                        <BaseButtonComponent
                                             id="editSMSSaveBtn"
                                             data-testid="editEmailSaveBtn"
-                                            variant="primary"
-                                            class="mx-2 actionButton"
+                                            button-type="primary"
+                                            size="small"
+                                            class="mx-2"
                                             :disabled="
                                                 tempEmail === email ||
                                                 !isValid($v.email)
@@ -647,7 +651,7 @@ export default class ProfileView extends Vue {
                                             @click="saveEmailEdit($event)"
                                         >
                                             Save
-                                        </b-button>
+                                        </BaseButtonComponent>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -700,20 +704,20 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <b-button
+                                                <BaseButtonComponent
                                                     v-if="
                                                         !smsVerified &&
                                                         !isSMSEditable &&
                                                         smsNumber
                                                     "
                                                     id="verifySMS"
+                                                    button-type="secondary"
                                                     data-testid="verifySMSBtn"
-                                                    variant="outline-primary"
                                                     class="ml-3"
                                                     @click="verifySMS()"
                                                 >
                                                     Verify
-                                                </b-button>
+                                                </BaseButtonComponent>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.smsNumber.sms"
@@ -781,23 +785,25 @@ export default class ProfileView extends Vue {
                                 </b-row>
                                 <b-row v-if="isSMSEditable" class="mb-3">
                                     <b-col>
-                                        <b-button
+                                        <BaseButtonComponent
                                             id="cancelBtn"
                                             data-testid="cancelSMSEditBtn"
-                                            variant="outline-primary"
-                                            class="mx-2 actionButton"
+                                            button-type="secondary"
+                                            size="small"
+                                            class="mr-2"
                                             @click="cancelSMSEdit()"
                                             >Cancel
-                                        </b-button>
-                                        <b-button
+                                        </BaseButtonComponent>
+                                        <BaseButtonComponent
                                             id="saveBtn"
                                             data-testid="saveSMSEditBtn"
-                                            variant="primary"
-                                            class="mx-2 actionButton"
+                                            button-type="primary"
+                                            size="small"
+                                            class="mx-2"
                                             :disabled="tempSMS === smsNumber"
                                             @click="saveSMSEdit()"
                                             >Save
-                                        </b-button>
+                                        </BaseButtonComponent>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -928,10 +934,6 @@ label {
 input {
     width: 320px !important;
     max-width: 320px !important;
-}
-
-.actionButton {
-    width: 80px;
 }
 
 .is-invalid label {
