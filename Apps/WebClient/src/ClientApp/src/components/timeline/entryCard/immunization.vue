@@ -23,7 +23,6 @@ export default class ImmunizationTimelineComponent extends Vue {
     @Prop() isMobileDetails!: boolean;
 
     private eventBus = EventBus;
-    private forecastVisible = false;
 
     private get entryIcon(): IconDefinition {
         return faSyringe;
@@ -33,10 +32,6 @@ export default class ImmunizationTimelineComponent extends Vue {
         return this.entry.immunization.targetedDisease
             ?.toLowerCase()
             .includes("covid");
-    }
-
-    private toggleDetails(): void {
-        this.forecastVisible = !this.forecastVisible;
     }
 
     private showCard(): void {
@@ -104,75 +99,41 @@ export default class ImmunizationTimelineComponent extends Vue {
                         ></b-col
                     >
                 </b-row>
-                <b-row v-if="entry.immunization.forecast">
+                <b-row v-if="entry.immunization.forecast" class="mt-3">
                     <b-col>
-                        <div class="d-flex flex-row-reverse">
-                            <b-btn
-                                data-testid="detailsBtn"
-                                variant="link"
-                                class="detailsButton"
-                                @click="toggleDetails()"
-                            >
-                                <span v-if="forecastVisible">
-                                    <font-awesome-icon
-                                        icon="chevron-up"
-                                        aria-hidden="true"
-                                    ></font-awesome-icon
-                                ></span>
-                                <span v-else>
-                                    <font-awesome-icon
-                                        icon="chevron-down"
-                                        aria-hidden="true"
-                                    ></font-awesome-icon
-                                ></span>
-                                <span v-if="forecastVisible"
-                                    >Hide Forecast</span
-                                >
-                                <span v-else>Forecast</span>
-                            </b-btn>
-                        </div>
-                        <b-collapse
-                            :id="'entryForecast-' + index + '-' + datekey"
-                            v-model="forecastVisible"
-                        >
-                            <b-row>
-                                <b-col>
-                                    <div data-testid="forecastDisplayName">
-                                        <strong>Immunization: </strong>
-                                        {{
-                                            entry.immunization.forecast
-                                                .displayName
-                                        }}
-                                    </div>
-                                    <div data-testid="forecastDueDate">
-                                        <strong>Due Date: </strong>
-                                        {{
-                                            entry.immunization.forecast.dueDate
-                                        }}
-                                    </div>
-                                    <div data-testid="forecastStatus">
-                                        <strong>Status: </strong>
-                                        {{ entry.immunization.forecast.status }}
-                                    </div>
-                                </b-col>
-                            </b-row>
+                        <strong>Forecast:</strong>
+                        <b-row class="my-1">
+                            <b-col>
+                                <div data-testid="forecastDisplayName">
+                                    <strong>Immunization: </strong>
+                                    {{
+                                        entry.immunization.forecast.displayName
+                                    }}
+                                </div>
+                                <div data-testid="forecastDueDate">
+                                    <strong>Due Date: </strong>
+                                    {{ entry.immunization.forecast.dueDate }}
+                                </div>
+                                <div data-testid="forecastStatus">
+                                    <strong>Status: </strong>
+                                    {{ entry.immunization.forecast.status }}
+                                </div>
+                            </b-col>
+                        </b-row>
 
-                            <div v-if="isCovidImmunization">
-                                <br />
-                                <p data-testid="forecastFollowDirections">
-                                    Please follow directions from your COVID
-                                    vaccine provider for information on COVID-19
-                                    2nd dose. For information on recommended
-                                    immunizations, please visit
-                                    <a
-                                        href="https://immunizebc.ca/"
-                                        target="blank_"
-                                        >https://immunizebc.ca/</a
-                                    >
-                                    or contact your local Public Health Unit.
-                                </p>
-                            </div>
-                        </b-collapse>
+                        <div v-if="isCovidImmunization">
+                            <br />
+                            <p data-testid="forecastFollowDirections">
+                                Please follow directions from your COVID vaccine
+                                provider for information on COVID-19 2nd dose.
+                                For information on recommended immunizations,
+                                please visit
+                                <a href="https://immunizebc.ca/" target="blank_"
+                                    >https://immunizebc.ca/</a
+                                >
+                                or contact your local Public Health Unit.
+                            </p>
+                        </div>
                     </b-col>
                 </b-row>
             </b-col>
