@@ -288,4 +288,17 @@ main {
 .devBanner {
     z-index: $z_header;
 }
+
+label.hg-label {
+    font-weight: bold;
+}
+
+.is-invalid .hg-label {
+    color: $danger;
+}
+
+h4.hg-h4 {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
 </style>
