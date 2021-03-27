@@ -22,6 +22,7 @@ import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
 import BaseButtonComponent from "@/components/shared/baseButton.vue";
 import PageTitleComponent from "@/components/shared/pageTitle.vue";
+import StatusLabelComponent from "@/components/shared/statusLabel.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -47,6 +48,7 @@ const authNamespace = "auth";
         LoadingComponent,
         VerifySMSComponent,
         PageTitleComponent,
+        StatusLabelComponent,
     },
 })
 export default class ProfileView extends Vue {
@@ -581,34 +583,29 @@ export default class ProfileView extends Vue {
                                                 id="emailStatus"
                                                 data-testid="emailStatus"
                                             >
-                                                <span class="text-muted"
-                                                    >Status:
-                                                </span>
-                                                <span
+                                                <StatusLabelComponent
                                                     v-if="emailVerified"
+                                                    status="Verified"
+                                                    variant="success"
                                                     data-testid="emailStatusVerified"
-                                                    class="text-success"
-                                                    >Verified</span
-                                                >
-                                                <span
+                                                />
+                                                <StatusLabelComponent
                                                     v-else-if="
                                                         email == null ||
                                                         email === ''
                                                     "
+                                                    status="Opted Out"
                                                     data-testid="emailStatusOptedOut"
-                                                    class="text-warning"
-                                                    >Opted Out</span
-                                                >
-                                                <span
+                                                />
+                                                <StatusLabelComponent
                                                     v-else
+                                                    status="Not Verified"
+                                                    variant="danger"
                                                     data-testid="emailStatusNotVerified"
-                                                    class="text-danger"
-                                                    >Not Verified</span
-                                                >
+                                                />
                                             </div>
-                                        </b-form-group>
-                                    </b-col></b-row
-                                >
+                                        </b-form-group> </b-col
+                                ></b-row>
                                 <b-row
                                     v-if="!email && tempEmail"
                                     class="mb-3"
@@ -738,30 +735,26 @@ export default class ProfileView extends Vue {
                                                 id="smsStatus"
                                                 data-testid="smsStatus"
                                             >
-                                                <span class="text-muted"
-                                                    >Status:
-                                                </span>
-                                                <span
+                                                <StatusLabelComponent
                                                     v-if="smsVerified"
+                                                    status="Verified"
+                                                    variant="success"
                                                     data-testid="smsStatusVerified"
-                                                    class="text-success"
-                                                    >Verified</span
-                                                >
-                                                <span
+                                                />
+                                                <StatusLabelComponent
                                                     v-else-if="
                                                         smsNumber == null ||
                                                         smsNumber === ''
                                                     "
+                                                    status="Opted Out"
                                                     data-testid="smsStatusOptedOut"
-                                                    class="text-warning"
-                                                    >Opted Out</span
-                                                >
-                                                <span
+                                                />
+                                                <StatusLabelComponent
                                                     v-else
+                                                    status="Not Verified"
+                                                    variant="danger"
                                                     data-testid="smsStatusNotVerified"
-                                                    class="text-danger"
-                                                    >Not Verified</span
-                                                >
+                                                />
                                             </div>
                                         </b-form-group>
                                     </b-col>
