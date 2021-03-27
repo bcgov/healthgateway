@@ -6,6 +6,7 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationRequest from "@/models/MedicationRequest";
+import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -18,8 +19,7 @@ import PDFUtil from "@/utility/pdfUtil";
     },
 })
 export default class MedicationRequestReportComponent extends Vue {
-    @Prop() private startDate!: string | null;
-    @Prop() private endDate!: string | null;
+    @Prop() private filter!: ReportFilter;
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -51,20 +51,7 @@ export default class MedicationRequestReportComponent extends Vue {
 
     private get visibleRecords(): MedicationRequest[] {
         let records = this.medicationRequests.filter((record) => {
-            let filterStart = true;
-            if (this.startDate !== null) {
-                filterStart = new DateWrapper(
-                    record.requestedDate
-                ).isAfterOrSame(new DateWrapper(this.startDate));
-            }
-
-            let filterEnd = true;
-            if (this.endDate !== null) {
-                filterEnd = new DateWrapper(
-                    record.requestedDate
-                ).isBeforeOrSame(new DateWrapper(this.endDate));
-            }
-            return filterStart && filterEnd;
+            return this.filter.allowsDate(record.requestedDate);
         });
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.requestedDate);
@@ -125,8 +112,7 @@ export default class MedicationRequestReportComponent extends Vue {
             <section class="pdf-item">
                 <ReportHeaderComponent
                     v-show="!isPreview"
-                    :start-date="startDate"
-                    :end-date="endDate"
+                    :filter="filter"
                     title="Health Gateway Special Authority Request History "
                 />
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">

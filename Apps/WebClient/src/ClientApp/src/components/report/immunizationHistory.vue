@@ -6,6 +6,7 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
+import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -18,8 +19,7 @@ import PDFUtil from "@/utility/pdfUtil";
     },
 })
 export default class ImmunizationHistoryReportComponent extends Vue {
-    @Prop() private startDate!: string | null;
-    @Prop() private endDate!: string | null;
+    @Prop() private filter!: ReportFilter;
 
     @Getter("user", { namespace: "user" })
     user!: User;
@@ -65,21 +65,9 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private get visibleImmunizations(): ImmunizationEvent[] {
         let records = this.patientImmunizations.filter((record) => {
-            let filterStart = true;
-            if (this.startDate !== null) {
-                filterStart = new DateWrapper(
-                    record.dateOfImmunization
-                ).isAfterOrSame(new DateWrapper(this.startDate));
-            }
-
-            let filterEnd = true;
-            if (this.endDate !== null) {
-                filterEnd = new DateWrapper(
-                    record.dateOfImmunization
-                ).isBeforeOrSame(new DateWrapper(this.endDate));
-            }
-            return filterStart && filterEnd;
+            return this.filter.allowsDate(record.dateOfImmunization);
         });
+
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.dateOfImmunization);
             const secondDate = new DateWrapper(b.dateOfImmunization);
@@ -128,8 +116,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 <div>
                     <ReportHeaderComponent
                         v-show="!isPreview"
-                        :start-date="startDate"
-                        :end-date="endDate"
+                        :filter="filter"
                         title="Health Gateway Immunization Record"
                     />
                     <hr />
