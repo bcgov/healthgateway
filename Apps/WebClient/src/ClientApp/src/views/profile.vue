@@ -526,13 +526,12 @@ export default class ProfileView extends Vue {
                                                 @click="makeEmailEditable()"
                                                 >Edit
                                             </b-link>
-                                            <div class="form-inline">
+                                            <div class="form-inline mb-1">
                                                 <b-form-input
                                                     id="email"
                                                     v-model="$v.email.$model"
                                                     data-testid="emailInput"
                                                     type="email"
-                                                    class="mb-1"
                                                     :placeholder="
                                                         isEmailEditable
                                                             ? 'Your email address'
@@ -678,7 +677,7 @@ export default class ProfileView extends Vue {
                                                 @click="makeSMSEditable()"
                                                 >Edit
                                             </b-link>
-                                            <div class="form-inline">
+                                            <div class="form-inline mb-1">
                                                 <b-form-input
                                                     id="smsNumber"
                                                     v-model="
@@ -687,7 +686,6 @@ export default class ProfileView extends Vue {
                                                     v-mask="'(###) ###-####'"
                                                     type="tel"
                                                     data-testid="smsNumberInput"
-                                                    class="mb-1"
                                                     :placeholder="
                                                         isSMSEditable
                                                             ? 'Your phone number'
