@@ -486,7 +486,9 @@ export default class ProfileView extends Vue {
                     <div v-if="isActiveProfile">
                         <b-row class="mb-3">
                             <b-col>
-                                <label for="profileNames">Full Name</label>
+                                <label for="profileNames" class="hg-label"
+                                    >Full Name</label
+                                >
                                 <h4 id="profileNames" class="hg-h4">
                                     {{ fullName }}
                                 </h4>
@@ -494,7 +496,7 @@ export default class ProfileView extends Vue {
                         </b-row>
                         <b-row class="mb-3">
                             <b-col>
-                                <label for="lastLoginDate"
+                                <label for="lastLoginDate" class="hg-label"
                                     >Last Login Date</label
                                 >
                                 <h4 id="lastLoginDate" class="hg-h4">
@@ -514,7 +516,7 @@ export default class ProfileView extends Vue {
                                                     : false
                                             "
                                         >
-                                            <label for="email">
+                                            <label for="email" class="hg-label">
                                                 Email Address
                                             </label>
                                             <b-link
@@ -664,10 +666,12 @@ export default class ProfileView extends Vue {
                                                     : false
                                             "
                                         >
-                                            <label for="smsNumber"
-                                                >Cell Number (SMS
-                                                notifications)</label
+                                            <label
+                                                for="smsNumber"
+                                                class="hg-label"
                                             >
+                                                Cell Number (SMS notifications)
+                                            </label>
                                             <b-link
                                                 v-if="!isSMSEditable"
                                                 id="editSMS"
@@ -808,7 +812,10 @@ export default class ProfileView extends Vue {
                                     aria-hidden="true"
                                     class="text-danger"
                                 ></font-awesome-icon>
-                                <label for="deletionWarning" class="ml-1">
+                                <label
+                                    for="deletionWarning"
+                                    class="hg-label ml-1"
+                                >
                                     Account marked for removal
                                 </label>
                                 <div id="deletionWarning">
@@ -821,7 +828,9 @@ export default class ProfileView extends Vue {
                         </b-row>
                         <b-row class="mb-3">
                             <b-col>
-                                <label>Time remaining for deletion: </label>
+                                <label class="hg-label"
+                                    >Time remaining for deletion:
+                                </label>
                                 {{ timeForDeletionString }}
                             </b-col>
                         </b-row>
@@ -840,7 +849,7 @@ export default class ProfileView extends Vue {
                     </div>
                     <b-row v-if="isActiveProfile" class="mb-3">
                         <b-col>
-                            <label>Manage Account</label>
+                            <label class="hg-label">Manage Account</label>
                             <div>
                                 <b-button
                                     v-if="!showCloseWarning"
@@ -918,21 +927,8 @@ export default class ProfileView extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-label {
-    font-weight: bold;
-}
-
 input {
     width: 320px !important;
     max-width: 320px !important;
-}
-
-.is-invalid label {
-    color: $danger;
-}
-
-h4.hg-h4 {
-    font-size: 1.2rem;
-    font-weight: 400;
 }
 </style>
