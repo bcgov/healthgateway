@@ -100,6 +100,7 @@ export default class LaboratoryTimelineComponent extends Vue {
         :title="entry.summaryTitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :has-attachment="reportAvailable"
     >
         <div slot="header-description">
             <strong

@@ -74,6 +74,7 @@ import {
     faFileAlt,
     faFlask,
     faLock,
+    faPaperclip,
     faPills,
     faPrint,
     faSpinner,
@@ -127,7 +128,8 @@ library.add(
     faChartLine,
     faStream,
     faUserPlus,
-    faUserFriends
+    faUserFriends,
+    faPaperclip
 );
 
 import ErrorCard from "@/components/errorCard.vue";

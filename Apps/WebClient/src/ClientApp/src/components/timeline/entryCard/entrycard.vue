@@ -27,7 +27,7 @@ export default class EntrycardTimelineComponent extends Vue {
     @Prop({ default: true }) allowComment!: boolean;
     @Prop({ default: true }) canShowDetails!: boolean;
     @Prop({ default: false }) isMobileDetails!: boolean;
-
+    @Prop({ default: false }) hasAttachment!: boolean;
     @Getter("isMobile") isMobileWidth!: boolean;
 
     private eventBus = EventBus;
@@ -136,6 +136,12 @@ export default class EntrycardTimelineComponent extends Vue {
                                 <font-awesome-icon
                                     :icon="['far', 'comment']"
                                     data-testid="commentIcon"
+                                />
+                            </span>
+                            <span v-if="hasAttachment" class="ml-1">
+                                <font-awesome-icon
+                                    :icon="['fa', 'paperclip']"
+                                    data-testid="attachmentIcon"
                                 />
                             </span>
                             <slot name="header-menu"> </slot>
