@@ -53,6 +53,7 @@ export default class ImmunizationTimelineComponent extends Vue {
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :allow-comment="false"
+        :has-attachment="isCovidImmunization"
     >
         <b-row slot="details-body" class="justify-content-between">
             <b-col>
