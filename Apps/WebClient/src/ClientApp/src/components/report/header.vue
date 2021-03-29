@@ -5,9 +5,7 @@ import { Getter } from "vuex-class";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
+import ReportFilter from "@/models/reportFilter";
 
 @Component
 export default class ReportHeaderComponent extends Vue {
@@ -15,10 +13,7 @@ export default class ReportHeaderComponent extends Vue {
     patientData!: PatientData;
 
     @Prop() private title!: string;
-    @Prop() private startDate?: string;
-    @Prop() private endDate?: string;
-
-    private logger!: ILogger;
+    @Prop() private filter!: ReportFilter;
 
     private get currentDate() {
         return this.formatDate(new DateWrapper().toISO());
@@ -28,10 +23,6 @@ export default class ReportHeaderComponent extends Vue {
         return this.patientData
             ? this.patientData.firstname + " " + this.patientData.lastname
             : "";
-    }
-
-    private created() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     }
 
     private formatDate(date: string): string {
@@ -88,13 +79,21 @@ export default class ReportHeaderComponent extends Vue {
                 }}</span>
             </b-col>
         </b-row>
-        <b-row v-if="startDate || endDate" class="pt-2 small">
+        <b-row v-if="filter.hasDateFilter()" class="pt-2 small">
             <b-col>
                 <span class="text-muted">
                     Displaying records
-                    {{ startDate ? `since ${formatDate(startDate)}` : "" }}
+                    {{
+                        filter.startDate
+                            ? `since ${formatDate(filter.startDate)}`
+                            : ""
+                    }}
                     until
-                    {{ endDate ? formatDate(endDate) : currentDate }}
+                    {{
+                        filter.endDate
+                            ? formatDate(filter.endDate)
+                            : currentDate
+                    }}
                 </span>
             </b-col>
         </b-row>

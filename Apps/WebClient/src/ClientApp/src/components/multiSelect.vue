@@ -2,23 +2,31 @@
 import Vue from "vue";
 import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
 
+export interface SelectOption {
+    value: string;
+    text: string;
+    disabled?: boolean;
+}
+
 @Component
 export default class MultiSelectComponent extends Vue {
     @Prop({ default: "Choose a tag..." }) placeholder!: string;
-    @Prop({ default: [] }) options!: [
-        {
-            value: unknown;
-            text: string;
-            disabled: boolean;
+    @Prop({ default: [] }) options!: SelectOption[];
+    @Model("change", { type: Array }) public model!: string[];
+
+    private values: string[] = [];
+
+    private get availableOptions(): SelectOption[] {
+        if (this.options.length === 0) {
+            return [];
         }
-    ];
-    @Model("change", { type: Array }) public model!: unknown[];
 
-    private values: unknown[] = [];
+        if (this.values.length === 0) {
+            return this.options;
+        }
 
-    private get availableOptions() {
         return this.options.filter(
-            (opt) => this.values.indexOf(opt.value || opt) === -1
+            (opt) => this.values.indexOf(opt.value) === -1
         );
     }
 
@@ -78,6 +86,7 @@ export default class MultiSelectComponent extends Vue {
                         <b-form-tag
                             :disabled="disabled"
                             :title="tag"
+                            :pill="true"
                             variant="danger"
                             @remove="removeTag(tag)"
                         >
