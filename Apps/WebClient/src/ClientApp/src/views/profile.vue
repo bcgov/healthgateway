@@ -555,7 +555,7 @@ export default class ProfileView extends Vue {
                                                     "
                                                     id="resendEmail"
                                                     data-testid="resendEmailBtn"
-                                                    button-type="secondary"
+                                                    variant="secondary"
                                                     class="ml-3"
                                                     :disabled="
                                                         emailVerificationSent
@@ -629,7 +629,7 @@ export default class ProfileView extends Vue {
                                         <BaseButtonComponent
                                             id="editEmailCancelBtn"
                                             data-testid="editEmailCancelBtn"
-                                            button-type="secondary"
+                                            variant="secondary"
                                             size="small"
                                             class="mr-2"
                                             @click="cancelEmailEdit()"
@@ -639,7 +639,7 @@ export default class ProfileView extends Vue {
                                         <BaseButtonComponent
                                             id="editSMSSaveBtn"
                                             data-testid="editEmailSaveBtn"
-                                            button-type="primary"
+                                            variant="primary"
                                             size="small"
                                             class="mx-2"
                                             :disabled="
@@ -710,7 +710,7 @@ export default class ProfileView extends Vue {
                                                         smsNumber
                                                     "
                                                     id="verifySMS"
-                                                    button-type="secondary"
+                                                    variant="secondary"
                                                     data-testid="verifySMSBtn"
                                                     class="ml-3"
                                                     @click="verifySMS()"
@@ -783,7 +783,7 @@ export default class ProfileView extends Vue {
                                         <BaseButtonComponent
                                             id="cancelBtn"
                                             data-testid="cancelSMSEditBtn"
-                                            button-type="secondary"
+                                            variant="secondary"
                                             size="small"
                                             class="mr-2"
                                             @click="cancelSMSEdit()"
@@ -792,7 +792,7 @@ export default class ProfileView extends Vue {
                                         <BaseButtonComponent
                                             id="saveBtn"
                                             data-testid="saveSMSEditBtn"
-                                            button-type="primary"
+                                            variant="primary"
                                             size="small"
                                             class="mx-2"
                                             :disabled="tempSMS === smsNumber"

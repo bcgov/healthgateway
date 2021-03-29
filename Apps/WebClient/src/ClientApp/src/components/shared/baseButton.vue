@@ -4,13 +4,13 @@ import { Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class BaseButtonComponent extends Vue {
-    @Prop({ required: true }) buttonType!: string;
+    @Prop({ required: true }) variant!: string;
     @Prop({ required: false, default: "" }) size!: string;
 
     private get classes(): string[] {
         let result = [];
 
-        switch (this.buttonType) {
+        switch (this.variant) {
             case "primary":
                 result.push("hg-button", "hg-primary");
                 break;
@@ -28,8 +28,8 @@ export default class BaseButtonComponent extends Vue {
         return result;
     }
 
-    private get variant(): string {
-        switch (this.buttonType) {
+    private get bootstrapVariant(): string {
+        switch (this.variant) {
             case "primary":
                 return "primary";
             case "secondary":
@@ -44,7 +44,7 @@ export default class BaseButtonComponent extends Vue {
 <template>
     <b-button
         v-bind="$attrs"
-        :variant="variant"
+        :variant="bootstrapVariant"
         :class="classes"
         v-on="$listeners"
     >
