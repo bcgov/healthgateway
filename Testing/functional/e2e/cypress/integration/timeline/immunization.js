@@ -42,13 +42,6 @@ describe('Immunization', () => {
         .should('be.visible')
       
       // Verify Forecast
-      cy.get('[data-testid=forecastDisplayName]').first().should('not.be.visible');
-      cy.get('[data-testid=forecastDueDate]').first().should('not.be.visible');
-      cy.get('[data-testid=forecastStatus]').first().should('not.be.visible');
-      cy.get('[data-testid=forecastFollowDirections]').first().should('not.be.visible');
-
-      cy.get('[data-testid=detailsBtn]').first().click();
-
       cy.get('[data-testid=forecastDisplayName]').first().should('be.visible');
       cy.get('[data-testid=forecastDisplayName]').first().contains('Covid-191');
       cy.get('[data-testid=forecastDueDate]').first().should('be.visible');
