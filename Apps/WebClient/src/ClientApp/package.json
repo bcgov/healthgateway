@@ -70,7 +70,7 @@
         "vuex-class": "^0.3.2",
         "webpack": "^4.46.0",
         "webpack-bundle-analyzer": "^4.4.0",
-        "webpack-cli": "^4.5.0",
+        "webpack-cli": "^4.6.0",
         "webpack-dev-middleware": "^4.1.0",
         "webpack-hot-middleware": "^2.25.0"
     },
