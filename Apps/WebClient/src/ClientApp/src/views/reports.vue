@@ -9,12 +9,12 @@ import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import MultiSelectComponent, {
     SelectOption,
 } from "@/components/multiSelect.vue";
-import PageTitleComponent from "@/components/pageTitle.vue";
 import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
