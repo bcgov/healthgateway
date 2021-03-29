@@ -603,13 +603,11 @@ namespace HealthGateway.Medication.Delegates.Test
                                                                                 string.Empty,
                                                                                 string.Empty,
                                                                                 string.Empty).ConfigureAwait(true)).Result;
-            Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
-            Assert.Equal(ActionType.Protected, response.ResultError.ActionCode);
-            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError.ResultMessage);
+            Assert.Equal(ResultType.Error, response.ResultStatus);
         }
 
         [Fact]
-        public void ValidateGetProtectiveWordParseError()
+        public void ValidateGetProtectiveWordJSONParseError()
         {
             string PHN = "9735361219";
             ODRHistoryQuery query = new ODRHistoryQuery()
@@ -664,9 +662,7 @@ namespace HealthGateway.Medication.Delegates.Test
                                                                                 string.Empty,
                                                                                 string.Empty,
                                                                                 string.Empty).ConfigureAwait(true)).Result;
-            Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
-            Assert.Equal(ActionType.Protected, response.ResultError.ActionCode);
-            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError.ResultMessage);
+            Assert.Equal(ResultType.Error, response.ResultStatus);
         }
 
         [Fact]
@@ -725,9 +721,7 @@ namespace HealthGateway.Medication.Delegates.Test
                                                                                 string.Empty,
                                                                                 string.Empty,
                                                                                 string.Empty).ConfigureAwait(true)).Result;
-            Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
-            Assert.Equal(ActionType.Protected, response.ResultError.ActionCode);
-            Assert.Equal(ErrorMessages.ProtectiveWordErrorMessage, response.ResultError.ResultMessage);
+            Assert.Equal(ResultType.Error, response.ResultStatus);
         }
 
         [Fact]
