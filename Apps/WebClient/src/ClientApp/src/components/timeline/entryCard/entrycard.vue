@@ -150,13 +150,13 @@ export default class EntrycardTimelineComponent extends Vue {
                         <slot name="details-body"></slot>
                     </b-col>
                 </b-row>
-                <b-row
-                    v-if="allowComment"
-                    :class="{ 'sticky-bottom': isMobileDetails }"
-                >
+                <b-row v-if="allowComment">
                     <b-col class="leftPane d-none d-md-block"></b-col>
                     <b-col class="pb-1 pt-1 px-3">
-                        <CommentSection :parent-entry="entry" />
+                        <CommentSection
+                            :parent-entry="entry"
+                            :is-mobile-details="isMobileDetails"
+                        />
                     </b-col>
                 </b-row>
             </b-collapse>
@@ -229,12 +229,5 @@ div[class*=" row"] {
 .detailsButton {
     padding: 0px;
     color: $primary;
-}
-
-.sticky-bottom {
-    border-top: 1px $primary solid;
-    position: sticky;
-    bottom: 0px;
-    background-color: white;
 }
 </style>
