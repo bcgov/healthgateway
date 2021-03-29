@@ -9,7 +9,7 @@
             </b-col>
         </b-row>
         <b-row class="m-1 fluid text-right">
-            <b-col> Last updated: <strong>2021-Mar-24</strong> </b-col>
+            <b-col> Last updated: <strong>2021-Mar-31</strong> </b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
