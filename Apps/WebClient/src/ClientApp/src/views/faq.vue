@@ -51,13 +51,18 @@
                                         Access immunization records for vaccines
                                         administered by public health and
                                         pharmacies. The Health Gateway also
-                                        provides digital the digital COVID-19
-                                        immunization card, which you can which
-                                        you can download and print as proof of
-                                        your immunization. Immunization records
-                                        for vaccines provided by family doctors
-                                        or travel clinics are currently
-                                        unavailable.
+                                        provides the digital COVID-19
+                                        immunization card, which you can
+                                        download and print as proof of your
+                                        immunization. Contact your
+                                        <a
+                                            href="https://immunizebc.ca/finder"
+                                            target="blank_"
+                                            >local public health unit</a
+                                        >
+                                        to have vaccines provided by family
+                                        doctors or travel clinics added to the
+                                        provincial immunization registry.
                                     </div>
                                 </li>
                                 <li>
