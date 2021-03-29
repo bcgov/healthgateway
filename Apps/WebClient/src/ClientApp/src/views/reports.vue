@@ -204,7 +204,7 @@ export default class ReportsView extends Vue {
         <div>
             <b-row>
                 <b-col class="col-12 col-md-10 col-lg-9 column-wrapper">
-                    <PageTitleComponent :title="`Export Records`" />
+                    <PageTitleComponent title="Export Records" />
                     <div class="my-3 px-3 py-4 form">
                         <b-row>
                             <b-col>
