@@ -6,6 +6,7 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
+import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -18,8 +19,7 @@ import PDFUtil from "@/utility/pdfUtil";
     },
 })
 export default class MSPVisitsReportComponent extends Vue {
-    @Prop() private startDate!: string | null;
-    @Prop() private endDate!: string | null;
+    @Prop() private filter!: ReportFilter;
 
     @Action("retrieve", { namespace: "encounter" })
     retrieveEncounters!: (params: { hdid: string }) => Promise<void>;
@@ -37,26 +37,12 @@ export default class MSPVisitsReportComponent extends Vue {
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
-    private notFoundText = "Not Found";
 
     private isPreview = true;
 
     private get visibleRecords(): Encounter[] {
         let records = this.patientEncounters.filter((record) => {
-            let filterStart = true;
-            if (this.startDate !== null) {
-                filterStart = new DateWrapper(
-                    record.encounterDate
-                ).isAfterOrSame(new DateWrapper(this.startDate));
-            }
-
-            let filterEnd = true;
-            if (this.endDate !== null) {
-                filterEnd = new DateWrapper(
-                    record.encounterDate
-                ).isBeforeOrSame(new DateWrapper(this.endDate));
-            }
-            return filterStart && filterEnd;
+            return this.filter.allowsDate(record.encounterDate);
         });
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.encounterDate);
@@ -131,8 +117,7 @@ export default class MSPVisitsReportComponent extends Vue {
             <section class="pdf-item">
                 <ReportHeaderComponent
                     v-show="!isPreview"
-                    :start-date="startDate"
-                    :end-date="endDate"
+                    :filter="filter"
                     title="Health Gateway Health Visit History"
                 />
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
