@@ -132,4 +132,22 @@ describe("Laboratory", () => {
         });
       });
   });
+
+  it("Validate Report Attachment Icons", () => {
+    cy.log("All cards with reports should have attachment icons.");
+    cy.get("[data-testid=laboratoryReportAvailable]")
+      .closest("[data-testid=timelineCard]")
+      .each((card) => {
+        cy.wrap(card).find("[data-testid=attachmentIcon]").should("exist");
+      });
+
+    cy.log("All cards with attachment icons should have reports.");
+    cy.get("[data-testid=attachmentIcon]")
+      .closest("[data-testid=timelineCard]")
+      .each((card) => {
+        cy.wrap(card)
+          .find("[data-testid=laboratoryReportAvailable]")
+          .should("exist");
+      });
+  });
 });
