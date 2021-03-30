@@ -95,7 +95,7 @@
       "messageDateTime": "2020-10-04T21:08:00+00:00",
       "messageId": "20000001442319514",
       "additionalData": "Positive for COVID-19 (SARS-CoV-2) RNA by molecular assay\u003Cbr\u003Emethod.\u003Cbr\u003E\u003Cbr\u003EThis assay targets the E and ORF1/a gene regions of the\u003Cbr\u003ECOVID-19 (SARS-CoV-2) virus.\u003Cbr\u003E\u003Cbr\u003EA copy of the result has been sent to Infection Prevention\u003Cbr\u003Eand Control.\u003Cbr\u003E\u003Cbr\u003EAs required by the regulation for the control of\u003Cbr\u003Ecommunicable disease, this case will be reported to the\u003Cbr\u003EMedical Health Officer.\u003Cbr\u003E\u003Cbr\u003E",
-      "reportAvailable": true,
+      "reportAvailable": false,
       "labResults": [
         {
           "id": "40a6e571-62b6-4cb3-89ed-afe7a322ccb2",
