@@ -77,25 +77,25 @@ namespace HealthGateway.WebClient.Services
         public PrimitiveRequestResult<bool> ValidateEmail(string hdid, Guid inviteKey)
         {
             this.logger.LogTrace($"Validating email... {inviteKey}");
-            PrimitiveRequestResult<bool> retVal = new ();
-
-            MessagingVerification? emailVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
-            if (emailVerification == null ||
-                emailVerification.HdId != hdid ||
-                emailVerification.Validated == true ||
-                emailVerification.Deleted == true)
+            MessagingVerification? matchingVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
+            if (matchingVerification == null ||
+                matchingVerification.HdId != hdid ||
+                matchingVerification.Deleted == true)
             {
                 // Invalid Verification Attempt
-                emailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
-                if (emailVerification != null &&
-                    !emailVerification.Validated)
+                MessagingVerification? lastEmailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
+                if (lastEmailVerification != null &&
+                    !lastEmailVerification.Validated)
                 {
-                    emailVerification.VerificationAttempts++;
-                    this.messageVerificationDelegate.Update(emailVerification);
+                    lastEmailVerification.VerificationAttempts++;
+                    this.messageVerificationDelegate.Update(lastEmailVerification);
                 }
+
+                this.logger.LogDebug($"Invalid email verification");
 
                 return new PrimitiveRequestResult<bool>()
                 {
+                    ResourcePayload = false,
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError()
                     {
@@ -104,29 +104,55 @@ namespace HealthGateway.WebClient.Services
                     },
                 };
             }
-            else if (emailVerification.VerificationAttempts >= this.maxVerificationAttempts ||
-                     emailVerification.ExpireDate < DateTime.UtcNow)
+            else if (matchingVerification.VerificationAttempts >= this.maxVerificationAttempts ||
+                     matchingVerification.ExpireDate < DateTime.UtcNow)
             {
+                this.logger.LogDebug($"Email verification expired");
+
                 // Verification Expired
-                retVal.ResultStatus = ResultType.ActionRequired;
-                retVal.ResultError = ErrorTranslator.ActionRequired("Email Verification Expired", ActionType.Expired);
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResourcePayload = false,
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = ErrorTranslator.ActionRequired("Email Verification Expired", ActionType.Expired),
+                };
+            }
+            else if (matchingVerification.Validated == true)
+            {
+                this.logger.LogDebug($"Email already validated");
+
+                // Verification already verified
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResourcePayload = true,
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Email Verification Already verified",
+                        ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState),
+                    },
+                };
             }
             else
             {
-                emailVerification.Validated = true;
-                this.messageVerificationDelegate.Update(emailVerification);
+                matchingVerification.Validated = true;
+                this.messageVerificationDelegate.Update(matchingVerification);
                 UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
-                userProfile.Email = emailVerification.Email!.To; // Gets the user email from the email sent.
+                userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
                 this.profileDelegate.Update(userProfile);
 
                 // Update the notification settings
                 this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SMSNumber));
 
-                retVal.ResultStatus = ResultType.Success;
-            }
+                this.logger.LogDebug($"Email validated");
 
-            this.logger.LogDebug($"Finished validating email: {JsonConvert.SerializeObject(retVal)}");
-            return retVal;
+                // Verification already verified
+                return new PrimitiveRequestResult<bool>()
+                {
+                    ResourcePayload = true,
+                    ResultStatus = ResultType.Success,
+                };
+            }
         }
 
         /// <inheritdoc />
@@ -192,14 +218,14 @@ namespace HealthGateway.WebClient.Services
                                              .GetLeftPart(UriPartial.Authority);
             string hostUrl = activationHost.ToString();
 
-            Dictionary<string, string> keyValues = new ()
+            Dictionary<string, string> keyValues = new()
             {
                 [EmailTemplateVariable.InviteKey] = inviteKey.ToString(),
                 [EmailTemplateVariable.ActivationHost] = hostUrl,
                 [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 
-            MessagingVerification messageVerification = new ()
+            MessagingVerification messageVerification = new()
             {
                 InviteKey = inviteKey,
                 HdId = hdid,
