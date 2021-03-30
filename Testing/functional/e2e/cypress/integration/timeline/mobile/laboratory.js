@@ -1,18 +1,20 @@
 const { AuthMethod } = require("../../../support/constants");
-before(() => {
-  cy.viewport("iphone-6");
-  cy.restoreAuthCookies();
-  cy.enableModules("Laboratory");
-  cy.intercept("GET", "**/v1/api/Laboratory*", {
-    fixture: "LaboratoryService/laboratory.json",
-  });
-  cy.login(
-    Cypress.env("keycloak.username"),
-    Cypress.env("keycloak.password"),
-    AuthMethod.KeyCloak
-  );
-});
+
 describe("Laboratory", () => {
+  before(() => {
+    cy.viewport("iphone-6");
+    cy.restoreAuthCookies();
+    cy.enableModules("Laboratory");
+    cy.intercept("GET", "**/v1/api/Laboratory*", {
+      fixture: "LaboratoryService/laboratory.json",
+    });
+    cy.login(
+      Cypress.env("keycloak.username"),
+      Cypress.env("keycloak.password"),
+      AuthMethod.KeyCloak
+    );
+  });
+  
   it("Validate Card", () => {
     cy.log("Verifying card data");
     cy.get("[data-testid=timelineCard]")
