@@ -6,8 +6,38 @@
                     <b-col>
                         <div id="pageTitle">
                             <h1 id="subject">Health Gateway Release Notes</h1>
-                            <hr />
+                            <hr/>
                         </div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
+                                    >March 31, 2021 - v1.3.13 - Exclude on Medication Export, 
+                                    Email Verification, Timeline Updates
+                            </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We added the ability to exclude certain medications by 
+                                        brand name on the medication history export. 
+                                    </li>
+                                    <li>
+                                        We updated the email verification flow to indicate 
+                                        when you've already verified your email. 
+                                    </li>
+                                    <li>
+                                        We added an icon to be displayed when pdf attachments are available. 
+                                        The input for comments was moved to the bottom of the expanded timeline card page.                                        
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
                     </b-col>
                 </b-row>
                 <b-row>
