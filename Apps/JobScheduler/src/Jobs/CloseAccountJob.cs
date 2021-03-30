@@ -89,7 +89,7 @@ namespace Healthgateway.JobScheduler.Jobs
             this.emailTemplate = this.configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}");
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
-            this.tokenUri = configSection.GetValue<Uri>(@"AuthTokenUri");
+            this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");
 
             this.tokenRequest = new ClientCredentialsTokenRequest();
             configSection.Bind(this.tokenRequest);
