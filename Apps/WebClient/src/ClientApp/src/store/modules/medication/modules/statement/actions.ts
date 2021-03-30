@@ -1,10 +1,13 @@
 import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
-import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult, { ResultError } from "@/models/requestResult";
-import { LoadStatus, MedicationState, RootState } from "@/models/storeState";
+import {
+    LoadStatus,
+    MedicationStatementState,
+    RootState,
+} from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IMedicationService } from "@/services/interfaces";
@@ -15,7 +18,7 @@ const medicationService: IMedicationService = container.get<IMedicationService>(
     SERVICE_IDENTIFIER.MedicationService
 );
 
-export const actions: ActionTree<MedicationState, RootState> = {
+export const actions: ActionTree<MedicationStatementState, RootState> = {
     retrieveMedicationStatements(
         context,
         params: { hdid: string; protectiveWord?: string }
@@ -39,7 +42,7 @@ export const actions: ActionTree<MedicationState, RootState> = {
                 });
             } else {
                 logger.debug("Retrieving Medication Statements");
-                context.commit("setRequested");
+                context.commit("setMedicationStatementRequested");
                 return medicationService
                     .getPatientMedicationStatementHistory(
                         params.hdid,
@@ -47,70 +50,33 @@ export const actions: ActionTree<MedicationState, RootState> = {
                     )
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleError", result.resultError);
-                            reject(result.resultError);
-                        } else {
-                            context.commit("setMedicationResult", result);
-                            resolve(result);
-                        }
-                    })
-                    .catch((error) => {
-                        context.dispatch("handleError", error);
-                        reject(error);
-                    });
-            }
-        });
-    },
-    retrieveMedicationRequests(
-        context,
-        params: { hdid: string }
-    ): Promise<RequestResult<MedicationRequest[]>> {
-        return new Promise((resolve, reject) => {
-            const medicationRequests: MedicationRequest[] =
-                context.getters.medicationRequests;
-            if (
-                context.state.status === LoadStatus.LOADED ||
-                medicationRequests.length > 0
-            ) {
-                logger.debug("Medication Requests found stored, not quering!");
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: medicationRequests,
-                    resultStatus: ResultType.Success,
-                    totalResultCount: medicationRequests.length,
-                });
-            } else {
-                logger.debug("Retrieving Medication Requests");
-                context.commit("setRequested");
-                return medicationService
-                    .getPatientMedicationRequest(params.hdid)
-                    .then((result) => {
-                        if (result.resultStatus === ResultType.Error) {
-                            context.dispatch("handleError", result.resultError);
+                            context.dispatch(
+                                "handleStatementError",
+                                result.resultError
+                            );
                             reject(result.resultError);
                         } else {
                             context.commit(
-                                "setMedicationRequestResult",
+                                "setMedicationStatementResult",
                                 result
                             );
                             resolve(result);
                         }
                     })
                     .catch((error) => {
-                        context.dispatch("handleError", error);
+                        context.dispatch("handleStatementError", error);
                         reject(error);
                     });
             }
         });
     },
-    handleError(context, error: ResultError) {
+    handleStatementError(context, error: ResultError) {
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("medicationError", error);
+        context.commit("medicationStatementError", error);
 
         context.dispatch(
             "errorBanner/addResultError",
-            { message: "Fetch Medications Error", error },
+            { message: "Fetch Medication Statements Error", error },
             { root: true }
         );
     },

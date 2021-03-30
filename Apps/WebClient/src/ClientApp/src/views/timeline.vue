@@ -80,10 +80,10 @@ export default class TimelineView extends Vue {
     @Action("retrieve", { namespace: "comment" })
     retrieveComments!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "medication" })
-    isMedicationLoading!: boolean;
+    @Getter("isMedicationStatementLoading", { namespace: "medication" })
+    isMedicationStatementLoading!: boolean;
 
-    @Getter("isLoading", { namespace: "medication" })
+    @Getter("isMedicationRequestLoading", { namespace: "medication" })
     isMedicationRequestLoading!: boolean;
 
     @Getter("isLoading", { namespace: "comment" })
@@ -259,7 +259,7 @@ export default class TimelineView extends Vue {
     private get isLoading(): boolean {
         return (
             this.isMedicationRequestLoading ||
-            this.isMedicationLoading ||
+            this.isMedicationStatementLoading ||
             this.isImmunizationLoading ||
             this.isLaboratoryLoading ||
             this.isEncounterLoading ||

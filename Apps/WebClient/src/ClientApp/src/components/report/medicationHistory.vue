@@ -29,7 +29,7 @@ export default class MedicationHistoryReportComponent extends Vue {
     @Action("retrieveMedicationStatements", { namespace: "medication" })
     private retrieveMedications!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "medication" })
+    @Getter("isMedicationStatementLoading", { namespace: "medication" })
     isLoading!: boolean;
 
     @Getter("medicationStatements", { namespace: "medication" })
