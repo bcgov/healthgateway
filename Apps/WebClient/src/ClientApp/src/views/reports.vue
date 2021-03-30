@@ -282,6 +282,7 @@ export default class ReportsView extends Vue {
                                     reportFilter.hasMedicationsFilter() &&
                                     reportType == 'MED'
                                 "
+                                data-testid="medicationFilter"
                             >
                                 <div><strong>Exclude</strong></div>
                                 <b-form-tag
@@ -332,6 +333,7 @@ export default class ReportsView extends Vue {
                                         v-model="selectedMedicationOptions"
                                         placeholder="Choose a medication"
                                         :options="medicationOptions"
+                                        data-testid="medicationExclusionFilter"
                                     ></MultiSelectComponent>
                                 </b-col>
                             </b-row>
