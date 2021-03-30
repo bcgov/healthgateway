@@ -184,7 +184,7 @@ namespace HealthGateway.WebClient.Services
 
         private void AddVerificationEmail(string hdid, string toEmail, Guid inviteKey)
         {
-            float verificationExpiryHours = this.emailVerificationExpirySeconds / 3600;
+            float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
 
             string activationHost = this.httpContextAccessor.HttpContext!.Request
                                              .GetTypedHeaders()

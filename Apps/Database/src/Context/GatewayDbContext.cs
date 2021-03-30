@@ -585,36 +585,6 @@ namespace HealthGateway.Database.Context
                 },
                 new EmailTemplate
                 {
-                    Id = Guid.Parse("896f8f2e-3bed-400b-acaf-51dd6082b4bd"),
-                    Name = "Invite",
-                    From = "HG_Donotreply@gov.bc.ca",
-                    Subject = "Health Gateway Private Invitation",
-                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailInviteTemplate.html"),
-                    Priority = EmailPriority.Low,
-                    EffectiveDate = this.DefaultSeedDate,
-                    FormatCode = EmailFormat.HTML,
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new EmailTemplate
-                {
-                    Id = Guid.Parse("2ab5d4aa-c4c9-4324-a753-cde4e21e7612"),
-                    Name = "BetaConfirmation",
-                    From = "HG_Donotreply@gov.bc.ca",
-                    Subject = "Health Gateway Waitlist Confirmation",
-                    Body = ReadResource("HealthGateway.Database.Assets.docs.EmailWaitlistTemplate.html"),
-                    Priority = EmailPriority.Low,
-                    EffectiveDate = this.DefaultSeedDate,
-                    FormatCode = EmailFormat.HTML,
-                    CreatedBy = UserId.DefaultUser,
-                    CreatedDateTime = this.DefaultSeedDate,
-                    UpdatedBy = UserId.DefaultUser,
-                    UpdatedDateTime = this.DefaultSeedDate,
-                },
-                new EmailTemplate
-                {
                     Id = Guid.Parse("eb695050-e2fb-4933-8815-3d4656e4541d"),
                     Name = "TermsOfService",
                     From = "HG_Donotreply@gov.bc.ca",

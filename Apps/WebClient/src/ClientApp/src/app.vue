@@ -213,7 +213,7 @@ export default class App extends Vue {
         <div v-if="!isProduction" class="devBanner">
             <div class="text-center bg-warning small">
                 Non-production environment:
-                <b>{{ host }}</b>
+                <strong>{{ host }}</strong>
             </div>
         </div>
 

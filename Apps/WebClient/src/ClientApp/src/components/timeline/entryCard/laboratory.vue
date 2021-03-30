@@ -190,7 +190,7 @@ export default class LaboratoryTimelineComponent extends Vue {
                     <strong>What to expect next</strong>
                     <p>
                         If you receive a
-                        <b>positive</b> COVID-19 result:
+                        <strong>positive</strong> COVID-19 result:
                     </p>
                     <ul>
                         <li>

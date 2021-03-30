@@ -79,7 +79,7 @@ namespace HealthGateway.Common.ErrorHandling
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return this.Value.GetHashCode();
         }
     }
 }

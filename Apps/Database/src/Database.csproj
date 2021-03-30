@@ -34,14 +34,10 @@
 
 
   <ItemGroup>
-    <Content Remove="Assets\docs\EmailInviteTemplate.html" />
     <Content Remove="Assets\docs\EmailValidationTemplate.html" />
-    <Content Remove="Assets\docs\EmailWaitlistTemplate.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\docs\EmailInviteTemplate.html" />
     <EmbeddedResource Include="Assets\docs\EmailValidationTemplate.html" />
-    <EmbeddedResource Include="Assets\docs\EmailWaitlistTemplate.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20200511.html" />
     <EmbeddedResource Include="Assets\Legal\TermsOfService.20191206.html" />
     <EmbeddedResource Include="Assets\docs\EmailUpdatedTermsofService.html" />
