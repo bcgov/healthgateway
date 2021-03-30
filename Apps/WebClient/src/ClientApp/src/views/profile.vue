@@ -164,7 +164,10 @@ export default class ProfileView extends Vue {
                     );
                     this.userProfile = results[1];
                     this.lastLoginDateString = new DateWrapper(
-                        this.userProfile.lastLoginDateTime
+                        this.userProfile.lastLoginDateTime,
+                        {
+                            isUtc: true,
+                        }
                     ).format();
 
                     this.email = this.userProfile.email;
