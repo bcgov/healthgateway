@@ -273,7 +273,7 @@ export default class CalendarBodyComponent extends Vue {
 }
 </style>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
 .calendar-body {
