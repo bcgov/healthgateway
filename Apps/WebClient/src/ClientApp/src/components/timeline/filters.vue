@@ -521,7 +521,7 @@ export default class FilterComponent extends Vue {
     width: 225px;
 }
 </style>
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
 .filter-section {
