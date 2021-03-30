@@ -17,6 +17,7 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
+import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
@@ -39,8 +40,11 @@ Vue.component("BFormTag", BFormTag);
 export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
+
+    @Getter("user", { namespace: "user" }) user!: User;
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -57,6 +61,9 @@ export default class ReportsView extends Vue {
 
     @Action("addError", { namespace: "errorBanner" })
     private addError!: (error: BannerError) => void;
+
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: (params: { hdid: string }) => Promise<void>;
 
     private isLoading = false;
     private isGeneratingReport = false;
@@ -75,6 +82,9 @@ export default class ReportsView extends Vue {
 
     private mounted() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
+        this.getPatientData({ hdid: this.user.hdid });
+
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({ value: "MED", text: "Medications" });
         }
@@ -197,7 +207,7 @@ export default class ReportsView extends Vue {
                                                 :disabled="
                                                     !reportType ||
                                                     isLoading ||
-                                                    patientData === null
+                                                    !patientData.hdid
                                                 "
                                                 @click="showConfirmationModal"
                                             >
