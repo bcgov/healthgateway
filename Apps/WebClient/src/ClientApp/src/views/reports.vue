@@ -150,7 +150,7 @@ export default class ReportsView extends Vue {
 
     private cancelFilter() {
         this.selectedStartDate = this.reportFilter.startDate;
-        this.selectedEndDate = this.reportFilter.startDate;
+        this.selectedEndDate = this.reportFilter.endDate;
         this.selectedMedicationOptions = this.reportFilter.medications;
     }
 
