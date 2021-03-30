@@ -302,15 +302,21 @@ export default class DependentCardComponent extends Vue {
                             >No records found.</b-col
                         >
                     </b-row>
-                    <table v-else class="w-100">
+                    <table
+                        v-else
+                        class="w-100"
+                        aria-describedby="COVID-19 Test Results"
+                    >
                         <tr>
-                            <th>COVID-19 Test Date</th>
-                            <th class="d-none d-sm-table-cell">Test Type</th>
-                            <th class="d-none d-sm-table-cell">
+                            <th scope="col">COVID-19 Test Date</th>
+                            <th scope="col" class="d-none d-sm-table-cell">
+                                Test Type
+                            </th>
+                            <th scope="col" class="d-none d-sm-table-cell">
                                 Test Location
                             </th>
-                            <th>Result</th>
-                            <th>Report</th>
+                            <th scope="col">Result</th>
+                            <th scope="col">Report</th>
                         </tr>
                         <tr
                             v-for="item in labResults"
@@ -366,7 +372,7 @@ export default class DependentCardComponent extends Vue {
                         <strong>What to expect next</strong>
                         <p>
                             If you receive a
-                            <b>positive</b> COVID-19 result:
+                            <strong>positive</strong> COVID-19 result:
                         </p>
                         <ul>
                             <li>
@@ -414,32 +420,36 @@ export default class DependentCardComponent extends Vue {
                                     }}
                                 </span>
                             </b-col>
-                            <li
-                                role="presentation"
-                                class="ml-auto mr-1 nav-item align-self-center"
-                            >
-                                <b-nav-item-dropdown
-                                    right
-                                    text=""
-                                    :no-caret="true"
+                            <ul class="list-unstyled">
+                                <li
+                                    role="presentation"
+                                    class="ml-auto mr-1 nav-item align-self-center"
                                 >
-                                    <template slot="button-content">
-                                        <font-awesome-icon
-                                            data-testid="dependentMenuBtn"
-                                            class="dependentMenu"
-                                            :icon="menuIcon"
-                                            size="1x"
-                                        ></font-awesome-icon>
-                                    </template>
-                                    <b-dropdown-item
-                                        data-testid="deleteDependentMenuBtn"
-                                        class="menuItem"
-                                        @click="showDeleteConfirmationModal()"
+                                    <b-nav-item-dropdown
+                                        right
+                                        text=""
+                                        :no-caret="true"
                                     >
-                                        Delete
-                                    </b-dropdown-item>
-                                </b-nav-item-dropdown>
-                            </li>
+                                        <template slot="button-content">
+                                            <font-awesome-icon
+                                                data-testid="dependentMenuBtn"
+                                                class="dependentMenu"
+                                                :icon="menuIcon"
+                                                size="1x"
+                                            ></font-awesome-icon>
+                                        </template>
+                                        <b-dropdown-item
+                                            data-testid="deleteDependentMenuBtn"
+                                            class="menuItem"
+                                            @click="
+                                                showDeleteConfirmationModal()
+                                            "
+                                        >
+                                            Delete
+                                        </b-dropdown-item>
+                                    </b-nav-item-dropdown>
+                                </li>
+                            </ul>
                         </b-row>
                     </div>
                 </template>
