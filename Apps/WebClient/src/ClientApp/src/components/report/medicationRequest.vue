@@ -27,7 +27,7 @@ export default class MedicationRequestReportComponent extends Vue {
     @Action("retrieveMedicationRequests", { namespace: "medication" })
     private retrieve!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "medication" })
+    @Getter("isMedicationRequestLoading", { namespace: "medication" })
     isLoading!: boolean;
 
     @Getter("medicationRequests", { namespace: "medication" })

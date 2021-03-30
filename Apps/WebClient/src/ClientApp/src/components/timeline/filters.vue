@@ -47,8 +47,8 @@ export default class FilterComponent extends Vue {
 
     @Getter("isSidebarOpen", { namespace: "navbar" }) isSidebarOpen!: boolean;
 
-    @Getter("medicationCount", { namespace: "medication" })
-    medicationCount!: number;
+    @Getter("medicationStatementCount", { namespace: "medication" })
+    medicationStatementCount!: number;
 
     @Getter("medicationRequestCount", { namespace: "medication" })
     medicationRequestCount!: number;
@@ -89,7 +89,7 @@ export default class FilterComponent extends Vue {
                 type: EntryType.Medication,
                 display: "Medications",
                 isEnabled: this.config.modules[EntryType.Medication],
-                numEntries: this.medicationCount,
+                numEntries: this.medicationStatementCount,
             },
             {
                 type: EntryType.Laboratory,
