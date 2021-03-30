@@ -155,6 +155,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                     v-for="item in visibleRecords"
                     :key="item.prescriptionIdentifier + item.dispensedDate"
                     class="item py-1"
+                    data-testid="medicationReportEntry"
                 >
                     <b-col class="col-1 my-auto text-nowrap">
                         {{ formatDate(item.dispensedDate) }}
@@ -162,7 +163,10 @@ export default class MedicationHistoryReportComponent extends Vue {
                     <b-col class="col-1 my-auto">
                         {{ item.medicationSummary.din }}
                     </b-col>
-                    <b-col class="col-2 my-auto">
+                    <b-col
+                        class="col-2 my-auto"
+                        data-testid="medicationReportEntryBrandName"
+                    >
                         {{ item.medicationSummary.brandName }}
                     </b-col>
                     <b-col class="col-2 my-auto">
