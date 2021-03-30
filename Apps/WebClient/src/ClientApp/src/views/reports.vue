@@ -104,7 +104,7 @@ export default class ReportsView extends Vue {
         return new DateWrapper(date).format();
     }
 
-    private mounted() {
+    private created() {
         this.getPatientData({ hdid: this.user.hdid });
 
         if (this.config.modules["Medication"]) {
