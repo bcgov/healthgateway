@@ -115,7 +115,7 @@ export default class LaboratoryTimelineComponent extends Vue {
         </div>
 
         <div slot="details-body">
-            <div v-if="reportAvailable">
+            <div v-if="reportAvailable" data-testid="laboratoryReportAvailable">
                 <b-spinner v-if="isLoadingDocument"></b-spinner>
                 <span v-else data-testid="laboratoryReport">
                     <strong>Report:</strong>

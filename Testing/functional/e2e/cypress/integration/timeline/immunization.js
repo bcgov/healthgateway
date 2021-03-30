@@ -28,6 +28,22 @@ describe('Immunization', () => {
         .should('be.visible')
     })
 
+    it('Validate COVID-19 Immunization Attachment Icons', () => {
+      cy.log('All COVID-19 immunizations should have attachment icons.')
+      cy.get('[data-testid=cardBtn]')
+        .closest('[data-testid=timelineCard]')
+        .each((card) => {
+          cy.wrap(card).find('[data-testid=attachmentIcon]').should('exist')
+        })
+
+      cy.log('All cards with attachment icons should be COVID-19 immunizations.')
+      cy.get('[data-testid=attachmentIcon]')
+        .closest('[data-testid=timelineCard]')
+        .each((card) => {
+          cy.wrap(card).find('[data-testid=cardBtn]').should('exist')
+        })
+    })
+
     it('Validate Card Details', () => {
       cy.get('[data-testid=timelineCard')
         .first()
