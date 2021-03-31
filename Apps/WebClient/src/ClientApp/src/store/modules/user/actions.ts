@@ -30,10 +30,10 @@ const patientService: IPatientService = container.get<IPatientService>(
 );
 
 export const actions: ActionTree<UserState, RootState> = {
-    checkRegistration(context, params: { hdid: string }): Promise<boolean> {
+    checkRegistration(context): Promise<boolean> {
         return new Promise((resolve, reject) => {
             return userProfileService
-                .getProfile(params.hdid)
+                .getProfile(context.state.user.hdid)
                 .then((userProfile) => {
                     logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
@@ -79,13 +79,10 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-    updateUserEmail(
-        context,
-        params: { hdid: string; emailAddress: string }
-    ): Promise<void> {
+    updateUserEmail(context, params: { emailAddress: string }): Promise<void> {
         return new Promise((resolve, reject) => {
             userProfileService
-                .updateEmail(params.hdid, params.emailAddress)
+                .updateEmail(context.state.user.hdid, params.emailAddress)
                 .then(() => {
                     resolve();
                 })
@@ -100,11 +97,14 @@ export const actions: ActionTree<UserState, RootState> = {
     },
     updateUserPreference(
         context,
-        params: { hdid: string; userPreference: UserPreference }
+        params: { userPreference: UserPreference }
     ): Promise<void> {
         return new Promise((resolve, reject) => {
             userProfileService
-                .updateUserPreference(params.hdid, params.userPreference)
+                .updateUserPreference(
+                    context.state.user.hdid,
+                    params.userPreference
+                )
                 .then((result) => {
                     if (result) {
                         context.commit(
@@ -122,11 +122,14 @@ export const actions: ActionTree<UserState, RootState> = {
     },
     createUserPreference(
         context,
-        params: { hdid: string; userPreference: UserPreference }
+        params: { userPreference: UserPreference }
     ): Promise<void> {
         return new Promise((resolve, reject) => {
             userProfileService
-                .createUserPreference(params.hdid, params.userPreference)
+                .createUserPreference(
+                    context.state.user.hdid,
+                    params.userPreference
+                )
                 .then((result) => {
                     if (result) {
                         context.commit(
@@ -142,10 +145,10 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-    closeUserAccount(context, params: { hdid: string }): Promise<void> {
+    closeUserAccount(context): Promise<void> {
         return new Promise((resolve, reject) => {
             userProfileService
-                .closeAccount(params.hdid)
+                .closeAccount(context.state.user.hdid)
                 .then((userProfile) => {
                     context.commit("setProfileUserData", userProfile);
                     resolve();
@@ -156,10 +159,10 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-    recoverUserAccount(context, params: { hdid: string }): Promise<void> {
+    recoverUserAccount(context): Promise<void> {
         return new Promise((resolve, reject) => {
             userProfileService
-                .recoverAccount(params.hdid)
+                .recoverAccount(context.state.user.hdid)
                 .then((userProfile) => {
                     logger.debug(
                         `recoverUserAccount User Profile: ${JSON.stringify(
@@ -175,11 +178,11 @@ export const actions: ActionTree<UserState, RootState> = {
                 });
         });
     },
-    getPatientData(context, params: { hdid: string }): Promise<void> {
+    getPatientData(context): Promise<void> {
         return new Promise((resolve, reject) => {
             if (context.getters.patientData.hdid === undefined) {
                 patientService
-                    .getPatientData(params.hdid)
+                    .getPatientData(context.state.user.hdid)
                     .then((result) => {
                         if (result.resultStatus === ResultType.Error) {
                             context.dispatch("handleError", result.resultError);

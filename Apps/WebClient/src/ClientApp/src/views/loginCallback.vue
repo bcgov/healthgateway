@@ -16,7 +16,7 @@ export default class LoginCallbackView extends Vue {
     @Action("clearStorage", { namespace: "auth" }) clearStorage!: () => void;
 
     @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+    checkRegistration!: () => Promise<boolean>;
 
     @Getter("user", { namespace: "user" }) user!: User;
 
@@ -35,11 +35,9 @@ export default class LoginCallbackView extends Vue {
                 // If the idp is valid, check the registration status and continue the route.
                 // Otherwise the router will handle the path.
                 if (this.isValidIdentityProvider) {
-                    this.checkRegistration({ hdid: this.user.hdid }).then(
-                        () => {
-                            this.$router.push({ path: redirectPath });
-                        }
-                    );
+                    this.checkRegistration().then(() => {
+                        this.$router.push({ path: redirectPath });
+                    });
                 } else {
                     this.$router.push({ path: redirectPath });
                 }

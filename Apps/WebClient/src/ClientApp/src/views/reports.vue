@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
@@ -39,6 +39,7 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
     @Getter("medicationStatements", { namespace: "medication" })
@@ -56,6 +57,9 @@ export default class ReportsView extends Vue {
     readonly immunizationHistoryReport!: ImmunizationHistoryReportComponent;
     @Ref("medicationRequestReport")
     readonly medicationRequestReport!: MedicationRequestReportComponent;
+
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: () => Promise<void>;
 
     private isLoading = false;
     private isGeneratingReport = false;
@@ -97,7 +101,9 @@ export default class ReportsView extends Vue {
         return new DateWrapper(date).format();
     }
 
-    private mounted() {
+    private created() {
+        this.getPatientData();
+
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({ value: "MED", text: "Medications" });
         }
@@ -236,7 +242,7 @@ export default class ReportsView extends Vue {
                                     :disabled="
                                         !reportType ||
                                         isLoading ||
-                                        patientData === null
+                                        !patientData.hdid
                                     "
                                     @click="showConfirmationModal"
                                 >
