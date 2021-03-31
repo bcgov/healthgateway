@@ -1,88 +1,88 @@
 parameters:
-  - name: Application
-    type: string 
-    default: NotSpecified
-    values:
-    - AdminWebClient
-    - Common
-    - Database
-    - Encounter
-    - Immunization
-    - JobScheduler
-    - Laboratory
-    - Medication
-    - Patient
-    - WebClient
-    - NotSpecified
+    - name: Application
+      type: string
+      default: NotSpecified
+      values:
+          - AdminWebClient
+          - Common
+          - Database
+          - Encounter
+          - Immunization
+          - JobScheduler
+          - Laboratory
+          - Medication
+          - Patient
+          - WebClient
+          - NotSpecified
 
-  - name: OpenShiftName
-    type: string
-    default: ''
+    - name: OpenShiftName
+      type: string
+      default: ""
 
-  - name: DotNetTests
-    type: boolean
-    default: true
+    - name: DotNetTests
+      type: boolean
+      default: true
 
-  - name: NPMInstall
-    type: boolean
-    default: false
+    - name: NPMInstall
+      type: boolean
+      default: false
 
-  - name: NPMTests
-    type: boolean
-    default: false
-  
-  - name: Library
-    type: boolean
-    default: false
+    - name: NPMTests
+      type: boolean
+      default: false
 
-  - name: EnableGoldCluster
-    type: boolean
-    default: false
+    - name: Library
+      type: boolean
+      default: false
 
-  - name: EnableSilverCluster
-    type: boolean
-    default: true
+    - name: EnableGoldCluster
+      type: boolean
+      default: false
+
+    - name: EnableSilverCluster
+      type: boolean
+      default: true
 
 #Build variables
 variables:
-  App.Name: ${{ parameters.Application }}
-  NPMInstall: ${{ parameters.NPMInstall }}
-  NPMTests: ${{ parameters.NPMTests }}
-  UnitTests: ${{ parameters.DotNetTests }}
-  Library: ${{ parameters.Library }}
-  EnableGold: ${{ parameters.EnableGoldCluster }}
-  EnableSilver: ${{ parameters.EnableSilverCluster }}
-  App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
-  ${{ if parameters.OpenShiftName }}:
-      OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
-  ${{ if not(parameters.OpenShiftName) }}:
-      OpenShift.Name: $[lower(variables['App.Name'])]
-  App.UnitTests: $(App.Home)/test/unit
-  PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
-  RunOpenShift: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
-  ${{ if eq(variables['PullRequest'], true) }}: 
-      BuildPrefix: "PR-$(SourceBranchName)"
-  ${{ if eq(variables['PullRequest'], false) }}: 
-      BuildPrefix: "$(SourceBranchName)"    
-    
+    App.Name: ${{ parameters.Application }}
+    NPMInstall: ${{ parameters.NPMInstall }}
+    NPMTests: ${{ parameters.NPMTests }}
+    UnitTests: ${{ parameters.DotNetTests }}
+    Library: ${{ parameters.Library }}
+    EnableGold: ${{ parameters.EnableGoldCluster }}
+    EnableSilver: ${{ parameters.EnableSilverCluster }}
+    App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
+    ${{ if parameters.OpenShiftName }}:
+        OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
+    ${{ if not(parameters.OpenShiftName) }}:
+        OpenShift.Name: $[lower(variables['App.Name'])]
+    App.UnitTests: $(App.Home)/test/unit
+    PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
+    RunOpenShift: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
+    ${{ if eq(variables['PullRequest'], true) }}:
+        BuildPrefix: "PR-$(SourceBranchName)"
+    ${{ if eq(variables['PullRequest'], false) }}:
+        BuildPrefix: "$(SourceBranchName)"
+
 jobs:
     - job: "GoldCluster"
       pool:
-        name: "HealthGateway"
+          name: "HealthGateway"
       displayName: "Build ${{ parameters.Application }} in Gold Cluster"
       condition: eq(variables['EnableGold'], true)
       steps:
-        - template: /Build/hg-steps-template.yaml
-          parameters:
-            toolsNamespace: "q6qfzk"
+          - template: /Build/hg-steps-template.yaml
+            parameters:
+                toolsNamespace: "q6qfzk"
 
     - job: "SilverCluster"
       pool:
-        name: "HealthGateway"
+          name: "HealthGateway"
       displayName: "Build ${{ parameters.Application }} in Silver Cluster"
       condition: eq(variables['EnableSilver'], true)
       steps:
-        - template: /Build/hg-steps-template.yaml
-          parameters:
-            toolsNamespace: "0bd5ad"
-            publish: false
+          - template: /Build/hg-steps-template.yaml
+            parameters:
+                toolsNamespace: "0bd5ad"
+                publish: false

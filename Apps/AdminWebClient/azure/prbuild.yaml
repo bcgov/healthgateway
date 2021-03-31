@@ -3,23 +3,22 @@ name: PR$(Rev:.r) #Build number
 pr:
     branches:
         include:
-        - dev
+            - dev
     paths:
         include:
-        - Apps/AdminWebClient
+            - Apps/AdminWebClient
 #        - Apps/Common
 #        - Apps/Database
 
-trigger: none  
+trigger: none
 
 pool:
     name: "HealthGateway"
 
 extends:
-  template: /Build/hg.yaml
-  parameters:
-    Application: AdminWebClient
-    DotNetTests: true
-    NPMInstall: true
-    NPMTests: false
-
+    template: /Build/hg.yaml
+    parameters:
+        Application: AdminWebClient
+        DotNetTests: true
+        NPMInstall: true
+        NPMTests: false

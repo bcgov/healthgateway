@@ -12,7 +12,7 @@ export default class LoadingComponent extends Vue {
         <v-container
             fluid
             fill-height
-            style="background-color: rgba(255, 255, 255, 0.5);"
+            style="background-color: rgba(255, 255, 255, 0.5)"
         >
             <v-layout justify-center align-center>
                 <v-progress-circular indeterminate> </v-progress-circular>

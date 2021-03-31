@@ -1,7 +1,6 @@
-
 export const AuthMethod = {
-        KeyCloak: 'KeyCloak',
-        BCSC: 'BCSC',
-        KeyCloakUI: 'KeyCloakUI'
-}
-export const localDevUri = "http://localhost:5000"
+    KeyCloak: "KeyCloak",
+    BCSC: "BCSC",
+    KeyCloakUI: "KeyCloakUI",
+};
+export const localDevUri = "http://localhost:5000";

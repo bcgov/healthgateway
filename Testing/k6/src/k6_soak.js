@@ -14,31 +14,29 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-import http from 'k6/http';
-import { sleep } from 'k6';
-import * as common from './inc/common.js';
+import http from "k6/http";
+import { sleep } from "k6";
+import * as common from "./inc/common.js";
 
 export let options = {
-  stages: [
-    { duration: '1m', target: 10 }, // below normal load
-    { duration: '2m', target: 250 },
-    { duration: '3h56m', target: 250 }, // stay at high users for hours 'soaking' the system
-    { duration: '2m', target: 0 }, // drop back down 
-  ],
+    stages: [
+        { duration: "1m", target: 10 }, // below normal load
+        { duration: "2m", target: 250 },
+        { duration: "3h56m", target: 250 }, // stay at high users for hours 'soaking' the system
+        { duration: "2m", target: 0 }, // drop back down
+    ],
 };
 
 export default function () {
+    let user = common.users[__VU % common.users.length];
 
-  let user = common.users[__VU % common.users.length];
+    common.authorizeUser(user);
 
-  common.authorizeUser(user);
+    let webClientBatchResponses = http.batch(common.webClientRequests(user));
+    let timelineBatchResponses = http.batch(common.timelineRequests(user));
 
-  let webClientBatchResponses = http.batch(common.webClientRequests(user));
-  let timelineBatchResponses = http.batch(common.timelineRequests(user));
+    common.checkResponses(webClientBatchResponses);
+    common.checkResponses(timelineBatchResponses);
 
-  common.checkResponses(webClientBatchResponses);
-  common.checkResponses(timelineBatchResponses);
-
-  sleep(common.getRandom(1.0, 3.0));
+    sleep(common.getRandom(1.0, 3.0));
 }
-

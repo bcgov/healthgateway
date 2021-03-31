@@ -4,29 +4,29 @@ pr: none
 
 resources:
     pipelines:
-      - pipeline: Database
-        source: Database
-        trigger:
-          branches:
-          - dev
+        - pipeline: Database
+          source: Database
+          trigger:
+              branches:
+                  - dev
 
 trigger:
     batch: "true"
     branches:
         include:
-        - dev
+            - dev
     paths:
         include:
-        - Apps/Common
+            - Apps/Common
 
 pool:
     name: "HealthGateway"
 
 extends:
-  template: /Build/hg.yaml
-  parameters:
-    Application: Common
-    DotNetTests: true
-    NPMInstall: false
-    NPMTests: false
-    Library: true
+    template: /Build/hg.yaml
+    parameters:
+        Application: Common
+        DotNetTests: true
+        NPMInstall: false
+        NPMTests: false
+        Library: true

@@ -10,5 +10,5 @@ export const actions: ActionTree<DrawerState, RootState> = {
 
     setState(context, params: { isDrawerOpen: boolean }): void {
         context.commit("setDrawerState", params.isDrawerOpen);
-    }
+    },
 };

@@ -1,33 +1,28 @@
-describe('FAQ Page', () => {
-    beforeEach(() => {
-    })
+describe("FAQ Page", () => {
+    beforeEach(() => {});
 
-    it('Page exists', () => {
-        cy.visit('/faq')
-        cy.contains('h1', 'Frequently Asked Questions')
+    it("Page exists", () => {
+        cy.visit("/faq");
+        cy.contains("h1", "Frequently Asked Questions");
 
-        cy.get('[data-testid=questionBtn]')
-            .its('length').should('be.gte', 1)
-    })
+        cy.get("[data-testid=questionBtn]").its("length").should("be.gte", 1);
+    });
 
-    it('Expand question', () => {
-        cy.get('[data-testid=answerTxt]')
-            .should('not.be.visible')
+    it("Expand question", () => {
+        cy.get("[data-testid=answerTxt]").should("not.be.visible");
 
-        cy.get('[data-testid=questionBtn]')
-            .should('be.visible')
+        cy.get("[data-testid=questionBtn]")
+            .should("be.visible")
             .first()
-            .click()
+            .click();
 
-        cy.get('[data-testid=answerTxt]')
-            .should('be.visible')
+        cy.get("[data-testid=answerTxt]").should("be.visible");
 
-        cy.get('[data-testid=questionBtn]')
-            .should('be.visible')
+        cy.get("[data-testid=questionBtn]")
+            .should("be.visible")
             .first()
-            .click()
+            .click();
 
-        cy.get('[data-testid=answerTxt]')
-            .should('not.be.visible')
-    })
-})
+        cy.get("[data-testid=answerTxt]").should("not.be.visible");
+    });
+});

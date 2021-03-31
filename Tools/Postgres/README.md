@@ -14,9 +14,9 @@ oc start-build patroni-pg11 | oc apply -f -
 
 Once that has completed, we can then deploy a standard single cluster per namespace by
 
-1) Creating the secrets, service account, and role bindings
-1) Allowing the service accounts to pull from the tools namespace
-1) Creating the statefulset
+1. Creating the secrets, service account, and role bindings
+1. Allowing the service accounts to pull from the tools namespace
+1. Creating the statefulset
 
 Via the command line this looks like
 
@@ -27,7 +27,7 @@ oc process -f ./openshift/rb-pullers.yaml | oc apply -f -
 oc process -f ./openshift/deployment.yaml | oc apply -f -
 ```
 
-NOTE:  The provisioning of disk is fairly slow and you may not notice anything for a few minutes.
+NOTE: The provisioning of disk is fairly slow and you may not notice anything for a few minutes.
 
 #### Clean up
 
@@ -44,21 +44,13 @@ Service account
 
 ### OpenShift 3
 
-Process the template patroni.yaml in Openshift, the parameters are self explanatory, populate them as needed. 
+Process the template patroni.yaml in Openshift, the parameters are self explanatory, populate them as needed.
 
-The objects created include:
-    1) Stateful Set Patroni-postgres containing 3 pods.
-    1) Master service (eg patroni-postgres-master)
-        Points to the elected master pod, which contains the transactional 
-        database (selector is application=patroni-postgres, cluster-name=patroni-postgres, role=master).
-    1) Replica service (eg patroni-postgres-replica)
-        Points to the replica pods, which contains the read-only database, 
-        we are currently configured for 2 replica pods (selector is application=patroni-postgres, cluster-name=patroni-postgres, role=replica).
-    1) Service account "patroni" with a role binding to the "patroni" role.
-    1) Volumes for each of the pods (5gb default).
-    1) Config map that stores the current master pod (patroni-postgres-leader).
-    1) Config map that stores the database configuration like "max_connections" (patroni-postgres-config).
-    1) Secret containing username and password.
+The objects created include: 1) Stateful Set Patroni-postgres containing 3 pods. 1) Master service (eg patroni-postgres-master)
+Points to the elected master pod, which contains the transactional
+database (selector is application=patroni-postgres, cluster-name=patroni-postgres, role=master). 1) Replica service (eg patroni-postgres-replica)
+Points to the replica pods, which contains the read-only database,
+we are currently configured for 2 replica pods (selector is application=patroni-postgres, cluster-name=patroni-postgres, role=replica). 1) Service account "patroni" with a role binding to the "patroni" role. 1) Volumes for each of the pods (5gb default). 1) Config map that stores the current master pod (patroni-postgres-leader). 1) Config map that stores the database configuration like "max_connections" (patroni-postgres-config). 1) Secret containing username and password.
 
 #### Initial Configuration
 
@@ -101,13 +93,13 @@ This service should be listing the current master node.
 
 Using the command line:
 
-``` bash
+```bash
 oc get pods -l role=master
 ```
 
 or
 
-``` bash
+```bash
 oc describe configmaps patroni-postgres-leader;
 ```
 
@@ -116,13 +108,13 @@ oc describe configmaps patroni-postgres-leader;
 The connection requires a port tunnel from the pod in openshift to the local computer,
 use the following command to create a tunnel:
 
-``` bash
+```bash
 oc port-forward <pod-name> <local-port>:5432
 ```
 
 example:
 
-``` bash
+```bash
 oc port-forward patroni-postgres-1 5432:5432
 ```
 
@@ -133,7 +125,7 @@ Use pgadmin or psql to connect to server: localhost:5432, username and password 
 Updates the configmap that stores the current leader node (master),
 The script below sets the leader to node 2:
 
-``` bash
+```bash
 oc annotate configmaps patroni-postgres-leader leader=patroni-postgres-2 --overwrite=true;
 ```
 
@@ -143,81 +135,81 @@ Backups are generated daily by the dc "backup" in the production realm and are c
 
 To restore the backup follow these steps:
 
-1) Connect to openshift using the terminal/bash and set the project to the production one.
-1) Download the backup file to your local computer using the command below:
+1. Connect to openshift using the terminal/bash and set the project to the production one.
+1. Download the backup file to your local computer using the command below:
 
-    ``` bash
+    ```bash
     oc rsync <backup-pod-name>:/backups/daily/<date> <local-folder>
     ```
 
     This copies the folder from the pod to the local folder.
 
-1) Extract backup script using gzip:
+1. Extract backup script using gzip:
 
-    ``` bash
+    ```bash
     gzip -d <file-name>
     ```
 
-1) Connect to the master database pod using port-forward (See 'Connection to the Database').
+1. Connect to the master database pod using port-forward (See 'Connection to the Database').
 
-1) Manually create the database:
+1. Manually create the database:
 
-    ``` bash
+    ```bash
     psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
     ```
 
-1) Execute the script to restore the database:
+1. Execute the script to restore the database:
 
-    ``` bash
+    ```bash
     psql -h localhost -d gateway -U postgres -p 5432 -a -q -f <path-to-file>
     ```
 
 ## Delete Database (Cleanup)
 
-1) Drop all current connections:
+1. Drop all current connections:
 
-    ``` bash
+    ```bash
     psql -h localhost -p 5432 -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='gateway';"
     ```
 
-1) Drop Database:
+1. Drop Database:
 
-    ``` bash
+    ```bash
     psql -h localhost -p 5432 -U postgres -c 'drop database gateway;'
     ```
 
-1) Create Database:
+1. Create Database:
 
-    ``` bash
+    ```bash
     psql -h localhost -p 5432 -U postgres -c 'create database gateway;'
     ```
 
-1) Run Migrations Scripts
+1. Run Migrations Scripts
 
     ?
 
 ## Edit Patroni configuration using Rest API
 
-1) Connect the terminal to any of the patroni pods running using remote shell:
+1. Connect the terminal to any of the patroni pods running using remote shell:
 
-    ``` bash
+    ```bash
     oc rsh patroni-postgres-1
     ```
 
-1) Update config (e.g. postgresql.parameters.max_connections to 500):
+1. Update config (e.g. postgresql.parameters.max_connections to 500):
 
-    ``` bash
+    ```bash
     curl -s -XPATCH -d '{"postgresql":{"parameters":{"max_prepared_transactions":500, "max_connections":500}}}' http://localhost:8008/config | jq .
     ```
 
-1) Restart Cluster:
+1. Restart Cluster:
 
-    ``` bash
+    ```bash
     patronictl restart patroni-postgres
     ```
 
-1) Get/View the current config:
+1. Get/View the current config:
 
-    ``` bash
+    ```bash
     curl -s localhost:8008/config | jq .
     ```

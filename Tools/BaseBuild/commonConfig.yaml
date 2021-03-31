@@ -1,22 +1,22 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: ${NAME}-template
+    name: ${NAME}-template
 objects:
-- apiVersion: v1
-  data:
-    HealthGateway_ConnectionStrings__GatewayConnection: ${DB_STR}
-  kind: ConfigMap
-  metadata:
-    name: ${NAME}-config
-    
-parameters: 
-  - name: NAME
-    displayName: Template Name
-    description: The name of the template and all related entities (override for multiple deployments in the same namespace)
-    value: common
-    required: true 
-  - name: DB_STR
-    displayName: DB Connection string
-    description: The database connection string required to connect to the database.
-    required: false  
+    - apiVersion: v1
+      data:
+          HealthGateway_ConnectionStrings__GatewayConnection: ${DB_STR}
+      kind: ConfigMap
+      metadata:
+          name: ${NAME}-config
+
+parameters:
+    - name: NAME
+      displayName: Template Name
+      description: The name of the template and all related entities (override for multiple deployments in the same namespace)
+      value: common
+      required: true
+    - name: DB_STR
+      displayName: DB Connection string
+      description: The database connection string required to connect to the database.
+      required: false

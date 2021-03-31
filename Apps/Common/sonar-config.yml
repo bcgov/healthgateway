@@ -1,9 +1,9 @@
 properties:
-  sonar.coverage.exclusions: '**Tests*.cs, **/Database/**'
-  sonar.cs.opencover.reportsPaths: '**/coverage.opencover.xml'
-  sonar.cs.xunit.reportsPaths: '**/xUnitResults/results.xml'
-  sonar.scm.disabled: 'true'
+    sonar.coverage.exclusions: "**Tests*.cs, **/Database/**"
+    sonar.cs.opencover.reportsPaths: "**/coverage.opencover.xml"
+    sonar.cs.xunit.reportsPaths: "**/xUnitResults/results.xml"
+    sonar.scm.disabled: "true"
 test-runners:
-  - xunit
+    - xunit
 paths:
-  xunit: test/unit/CommonTests.csproj
+    xunit: test/unit/CommonTests.csproj

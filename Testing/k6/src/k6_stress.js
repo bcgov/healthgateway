@@ -14,36 +14,34 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-import http from 'k6/http';
-import { sleep } from 'k6';
-import * as common from './inc/common.js';
+import http from "k6/http";
+import { sleep } from "k6";
+import * as common from "./inc/common.js";
 
 export let options = {
-  stages: [
-    { duration: '2m', target: 50 }, // below normal load
-    { duration: '5m', target: 100 },
-    { duration: '2m', target: 200 }, // normal load
-    { duration: '5m', target: 200 },
-    { duration: '2m', target: 400 }, // around the breaking point
-    { duration: '4m', target: 400 },
-    { duration: '2m', target: 500 }, // beyond the breaking point
-    { duration: '5m', target: 550 },
-    { duration: '5m', target: 0 }, // scale down. Recovery stage.
-  ],
+    stages: [
+        { duration: "2m", target: 50 }, // below normal load
+        { duration: "5m", target: 100 },
+        { duration: "2m", target: 200 }, // normal load
+        { duration: "5m", target: 200 },
+        { duration: "2m", target: 400 }, // around the breaking point
+        { duration: "4m", target: 400 },
+        { duration: "2m", target: 500 }, // beyond the breaking point
+        { duration: "5m", target: 550 },
+        { duration: "5m", target: 0 }, // scale down. Recovery stage.
+    ],
 };
 
 export default function () {
+    let user = common.users[__VU % common.users.length];
 
-  let user = common.users[__VU % common.users.length];
+    common.authorizeUser(user);
 
-  common.authorizeUser(user); 
+    let webClientBatchResponses = http.batch(common.webClientRequests(user));
+    let timelineBatchResponses = http.batch(common.timelineRequests(user));
 
-  let webClientBatchResponses = http.batch(common.webClientRequests(user));
-  let timelineBatchResponses = http.batch(common.timelineRequests(user));
+    common.checkResponses(webClientBatchResponses);
+    common.checkResponses(timelineBatchResponses);
 
-  common.checkResponses(webClientBatchResponses);
-  common.checkResponses(timelineBatchResponses);
-
-  sleep(common.getRandom(0.5, 3.0));
+    sleep(common.getRandom(0.5, 3.0));
 }
-

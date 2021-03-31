@@ -4,27 +4,27 @@ pr: none
 
 resources:
     pipelines:
-      - pipeline: Common
-        source: Common
-        trigger:
-          branches:
-          - dev
+        - pipeline: Common
+          source: Common
+          trigger:
+              branches:
+                  - dev
 
 trigger:
     batch: "true"
     branches:
         include:
-        - dev
+            - dev
     paths:
         include:
-        - Apps/JobScheduler
-        - Apps/DBMaintainer
+            - Apps/JobScheduler
+            - Apps/DBMaintainer
 
 extends:
-  template: /Build/hg.yaml
-  parameters:
-    Application: JobScheduler
-    OpenShiftName: hangfire
-    DotNetTests: false
-    NPMInstall: false
-    NPMTests: false
+    template: /Build/hg.yaml
+    parameters:
+        Application: JobScheduler
+        OpenShiftName: hangfire
+        DotNetTests: false
+        NPMInstall: false
+        NPMTests: false
