@@ -5,7 +5,6 @@ import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
-import MedicationResult from "@/models/medicationResult";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
@@ -75,9 +74,18 @@ export interface UserState {
 }
 
 export interface MedicationState {
+    status: LoadStatus;
+}
+
+export interface MedicationStatementState {
     medicationStatements: MedicationStatementHistory[];
     protectiveWordAttempts: number;
-    medications: MedicationResult[];
+    statusMessage: string;
+    error?: ResultError;
+    status: LoadStatus;
+}
+
+export interface MedicationRequestState {
     medicationRequests: MedicationRequest[];
     statusMessage: string;
     error?: ResultError;

@@ -26,13 +26,13 @@ import { ILogger } from "@/services/interfaces";
     },
 })
 export default class HealthInsightsView extends Vue {
-    @Action("retrieve", { namespace: "medication" })
+    @Action("retrieveMedicationStatements", { namespace: "medication" })
     retrieveMedications!: (params: {
         hdid: string;
         protectiveWord?: string;
     }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "medication" })
+    @Getter("isMedicationStatementLoading", { namespace: "medication" })
     isMedicationLoading!: boolean;
 
     @Getter("medicationStatements", { namespace: "medication" })

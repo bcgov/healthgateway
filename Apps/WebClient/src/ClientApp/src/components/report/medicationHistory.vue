@@ -7,6 +7,7 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -20,8 +21,7 @@ import PDFUtil from "@/utility/pdfUtil";
     },
 })
 export default class MedicationHistoryReportComponent extends Vue {
-    @Prop() private startDate!: string | null;
-    @Prop() private endDate!: string | null;
+    @Prop() private filter!: ReportFilter;
 
     @Getter("user", { namespace: "user" })
     private user!: User;
@@ -29,7 +29,7 @@ export default class MedicationHistoryReportComponent extends Vue {
     @Action("retrieveMedicationStatements", { namespace: "medication" })
     private retrieveMedications!: (params: { hdid: string }) => Promise<void>;
 
-    @Getter("isLoading", { namespace: "medication" })
+    @Getter("isMedicationStatementLoading", { namespace: "medication" })
     isLoading!: boolean;
 
     @Getter("medicationStatements", { namespace: "medication" })
@@ -57,20 +57,10 @@ export default class MedicationHistoryReportComponent extends Vue {
 
     private get visibleRecords(): MedicationStatementHistory[] {
         let records = this.medicationStatements.filter((record) => {
-            let filterStart = true;
-            if (this.startDate !== null) {
-                filterStart = new DateWrapper(
-                    record.dispensedDate
-                ).isAfterOrSame(new DateWrapper(this.startDate));
-            }
-
-            let filterEnd = true;
-            if (this.endDate !== null) {
-                filterEnd = new DateWrapper(
-                    record.dispensedDate
-                ).isBeforeOrSame(new DateWrapper(this.endDate));
-            }
-            return filterStart && filterEnd;
+            return (
+                this.filter.allowsDate(record.dispensedDate) &&
+                this.filter.allowsMedication(record.medicationSummary.brandName)
+            );
         });
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.dispensedDate);
@@ -141,9 +131,11 @@ export default class MedicationHistoryReportComponent extends Vue {
             <section class="pdf-item">
                 <ReportHeaderComponent
                     v-show="!isPreview"
-                    :start-date="startDate"
-                    :end-date="endDate"
-                    title="Health Gateway Medication History"
+                    :filter="filter"
+                    :title="
+                        'Health Gateway Medication History' +
+                        (filter.hasMedicationsFilter() ? ' (Redacted)' : '')
+                    "
                 />
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
@@ -163,6 +155,7 @@ export default class MedicationHistoryReportComponent extends Vue {
                     v-for="item in visibleRecords"
                     :key="item.prescriptionIdentifier + item.dispensedDate"
                     class="item py-1"
+                    data-testid="medicationReportEntry"
                 >
                     <b-col class="col-1 my-auto text-nowrap">
                         {{ formatDate(item.dispensedDate) }}
@@ -170,7 +163,10 @@ export default class MedicationHistoryReportComponent extends Vue {
                     <b-col class="col-1 my-auto">
                         {{ item.medicationSummary.din }}
                     </b-col>
-                    <b-col class="col-2 my-auto">
+                    <b-col
+                        class="col-2 my-auto"
+                        data-testid="medicationReportEntryBrandName"
+                    >
                         {{ item.medicationSummary.brandName }}
                     </b-col>
                     <b-col class="col-2 my-auto">

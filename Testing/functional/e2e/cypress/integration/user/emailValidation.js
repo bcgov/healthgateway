@@ -15,15 +15,19 @@ describe('User Email Verification', () => {
             "/validateEmail/valid");
         cy.get("[data-testid=verifingInvite]").should('not.exist');
         cy.get('[data-testid=verifiedInvite]').should('be.visible');
+        cy.get('[data-testid=continueButton]').click();
+        cy.url().should("include", "/timeline");        
     })
 
-    it('Check invalid email invite', () => {
+    it('Check already verified email invite', () => {
         cy.login(Cypress.env('keycloak.username'),
             Cypress.env('keycloak.password'),
             AuthMethod.KeyCloak,
             "/validateEmail/invalid");
         cy.get("[data-testid=verifingInvite]").should('not.exist');
-        cy.get('[data-testid=invalidInvite]').should('be.visible');
+        cy.get('[data-testid=alreadyVerifiedInvite]').should('be.visible');
+        cy.get('[data-testid=continueButton]').click();
+        cy.url().should("include", "/timeline");        
     })
 
     it('Check expired email invite', () => {
@@ -33,7 +37,7 @@ describe('User Email Verification', () => {
             "/validateEmail/expired");
         cy.get("[data-testid=verifingInvite]").should('not.exist');
         cy.get('[data-testid=expiredInvite]').should('be.visible');
-        cy.get('[data-testid=profileLink]').click();
+        cy.get('[data-testid=continueButton]').click();
         cy.url().should("include", "/profile");        
     })
 

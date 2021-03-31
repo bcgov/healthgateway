@@ -6,6 +6,7 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
+import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -18,8 +19,7 @@ import PDFUtil from "@/utility/pdfUtil";
     },
 })
 export default class COVID19ReportComponent extends Vue {
-    @Prop() private startDate!: string | null;
-    @Prop() private endDate!: string | null;
+    @Prop() private filter!: ReportFilter;
 
     @Action("retrieve", { namespace: "laboratory" })
     retrieveLaboratory!: (params: { hdid: string }) => Promise<void>;
@@ -37,7 +37,6 @@ export default class COVID19ReportComponent extends Vue {
     readonly report!: HTMLElement;
 
     private logger!: ILogger;
-    private notFoundText = "Not Found";
     private isPreview = true;
 
     @Watch("isLaboratoryLoading")
@@ -48,20 +47,9 @@ export default class COVID19ReportComponent extends Vue {
 
     private get visibleRecords(): LaboratoryOrder[] {
         let records = this.laboratoryOrders.filter((record) => {
-            let filterStart = true;
-            if (this.startDate !== null) {
-                filterStart = new DateWrapper(
-                    record.labResults[0].collectedDateTime
-                ).isAfterOrSame(new DateWrapper(this.startDate));
-            }
-
-            let filterEnd = true;
-            if (this.endDate !== null) {
-                filterEnd = new DateWrapper(
-                    record.labResults[0].collectedDateTime
-                ).isBeforeOrSame(new DateWrapper(this.endDate));
-            }
-            return filterStart && filterEnd;
+            return this.filter.allowsDate(
+                record.labResults[0].collectedDateTime
+            );
         });
         records.sort((a, b) => {
             const firstDate = new DateWrapper(
@@ -121,8 +109,7 @@ export default class COVID19ReportComponent extends Vue {
             <section class="pdf-item">
                 <ReportHeaderComponent
                     v-show="!isPreview"
-                    :start-date="startDate"
-                    :end-date="endDate"
+                    :filter="filter"
                     title="Health Gateway COVID-19 Test Result History"
                 />
                 <b-row v-if="isEmpty && (!isLaboratoryLoading || !isPreview)">

@@ -28,6 +28,22 @@ describe('Immunization', () => {
         .should('be.visible')
     })
 
+    it('Validate COVID-19 Immunization Attachment Icons', () => {
+      cy.log('All COVID-19 immunizations should have attachment icons.')
+      cy.get('[data-testid=cardBtn]')
+        .closest('[data-testid=timelineCard]')
+        .each((card) => {
+          cy.wrap(card).find('[data-testid=attachmentIcon]').should('exist')
+        })
+
+      cy.log('All cards with attachment icons should be COVID-19 immunizations.')
+      cy.get('[data-testid=attachmentIcon]')
+        .closest('[data-testid=timelineCard]')
+        .each((card) => {
+          cy.wrap(card).find('[data-testid=cardBtn]').should('exist')
+        })
+    })
+
     it('Validate Card Details', () => {
       cy.get('[data-testid=timelineCard')
         .first()
@@ -42,13 +58,6 @@ describe('Immunization', () => {
         .should('be.visible')
       
       // Verify Forecast
-      cy.get('[data-testid=forecastDisplayName]').first().should('not.be.visible');
-      cy.get('[data-testid=forecastDueDate]').first().should('not.be.visible');
-      cy.get('[data-testid=forecastStatus]').first().should('not.be.visible');
-      cy.get('[data-testid=forecastFollowDirections]').first().should('not.be.visible');
-
-      cy.get('[data-testid=detailsBtn]').first().click();
-
       cy.get('[data-testid=forecastDisplayName]').first().should('be.visible');
       cy.get('[data-testid=forecastDisplayName]').first().contains('Covid-191');
       cy.get('[data-testid=forecastDueDate]').first().should('be.visible');

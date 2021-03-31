@@ -75,7 +75,7 @@ namespace HealthGateway.Medication.Delegates
         {
             using (Source.StartActivity("GetMedicationRequestsAsync"))
             {
-                RequestResult<IList<MedicationRequest>> retVal = new()
+                RequestResult<IList<MedicationRequest>> retVal = new ()
                 {
                     ResultStatus = Common.Constants.ResultType.Error,
                 };

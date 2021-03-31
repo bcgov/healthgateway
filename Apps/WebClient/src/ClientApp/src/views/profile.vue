@@ -20,6 +20,9 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
+import BaseButtonComponent from "@/components/shared/baseButton.vue";
+import PageTitleComponent from "@/components/shared/pageTitle.vue";
+import StatusLabelComponent from "@/components/shared/statusLabel.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -41,8 +44,11 @@ const authNamespace = "auth";
 
 @Component({
     components: {
+        BaseButtonComponent,
         LoadingComponent,
         VerifySMSComponent,
+        PageTitleComponent,
+        StatusLabelComponent,
     },
 })
 export default class ProfileView extends Vue {
@@ -53,30 +59,22 @@ export default class ProfileView extends Vue {
 
     @Action("updateUserEmail", { namespace: userNamespace })
     updateUserEmail!: ({
-        hdid,
         emailAddress,
     }: {
-        hdid: string;
         emailAddress: string;
     }) => Promise<void>;
 
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+    @Action("checkRegistration", { namespace: userNamespace })
+    checkRegistration!: () => Promise<boolean>;
 
     @Action("closeUserAccount", { namespace: userNamespace })
-    closeUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
+    closeUserAccount!: () => Promise<void>;
 
     @Action("recoverUserAccount", { namespace: userNamespace })
-    recoverUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
+    recoverUserAccount!: () => Promise<void>;
 
-    @Action("updateSMSResendDateTime", { namespace: "user" })
-    updateSMSResendDateTime!: ({
-        hdid,
-        dateTime,
-    }: {
-        hdid: string;
-        dateTime: DateWrapper;
-    }) => void;
+    @Action("updateSMSResendDateTime", { namespace: userNamespace })
+    updateSMSResendDateTime!: ({ dateTime }: { dateTime: DateWrapper }) => void;
 
     @Getter("user", { namespace: userNamespace }) user!: User;
 
@@ -158,7 +156,10 @@ export default class ProfileView extends Vue {
                     );
                     this.userProfile = results[1];
                     this.lastLoginDateString = new DateWrapper(
-                        this.userProfile.lastLoginDateTime
+                        this.userProfile.lastLoginDateTime,
+                        {
+                            isUtc: true,
+                        }
                     ).format();
 
                     this.email = this.userProfile.email;
@@ -353,13 +354,12 @@ export default class ProfileView extends Vue {
     }
 
     private onVerifySMSSubmit(): void {
-        this.checkRegistration({ hdid: this.user.hdid });
+        this.checkRegistration();
         this.smsVerified = true;
     }
     private sendUserEmailUpdate(): void {
         this.isLoading = true;
         this.updateUserEmail({
-            hdid: this.user.hdid || "",
             emailAddress: this.email,
         })
             .then(() => {
@@ -368,7 +368,7 @@ export default class ProfileView extends Vue {
                 this.emailVerified = false;
                 this.emailVerificationSent = true;
                 this.tempEmail = "";
-                this.checkRegistration({ hdid: this.user.hdid });
+                this.checkRegistration();
                 this.$v.$reset();
                 this.showCheckEmailAlert = !this.isEmptyEmail;
             })
@@ -389,7 +389,6 @@ export default class ProfileView extends Vue {
         );
         // Reset timer when user submits their SMS number
         this.updateSMSResendDateTime({
-            hdid: this.user.hdid,
             dateTime: new DateWrapper(),
         });
         // Send update to backend
@@ -399,7 +398,7 @@ export default class ProfileView extends Vue {
                 this.isSMSEditable = false;
                 this.smsVerified = false;
                 this.tempSMS = "";
-                this.checkRegistration({ hdid: this.user.hdid });
+                this.checkRegistration();
                 if (this.smsNumber) {
                     this.verifySMS();
                 }
@@ -409,9 +408,7 @@ export default class ProfileView extends Vue {
 
     private recoverAccount(): void {
         this.isLoading = true;
-        this.recoverUserAccount({
-            hdid: this.user.hdid,
-        })
+        this.recoverUserAccount()
             .then(() => {
                 this.logger.verbose("success!");
             })
@@ -436,9 +433,7 @@ export default class ProfileView extends Vue {
 
     private closeAccount(): void {
         this.isLoading = true;
-        this.closeUserAccount({
-            hdid: this.user.hdid,
-        })
+        this.closeUserAccount()
             .then(() => {
                 this.logger.verbose("success!");
                 this.showCloseWarning = false;
@@ -475,15 +470,14 @@ export default class ProfileView extends Vue {
                         If you didn't receive one, please check your junk mail.
                     </span>
                 </b-alert>
-                <div id="pageTitle">
-                    <h1 id="subject">Profile</h1>
-                    <hr />
-                </div>
+                <PageTitleComponent title="Profile" />
                 <div v-if="!isLoading">
                     <div v-if="isActiveProfile">
                         <b-row class="mb-3">
                             <b-col>
-                                <label for="profileNames">Full Name</label>
+                                <label for="profileNames" class="hg-label"
+                                    >Full Name</label
+                                >
                                 <h4 id="profileNames" class="hg-h4">
                                     {{ fullName }}
                                 </h4>
@@ -491,7 +485,7 @@ export default class ProfileView extends Vue {
                         </b-row>
                         <b-row class="mb-3">
                             <b-col>
-                                <label for="lastLoginDate"
+                                <label for="lastLoginDate" class="hg-label"
                                     >Last Login Date</label
                                 >
                                 <h4 id="lastLoginDate" class="hg-h4">
@@ -511,7 +505,7 @@ export default class ProfileView extends Vue {
                                                     : false
                                             "
                                         >
-                                            <label for="email">
+                                            <label for="email" class="hg-label">
                                                 Email Address
                                             </label>
                                             <b-link
@@ -523,13 +517,12 @@ export default class ProfileView extends Vue {
                                                 @click="makeEmailEditable()"
                                                 >Edit
                                             </b-link>
-                                            <div class="form-inline">
+                                            <div class="form-inline mb-1">
                                                 <b-form-input
                                                     id="email"
                                                     v-model="$v.email.$model"
                                                     data-testid="emailInput"
                                                     type="email"
-                                                    class="mb-1"
                                                     :placeholder="
                                                         isEmailEditable
                                                             ? 'Your email address'
@@ -543,7 +536,7 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <b-button
+                                                <BaseButtonComponent
                                                     v-if="
                                                         !emailVerified &&
                                                         !isEmailEditable &&
@@ -551,7 +544,7 @@ export default class ProfileView extends Vue {
                                                     "
                                                     id="resendEmail"
                                                     data-testid="resendEmailBtn"
-                                                    variant="outline-primary"
+                                                    variant="secondary"
                                                     class="ml-3"
                                                     :disabled="
                                                         emailVerificationSent
@@ -561,7 +554,7 @@ export default class ProfileView extends Vue {
                                                     "
                                                 >
                                                     Resend Verification
-                                                </b-button>
+                                                </BaseButtonComponent>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.email.email"
@@ -580,34 +573,29 @@ export default class ProfileView extends Vue {
                                                 id="emailStatus"
                                                 data-testid="emailStatus"
                                             >
-                                                <span class="text-muted"
-                                                    >Status:
-                                                </span>
-                                                <span
+                                                <StatusLabelComponent
                                                     v-if="emailVerified"
+                                                    status="Verified"
+                                                    variant="success"
                                                     data-testid="emailStatusVerified"
-                                                    class="text-success"
-                                                    >Verified</span
-                                                >
-                                                <span
+                                                />
+                                                <StatusLabelComponent
                                                     v-else-if="
                                                         email == null ||
                                                         email === ''
                                                     "
+                                                    status="Opted Out"
                                                     data-testid="emailStatusOptedOut"
-                                                    class="text-warning"
-                                                    >Opted Out</span
-                                                >
-                                                <span
+                                                />
+                                                <StatusLabelComponent
                                                     v-else
+                                                    status="Not Verified"
+                                                    variant="danger"
                                                     data-testid="emailStatusNotVerified"
-                                                    class="text-danger"
-                                                    >Not Verified</span
-                                                >
+                                                />
                                             </div>
-                                        </b-form-group>
-                                    </b-col></b-row
-                                >
+                                        </b-form-group> </b-col
+                                ></b-row>
                                 <b-row
                                     v-if="!email && tempEmail"
                                     class="mb-3"
@@ -627,20 +615,22 @@ export default class ProfileView extends Vue {
                                 </b-row>
                                 <b-row v-if="isEmailEditable" class="mb-3">
                                     <b-col>
-                                        <b-button
+                                        <BaseButtonComponent
                                             id="editEmailCancelBtn"
                                             data-testid="editEmailCancelBtn"
-                                            variant="outline-primary"
-                                            class="mx-2 actionButton"
+                                            variant="secondary"
+                                            size="small"
+                                            class="mr-2"
                                             @click="cancelEmailEdit()"
                                         >
                                             Cancel
-                                        </b-button>
-                                        <b-button
+                                        </BaseButtonComponent>
+                                        <BaseButtonComponent
                                             id="editSMSSaveBtn"
                                             data-testid="editEmailSaveBtn"
                                             variant="primary"
-                                            class="mx-2 actionButton"
+                                            size="small"
+                                            class="mx-2"
                                             :disabled="
                                                 tempEmail === email ||
                                                 !isValid($v.email)
@@ -648,7 +638,7 @@ export default class ProfileView extends Vue {
                                             @click="saveEmailEdit($event)"
                                         >
                                             Save
-                                        </b-button>
+                                        </BaseButtonComponent>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -665,10 +655,12 @@ export default class ProfileView extends Vue {
                                                     : false
                                             "
                                         >
-                                            <label for="smsNumber"
-                                                >Cell Number (SMS
-                                                notifications)</label
+                                            <label
+                                                for="smsNumber"
+                                                class="hg-label"
                                             >
+                                                Cell Number (SMS notifications)
+                                            </label>
                                             <b-link
                                                 v-if="!isSMSEditable"
                                                 id="editSMS"
@@ -678,7 +670,7 @@ export default class ProfileView extends Vue {
                                                 @click="makeSMSEditable()"
                                                 >Edit
                                             </b-link>
-                                            <div class="form-inline">
+                                            <div class="form-inline mb-1">
                                                 <b-form-input
                                                     id="smsNumber"
                                                     v-model="
@@ -687,7 +679,6 @@ export default class ProfileView extends Vue {
                                                     v-mask="'(###) ###-####'"
                                                     type="tel"
                                                     data-testid="smsNumberInput"
-                                                    class="mb-1"
                                                     :placeholder="
                                                         isSMSEditable
                                                             ? 'Your phone number'
@@ -701,20 +692,20 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <b-button
+                                                <BaseButtonComponent
                                                     v-if="
                                                         !smsVerified &&
                                                         !isSMSEditable &&
                                                         smsNumber
                                                     "
                                                     id="verifySMS"
+                                                    variant="secondary"
                                                     data-testid="verifySMSBtn"
-                                                    variant="outline-primary"
                                                     class="ml-3"
                                                     @click="verifySMS()"
                                                 >
                                                     Verify
-                                                </b-button>
+                                                </BaseButtonComponent>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.smsNumber.sms"
@@ -735,30 +726,26 @@ export default class ProfileView extends Vue {
                                                 id="smsStatus"
                                                 data-testid="smsStatus"
                                             >
-                                                <span class="text-muted"
-                                                    >Status:
-                                                </span>
-                                                <span
+                                                <StatusLabelComponent
                                                     v-if="smsVerified"
+                                                    status="Verified"
+                                                    variant="success"
                                                     data-testid="smsStatusVerified"
-                                                    class="text-success"
-                                                    >Verified</span
-                                                >
-                                                <span
+                                                />
+                                                <StatusLabelComponent
                                                     v-else-if="
                                                         smsNumber == null ||
                                                         smsNumber === ''
                                                     "
+                                                    status="Opted Out"
                                                     data-testid="smsStatusOptedOut"
-                                                    class="text-warning"
-                                                    >Opted Out</span
-                                                >
-                                                <span
+                                                />
+                                                <StatusLabelComponent
                                                     v-else
+                                                    status="Not Verified"
+                                                    variant="danger"
                                                     data-testid="smsStatusNotVerified"
-                                                    class="text-danger"
-                                                    >Not Verified</span
-                                                >
+                                                />
                                             </div>
                                         </b-form-group>
                                     </b-col>
@@ -782,23 +769,25 @@ export default class ProfileView extends Vue {
                                 </b-row>
                                 <b-row v-if="isSMSEditable" class="mb-3">
                                     <b-col>
-                                        <b-button
+                                        <BaseButtonComponent
                                             id="cancelBtn"
                                             data-testid="cancelSMSEditBtn"
-                                            variant="outline-primary"
-                                            class="mx-2 actionButton"
+                                            variant="secondary"
+                                            size="small"
+                                            class="mr-2"
                                             @click="cancelSMSEdit()"
                                             >Cancel
-                                        </b-button>
-                                        <b-button
+                                        </BaseButtonComponent>
+                                        <BaseButtonComponent
                                             id="saveBtn"
                                             data-testid="saveSMSEditBtn"
                                             variant="primary"
-                                            class="mx-2 actionButton"
+                                            size="small"
+                                            class="mx-2"
                                             :disabled="tempSMS === smsNumber"
                                             @click="saveSMSEdit()"
                                             >Save
-                                        </b-button>
+                                        </BaseButtonComponent>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -812,7 +801,10 @@ export default class ProfileView extends Vue {
                                     aria-hidden="true"
                                     class="text-danger"
                                 ></font-awesome-icon>
-                                <label for="deletionWarning" class="ml-1">
+                                <label
+                                    for="deletionWarning"
+                                    class="hg-label ml-1"
+                                >
                                     Account marked for removal
                                 </label>
                                 <div id="deletionWarning">
@@ -825,7 +817,9 @@ export default class ProfileView extends Vue {
                         </b-row>
                         <b-row class="mb-3">
                             <b-col>
-                                <label>Time remaining for deletion: </label>
+                                <label class="hg-label"
+                                    >Time remaining for deletion:
+                                </label>
                                 {{ timeForDeletionString }}
                             </b-col>
                         </b-row>
@@ -844,7 +838,7 @@ export default class ProfileView extends Vue {
                     </div>
                     <b-row v-if="isActiveProfile" class="mb-3">
                         <b-col>
-                            <label>Manage Account</label>
+                            <label class="hg-label">Manage Account</label>
                             <div>
                                 <b-button
                                     v-if="!showCloseWarning"
@@ -922,33 +916,8 @@ export default class ProfileView extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-#pageTitle {
-    color: $primary;
-}
-
-#pageTitle hr {
-    border-top: 2px solid $primary;
-}
-
-label {
-    font-weight: bold;
-}
-
 input {
     width: 320px !important;
     max-width: 320px !important;
-}
-
-.actionButton {
-    width: 80px;
-}
-
-.is-invalid label {
-    color: $danger;
-}
-
-h4.hg-h4 {
-    font-size: 1.2rem;
-    font-weight: 400;
 }
 </style>

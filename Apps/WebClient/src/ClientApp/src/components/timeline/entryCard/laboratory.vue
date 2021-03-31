@@ -100,6 +100,7 @@ export default class LaboratoryTimelineComponent extends Vue {
         :title="entry.summaryTitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
+        :has-attachment="reportAvailable"
     >
         <div slot="header-description">
             <strong
@@ -114,7 +115,7 @@ export default class LaboratoryTimelineComponent extends Vue {
         </div>
 
         <div slot="details-body">
-            <div v-if="reportAvailable">
+            <div v-if="reportAvailable" data-testid="laboratoryReportAvailable">
                 <b-spinner v-if="isLoadingDocument"></b-spinner>
                 <span v-else data-testid="laboratoryReport">
                     <strong>Report:</strong>
@@ -190,7 +191,7 @@ export default class LaboratoryTimelineComponent extends Vue {
                     <strong>What to expect next</strong>
                     <p>
                         If you receive a
-                        <b>positive</b> COVID-19 result:
+                        <strong>positive</strong> COVID-19 result:
                     </p>
                     <ul>
                         <li>

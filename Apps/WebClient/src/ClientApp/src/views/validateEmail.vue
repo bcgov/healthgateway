@@ -5,6 +5,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import BaseButtonComponent from "@/components/shared/baseButton.vue";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -12,24 +13,31 @@ import container from "@/plugins/inversify.config";
 import { IUserProfileService } from "@/services/interfaces";
 library.add(faTimesCircle);
 
-@Component
+@Component({
+    components: {
+        "hg-button": BaseButtonComponent,
+    },
+})
 export default class ValidateEmailView extends Vue {
     @Prop() inviteKey!: string;
 
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+    checkRegistration!: () => Promise<boolean>;
 
     private isLoading = true;
+    private validatedValue = false;
     private resultStatus: ResultType | null = null;
 
-    private get isSuccess() {
-        return this.resultStatus === ResultType.Success;
+    private get isVerified() {
+        return this.resultStatus === ResultType.Success && this.validatedValue;
     }
-    private get isActionRequired() {
-        return this.resultStatus === ResultType.ActionRequired;
+
+    private get isAlreadyVerified() {
+        return this.resultStatus === ResultType.Error && this.validatedValue;
     }
+
     private mounted() {
         this.verifyEmail();
     }
@@ -42,14 +50,8 @@ export default class ValidateEmailView extends Vue {
         userProfileService
             .validateEmail(this.user.hdid, this.inviteKey)
             .then((result) => {
+                this.validatedValue = result.resourcePayload;
                 this.resultStatus = result.resultStatus;
-                if (this.resultStatus == ResultType.Success) {
-                    this.checkRegistration({ hdid: this.user.hdid });
-                    setTimeout(
-                        () => this.$router.push({ path: "/timeline" }),
-                        2000
-                    );
-                }
             })
             .finally(() => {
                 this.isLoading = false;
@@ -65,20 +67,62 @@ export default class ValidateEmailView extends Vue {
                 <h4 v-if="isLoading" data-testid="verifingInvite">
                     We are verifying your email...
                 </h4>
-                <h4 v-else-if="isSuccess" data-testid="verifiedInvite">
-                    Your email was successfully verified!
-                </h4>
-                <h4 v-else-if="isActionRequired" data-testid="expiredInvite">
-                    Your verification link is expired. Resend your verification
-                    email from the
-                    <router-link to="/profile" data-testid="profileLink">
-                        Profile Page</router-link
-                    >.
-                </h4>
-                <h4 v-else data-testid="invalidInvite">
-                    Something is not right, are you sure this is the correct
-                    link?
-                </h4>
+                <div v-else-if="isVerified">
+                    <font-awesome-icon
+                        class="text-success"
+                        icon="check-circle"
+                        aria-hidden="true"
+                        size="1x"
+                    />
+                    <h4 data-testid="verifiedInvite">
+                        Your email address has been verified
+                    </h4>
+
+                    <hg-button
+                        data-testid="continueButton"
+                        variant="primary"
+                        @click="$router.push({ path: '/timeline' })"
+                    >
+                        Continue
+                    </hg-button>
+                </div>
+                <div v-else-if="isAlreadyVerified">
+                    <font-awesome-icon
+                        class="text-success"
+                        icon="check-circle"
+                        aria-hidden="true"
+                        size="1x"
+                    />
+                    <h4 data-testid="alreadyVerifiedInvite">
+                        Your email address is already verified
+                    </h4>
+                    <hg-button
+                        data-testid="continueButton"
+                        variant="primary"
+                        @click="$router.push({ path: '/timeline' })"
+                    >
+                        Continue
+                    </hg-button>
+                </div>
+                <div v-else>
+                    <font-awesome-icon
+                        class="text-danger"
+                        icon="times-circle"
+                        aria-hidden="true"
+                        size="1x"
+                    />
+                    <h4 data-testid="expiredInvite">
+                        Your link is expired or incorrect. Please resend
+                        verification email from your profile page
+                    </h4>
+                    <hg-button
+                        data-testid="continueButton"
+                        variant="primary"
+                        @click="$router.push({ path: '/profile' })"
+                    >
+                        Continue
+                    </hg-button>
+                </div>
             </b-col>
         </b-row>
     </b-container>

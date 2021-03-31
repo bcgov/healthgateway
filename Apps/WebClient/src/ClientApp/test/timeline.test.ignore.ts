@@ -18,7 +18,7 @@ import {
     ErrorBannerState,
     ImmunizationState,
     LaboratoryState,
-    MedicationState,
+    MedicationStatementState,
     NavbarState,
     RootState,
 } from "@/models/storeState";
@@ -97,7 +97,7 @@ const laboratoryGetters = {
     },
 };
 
-const medicationActions: ActionTree<MedicationState, RootState> = {
+const medicationActions: ActionTree<MedicationStatementState, RootState> = {
     getMedicationStatements(
         context,
         params: {

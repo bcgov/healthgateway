@@ -34,7 +34,7 @@ namespace HealthGateway.Medication.Delegates.Test
     using Moq.Protected;
     using Xunit;
 
-    public class SalesforceDelegate_Test
+    public class SalesforceDelegateTest
     {
         [Fact]
         public void ShouldRetrieveMedicationRequests()
@@ -307,7 +307,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             var jwt = JsonSerializer.Deserialize<JWTModel>(json, options);
 
-            return jwt ?? new();
+            return jwt ?? new ();
         }
 
         private static Mock<IHttpClientService> CreateHttpClient(HttpResponseMessage stubResponse, string expectedPHN, string authorizationToken)

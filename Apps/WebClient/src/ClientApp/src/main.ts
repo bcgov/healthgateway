@@ -4,8 +4,7 @@ import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import "@/plugins/registerComponentHooks";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { BPopover } from "bootstrap-vue";
-import { BBadge } from "bootstrap-vue";
+import { BBadge, BFormTag, BFormTags, BPopover } from "bootstrap-vue";
 import IdleVue from "idle-vue";
 import Vue from "vue";
 import VueContentPlaceholders from "vue-content-placeholders";
@@ -41,6 +40,8 @@ import store from "@/store/store";
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 Vue.component("BPopover", BPopover);
 Vue.component("BBadge", BBadge);
+Vue.component("BFormTags", BFormTags);
+Vue.component("BFormTag", BFormTag);
 
 Vue.use(VueRouter);
 Vue.use(Vuelidate);
@@ -128,11 +129,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
                 store.getters["auth/isValidIdentityProvider"];
             const user: User = store.getters["user/user"];
             if (user.hdid && isValid) {
-                store
-                    .dispatch("user/checkRegistration", { hdid: user.hdid })
-                    .then(() => {
-                        initializeVue();
-                    });
+                store.dispatch("user/checkRegistration").then(() => {
+                    initializeVue();
+                });
             } else {
                 initializeVue();
             }

@@ -71,6 +71,7 @@ export default class RegistrationInfoView extends Vue {
                         <img
                             width="350"
                             src="@/assets/images/landing/002_Devices.png"
+                            alt="Different Devices (Laptop, Tablet, Phone)"
                     /></b-col>
 
                     <b-col fluid>
@@ -86,6 +87,7 @@ export default class RegistrationInfoView extends Vue {
                                             class="mr-3"
                                             :src="mobileCardImg"
                                             height="40"
+                                            alt="BC Services Card App Icon"
                                         />Register for Health Gateway
                                     </b-button>
                                 </router-link>

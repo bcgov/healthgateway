@@ -1,18 +1,20 @@
 const { AuthMethod } = require("../../../support/constants");
-before(() => {
-  cy.viewport("iphone-6");
-  cy.restoreAuthCookies();
-  cy.enableModules("Laboratory");
-  cy.intercept("GET", "**/v1/api/Laboratory*", {
-    fixture: "LaboratoryService/laboratory.json",
-  });
-  cy.login(
-    Cypress.env("keycloak.username"),
-    Cypress.env("keycloak.password"),
-    AuthMethod.KeyCloak
-  );
-});
+
 describe("Laboratory", () => {
+  before(() => {
+    cy.viewport("iphone-6");
+    cy.restoreAuthCookies();
+    cy.enableModules("Laboratory");
+    cy.intercept("GET", "**/v1/api/Laboratory*", {
+      fixture: "LaboratoryService/laboratory.json",
+    });
+    cy.login(
+      Cypress.env("keycloak.username"),
+      Cypress.env("keycloak.password"),
+      AuthMethod.KeyCloak
+    );
+  });
+  
   it("Validate Card", () => {
     cy.log("Verifying card data");
     cy.get("[data-testid=timelineCard]")
@@ -130,6 +132,24 @@ describe("Laboratory", () => {
         cy.get("[data-testid=laboratoryTestStatus]").should(($div) => {
           expect($div.text().trim()).equal(amendedStatus);
         });
+      });
+  });
+
+  it("Validate Report Attachment Icons", () => {
+    cy.log("All cards with reports should have attachment icons.");
+    cy.get("[data-testid=laboratoryReportAvailable]")
+      .closest("[data-testid=timelineCard]")
+      .each((card) => {
+        cy.wrap(card).find("[data-testid=attachmentIcon]").should("exist");
+      });
+
+    cy.log("All cards with attachment icons should have reports.");
+    cy.get("[data-testid=attachmentIcon]")
+      .closest("[data-testid=timelineCard]")
+      .each((card) => {
+        cy.wrap(card)
+          .find("[data-testid=laboratoryReportAvailable]")
+          .should("exist");
       });
   });
 });

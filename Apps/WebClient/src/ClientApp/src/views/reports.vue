@@ -1,5 +1,4 @@
 <script lang="ts">
-import { BFormTag } from "bootstrap-vue";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -7,21 +6,21 @@ import { Action, Getter } from "vuex-class";
 import DatePickerComponent from "@/components/datePicker.vue";
 import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import PageTitleComponent from "@/components/pageTitle.vue";
+import MultiSelectComponent, {
+    SelectOption,
+} from "@/components/multiSelect.vue";
 import COVID19ReportComponent from "@/components/report/covid19.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/immunizationHistory.vue";
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
-import BannerError from "@/models/bannerError";
+import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationSummary from "@/models/medicationSummary";
 import PatientData from "@/models/patientData";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
-
-Vue.component("BFormTag", BFormTag);
+import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 
 @Component({
     components: {
@@ -34,13 +33,17 @@ Vue.component("BFormTag", BFormTag);
         ImmunizationHistoryReportComponent,
         MedicationRequestReportComponent,
         DatePickerComponent,
+        MultiSelectComponent,
     },
 })
 export default class ReportsView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
+
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
+    @Getter("medicationStatements", { namespace: "medication" })
+    medicationStatements!: MedicationStatementHistory[];
 
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
@@ -55,26 +58,52 @@ export default class ReportsView extends Vue {
     @Ref("medicationRequestReport")
     readonly medicationRequestReport!: MedicationRequestReportComponent;
 
-    @Action("addError", { namespace: "errorBanner" })
-    private addError!: (error: BannerError) => void;
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: () => Promise<void>;
 
     private isLoading = false;
     private isGeneratingReport = false;
-    private logger!: ILogger;
     private reportType = "";
-    private startDate: Date | null = null;
-    private endDate: Date | null = null;
-    private selectedStartDate: Date | null = null;
-    private selectedEndDate: Date | null = null;
     private reportTypeOptions = [{ value: "", text: "Select" }];
-    private retryCount = 2;
+
+    private selectedStartDate: StringISODate | null = null;
+    private selectedEndDate: StringISODate | null = null;
+    private selectedMedicationOptions: string[] = [];
+
+    private reportFilter: ReportFilter = ReportFilterBuilder.create().build();
+
+    private get medicationOptions(): SelectOption[] {
+        var medications = this.medicationStatements.reduce<MedicationSummary[]>(
+            (acumulator: MedicationSummary[], current) => {
+                var med = current.medicationSummary;
+                if (
+                    acumulator.findIndex((x) => x.brandName === med.brandName) <
+                    0
+                ) {
+                    acumulator.push(med);
+                }
+                return acumulator;
+            },
+            []
+        );
+
+        medications.sort((a, b) => a.brandName.localeCompare(b.brandName));
+
+        return medications.map<SelectOption>((x) => {
+            return {
+                text: x.brandName,
+                value: x.brandName,
+            };
+        });
+    }
 
     private formatDate(date: string): string {
         return new DateWrapper(date).format();
     }
 
-    private mounted() {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private created() {
+        this.getPatientData();
+
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({ value: "MED", text: "Medications" });
         }
@@ -105,24 +134,42 @@ export default class ReportsView extends Vue {
     }
 
     private clearFilter() {
-        this.startDate = null;
-        this.endDate = null;
         this.selectedStartDate = null;
         this.selectedEndDate = null;
+        this.selectedMedicationOptions = [];
+        this.updateFilter();
+    }
+
+    private clearFilterDates() {
+        this.selectedStartDate = null;
+        this.selectedEndDate = null;
+        this.updateFilter();
+    }
+
+    private clearFilterMedication(medicationName: string) {
+        var index = this.selectedMedicationOptions.indexOf(medicationName);
+        if (index >= 0) {
+            this.selectedMedicationOptions.splice(index, 1);
+            this.updateFilter();
+        }
     }
 
     private cancelFilter() {
-        this.selectedStartDate = this.startDate;
-        this.selectedEndDate = this.endDate;
+        this.selectedStartDate = this.reportFilter.startDate;
+        this.selectedEndDate = this.reportFilter.endDate;
+        this.selectedMedicationOptions = this.reportFilter.medications;
     }
 
     private updateFilter() {
-        this.startDate = this.selectedStartDate;
-        this.endDate = this.selectedEndDate;
+        this.reportFilter = ReportFilterBuilder.create()
+            .withStartDate(this.selectedStartDate)
+            .withEndDate(this.selectedEndDate)
+            .withMedications(this.selectedMedicationOptions)
+            .build();
     }
 
     private formatDateLong(date: string): string {
-        return new DateWrapper(date).format();
+        return DateWrapper.format(date);
     }
 
     private showConfirmationModal() {
@@ -163,155 +210,161 @@ export default class ReportsView extends Vue {
         <div>
             <b-row>
                 <b-col class="col-12 col-md-10 col-lg-9 column-wrapper">
-                    <PageTitleComponent :title="`Export Records`" />
+                    <PageTitleComponent title="Export Records" />
                     <div class="my-3 px-3 py-4 form">
                         <b-row>
                             <b-col>
                                 <label for="reportType"> Record Type </label>
                             </b-col>
                         </b-row>
-                        <b-row>
-                            <b-col class="col-12 col-md-8 mb-2">
-                                <b-row>
-                                    <b-col>
-                                        <b-form-select
-                                            id="reportType"
-                                            v-model="reportType"
-                                            data-testid="reportType"
-                                            :options="reportTypeOptions"
-                                        >
-                                        </b-form-select>
-                                    </b-col>
-                                </b-row>
+                        <b-row align-h="between" class="py-2">
+                            <b-col class="mb-2" md="12" lg="">
+                                <b-form-select
+                                    id="reportType"
+                                    v-model="reportType"
+                                    data-testid="reportType"
+                                    :options="reportTypeOptions"
+                                >
+                                </b-form-select>
                             </b-col>
-                            <b-col class="col-12 col-md-3">
-                                <b-row>
-                                    <b-col
-                                        class="d-flex justify-content-center justify-content-md-end"
-                                    >
-                                        <div style="width: fit-content">
-                                            <b-button
-                                                variant="primary"
-                                                data-testid="exportRecordBtn"
-                                                class="mb-1"
-                                                :disabled="
-                                                    !reportType ||
-                                                    isLoading ||
-                                                    patientData === null
-                                                "
-                                                @click="showConfirmationModal"
-                                            >
-                                                Download PDF
-                                            </b-button>
-                                        </div>
-                                    </b-col>
-                                </b-row>
-                                <b-row>
-                                    <b-col
-                                        class="d-flex justify-content-start justify-content-md-end"
-                                    >
-                                        <b-button
-                                            v-b-toggle.advanced-panel
-                                            variant="link"
-                                            data-testid="advancedBtn"
-                                        >
-                                            Advanced
-                                        </b-button>
-                                    </b-col>
-                                </b-row>
+                            <b-col class="p-0 px-3" cols="auto">
+                                <b-button
+                                    v-b-toggle.advanced-panel
+                                    variant="link"
+                                    data-testid="advancedBtn"
+                                >
+                                    Advanced
+                                </b-button>
+                                <b-button
+                                    variant="primary"
+                                    data-testid="exportRecordBtn"
+                                    class="mb-1 ml-2"
+                                    :disabled="
+                                        !reportType ||
+                                        isLoading ||
+                                        !patientData.hdid
+                                    "
+                                    @click="showConfirmationModal"
+                                >
+                                    Download PDF
+                                </b-button>
                             </b-col>
                         </b-row>
-                        <b-row v-if="startDate || endDate">
-                            <b-col class="d-flex justify-content-start">
+                        <b-row
+                            v-if="reportFilter.hasActiveFilter()"
+                            class="pb-2"
+                        >
+                            <b-col v-if="reportFilter.hasDateFilter()">
+                                <div><strong>Date Range</strong></div>
                                 <b-form-tag
                                     variant="light"
                                     class="filter-selected"
                                     title="From"
                                     data-testid="clearFilter"
-                                    @remove="clearFilter"
+                                    :pill="true"
+                                    @remove="clearFilterDates"
                                 >
                                     <span data-testid="selectedDatesFilter"
                                         >{{
-                                            startDate
+                                            reportFilter.startDate
                                                 ? `From ${formatDateLong(
-                                                      startDate
+                                                      reportFilter.startDate
                                                   )}`
                                                 : ""
                                         }}
                                         {{
-                                            endDate
+                                            reportFilter.endDate
                                                 ? ` To ${formatDateLong(
-                                                      endDate
+                                                      reportFilter.endDate
                                                   )}`
                                                 : ""
                                         }}</span
                                     >
                                 </b-form-tag>
                             </b-col>
+
+                            <b-col
+                                v-if="
+                                    reportFilter.hasMedicationsFilter() &&
+                                    reportType == 'MED'
+                                "
+                                data-testid="medicationFilter"
+                            >
+                                <div><strong>Exclude</strong></div>
+                                <b-form-tag
+                                    v-for="item in reportFilter.medications"
+                                    :key="item"
+                                    variant="danger"
+                                    :title="item"
+                                    :data-testid="item + '-clearFilter'"
+                                    :pill="true"
+                                    @remove="clearFilterMedication(item)"
+                                >
+                                    <span :data-testid="item + '-excluded'">{{
+                                        item
+                                    }}</span>
+                                </b-form-tag>
+                            </b-col>
                         </b-row>
                         <b-collapse
                             id="advanced-panel"
                             data-testid="advancedPanel"
+                            class="border-top"
                         >
-                            <b-row class="border-top pt-3">
-                                <b-col class="col-12 col-md-3 mb-2">
-                                    <b-row>
-                                        <b-col>
-                                            <label for="start-date">From</label>
-                                        </b-col>
-                                    </b-row>
-                                    <b-row>
-                                        <b-col>
-                                            <DatePickerComponent
-                                                id="start-date"
-                                                v-model="selectedStartDate"
-                                                data-testid="startDateInput"
-                                            />
-                                        </b-col>
-                                    </b-row>
+                            <b-row>
+                                <b-col class="col-12 col-lg-4 pt-3">
+                                    <label for="start-date">From</label>
+                                    <DatePickerComponent
+                                        id="start-date"
+                                        v-model="selectedStartDate"
+                                        data-testid="startDateInput"
+                                    />
                                 </b-col>
-                                <b-col class="col-12 col-md-9">
-                                    <b-row>
-                                        <b-col>
-                                            <label for="end-date">To</label>
-                                        </b-col>
-                                    </b-row>
-                                    <b-row>
-                                        <b-col class="col-12 col-md-4 mb-2">
-                                            <DatePickerComponent
-                                                id="end-date"
-                                                v-model="selectedEndDate"
-                                                data-testid="endDateInput"
-                                            />
-                                        </b-col>
-                                        <b-col class="col-12 col-md-8">
-                                            <div
-                                                style="width: fit-content"
-                                                class="ml-auto"
-                                            >
-                                                <b-button
-                                                    v-b-toggle.advanced-panel
-                                                    variant="link"
-                                                    data-testid="clearBtn"
-                                                    class="mb-1 mr-2 text-muted"
-                                                    :disabled="isLoading"
-                                                    @click="cancelFilter"
-                                                >
-                                                    Cancel
-                                                </b-button>
-                                                <b-button
-                                                    v-b-toggle.advanced-panel
-                                                    variant="primary"
-                                                    data-testid="applyFilterBtn"
-                                                    class="mb-1 ml-2"
-                                                    :disabled="isLoading"
-                                                    @click="updateFilter"
-                                                >
-                                                    Apply
-                                                </b-button>
-                                            </div>
-                                        </b-col>
-                                    </b-row>
+                                <b-col class="col-12 col-lg-4 pt-3">
+                                    <label for="end-date">To</label>
+                                    <DatePickerComponent
+                                        id="end-date"
+                                        v-model="selectedEndDate"
+                                        data-testid="endDateInput"
+                                    />
+                                </b-col>
+                            </b-row>
+                            <b-row v-show="reportType == 'MED'" class="pt-3">
+                                <b-col>
+                                    <div>
+                                        <strong>Exclude These Records</strong>
+                                    </div>
+                                    <div>Medications:</div>
+                                    <MultiSelectComponent
+                                        v-model="selectedMedicationOptions"
+                                        placeholder="Choose a medication"
+                                        :options="medicationOptions"
+                                        data-testid="medicationExclusionFilter"
+                                    ></MultiSelectComponent>
+                                </b-col>
+                            </b-row>
+                            <b-row align-h="end" class="pt-4">
+                                <b-col cols="auto">
+                                    <b-button
+                                        v-b-toggle.advanced-panel
+                                        variant="link"
+                                        data-testid="clearBtn"
+                                        class="mb-1 mr-2 text-muted"
+                                        :disabled="isLoading"
+                                        @click="cancelFilter"
+                                    >
+                                        Cancel
+                                    </b-button>
+                                    <b-button
+                                        v-b-toggle.advanced-panel
+                                        variant="primary"
+                                        data-testid="applyFilterBtn"
+                                        class="mb-1 ml-2"
+                                        :disabled="isLoading"
+                                        @click="updateFilter"
+                                    >
+                                        Apply
+                                    </b-button>
                                 </b-col>
                             </b-row>
                         </b-collapse>
@@ -329,8 +382,7 @@ export default class ReportsView extends Vue {
                     >
                         <MedicationHistoryReportComponent
                             ref="medicationHistoryReport"
-                            :start-date="startDate"
-                            :end-date="endDate"
+                            :filter="reportFilter"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -341,8 +393,7 @@ export default class ReportsView extends Vue {
                     >
                         <MSPVisitsReportComponent
                             ref="mspVisitsReport"
-                            :start-date="startDate"
-                            :end-date="endDate"
+                            :filter="reportFilter"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -353,8 +404,7 @@ export default class ReportsView extends Vue {
                     >
                         <COVID19ReportComponent
                             ref="covid19Report"
-                            :start-date="startDate"
-                            :end-date="endDate"
+                            :filter="reportFilter"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -365,8 +415,7 @@ export default class ReportsView extends Vue {
                     >
                         <ImmunizationHistoryReportComponent
                             ref="immunizationHistoryReport"
-                            :start-date="startDate"
-                            :end-date="endDate"
+                            :filter="reportFilter"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>
@@ -377,8 +426,7 @@ export default class ReportsView extends Vue {
                     >
                         <MedicationRequestReportComponent
                             ref="medicationRequestReport"
-                            :start-date="startDate"
-                            :end-date="endDate"
+                            :filter="reportFilter"
                             @on-is-loading-changed="isLoading = $event"
                         />
                     </div>

@@ -74,6 +74,7 @@ import {
     faFileAlt,
     faFlask,
     faLock,
+    faPaperclip,
     faPills,
     faPrint,
     faSpinner,
@@ -127,7 +128,8 @@ library.add(
     faChartLine,
     faStream,
     faUserPlus,
-    faUserFriends
+    faUserFriends,
+    faPaperclip
 );
 
 import ErrorCard from "@/components/errorCard.vue";
@@ -213,7 +215,7 @@ export default class App extends Vue {
         <div v-if="!isProduction" class="devBanner">
             <div class="text-center bg-warning small">
                 Non-production environment:
-                <b>{{ host }}</b>
+                <strong>{{ host }}</strong>
             </div>
         </div>
 
@@ -287,5 +289,18 @@ main {
 
 .devBanner {
     z-index: $z_header;
+}
+
+label.hg-label {
+    font-weight: bold;
+}
+
+.is-invalid .hg-label {
+    color: $danger;
+}
+
+h4.hg-h4 {
+    font-size: 1.2rem;
+    font-weight: 400;
 }
 </style>

@@ -28,15 +28,9 @@ const config = "config";
 })
 export default class SidebarComponent extends Vue {
     @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: {
-        hdid: string;
-        userPreference: UserPreference;
-    }) => void;
+    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
     @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: {
-        hdid: string;
-        userPreference: UserPreference;
-    }) => void;
+    createUserPreference!: (params: { userPreference: UserPreference }) => void;
 
     @Action("toggleSidebar", { namespace: navbar }) toggleSidebar!: () => void;
 
@@ -152,13 +146,11 @@ export default class SidebarComponent extends Vue {
         userPreference.value = "false";
         if (userPreference.hdId != undefined) {
             this.updateUserPreference({
-                hdid: this.user.hdid,
                 userPreference: userPreference,
             });
         } else {
             userPreference.hdId = this.user.hdid;
             this.createUserPreference({
-                hdid: this.user.hdid,
                 userPreference: userPreference,
             });
         }
