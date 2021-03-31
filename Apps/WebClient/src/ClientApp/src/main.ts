@@ -129,11 +129,9 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
                 store.getters["auth/isValidIdentityProvider"];
             const user: User = store.getters["user/user"];
             if (user.hdid && isValid) {
-                store
-                    .dispatch("user/checkRegistration", { hdid: user.hdid })
-                    .then(() => {
-                        initializeVue();
-                    });
+                store.dispatch("user/checkRegistration").then(() => {
+                    initializeVue();
+                });
             } else {
                 initializeVue();
             }

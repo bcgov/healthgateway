@@ -35,7 +35,7 @@ export default class RegistrationView extends Vue {
     @Prop() inviteEmail?: string;
 
     @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+    checkRegistration!: () => Promise<boolean>;
 
     @Ref("registrationForm") form!: HTMLFormElement;
 
@@ -231,36 +231,34 @@ export default class RegistrationView extends Vue {
                     this.logger.debug(
                         `Create Profile result: ${JSON.stringify(result)}`
                     );
-                    this.checkRegistration({ hdid: this.oidcUser.hdid }).then(
-                        (isRegistered: boolean) => {
-                            if (isRegistered) {
-                                if (this.smsNumber === "" && this.email === "")
-                                    this.$router.push({ path: "/timeline" });
-                                else {
-                                    this.$router.push({
-                                        path: "/profile",
-                                        query: {
-                                            toVerifyPhone:
-                                                this.smsNumber === ""
-                                                    ? "false"
-                                                    : "true",
-                                            toVerifyEmail:
-                                                this.email === ""
-                                                    ? "false"
-                                                    : "true",
-                                        },
-                                    });
-                                }
-                            } else {
-                                this.addError({
-                                    title: "User profile creation",
-                                    description: "Profile already created",
-                                    detail: "",
-                                    errorCode: "",
+                    this.checkRegistration().then((isRegistered: boolean) => {
+                        if (isRegistered) {
+                            if (this.smsNumber === "" && this.email === "")
+                                this.$router.push({ path: "/timeline" });
+                            else {
+                                this.$router.push({
+                                    path: "/profile",
+                                    query: {
+                                        toVerifyPhone:
+                                            this.smsNumber === ""
+                                                ? "false"
+                                                : "true",
+                                        toVerifyEmail:
+                                            this.email === ""
+                                                ? "false"
+                                                : "true",
+                                    },
                                 });
                             }
+                        } else {
+                            this.addError({
+                                title: "User profile creation",
+                                description: "Profile already created",
+                                detail: "",
+                                errorCode: "",
+                            });
                         }
-                    );
+                    });
                 })
                 .catch((err) => {
                     this.addError(

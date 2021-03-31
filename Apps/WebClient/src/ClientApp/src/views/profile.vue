@@ -59,30 +59,22 @@ export default class ProfileView extends Vue {
 
     @Action("updateUserEmail", { namespace: userNamespace })
     updateUserEmail!: ({
-        hdid,
         emailAddress,
     }: {
-        hdid: string;
         emailAddress: string;
     }) => Promise<void>;
 
-    @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+    @Action("checkRegistration", { namespace: userNamespace })
+    checkRegistration!: () => Promise<boolean>;
 
     @Action("closeUserAccount", { namespace: userNamespace })
-    closeUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
+    closeUserAccount!: () => Promise<void>;
 
     @Action("recoverUserAccount", { namespace: userNamespace })
-    recoverUserAccount!: ({ hdid }: { hdid: string }) => Promise<void>;
+    recoverUserAccount!: () => Promise<void>;
 
-    @Action("updateSMSResendDateTime", { namespace: "user" })
-    updateSMSResendDateTime!: ({
-        hdid,
-        dateTime,
-    }: {
-        hdid: string;
-        dateTime: DateWrapper;
-    }) => void;
+    @Action("updateSMSResendDateTime", { namespace: userNamespace })
+    updateSMSResendDateTime!: ({ dateTime }: { dateTime: DateWrapper }) => void;
 
     @Getter("user", { namespace: userNamespace }) user!: User;
 
@@ -359,13 +351,12 @@ export default class ProfileView extends Vue {
     }
 
     private onVerifySMSSubmit(): void {
-        this.checkRegistration({ hdid: this.user.hdid });
+        this.checkRegistration();
         this.smsVerified = true;
     }
     private sendUserEmailUpdate(): void {
         this.isLoading = true;
         this.updateUserEmail({
-            hdid: this.user.hdid || "",
             emailAddress: this.email,
         })
             .then(() => {
@@ -374,7 +365,7 @@ export default class ProfileView extends Vue {
                 this.emailVerified = false;
                 this.emailVerificationSent = true;
                 this.tempEmail = "";
-                this.checkRegistration({ hdid: this.user.hdid });
+                this.checkRegistration();
                 this.$v.$reset();
                 this.showCheckEmailAlert = !this.isEmptyEmail;
             })
@@ -395,7 +386,6 @@ export default class ProfileView extends Vue {
         );
         // Reset timer when user submits their SMS number
         this.updateSMSResendDateTime({
-            hdid: this.user.hdid,
             dateTime: new DateWrapper(),
         });
         // Send update to backend
@@ -405,7 +395,7 @@ export default class ProfileView extends Vue {
                 this.isSMSEditable = false;
                 this.smsVerified = false;
                 this.tempSMS = "";
-                this.checkRegistration({ hdid: this.user.hdid });
+                this.checkRegistration();
                 if (this.smsNumber) {
                     this.verifySMS();
                 }
@@ -415,9 +405,7 @@ export default class ProfileView extends Vue {
 
     private recoverAccount(): void {
         this.isLoading = true;
-        this.recoverUserAccount({
-            hdid: this.user.hdid,
-        })
+        this.recoverUserAccount()
             .then(() => {
                 this.logger.verbose("success!");
             })
@@ -442,9 +430,7 @@ export default class ProfileView extends Vue {
 
     private closeAccount(): void {
         this.isLoading = true;
-        this.closeUserAccount({
-            hdid: this.user.hdid,
-        })
+        this.closeUserAccount()
             .then(() => {
                 this.logger.verbose("success!");
                 this.showCloseWarning = false;

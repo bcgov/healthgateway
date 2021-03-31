@@ -24,7 +24,7 @@ export default class ValidateEmailView extends Vue {
     @Getter("user", { namespace: "user" }) user!: User;
 
     @Action("checkRegistration", { namespace: "user" })
-    checkRegistration!: (params: { hdid: string }) => Promise<boolean>;
+    checkRegistration!: () => Promise<boolean>;
 
     private isLoading = true;
     private validatedValue = false;

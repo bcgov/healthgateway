@@ -21,7 +21,6 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models/medicationSummary";
 import PatientData from "@/models/patientData";
 import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
-import User from "@/models/user";
 
 @Component({
     components: {
@@ -46,8 +45,6 @@ export default class ReportsView extends Vue {
     @Getter("medicationStatements", { namespace: "medication" })
     medicationStatements!: MedicationStatementHistory[];
 
-    @Getter("user", { namespace: "user" }) user!: User;
-
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
     @Ref("medicationHistoryReport")
@@ -62,7 +59,7 @@ export default class ReportsView extends Vue {
     readonly medicationRequestReport!: MedicationRequestReportComponent;
 
     @Action("getPatientData", { namespace: "user" })
-    getPatientData!: (params: { hdid: string }) => Promise<void>;
+    getPatientData!: () => Promise<void>;
 
     private isLoading = false;
     private isGeneratingReport = false;
@@ -105,7 +102,7 @@ export default class ReportsView extends Vue {
     }
 
     private created() {
-        this.getPatientData({ hdid: this.user.hdid });
+        this.getPatientData();
 
         if (this.config.modules["Medication"]) {
             this.reportTypeOptions.push({ value: "MED", text: "Medications" });

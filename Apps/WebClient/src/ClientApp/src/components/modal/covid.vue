@@ -14,16 +14,10 @@ import type { UserPreference } from "@/models/userPreference";
 @Component
 export default class CovidModalComponent extends Vue {
     @Action("updateUserPreference", { namespace: "user" })
-    updateUserPreference!: (params: {
-        hdid: string;
-        userPreference: UserPreference;
-    }) => void;
+    updateUserPreference!: (params: { userPreference: UserPreference }) => void;
 
     @Action("createUserPreference", { namespace: "user" })
-    createUserPreference!: (params: {
-        hdid: string;
-        userPreference: UserPreference;
-    }) => void;
+    createUserPreference!: (params: { userPreference: UserPreference }) => void;
 
     @Action("setFilter", { namespace: "timeline" })
     setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
@@ -71,7 +65,6 @@ export default class CovidModalComponent extends Vue {
         if (this.user.preferences[preferenceName] != undefined) {
             this.user.preferences[preferenceName].value = isoNow;
             this.updateUserPreference({
-                hdid: this.user.hdid,
                 userPreference: this.user.preferences[preferenceName],
             });
         } else {
@@ -83,7 +76,6 @@ export default class CovidModalComponent extends Vue {
                 createdDateTime: new DateWrapper().toISO(),
             };
             this.createUserPreference({
-                hdid: this.user.hdid,
                 userPreference: this.user.preferences[preferenceName],
             });
         }
