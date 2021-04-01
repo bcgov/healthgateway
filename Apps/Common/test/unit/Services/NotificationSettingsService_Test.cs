@@ -155,6 +155,7 @@ namespace HealthGateway.CommonTests.Services
                     It.IsAny<EnqueuedState>()));
 
             Assert.True(nsr.SMSVerificationCode != null);
+            Assert.True(nsr.SMSVerificationCode.Length == 6);
         }
     }
 }

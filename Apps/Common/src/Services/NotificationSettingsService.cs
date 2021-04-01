@@ -19,6 +19,7 @@ namespace HealthGateway.Common.Services
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
+    using System.Security.Cryptography;
     using System.Text.Json;
     using System.Threading.Tasks;
     using Hangfire;
@@ -118,8 +119,16 @@ namespace HealthGateway.Common.Services
             if (notificationSettings.SMSEnabled && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
             {
                 // Create the SMS validation code if the SMS is not verified and the caller didn't set it.
-                Random generator = new Random();
-                notificationSettings.SMSVerificationCode = generator.Next(0, 999999).ToString("D6", CultureInfo.InvariantCulture);
+                using (RandomNumberGenerator generator = RandomNumberGenerator.Create())
+                {
+                    byte[] data = new byte[16];
+                    generator.GetBytes(data);
+                    notificationSettings.SMSVerificationCode =
+                        BitConverter
+                            .ToUInt32(data)
+                            .ToString("D6", CultureInfo.InvariantCulture)
+                            .Substring(0, 6);
+                }
             }
 
             return notificationSettings;
