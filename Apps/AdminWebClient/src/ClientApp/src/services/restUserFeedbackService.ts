@@ -21,14 +21,14 @@ export class RestUserFeedbackService implements IUserFeedbackService {
                 .get<RequestResult<UserFeedback[]>>(
                     `${this.USER_FEEDBACK_BASE_URI}`
                 )
-                .then((requestResult) => {
+                .then(requestResult => {
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
                         reject
                     );
                 })
-                .catch((err) => {
+                .catch(err => {
                     console.log(err);
                     return reject(err);
                 });
@@ -45,14 +45,14 @@ export class RestUserFeedbackService implements IUserFeedbackService {
                     JSON.stringify(feedback),
                     headers
                 )
-                .then((requestResult) => {
+                .then(requestResult => {
                     if (requestResult) {
                         resolve(true);
                     } else {
                         reject("Error toggling user feedback");
                     }
                 })
-                .catch((err) => {
+                .catch(err => {
                     console.log(err);
                     return reject(err);
                 });

@@ -4,9 +4,9 @@ export const SERVICE_IDENTIFIER = {
     DashboardService: Symbol.for("DashboardService"),
     UserFeedbackService: Symbol.for("UserFeedbackService"),
     EmailAdminService: Symbol.for("EmailAdminService"),
-    CommunicationService: Symbol.for("CommunicationService"),
+    CommunicationService: Symbol.for("CommunicationService")
 };
 
 export const DELEGATE_IDENTIFIER = {
-    HttpDelegate: Symbol.for("HttpDelegate"),
+    HttpDelegate: Symbol.for("HttpDelegate")
 };

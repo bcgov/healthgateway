@@ -1,9 +1,9 @@
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 
 import {
-    FontAwesomeIcon,
-    FontAwesomeLayers,
-    FontAwesomeLayersText,
+  FontAwesomeIcon,
+  FontAwesomeLayers,
+  FontAwesomeLayersText,
 } from "@fortawesome/vue-fontawesome";
 import Vue from "vue";
 
@@ -16,5 +16,5 @@ Vue.component("FontAwesomeLayers", FontAwesomeLayers);
 Vue.component("FontAwesomeLayersText", FontAwesomeLayersText);
 
 new Vue({
-    render: (h) => h(App),
+  render: (h) => h(App),
 }).$mount("#app-root");

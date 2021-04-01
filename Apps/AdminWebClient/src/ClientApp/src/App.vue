@@ -22,7 +22,7 @@ library.add(faEdit);
 library.add(faTrash);
 
 @Component({
-    components: { MainNavbar, Footer, ToolbarComponent },
+    components: { MainNavbar, Footer, ToolbarComponent }
 })
 export default class App extends Vue {}
 </script>

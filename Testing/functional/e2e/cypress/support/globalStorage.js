@@ -1,1 +1,2 @@
-export var globalStorage = { authCookies: [] };
+
+export var globalStorage = {authCookies: []};

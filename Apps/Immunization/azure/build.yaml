@@ -3,29 +3,30 @@ name: 1.1.0$(Rev:.r) #Build number
 pr: none
 
 resources:
-    pipelines:
-        - pipeline: Common
-          source: Common
-          trigger:
-              branches:
-                  - dev
-
+ pipelines:
+   - pipeline: Common
+     source: Common
+     trigger:
+       branches:
+       - dev
+       
 trigger:
     batch: "true"
     branches:
         include:
-            - dev
+        - dev
     paths:
         include:
-            - Apps/Immunization
+        - Apps/Immunization
 
 pool:
     name: "HealthGateway"
 
 extends:
-    template: /Build/hg.yaml
-    parameters:
-        Application: Immunization
-        DotNetTests: true
-        NPMInstall: false
-        NPMTests: false
+  template: /Build/hg.yaml
+  parameters:
+    Application: Immunization
+    DotNetTests: true
+    NPMInstall: false
+    NPMTests: false
+

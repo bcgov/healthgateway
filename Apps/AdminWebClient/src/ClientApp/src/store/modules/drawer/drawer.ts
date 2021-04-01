@@ -7,7 +7,7 @@ import { getters } from "./getters";
 import { mutations } from "./mutations";
 
 export const state: DrawerState = {
-    isOpen: true,
+    isOpen: true
 };
 
 const namespaced = true;
@@ -17,5 +17,5 @@ export const drawer: Module<DrawerState, RootState> = {
     state,
     getters,
     actions,
-    mutations,
+    mutations
 };

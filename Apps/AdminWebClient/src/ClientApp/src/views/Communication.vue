@@ -11,8 +11,8 @@ import BannerFeedback from "@/models/bannerFeedback";
     components: {
         LoadingComponent,
         BannerFeedbackComponent,
-        CommunicationTable,
-    },
+        CommunicationTable
+    }
 })
 export default class CommunicationView extends Vue {
     private isLoading = false;
@@ -20,7 +20,7 @@ export default class CommunicationView extends Vue {
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
-        message: "",
+        message: ""
     };
 
     private shouldShowFeedback(show: boolean) {

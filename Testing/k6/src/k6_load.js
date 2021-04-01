@@ -14,26 +14,28 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-import http from "k6/http";
-import { sleep } from "k6";
-import * as common from "./inc/common.js";
+import http from 'k6/http';
+import { sleep } from 'k6';
+import * as common from './inc/common.js';
 
 export let options = common.loadOptions;
 
 export default function () {
-    let user = common.users[__VU % common.users.length];
 
-    common.authorizeUser(user);
+  let user = common.users[__VU % common.users.length];
 
-    common.groupWithDurationMetric("batch", function () {
-        let webClientBatchResponses = http.batch(
-            common.webClientRequests(user)
-        );
-        let timelineBatchResponses = http.batch(common.timelineRequests(user));
+  common.authorizeUser(user);
 
-        common.checkResponses(webClientBatchResponses);
-        common.checkResponses(timelineBatchResponses);
-    });
+  common.groupWithDurationMetric('batch', function () {
 
-    sleep(1);
+    let webClientBatchResponses = http.batch(common.webClientRequests(user));
+    let timelineBatchResponses = http.batch(common.timelineRequests(user));
+
+    common.checkResponses(webClientBatchResponses);
+    common.checkResponses(timelineBatchResponses);
+
+  });
+
+  sleep(1);
 }
+

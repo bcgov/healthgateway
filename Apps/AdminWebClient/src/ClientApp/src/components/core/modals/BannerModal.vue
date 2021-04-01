@@ -14,7 +14,9 @@
                     <v-row>
                         <v-col>
                             <ValidationProvider
-                                v-slot="{ errors }"
+                                v-slot="{
+                                    errors
+                                }"
                                 :rules="
                                     dateTimeRules(
                                         editedItem.effectiveDateTime,
@@ -34,7 +36,9 @@
                         </v-col>
                         <v-col>
                             <ValidationProvider
-                                v-slot="{ errors }"
+                                v-slot="{
+                                    errors
+                                }"
                                 :rules="
                                     dateTimeRules(
                                         editedItem.effectiveDateTime,
@@ -59,7 +63,7 @@
                                 v-model="editedItem.subject"
                                 label="Subject"
                                 maxlength="100"
-                                :rules="[(v) => !!v || 'Subject is required']"
+                                :rules="[v => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
                             ></v-text-field>
@@ -119,7 +123,7 @@ import {
     Paragraph,
     Strike,
     TiptapVuetify,
-    Underline,
+    Underline
 } from "tiptap-vuetify";
 import { extend, ValidationProvider } from "vee-validate";
 import { Component, Emit, Prop, Vue, Watch } from "vue-property-decorator";
@@ -136,14 +140,14 @@ extend("dateValid", {
         }
         return "Effective date must occur before expiry date.";
     },
-    params: ["effective", "expiry"],
+    params: ["effective", "expiry"]
 });
 
 @Component({
     components: {
         ValidationProvider,
-        TiptapVuetify,
-    },
+        TiptapVuetify
+    }
 })
 export default class BannerModal extends Vue {
     private dialog = false;
@@ -162,14 +166,14 @@ export default class BannerModal extends Vue {
             Heading,
             {
                 options: {
-                    levels: [1, 2, 3, 4],
-                },
-            },
+                    levels: [1, 2, 3, 4]
+                }
+            }
         ],
         Bold,
         Code,
         Paragraph,
-        HardBreak,
+        HardBreak
     ];
 
     @Prop() editedItem!: Communication;
@@ -201,7 +205,7 @@ export default class BannerModal extends Vue {
         return "dateValid:" + effective.toString() + "," + expiry.toString();
     }
 
-    private dateTimeValid(): boolean {
+     private dateTimeValid(): boolean {
         return moment(this.editedItem.effectiveDateTime).isBefore(
             moment(this.editedItem.expiryDateTime)
         );

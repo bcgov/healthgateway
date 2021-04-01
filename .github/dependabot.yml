@@ -5,32 +5,32 @@
 
 version: 2
 updates:
-    - package-ecosystem: "nuget" # See documentation for possible values
-      directory: "/Apps" # Location of package manifests
-      schedule:
-          interval: "daily"
-      reviewers:
-          - "sslaws"
-          - "FuriousLlama"
-          - "tiagograf-AOT"
-          - "mikelyttle"
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "/Apps" # Location of package manifests
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "sslaws"
+      - "FuriousLlama"
+      - "tiagograf-AOT"
+      - "mikelyttle"
 
-    - package-ecosystem: "npm" # See documentation for possible values
-      directory: "/Apps/AdminWebClient/src/ClientApp" # Location of package manifests
-      schedule:
-          interval: "daily"
-      reviewers:
-          - "sslaws"
-          - "FuriousLlama"
-          - "tiagograf-AOT"
-          - "mikelyttle"
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Apps/AdminWebClient/src/ClientApp" # Location of package manifests
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "sslaws"
+      - "FuriousLlama"
+      - "tiagograf-AOT"
+      - "mikelyttle"
 
-    - package-ecosystem: "npm" # See documentation for possible values
-      directory: "/Apps/WebClient/src/ClientApp" # Location of package manifests
-      schedule:
-          interval: "daily"
-      reviewers:
-          - "sslaws"
-          - "FuriousLlama"
-          - "tiagograf-AOT"
-          - "mikelyttle"
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/Apps/WebClient/src/ClientApp" # Location of package manifests
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "sslaws"
+      - "FuriousLlama"
+      - "tiagograf-AOT"
+      - "mikelyttle"

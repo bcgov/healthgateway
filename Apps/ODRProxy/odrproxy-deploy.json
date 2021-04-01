@@ -1,286 +1,286 @@
 {
-    "apiVersion": "v1",
-    "kind": "Template",
-    "metadata": {
-        "annotations": {
-            "description": "Deployment template for healthgateproxy",
-            "tags": "npm"
-        },
-        "name": "healthgateproxy"
+  "apiVersion": "v1",
+  "kind": "Template",
+  "metadata": {
+    "annotations": {
+      "description": "Deployment template for healthgateproxy",
+      "tags": "npm"
     },
-    "objects": [
-        {
-            "apiVersion": "v1",
-            "kind": "DeploymentConfig",
-            "metadata": {
-                "creationTimestamp": null,
-                "labels": {
-                    "app": "${NAME}"
-                },
-                "name": "${NAME}"
-            },
-            "spec": {
-                "replicas": 2,
-                "selector": {
-                    "app": "${NAME}",
-                    "deploymentconfig": "${NAME}"
-                },
-                "strategy": {
-                    "rollingParams": {
-                        "intervalSeconds": 1,
-                        "maxSurge": "25%",
-                        "maxUnavailable": "25%",
-                        "timeoutSeconds": 600,
-                        "updatePeriodSeconds": 1
-                    },
-                    "type": "Rolling"
-                },
-                "template": {
-                    "metadata": {
-                        "creationTimestamp": null,
-                        "labels": {
-                            "app": "${NAME}",
-                            "deploymentconfig": "${NAME}"
-                        }
-                    },
-                    "spec": {
-                        "containers": [
-                            {
-                                "image": "${NAME}",
-                                "imagePullPolicy": "Always",
-                                "name": "${NAME}",
-                                "ports": [
-                                    {
-                                        "containerPort": 8080,
-                                        "protocol": "TCP"
-                                    }
-                                ],
-                                "env": [
-                                    {
-                                        "name": "TARGET_URL",
-                                        "value": "${TARGET_URL}"
-                                    },
-                                    {
-                                        "name": "TARGET_USERNAME_PASSWORD",
-                                        "value": "${TARGET_USERNAME_PASSWORD}"
-                                    },
-                                    {
-                                        "name": "MUTUAL_TLS_PEM_KEY_BASE64",
-                                        "value": "${MUTUAL_TLS_PEM_KEY_BASE64}"
-                                    },
-                                    {
-                                        "name": "MUTUAL_TLS_PEM_KEY_PASSPHRASE",
-                                        "value": "${MUTUAL_TLS_PEM_KEY_PASSPHRASE}"
-                                    },
-                                    {
-                                        "name": "MUTUAL_TLS_PEM_CERT",
-                                        "value": "${MUTUAL_TLS_PEM_CERT}"
-                                    },
-                                    {
-                                        "name": "SECURE_MODE",
-                                        "value": "${SECURE_MODE}"
-                                    },
-                                    {
-                                        "name": "USE_MUTUAL_TLS",
-                                        "value": "${USE_MUTUAL_TLS}"
-                                    },
-                                    {
-                                        "name": "AUTH_TOKEN_KEY",
-                                        "value": "${AUTH_TOKEN_KEY}"
-                                    },
-                                    {
-                                        "name": "USE_AUTH_TOKEN",
-                                        "value": "${USE_AUTH_TOKEN}"
-                                    },
-                                    {
-                                        "name": "LOGGER_HOST",
-                                        "value": "${LOGGER_HOST}"
-                                    },
-                                    {
-                                        "name": "LOGGER_PORT",
-                                        "value": "${LOGGER_PORT}"
-                                    },
-                                    {
-                                        "name": "SPLUNK_AUTH_TOKEN",
-                                        "value": "${SPLUNK_AUTH_TOKEN}"
-                                    }
-                                ],
-                                "resources": {
-                                    "requests": {
-                                        "cpu": "100m",
-                                        "memory": "100Mi"
-                                    },
-                                    "limits": {
-                                        "cpu": "250m",
-                                        "memory": "200Mi"
-                                    }
-                                }
-                            }
-                        ],
-                        "dnsPolicy": "ClusterFirst",
-                        "restartPolicy": "Always",
-                        "securityContext": {},
-                        "terminationGracePeriodSeconds": 30
-                    }
-                },
-                "test": false,
-                "triggers": [
-                    {
-                        "type": "ConfigChange"
-                    },
-                    {
-                        "type": "ImageChange",
-                        "imageChangeParams": {
-                            "automatic": true,
-                            "containerNames": ["${NAME}"],
-                            "from": {
-                                "kind": "ImageStreamTag",
-                                "namespace": "${IMAGE_NAMESPACE}",
-                                "name": "${SOURCE_NAME}:${TAG_NAME}"
-                            }
-                        }
-                    }
-                ]
-            }
+    "name": "healthgateproxy"
+  },
+  "objects": [
+    {
+      "apiVersion": "v1",
+      "kind": "DeploymentConfig",
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "app": "${NAME}"
         },
-        {
-            "apiVersion": "v1",
-            "kind": "Service",
-            "metadata": {
-                "creationTimestamp": null,
-                "labels": {
-                    "app": "${NAME}"
-                },
-                "name": "${NAME}"
-            },
-            "spec": {
+        "name": "${NAME}"
+      },
+      "spec": {
+        "replicas": 2,
+        "selector": {
+          "app": "${NAME}",
+          "deploymentconfig": "${NAME}"
+        },
+        "strategy": {
+          "rollingParams": {
+            "intervalSeconds": 1,
+            "maxSurge": "25%",
+            "maxUnavailable": "25%",
+            "timeoutSeconds": 600,
+            "updatePeriodSeconds": 1
+          },
+          "type": "Rolling"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "app": "${NAME}",
+              "deploymentconfig": "${NAME}"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "${NAME}",
+                "imagePullPolicy": "Always",
+                "name": "${NAME}",
                 "ports": [
-                    {
-                        "name": "8080-tcp",
-                        "port": 8080,
-                        "protocol": "TCP",
-                        "targetPort": 8080
-                    }
+                  {
+                    "containerPort": 8080,
+                    "protocol": "TCP"
+                  }
                 ],
-                "selector": {
-                    "app": "${NAME}",
-                    "deploymentconfig": "${NAME}"
-                },
-                "sessionAffinity": "None",
-                "type": "ClusterIP"
+                "env": [
+                  {
+                    "name": "TARGET_URL",
+                    "value": "${TARGET_URL}"
+                  },
+                  {
+                    "name": "TARGET_USERNAME_PASSWORD",
+                    "value": "${TARGET_USERNAME_PASSWORD}"
+                  },
+                  {
+                    "name": "MUTUAL_TLS_PEM_KEY_BASE64",
+                    "value": "${MUTUAL_TLS_PEM_KEY_BASE64}"
+                  },
+                  {
+                    "name": "MUTUAL_TLS_PEM_KEY_PASSPHRASE",
+                    "value": "${MUTUAL_TLS_PEM_KEY_PASSPHRASE}"
+                  },
+                  {
+                    "name": "MUTUAL_TLS_PEM_CERT",
+                    "value": "${MUTUAL_TLS_PEM_CERT}"
+                  },
+                  {
+                    "name": "SECURE_MODE",
+                    "value": "${SECURE_MODE}"
+                  },
+                  {
+                    "name": "USE_MUTUAL_TLS",
+                    "value": "${USE_MUTUAL_TLS}"
+                  },
+                  {
+                    "name": "AUTH_TOKEN_KEY",
+                    "value": "${AUTH_TOKEN_KEY}"
+                  },
+                  {
+                    "name": "USE_AUTH_TOKEN",
+                    "value": "${USE_AUTH_TOKEN}"
+                  },
+                  {
+                    "name": "LOGGER_HOST",
+                    "value": "${LOGGER_HOST}"
+                  },
+                  {
+                    "name": "LOGGER_PORT",
+                    "value": "${LOGGER_PORT}"
+                  },
+                  {
+                    "name": "SPLUNK_AUTH_TOKEN",
+                    "value": "${SPLUNK_AUTH_TOKEN}"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "100Mi"
+                  },
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "200Mi"
+                  }
+                }
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "restartPolicy": "Always",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30
+          }
+        },
+        "test": false,
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": ["${NAME}"],
+              "from": {
+                "kind": "ImageStreamTag",
+                "namespace": "${IMAGE_NAMESPACE}",
+                "name": "${SOURCE_NAME}:${TAG_NAME}"
+              }
             }
-        }
-    ],
-    "parameters": [
-        {
-            "description": "The name of the source image",
-            "displayName": "Source Name",
-            "name": "SOURCE_NAME",
-            "required": true,
-            "value": "odrproxy"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "app": "${NAME}"
         },
-        {
-            "description": "The name assigned to all of the openshift objects defined in this template. Generally odrproxy but for some environments would be odrproxy-demo",
-            "displayName": "Name",
-            "name": "NAME",
-            "required": true
+        "name": "${NAME}"
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "app": "${NAME}",
+          "deploymentconfig": "${NAME}"
         },
-        {
-            "description": "The namespace where to get the above image name",
-            "displayName": "Image Namespace",
-            "name": "IMAGE_NAMESPACE",
-            "required": true,
-            "value": "q6qfzk-tools"
-        },
-        {
-            "description": "The TAG name for this environment, e.g., dev, test, prod",
-            "displayName": "Env TAG name",
-            "name": "TAG_NAME",
-            "required": true
-        },
-        {
-            "description": "URL of Digital Experience MSP Service",
-            "displayName": "TARGET_URL",
-            "name": "TARGET_URL",
-            "required": false,
-            "value": ""
-        },
-        {
-            "description": "User name : password for the Digital Experience MSP Service",
-            "displayName": "TARGET_USERNAME_PASSWORD",
-            "name": "TARGET_USERNAME_PASSWORD",
-            "required": false,
-            "value": ""
-        },
-        {
-            "description": "Private key of the MSP-Service for the Mutual TLS negotiation",
-            "displayName": "MUTUAL_TLS_PEM_KEY_BASE64",
-            "name": "MUTUAL_TLS_PEM_KEY_BASE64",
-            "required": false,
-            "value": ""
-        },
-        {
-            "description": "Passphrase for the private key of the MSP-Service",
-            "displayName": "MUTUAL_TLS_PEM_KEY_PASSPHRASE",
-            "name": "MUTUAL_TLS_PEM_KEY_PASSPHRASE",
-            "required": false,
-            "value": ""
-        },
-        {
-            "description": "Public Certificate of the Digital Experience MSP Service to be trusted",
-            "displayName": "MUTUAL_TLS_PEM_CERT",
-            "name": "MUTUAL_TLS_PEM_CERT",
-            "required": false,
-            "value": ""
-        },
-        {
-            "description": "Use SSL",
-            "displayName": "SECURE_MODE",
-            "name": "SECURE_MODE",
-            "required": false,
-            "value": "true"
-        },
-        {
-            "description": "Use Mutual SSL",
-            "displayName": "USE_MUTUAL_TLS",
-            "name": "USE_MUTUAL_TLS",
-            "required": false,
-            "value": "true"
-        },
-        {
-            "description": "Authentication Key used in all SSL",
-            "displayName": "AUTH_TOKEN_KEY",
-            "name": "AUTH_TOKEN_KEY",
-            "required": false,
-            "value": ""
-        },
-        {
-            "description": "Use Auth Token in all SSL",
-            "displayName": "USE_AUTH_TOKEN",
-            "name": "USE_AUTH_TOKEN",
-            "required": false,
-            "value": "true"
-        },
-        {
-            "description": "Host name for the Splunk Forwarder",
-            "displayName": "LOGGER_HOST",
-            "name": "LOGGER_HOST",
-            "required": false,
-            "value": "splunk-forwarder"
-        },
-        {
-            "description": "Port for the Splunk Forwarder",
-            "displayName": "LOGGER_PORT",
-            "name": "LOGGER_PORT",
-            "required": false,
-            "value": "8080"
-        },
-        {
-            "description": "Authorization token required to use the splunk server",
-            "displayName": "SPLUNK_AUTH_TOKEN",
-            "name": "SPLUNK_AUTH_TOKEN",
-            "required": false,
-            "value": ""
-        }
-    ]
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "description": "The name of the source image",
+      "displayName": "Source Name",
+      "name": "SOURCE_NAME",
+      "required": true,
+      "value": "odrproxy"
+    },
+    {
+      "description": "The name assigned to all of the openshift objects defined in this template. Generally odrproxy but for some environments would be odrproxy-demo",
+      "displayName": "Name",
+      "name": "NAME",
+      "required": true,
+    },
+    {
+      "description": "The namespace where to get the above image name",
+      "displayName": "Image Namespace",
+      "name": "IMAGE_NAMESPACE",
+      "required": true,
+      "value": "q6qfzk-tools"
+    },
+    {
+      "description": "The TAG name for this environment, e.g., dev, test, prod",
+      "displayName": "Env TAG name",
+      "name": "TAG_NAME",
+      "required": true,
+    },
+    {
+      "description": "URL of Digital Experience MSP Service",
+      "displayName": "TARGET_URL",
+      "name": "TARGET_URL",
+      "required": false,
+      "value": ""
+    },
+    {
+      "description": "User name : password for the Digital Experience MSP Service",
+      "displayName": "TARGET_USERNAME_PASSWORD",
+      "name": "TARGET_USERNAME_PASSWORD",
+      "required": false,
+      "value": ""
+    },
+    {
+      "description": "Private key of the MSP-Service for the Mutual TLS negotiation",
+      "displayName": "MUTUAL_TLS_PEM_KEY_BASE64",
+      "name": "MUTUAL_TLS_PEM_KEY_BASE64",
+      "required": false,
+      "value": ""
+    },
+    {
+      "description": "Passphrase for the private key of the MSP-Service",
+      "displayName": "MUTUAL_TLS_PEM_KEY_PASSPHRASE",
+      "name": "MUTUAL_TLS_PEM_KEY_PASSPHRASE",
+      "required": false,
+      "value": ""
+    },
+    {
+      "description": "Public Certificate of the Digital Experience MSP Service to be trusted",
+      "displayName": "MUTUAL_TLS_PEM_CERT",
+      "name": "MUTUAL_TLS_PEM_CERT",
+      "required": false,
+      "value": ""
+    },
+    {
+      "description": "Use SSL",
+      "displayName": "SECURE_MODE",
+      "name": "SECURE_MODE",
+      "required": false,
+      "value": "true"
+    },
+    {
+      "description": "Use Mutual SSL",
+      "displayName": "USE_MUTUAL_TLS",
+      "name": "USE_MUTUAL_TLS",
+      "required": false,
+      "value": "true"
+    },
+    {
+      "description": "Authentication Key used in all SSL",
+      "displayName": "AUTH_TOKEN_KEY",
+      "name": "AUTH_TOKEN_KEY",
+      "required": false,
+      "value": ""
+    },
+    {
+      "description": "Use Auth Token in all SSL",
+      "displayName": "USE_AUTH_TOKEN",
+      "name": "USE_AUTH_TOKEN",
+      "required": false,
+      "value": "true"
+    },
+    {
+      "description": "Host name for the Splunk Forwarder",
+      "displayName": "LOGGER_HOST",
+      "name": "LOGGER_HOST",
+      "required": false,
+      "value": "splunk-forwarder"
+    },
+    {
+      "description": "Port for the Splunk Forwarder",
+      "displayName": "LOGGER_PORT",
+      "name": "LOGGER_PORT",
+      "required": false,
+      "value": "8080"
+    },
+    {
+      "description": "Authorization token required to use the splunk server",
+      "displayName": "SPLUNK_AUTH_TOKEN",
+      "name": "SPLUNK_AUTH_TOKEN",
+      "required": false,
+      "value": ""
+    }
+  ]
 }

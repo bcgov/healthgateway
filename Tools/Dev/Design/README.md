@@ -18,10 +18,10 @@ height of the heaeder is **fixed** and **65px** on all devices.
 
 BC Sans is an open source font family, and is a modified version of Noto Sans, developed by Google. BC Sans includes modifications to support Indigenous languages in British Columbia.
 
--   BC Sans Regular - 400
--   BC Sans Italic - 400
--   BC Sans Bold - 700
--   BC Sans Bold Italic - 700
+- BC Sans Regular - 400
+- BC Sans Italic - 400
+- BC Sans Bold - 700
+- BC Sans Bold Italic - 700
 
 ### Colour Palette
 

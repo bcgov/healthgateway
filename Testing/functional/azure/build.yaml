@@ -3,36 +3,36 @@ name: 1.0.0$(Rev:.r) #Build number
 pr: none
 
 trigger:
-    batch: "true"
-    branches:
-        include:
-            - dev
-    paths:
-        include:
-            - Testing/functional
+  batch: "true"
+  branches:
+    include:
+    - dev
+  paths:
+    include:
+    - Testing/functional
 variables:
-    Tests.Path: $(Build.SourcesDirectory)/Testing/functional/e2e
+  Tests.Path: $(Build.SourcesDirectory)/Testing/functional/e2e
 
 jobs:
-    - job: "PackageTests"
-      pool:
-          name: "HealthGateway"
-      displayName: "Packaging Functional Tests"
-      steps:
-          - script: |
-                set -e
-                echo Creating Artifact
-                echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
-            displayName: "Create Trigger Build Artifact"
+  - job: "PackageTests"
+    pool:
+      name: "HealthGateway"
+    displayName: "Packaging Functional Tests"
+    steps:
+      - script: |
+          set -e
+          echo Creating Artifact
+          echo `date` > $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).txt
+        displayName: "Create Trigger Build Artifact"
 
-          - task: CopyFiles@2
-            displayName: "Copying Functional Tests to Staging"
-            inputs:
-                SourceFolder: "$(Tests.Path)"
-                Contents: "**"
-                TargetFolder: "$(Build.ArtifactStagingDirectory)"
+      - task: CopyFiles@2
+        displayName: "Copying Functional Tests to Staging"
+        inputs:
+          SourceFolder: "$(Tests.Path)"
+          Contents: "**"
+          TargetFolder: "$(Build.ArtifactStagingDirectory)"
 
-          - task: PublishPipelineArtifact@0
-            displayName: "Publishing Functional Tests"
-            inputs:
-                targetPath: "$(Build.ArtifactStagingDirectory)"
+      - task: PublishPipelineArtifact@0
+        displayName: "Publishing Functional Tests"
+        inputs:
+          targetPath: "$(Build.ArtifactStagingDirectory)"

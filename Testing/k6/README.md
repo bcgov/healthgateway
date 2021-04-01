@@ -40,7 +40,7 @@ HG_PASSWORD=<loadtestusers_password> HG_TEST=smoke run.sh src/services\k6_<servi
 
 ### When to run the smoke test
 
-Run this test often, after each system change/release. This ensures that functionality has not broken under basic loads.
+Run this test often, after each system change/release.  This ensures that functionality has not broken under basic loads.
 
 ## Load Testing
 

@@ -1,303 +1,321 @@
 {
-    "resourcePayload": {
-        "loadState": {
-            "refreshInProgress": false
-        },
-        "recommendations": [
-            {
-                "recommendationSetId": "5513119_138378891",
-                "disseaseEligibleDate": "2020-12-30T00:00:00",
-                "diseaseDueDate": "2021-02-02T00:00:00",
-                "agentEligibleDate": null,
-                "agentDueDate": null,
-                "status": "Eligible",
-                "targetDiseases": [
-                    {
-                        "code": "240532009",
-                        "name": "Human papillomavirus infection"
-                    }
-                ],
-                "immunization": {
-                    "name": "Human Papillomavirus-HPV9",
-                    "immunizationAgents": [
-                        {
-                            "code": "BCYSCT_AN032",
-                            "name": "HPV-9",
-                            "lotNumber": "",
-                            "productName": ""
-                        }
-                    ]
-                }
-            },
-            {
-                "recommendationSetId": "5513119_138378891",
-                "disseaseEligibleDate": null,
-                "diseaseDueDate": null,
-                "agentEligibleDate": "2020-12-30T00:00:00",
-                "agentDueDate": "2020-12-30T00:00:00",
-                "status": "Eligible",
-                "targetDiseases": [],
-                "immunization": {
-                    "name": "",
-                    "immunizationAgents": [
-                        {
-                            "code": "BCYSCT_AG082",
-                            "name": "HPV-9",
-                            "lotNumber": "",
-                            "productName": ""
-                        }
-                    ]
-                }
-            }
-        ],
-        "immunizations": [
-            {
-                "id": "3209587_54397520",
-                "name": "COVID-19",
-                "dateOfImmunization": "2013-09-20T00:00:00",
-                "status": "Completed",
-                "targetedDisease": "Covid",
-                "providerOrClinic": "TEST LOCATION",
-                "immunization": {
-                    "name": "Mocked Name",
-                    "immunizationAgents": [
-                        {
-                            "code": "414003004",
-                            "name": "DTaP-IPV",
-                            "lotNumber": "123456",
-                            "productName": "COVID"
-                        },
-                        {
-                            "code": "777003004",
-                            "name": "Another Agent",
-                            "lotNumber": "1234567789",
-                            "productName": "COVID 2"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            },
-            {
-                "id": "3209587_54397521",
-                "name": "COVID",
-                "dateOfImmunization": "2010-03-28T00:00:00",
-                "status": "Completed",
-                "providerOrClinic": "Provider A",
-                "targetedDisease": "Covid",
-                "immunization": {
-                    "name": "Mocked Name",
-                    "immunizationAgents": [
-                        {
-                            "code": "414004005",
-                            "name": "DTaP-IPV-Hib",
-                            "lotNumber": "LOT A",
-                            "productName": "Product A"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            },
-            {
-                "id": "3209587_54397522",
-                "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                "dateOfImmunization": "2008-12-20T00:00:00",
-                "status": "Completed",
-                "providerOrClinic": "Provider A",
-                "immunization": {
-                    "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                    "immunizationAgents": [
-                        {
-                            "code": "426842004",
-                            "name": "DTaP-IPV-Hib-HB",
-                            "lotNumber": "LOT A",
-                            "productName": "Product A"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            },
-            {
-                "id": "3209587_54397523",
-                "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                "dateOfImmunization": "2009-02-23T00:00:00",
-                "status": "Completed",
-                "providerOrClinic": "Provider A",
-                "immunization": {
-                    "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                    "immunizationAgents": [
-                        {
-                            "code": "426842004",
-                            "name": "DTaP-IPV-Hib-HB",
-                            "lotNumber": "LOT A",
-                            "productName": "Product A"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            },
-            {
-                "id": "3209587_54397524",
-                "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                "dateOfImmunization": "2009-06-06T00:00:00",
-                "status": "Completed",
-                "providerOrClinic": "Provider A",
-                "immunization": {
-                    "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
-                    "immunizationAgents": [
-                        {
-                            "code": "426842004",
-                            "name": "DTaP-IPV-Hib-HB",
-                            "lotNumber": "LOT A",
-                            "productName": "Product A"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            },
-            {
-                "id": "3209587_54397525",
-                "name": "Meningococcal-C Conjugate",
-                "dateOfImmunization": "2008-12-20T00:00:00",
-                "status": "Completed",
-                "providerOrClinic": "Provider A",
-                "immunization": {
-                    "name": "Meningococcal-C Conjugate",
-                    "immunizationAgents": [
-                        {
-                            "code": "359068008",
-                            "name": "Men-C-C",
-                            "lotNumber": "LOT A",
-                            "productName": "Product A"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            },
-            {
-                "id": "3209587_54397526",
-                "name": "Measles, Mumps, Rubella",
-                "dateOfImmunization": "2009-10-22T00:00:00",
-                "status": "Completed",
-                "providerOrClinic": "Provider A",
-                "immunization": {
-                    "name": "Measles, Mumps, Rubella",
-                    "immunizationAgents": [
-                        {
-                            "code": "61153008",
-                            "name": "MMR",
-                            "lotNumber": "LOT A",
-                            "productName": "Product A"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            },
-            {
-                "id": "3209587_54397527",
-                "name": "Measles, Mumps, Rubella",
-                "dateOfImmunization": "2010-03-28T00:00:00",
-                "status": "Completed",
-                "providerOrClinic": "Provider A",
-                "immunization": {
-                    "name": "Measles, Mumps, Rubella",
-                    "immunizationAgents": [
-                        {
-                            "code": "61153008",
-                            "name": "MMR",
-                            "lotNumber": "LOT A",
-                            "productName": "Product A"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            },
-            {
-                "id": "3209587_54397528",
-                "name": "Pneumococcal Conjugate - PCV7",
-                "dateOfImmunization": "2008-12-20T00:00:00",
-                "status": "Completed",
-                "providerOrClinic": "Provider A",
-                "immunization": {
-                    "name": "Pneumococcal Conjugate - PCV7",
-                    "immunizationAgents": [
-                        {
-                            "code": "125714002",
-                            "name": "Pneumo-C-7",
-                            "lotNumber": "LOT A",
-                            "productName": "Product A"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            }
-        ]
+  "resourcePayload": {
+    "loadState": {
+      "refreshInProgress": false
     },
-    "totalResultCount": 9,
-    "pageIndex": 0,
-    "pageSize": 25,
-    "resultStatus": 1,
-    "resultError": null
+    "recommendations": [
+      {
+        "recommendationSetId": "5513119_138378891",
+        "disseaseEligibleDate": "2020-12-30T00:00:00",
+        "diseaseDueDate": "2021-02-02T00:00:00",
+        "agentEligibleDate": null,
+        "agentDueDate": null,
+        "status": "Eligible",
+        "targetDiseases": [
+          {
+            "code": "240532009",
+            "name": "Human papillomavirus infection"
+          }
+        ],
+        "immunization": {
+          "name": "Human Papillomavirus-HPV9",
+          "immunizationAgents": [
+            {
+              "code": "BCYSCT_AN032",
+              "name": "HPV-9",
+              "lotNumber": "",
+              "productName": ""
+            }
+          ]
+        }
+      },
+      {
+        "recommendationSetId": "5513119_138378891",
+        "disseaseEligibleDate": null,
+        "diseaseDueDate": null,
+        "agentEligibleDate": "2020-12-30T00:00:00",
+        "agentDueDate": "2020-12-30T00:00:00",
+        "status": "Eligible",
+        "targetDiseases": [],
+        "immunization": {
+          "name": "",
+          "immunizationAgents": [
+            {
+              "code": "BCYSCT_AG082",
+              "name": "HPV-9",
+              "lotNumber": "",
+              "productName": ""
+            }
+          ]
+        }
+      }
+    ],
+    "immunizations": [
+      {
+        "id": "3209587_54397520",
+        "name": "COVID-19",
+        "dateOfImmunization": "2013-09-20T00:00:00",
+        "status": "Completed",
+        "targetedDisease": "Covid",
+        "providerOrClinic": "TEST LOCATION",
+        "immunization":
+          {
+            "name":"Mocked Name",
+            "immunizationAgents":[
+              {
+                "code": "414003004",
+                "name": "DTaP-IPV",
+                "lotNumber": "123456",
+                "productName": "COVID"
+              },
+              {
+                "code": "777003004",
+                "name": "Another Agent",
+                "lotNumber": "1234567789",
+                "productName": "COVID 2"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      },
+      {
+        "id": "3209587_54397521",
+        "name": "COVID",
+        "dateOfImmunization": "2010-03-28T00:00:00",
+        "status": "Completed",
+        "providerOrClinic": "Provider A",
+        "targetedDisease": "Covid",
+        "immunization":
+          {
+            "name":"Mocked Name",
+            "immunizationAgents":[
+              {
+                "code": "414004005",
+                "name": "DTaP-IPV-Hib",
+                "lotNumber": "LOT A",
+                "productName": "Product A"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      },
+      {
+        "id": "3209587_54397522",
+        "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
+        "dateOfImmunization": "2008-12-20T00:00:00",
+        "status": "Completed",
+        "providerOrClinic": "Provider A",
+        "immunization":
+          {
+            "name":"Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
+            "immunizationAgents":[
+              {
+                "code": "426842004",
+                "name": "DTaP-IPV-Hib-HB",
+                "lotNumber": "LOT A",
+                "productName": "Product A"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      },
+      {
+        "id": "3209587_54397523",
+        "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
+        "dateOfImmunization": "2009-02-23T00:00:00",
+        "status": "Completed",
+        "providerOrClinic": "Provider A",
+        "immunization":
+          {
+            "name":"Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
+            "immunizationAgents":[
+              {
+                "code": "426842004",
+                "name": "DTaP-IPV-Hib-HB",
+                "lotNumber": "LOT A",
+                "productName": "Product A"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      },
+      {
+        "id": "3209587_54397524",
+        "name": "Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
+        "dateOfImmunization": "2009-06-06T00:00:00",
+        "status": "Completed",
+        "providerOrClinic": "Provider A",
+        "immunization":
+          {
+            "name":"Diphtheria, Tetanus, Pertussis, Polio, Hib, Hep B",
+            "immunizationAgents":[
+              {
+                "code": "426842004",
+                "name": "DTaP-IPV-Hib-HB",
+                "lotNumber": "LOT A",
+                "productName": "Product A"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      },
+      {
+        "id": "3209587_54397525",
+        "name": "Meningococcal-C Conjugate",
+        "dateOfImmunization": "2008-12-20T00:00:00",
+        "status": "Completed",
+        "providerOrClinic": "Provider A",
+        "immunization":
+          {
+            "name":"Meningococcal-C Conjugate",
+            "immunizationAgents":[
+              {
+                "code": "359068008",
+                "name": "Men-C-C",
+                "lotNumber": "LOT A",
+                "productName": "Product A"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      },
+      {
+        "id": "3209587_54397526",
+        "name": "Measles, Mumps, Rubella",
+        "dateOfImmunization": "2009-10-22T00:00:00",
+        "status": "Completed",
+        "providerOrClinic": "Provider A",
+        "immunization":
+          {
+            "name":"Measles, Mumps, Rubella",
+            "immunizationAgents":[
+              {
+                "code": "61153008",
+                "name": "MMR",
+                "lotNumber": "LOT A",
+                "productName": "Product A"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      },
+      {
+        "id": "3209587_54397527",
+        "name": "Measles, Mumps, Rubella",
+        "dateOfImmunization": "2010-03-28T00:00:00",
+        "status": "Completed",
+        "providerOrClinic": "Provider A",
+        "immunization":
+          {
+            "name":"Measles, Mumps, Rubella",
+            "immunizationAgents":[
+              {
+                "code": "61153008",
+                "name": "MMR",
+                "lotNumber": "LOT A",
+                "productName": "Product A"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      },
+      {
+        "id": "3209587_54397528",
+        "name": "Pneumococcal Conjugate - PCV7",
+        "dateOfImmunization": "2008-12-20T00:00:00",
+        "status": "Completed",
+        "providerOrClinic": "Provider A",
+        "immunization":
+          {
+            "name":"Pneumococcal Conjugate - PCV7",
+            "immunizationAgents":[
+              {
+                "code": "125714002",
+                "name": "Pneumo-C-7",
+                "lotNumber": "LOT A",
+                "productName": "Product A"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      }
+    ]
+  },
+  "totalResultCount": 9,
+  "pageIndex": 0,
+  "pageSize": 25,
+  "resultStatus": 1,
+  "resultError": null
 }

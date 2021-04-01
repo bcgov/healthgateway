@@ -14,21 +14,20 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-import http from "k6/http";
-import { check, group, sleep } from "k6";
-import { Rate, Trend } from "k6/metrics";
-import * as common from "../inc/common.js";
+import http from 'k6/http';
+import { check, group, sleep } from 'k6';
+import { Rate, Trend } from 'k6/metrics';
+import * as common from '../inc/common.js';
 
 export let options = common.OptionConfig();
 
 export default function () {
-    let user = common.users[__VU % common.users.length];
 
-    common.authorizeUser(user);
-    let response = http.get(
-        common.LaboratoryServiceUrl + "?hdid=" + user.hdid,
-        common.params(user)
-    );
-    common.checkResponse(response);
-    sleep(1);
+  let user = common.users[__VU % common.users.length];
+
+  common.authorizeUser(user);
+  let response = http.get(common.LaboratoryServiceUrl + "?hdid=" + user.hdid, common.params(user));
+  common.checkResponse(response);
+  sleep(1);
 }
+

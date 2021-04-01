@@ -1,97 +1,93 @@
-const { AuthMethod, localDevUri } = require("../../support/constants");
+const { AuthMethod, localDevUri } = require("../../support/constants")
 
-describe("Authentication", () => {
+describe('Authentication', () => {
     beforeEach(() => {
         cy.enableModules("");
-    });
+    })
 
-    it("BCSC UI Login", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.login(
-                Cypress.env("bcsc.username"),
-                Cypress.env("bcsc.password"),
-                AuthMethod.BCSC
-            );
+
+    it('BCSC UI Login', () => {
+        if (Cypress.config().baseUrl != localDevUri ) {
+            cy.login(Cypress.env('bcsc.username'), Cypress.env('bcsc.password'), AuthMethod.BCSC)
             cy.checkTimelineHasLoaded();
-
-            cy.get("[data-testid=headerDropdownBtn]").click();
-            cy.get("[data-testid=logoutBtn]")
-                .should("be.visible")
-                .should("not.be.disabled");
-        } else {
-            cy.log("Skipped BCSC UI Login as running locally");
-        }
-    });
-
-    it("KeyCloak UI Login", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.login(
-                Cypress.env("keycloak.username"),
-                Cypress.env("keycloak.password"),
-                AuthMethod.KeyCloakUI
-            );
-            cy.checkTimelineHasLoaded();
-            cy.get("[data-testid=headerDropdownBtn]").click();
-            cy.get("[data-testid=logoutBtn]")
-                .should("be.visible")
-                .should("not.be.disabled");
-        } else {
-            cy.log("Skipped KeyCloak UI Login as running locally");
-        }
-    });
-
-    it("Logout", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.login(
-                Cypress.env("keycloak.username"),
-                Cypress.env("keycloak.password"),
-                AuthMethod.KeyCloak
-            );
-            cy.checkTimelineHasLoaded();
-            cy.get("[data-testid=headerDropdownBtn]").click();
-            cy.get("[data-testid=logoutBtn]").click();
-            cy.get("[data-testid=ratingModalSkipBtn]").click();
-            cy.contains("h3", "You signed out of your account");
-            cy.get("[data-testid=loginBtn]")
-                .should("be.visible")
-                .should("not.be.disabled")
-                .should("have.attr", "href", "/login");
-        } else {
-            cy.log("Skipped Logout Test as running locally");
-        }
-    });
-
-    it("IDIR Blocked", () => {
-        if (Cypress.config().baseUrl != localDevUri) {
-            cy.visit("/login");
-            cy.log(
-                `Authenticating as IDIR user ${Cypress.env("idir.username")}`
-            );
-            cy.get("[data-testid=IDIRBtn]")
-                .should("be.visible")
-                .should("not.be.disabled")
+            
+            cy.get('[data-testid=headerDropdownBtn]')
                 .click();
-            cy.get("#user").type(Cypress.env("idir.username"));
-            cy.get("#password").type(Cypress.env("idir.password"));
-            cy.get('input[name="btnSubmit"').click();
+            cy.get('[data-testid=logoutBtn]')
+                .should('be.visible')
+                .should('not.be.disabled');
+        }
+        else {
+            cy.log("Skipped BCSC UI Login as running locally")
+        }
+    })
+
+    it('KeyCloak UI Login', () => {
+        if (Cypress.config().baseUrl != localDevUri) {
+            cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloakUI)
+            cy.checkTimelineHasLoaded();
+            cy.get('[data-testid=headerDropdownBtn]')
+                .click();
+            cy.get('[data-testid=logoutBtn]')
+                .should('be.visible')
+                .should('not.be.disabled');
+        }
+        else {
+            cy.log("Skipped KeyCloak UI Login as running locally")
+        }
+    })
+
+    it('Logout', () => {
+        if (Cypress.config().baseUrl != localDevUri) {
+            cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
+            cy.checkTimelineHasLoaded();
+            cy.get('[data-testid=headerDropdownBtn]')
+                .click();
+            cy.get('[data-testid=logoutBtn]')
+                .click();
+            cy.get('[data-testid=ratingModalSkipBtn]')
+                .click();
+            cy.contains('h3', 'You signed out of your account');
+            cy.get('[data-testid=loginBtn]')
+                .should('be.visible')
+                .should('not.be.disabled')
+                .should('have.attr', 'href', '/login');
+        }
+        else {
+            cy.log("Skipped Logout Test as running locally")
+        }
+    })
+
+    it('IDIR Blocked', () => {
+        if (Cypress.config().baseUrl != localDevUri) {
+            cy.visit('/login');
+            cy.log(`Authenticating as IDIR user ${Cypress.env('idir.username')}`);
+            cy.get('[data-testid=IDIRBtn]')
+                .should('be.visible')
+                .should('not.be.disabled')
+                .click();
+            cy.get('#user')
+                .type(Cypress.env('idir.username'));
+            cy.get('#password')
+                .type(Cypress.env('idir.password'));
+            cy.get('input[name="btnSubmit"')
+                .click();
             // cy.contains('h1', '403');
             // cy.contains('h2', 'IDIR Login');
-        } else {
-            cy.log("Skipped Logout Test as running locally");
         }
-    });
+        else {
+            cy.log("Skipped Logout Test as running locally")
+        }
+    })
 
-    it("KeyCloak Login", () => {
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak
-        );
-        cy.get("[data-testid=headerDropdownBtn]").click();
-        cy.get("[data-testid=logoutBtn]")
-            .should("be.visible")
-            .should("not.be.disabled");
-    });
+    it('KeyCloak Login', () => {
+        cy.login(Cypress.env('keycloak.username'), Cypress.env('keycloak.password'), AuthMethod.KeyCloak)
+        cy.get('[data-testid=headerDropdownBtn]')
+            .click();
+        cy.get('[data-testid=logoutBtn]')
+            .should('be.visible')
+            .should('not.be.disabled');
+    })
 
     // it('Idle Timeout', () => {
     // // Work in Progress, clock not working correctly.
@@ -111,4 +107,4 @@ describe("Authentication", () => {
     //     cy.get('[data-testid=idleModal]')
     //       .find('footer').find('button').should('have.text', "I'm here!")
     // })
-});
+})

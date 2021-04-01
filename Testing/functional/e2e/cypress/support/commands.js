@@ -8,49 +8,42 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 const { AuthMethod } = require("./constants");
-const { globalStorage } = require("./globalStorage");
+const { globalStorage } = require("./globalStorage")
 
 function storeAuthCookies() {
-    cy.getCookies().then((cookies) => {
-        globalStorage.authCookies = cookies;
-    });
+    cy.getCookies()
+        .then((cookies) => {
+            globalStorage.authCookies = cookies;
+        });
 }
 
 Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
         if (authMethod == AuthMethod.KeyCloak) {
-            cy.readConfig().then((config) => {
+            cy.readConfig().then(config => {
                 cy.log(`Performing Keycloak logout`);
-                cy.request({
-                    url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
-                });
-
+                cy.request({ url: `${config.openIdConnect.authority}/protocol/openid-connect/logout` });
+                
                 const stateStore = {
                     id: "d0b27ba424b64b358b65d40cfdbc040b",
                     created: new Date().getTime(),
                     request_type: "si:r",
-                    code_verifier:
-                        "cd68894d45d84646b4b1bc4bbca482c9730850f72af8471b9240b128310adf505d9622e5e5ee43c1ba034f500e8ef7e2",
+                    code_verifier: "cd68894d45d84646b4b1bc4bbca482c9730850f72af8471b9240b128310adf505d9622e5e5ee43c1ba034f500e8ef7e2",
                     redirect_uri: config.openIdConnect.callbacks.Logon,
                     authority: config.openIdConnect.authority,
                     client_id: config.openIdConnect.clientId,
                     response_mode: "query",
                     scope: config.openIdConnect.scope,
-                    extraTokenParams: {},
-                };
-                cy.log("Creating OIDC StateStore in Local storage");
-                window.sessionStorage.setItem(
-                    `oidc.${stateStore.id}`,
-                    JSON.stringify(stateStore)
-                );
+                    extraTokenParams: {}
+                }
+                cy.log("Creating OIDC StateStore in Local storage")
+                window.sessionStorage.setItem(`oidc.${stateStore.id}`, JSON.stringify(stateStore))
 
-                cy.log(
-                    `Creating OIDC Active Route: ${path} in Session storage`
-                );
-                window.sessionStorage.setItem("vuex_oidc_active_route", path);
+                cy.log(`Creating OIDC Active Route: ${path} in Session storage`)
+                window.sessionStorage.setItem('vuex_oidc_active_route', path)
 
-                cy.log("Requesting Keycloak Authentication form");
+                cy.log("Requesting Keycloak Authentication form")
                 cy.request({
                     url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
                     followRedirect: false,
@@ -62,10 +55,10 @@ Cypress.Commands.add(
                         client_id: config.openIdConnect.clientId,
                         response_mode: "query",
                         state: stateStore.id,
-                    },
+                    }
                 })
-                    .then((response) => {
-                        cy.log("Posting credentials");
+                    .then(response => {
+                        cy.log("Posting credentials")
                         const html = document.createElement("html");
                         html.innerHTML = response.body;
                         const form = html.getElementsByTagName("form")[0];
@@ -77,27 +70,25 @@ Cypress.Commands.add(
                             form: true,
                             body: {
                                 username: username,
-                                password: password,
-                            },
+                                password: password
+                            }
                         });
                     })
-                    .then((response) => {
+                    .then(response => {
                         let callBackQS = response.headers["location"];
-                        const callbackURL = `${callBackQS}`;
-                        cy.log("Visiting Callback");
-                        cy.visit(callbackURL);
+                        const callbackURL = `${callBackQS}`
+                        cy.log("Visiting Callback")
+                        cy.visit(callbackURL)
                         // Wait for cookies are set before store them in cypress.
-                        cy.get("[data-testid=headerDropdownBtn]").should(
-                            "be.visible"
-                        );
+                        cy.get('[data-testid=headerDropdownBtn]')
+                            .should('be.visible')
                         storeAuthCookies();
-                    });
+                    })
             });
-        } else if (authMethod == AuthMethod.BCSC) {
-            cy.log(
-                `Authenticating as BC Services Card user ${username} using the UI`
-            );
-            cy.visit(path);
+        }
+        else if (authMethod == AuthMethod.BCSC) {
+            cy.log(`Authenticating as BC Services Card user ${username} using the UI`);
+            cy.visit(path)
             cy.get("#BCSCBtn")
                 .should("be.visible")
                 .should("have.text", "BC Services Card")
@@ -107,7 +98,8 @@ Cypress.Commands.add(
                 "https://idtest.gov.bc.ca/login/entry#start"
             );
             cy.get("#tile_btn_virtual_device_div_id > h2").click();
-            cy.get("#csn").click({ force: true });
+            cy.get("#csn")
+                .click({ force: true });
             cy.get("#csn").type(username);
             cy.get("#continue").click();
             cy.url().should(
@@ -120,7 +112,7 @@ Cypress.Commands.add(
             cy.get("#btnSubmit").click();
         } else {
             cy.log(`Authenticating as KeyCloak user ${username} using the UI`);
-            cy.visit(path);
+            cy.visit(path)
             cy.get("#KeyCloakBtn")
                 .should("be.visible")
                 .should("have.text", "KeyCloak")
@@ -133,128 +125,118 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("getTokens", (username, password) => {
-    cy.readConfig().then((config) => {
-        cy.log(`Performing Keycloak logout`);
-        cy.request({
-            url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
-        });
-
-        cy.log("Performing Keycloak Authentication");
-        cy.request({
-            url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
+  cy.readConfig().then(config => {
+    cy.log(`Performing Keycloak logout`);
+    cy.request({ url: `${config.openIdConnect.authority}/protocol/openid-connect/logout` });
+    
+    cy.log("Performing Keycloak Authentication")
+    cy.request({
+        url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
+        followRedirect: false,
+        qs: {
+            scope: config.openIdConnect.scope,
+            response_type: config.openIdConnect.responseType,
+            approval_prompt: "auto",
+            redirect_uri: config.openIdConnect.callbacks.Logon,
+            client_id: config.openIdConnect.clientId,
+            response_mode: "query",
+            state: "d0b27ba424b64b358b65d40cfdbc040b",
+        }
+    })
+    .then(response => {
+        cy.log("Posting credentials")
+        const html = document.createElement("html");
+        html.innerHTML = response.body;
+        const form = html.getElementsByTagName("form")[0];
+        const url = form.action;
+        return cy.request({
+            method: "POST",
+            url,
             followRedirect: false,
-            qs: {
-                scope: config.openIdConnect.scope,
-                response_type: config.openIdConnect.responseType,
-                approval_prompt: "auto",
-                redirect_uri: config.openIdConnect.callbacks.Logon,
-                client_id: config.openIdConnect.clientId,
-                response_mode: "query",
-                state: "d0b27ba424b64b358b65d40cfdbc040b",
-            },
+            form: true,
+            body: {
+                username: username,
+                password: password
+            }
         })
-            .then((response) => {
-                cy.log("Posting credentials");
-                const html = document.createElement("html");
-                html.innerHTML = response.body;
-                const form = html.getElementsByTagName("form")[0];
-                const url = form.action;
-                return cy.request({
-                    method: "POST",
-                    url,
-                    followRedirect: false,
-                    form: true,
-                    body: {
-                        username: username,
-                        password: password,
-                    },
-                });
-            })
-            .then((response) => {
-                cy.log(
-                    `CALLBACK for Posting credentials : response: ${JSON.stringify(
-                        response
-                    )}`
-                );
-                let callBackQS = response.headers["location"];
-                const url = new URL(callBackQS);
-                const params = url.search.substring(1).split("&");
-                let code;
-                for (const param of params) {
-                    const [key, value] = param.split("=");
-                    if (key === "code") {
-                        code = value;
-                        break;
-                    }
-                }
-                cy.request({
-                    method: "post",
-                    url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
-                    body: {
-                        client_id: config.openIdConnect.clientId,
-                        redirect_uri: config.openIdConnect.callbacks.Logon,
-                        code,
-                        grant_type: "authorization_code",
-                    },
-                    form: true,
-                    followRedirect: false,
-                }).its("body");
-            });
-    });
-});
+    })
+    .then(response => {
+        cy.log(`CALLBACK for Posting credentials : response: ${JSON.stringify(response)}`)
+        let callBackQS = response.headers["location"];
+        const url = new URL(callBackQS);
+        const params = url.search.substring(1).split("&");
+        let code;
+        for (const param of params) {
+          const [key, value] = param.split("=");
+          if (key === "code") {
+            code = value;
+            break;
+          }
+        }
+        cy.request({
+          method: "post",
+          url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
+          body: {
+            client_id: config.openIdConnect.clientId,
+            redirect_uri: config.openIdConnect.callbacks.Logon,
+            code,
+            grant_type: "authorization_code"
+          },
+          form: true,
+          followRedirect: false
+        }).its("body");
+  })
+  });
+})
 
 Cypress.Commands.add("readConfig", () => {
-    cy.log(`Reading Environment Configuration`);
-    return cy
-        .request(`${Cypress.config("baseUrl")}/v1/api/configuration`)
-        .should((response) => {
-            expect(response.status).to.eq(200);
-        })
-        .its("body");
-});
+    cy.log(`Reading Environment Configuration`)
+    return cy.request(`${Cypress.config("baseUrl")}/v1/api/configuration`)
+        .should((response) => { expect(response.status).to.eq(200) })
+        .its("body")
+})
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
-    cy.get("#subject").should("have.text", "Health Care Timeline");
+    cy.get('#subject')
+        .should('have.text', 'Health Care Timeline')
     cy.get("[data-testid=timelineLoading]").should("not.exist");
 });
 
 Cypress.Commands.add("enableModules", (modules) => {
-    return cy
-        .readConfig()
-        .as("config")
-        .then((config) => {
-            Object.keys(config.webClient.modules).forEach((key) => {
-                config.webClient.modules[key] = modules.includes(key);
-            });
-            cy.intercept("GET", "/v1/api/configuration/", {
-                statusCode: 200,
-                body: config,
-            });
+    return cy.readConfig().as("config").then(config => {
+        Object.keys(config.webClient.modules).forEach(key => {
+            config.webClient.modules[key] = modules.includes(key);
         });
+        cy.intercept('GET', '/v1/api/configuration/', {
+            statusCode: 200,
+            body: config
+        });
+    });
 });
 
 Cypress.Commands.add("setupDownloads", () => {
-    const downloadsFolder = "cypress/downloads";
-    // The next command allow downloads in Electron, Chrome, and Edge
-    // without any users popups or file save dialogs.
-    if (!Cypress.isBrowser("firefox")) {
-        // since this call returns a promise, must tell Cypress to wait for it to be resolved
-        cy.log("Page.setDownloadBehavior");
-        cy.wrap(
-            Cypress.automation("remote:debugger:protocol", {
-                command: "Page.setDownloadBehavior",
-                params: { behavior: "allow", downloadPath: downloadsFolder },
-            }),
-            { log: false }
-        );
-    }
+  const downloadsFolder = 'cypress/downloads'
+  // The next command allow downloads in Electron, Chrome, and Edge
+  // without any users popups or file save dialogs.
+  if (!Cypress.isBrowser('firefox')) {
+    // since this call returns a promise, must tell Cypress to wait for it to be resolved
+    cy.log('Page.setDownloadBehavior')
+    cy.wrap(
+      Cypress.automation('remote:debugger:protocol',
+        {
+          command: 'Page.setDownloadBehavior',
+          params: { behavior: 'allow', downloadPath: downloadsFolder },
+        }),
+      { log: false }
+    )
+  }
 });
 
 Cypress.Commands.add("restoreAuthCookies", () => {
-    globalStorage.authCookies.forEach((cookie) => {
+    globalStorage.authCookies.forEach(cookie => {
         cy.setCookie(cookie.name, cookie.value);
     });
     var names = globalStorage.authCookies.map((x) => x.name);
-
+  
     Cypress.Cookies.preserveOnce(...names);
 });

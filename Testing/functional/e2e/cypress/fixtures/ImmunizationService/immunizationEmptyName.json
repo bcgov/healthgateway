@@ -1,42 +1,44 @@
 {
-    "resourcePayload": {
-        "loadState": {
-            "refreshInProgress": false
-        },
-        "recommendations": [],
-        "immunizations": [
-            {
-                "id": "3209587_54397520",
-                "name": "COVID-19",
-                "dateOfImmunization": "2013-09-20T00:00:00",
-                "status": "Completed",
-                "targetedDisease": "Covid",
-                "providerOrClinic": "TEST LOCATION",
-                "immunization": {
-                    "name": "",
-                    "immunizationAgents": [
-                        {
-                            "code": "414003004",
-                            "name": "DTaP-IPV",
-                            "lotNumber": "123456",
-                            "productName": "COVID"
-                        }
-                    ]
-                },
-                "forecast": {
-                    "recomendationId": "",
-                    "createDate": "0001-01-01T00:00:00",
-                    "status": "Eligible",
-                    "displayName": "Covid-191",
-                    "eligibleDate": "0001-01-01T00:00:00",
-                    "dueDate": "2021-01-31T00:00:00-08:00"
-                }
-            }
-        ]
+  "resourcePayload": {
+    "loadState": {
+      "refreshInProgress": false
     },
-    "totalResultCount": 1,
-    "pageIndex": 0,
-    "pageSize": 25,
-    "resultStatus": 1,
-    "resultError": null
+    "recommendations": [],
+    "immunizations": [
+      {
+        "id": "3209587_54397520",
+        "name": "COVID-19",
+        "dateOfImmunization": "2013-09-20T00:00:00",
+        "status": "Completed",
+        "targetedDisease": "Covid",
+        "providerOrClinic": "TEST LOCATION",
+        "immunization":
+          {
+            "name":"",
+            "immunizationAgents":[
+              {
+                "code": "414003004",
+                "name": "DTaP-IPV",
+                "lotNumber": "123456",
+                "productName": "COVID"
+              }
+            ]
+          },
+        "forecast":
+          {
+            "recomendationId":"",
+            "createDate":"0001-01-01T00:00:00",
+            "status":"Eligible",
+            "displayName":"Covid-191",
+            "eligibleDate":"0001-01-01T00:00:00",
+            "dueDate":"2021-01-31T00:00:00-08:00"
+          }
+      }
+    ]
+  },
+  "totalResultCount": 1,
+  "pageIndex": 0,
+  "pageSize": 25,
+  "resultStatus": 1,
+  "resultError": null
 }

@@ -1,6 +1,6 @@
 # DBMaintainer
 
-The DBMaintainer project provides CLI tools to load Federal and Provincial drug files.  
+The DBMaintainer project provides CLI tools to load  Federal and Provincial drug files.  
 The project also is used to perform EF migration tasks from the command line.
 
 ## Database utilities

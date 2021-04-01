@@ -6,7 +6,7 @@ Implements functional tests for Health Gateway using Cypress.io tooling.
 
 A Developer should have gone through the Health Gateway installation and configuration.
 
-The developer should re-seed his/her database by connecting to the DB using PGAdmin or another client tool and running
+The developer should re-seed his/her database by connecting to the DB using PGAdmin or another client tool and running 
 cypress/db/seed.sql
 
 ## Cypress
@@ -28,13 +28,13 @@ Create a cypress.env.json and update with passwords or any other environment var
     "keycloak.password": "THE PASSWORD",
     "idir.password": "THE PASSWORD",
     "keycloak.unregistered.password": "THE PASSWORD"
-    "phoneNumber": "2505084843"
+    "phoneNumber": "2505084843"    
 }
 ```
 
 ### Running Interactively
 
-While creating and debugging tests you will want to run Cypress interactively.
+While creating and debugging tests you will want to run Cypress interactively.  
 
 ```bash
 export CYPRESS_BASE_URL=http://localhost:5000

@@ -4,9 +4,9 @@ Documents our OpenShift Build and Deployment process templates.
 
 ## Prerequisites
 
-A Network Security Policy needs to be deployed into each namespace prior to anything being executed. In order to create this, please execute the following:
+A Network Security Policy needs to be deployed into each namespace prior to anything being executed.  In order to create this, please execute the following:
 
-````console
+```console
 oc project 0bd5ad-tools
 oc process -f ./nsp.yaml -p NAMESPACE_PREFIX=0bd5ad -p ENVIRONMENT=tools | oc apply -f -
 oc project 0bd5ad-dev
@@ -28,7 +28,7 @@ Review the common config parameters
 
 ```console
   oc process -f ./commonConfig.yaml --parameters
-````
+```
 
 Create the common config
 
@@ -58,7 +58,7 @@ The Client Registry backing service requires a certificate for system to system 
 oc create configmap patient-cert --from-file=path/cert
 ```
 
-Creates a Docker based hybrid build along with the associated Image Stream which will be required for each of our configured applications. These templates are integrated into our Azure Build Pipelines and any change will be reflected in the next build.
+Creates a Docker based hybrid build along with the associated Image Stream which will be required for each of our configured applications.  These templates are integrated into our Azure Build Pipelines and any change will be reflected in the next build.
 
 ### Services
 
@@ -76,7 +76,7 @@ Hangfire and Admin WebClient require additional configuration in order to operat
 
 To update Hangfire
 
-````console
+```console
 oc process -f ./hangfireSecrets.yaml --parameters
 oc process -f ./hangfireSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret] -p ADMIN_SECRET=[Admin OIDC Secret] -p ADMIN_USER=[Admin Username] -p ADMIN_PASSWORD=[Admin Password]
 oc set env --from=secret/hangfire-secrets dc/hangfire
@@ -86,11 +86,11 @@ and Admin WebClient
 oc process -f ./adminWebClientSecrets.yaml --parameters
 oc process -f ./adminWebClientSecrets.yaml -p OIDC_SECRET=[Client OIDC Secret]
 oc set env --from=secret/adminwebclient-secrets dc/adminwebclient
-````
+```
 
 ### WebClient Production Only Robots.txt Configuration
 
-Health Gateway has a configurable [robots.txt](../../Apps/WebClient/src/Server/Controllers/RobotsController.cs) that is based on the HealthGateway_Robots.txt environment variable. Our default is to have all Robots disallowed in non-Production environments.
+Health Gateway has a configurable [robots.txt](../../Apps/WebClient/src/Server/Controllers/RobotsController.cs) that is based on the HealthGateway_Robots.txt environment variable.  Our default is to have all Robots disallowed in non-Production environments.
 
 Create a ConfigMap for the Robots file
 
@@ -100,7 +100,7 @@ oc create configmap robots.txt --from-file=HealthGateway_Robots.txt=robots.txt
 
 Once complete manually add the configmap to the webclient deployment config using the name HealthGateway_Robots.txt
 
-The following should work from CLI but DOES NOT as it forces the environment name to uppercase and replaces the . with a \_
+The following should work from CLI but DOES NOT as it forces the environment name to uppercase and replaces the . with a _
 e.g. HEALTHGATEWAY_ROBOTS_TXT - investigating but not critical and so documenting.
 
 ```console
@@ -109,7 +109,7 @@ oc set env --from=configmap/robots.txt dc/webclient
 
 ### Routes
 
-Once the services have been deployed, you will need to create endpoint routes. Certificates are required for this step and you can download the HealthgatewayPrivateKey.pem, wildcard.healthgateway.gov.bc.ca.pem and the caCertificate.pem from the Health Gateway Secure Documentation under Certificates 2020.
+Once the services have been deployed, you will need to create endpoint routes.  Certificates are required for this step and you can download the HealthgatewayPrivateKey.pem, wildcard.healthgateway.gov.bc.ca.pem and the caCertificate.pem from the Health Gateway Secure Documentation under Certificates 2020.
 
 Once done, proceed to run
 

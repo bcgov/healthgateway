@@ -36,38 +36,38 @@ export default class MainNavbar extends Vue {
                 title: "Dashboard",
                 icon: "view_quilt",
                 to: "/",
-                visible: this.isUserReviewer || this.isUserAdmin,
+                visible: this.isUserReviewer || this.isUserAdmin
             },
             {
                 title: "JobScheduler",
                 icon: "schedule",
                 to: "/job-scheduler",
-                visible: this.isUserAdmin,
+                visible: this.isUserAdmin
             },
             {
                 title: "Communications",
                 icon: "email",
                 to: "/communication",
-                visible: this.isUserAdmin,
+                visible: this.isUserAdmin
             },
             {
                 title: "Feedback Review",
                 icon: "comment",
                 to: "/user-feedback",
-                visible: this.isUserReviewer || this.isUserAdmin,
+                visible: this.isUserReviewer || this.isUserAdmin
             },
             {
                 title: "System Analytics",
                 icon: "fa-download",
                 to: "/stats",
-                visible: this.isUserAdmin,
+                visible: this.isUserAdmin
             },
             {
                 title: "Resend Emails",
                 icon: "email",
                 to: "/admin-email",
-                visible: this.isUserAdmin,
-            },
+                visible: this.isUserAdmin
+            }
         ];
     }
 
@@ -115,7 +115,9 @@ export default class MainNavbar extends Vue {
                                 HealthGateway
                             </v-list-item-title>
 
-                            <v-list-item-subtitle> Admin </v-list-item-subtitle>
+                            <v-list-item-subtitle>
+                                Admin
+                            </v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
                     <v-divider />

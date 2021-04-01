@@ -13,8 +13,8 @@ import { IEmailAdminService } from "@/services/interfaces";
 @Component({
     components: {
         LoadingComponent,
-        BannerFeedbackComponent,
-    },
+        BannerFeedbackComponent
+    }
 })
 export default class ResendEmailView extends Vue {
     private filterText = "";
@@ -23,7 +23,7 @@ export default class ResendEmailView extends Vue {
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
-        message: "",
+        message: ""
     };
 
     private selectedEmails: Email[] = [];
@@ -31,18 +31,18 @@ export default class ResendEmailView extends Vue {
     private tableHeaders = [
         {
             text: "Subject",
-            value: "subject",
+            value: "subject"
         },
         {
             text: "Status",
-            value: "emailStatusCode",
+            value: "emailStatusCode"
         },
         {
             text: "Date",
-            value: "sentDateTime",
+            value: "sentDateTime"
         },
         { text: "Email", value: "to" },
-        { text: "Is Invited?", value: "userInviteStatus" },
+        { text: "Is Invited?", value: "userInviteStatus" }
     ];
 
     private emailList: Email[] = [];
@@ -60,16 +60,16 @@ export default class ResendEmailView extends Vue {
         this.selectedEmails = [];
         this.emailService
             .getEmails()
-            .then((emails) => {
+            .then(emails => {
                 this.emailList.push(...emails);
             })
-            .catch((err) => {
+            .catch(err => {
                 console.log(err);
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Failed to load emails",
+                    message: "Failed to load emails"
                 };
             })
             .finally(() => {
@@ -86,7 +86,7 @@ export default class ResendEmailView extends Vue {
 
     private resendEmails(): void {
         this.isLoading = true;
-        let selectedIds = this.selectedEmails.map((s) => s.id);
+        let selectedIds = this.selectedEmails.map(s => s.id);
         this.emailService
             .resendEmails(selectedIds)
             .then(() => {
@@ -94,15 +94,15 @@ export default class ResendEmailView extends Vue {
                 this.bannerFeedback = {
                     type: ResultType.Success,
                     title: "Success.",
-                    message: "Emails queued to be sent",
+                    message: "Emails queued to be sent"
                 };
             })
-            .catch((err) => {
+            .catch(err => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Sending emails failed, please try again",
+                    message: "Sending emails failed, please try again"
                 };
                 console.log(err);
             })

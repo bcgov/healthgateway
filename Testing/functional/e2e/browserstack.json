@@ -7,22 +7,30 @@
         {
             "browser": "chrome",
             "os": "Windows 10",
-            "versions": ["85"]
+            "versions": [
+                "85"
+            ]
         },
         {
             "browser": "edge",
             "os": "Windows 10",
-            "versions": ["85"]
+            "versions": [
+                "85"
+            ]
         },
         {
             "browser": "firefox",
             "os": "Windows 10",
-            "versions": ["80"]
+            "versions": [
+                "80"
+            ]
         },
         {
             "browser": "chrome",
             "os": "OS X Catalina",
-            "versions": ["85"]
+            "versions": [
+                "85"
+            ]
         }
     ],
     "run_settings": {
