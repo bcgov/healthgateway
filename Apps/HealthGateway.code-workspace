@@ -74,5 +74,18 @@
       {"mode": "auto"}
     ],
     "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
+    "search.exclude": {
+        "**/bin": true,
+        "**/obj": true,
+        "**/dist": true,
+        "**/node_modules": true
+      },
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true,
+      "[csharp]": {
+        "editor.defaultFormatter": "ms-dotnettools.csharp",
+        "editor.formatOnSave": false
+      },
+      "omnisharp.defaultLaunchSolution": "HealthGateway.sln"
   }
 }

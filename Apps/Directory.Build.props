@@ -19,6 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)\.editorconfig" />
+        <None Include="$(MSBuildThisFileDirectory)\..\.editorconfig" />
     </ItemGroup>
 </Project>
