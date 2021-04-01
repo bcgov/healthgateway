@@ -92,7 +92,7 @@
         "bootstrap-vue": "^2.21.2",
         "chart.js": "^2.9.4",
         "cookie-storage": "^6.1.0",
-        "core-js": "^3.9.1",
+        "core-js": "^3.10.0",
         "file-saver": "^2.0.5",
         "html2pdf.js": "^0.9.2",
         "idle-vue": "^2.0.5",
