@@ -15,7 +15,7 @@ objects:
       labels:
         app: ${NAME}
     secrets:
-    - fieldPath: metadata.namespace
+      - fieldPath: metadata.namespace
 
   - kind: RoleBinding
     apiVersion: v1
@@ -28,10 +28,10 @@ objects:
       kind: Role
       name: edit
     subjects:
-    - apiVersion: v1
-      fieldPath: metadata.namespace
-      kind: ServiceAccount
-      name: ${NAME}
+      - apiVersion: v1
+        fieldPath: metadata.namespace
+        kind: ServiceAccount
+        name: ${NAME}
 
   - apiVersion: v1
     kind: ConfigMap
@@ -46,7 +46,7 @@ objects:
 
   - apiVersion: v1
     kind: Secret
-    metadata:  
+    metadata:
       name: ${NAME}-token
       labels:
         app: ${NAME}
@@ -104,18 +104,18 @@ objects:
         dockerStrategy:
           from:
             kind: DockerImage
-            name: 'ubuntu:20.04'
+            name: "ubuntu:20.04"
       successfulBuildsHistoryLimit: 5
       failedBuildsHistoryLimit: 3
       triggers:
-      - type: ConfigChange
-      - imageChange: {}
-        type: ImageChange
-      - type: ConfigChange
-      - github:
-          secretReference:
-            name: ${NAME}-hooksecret
-        type: GitHub
+        - type: ConfigChange
+        - imageChange: {}
+          type: ImageChange
+        - type: ConfigChange
+        - github:
+            secretReference:
+              name: ${NAME}-hooksecret
+          type: GitHub
 
   - apiVersion: v1
     kind: DeploymentConfig
@@ -165,11 +165,11 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       key: AZ_DEVOPS_WORK_DIR
-                      name: ${NAME}-config                    
+                      name: ${NAME}-config
               image: ${NAME}
               imagePullPolicy: Always
               name: ${NAME}
-              resources: 
+              resources:
                 limits:
                   cpu: ${CPU_LIMIT}
                   memory: ${MEMORY_LIMIT}
@@ -179,15 +179,15 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
-              - mountPath: /opt/az/_work
-                name: ephemeral-work
+                - mountPath: /opt/az/_work
+                  name: ephemeral-work
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           serviceAccount: ${NAME}
           terminationGracePeriodSeconds: 30
           volumes:
-          - name: ephemeral-work
-            emptyDir: {}
+            - name: ephemeral-work
+              emptyDir: {}
       test: false
       triggers:
         - type: ConfigChange
@@ -197,7 +197,7 @@ objects:
               - ${NAME}
             from:
               kind: ImageStreamTag
-              name: '${NAME}:latest'
+              name: "${NAME}:latest"
               namespace: ${INSTALL_NAMESPACE}
           type: ImageChange
 
@@ -217,55 +217,55 @@ objects:
       targetCPUUtilizationPercentage: 60
 
 parameters:
-- description: The name of the Azure Agent
-  displayName: Name
-  name: NAME
-  required: true
-  value: azure-agent
-- description: The version to tag to the image
-  displayName: version
-  name: VERSION
-  required: true
-  value: latest
-- description: The source repository
-  name: SOURCE_REPOSITORY_URL
-  required: true
-  value: https://github.com/bcgov/healthgateway.git
-- description: The build source context
-  name: SOURCE_CONTEXT_DIR
-  required: true
-  value: Tools/AzureAgent/docker
-- description: The repository branch to build from
-  name: SOURCE_REPOSITORY_REF
-  required: true
-  value: dev
-- description: The secret to be used for GitHub webhook integration
-  name: GIT_WEBHOOK_SECRET
-  generate: expression
-  from: "[a-zA-Z0-9]{24}"  
-- description: Azure DevOps Organization URL
-  name: AZ_DEVOPS_ORG_URL
-  required: true
-- description: Azure DevOps Agent pool
-  name: AZ_DEVOPS_POOL
-  required: true
-  value: HealthGatewayOCP4
-- description: Azure DevOps PAT Token
-  name: AZ_DEVOPS_TOKEN
-  required: true
-- description: Azure Work directory
-  name: AZ_DEVOPS_WORK_DIR
-  required: true
-  value: /opt/az/_work
-- name: INSTALL_NAMESPACE
-  displayName: The Namespace where the Azure agent is being deployed.
-  description: The namespace of the project to install the agent
-  required: true
-- name: CPU_LIMIT
-  displayName: The max CPU for this agent
-  required: true
-  value: 2500m
-- name: MEMORY_LIMIT
-  displayName: The max memory for this agent
-  required: true
-  value: 6Gi    
+  - description: The name of the Azure Agent
+    displayName: Name
+    name: NAME
+    required: true
+    value: azure-agent
+  - description: The version to tag to the image
+    displayName: version
+    name: VERSION
+    required: true
+    value: latest
+  - description: The source repository
+    name: SOURCE_REPOSITORY_URL
+    required: true
+    value: https://github.com/bcgov/healthgateway.git
+  - description: The build source context
+    name: SOURCE_CONTEXT_DIR
+    required: true
+    value: Tools/AzureAgent/docker
+  - description: The repository branch to build from
+    name: SOURCE_REPOSITORY_REF
+    required: true
+    value: dev
+  - description: The secret to be used for GitHub webhook integration
+    name: GIT_WEBHOOK_SECRET
+    generate: expression
+    from: "[a-zA-Z0-9]{24}"
+  - description: Azure DevOps Organization URL
+    name: AZ_DEVOPS_ORG_URL
+    required: true
+  - description: Azure DevOps Agent pool
+    name: AZ_DEVOPS_POOL
+    required: true
+    value: HealthGatewayOCP4
+  - description: Azure DevOps PAT Token
+    name: AZ_DEVOPS_TOKEN
+    required: true
+  - description: Azure Work directory
+    name: AZ_DEVOPS_WORK_DIR
+    required: true
+    value: /opt/az/_work
+  - name: INSTALL_NAMESPACE
+    displayName: The Namespace where the Azure agent is being deployed.
+    description: The namespace of the project to install the agent
+    required: true
+  - name: CPU_LIMIT
+    displayName: The max CPU for this agent
+    required: true
+    value: 2500m
+  - name: MEMORY_LIMIT
+    displayName: The max memory for this agent
+    required: true
+    value: 6Gi

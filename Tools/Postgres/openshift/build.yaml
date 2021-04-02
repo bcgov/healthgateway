@@ -11,74 +11,74 @@ labels:
   app.kubernetes.io/managed-by: template
   app.kubernetes.io/version: "${PG_VERSION}"
 objects:
-#Postgres ImageStream is created if it doesn't already exist
-- apiVersion: image.openshift.io/v1
-  kind: ImageStream
-  metadata:
-    name: postgres
-  spec:
+  #Postgres ImageStream is created if it doesn't already exist
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      name: postgres
+    spec:
+      lookupPolicy:
+        local: false
+
+  - apiVersion: v1
+    kind: ImageStreamTag
     lookupPolicy:
       local: false
+    metadata:
+      name: postgres:${PG_VERSION}
+    tag:
+      annotations: null
+      from:
+        kind: DockerImage
+        name: registry.hub.docker.com/library/postgres:${PG_VERSION}
+      importPolicy:
+        scheduled: true
+      name: "${PG_VERSION}"
+      referencePolicy:
+        type: Source
 
-- apiVersion: v1
-  kind: ImageStreamTag
-  lookupPolicy:
-    local: false
-  metadata:
-    name: postgres:${PG_VERSION}
-  tag:
-    annotations: null
-    from:
-      kind: DockerImage
-      name: registry.hub.docker.com/library/postgres:${PG_VERSION}
-    importPolicy:
-      scheduled: true
-    name: "${PG_VERSION}"
-    referencePolicy:
-      type: Source
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      creationTimestamp: null
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
 
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    creationTimestamp: null
-    name: ${NAME}
-  spec:
-    lookupPolicy:
-      local: false
-  status:
-    dockerImageRepository: ""
-
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    name: ${NAME}${SUFFIX}
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: "${NAME}:${OUT_VERSION}"
-    postCommit: {}
-    resources: {}
-    source:
-      contextDir: ${DOCKER_CONTEXT}
-      git:
-        ref: ${GIT_REF}
-        uri: ${GIT_URI}
-      type: Git
-    strategy:
-      dockerStrategy:
-        from:
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      creationTimestamp: null
+      name: ${NAME}${SUFFIX}
+    spec:
+      nodeSelector: null
+      output:
+        to:
           kind: ImageStreamTag
-          name: postgres:${PG_VERSION}
-      type: Docker
-    triggers:
-    - type: ConfigChange
-    - imageChange: {}
-      type: ImageChange
-  status:
-    lastVersion: 0
+          name: "${NAME}:${OUT_VERSION}"
+      postCommit: {}
+      resources: {}
+      source:
+        contextDir: ${DOCKER_CONTEXT}
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_URI}
+        type: Git
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: postgres:${PG_VERSION}
+        type: Docker
+      triggers:
+        - type: ConfigChange
+        - imageChange: {}
+          type: ImageChange
+    status:
+      lastVersion: 0
 
 parameters:
   - name: NAME

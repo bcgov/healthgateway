@@ -5,7 +5,7 @@ description: |
 spec:
   - name: PIA
     status: completed
-    last-updated: '2019-12-13T19:22:02.431Z'
+    last-updated: "2019-12-13T19:22:02.431Z"
   - name: STRA
     status: completed
-    last-updated: '2019-12-13T19:22:02.431Z'
+    last-updated: "2019-12-13T19:22:02.431Z"

@@ -6,10 +6,10 @@ trigger:
   batch: "true"
   branches:
     include:
-    - dev
+      - dev
   paths:
     include:
-    - Testing/functional
+      - Testing/functional
 variables:
   Tests.Path: $(Build.SourcesDirectory)/Testing/functional/e2e
 

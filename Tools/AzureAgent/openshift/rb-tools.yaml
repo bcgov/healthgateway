@@ -8,7 +8,7 @@ metadata:
 objects:
   - apiVersion: authorization.openshift.io/v1
     groupNames:
-    - system:serviceaccounts:${NAMESPACE}-tools
+      - system:serviceaccounts:${NAMESPACE}-tools
     kind: RoleBinding
     metadata:
       name: azure:image-pullers
@@ -18,29 +18,29 @@ objects:
     roleRef:
       name: system:image-puller
     subjects:
-    - kind: SystemGroup
-      name: system:serviceaccounts:${NAMESPACE}-tools
-    - kind: ServiceAccount
-      name: default
-      namespace: ${NAMESPACE}-dev
-    - kind: ServiceAccount
-      name: default
-      namespace: ${NAMESPACE}-test
-    - kind: ServiceAccount
-      name: default
-      namespace: ${NAMESPACE}-prod
+      - kind: SystemGroup
+        name: system:serviceaccounts:${NAMESPACE}-tools
+      - kind: ServiceAccount
+        name: default
+        namespace: ${NAMESPACE}-dev
+      - kind: ServiceAccount
+        name: default
+        namespace: ${NAMESPACE}-test
+      - kind: ServiceAccount
+        name: default
+        namespace: ${NAMESPACE}-prod
     userNames:
-    - system:serviceaccount:${NAMESPACE}-dev:default
-    - system:serviceaccount:${NAMESPACE}-test:default
-    - system:serviceaccount:${NAMESPACE}-prod:default
+      - system:serviceaccount:${NAMESPACE}-dev:default
+      - system:serviceaccount:${NAMESPACE}-test:default
+      - system:serviceaccount:${NAMESPACE}-prod:default
 
-parameters:  
-- name: NAMESPACE
-  displayName: The Project Namespace
-  description: The namespace of the project
-  required: true
-- name: AGENTNAME
-  displayName: The name of the Azure Agent service account
-  description: The namespace of the project
-  required: true
-  value: azure-agent 
+parameters:
+  - name: NAMESPACE
+    displayName: The Project Namespace
+    description: The namespace of the project
+    required: true
+  - name: AGENTNAME
+    displayName: The name of the Azure Agent service account
+    description: The namespace of the project
+    required: true
+    value: azure-agent
