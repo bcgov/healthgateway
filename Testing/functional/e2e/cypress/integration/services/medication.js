@@ -2,21 +2,26 @@ const { AuthMethod } = require("../../support/constants");
 
 function verifyProvincialDrug(drug) {
     expect(drug).to.not.be.null;
-    expect(drug.din).to.equal('66999990');
+    expect(drug.din).to.equal("66999990");
     expect(drug.provincialData.pharmaCareDrug).to.not.be.null;
-    expect(drug.provincialData.pharmaCareDrug.dinpin).to.equal('66999990');
+    expect(drug.provincialData.pharmaCareDrug.dinpin).to.equal("66999990");
 }
 
 function verifyFedDrug(drug) {
     expect(drug).to.not.be.null;
-    expect(drug.din).to.equal('02391724');
-    expect(drug.federalData.drugProduct.drugIdentificationNumber).to.equal('02391724');
+    expect(drug.din).to.equal("02391724");
+    expect(drug.federalData.drugProduct.drugIdentificationNumber).to.equal(
+        "02391724"
+    );
 }
 
 describe("Medication Service", () => {
     beforeEach(() => {
         cy.readConfig().as("config");
-        cy.getTokens(Cypress.env("keycloak.username"), Cypress.env("keycloak.password")).as("tokens");
+        cy.getTokens(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password")
+        ).as("tokens");
     });
 
     it("Verify Swagger", () => {
@@ -29,11 +34,14 @@ describe("Medication Service", () => {
             );
         });
     });
-    
+
     it("Verify Get Medications List", () => {
-        const drugIdentifiersQueryString = 'drugIdentifiers=66999990&drugIdentifiers=02391724&drugIdentifiers=02212048&drugIdentifiers=02263238&drugIdentifiers=00496499&drugIdentifiers=02042258&drugIdentifiers=02240550&drugIdentifiers=01926799&drugIdentifiers=02237250&drugIdentifiers=02252716&drugIdentifiers=02263254&drugIdentifiers=02046121&drugIdentifiers=02271958&drugIdentifiers=02240606&drugIdentifiers=02247701&drugIdentifiers=02046148&drugIdentifiers=66999997&drugIdentifiers=00402753&drugIdentifiers=00029246';
+        const drugIdentifiersQueryString =
+            "drugIdentifiers=66999990&drugIdentifiers=02391724&drugIdentifiers=02212048&drugIdentifiers=02263238&drugIdentifiers=00496499&drugIdentifiers=02042258&drugIdentifiers=02240550&drugIdentifiers=01926799&drugIdentifiers=02237250&drugIdentifiers=02252716&drugIdentifiers=02263254&drugIdentifiers=02046121&drugIdentifiers=02271958&drugIdentifiers=02240606&drugIdentifiers=02247701&drugIdentifiers=02046148&drugIdentifiers=66999997&drugIdentifiers=00402753&drugIdentifiers=00029246";
         cy.get("@config").then((config) => {
-            cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+            cy.log(
+                `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+            );
             cy.request({
                 url: `${config.serviceEndpoints.Medication}v1/api/Medication/?${drugIdentifiersQueryString}`,
                 followRedirect: false,
@@ -46,19 +54,21 @@ describe("Medication Service", () => {
                 cy.log(`response.body: ${response.body}`);
                 expect(response.body.totalResultCount).to.equal(19);
                 expect(response.body.resourcePayload).to.not.be.null;
-                const drug66999990 = response.body.resourcePayload['66999990'];
+                const drug66999990 = response.body.resourcePayload["66999990"];
                 verifyProvincialDrug(drug66999990);
-                
-                const drugFederal = response.body.resourcePayload['02391724'];
+
+                const drugFederal = response.body.resourcePayload["02391724"];
                 verifyFedDrug(drugFederal);
             });
         });
     });
-    
+
     it("Verify GetMedication ProvincialDrug", () => {
         const drugIdentifier = "02391724";
         cy.get("@config").then((config) => {
-            cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+            cy.log(
+                `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+            );
             cy.request({
                 url: `${config.serviceEndpoints.Medication}v1/api/Medication/${drugIdentifier}`,
                 followRedirect: false,
@@ -73,11 +83,13 @@ describe("Medication Service", () => {
             });
         });
     });
-    
+
     it("Verify GetMedication FEDDrug", () => {
         const drugIdentifier = "66999990";
         cy.get("@config").then((config) => {
-            cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+            cy.log(
+                `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+            );
             cy.request({
                 url: `${config.serviceEndpoints.Medication}v1/api/Medication/${drugIdentifier}`,
                 followRedirect: false,
@@ -96,7 +108,9 @@ describe("Medication Service", () => {
     it("Verify MedicationStatement Unauthorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.get("@config").then((config) => {
-            cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+            cy.log(
+                `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+            );
             cy.request({
                 url: `${config.serviceEndpoints.Medication}v1/api/MedicationStatement/${HDID}`,
                 followRedirect: false,
@@ -112,7 +126,9 @@ describe("Medication Service", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
-                cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+                cy.log(
+                    `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+                );
                 cy.request({
                     url: `${config.serviceEndpoints.Medication}v1/api/MedicationStatement/${HDID}`,
                     followRedirect: false,
@@ -135,7 +151,9 @@ describe("Medication Service", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
-                cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+                cy.log(
+                    `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+                );
                 cy.request({
                     url: `${config.serviceEndpoints.Medication}v1/api/MedicationStatement/${HDID}`,
                     followRedirect: false,
@@ -149,8 +167,13 @@ describe("Medication Service", () => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
                     cy.log(`response.body: ${response.body}`);
-                    expect(response.body.resourcePayload.length).to.be.greaterThan(250);
-                    expect(response.body.resourcePayload[100].prescriptionIdentifier).to.match(/^\d{7}$/);
+                    expect(
+                        response.body.resourcePayload.length
+                    ).to.be.greaterThan(250);
+                    expect(
+                        response.body.resourcePayload[100]
+                            .prescriptionIdentifier
+                    ).to.match(/^\d{7}$/);
                 });
             });
         });
@@ -159,7 +182,9 @@ describe("Medication Service", () => {
     it("Verify MedicationRequest Unauthorized", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.get("@config").then((config) => {
-            cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+            cy.log(
+                `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+            );
             cy.request({
                 url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
                 followRedirect: false,
@@ -175,7 +200,9 @@ describe("Medication Service", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
-                cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+                cy.log(
+                    `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+                );
                 cy.request({
                     url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
                     followRedirect: false,
@@ -198,7 +225,9 @@ describe("Medication Service", () => {
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
             cy.get("@config").then((config) => {
-                cy.log(`Medication Service Endpoint: ${config.serviceEndpoints.Medication}`);
+                cy.log(
+                    `Medication Service Endpoint: ${config.serviceEndpoints.Medication}`
+                );
                 cy.request({
                     url: `${config.serviceEndpoints.Medication}v1/api/MedicationRequest/${HDID}`,
                     followRedirect: false,
@@ -212,8 +241,11 @@ describe("Medication Service", () => {
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
                     cy.log(`response.body: ${response.body}`);
-                    expect(response.body.resourcePayload.length).to.be.greaterThan(1);
-                    expect(response.body.resourcePayload[0].referenceNumber).to.not.be.empty;
+                    expect(
+                        response.body.resourcePayload.length
+                    ).to.be.greaterThan(1);
+                    expect(response.body.resourcePayload[0].referenceNumber).to
+                        .not.be.empty;
                 });
             });
         });
