@@ -1,4 +1,3 @@
-
 # Sysdig
 
 [BC Government Setup Guide](https://developer.gov.bc.ca/OpenShift-User-Guide-to-Creating-and-Using-a-Sysdig-Team-for-Monitoring)
