@@ -37,5 +37,5 @@ export const getters: GetterTree<AuthState, RootState> = {
     isReviewer(state: AuthState): boolean {
         const { authentication } = state;
         return authentication?.roles.includes(UserRoles.Reviewer) ?? false;
-    }
+    },
 };

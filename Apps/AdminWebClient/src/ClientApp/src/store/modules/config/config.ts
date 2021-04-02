@@ -11,7 +11,7 @@ export const state: ConfigState = {
     statusMessage: "",
     config: new ExternalConfiguration(),
     error: false,
-    stateType: StateType.NONE
+    stateType: StateType.NONE,
 };
 
 const namespaced = true;
@@ -21,5 +21,5 @@ export const config: Module<ConfigState, RootState> = {
     state,
     getters,
     actions,
-    mutations
+    mutations,
 };
