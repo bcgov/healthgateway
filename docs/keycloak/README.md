@@ -100,7 +100,7 @@ The following are realm-level roles, and default roles for OAuth2 and UMA.
 ### Notes
 
 - 'access_hnclient' will be deprecated in a future release as we have deprecated our access to PharmaNet via HNSecure private network, as it is nearing end of life.
-- 'access_patient' may be replaced by system/*.* once we have fixed our issue hitting the 4k Cookie size limit when creating JWTs.
+- 'access_patient' may be replaced by system/\*.\* once we have fixed our issue hitting the 4k Cookie size limit when creating JWTs.
 
 ## Identity Providers
 
