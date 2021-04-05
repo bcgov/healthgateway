@@ -13,7 +13,7 @@
     "devDependencies": {
         "@types/chart.js": "^2.9.31",
         "@types/jest": "^26.0.22",
-        "@types/luxon": "^1.26.2",
+        "@types/luxon": "^1.26.3",
         "@types/vuelidate": "^0.7.14",
         "@types/webpack-env": "^1.16.0",
         "@typescript-eslint/eslint-plugin": "^4.20.0",
