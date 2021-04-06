@@ -17,7 +17,7 @@
         "@types/vuelidate": "^0.7.14",
         "@types/webpack-env": "^1.16.0",
         "@typescript-eslint/eslint-plugin": "^4.20.0",
-        "@typescript-eslint/parser": "^4.20.0",
+        "@typescript-eslint/parser": "^4.21.0",
         "@vue/cli-plugin-eslint": "^4.5.12",
         "@vue/cli-plugin-typescript": "^4.5.12",
         "@vue/cli-plugin-unit-jest": "^4.5.12",
