@@ -49,8 +49,7 @@ namespace HealthGateway.CommonTests.Auditing
 
             Mock<ILogger<IAuditLogger>> logger = new Mock<ILogger<IAuditLogger>>();
             Mock<IWriteAuditEventDelegate> dbContext = new Mock<IWriteAuditEventDelegate>();
-            Mock<IConfiguration> config = new Mock<IConfiguration>();
-            AuditLogger auditLogger = new AuditLogger(logger.Object, dbContext.Object, config.Object);
+            AuditLogger auditLogger = new AuditLogger(logger.Object, dbContext.Object);
 
             AuditEvent actual = new AuditEvent();
             auditLogger.PopulateWithHttpContext(ctx, actual);
