@@ -58,7 +58,7 @@ namespace HealthGateway.Common.Delegates
             using (Source.StartActivity("GetDemographicsByHDIDAsync"))
             {
                 // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(OIDType.HDID, hdid);
+                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.HDID, hdid);
                 try
                 {
                     // Perform the request
@@ -83,7 +83,7 @@ namespace HealthGateway.Common.Delegates
             using (Source.StartActivity("GetDemographicsByPHNAsync"))
             {
                 // Create request object
-                HCIM_IN_GetDemographicsRequest request = CreateRequest(OIDType.PHN, phn);
+                HCIM_IN_GetDemographicsRequest request = CreateRequest(OidType.PHN, phn);
                 try
                 {
                     // Perform the request
@@ -102,7 +102,7 @@ namespace HealthGateway.Common.Delegates
             }
         }
 
-        private static HCIM_IN_GetDemographicsRequest CreateRequest(OIDType oIDType, string identifierValue)
+        private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue)
         {
             using (Source.StartActivity("CreatePatientSOAPRequest"))
             {
@@ -142,7 +142,7 @@ namespace HealthGateway.Common.Delegates
                 request.controlActProcess.queryByParameter = new HCIM_IN_GetDemographicsQUQI_MT020001QueryByParameter();
                 request.controlActProcess.queryByParameter.queryByParameterPayload = new HCIM_IN_GetDemographicsQueryByParameterPayload();
                 request.controlActProcess.queryByParameter.queryByParameterPayload.personid = new HCIM_IN_GetDemographicsPersonid();
-                request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = oIDType.ToString(), extension = identifierValue, assigningAuthorityName = "LCTZ_IAS" };
+                request.controlActProcess.queryByParameter.queryByParameterPayload.personid.value = new II() { root = oidType.ToString(), extension = identifierValue, assigningAuthorityName = "LCTZ_IAS" };
 
                 return new HCIM_IN_GetDemographicsRequest(request);
             }
@@ -257,11 +257,11 @@ namespace HealthGateway.Common.Delegates
                 II? identifiedPersonId = (II?)retrievedPerson.identifiedPerson.id.GetValue(0);
                 string? personIdentifierType = identifiedPersonId?.root;
                 string personIdentifier = identifiedPersonId?.extension ?? string.Empty;
-                if (personIdentifierType == OIDType.HDID.ToString())
+                if (personIdentifierType == OidType.HDID.ToString())
                 {
                     patient.HdId = personIdentifier;
                 }
-                else if (personIdentifierType == OIDType.PHN.ToString())
+                else if (personIdentifierType == OidType.PHN.ToString())
                 {
                     patient.PersonalHealthNumber = personIdentifier;
                 }
@@ -278,11 +278,11 @@ namespace HealthGateway.Common.Delegates
                 II? subjectId = (II?)retrievedPerson.id.GetValue(0);
                 string? subjectIdentifierType = subjectId?.root;
                 string subjectIdentifier = subjectId?.extension ?? string.Empty;
-                if (subjectIdentifierType == OIDType.HDID.ToString())
+                if (subjectIdentifierType == OidType.HDID.ToString())
                 {
                     patient.HdId = subjectIdentifier;
                 }
-                else if (personIdentifierType == OIDType.PHN.ToString())
+                else if (personIdentifierType == OidType.PHN.ToString())
                 {
                     patient.PersonalHealthNumber = subjectIdentifier;
                 }
