@@ -334,32 +334,22 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The passed in IServiceCollection.</param>
         public void ConfigureOpenIdConnectServices(IServiceCollection services)
         {
-            string basePath = this.GetAppBasePath();
-            bool isDev = this.environment.IsDevelopment();
             services.AddAuthentication(auth =>
                 {
                     auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     auth.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
                     auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 })
-                .AddCookie(options =>
-                {
-                    options.Cookie.Name = this.environment.ApplicationName;
-                    options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
-                    options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
-                    options.SlidingExpiration = true;
-                    options.Cookie.HttpOnly = true;
-
-                    // Allows http://localhost to work on Chromium and Edge.
-                    options.Cookie.SameSite = isDev ? SameSiteMode.Unspecified : options.Cookie.SameSite;
-                    options.Cookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : options.Cookie.SecurePolicy;
-                })
+                .AddCookie(options => this.AddCookies(options))
                 .AddOpenIdConnect(options =>
                 {
-                    // Allows http://localhost to work on Chromium and Edge.
-                    options.ProtocolValidator.RequireNonce = isDev ? false : options.ProtocolValidator.RequireNonce;
-                    options.CorrelationCookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : options.CorrelationCookie.SecurePolicy;
-                    options.CorrelationCookie.SameSite = isDev ? SameSiteMode.Unspecified : options.CorrelationCookie.SameSite;
+                    if (this.environment.IsDevelopment())
+                    {
+                        // Allows http://localhost to work on Chromium and Edge.
+                        options.ProtocolValidator.RequireNonce = false;
+                        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                        options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+                    }
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -796,6 +786,27 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             this.Logger.LogDebug($"BasePath = {basePath}");
             return basePath;
+        }
+
+        /// <summary>
+        /// Adds cookie authentication with custom configuration to AuthenticationBuilder.
+        /// </summary>
+        /// <param name="options">The cookie options to be setup.</param>
+        private void AddCookies(CookieAuthenticationOptions options)
+        {
+            string basePath = this.GetAppBasePath();
+
+            options.Cookie.Name = this.environment.ApplicationName;
+            options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+            options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+            options.SlidingExpiration = true;
+            options.Cookie.HttpOnly = true;
+            if (this.environment.IsDevelopment())
+            {
+                // Allows http://localhost to work on Chromium and Edge.
+                options.Cookie.SameSite = SameSiteMode.Unspecified;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            }
         }
     }
 }

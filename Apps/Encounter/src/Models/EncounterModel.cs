@@ -17,6 +17,7 @@ namespace HealthGateway.Encounter.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Security.Cryptography;
     using System.Text;
     using System.Text.Json.Serialization;
@@ -105,7 +106,7 @@ namespace HealthGateway.Encounter.Models
         /// </summary>
         /// <param name="models">The list of ODR models to convert.</param>
         /// <returns>A list of Encounter objects.</returns>
-        public static List<EncounterModel> FromODRClaimModelList(List<Claim> models)
+        public static IEnumerable<EncounterModel> FromODRClaimModelList(IEnumerable<Claim> models)
         {
             List<EncounterModel> objects = new List<EncounterModel>();
             HashSet<string> encounterIds = new HashSet<string>();
