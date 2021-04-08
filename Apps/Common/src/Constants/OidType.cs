@@ -123,6 +123,8 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Determines whether two specified types have the same value.
         /// </summary>
+        /// <returns>True if the value of a is equal; otherwise, false.</returns>
+        /// <param name="other">The object to compare against for equality.</param>
         public bool Equals(OidType? other)
         {
             return this.value == other?.value;

@@ -148,6 +148,96 @@ namespace HealthGateway.Common.Delegates
             }
         }
 
+        private static bool SetIdentifier(string personIdentifierType, string personIdentifier, PatientModel patient)
+        {
+            if (personIdentifierType == OidType.HDID.ToString())
+            {
+                patient.HdId = personIdentifier;
+                return true;
+            }
+            else if (personIdentifierType == OidType.PHN.ToString())
+            {
+                patient.PersonalHealthNumber = personIdentifier;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool SetNames(PN? nameSection, PatientModel patient)
+        {
+            if (nameSection == null)
+            {
+                return false;
+            }
+
+            // Extract the subject names
+            List<string> givenNameList = new List<string>();
+            List<string> lastNameList = new List<string>();
+            for (int i = 0; i < nameSection.Items.Length; i++)
+            {
+                ENXP name = nameSection.Items[i];
+
+                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    givenNameList.Add(name.Text[0]);
+                }
+                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                {
+                    lastNameList.Add(name.Text[0]);
+                }
+            }
+
+            string delimiter = " ";
+            patient.FirstName = givenNameList.Aggregate((i, j) => i + delimiter + j);
+            patient.LastName = lastNameList.Aggregate((i, j) => i + delimiter + j);
+            return true;
+        }
+
+        private RequestResult<PatientModel> CheckResponseCode(string responseCode)
+        {
+            if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
+            {
+                // BCHCIM.GD.2.0018 Not found
+                this.logger.LogWarning($"Client Registry did not find any records. Returned message code: {responseCode}");
+                this.logger.LogDebug($"Finished getting patient.");
+                return new RequestResult<PatientModel>()
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = new RequestResultError() { ResultMessage = "Client Registry did not find any records", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                };
+            }
+
+            if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
+            {
+                // Returned BCHCIM.GD.2.0006 Invalid PHN
+                this.logger.LogWarning($"Personal Health Number is invalid. Returned message code: {responseCode}");
+                this.logger.LogDebug($"Finished getting patient.");
+                return new RequestResult<PatientModel>()
+                {
+                    ResultStatus = ResultType.ActionRequired,
+                    ResultError = new RequestResultError() { ResultMessage = "Personal Health Number is invalid", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                };
+            }
+
+            // Verify that the reply contains a result
+            if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
+            {
+                this.logger.LogWarning($"Client Registry did not return a person. Returned message code: {responseCode}");
+                this.logger.LogDebug($"Finished getting patient.");
+                return new RequestResult<PatientModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError() { ResultMessage = "Client Registry did not return a person", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
+                };
+            }
+
+            return new RequestResult<PatientModel>()
+            {
+                ResultStatus = ResultType.Success,
+            };
+        }
+
         private RequestResult<PatientModel> ParseResponse(HCIM_IN_GetDemographicsResponse1 reply)
         {
             using (Source.StartActivity("ParsePatientResponse"))
@@ -155,40 +245,10 @@ namespace HealthGateway.Common.Delegates
                 this.logger.LogDebug($"Parsing patient response... {JsonSerializer.Serialize(reply)}");
 
                 string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
-                if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
+                RequestResult<PatientModel> requestResult = this.CheckResponseCode(responseCode);
+                if (requestResult.ResultStatus != ResultType.Success)
                 {
-                    // BCHCIM.GD.2.0018 Not found
-                    this.logger.LogWarning($"Client Registry did not find any records. Returned message code: {responseCode}");
-                    this.logger.LogDebug($"Finished getting patient.");
-                    return new RequestResult<PatientModel>()
-                    {
-                        ResultStatus = ResultType.ActionRequired,
-                        ResultError = new RequestResultError() { ResultMessage = "Client Registry did not find any records", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
-                    };
-                }
-
-                if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
-                {
-                    // Returned BCHCIM.GD.2.0006 Invalid PHN
-                    this.logger.LogWarning($"Personal Health Number is invalid. Returned message code: {responseCode}");
-                    this.logger.LogDebug($"Finished getting patient.");
-                    return new RequestResult<PatientModel>()
-                    {
-                        ResultStatus = ResultType.ActionRequired,
-                        ResultError = new RequestResultError() { ResultMessage = "Personal Health Number is invalid", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
-                    };
-                }
-
-                // Verify that the reply contains a result
-                if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
-                {
-                    this.logger.LogWarning($"Client Registry did not return a person. Returned message code: {responseCode}");
-                    this.logger.LogDebug($"Finished getting patient.");
-                    return new RequestResult<PatientModel>()
-                    {
-                        ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError() { ResultMessage = "Client Registry did not return a person", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
-                    };
+                    return requestResult;
                 }
 
                 HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
@@ -207,9 +267,21 @@ namespace HealthGateway.Common.Delegates
                     };
                 }
 
-                PN? nameSection = retrievedPerson.identifiedPerson.name.Where(x => x.use.Any(u => u == cs_EntityNameUse.C)).FirstOrDefault();
+                string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
+                DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+                string genderCode = retrievedPerson.identifiedPerson.administrativeGenderCode.code;
+                string gender = "NotSpecified";
+                gender = genderCode == "F" ? "Female" : gender;
+                gender = genderCode == "M" ? "Male" : gender;
+                PatientModel patient = new PatientModel()
+                {
+                    Birthdate = dob,
+                    Gender = gender,
+                    EmailAddress = string.Empty,
+                };
 
-                if (nameSection == null)
+                PN? nameSection = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
+                if (!ClientRegistriesDelegate.SetNames(nameSection, patient))
                 {
                     this.logger.LogWarning($"Client Registry returned a person with an invalid name.");
                     return new RequestResult<PatientModel>()
@@ -219,53 +291,11 @@ namespace HealthGateway.Common.Delegates
                     };
                 }
 
-                // Extract the subject names
-                List<string> givenNameList = new List<string>();
-                List<string> lastNameList = new List<string>();
-                for (int i = 0; i < nameSection.Items.Length; i++)
-                {
-                    ENXP name = nameSection.Items[i];
-
-                    if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                    {
-                        givenNameList.Add(name.Text[0]);
-                    }
-                    else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
-                    {
-                        lastNameList.Add(name.Text[0]);
-                    }
-                }
-
-                string delimiter = " ";
-                string givenNames = givenNameList.Aggregate((i, j) => i + delimiter + j);
-                string lastNames = lastNameList.Aggregate((i, j) => i + delimiter + j);
-                string? dobStr = ((TS)retrievedPerson.identifiedPerson.birthTime).value; // yyyyMMdd
-                DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-                string genderCode = retrievedPerson.identifiedPerson.administrativeGenderCode.code;
-                string gender = "NotSpecified";
-                if (genderCode == "F")
-                {
-                    gender = "Female";
-                }
-                else if (genderCode == "M")
-                {
-                    gender = "Male";
-                }
-
-                PatientModel patient = new PatientModel() { FirstName = givenNames, LastName = lastNames, Birthdate = dob, Gender = gender, EmailAddress = string.Empty };
-
                 II? identifiedPersonId = (II?)retrievedPerson.identifiedPerson.id.GetValue(0);
                 string? personIdentifierType = identifiedPersonId?.root;
                 string personIdentifier = identifiedPersonId?.extension ?? string.Empty;
-                if (personIdentifierType == OidType.HDID.ToString())
-                {
-                    patient.HdId = personIdentifier;
-                }
-                else if (personIdentifierType == OidType.PHN.ToString())
-                {
-                    patient.PersonalHealthNumber = personIdentifier;
-                }
-                else
+
+                if (!ClientRegistriesDelegate.SetIdentifier(personIdentifierType, personIdentifier, patient))
                 {
                     this.logger.LogWarning($"Client Registry returned a person with a person identifier not recognized. No PHN or HDID was populated.");
                     return new RequestResult<PatientModel>()
@@ -278,15 +308,7 @@ namespace HealthGateway.Common.Delegates
                 II? subjectId = (II?)retrievedPerson.id.GetValue(0);
                 string? subjectIdentifierType = subjectId?.root;
                 string subjectIdentifier = subjectId?.extension ?? string.Empty;
-                if (subjectIdentifierType == OidType.HDID.ToString())
-                {
-                    patient.HdId = subjectIdentifier;
-                }
-                else if (personIdentifierType == OidType.PHN.ToString())
-                {
-                    patient.PersonalHealthNumber = subjectIdentifier;
-                }
-                else
+                if (!ClientRegistriesDelegate.SetIdentifier(subjectIdentifierType, subjectIdentifier, patient))
                 {
                     this.logger.LogWarning($"Client Registry returned a person with a subject identifier not recognized. No PHN or HDID was populated.");
                     return new RequestResult<PatientModel>()

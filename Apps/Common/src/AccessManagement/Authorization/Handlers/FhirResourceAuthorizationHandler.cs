@@ -62,7 +62,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                     this.logger.LogWarning($"Fhir resource Handler has been invoked without route resource being specified, ignoring");
                     continue;
                 }
-                if (this.IsOwner(context, resourceHDID))
+                else if (this.IsOwner(context, resourceHDID))
                 {
                     context.Succeed(requirement);
                 }

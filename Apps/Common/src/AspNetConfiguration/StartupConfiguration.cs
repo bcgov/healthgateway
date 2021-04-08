@@ -349,6 +349,7 @@ namespace HealthGateway.Common.AspNetConfiguration
                     options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
                     options.SlidingExpiration = true;
                     options.Cookie.HttpOnly = true;
+
                     // Allows http://localhost to work on Chromium and Edge.
                     options.Cookie.SameSite = isDev ? SameSiteMode.Unspecified : options.Cookie.SameSite;
                     options.Cookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : options.Cookie.SecurePolicy;

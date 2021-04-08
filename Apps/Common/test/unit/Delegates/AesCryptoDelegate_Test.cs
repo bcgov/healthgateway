@@ -32,7 +32,7 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyConfigurationBinding()
         {
-            AESCryptoDelegateConfig expectedConfig = new AESCryptoDelegateConfig()
+            AesCryptoDelegateConfig expectedConfig = new AesCryptoDelegateConfig()
             {
                 KeySize = 256,
                 IV = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF")),
@@ -48,9 +48,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             Assert.True(expectedConfig.IsDeepEqual(aesDelegate.AesConfig));
         }
@@ -58,9 +56,9 @@ namespace HealthGateway.CommonTests.Delegates
         [Fact]
         public void VerifyDefaultConfigurationBinding()
         {
-            AESCryptoDelegateConfig expectedConfig = new AESCryptoDelegateConfig()
+            AesCryptoDelegateConfig expectedConfig = new AesCryptoDelegateConfig()
             {
-                KeySize = AESCryptoDelegateConfig.DefaultKeySize,
+                KeySize = AesCryptoDelegateConfig.DefaultKeySize,
             };
 
             var myConfiguration = new Dictionary<string, string>
@@ -72,9 +70,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             Assert.True(expectedConfig.IsDeepEqual(aesDelegate.AesConfig));
         }
@@ -91,9 +87,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             string key = aesDelegate.GenerateKey();
             byte[] keyBytes = Convert.FromBase64String(key);
@@ -112,9 +106,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -136,9 +128,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -164,9 +154,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -202,9 +190,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
 
@@ -226,9 +212,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
             string iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF"));
@@ -258,9 +242,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            AESCryptoDelegate aesDelegate = new AESCryptoDelegate(
-                new Mock<ILogger<AESCryptoDelegate>>().Object,
-                configuration);
+            AesCryptoDelegate aesDelegate = new AesCryptoDelegate(configuration);
 
             string key = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEFGHIJKLMNOPQRSTUV"));
             string iv = Convert.ToBase64String(Encoding.ASCII.GetBytes("0123456789ABCDEF"));

@@ -29,12 +29,12 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Text.Json;
     using HealthGateway.Database.Models.Cacheable;
 
-    public class HMACHashDelegate_Test
+    public class HmacHashDelegate_Test
     {
         [Fact]
         public void VerifyConfigurationBinding()
         {
-            HMACHashDelegateConfig expectedConfig = new HMACHashDelegateConfig()
+            HmacHashDelegateConfig expectedConfig = new HmacHashDelegateConfig()
             {
                 PseudoRandomFunction = Microsoft.AspNetCore.Cryptography.KeyDerivation.KeyDerivationPrf.HMACSHA1,
                 Iterations = 100,
@@ -52,20 +52,18 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            HMACHashDelegate hashDelegate = new HMACHashDelegate(
-                new Mock<ILogger<HMACHashDelegate>>().Object,
-                configuration);
+            HmacHashDelegate hashDelegate = new HmacHashDelegate(configuration);
 
             Assert.True(expectedConfig.IsDeepEqual(hashDelegate.HashConfig));
         }
         [Fact]
         public void VerifyDefaultConfigurationBinding()
         {
-            HMACHashDelegateConfig expectedConfig = new HMACHashDelegateConfig()
+            HmacHashDelegateConfig expectedConfig = new HmacHashDelegateConfig()
             {
-                PseudoRandomFunction = HMACHashDelegateConfig.DefaultPseudoRandomFunction,
-                Iterations = HMACHashDelegateConfig.DefaultIterations,
-                SaltLength = HMACHashDelegateConfig.DefaultSaltLength,
+                PseudoRandomFunction = HmacHashDelegateConfig.DefaultPseudoRandomFunction,
+                Iterations = HmacHashDelegateConfig.DefaultIterations,
+                SaltLength = HmacHashDelegateConfig.DefaultSaltLength,
             };
 
             var myConfiguration = new Dictionary<string, string>
@@ -77,9 +75,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            HMACHashDelegate hashDelegate = new HMACHashDelegate(
-                new Mock<ILogger<HMACHashDelegate>>().Object,
-                configuration);
+            HmacHashDelegate hashDelegate = new HmacHashDelegate(configuration);
 
             Assert.True(expectedConfig.IsDeepEqual(hashDelegate.HashConfig));
         }
@@ -96,9 +92,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            HMACHashDelegate hashDelegate = new HMACHashDelegate(
-                new Mock<ILogger<HMACHashDelegate>>().Object,
-                configuration);
+            HmacHashDelegate hashDelegate = new HmacHashDelegate(configuration);
             IHash hash = hashDelegate.Hash("qwerty");
 
             Assert.True(hashDelegate.Compare("qwerty", hash));
@@ -110,7 +104,7 @@ namespace HealthGateway.CommonTests.Delegates
             string valueToHash = "qwerty";
             string salt = "/KzcYC/PC4c4ucgriabmhA==";
             string expectedValue = "s+QcBH+1K1kIPk2GnGMPMJFzBVA=";
-            IHash hash = HMACHashDelegate.HMACHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA1);
+            IHash hash = HmacHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA1);
 
             Assert.True(hash.Hash == expectedValue);
         }
@@ -121,7 +115,7 @@ namespace HealthGateway.CommonTests.Delegates
             string valueToHash = "qwerty";
             string salt = "GPQ/DRGs6RSYjOh1EE1CZwKNCqCP8Zhb4DAhczEQYpE=";
             string expectedValue = "eY+j2PXHewxRiVrz+ngCEfwHXqsmF151Y3M+xrL2HlM=";
-            IHash hash = HMACHashDelegate.HMACHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA256);
+            IHash hash = HmacHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA256);
 
             Assert.True(hash.Hash == expectedValue);
         }
@@ -132,7 +126,7 @@ namespace HealthGateway.CommonTests.Delegates
             string valueToHash = "qwerty";
             string salt = "/KzcYC/PC4c4ucgriabmhA==";
             string expectedValue = "EYxkddpZRM2KTR+fjT8G9jA2bYtjUMSrr8CfOgWyI2VXUYU3LrPPC2F9kVx7mRoGR0YaDEZppXXvkgCymDKWJQ==";
-            IHash hash = HMACHashDelegate.HMACHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA512);
+            IHash hash = HmacHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA512);
 
             Assert.True(hash.Hash == expectedValue);
         }
@@ -150,9 +144,7 @@ namespace HealthGateway.CommonTests.Delegates
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            HMACHashDelegate hashDelegate = new HMACHashDelegate(
-                new Mock<ILogger<HMACHashDelegate>>().Object,
-                configuration);
+            HmacHashDelegate hashDelegate = new HmacHashDelegate(configuration);
             IHash hash = hashDelegate.Hash(valueToHash);
 
             Assert.True(hashDelegate.Compare(valueToHash, hash));
