@@ -70,7 +70,7 @@ namespace HealthGateway.Common.Auditing
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
         {
             ClaimsIdentity? claimsIdentity = context.User.Identity as ClaimsIdentity;
-            Claim? hdidClaim = claimsIdentity?.Claims.Where(c => c.Type == "hdid").FirstOrDefault();
+            Claim? hdidClaim = claimsIdentity?.Claims.FirstOrDefault(c => c.Type == "hdid");
             string? hdid = hdidClaim?.Value;
 
             auditEvent.ApplicationType = GetApplicationType();
