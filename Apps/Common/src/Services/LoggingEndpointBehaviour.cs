@@ -27,7 +27,7 @@ namespace HealthGateway.Common.Services
     [ExcludeFromCodeCoverage]
     public class LoggingEndpointBehaviour : IEndpointBehavior
     {
-        private IClientMessageInspector messageInspector;
+        private readonly IClientMessageInspector messageInspector;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingEndpointBehaviour"/> class.

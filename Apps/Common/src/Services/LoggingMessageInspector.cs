@@ -27,7 +27,7 @@ namespace HealthGateway.Common.Services
     /// </summary>
     public class LoggingMessageInspector : IClientMessageInspector
     {
-        private ILogger<LoggingMessageInspector> logger;
+        private readonly ILogger<LoggingMessageInspector> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingMessageInspector"/> class.

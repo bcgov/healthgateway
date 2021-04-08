@@ -40,7 +40,6 @@ namespace HealthGateway.Common.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration configuration;
         private readonly NotificationSettingsConfig nsConfig;
 
         /// <summary>
@@ -56,9 +55,8 @@ namespace HealthGateway.Common.Delegates
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.configuration = configuration;
             this.nsConfig = new NotificationSettingsConfig();
-            this.configuration.Bind(NotificationSettingsConfigSectionKey, this.nsConfig);
+            configuration.Bind(NotificationSettingsConfigSectionKey, this.nsConfig);
         }
 
         /// <inheritdoc/>
