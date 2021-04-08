@@ -37,11 +37,19 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
                 laboratoryService
                     .getOrders(params.hdid)
                     .then((result) => {
-                        context.commit(
-                            "setLaboratoryOrders",
-                            result.resourcePayload
-                        );
-                        resolve(result);
+                        if (result.resultStatus === ResultType.Success) {
+                            context.commit(
+                                "setLaboratoryOrders",
+                                result.resourcePayload
+                            );
+                            resolve(result);
+                        } else {
+                            context.commit(
+                                "laboratoryError",
+                                result.resultError
+                            );
+                            reject(result.resultError);
+                        }
                     })
                     .catch((error) => {
                         logger.error(`ERROR: ${JSON.stringify(error)}`);
