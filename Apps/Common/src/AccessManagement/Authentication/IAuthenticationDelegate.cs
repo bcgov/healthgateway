@@ -31,15 +31,15 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// </summary>
         /// <param name="tokenUri">Uri to request the the token from.</param>
         /// <param name="tokenRequest">Token request configuration.</param>
-        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
-        JWTModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
+        /// <returns>An instance fo the <see cref="JwtModel"/> class.</returns>
+        JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
 
         /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.
         /// </summary>
         /// <param name="tokenUri">Uri to request the the token from.</param>
         /// <param name="tokenRequest">Token request configuration.</param>
-        /// <returns>An instance fo the <see cref="JWTModel"/> class.</returns>
-        JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
+        /// <returns>An instance fo the <see cref="JwtModel"/> class.</returns>
+        JwtModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest);
     }
 }

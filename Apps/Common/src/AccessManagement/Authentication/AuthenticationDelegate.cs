@@ -48,24 +48,24 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JWTModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        public JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             this.logger.LogDebug($"Authenticating Service... {tokenRequest.ClientId}");
             Task<IAuthModel> authenticating = this.ClientCredentialsGrant(tokenUri, tokenRequest);
 
-            JWTModel jwtModel = (authenticating.Result as JWTModel) !;
+            JwtModel jwtModel = (authenticating.Result as JwtModel) !;
             this.logger.LogDebug($"Finished authenticating Service. {tokenRequest.ClientId}");
 
             return jwtModel;
         }
 
         /// <inheritdoc/>
-        public JWTModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        public JwtModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
             this.logger.LogDebug($"Authenticating Direct Grant as User: {tokenRequest.Username}");
             Task<IAuthModel> authenticating = this.ResourceOwnerPasswordGrant(tokenUri, tokenRequest);
 
-            JWTModel jwtModel = (authenticating.Result as JWTModel) !;
+            JwtModel jwtModel = (authenticating.Result as JwtModel) !;
             this.logger.LogDebug($"Finished authenticating User: {tokenRequest.Username}");
 
             return jwtModel;
@@ -73,7 +73,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
         private async Task<IAuthModel> ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
-            JWTModel authModel = new ();
+            JwtModel authModel = new ();
             try
             {
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -94,7 +94,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse) !;
+                authModel = JsonSerializer.Deserialize<JwtModel>(jwtTokenResponse) !;
             }
             catch (HttpRequestException e)
             {
@@ -106,7 +106,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
 
         private async Task<IAuthModel> ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
         {
-            JWTModel authModel = new ();
+            JwtModel authModel = new ();
             try
             {
                 using HttpClient client = this.httpClientService.CreateDefaultHttpClient();
@@ -131,7 +131,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 string jwtTokenResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 this.logger.LogTrace($"JWT Token response: {jwtTokenResponse}");
                 response.EnsureSuccessStatusCode();
-                authModel = JsonSerializer.Deserialize<JWTModel>(jwtTokenResponse) !;
+                authModel = JsonSerializer.Deserialize<JwtModel>(jwtTokenResponse) !;
             }
             catch (HttpRequestException e)
             {
