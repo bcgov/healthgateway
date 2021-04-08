@@ -1,14 +1,14 @@
 {
-  "resourcePayload": {
-    "loadState": {
-      "refreshInProgress": true
+    "resourcePayload": {
+        "loadState": {
+            "refreshInProgress": true
+        },
+        "immunizations": [],
+        "recommendations": []
     },
-    "immunizations": [],
-    "recommendations": []
-  },
-  "totalResultCount": 0,
-  "pageIndex": 0,
-  "pageSize": 25,
-  "resultStatus": 1,
-  "resultError": null
+    "totalResultCount": 0,
+    "pageIndex": 0,
+    "pageSize": 25,
+    "resultStatus": 1,
+    "resultError": null
 }

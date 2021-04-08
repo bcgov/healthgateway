@@ -1,14 +1,14 @@
-version: '3.5'
+version: "3.5"
 services:
   keycloak:
     container_name: keycloak
     image: jboss/keycloak
     ports:
-     - '8080:8080'
+      - "8080:8080"
     env_file:
       - ./keycloak.env
     environment:
-     - TAG=1 #Placeholder to keep environment section
+      - TAG=1 #Placeholder to keep environment section
     depends_on:
       - keycloakdb
     networks:
@@ -20,7 +20,7 @@ services:
     container_name: keycloakdb
     image: postgres:latest
     ports:
-      - '5433:5432' #Expose keycloak ports to the workstation
+      - "5433:5432" #Expose keycloak ports to the workstation
     env_file:
       - ./postgres.env
     environment:
@@ -33,7 +33,7 @@ services:
       - ./pgdata:/var/lib/postgresql/data
 
 networks:
-   web:
-     name: web
-   keycloakdb:
-     name: keycloakdb
+  web:
+    name: web
+  keycloakdb:
+    name: keycloakdb

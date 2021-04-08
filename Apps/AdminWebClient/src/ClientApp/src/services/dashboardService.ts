@@ -15,15 +15,14 @@ export class DashboardService implements IDashboardService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<{ [key: string]: number }>(
-                    `${
-                        this.BASE_URI
-                    }/RegisteredCount?timeOffset=${new Date().getTimezoneOffset() *
-                        -1}`
+                    `${this.BASE_URI}/RegisteredCount?timeOffset=${
+                        new Date().getTimezoneOffset() * -1
+                    }`
                 )
-                .then(requestResult => {
+                .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });
@@ -34,15 +33,14 @@ export class DashboardService implements IDashboardService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<{ [key: string]: number }>(
-                    `${
-                        this.BASE_URI
-                    }/LoggedInCount?timeOffset=${new Date().getTimezoneOffset() *
-                        -1}`
+                    `${this.BASE_URI}/LoggedInCount?timeOffset=${
+                        new Date().getTimezoneOffset() * -1
+                    }`
                 )
-                .then(requestResult => {
+                .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });
@@ -53,15 +51,14 @@ export class DashboardService implements IDashboardService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<{ [key: string]: number }>(
-                    `${
-                        this.BASE_URI
-                    }/DependentCount?timeOffset=${new Date().getTimezoneOffset() *
-                        -1}`
+                    `${this.BASE_URI}/DependentCount?timeOffset=${
+                        new Date().getTimezoneOffset() * -1
+                    }`
                 )
-                .then(requestResult => {
+                .then((requestResult) => {
                     resolve(requestResult);
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });

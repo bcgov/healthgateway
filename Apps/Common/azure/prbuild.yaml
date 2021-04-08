@@ -1,17 +1,17 @@
 name: PR$(Rev:.r) #Build number
 
 pr:
-    branches:
-        include:
-        - dev
-    paths:
-        include:
-        - Apps/Common
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/Common
 
 trigger: none
-        
+
 pool:
-    name: "HealthGateway"
+  name: "HealthGateway"
 
 extends:
   template: /Build/hg.yaml

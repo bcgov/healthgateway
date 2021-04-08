@@ -1,13 +1,13 @@
 pr: none
 trigger: none
 schedules:
-- cron: "0 0 * * *"
-  displayName: Daily midnight build
-  branches:
-    include:
-    - dev
+  - cron: "0 0 * * *"
+    displayName: Daily midnight build
+    branches:
+      include:
+        - dev
 pool:
-  name: 'HealthGateway'
+  name: "HealthGateway"
 
 jobs:
   - job: AnalyzeProjects
@@ -36,15 +36,14 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="b81603b305c3bb5e36a5fda4f09e4a010a0b7ec7"
           echo "$@" >&2
-        displayName: 'Database - Perform Static Code Analysis'
+        displayName: "Database - Perform Static Code Analysis"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/Database
-        enabled: 'true'
-
+        enabled: "true"
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Database Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'Database - On Fail'
+        displayName: "Database - On Fail"
         condition: failed()
 
       - script: |
@@ -70,16 +69,15 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="$(common.login)"
           echo "$@" >&2
-        displayName: 'Common - Perform Static Code Analysis'
+        displayName: "Common - Perform Static Code Analysis"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/Common
-        enabled: 'true'
+        enabled: "true"
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Common Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'Common - On Fail'
+        displayName: "Common - On Fail"
         condition: failed()
-
 
       - script: |
           set -e
@@ -105,15 +103,14 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="$(adminwebclient.login)"
           echo "$@" >&2
-        displayName: 'AdminWebClient - Perform Static Code Analysis'
+        displayName: "AdminWebClient - Perform Static Code Analysis"
         workingDirectory: $(Build.SourcesDirectory)/Apps/AdminWebClient
         continueOnError: true
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"AdminWebClient Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'AdminWebClient - On Fail'
+        displayName: "AdminWebClient - On Fail"
         condition: failed()
-
 
       - script: |
           set -e
@@ -137,16 +134,15 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="$(medication.login)"
           echo "$@" >&2
-        displayName: 'Medication - Perform Static Code Analysis'
+        displayName: "Medication - Perform Static Code Analysis"
         workingDirectory: $(Build.SourcesDirectory)/Apps/Medication
-        enabled: 'true'
+        enabled: "true"
         continueOnError: true
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Medication Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'Medication - On Fail'
+        displayName: "Medication - On Fail"
         condition: failed()
-
 
       - script: |
           set -e
@@ -170,16 +166,15 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="$(encounter.login)"
           echo "$@" >&2
-        displayName: 'Encounter - Perform Static Code Analysis'
+        displayName: "Encounter - Perform Static Code Analysis"
         workingDirectory: $(Build.SourcesDirectory)/Apps/Encounter
-        enabled: 'true'
+        enabled: "true"
         continueOnError: true
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Encounter Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'Encounter - On Fail'
+        displayName: "Encounter - On Fail"
         condition: failed()
-
 
       - script: |
           set -e
@@ -204,16 +199,15 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="$(patient.login)"
           echo "$@" >&2
-        displayName: 'Patient - Perform Static Code Analysis'
+        displayName: "Patient - Perform Static Code Analysis"
         workingDirectory: $(Build.SourcesDirectory)/Apps/Patient
-        enabled: 'true'
+        enabled: "true"
         continueOnError: true
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Patient Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'Patient - On Fail'
+        displayName: "Patient - On Fail"
         condition: failed()
-
 
       - script: |
           set -e
@@ -238,15 +232,14 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="$(immunization.login)"
           echo "$@" >&2
-        displayName: 'Immunization - Perform Static Code Analysis'
+        displayName: "Immunization - Perform Static Code Analysis"
         workingDirectory: $(Build.SourcesDirectory)/Apps/Immunization
         continueOnError: true
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Immunization Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'Immunization - On Fail'
+        displayName: "Immunization - On Fail"
         condition: failed()
-
 
       - script: |
           set -e
@@ -271,15 +264,14 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="$(laboratory.login)"
           echo "$@" >&2
-        displayName: 'Laboratory - Perform Static Code Analysis'
+        displayName: "Laboratory - Perform Static Code Analysis"
         workingDirectory: $(Build.SourcesDirectory)/Apps/Laboratory
         continueOnError: true
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"Laboratory Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'Laboratory - On Fail'
+        displayName: "Laboratory - On Fail"
         condition: failed()
-
 
       - script: |
           set -e
@@ -306,11 +298,11 @@ jobs:
           dotnet build    
           dotnet sonarscanner end /d:sonar.login="$(webclient.login)"
           echo "$@" >&2
-        displayName: 'WebClient - Perform Static Code Analysis'
+        displayName: "WebClient - Perform Static Code Analysis"
         workingDirectory: $(Build.SourcesDirectory)/Apps/WebClient
         continueOnError: true
 
       - script: |
           curl '-X' POST '-H' 'Content-Type: application/json' '--data' '{"icon_emoji":":cloud_lightning:","text":"WebClient Analysis Failed."}' https://chat.pathfinder.gov.bc.ca/hooks/WEHBAtxe6ufWYj2FR/2MMMbS9btPZxtrbgPckiuCqqLzsnEuuWmozKjtY8fXrWHjoa
-        displayName: 'WebClient - On Fail'
-        condition: failed()        
+        displayName: "WebClient - On Fail"
+        condition: failed()

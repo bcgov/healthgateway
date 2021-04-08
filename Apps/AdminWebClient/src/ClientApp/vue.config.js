@@ -7,10 +7,10 @@ module.exports = {
     devServer: {
         overlay: {
             warnings: true,
-            errors: true
-        }
+            errors: true,
+        },
     },
-    chainWebpack: config => {
+    chainWebpack: (config) => {
         config.plugins.delete("split-manifest").delete("inline-manifest");
         config.resolve.symlinks(false);
 
@@ -24,9 +24,9 @@ module.exports = {
          * Configure preload to load all chunks
          * NOTE: use `allChunks` instead of `all` (deprecated)
          */
-        config.plugin("preload").tap(options => {
+        config.plugin("preload").tap((options) => {
             options[0].include = "allChunks";
             return options;
         });
-    }
+    },
 };

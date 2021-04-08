@@ -1,15 +1,15 @@
 name: PR$(Rev:.r) #Build number
 
 pr:
-    branches:
-        include:
-        - dev
-    paths:
-        include:
-        - Apps/JobScheduler
-        - Apps/DBMaintainer
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Apps/JobScheduler
+      - Apps/DBMaintainer
 
-trigger: none  
+trigger: none
 
 extends:
   template: /Build/hg.yaml

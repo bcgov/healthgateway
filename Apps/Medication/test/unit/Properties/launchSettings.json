@@ -1,16 +1,16 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true
-  },
-  "profiles": {
-    "MedicationTests": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://0.0.0.0:5000"
+    "iisSettings": {
+        "windowsAuthentication": false,
+        "anonymousAuthentication": true
+    },
+    "profiles": {
+        "MedicationTests": {
+            "commandName": "Project",
+            "launchBrowser": true,
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "applicationUrl": "http://0.0.0.0:5000"
+        }
     }
-  }
 }
