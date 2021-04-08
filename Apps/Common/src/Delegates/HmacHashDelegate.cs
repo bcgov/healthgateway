@@ -71,7 +71,7 @@ namespace HealthGateway.Common.Delegates
                 // The key is not null, so we can generate a hash
                 // Calculate the length in bytes of the hash given the function size
                 int hashLength;
-                switch(prf) 
+                switch (prf)
                 {
                     case KeyDerivationPrf.HMACSHA1:
                         hashLength = 20;
