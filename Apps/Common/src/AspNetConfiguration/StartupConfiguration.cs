@@ -335,7 +335,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureOpenIdConnectServices(IServiceCollection services)
         {
             string basePath = this.GetAppBasePath();
-
+            bool isDev = this.environment.IsDevelopment();
             services.AddAuthentication(auth =>
                 {
                     auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -349,22 +349,16 @@ namespace HealthGateway.Common.AspNetConfiguration
                     options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
                     options.SlidingExpiration = true;
                     options.Cookie.HttpOnly = true;
-                    if (this.environment.IsDevelopment())
-                    {
-                        // Allows http://localhost to work on Chromium and Edge.
-                        options.Cookie.SameSite = SameSiteMode.Unspecified;
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                    }
+                    // Allows http://localhost to work on Chromium and Edge.
+                    options.Cookie.SameSite = isDev ? SameSiteMode.Unspecified : options.Cookie.SameSite;
+                    options.Cookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : options.Cookie.SecurePolicy;
                 })
                 .AddOpenIdConnect(options =>
                 {
-                    if (this.environment.IsDevelopment())
-                    {
-                        // Allows http://localhost to work on Chromium and Edge.
-                        options.ProtocolValidator.RequireNonce = false;
-                        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                        options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
-                    }
+                    // Allows http://localhost to work on Chromium and Edge.
+                    options.ProtocolValidator.RequireNonce = isDev ? false : options.ProtocolValidator.RequireNonce;
+                    options.CorrelationCookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : options.CorrelationCookie.SecurePolicy;
+                    options.CorrelationCookie.SameSite = isDev ? SameSiteMode.Unspecified : options.CorrelationCookie.SameSite;
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -387,14 +381,12 @@ namespace HealthGateway.Common.AspNetConfiguration
                             JwtSecurityToken accessToken = ctx.SecurityToken;
                             if (accessToken != null)
                             {
-                                if (ctx.Principal?.Identity is ClaimsIdentity claimsIdentity)
-                                {
-                                    claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
-                                }
-                                else
+                                if (ctx.Principal?.Identity is not ClaimsIdentity claimsIdentity)
                                 {
                                     throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
                                 }
+
+                                claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
                             }
 
                             return Task.CompletedTask;
