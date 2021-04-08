@@ -46,6 +46,7 @@ namespace HealthGateway.Common.Services
         /// <param name="bindingParameters">The binding parameter collection.</param>
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -70,6 +71,7 @@ namespace HealthGateway.Common.Services
         /// <param name="endpointDispatcher">The endpoint dispatcher.</param>
         public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
         {
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -78,6 +80,7 @@ namespace HealthGateway.Common.Services
         /// <param name="endpoint">The service endpoint.</param>
         public void Validate(ServiceEndpoint endpoint)
         {
+            throw new NotSupportedException();
         }
     }
 }
