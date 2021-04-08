@@ -78,7 +78,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, mockHttpClientService.Object, this.configuration);
 
-            HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel()
+            HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel()
             {
                 AccessToken = "Bearer Token",
             };
@@ -111,7 +111,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, mockHttpClientService.Object, this.configuration);
 
-            HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel()
+            HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel()
             {
                 AccessToken = "Bearer Token",
             };
