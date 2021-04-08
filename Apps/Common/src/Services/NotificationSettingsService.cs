@@ -121,7 +121,7 @@ namespace HealthGateway.Common.Services
                 // Create the SMS validation code if the SMS is not verified and the caller didn't set it.
                 using (RandomNumberGenerator generator = RandomNumberGenerator.Create())
                 {
-                    byte[] data = new byte[16];
+                    byte[] data = new byte[4];
                     generator.GetBytes(data);
                     notificationSettings.SMSVerificationCode =
                         BitConverter
