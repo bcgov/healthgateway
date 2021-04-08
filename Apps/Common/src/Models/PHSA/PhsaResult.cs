@@ -22,13 +22,13 @@ namespace HealthGateway.Common.Models.PHSA
     /// Representation of the result sent by PHSA.
     /// </summary>
     /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class PhsaResult<T>
     {
         /// <summary>
         /// Gets or sets the LoadState.
         /// </summary>
         [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
+        public PhsaLoadState LoadState { get; set; } = new PhsaLoadState();
 
         /// <summary>
         /// Gets or sets the result section.

@@ -46,12 +46,12 @@ namespace HealthGateway.Immunization.Test.Service
         public void ValidateImmunization()
         {
             var mockDelegate = new Mock<IImmunizationDelegate>();
-            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
+            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new RequestResult<PhsaResult<ImmunizationResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new PHSAResult<ImmunizationResponse>()
+                ResourcePayload = new PhsaResult<ImmunizationResponse>()
                 {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, },
+                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
                     Result = new ImmunizationResponse()
                     {
                         ImmunizationViews = new List<ImmunizationViewResponse>() {
@@ -98,12 +98,12 @@ namespace HealthGateway.Immunization.Test.Service
             string antigenName = "HPV-9";
 
             var mockDelegate = new Mock<IImmunizationDelegate>();
-            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
+            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new RequestResult<PhsaResult<ImmunizationResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new PHSAResult<ImmunizationResponse>()
+                ResourcePayload = new PhsaResult<ImmunizationResponse>()
                 {
-                    LoadState = new PHSALoadState() { RefreshInProgress = false, },
+                    LoadState = new PhsaLoadState() { RefreshInProgress = false, },
                     Result = new ImmunizationResponse()
                     {
                         Recommendations = new List<ImmunizationRecommendationResponse>() {
@@ -191,7 +191,7 @@ namespace HealthGateway.Immunization.Test.Service
         {
 
             var mockDelegate = new Mock<IImmunizationDelegate>();
-            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationResponse>>()
+            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new RequestResult<PhsaResult<ImmunizationResponse>>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
                 ResultError = new RequestResultError()

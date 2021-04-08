@@ -31,7 +31,7 @@ namespace HealthGateway.Immunization.Delegates
         /// </summary>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0);
+        /// <returns>The PhsaResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
+        Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0);
     }
 }

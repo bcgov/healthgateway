@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Models.PHSA
     /// <summary>
     /// Representation of the load state sent by PHSA.
     /// </summary>
-    public class PHSALoadState
+    public class PhsaLoadState
     {
         /// <summary>
         /// Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
