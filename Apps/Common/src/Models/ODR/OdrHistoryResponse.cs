@@ -19,9 +19,9 @@ namespace HealthGateway.Common.Models.ODR
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The ODR History Request/Response model.
+    /// The ODR Medication Response.
     /// </summary>
-    public class ODRHistoryWrapper
+    public class OdrHistoryResponse
     {
         /// <summary>
         /// Gets or sets the Id of the request.
@@ -30,15 +30,15 @@ namespace HealthGateway.Common.Models.ODR
         public Guid Id { get; set; } = default;
 
         /// <summary>
-        /// Gets or sets the HDID of the requestor.
+        /// Gets or sets the total records available from the server for the query excluding page limits.
         /// </summary>
-        [JsonPropertyName("hdid")]
-        public string RequestorHDID { get; set; } = string.Empty;
+        [JsonPropertyName("totalRecords")]
+        public int TotalRecords { get; set; }
 
         /// <summary>
-        /// Gets or sets the IP of the requestor.
+        /// Gets or sets the Total Pages available.
         /// </summary>
-        [JsonPropertyName("requestingIP")]
-        public string RequestorIP { get; set; } = string.Empty;
+        [JsonPropertyName("totalPages")]
+        public int Pages { get; set; }
     }
 }

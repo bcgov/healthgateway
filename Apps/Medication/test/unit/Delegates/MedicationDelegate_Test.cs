@@ -61,7 +61,7 @@ namespace HealthGateway.Medication.Delegates.Test
             string PHN = "9735361219";
             string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string IP = "10.0.0.1";
-            ODRHistoryQuery query = new ODRHistoryQuery()
+            OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
@@ -133,9 +133,9 @@ namespace HealthGateway.Medication.Delegates.Test
             string meedicationHistoryjson = JsonSerializer.Serialize(medicationHistory);
 
             var handlerMock = new Mock<HttpMessageHandler>();
-            ODRConfig odrConfig = new ODRConfig();
-            string ODRConfigSectionKey = "ODR";
-            this.configuration.Bind(ODRConfigSectionKey, odrConfig);
+            OdrConfig odrConfig = new OdrConfig();
+            string OdrConfigSectionKey = "ODR";
+            this.configuration.Bind(OdrConfigSectionKey, odrConfig);
             Uri baseURI = new Uri(odrConfig.BaseEndpoint);
             Uri patientProfileEndpoint = new Uri(baseURI, odrConfig.PatientProfileEndpoint);
             Uri protectiveWordEndpoint = new Uri(baseURI, odrConfig.ProtectiveWordEndpoint);
@@ -169,7 +169,7 @@ namespace HealthGateway.Medication.Delegates.Test
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = "",
             };
@@ -199,7 +199,7 @@ namespace HealthGateway.Medication.Delegates.Test
             string PHN = "9735361219";
             string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string IP = "10.0.0.1";
-            ODRHistoryQuery query = new ODRHistoryQuery()
+            OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
@@ -242,9 +242,9 @@ namespace HealthGateway.Medication.Delegates.Test
             string meedicationHistoryjson = JsonSerializer.Serialize(medicationHistory);
 
             var handlerMock = new Mock<HttpMessageHandler>();
-            ODRConfig odrConfig = new ODRConfig();
-            string ODRConfigSectionKey = "ODR";
-            this.configuration.Bind(ODRConfigSectionKey, odrConfig);
+            OdrConfig odrConfig = new OdrConfig();
+            string OdrConfigSectionKey = "ODR";
+            this.configuration.Bind(OdrConfigSectionKey, odrConfig);
             Uri baseURI = new Uri(odrConfig.BaseEndpoint);
             Uri patientProfileEndpoint = new Uri(baseURI, odrConfig.PatientProfileEndpoint);
             Uri protectiveWordEndpoint = new Uri(baseURI, odrConfig.ProtectiveWordEndpoint);
@@ -277,7 +277,7 @@ namespace HealthGateway.Medication.Delegates.Test
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = "",
             };
@@ -311,7 +311,7 @@ namespace HealthGateway.Medication.Delegates.Test
             string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string IP = "10.0.0.1";
             string protectiveWordStr = "ProtectiveWord";
-            ODRHistoryQuery query = new ODRHistoryQuery()
+            OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
@@ -332,9 +332,9 @@ namespace HealthGateway.Medication.Delegates.Test
             string protectiveWordjson = JsonSerializer.Serialize(protectiveWord);
 
             var handlerMock = new Mock<HttpMessageHandler>();
-            ODRConfig odrConfig = new ODRConfig();
-            string ODRConfigSectionKey = "ODR";
-            this.configuration.Bind(ODRConfigSectionKey, odrConfig);
+            OdrConfig odrConfig = new OdrConfig();
+            string OdrConfigSectionKey = "ODR";
+            this.configuration.Bind(OdrConfigSectionKey, odrConfig);
             Uri baseURI = new Uri(odrConfig.BaseEndpoint);
             Uri protectiveWordEndpoint = new Uri(baseURI, odrConfig.ProtectiveWordEndpoint);
 
@@ -354,7 +354,7 @@ namespace HealthGateway.Medication.Delegates.Test
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = $"{protectiveWord}-HASH"
             };
@@ -385,7 +385,7 @@ namespace HealthGateway.Medication.Delegates.Test
             string PHN = "9735361219";
             string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string IP = "10.0.0.1";
-            ODRHistoryQuery query = new ODRHistoryQuery()
+            OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
@@ -406,9 +406,9 @@ namespace HealthGateway.Medication.Delegates.Test
             string protectiveWordjson = JsonSerializer.Serialize(protectiveWord);
 
             var handlerMock = new Mock<HttpMessageHandler>();
-            ODRConfig odrConfig = new ODRConfig();
-            string ODRConfigSectionKey = "ODR";
-            this.configuration.Bind(ODRConfigSectionKey, odrConfig);
+            OdrConfig odrConfig = new OdrConfig();
+            string OdrConfigSectionKey = "ODR";
+            this.configuration.Bind(OdrConfigSectionKey, odrConfig);
             Uri baseURI = new Uri(odrConfig.BaseEndpoint);
             Uri patientProfileEndpoint = new Uri(baseURI, odrConfig.PatientProfileEndpoint);
             Uri protectiveWordEndpoint = new Uri(baseURI, odrConfig.ProtectiveWordEndpoint);
@@ -442,7 +442,7 @@ namespace HealthGateway.Medication.Delegates.Test
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = "",
             };
@@ -471,7 +471,7 @@ namespace HealthGateway.Medication.Delegates.Test
             string PHN = "9735361219";
             string HDID = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string IP = "10.0.0.1";
-            ODRHistoryQuery query = new ODRHistoryQuery()
+            OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
@@ -492,9 +492,9 @@ namespace HealthGateway.Medication.Delegates.Test
             string protectiveWordjson = JsonSerializer.Serialize(protectiveWord);
 
             var handlerMock = new Mock<HttpMessageHandler>();
-            ODRConfig odrConfig = new ODRConfig();
-            string ODRConfigSectionKey = "ODR";
-            this.configuration.Bind(ODRConfigSectionKey, odrConfig);
+            OdrConfig odrConfig = new OdrConfig();
+            string OdrConfigSectionKey = "ODR";
+            this.configuration.Bind(OdrConfigSectionKey, odrConfig);
             Uri baseURI = new Uri(odrConfig.BaseEndpoint);
             Uri patientProfileEndpoint = new Uri(baseURI, odrConfig.PatientProfileEndpoint);
             Uri protectiveWordEndpoint = new Uri(baseURI, odrConfig.ProtectiveWordEndpoint);
@@ -524,7 +524,7 @@ namespace HealthGateway.Medication.Delegates.Test
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = "",
             };
@@ -551,7 +551,7 @@ namespace HealthGateway.Medication.Delegates.Test
         public void ValidateGetProtectiveWordHttpError()
         {
             string PHN = "9735361219";
-            ODRHistoryQuery query = new ODRHistoryQuery()
+            OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
@@ -560,9 +560,9 @@ namespace HealthGateway.Medication.Delegates.Test
 
 
             var handlerMock = new Mock<HttpMessageHandler>();
-            ODRConfig odrConfig = new ODRConfig();
-            string ODRConfigSectionKey = "ODR";
-            this.configuration.Bind(ODRConfigSectionKey, odrConfig);
+            OdrConfig odrConfig = new OdrConfig();
+            string OdrConfigSectionKey = "ODR";
+            this.configuration.Bind(OdrConfigSectionKey, odrConfig);
             Uri baseURI = new Uri(odrConfig.BaseEndpoint);
             Uri protectiveWordEndpoint = new Uri(baseURI, odrConfig.ProtectiveWordEndpoint);
 
@@ -583,7 +583,7 @@ namespace HealthGateway.Medication.Delegates.Test
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = "",
             };
@@ -610,7 +610,7 @@ namespace HealthGateway.Medication.Delegates.Test
         public void ValidateGetProtectiveWordJSONParseError()
         {
             string PHN = "9735361219";
-            ODRHistoryQuery query = new ODRHistoryQuery()
+            OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
@@ -619,9 +619,9 @@ namespace HealthGateway.Medication.Delegates.Test
 
 
             var handlerMock = new Mock<HttpMessageHandler>();
-            ODRConfig odrConfig = new ODRConfig();
-            string ODRConfigSectionKey = "ODR";
-            this.configuration.Bind(ODRConfigSectionKey, odrConfig);
+            OdrConfig odrConfig = new OdrConfig();
+            string OdrConfigSectionKey = "ODR";
+            this.configuration.Bind(OdrConfigSectionKey, odrConfig);
             Uri baseURI = new Uri(odrConfig.BaseEndpoint);
             Uri protectiveWordEndpoint = new Uri(baseURI, odrConfig.ProtectiveWordEndpoint);
 
@@ -642,7 +642,7 @@ namespace HealthGateway.Medication.Delegates.Test
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = "",
             };
@@ -669,7 +669,7 @@ namespace HealthGateway.Medication.Delegates.Test
         public void ValidateGetProtectiveWordParseException()
         {
             string PHN = "9735361219";
-            ODRHistoryQuery query = new ODRHistoryQuery()
+            OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 StartDate = System.DateTime.Parse("1990/01/01"),
                 EndDate = System.DateTime.Now,
@@ -678,9 +678,9 @@ namespace HealthGateway.Medication.Delegates.Test
 
 
             var handlerMock = new Mock<HttpMessageHandler>();
-            ODRConfig odrConfig = new ODRConfig();
-            string ODRConfigSectionKey = "ODR";
-            this.configuration.Bind(ODRConfigSectionKey, odrConfig);
+            OdrConfig odrConfig = new OdrConfig();
+            string OdrConfigSectionKey = "ODR";
+            this.configuration.Bind(OdrConfigSectionKey, odrConfig);
             Uri baseURI = new Uri(odrConfig.BaseEndpoint);
             Uri protectiveWordEndpoint = new Uri(baseURI, odrConfig.ProtectiveWordEndpoint);
 
@@ -701,7 +701,7 @@ namespace HealthGateway.Medication.Delegates.Test
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HMACHash()
+            IHash hash = new HmacHash()
             {
                 Hash = "",
             };

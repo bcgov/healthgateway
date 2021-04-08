@@ -74,7 +74,7 @@ namespace HealthGateway.Encounter.Services
                 if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
                 {
                     PatientModel patient = patientResult.ResourcePayload;
-                    ODRHistoryQuery mspHistoryQuery = new ODRHistoryQuery()
+                    OdrHistoryQuery mspHistoryQuery = new OdrHistoryQuery()
                     {
                         StartDate = patient.Birthdate,
                         EndDate = System.DateTime.Now,

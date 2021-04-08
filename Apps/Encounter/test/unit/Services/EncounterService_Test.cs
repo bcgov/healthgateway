@@ -94,7 +94,7 @@ namespace HealthGateway.Encounter.Test.Service
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
-            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
             {
@@ -159,7 +159,7 @@ namespace HealthGateway.Encounter.Test.Service
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
-            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
             {
@@ -208,7 +208,7 @@ namespace HealthGateway.Encounter.Test.Service
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
-            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             RequestResult<PatientModel> patientResult = new RequestResult<PatientModel>()
             {
