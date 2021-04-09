@@ -24,6 +24,23 @@ namespace HealthGateway.Medication.Models.Salesforce
     public class ResponseWrapper
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseWrapper"/> class.
+        /// </summary>
+        public ResponseWrapper()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseWrapper"/> class.
+        /// </summary>
+        /// <param name="items">The list of items to initialize.</param>
+        [JsonConstructor]
+        public ResponseWrapper(IList<SpecialAuthorityRequest> items)
+        {
+            this.Items = items;
+        }
+
+        /// <summary>
         /// Gets the patientIdentifier.
         /// </summary>
         [JsonPropertyName("items")]

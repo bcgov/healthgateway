@@ -31,6 +31,7 @@ namespace HealthGateway.Immunization.Models
         /// Initializes a new instance of the <see cref="ImmunizationRecommendation"/> class.
         /// </summary>
         /// <param name="targetDiseases">The list of target diseases.</param>
+        [JsonConstructor]
         public ImmunizationRecommendation(IList<TargetDisease> targetDiseases)
         {
             this.TargetDiseases = targetDiseases;

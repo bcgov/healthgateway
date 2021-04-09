@@ -36,6 +36,7 @@ namespace HealthGateway.Immunization.Models
         /// <param name="loadState">The load state model.</param>
         /// <param name="immunizations">The list of immunizations.</param>
         /// <param name="recommendations">The list of recommendations.</param>
+        [JsonConstructor]
         public ImmunizationResult(LoadStateModel loadState, IList<ImmunizationEvent> immunizations, IList<ImmunizationRecommendation> recommendations)
         {
             this.LoadState = loadState;

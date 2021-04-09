@@ -17,7 +17,7 @@ namespace HealthGateway.WebClient.Models
 {
     using System;
     using System.Collections.Generic;
-
+    using System.Text.Json.Serialization;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -36,6 +36,7 @@ namespace HealthGateway.WebClient.Models
         /// Initializes a new instance of the <see cref="UserProfileModel"/> class.
         /// </summary>
         /// <param name="preferences">The dictionary of preferences.</param>
+        [JsonConstructor]
         public UserProfileModel(IDictionary<string, UserPreferenceModel> preferences)
         {
             this.Preferences = preferences;

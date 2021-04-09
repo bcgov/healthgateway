@@ -29,6 +29,7 @@ namespace HealthGateway.Immunization.Models.PHSA
         /// </summary>
         /// <param name="immunizationViews">The list of immunization view response.</param>
         /// <param name="recommendations">The list of immunization recommendation response.</param>
+        [JsonConstructor]
         public ImmunizationResponse(IList<ImmunizationViewResponse> immunizationViews, IList<ImmunizationRecommendationResponse> recommendations)
         {
             this.ImmunizationViews = immunizationViews;

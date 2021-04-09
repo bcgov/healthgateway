@@ -32,6 +32,16 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ImmunizationRecommendationResponse"/> class.
+        /// </summary>
+        /// <param name="recommendations">The initialized list of recommendations.</param>
+        [JsonConstructor]
+        public ImmunizationRecommendationResponse(IList<RecommendationResponse> recommendations)
+        {
+            this.Recommendations = recommendations;
+        }
+
+        /// <summary>
         /// Gets or sets the Dissease Eligible Date.
         /// </summary>
         [JsonPropertyName("forecastCreationDate")]
