@@ -7,6 +7,11 @@
     <RootNamespace>HealthGateway.DatabaseTests</RootNamespace>
     <nowarn>SA0001</nowarn>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>SA0001; CA1707; SA1600</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />
   </ItemGroup>
@@ -43,5 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Context\" />
+    <Folder Include="Delegates\" />
   </ItemGroup>
 </Project>
