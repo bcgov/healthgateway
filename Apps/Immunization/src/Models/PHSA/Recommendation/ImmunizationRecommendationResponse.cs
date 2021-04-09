@@ -25,6 +25,13 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
     public class ImmunizationRecommendationResponse
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ImmunizationRecommendationResponse"/> class.
+        /// </summary>
+        public ImmunizationRecommendationResponse()
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the Dissease Eligible Date.
         /// </summary>
         [JsonPropertyName("forecastCreationDate")]
@@ -49,9 +56,9 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
         public string RecommendationSourceSystemId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the list of recommendations definition.
+        /// Gets the list of recommendations definition.
         /// </summary>
         [JsonPropertyName("recommendations")]
-        public IList<RecommendationResponse> Recommendations { get; set; } = new List<RecommendationResponse>();
+        public IList<RecommendationResponse> Recommendations { get; } = new List<RecommendationResponse>();
     }
 }

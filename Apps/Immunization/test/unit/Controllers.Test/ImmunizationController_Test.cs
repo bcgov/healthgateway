@@ -70,11 +70,10 @@ namespace HealthGateway.Immunization.Test.Controller
                     ImmunizationAgents = expectedAgents
                 }
             });
-            var expectedImmzResult = new ImmunizationResult()
-            {
-                Immunizations = expectedImmunizations,
-                LoadState = new LoadStateModel() { RefreshInProgress = false },
-            };
+            var expectedImmzResult = new ImmunizationResult(
+                new LoadStateModel() { RefreshInProgress = false },
+                expectedImmunizations,
+                new List<ImmunizationRecommendation>());
 
             RequestResult<ImmunizationResult> expectedRequestResult = new RequestResult<ImmunizationResult>()
             {

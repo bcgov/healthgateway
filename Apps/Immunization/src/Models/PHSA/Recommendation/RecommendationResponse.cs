@@ -24,10 +24,10 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
     public class RecommendationResponse
     {
         /// <summary>
-        /// Gets or sets the Date Criterion.
+        /// Gets the Date Criterion.
         /// </summary>
         [JsonPropertyName("dateCriterion")]
-        public IList<DateCriterion> DateCriterions { get; set; } = new List<DateCriterion>();
+        public IList<DateCriterion> DateCriterions { get; } = new List<DateCriterion>();
 
         /// <summary>
         /// Gets or sets the Forecast Status.

@@ -26,6 +26,6 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
         /// Gets or sets the Date Criterion Code text.
         /// </summary>
         [JsonPropertyName("text")]
-        public string text { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
     }
 }

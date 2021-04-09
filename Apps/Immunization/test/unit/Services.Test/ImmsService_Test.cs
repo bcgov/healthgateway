@@ -52,16 +52,14 @@ namespace HealthGateway.Immunization.Test.Service
                 ResourcePayload = new PhsaResult<ImmunizationResponse>()
                 {
                     LoadState = new PhsaLoadState() { RefreshInProgress = false, },
-                    Result = new ImmunizationResponse()
-                    {
-                        ImmunizationViews = new List<ImmunizationViewResponse>() {
+                    Result = new ImmunizationResponse(new List<ImmunizationViewResponse>() {
                         new ImmunizationViewResponse(){
                             Id = Guid.NewGuid(),
                             Name = "MockImmunization",
                             OccurrenceDateTime = DateTime.Now,
                             SourceSystemId = "MockSourceID"
                         }},
-                    },
+                        new List<ImmunizationRecommendationResponse>()),
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -70,11 +68,10 @@ namespace HealthGateway.Immunization.Test.Service
             RequestResult<ImmunizationResult> expectedResult = new RequestResult<ImmunizationResult>()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new ImmunizationResult()
-                {
-                    LoadState = LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload.LoadState),
-                    Immunizations = ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload.Result.ImmunizationViews),
-                },
+                ResourcePayload = new ImmunizationResult(
+                    LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload.LoadState),
+                    ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload.Result.ImmunizationViews),
+                    new List<ImmunizationRecommendation>()),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -97,6 +94,43 @@ namespace HealthGateway.Immunization.Test.Service
             string vaccineName = "Human Papillomavirus-HPV9 Vaccine";
             string antigenName = "HPV-9";
 
+            ImmunizationRecommendationResponse immzRecommendationResponse = new ImmunizationRecommendationResponse()
+            {
+                ForecastCreationDate = DateTime.Now,
+                RecommendationId = recomendationSetId,
+                RecommendationSourceSystem = "MockSourceSystem",
+                RecommendationSourceSystemId = "MockSourceID",
+            };
+
+            RecommendationResponse recommendationResponse = new RecommendationResponse();
+            recommendationResponse.ForecastStatus.ForecastStatusText = "Eligible";
+            recommendationResponse.TargetDisease.TargetDiseaseCodes.Add(new SystemCode()
+            {
+                Code = "240532009",
+                CommonType = "DiseaseCode",
+                Display = diseaseName,
+                System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code"
+            });
+            recommendationResponse.VaccineCode.VaccineCodeText = vaccineName;
+            recommendationResponse.VaccineCode.VaccineCodes.Add(new SystemCode()
+            {
+                Code = "BCYSCT_AN032",
+                CommonType = "AntiGenCode",
+                Display = antigenName,
+                System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code"
+            });
+
+            recommendationResponse.DateCriterions.Add(new DateCriterion()
+            {
+                DateCriterionCode = new DateCriterionCode()
+                {
+                    Text = "Forecast by Disease Eligible Date"
+                },
+                Value = diseaseEligibleDateString
+            });
+
+            immzRecommendationResponse.Recommendations.Add(recommendationResponse); 
+
             var mockDelegate = new Mock<IImmunizationDelegate>();
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new RequestResult<PhsaResult<ImmunizationResponse>>()
             {
@@ -104,51 +138,12 @@ namespace HealthGateway.Immunization.Test.Service
                 ResourcePayload = new PhsaResult<ImmunizationResponse>()
                 {
                     LoadState = new PhsaLoadState() { RefreshInProgress = false, },
-                    Result = new ImmunizationResponse()
-                    {
-                        Recommendations = new List<ImmunizationRecommendationResponse>() {
-                            new ImmunizationRecommendationResponse() {
-                                    ForecastCreationDate = DateTime.Now,
-                                    RecommendationId = recomendationSetId,
-                                    RecommendationSourceSystem = "MockSourceSystem",
-                                    RecommendationSourceSystemId = "MockSourceID",
-                                    Recommendations = new List<RecommendationResponse>() {
-                                        new RecommendationResponse() {
-                                            DateCriterions = new List<DateCriterion>() {
-                                                new DateCriterion() {
-                                                    DateCriterionCode = new DateCriterionCode() {
-                                                        text = "Forecast by Disease Eligible Date"
-                                                    },
-                                                    Value = diseaseEligibleDateString
-                                                }
-                                            },
-                                            ForecastStatus = new ForecastStatusModel() { ForecastStatusText = "Eligible" },
-                                            TargetDisease = new TargetDiseaseResponse() {
-                                                targetDiseaseCodes = new List<SystemCode>() {
-                                                    new SystemCode() {
-                                                        Code = "240532009",
-                                                        CommonType = "DiseaseCode",
-                                                        Display = diseaseName,
-                                                        System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-disease-code"
-                                                    }
-                                                }
-                                            },
-                                            VaccineCode = new VaccineCode(){
-                                                VaccineCodeText = vaccineName,
-                                                VaccineCodes = new List<SystemCode>() {
-                                                    new SystemCode() {
-                                                        Code = "BCYSCT_AN032",
-                                                        CommonType = "AntiGenCode",
-                                                        Display = antigenName,
-                                                        System = "https://ehealthbc.ca/NamingSystem/ca-bc-panorama-immunization-antigen-code"
-                                                    }
-                                                }
-                                            },
-                                        }
-                                    },
-                            }
-                        },
-                    },
+                    Result = new ImmunizationResponse(
+                        new List<ImmunizationViewResponse>(),
+                        new List<ImmunizationRecommendationResponse>()
+                        {
+                            immzRecommendationResponse
+                        }),
                 },
                 PageIndex = 0,
                 PageSize = 5,
@@ -157,11 +152,10 @@ namespace HealthGateway.Immunization.Test.Service
             RequestResult<ImmunizationResult> expectedResult = new RequestResult<ImmunizationResult>()
             {
                 ResultStatus = delegateResult.ResultStatus,
-                ResourcePayload = new ImmunizationResult()
-                {
-                    LoadState = LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload.LoadState),
-                    Recommendations = ImmunizationRecommendation.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations),
-                },
+                ResourcePayload = new ImmunizationResult(
+                    LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload.LoadState),
+                    new List<ImmunizationEvent>(),
+                    ImmunizationRecommendation.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations)),
                 PageIndex = delegateResult.PageIndex,
                 PageSize = delegateResult.PageSize,
                 TotalResultCount = delegateResult.TotalResultCount,
@@ -176,9 +170,9 @@ namespace HealthGateway.Immunization.Test.Service
             var recomendationResult = expectedResult.ResourcePayload.Recommendations[0];
             Assert.Equal(recomendationSetId, recomendationResult.RecommendationSetId);
             Assert.Equal(vaccineName, recomendationResult.Immunization.Name);
-            Assert.Equal(1, recomendationResult.Immunization.ImmunizationAgents.Count());
+            Assert.Collection(recomendationResult.Immunization.ImmunizationAgents,
+                item => Assert.Equal(antigenName, item.Name));
             Assert.Equal(antigenName, recomendationResult.Immunization.ImmunizationAgents.First().Name);
-            Assert.Equal(1, recomendationResult.TargetDiseases.Count());
             Assert.Equal(diseaseName, recomendationResult.TargetDiseases.First().Name);
             Assert.Equal(DateTime.Parse(diseaseEligibleDateString), recomendationResult.DisseaseEligibleDate);
             Assert.Null(recomendationResult.DiseaseDueDate);

@@ -79,7 +79,12 @@ namespace HealthGateway.Admin.Controllers
 
             this.logger.LogDebug("Redirecting to dashboard");
             string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
-            return new RedirectResult($"{basePath}/");
+            if (this.Url.IsLocalUrl(basePath))
+            {
+                return new RedirectResult($"{basePath}/");
+            }
+
+            return new RedirectResult("/");
         }
 
         /// <summary>

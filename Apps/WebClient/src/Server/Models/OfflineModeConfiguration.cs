@@ -42,8 +42,8 @@ namespace HealthGateway.WebClient.Models
         public string Message { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the list of IPs that can use the webclient during an outage.
+        /// Gets the list of IPs that can use the webclient during an outage.
         /// </summary>
-        public IList<string> Whitelist { get; set; } = new List<string>();
+        public IList<string> Whitelist { get; } = new List<string>();
     }
 }

@@ -28,10 +28,11 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
         /// </summary>
         [JsonPropertyName("vaccineCodeText")]
         public string VaccineCodeText { get; set; } = string.Empty;
+
         /// <summary>
-        /// Gets or sets the Vaccine codes.
+        /// Gets the Vaccine codes.
         /// </summary>
         [JsonPropertyName("vaccineCodes")]
-        public IList<SystemCode> VaccineCodes { get; set; } = new List<SystemCode>();
+        public IList<SystemCode> VaccineCodes { get; } = new List<SystemCode>();
     }
 }

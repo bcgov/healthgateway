@@ -17,6 +17,7 @@ namespace HealthGateway.Immunization.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Text.Json.Serialization;
     using HealthGateway.Immunization.Models.PHSA.Recommendation;
@@ -26,6 +27,15 @@ namespace HealthGateway.Immunization.Models
     /// </summary>
     public class ImmunizationRecommendation
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImmunizationRecommendation"/> class.
+        /// </summary>
+        /// <param name="targetDiseases">The list of target diseases.</param>
+        public ImmunizationRecommendation(IList<TargetDisease> targetDiseases)
+        {
+            this.TargetDiseases = targetDiseases;
+        }
+
         /// <summary>
         /// Gets or sets the Recommendation Set Id.
         /// </summary>
@@ -63,10 +73,10 @@ namespace HealthGateway.Immunization.Models
         public string Status { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Target Diseases.
+        /// Gets the Target Diseases.
         /// </summary>
         [JsonPropertyName("targetDiseases")]
-        public IList<TargetDisease> TargetDiseases { get; set; } = new List<TargetDisease>();
+        public IList<TargetDisease> TargetDiseases { get; } = new List<TargetDisease>();
 
         /// <summary>
         /// Gets or sets the Immunization definition.
@@ -103,20 +113,19 @@ namespace HealthGateway.Immunization.Models
         /// <returns>The newly created ImmunizationEvent object.</returns>
         private static ImmunizationRecommendation FromPHSAModel(string recomendationSetId, RecommendationResponse model)
         {
-            DateCriterion? disseaseEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.text == "Forecast by Disease Eligible Date");
-            DateCriterion? diseaseDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.text == "Forecast by Disease Due Date");
-            DateCriterion? agentEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.text == "Forecast by Agent Eligible Date");
-            DateCriterion? agentDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.text == "Forecast by Agent Eligible Date");
+            DateCriterion? disseaseEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Eligible Date");
+            DateCriterion? diseaseDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Due Date");
+            DateCriterion? agentEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Agent Eligible Date");
+            DateCriterion? agentDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Agent Eligible Date");
 
-            return new ImmunizationRecommendation()
+            return new ImmunizationRecommendation(TargetDisease.FromPHSAModelList(model.TargetDisease))
             {
                 RecommendationSetId = recomendationSetId,
-                DisseaseEligibleDate = disseaseEligible != null ? DateTime.Parse(disseaseEligible.Value) : null,
-                DiseaseDueDate = diseaseDue != null ? DateTime.Parse(diseaseDue.Value) : null,
-                AgentEligibleDate = agentEligible != null ? DateTime.Parse(agentEligible.Value) : null,
-                AgentDueDate = agentDue != null ? DateTime.Parse(agentDue.Value) : null,
+                DisseaseEligibleDate = disseaseEligible != null ? DateTime.Parse(disseaseEligible.Value, CultureInfo.CurrentCulture) : null,
+                DiseaseDueDate = diseaseDue != null ? DateTime.Parse(diseaseDue.Value, CultureInfo.CurrentCulture) : null,
+                AgentEligibleDate = agentEligible != null ? DateTime.Parse(agentEligible.Value, CultureInfo.CurrentCulture) : null,
+                AgentDueDate = agentDue != null ? DateTime.Parse(agentDue.Value, CultureInfo.CurrentCulture) : null,
                 Status = model.ForecastStatus.ForecastStatusText,
-                TargetDiseases = TargetDisease.FromPHSAModelList(model.TargetDisease),
                 Immunization = ImmunizationDefinition.FromPHSAModel(model.VaccineCode),
             };
         }

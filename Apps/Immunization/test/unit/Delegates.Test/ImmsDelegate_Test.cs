@@ -24,6 +24,7 @@ namespace HealthGateway.Immunization.Test.Delegate
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Models.PHSA;
+    using HealthGateway.Immunization.Models.PHSA.Recommendation;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -62,10 +63,9 @@ namespace HealthGateway.Immunization.Test.Delegate
 
             PhsaResult<ImmunizationResponse> phsaResponse = new PhsaResult<ImmunizationResponse>()
             {
-                Result = new ImmunizationResponse()
-                {
-                    ImmunizationViews = new List<ImmunizationViewResponse>() { expectedViewResponse }
-                }
+                Result = new ImmunizationResponse(
+                    new List<ImmunizationViewResponse>() { expectedViewResponse },
+                    new List<ImmunizationRecommendationResponse>()),
             };
 
             string json = JsonSerializer.Serialize(phsaResponse, null);
@@ -78,7 +78,7 @@ namespace HealthGateway.Immunization.Test.Delegate
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Equal(1, actualResult.ResourcePayload.Result.ImmunizationViews.Count());
+            Assert.Collection(actualResult.ResourcePayload.Result.ImmunizationViews, item => Assert.Equal(expectedViewResponse.Id, item.Id));
         }
 
         [Fact]

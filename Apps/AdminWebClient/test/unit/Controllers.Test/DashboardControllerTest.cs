@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Test.Services
         [Fact]
         public void ShouldGetDependentCount()
         {
-            Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { new DateTime(), 3 } };
+            Dictionary<DateTime, int> expected = new Dictionary<DateTime, int>() { { default(DateTime), 3 } };
             Mock<IDashboardService> mockService = new Mock<IDashboardService>();
             mockService.Setup(s => s.GetDailyDependentCount(It.IsAny<int>())).Returns(expected);
             DashboardController controller = new DashboardController(

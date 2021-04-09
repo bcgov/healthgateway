@@ -24,9 +24,9 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
     public class TargetDiseaseResponse
     {
         /// <summary>
-        /// Gets or sets the Target Disese Codes.
+        /// Gets the Target Disese Codes.
         /// </summary>
         [JsonPropertyName("targetDiseaseCodes")]
-        public IList<SystemCode> targetDiseaseCodes { get; set; } = new List<SystemCode>();
+        public IList<SystemCode> TargetDiseaseCodes { get; } = new List<SystemCode>();
     }
 }

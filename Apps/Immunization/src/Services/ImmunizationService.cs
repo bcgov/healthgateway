@@ -57,12 +57,10 @@ namespace HealthGateway.Immunization.Services
                 return new RequestResult<ImmunizationResult>()
                 {
                     ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = new ImmunizationResult()
-                    {
-                        LoadState = LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload!.LoadState),
-                        Immunizations = ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
-                        Recommendations = ImmunizationRecommendation.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations),
-                    },
+                    ResourcePayload = new ImmunizationResult(
+                        LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload!.LoadState),
+                        ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
+                        ImmunizationRecommendation.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations)),
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,

@@ -60,6 +60,24 @@ namespace HealthGateway.Common.Services
             this.resourceDelegateDelegate = resourceDelegateDelegate;
         }
 
+        /// <summary>
+        /// Creates a new 6 digit verification code.
+        /// </summary>
+        /// <returns>The verification code.</returns>
+        public static string CreateVerificationCode()
+        {
+            using (RandomNumberGenerator generator = RandomNumberGenerator.Create())
+            {
+                byte[] data = new byte[4];
+                generator.GetBytes(data);
+                return
+                    BitConverter
+                        .ToUInt32(data)
+                        .ToString("D6", CultureInfo.InvariantCulture)
+                        .Substring(0, 6);
+            }
+        }
+
         /// <inheritdoc />
         public NotificationSettingsRequest QueueNotificationSettings(NotificationSettingsRequest notificationSettings)
         {
@@ -119,16 +137,7 @@ namespace HealthGateway.Common.Services
             if (notificationSettings.SMSEnabled && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
             {
                 // Create the SMS validation code if the SMS is not verified and the caller didn't set it.
-                using (RandomNumberGenerator generator = RandomNumberGenerator.Create())
-                {
-                    byte[] data = new byte[4];
-                    generator.GetBytes(data);
-                    notificationSettings.SMSVerificationCode =
-                        BitConverter
-                            .ToUInt32(data)
-                            .ToString("D6", CultureInfo.InvariantCulture)
-                            .Substring(0, 6);
-                }
+                notificationSettings.SMSVerificationCode = CreateVerificationCode();
             }
 
             return notificationSettings;
