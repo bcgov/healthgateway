@@ -15,16 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Controllers
 {
-    using Xunit;
+    using System.Collections.Generic;
+    using System.Net.Mime;
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Controllers;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Http;
-    using System.Collections.Generic;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
-    using System.Net.Mime;
+    using Xunit;
 
-    public class RobotsControllerTest
+    public class RobotsController_Test
     {
         [Fact]
         public void ShouldGetRobotsCustom()
@@ -40,13 +40,13 @@ namespace HealthGateway.WebClient.Test.Controllers
             string robotsContent = expectedResult.Content;
             var myConfiguration = new Dictionary<string, string>
             {
-                {key, robotsContent},
+                { key, robotsContent },
             };
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            RobotsController controller = new RobotsController(configuration);
+            using RobotsController controller = new RobotsController(configuration);
 
             IActionResult actualResult = controller.Robots();
             Assert.IsType<ContentResult>(actualResult);
@@ -70,7 +70,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 .AddInMemoryCollection(myConfiguration)
                 .Build();
 
-            RobotsController controller = new RobotsController(configuration);
+            using RobotsController controller = new RobotsController(configuration);
 
             ContentResult actualResult = (ContentResult)controller.Robots();
             Assert.Equal(actualResult.StatusCode, expectedResult.StatusCode);

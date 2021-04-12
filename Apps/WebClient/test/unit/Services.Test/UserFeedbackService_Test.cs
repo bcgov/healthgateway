@@ -15,17 +15,17 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Services
 {
-    using Xunit;
-    using Moq;
+    using System;
     using DeepEqual.Syntax;
-    using HealthGateway.WebClient.Services;
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
-    using HealthGateway.Database.Delegates;
-    using Microsoft.Extensions.Logging;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
-    using System;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClient.Services;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using Xunit;
 
     public class UserFeedbackService_Test
     {
@@ -41,7 +41,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Rating> insertResult = new DBResult<Rating>
             {
                 Payload = expectedRating,
-                Status = DBStatusCode.Created
+                Status = DBStatusCode.Created,
             };
 
             Mock<IRatingDelegate> ratingDelegateMock = new Mock<IRatingDelegate>();
@@ -49,14 +49,13 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
-                null,
-                ratingDelegateMock.Object
-            );
+                new Mock<IFeedbackDelegate>().Object,
+                ratingDelegateMock.Object);
 
             RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
 
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(expectedRating));
+            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(expectedRating));
         }
 
         [Fact]
@@ -71,7 +70,7 @@ namespace HealthGateway.WebClient.Test.Services
             DBResult<Rating> insertResult = new DBResult<Rating>
             {
                 Payload = expectedRating,
-                Status = DBStatusCode.Error
+                Status = DBStatusCode.Error,
             };
 
             Mock<IRatingDelegate> ratingDelegateMock = new Mock<IRatingDelegate>();
@@ -79,9 +78,8 @@ namespace HealthGateway.WebClient.Test.Services
 
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
-                null,
-                ratingDelegateMock.Object
-            );
+                new Mock<IFeedbackDelegate>().Object,
+                ratingDelegateMock.Object);
 
             RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
 
@@ -97,13 +95,13 @@ namespace HealthGateway.WebClient.Test.Services
                 Id = Guid.NewGuid(),
                 UserProfileId = "Mocked UserProfileId",
                 IsSatisfied = true,
-                IsReviewed = true
+                IsReviewed = true,
             };
 
             DBResult<UserFeedback> insertResult = new DBResult<UserFeedback>
             {
                 Payload = expectedUserFeedback,
-                Status = DBStatusCode.Created
+                Status = DBStatusCode.Created,
             };
 
             Mock<IFeedbackDelegate> userFeedbackDelegateMock = new Mock<IFeedbackDelegate>();
@@ -112,13 +110,12 @@ namespace HealthGateway.WebClient.Test.Services
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
                 userFeedbackDelegateMock.Object,
-                null
-            );
+                new Mock<IRatingDelegate>().Object);
 
             DBResult<UserFeedback> actualResult = service.CreateUserFeedback(expectedUserFeedback);
 
             Assert.Equal(DBStatusCode.Created, actualResult.Status);
-            Assert.True(actualResult.Payload.IsDeepEqual(expectedUserFeedback));
+            Assert.True(actualResult.Payload?.IsDeepEqual(expectedUserFeedback));
         }
     }
 }

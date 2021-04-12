@@ -135,30 +135,33 @@ namespace HealthGateway.Medication.Delegates.Test
             var handlerMock = new Mock<HttpMessageHandler>();
             Uri patientProfileEndpoint = new Uri(this.baseURI, this.odrConfig.PatientProfileEndpoint);
             Uri protectiveWordEndpoint = new Uri(this.baseURI, this.odrConfig.ProtectiveWordEndpoint);
+
+            using var patientResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(meedicationHistoryjson),
+            };
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == patientProfileEndpoint),
                   ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage()
-               {
-                   StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent(meedicationHistoryjson),
-               })
+               .ReturnsAsync(patientResponseMessage)
                .Verifiable();
 
+            using var protectiveWordResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(protectiveWordjson),
+            };
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == protectiveWordEndpoint),
                   ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage()
-               {
-                   StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent(protectiveWordjson),
-               })
+               .ReturnsAsync(protectiveWordResponseMessage)
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
@@ -386,30 +389,33 @@ namespace HealthGateway.Medication.Delegates.Test
             var handlerMock = new Mock<HttpMessageHandler>();
             Uri patientProfileEndpoint = new Uri(this.baseURI, this.odrConfig.PatientProfileEndpoint);
             Uri protectiveWordEndpoint = new Uri(this.baseURI, this.odrConfig.ProtectiveWordEndpoint);
+
+            using var patientResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Content = new StringContent("Mock HTTP Error"),
+            };
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == patientProfileEndpoint),
                   ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage()
-               {
-                   StatusCode = HttpStatusCode.BadRequest,
-                   Content = new StringContent("Mock HTTP Error"),
-               })
+               .ReturnsAsync(patientResponseMessage)
                .Verifiable();
 
+            using var protectiveWordResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(protectiveWordjson),
+            };
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == protectiveWordEndpoint),
                   ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage()
-               {
-                   StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent(protectiveWordjson),
-               })
+               .ReturnsAsync(protectiveWordResponseMessage)
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
@@ -473,17 +479,18 @@ namespace HealthGateway.Medication.Delegates.Test
                .Throws<HttpRequestException>()
                .Verifiable();
 
+            using var protectiveWordResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(protectiveWordjson),
+            };
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == protectiveWordEndpoint),
                   ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage()
-               {
-                   StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent(protectiveWordjson),
-               })
+               .ReturnsAsync(protectiveWordResponseMessage)
                .Verifiable();
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
@@ -525,17 +532,18 @@ namespace HealthGateway.Medication.Delegates.Test
             var handlerMock = new Mock<HttpMessageHandler>();
             Uri protectiveWordEndpoint = new Uri(this.baseURI, this.odrConfig.ProtectiveWordEndpoint);
 
+            using HttpResponseMessage httpResponseMessage = new ()
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Content = new StringContent("Mock Bad Request"),
+            };
             handlerMock
                .Protected()
                .Setup<Task<HttpResponseMessage>>(
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == protectiveWordEndpoint),
                   ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage()
-               {
-                   StatusCode = HttpStatusCode.BadRequest,
-                   Content = new StringContent("Mock Bad Request"),
-               })
+               .ReturnsAsync(httpResponseMessage)
                .Verifiable();
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -577,6 +585,11 @@ namespace HealthGateway.Medication.Delegates.Test
 
             var handlerMock = new Mock<HttpMessageHandler>();
             Uri protectiveWordEndpoint = new Uri(this.baseURI, this.odrConfig.ProtectiveWordEndpoint);
+            using var protectiveWordResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("{}"),
+            };
 
             handlerMock
                .Protected()
@@ -584,11 +597,7 @@ namespace HealthGateway.Medication.Delegates.Test
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == protectiveWordEndpoint),
                   ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage()
-               {
-                   StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent("{}"),
-               })
+               .ReturnsAsync(protectiveWordResponseMessage)
                .Verifiable();
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -629,7 +638,11 @@ namespace HealthGateway.Medication.Delegates.Test
             };
 
             var handlerMock = new Mock<HttpMessageHandler>();
-
+            using var protectiveWordResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("Bad Data"),
+            };
             Uri protectiveWordEndpoint = new Uri(this.baseURI, this.odrConfig.ProtectiveWordEndpoint);
 
             handlerMock
@@ -638,11 +651,7 @@ namespace HealthGateway.Medication.Delegates.Test
                   "SendAsync",
                   ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == protectiveWordEndpoint),
                   ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage()
-               {
-                   StatusCode = HttpStatusCode.OK,
-                   Content = new StringContent("Bad Data"),
-               })
+               .ReturnsAsync(protectiveWordResponseMessage)
                .Verifiable();
 
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());

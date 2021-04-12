@@ -15,42 +15,63 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Test.Services
 {
-    using Xunit;
-    using Moq;
+    using System;
     using DeepEqual.Syntax;
-    using HealthGateway.WebClient.Services;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.Database.Delegates;
-    using Microsoft.Extensions.Logging;
-    using HealthGateway.Common.Models;
-    using System;
-    using HealthGateway.Database.Constants;
-    using Microsoft.Extensions.DependencyInjection;
+    using HealthGateway.WebClient.Services;
     using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using Xunit;
 
-    public class CommunicationServiceTest
+    public class CommunicationService_Test
     {
-        private Tuple<RequestResult<Communication>, Communication> ExecuteGetActiveCommunication(Database.Constants.DBStatusCode dbResultStatus = Database.Constants.DBStatusCode.Read)
+        [Fact]
+        public void ShouldGetActiveCommunication()
+        {
+            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(DBStatusCode.Read);
+            var actualResult = result.Item1;
+            var communication = result.Item2;
+
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.True(actualResult.ResourcePayload?.IsDeepEqual(communication));
+        }
+
+        [Fact]
+        public void ShouldGetActiveCommunicationWithDBError()
+        {
+            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(DBStatusCode.Error);
+            var actualResult = result.Item1;
+
+            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
+            Assert.Equal("testhostServer-CI-DB", actualResult.ResultError!.ErrorCode);
+        }
+
+        private static Tuple<RequestResult<Communication>, Communication> ExecuteGetActiveCommunication(DBStatusCode dbResultStatus = DBStatusCode.Read)
         {
             Communication communication = new Communication
             {
                 Id = Guid.NewGuid(),
                 EffectiveDateTime = DateTime.UtcNow.AddDays(-1),
-                ExpiryDateTime = DateTime.UtcNow.AddDays(2)
+                ExpiryDateTime = DateTime.UtcNow.AddDays(2),
             };
 
             DBResult<Communication> dbResult = new DBResult<Communication>
             {
                 Payload = communication,
-                Status = dbResultStatus
+                Status = dbResultStatus,
             };
 
             ServiceCollection services = new ServiceCollection();
             services.AddMemoryCache();
             ServiceProvider serviceProvider = services.BuildServiceProvider();
 
-            IMemoryCache memoryCache = serviceProvider.GetService<IMemoryCache>();
+            IMemoryCache? memoryCache = serviceProvider.GetService<IMemoryCache>();
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
             communicationDelegateMock.Setup(s => s.GetActiveBanner()).Returns(dbResult);
@@ -58,32 +79,10 @@ namespace HealthGateway.WebClient.Test.Services
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
-                memoryCache
-            );
+                memoryCache);
             RequestResult<Communication> actualResult = service.GetActiveBanner();
 
             return new Tuple<RequestResult<Communication>, Communication>(actualResult, communication);
-        }
-
-        [Fact]
-        public void ShouldGetActiveCommunication()
-        {
-            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(Database.Constants.DBStatusCode.Read);
-            var actualResult = result.Item1;
-            var communication = result.Item2;
-
-            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload.IsDeepEqual(communication));
-        }
-
-        [Fact]
-        public void ShouldGetActiveCommunicationWithDBError()
-        {
-            Tuple<RequestResult<Communication>, Communication> result = ExecuteGetActiveCommunication(Database.Constants.DBStatusCode.Error);
-            var actualResult = result.Item1;
-
-            Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal("testhostServer-CI-DB", actualResult.ResultError.ErrorCode);
         }
     }
 }

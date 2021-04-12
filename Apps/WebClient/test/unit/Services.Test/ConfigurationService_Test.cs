@@ -16,27 +16,29 @@
 namespace HealthGateway.WebClient.Test.Services
 {
     using System.Collections.Generic;
-    using Xunit;
-    using Moq;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Services;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using Xunit;
 
-    public class ConfigurationServiceTest
+    public class ConfigurationService_Test
     {
         private IConfiguration config;
         private Mock<ILogger<ConfigurationService>> mockLog;
         private ConfigurationService service;
 
-        public ConfigurationServiceTest()
+        public ConfigurationService_Test()
         {
             this.config = new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json").Build();
+
             // Mock dependency injection of controller
             this.mockLog = new Mock<ILogger<ConfigurationService>>();
+
             // Creates the controller passing mocked dependencies
-            this.service = new ConfigurationService(mockLog.Object, config);
+            this.service = new ConfigurationService(this.mockLog.Object, this.config);
         }
 
         [Fact]
@@ -53,8 +55,8 @@ namespace HealthGateway.WebClient.Test.Services
                     Callbacks = new Dictionary<string, System.Uri>
                     {
                         { "Logon", new System.Uri("https://localhost/logon") },
-                        { "Logout",new System.Uri("https://localhost/logout") },
-                    }
+                        { "Logout", new System.Uri("https://localhost/logout") },
+                    },
                 },
                 IdentityProviders = new Models.IdentityProviderConfiguration[]
                 {
@@ -65,7 +67,7 @@ namespace HealthGateway.WebClient.Test.Services
                         Icon = "Icon",
                         Hint = "Hint",
                         Disabled = true,
-                    }
+                    },
                 },
                 WebClient = new Models.WebClientConfiguration()
                 {
@@ -79,18 +81,18 @@ namespace HealthGateway.WebClient.Test.Services
                    {
                        {
                            "External", new System.Uri("https://localhost/external")
-                       }
-                   }
+                       },
+                   },
                 },
                 ServiceEndpoints = new Dictionary<string, System.Uri>()
                 {
                     {
                         "Service", new System.Uri("https://localhost/service")
-                    }
-                }
+                    },
+                },
             };
-            Models.ExternalConfiguration actualResult = service.GetConfiguration();
-            Assert.True(expectedResult.IsDeepEqual(actualResult)); 
+            Models.ExternalConfiguration actualResult = this.service.GetConfiguration();
+            Assert.True(expectedResult.IsDeepEqual(actualResult));
         }
     }
 }
