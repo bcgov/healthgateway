@@ -5,7 +5,7 @@
     <RootNamespace>HealthGateway.Patient</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DocumentationFile>bin\Debug\netcoreapp2.2\Patient.xml</DocumentationFile>
+    <DocumentationFile>.\Patient.xml</DocumentationFile>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>

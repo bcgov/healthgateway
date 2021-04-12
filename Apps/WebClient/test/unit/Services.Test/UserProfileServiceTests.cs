@@ -36,12 +36,18 @@ namespace HealthGateway.WebClient.Test.Services
     using Moq;
     using Xunit;
 
-    public class UserProfileService_Test
+    /// <summary>
+    /// UserProfileService's Unit Tests.
+    /// </summary>
+    public class UserProfileServiceTests
     {
         private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
         private readonly Mock<IConfigurationService> configServiceMock = new Mock<IConfigurationService>();
 
-        public UserProfileService_Test()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileServiceTests"/> class.
+        /// </summary>
+        public UserProfileServiceTests()
         {
             var externalConfiguration = new ExternalConfiguration()
             {
@@ -53,6 +59,9 @@ namespace HealthGateway.WebClient.Test.Services
             this.configServiceMock.Setup(s => s.GetConfiguration()).Returns(externalConfiguration);
         }
 
+        /// <summary>
+        /// GetUserProfile - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldGetUserProfile()
         {
@@ -64,6 +73,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(this.hdid, expectedRecord.HdId);
         }
 
+        /// <summary>
+        /// GetUserProfile - Happy Path With Terms of Service Updated.
+        /// </summary>
         [Fact]
         public void ShouldGetUserProfileWithTermsOfServiceUpdated()
         {
@@ -75,6 +87,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.HasTermsOfServiceUpdated);
         }
 
+        /// <summary>
+        /// GetUserProfile - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldGetUserProfileWithDBError()
         {
@@ -85,6 +100,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal("testhostServer-CI-DB", actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// GetUserProfile - Not Found Error.
+        /// </summary>
         [Fact]
         public void ShouldGetUserProfileWithProfileNotFoundError()
         {
@@ -95,6 +113,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Null(actualResult.ResourcePayload?.HdId);
         }
 
+        /// <summary>
+        /// InsertUserProfile - Happy Path.
+        /// </summary>
         [Fact]
         public async void ShouldInsertUserProfile()
         {
@@ -105,6 +126,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
+        /// <summary>
+        /// InsertUserProfile - Closed Registration Error.
+        /// </summary>
         [Fact]
         public async void ShouldInsertUserProfileWithClosedRegistration()
         {
@@ -116,6 +140,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal("Registration is closed", actualResult.ResultError!.ResultMessage);
         }
 
+        /// <summary>
+        /// CreateUserProfile - Happy Path with notification update.
+        /// </summary>
         [Fact]
         public async void ShouldQueueNotificationUpdate()
         {
@@ -173,6 +200,10 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(expected.Email, actualResult.ResourcePayload?.Email);
         }
 
+        /// <summary>
+        /// ValidateMinimumAge - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldValidateAgeAsync()
         {
@@ -213,6 +244,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(expected.ResourcePayload, actualResult.ResourcePayload);
         }
 
+        /// <summary>
+        /// GetUserPreference - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldGetUserPreference()
         {
@@ -225,6 +259,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(actualResult.ResourcePayload?["TutorialPopover"].Value, expectedRecord[0].Value);
         }
 
+        /// <summary>
+        /// GetUserPreference - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldGetUserPreferenceWithDBError()
         {
@@ -235,6 +272,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// CreateUserPreference - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldCreateUserPreference()
         {
@@ -243,6 +283,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Success, result.ResultStatus);
         }
 
+        /// <summary>
+        /// CreateUserPreference - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldCreateUserPreferenceWithDBError()
         {
@@ -252,6 +295,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// UpdateUserPreference - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldUpdateUserPreference()
         {
@@ -260,6 +306,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Success, result.ResultStatus);
         }
 
+        /// <summary>
+        /// UpdateUserPreference - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldUpdateUserPreferenceWithDBError()
         {
@@ -269,6 +318,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// CloseUserProfile - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldCloseUserProfile()
         {
@@ -284,6 +336,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.NotNull(actualResult.ResourcePayload?.ClosedDateTime);
         }
 
+        /// <summary>
+        /// CloseUserProfile - Happy Path (Update Closed DateTime).
+        /// </summary>
         [Fact]
         public void PreviouslyClosedUserProfile()
         {
@@ -300,6 +355,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(userProfile.ClosedDateTime, actualResult.ResourcePayload?.ClosedDateTime);
         }
 
+        /// <summary>
+        /// CloseUserProfile - Happy Path with email notificaition.
+        /// </summary>
         [Fact]
         public void ShouldCloseUserProfileAndQueueNewEmail()
         {
@@ -316,6 +374,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.NotNull(actualResult.ResourcePayload?.ClosedDateTime);
         }
 
+        /// <summary>
+        /// RecoverUserProfile - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldRecoverUserProfile()
         {
@@ -333,6 +394,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Null(actualResult.ResourcePayload?.ClosedDateTime);
         }
 
+        /// <summary>
+        /// RecoverUserProfile - Alraedy active happy Path.
+        /// </summary>
         [Fact]
         public void ShouldRecoverUserProfileAlreadyActive()
         {

@@ -24,8 +24,14 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Microsoft.Extensions.Configuration;
     using Xunit;
 
-    public class RobotsController_Test
+    /// <summary>
+    /// RobotsController's Unit Tests.
+    /// </summary>
+    public class RobotsControllerTests
     {
+        /// <summary>
+        /// GetRobots - Custom Content.
+        /// </summary>
         [Fact]
         public void ShouldGetRobotsCustom()
         {
@@ -53,6 +59,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True(actualResult.IsDeepEqual(expectedResult));
         }
 
+        /// <summary>
+        /// GetRobots - Default Config.
+        /// </summary>
         [Fact]
         public void ShouldGetRobotsTxtDefaultConfig()
         {

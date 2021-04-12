@@ -32,11 +32,17 @@ namespace HealthGateway.WebClient.Test.Services
     using Moq;
     using Xunit;
 
-    public class CommentService_Test
+    /// <summary>
+    /// CommentService's Unit Tests.
+    /// </summary>
+    public class CommentServiceTests
     {
         private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
         private readonly string parentEntryId = "123456789";
 
+        /// <summary>
+        /// GetComments - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldGetComments()
         {
@@ -48,6 +54,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userCommentList));
         }
 
+        /// <summary>
+        /// GetComments - Database error.
+        /// </summary>
         [Fact]
         public void ShouldGetCommentsWithDbError()
         {
@@ -58,6 +67,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal("testhostServer-CI-DB", actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// InsertComment - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldInsertComment()
         {
@@ -69,6 +81,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(createdRecord));
         }
 
+        /// <summary>
+        /// InsertComment - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldInsertCommentWithDBError()
         {
@@ -79,6 +94,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.NotNull(actualResult.ResultError);
         }
 
+        /// <summary>
+        /// UpdateComment - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldUpdateComment()
         {
@@ -89,6 +107,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(updatedRecord));
         }
 
+        /// <summary>
+        /// UpdateComment - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldUpdateCommentWithDBError()
         {
@@ -99,6 +120,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.NotNull(actualResult.ResultError);
         }
 
+        /// <summary>
+        /// DeleteComment - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldDeleteComment()
         {
@@ -109,6 +133,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(deletedRecord));
         }
 
+        /// <summary>
+        /// DeleteComment - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldDeleteCommentWithDBError()
         {
@@ -119,8 +146,11 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.NotNull(actualResult.ResultError);
         }
 
+        /// <summary>
+        /// GetComments - No Encryption key error.
+        /// </summary>
         [Fact]
-        public void ShouldBeErrorIfNoKeyGet()
+        public void ShouldGetCommentsWithNoKeyError()
         {
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -150,8 +180,11 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
+        /// <summary>
+        /// InsertComment - No Encryption key error.
+        /// </summary>
         [Fact]
-        public void ShouldBeErrorIfNoKeyAdd()
+        public void ShouldInsertCommentWithNoKeyError()
         {
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -181,8 +214,11 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
+        /// <summary>
+        /// UpdateComment - No Encryption key error.
+        /// </summary>
         [Fact]
-        public void ShouldBeErrorIfNoKeyUpdate()
+        public void ShouldUpdateCommentWithNoKeyError()
         {
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -212,8 +248,11 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
+        /// <summary>
+        /// DeleteComment - No Encryption key error.
+        /// </summary>
         [Fact]
-        public void ShouldBeErrorIfNoKeyDelete()
+        public void ShouldDeleteCommentWithNoKeyError()
         {
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>

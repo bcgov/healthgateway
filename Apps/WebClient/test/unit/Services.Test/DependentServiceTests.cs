@@ -32,7 +32,10 @@ namespace HealthGateway.WebClient.Test.Services
     using Moq;
     using Xunit;
 
-    public class DependentService_Test
+    /// <summary>
+    /// DependentService's Unit Tests.
+    /// </summary>
+    public class DependentServiceTests
     {
         private readonly string mockParentHdId = "MockFirstName";
         private readonly string mockPHN = "MockPHN";
@@ -45,6 +48,9 @@ namespace HealthGateway.WebClient.Test.Services
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";
         private readonly string noHdIdError = "Please ensure you are using a current BC Services Card.";
 
+        /// <summary>
+        /// GetDependents - Happy Path.
+        /// </summary>
         [Fact]
         public void GetDependents()
         {
@@ -61,6 +67,9 @@ namespace HealthGateway.WebClient.Test.Services
             }
         }
 
+        /// <summary>
+        /// GetDependents - Empty Patient Error.
+        /// </summary>
         [Fact]
         public void GetDependentsWithEmptyPatientResPayloadError()
         {
@@ -74,6 +83,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal("Communication Exception when trying to retrieve Dependent(s) - HdId: MockHdId-0; HdId: MockHdId-1; HdId: MockHdId-2; HdId: MockHdId-3; HdId: MockHdId-4; HdId: MockHdId-5; HdId: MockHdId-6; HdId: MockHdId-7; HdId: MockHdId-8; HdId: MockHdId-9;", actualResult.ResultError.ResultMessage);
         }
 
+        /// <summary>
+        /// ValidateDependent - Happy Path.
+        /// </summary>
         [Fact]
         public void ValidateDependent()
         {
@@ -84,6 +96,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
+        /// <summary>
+        /// ValidateDependent - Empty Patient Error.
+        /// </summary>
         [Fact]
         public void ValidateDependentWithEmptyPatientResPayloadError()
         {
@@ -98,6 +113,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal("testhostServer-CE-PAT", actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// ValidateDependent - Database Error.
+        /// </summary>
         [Fact]
         public void ValidateDependentWithDbError()
         {
@@ -116,6 +134,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(serviceError, actualResult.ResultError!.ErrorCode);
         }
 
+        /// <summary>
+        /// ValidateDependent - Wrong First Name Error.
+        /// </summary>
         [Fact]
         public void ValidateDependentWithWrongFirstName()
         {
@@ -130,6 +151,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(this.mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
+        /// <summary>
+        /// ValidateDependent - Wrong Last Name Error.
+        /// </summary>
         [Fact]
         public void ValidateDependentWithWrongLastName()
         {
@@ -144,6 +168,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(this.mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
+        /// <summary>
+        /// ValidateDependent - Wrong Date of Birth Error.
+        /// </summary>
         [Fact]
         public void ValidateDependentWithWrongDateOfBirth()
         {
@@ -158,6 +185,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(this.mismatchedError, actualResult.ResultError.ResultMessage);
         }
 
+        /// <summary>
+        /// ValidateDependent - No HdId Error.
+        /// </summary>
         [Fact]
         public void ValidateDependentWithNoHdId()
         {
@@ -182,6 +212,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(this.noHdIdError, actualResult.ResultError.ResultMessage);
         }
 
+        /// <summary>
+        /// ValidateRemove - Happy Path.
+        /// </summary>
         [Fact]
         public void ValidateRemove()
         {

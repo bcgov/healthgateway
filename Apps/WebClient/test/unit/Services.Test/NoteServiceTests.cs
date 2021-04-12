@@ -32,10 +32,16 @@ namespace HealthGateway.WebClient.Test.Services
     using Moq;
     using Xunit;
 
-    public class NoteService_Test
+    /// <summary>
+    /// NoteService's Unit Tests.
+    /// </summary>
+    public class NoteServiceTests
     {
         private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
 
+        /// <summary>
+        /// GetNotes - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldGetNotes()
         {
@@ -47,6 +53,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userNoteList));
         }
 
+        /// <summary>
+        /// GetNotes - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldGetNotesWithDbError()
         {
@@ -57,6 +66,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal("testhostServer-CI-DB", actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// GetNotes - No Encryption Key Error.
+        /// </summary>
         [Fact]
         public void ShouldGetNotesWithProfileKeyNotSetError()
         {
@@ -67,6 +79,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal("Profile Key not set", actualResult.ResultError?.ResultMessage);
         }
 
+        /// <summary>
+        /// InsertNote - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldInsertNote()
         {
@@ -79,6 +94,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userNote));
         }
 
+        /// <summary>
+        /// InsertNote - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldInsertNoteWithDBError()
         {
@@ -90,6 +108,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// UpdateNote - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldUpdateNote()
         {
@@ -101,6 +122,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userNote));
         }
 
+        /// <summary>
+        /// UpdateNote - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldUpdateNoteWithDBError()
         {
@@ -111,6 +135,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
         }
 
+        /// <summary>
+        /// DeleteNote - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldDeleteNote()
         {
@@ -123,6 +150,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(userNote));
         }
 
+        /// <summary>
+        /// DeleteNote - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldDeleteNoteWithDBError()
         {
@@ -133,8 +163,11 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.NotNull(actualResult.ResultError);
         }
 
+        /// <summary>
+        /// InsertNote - No Encryption Key Error.
+        /// </summary>
         [Fact]
-        public void ShouldBeErrorIfNoKeyAdd()
+        public void ShouldInsertNoteWithNoKeyError()
         {
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -163,8 +196,11 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
+        /// <summary>
+        /// UpdateNote - No Encryption Key Error.
+        /// </summary>
         [Fact]
-        public void ShouldBeErrorIfNoKeyUpdate()
+        public void ShouldUpdateNoteWithNoKeyError()
         {
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>
@@ -193,8 +229,11 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
+        /// <summary>
+        /// DeleteNote - No Encryption Key Error.
+        /// </summary>
         [Fact]
-        public void ShouldBeErrorNoKeyDelete()
+        public void ShouldDeleteNoteWithNoKeyError()
         {
             string? encryptionKey = null;
             DBResult<UserProfile> profileDBResult = new DBResult<UserProfile>

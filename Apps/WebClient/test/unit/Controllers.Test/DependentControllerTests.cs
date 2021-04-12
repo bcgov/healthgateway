@@ -31,7 +31,10 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Moq;
     using Xunit;
 
-    public class DependentController_Test
+    /// <summary>
+    /// DependentController's Unit Tests.
+    /// </summary>
+    public class DependentControllerTests
     {
         private readonly string hdid = "mockedHdId";
         private readonly string token = "Fake Access Token";
@@ -39,6 +42,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         private readonly string firstName = "mocked";
         private readonly string lastname = "DependentName";
 
+        /// <summary>
+        /// GetDependents - Happy path scenario.
+        /// </summary>
         [Fact]
         public void ShouldGetDependents()
         {
@@ -62,6 +68,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expectedResult));
         }
 
+        /// <summary>
+        /// AddDependent - Happy path scenario.
+        /// </summary>
         [Fact]
         public void ShouldAddDependent()
         {
@@ -96,6 +105,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True(((JsonResult)actualResult).Value!.IsDeepEqual(expectedResult));
         }
 
+        /// <summary>
+        /// DeleteDependent - Happy path scenario.
+        /// </summary>
         [Fact]
         public void ShouldDeleteDependent()
         {
@@ -124,6 +136,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True(((JsonResult)actualResult).Value!.IsDeepEqual(expectedResult));
         }
 
+        /// <summary>
+        /// DeleteDependent - BadRequest path scenario.
+        /// </summary>
         [Fact]
         public void ShouldFailDeleteDependent()
         {

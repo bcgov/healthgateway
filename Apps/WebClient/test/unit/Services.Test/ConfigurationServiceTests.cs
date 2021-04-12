@@ -23,13 +23,19 @@ namespace HealthGateway.WebClient.Test.Services
     using Moq;
     using Xunit;
 
-    public class ConfigurationService_Test
+    /// <summary>
+    /// ConfigurationService's Unit Tests.
+    /// </summary>
+    public class ConfigurationServiceTests
     {
         private IConfiguration config;
         private Mock<ILogger<ConfigurationService>> mockLog;
         private ConfigurationService service;
 
-        public ConfigurationService_Test()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationServiceTests"/> class.
+        /// </summary>
+        public ConfigurationServiceTests()
         {
             this.config = new ConfigurationBuilder()
                 .AddJsonFile("UnitTest.json").Build();
@@ -41,6 +47,9 @@ namespace HealthGateway.WebClient.Test.Services
             this.service = new ConfigurationService(this.mockLog.Object, this.config);
         }
 
+        /// <summary>
+        /// GetConfiguration - Happy Path.
+        /// </summary>
         [Fact]
         public void TestGetConfig()
         {

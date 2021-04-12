@@ -35,12 +35,18 @@ namespace HealthGateway.WebClient.Test.Controllers
     using Moq;
     using Xunit;
 
-    public class UserProfileController_Test
+    /// <summary>
+    /// UserProfileController's Unit Tests.
+    /// </summary>
+    public class UserProfileControllerTests
     {
         private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
         private readonly string token = "Fake Access Token";
         private readonly string userId = "1001";
 
+        /// <summary>
+        /// GetUserProfile - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldGetUserProfile()
         {
@@ -51,6 +57,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True(((JsonResult)actualResult)?.Value?.IsDeepEqual(expected));
         }
 
+        /// <summary>
+        /// GetUserProfile - With Empty User Preferences.
+        /// </summary>
         [Fact]
         public void ShouldGetUserProfileWithoutUserPreference()
         {
@@ -63,6 +72,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.Empty(reqResult.ResourcePayload?.Preferences);
         }
 
+        /// <summary>
+        /// CreateUserProfile - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldCreateUserProfile()
         {
@@ -106,6 +119,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expected));
         }
 
+        /// <summary>
+        /// ValidateAge - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldValidateAge()
         {
@@ -137,6 +154,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.Equal(expected, ((JsonResult)actualResult).Value);
         }
 
+        /// <summary>
+        /// CreateUserPreference - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldCreateUserPreference()
         {
@@ -157,6 +177,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.Equal(this.hdid, reqResult.ResourcePayload.UpdatedBy);
         }
 
+        /// <summary>
+        /// CreateUserPreference - Bad Request.
+        /// </summary>
         [Fact]
         public void ShouldCreateUserPreferenceWithBadRequestResultError()
         {
@@ -165,6 +188,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.IsType<BadRequestResult>(actualResult);
         }
 
+        /// <summary>
+        /// UpdateUserPreference - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldUpdateUserPreference()
         {
@@ -182,6 +208,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.Equal(ResultType.Success, reqResult!.ResultStatus);
         }
 
+        /// <summary>
+        /// UpdateUserPreference - Bad Request.
+        /// </summary>
         [Fact]
         public void ShouldUpdateUserPreferenceWithBadRequestResultError()
         {
@@ -190,8 +219,11 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.IsType<BadRequestResult>(actualResult);
         }
 
+        /// <summary>
+        /// UpdateUserPreference - Bad Request (Empty Preference).
+        /// </summary>
         [Fact]
-        public void ShouldUpdateUserPreferenceWithEmtptyReferenceNameError()
+        public void ShouldUpdateUserPreferenceWithEmptyPreferenceError()
         {
             var userPref = new UserPreferenceModel()
             {
@@ -206,6 +238,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.IsType<BadRequestResult>(actualResult);
         }
 
+        /// <summary>
+        /// UpdateUserPreference - Forbidden Request.
+        /// </summary>
         [Fact]
         public void ShouldUpdateUserPreferenceWithForbidResultError()
         {
@@ -220,6 +255,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.IsType<ForbidResult>(actualResult);
         }
 
+        /// <summary>
+        /// GetLastTermsOfService - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldGetLastTermsOfService()
         {
@@ -256,6 +294,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expectedResult));
         }
 
+        /// <summary>
+        /// UpdateUserEmail - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldUpdateUserEmail()
         {
@@ -274,6 +315,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True((bool)((JsonResult)actualResult).Value);
         }
 
+        /// <summary>
+        /// ValidateEmail - Happy Path.
+        /// </summary>
         [Fact]
         public async void ShouldValidateEmail()
         {
@@ -300,6 +344,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.Equal(ResultType.Success, result?.ResultStatus);
         }
 
+        /// <summary>
+        /// ValidateEmail - Email not found error.
+        /// </summary>
         [Fact]
         public async void ShouldValidateEmailWithEmailNotFound()
         {
@@ -325,6 +372,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.Equal(ResultType.Error, result!.ResultStatus);
         }
 
+        /// <summary>
+        /// UpdateUserSMSNumber - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldUpdateUserSMSNumber()
         {
@@ -343,6 +393,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.True((bool)((JsonResult)actualResult).Value);
         }
 
+        /// <summary>
+        /// ValidateSms - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldValidateSms()
         {
@@ -360,6 +413,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Assert.IsType<OkResult>(actualResult);
         }
 
+        /// <summary>
+        /// ValidateSms - Sms not found error.
+        /// </summary>
         [Fact]
         public void ShouldValidateSmsNotFoundResult()
         {

@@ -27,8 +27,14 @@ namespace HealthGateway.WebClient.Test.Services
     using Moq;
     using Xunit;
 
-    public class UserFeedbackService_Test
+    /// <summary>
+    /// UserFeedbackService's Unit Tests.
+    /// </summary>
+    public class UserFeedbackServiceTests
     {
+        /// <summary>
+        /// CreateRating - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldCreateRating()
         {
@@ -58,6 +64,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(expectedRating));
         }
 
+        /// <summary>
+        /// CreateRating - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldCreateRatingWithError()
         {
@@ -86,6 +95,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
+        /// <summary>
+        /// CreateUserFeedBack - Happy Path.
+        /// </summary>
         [Fact]
         public void ShouldCreateUserFeedback()
         {

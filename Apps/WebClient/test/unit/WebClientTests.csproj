@@ -5,13 +5,12 @@
     <!-- SonarQube needs this -->
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.WebClientTests</RootNamespace>
-    <nowarn>SA0001</nowarn>
+    <NoWarn></NoWarn>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>SA0001; CA1707; SA1600;</NoWarn>
+    <DocumentationFile>.\WebClientTests.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />

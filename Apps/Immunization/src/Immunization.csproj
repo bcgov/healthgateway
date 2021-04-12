@@ -4,7 +4,7 @@
     <RootNamespace>HealthGateway.Immunization</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DocumentationFile>bin\Debug\netcoreapp3.1\Immunization.xml</DocumentationFile>
+    <DocumentationFile>.\Immunization.xml</DocumentationFile>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>

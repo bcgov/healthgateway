@@ -29,8 +29,14 @@ namespace HealthGateway.WebClient.Test.Services
     using Moq;
     using Xunit;
 
-    public class CommunicationService_Test
+    /// <summary>
+    /// CommunicationService's Unit Tests.
+    /// </summary>
+    public class CommunicationServiceTests
     {
+        /// <summary>
+        /// GetActiveCommunication - Happy path scenario.
+        /// </summary>
         [Fact]
         public void ShouldGetActiveCommunication()
         {
@@ -42,6 +48,9 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.True(actualResult.ResourcePayload?.IsDeepEqual(communication));
         }
 
+        /// <summary>
+        /// GetActiveCommunication - Database Error.
+        /// </summary>
         [Fact]
         public void ShouldGetActiveCommunicationWithDBError()
         {
