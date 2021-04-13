@@ -4,13 +4,12 @@
     <IsPackable>false</IsPackable>
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.PatientTests</RootNamespace>
-    <nowarn>SA0001</nowarn>
-    <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DocumentationFile>.\PatientTests.xml</DocumentationFile>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>SA0001; CA1707; SA1600</NoWarn>
+    <NoWarn></NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />

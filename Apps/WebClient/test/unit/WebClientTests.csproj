@@ -2,15 +2,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <!-- SonarQube needs this -->
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.WebClientTests</RootNamespace>
-    <NoWarn></NoWarn>
-    <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DocumentationFile>.\WebClientTests.xml</DocumentationFile>
+    <NoWarn></NoWarn>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />
