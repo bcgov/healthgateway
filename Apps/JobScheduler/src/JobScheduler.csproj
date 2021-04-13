@@ -8,7 +8,7 @@
     <DocumentationFile>bin\Debug\netcoreapp3.1\JobScheduler.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.20" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.21" />
     <PackageReference Include="Hangfire.MaximumConcurrentExecutions" Version="1.1.0" />
     <PackageReference Include="Hangfire.Postgresql" Version="1.8.4" />
     <PackageReference Include="mailkit" Version="2.11.1" />
