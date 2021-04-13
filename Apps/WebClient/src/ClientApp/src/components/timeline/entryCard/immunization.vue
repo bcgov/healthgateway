@@ -125,9 +125,10 @@ export default class ImmunizationTimelineComponent extends Vue {
                         <div v-if="isCovidImmunization">
                             <br />
                             <p data-testid="forecastFollowDirections">
-                                Please follow directions from your COVID vaccine
-                                provider for information on COVID-19 2nd dose.
-                                For information on recommended immunizations,
+                                For your COVID-19 second dose you will be
+                                notified by email, text or phone call when you
+                                are eligible to book an appointment. For 
+                                information on recommended immunizations,
                                 please visit
                                 <a href="https://immunizebc.ca/" target="blank_"
                                     >https://immunizebc.ca/</a
