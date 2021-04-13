@@ -27,6 +27,13 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="OfflineModeConfiguration"/> class.
         /// </summary>
+        public OfflineModeConfiguration()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OfflineModeConfiguration"/> class.
+        /// </summary>
         /// <param name="whitelist">The initialied list of whitelisted ip addresses.</param>
         public OfflineModeConfiguration(IList<string> whitelist)
         {
