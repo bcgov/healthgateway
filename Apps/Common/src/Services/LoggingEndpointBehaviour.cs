@@ -27,7 +27,7 @@ namespace HealthGateway.Common.Services
     [ExcludeFromCodeCoverage]
     public class LoggingEndpointBehaviour : IEndpointBehavior
     {
-        private IClientMessageInspector messageInspector;
+        private readonly IClientMessageInspector messageInspector;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingEndpointBehaviour"/> class.
@@ -46,6 +46,7 @@ namespace HealthGateway.Common.Services
         /// <param name="bindingParameters">The binding parameter collection.</param>
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         {
+            // Does nothing.
         }
 
         /// <summary>
@@ -70,6 +71,7 @@ namespace HealthGateway.Common.Services
         /// <param name="endpointDispatcher">The endpoint dispatcher.</param>
         public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
         {
+            // Does nothing.
         }
 
         /// <summary>
@@ -78,6 +80,7 @@ namespace HealthGateway.Common.Services
         /// <param name="endpoint">The service endpoint.</param>
         public void Validate(ServiceEndpoint endpoint)
         {
+            // Does nothing.
         }
     }
 }

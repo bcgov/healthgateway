@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,28 +13,33 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Database.Models.Cacheable
 {
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+    using HealthGateway.Database.Constants;
 
     /// <summary>
-    /// Representation of the result sent by PHSA.
+    /// A hash of something.
     /// </summary>
-    /// <typeparam name="T">The result object type.</typeparam>
-    public class PHSAResult<T>
+    public class HmacHash : IHash
     {
         /// <summary>
-        /// Gets or sets the LoadState.
+        /// Gets or sets the pseudo random function that was used to generate this hash.
         /// </summary>
-        [JsonPropertyName("loadState")]
-        public PHSALoadState LoadState { get; set; } = new PHSALoadState();
+        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HMACSHA512;
 
         /// <summary>
-        /// Gets or sets the result section.
+        /// Gets or sets the iterations used to generate this hash.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        [JsonPropertyName("result")]
-        public T? Result { get; set; } = default(T);
+        public int Iterations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base64 salt that was used in generating the hash.
+        /// </summary>
+        public string? Salt { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base64 encoded hash.
+        /// </summary>
+        public string? Hash { get; set; }
     }
 }

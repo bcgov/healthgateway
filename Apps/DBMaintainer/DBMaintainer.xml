@@ -1,0 +1,483 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DBMaintainer</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1">
+            <summary>
+            The base class for HealthGateway Drug file loading utility programs.
+            </summary>
+            <typeparam name="T">The parser to use to process files.</typeparam>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.#ctor(Microsoft.Extensions.Logging.ILogger,`0,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="parser">The file parser.</param>
+            <param name="downloadService">The download utility.</param>
+            <param name="configuration">The IConfiguration to use.</param>
+            <param name="drugDBContext">The database context to interact with.</param>
+        </member>
+        <member name="P:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.Parser">
+            <summary>
+            Gets or sets the file parser.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.Logger">
+            <summary>
+            Gets or sets the logger.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.Configuration">
+            <summary>
+            Gets or sets the configuration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.DownloadService">
+            <summary>
+            Gets or sets the Downloader utility which gets the file and gives us a unique hash.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.DrugDbContext">
+            <summary>
+            Gets or sets the database context to use to to interact with the DB.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.ProcessDownload(System.String,HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Processes the downloaded file.
+            </summary>
+            <param name="sourceFolder">The source folder.</param>
+            <param name="downloadedFile">The filedownload to process.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.Process(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.AddFileToDB(HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Adds the processed file to the DB to ensure we don't process again.
+            </summary>
+            <param name="downloadedFile">The FileDownload to add to the DB.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.RemoveOldFiles(HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Removes All Download Files that match the Program type but do not match the file hash.
+            </summary>
+            <param name="downloadedFile">Search for all download files not matching this one.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.DownloadFile(System.Uri,System.String)">
+            <summary>
+            Downloads the given file to the target folder.
+            </summary>
+            <param name="source">The URI of a file to download.</param>
+            <param name="targetFolder">The location to store the file.</param>
+            <returns>A FileDownload object.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.ExtractFiles(HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Extracts the file referenced via FileDownload.
+            </summary>
+            <param name="downloadedFile">The FileDownload object to extract.</param>
+            <returns>The path to the unzipped folder.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.RemoveExtractedFiles(System.String)">
+            <summary>
+            Recursively deletes the files at folder.
+            </summary>
+            <param name="folder">The folder to delete.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BaseDrugApp`1.FileProcessed(HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Confirms if the downloadedFile has been processed previously.
+            </summary>
+            <param name="downloadedFile">The file to verify.</param>
+            <returns>True if the file has been previously processed.</returns>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp">
+            <summary>
+            Utility program to load the BC Government PharmaCare drug file.
+            See https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files for reference.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp},HealthGateway.DrugMaintainer.IPharmaCareDrugParser,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp"/> class.
+            </summary>
+            <param name="logger">The logger to use.</param>
+            <param name="parser">The parser to use.</param>
+            <param name="downloadService">The Download Service Utility.</param>
+            <param name="configuration">The Configuration.</param>
+            <param name="drugDBContext">The database context.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp.ProcessDownload(System.String,HealthGateway.Database.Models.FileDownload)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.Apps.FedDrugDBApp">
+            <summary>
+            Utility program to load the Federal Government Drug Product database.
+            Reads the AllFiles zip as located and documented at
+            See https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html for reference.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.FedDrugDBApp.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.Apps.FedDrugDBApp},HealthGateway.DrugMaintainer.IDrugProductParser,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.Apps.FedDrugDBApp"/> class.
+            </summary>
+            <param name="logger">The logger to use.</param>
+            <param name="parser">The parser to use.</param>
+            <param name="downloadService">The Download Service Utility.</param>
+            <param name="configuration">The Configuration.</param>
+            <param name="drugDBContext">The database context.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.FedDrugDBApp.ProcessDownload(System.String,HealthGateway.Database.Models.FileDownload)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.Apps.IDrugApp">
+            <summary>
+            Common interface for all drug apps.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Apps.IDrugApp.Process(System.String)">
+            <summary>
+            Processes the downloaded files.
+            </summary>
+            <param name="configSectionName">The name of the configuration to use for configuration.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.ActiveIngredientMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.ActiveIngredientMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.ActiveIngredientMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.CompanyMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.CompanyMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.CompanyMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.DrugProductMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.DrugProductMapper.#ctor(HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.DrugProductMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="filedownload">The filedownload to map.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.FormMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FormMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.FormMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.PackagingMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.PackagingMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.PackagingMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.PharmaCareDrugMapper">
+            <summary>
+            Performs a mapping from the read file to the model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.PharmaCareDrugMapper.#ctor(HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.PharmaCareDrugMapper"/> class.
+            Performs the mapping of read Pharmacare file to the db model.
+            </summary>
+            <param name="filedownload">The filedownload to map.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.PharmaceuticalStdMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.PharmaceuticalStdMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.PharmaceuticalStdMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.RouteMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.RouteMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.RouteMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.ScheduleMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.ScheduleMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.ScheduleMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.StatusMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.StatusMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.StatusMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.TherapeuticMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.TherapeuticMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.TherapeuticMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.VeterinarySpeciesMapper">
+            <summary>
+            Mapping class to which maps the read file to the relavent model object.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.VeterinarySpeciesMapper.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.VeterinarySpeciesMapper"/> class.
+            Performs the mapping of the read file to the to the model.
+            </summary>
+            <param name="drugProducts">The DrugProduct to relate the object to.</param>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.FederalDrugProductParser">
+            <summary>
+            Concrete implemention of the <see cref="T:HealthGateway.DrugMaintainer.IDrugProductParser"/>.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.FederalDrugProductParser})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.FederalDrugProductParser"/> class.
+            </summary>
+            <param name="logger">The logger to use.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseDrugFile(System.String,HealthGateway.Database.Models.FileDownload)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseActiveIngredientFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseCompanyFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseStatusFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseFormFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParsePackagingFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParsePharmaceuticalStdFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseRouteFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseScheduleFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseTherapeuticFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.ParseVeterinarySpeciesFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.FederalDrugProductParser.GetFileMatching(System.String,System.String)">
+            <summary>
+            Searchs teh SourceFolder and returns a single file matching the pattern.
+            </summary>
+            <param name="sourceFolder">The source folder to search.</param>
+            <param name="fileMatch">The file pattern to match.</param>
+            <returns>The filename of the file matching.</returns>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.IDrugProductParser">
+            <summary>
+            Interface to parse each of the Federal Government drug files.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseDrugFile(System.String,HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Parses the Drug file.
+            </summary>
+            <param name="sourceFolder">The source folder of the extracted files.</param>
+            <param name="fileDownload">The file download to assoicate to the parsed records.</param>
+            <returns>A list of Drug Products.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseActiveIngredientFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the Active Ingredient file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>A list of Active ingredients.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseCompanyFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the company file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>The list of companies.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseStatusFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the status file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>the list of drug statuses.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseFormFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the form file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>The list of drug forms.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParsePackagingFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the Packaging file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>A list of drug packaging.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParsePharmaceuticalStdFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the pharmaceutical standard file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>A list of pharmaceutical std.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseRouteFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the route file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>A list of drug routes.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseScheduleFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the schedule file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>A list of drug schedules.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseTherapeuticFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the Therapeutic class file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>A list of drug therapeutic classes.</returns>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IDrugProductParser.ParseVeterinarySpeciesFile(System.String,System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.DrugProduct})">
+            <summary>
+            Parses the verterinary species file.
+            </summary>
+            <param name="filePath">The path to the file.</param>
+            <param name="drugProducts">The Drug products to link.</param>
+            <returns>A list of veterinary species.</returns>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.IPharmaCareDrugParser">
+            <summary>
+            Interface to parse the BC Pharmacare drug file.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.IPharmaCareDrugParser.ParsePharmaCareDrugFile(System.String,HealthGateway.Database.Models.FileDownload)">
+            <summary>
+            Parses the drug file.
+            </summary>
+            <param name="filename">The file to parse.</param>
+            <param name="filedownload">The related download file to associate with.</param>
+            <returns>a list of pharmacare durgs.</returns>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.PharmaCareDrugParser">
+            <summary>
+            Concrete implemention of the <see cref="T:HealthGateway.DrugMaintainer.IPharmaCareDrugParser"/>.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.PharmaCareDrugParser.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.PharmaCareDrugParser})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.PharmaCareDrugParser"/> class.
+            </summary>
+            <param name="logger">The logger to use.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.PharmaCareDrugParser.ParsePharmaCareDrugFile(System.String,HealthGateway.Database.Models.FileDownload)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.DrugMaintainer.Program">
+            <summary>
+            Drug Loader console application.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Program.Main(System.String[])">
+            <summary>
+            Main entry point.
+            </summary>
+            <param name="args">The set of command line arguments.</param>
+        </member>
+        <member name="M:HealthGateway.DrugMaintainer.Program.CreateWebHostBuilder(System.String[])">
+            <summary>
+            Creates the IHostBuilder for configuration, service injection etc.
+            </summary>
+            <returns>The IHostBuilder.</returns>
+            <param name="args">The set of command line arguments.</param>
+        </member>
+    </members>
+</doc>

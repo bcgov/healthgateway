@@ -24,10 +24,27 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
     public class ForecastStatusModel
     {
         /// <summary>
-        /// Gets or sets the Forecast Status codes.
+        /// Initializes a new instance of the <see cref="ForecastStatusModel"/> class.
+        /// </summary>
+        public ForecastStatusModel()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ForecastStatusModel"/> class.
+        /// </summary>
+        /// <param name="forcastCodes">The initialized list of forcast codes.</param>
+        [JsonConstructor]
+        public ForecastStatusModel(IList<SystemCode> forcastCodes)
+        {
+            this.ForcastCodes = forcastCodes;
+        }
+
+        /// <summary>
+        /// Gets the Forecast Status codes.
         /// </summary>
         [JsonPropertyName("forcastCodes")]
-        public IList<SystemCode> ForcastCodes { get; set; } = new List<SystemCode>();
+        public IList<SystemCode> ForcastCodes { get; } = new List<SystemCode>();
 
         /// <summary>
         /// Gets or sets the Date Criterion value.

@@ -24,21 +24,42 @@ namespace HealthGateway.Immunization.Models
     public class ImmunizationResult
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ImmunizationResult"/> class.
+        /// </summary>
+        public ImmunizationResult()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImmunizationResult"/> class.
+        /// </summary>
+        /// <param name="loadState">The load state model.</param>
+        /// <param name="immunizations">The list of immunizations.</param>
+        /// <param name="recommendations">The list of recommendations.</param>
+        [JsonConstructor]
+        public ImmunizationResult(LoadStateModel loadState, IList<ImmunizationEvent> immunizations, IList<ImmunizationRecommendation> recommendations)
+        {
+            this.LoadState = loadState;
+            this.Immunizations = immunizations;
+            this.Recommendations = recommendations;
+        }
+
+        /// <summary>
         /// Gets or sets the Load State.
         /// </summary>
         [JsonPropertyName("loadState")]
         public LoadStateModel LoadState { get; set; } = new LoadStateModel();
 
         /// <summary>
-        /// Gets or sets the list of Immunizations events.
+        /// Gets the list of Immunizations events.
         /// </summary>
         [JsonPropertyName("immunizations")]
-        public IList<ImmunizationEvent> Immunizations { get; set; } = new List<ImmunizationEvent>();
+        public IList<ImmunizationEvent> Immunizations { get; } = new List<ImmunizationEvent>();
 
         /// <summary>
-        /// Gets or sets the list of Immunizations recommendations.
+        /// Gets the list of Immunizations recommendations.
         /// </summary>
         [JsonPropertyName("recommendations")]
-        public IList<ImmunizationRecommendation> Recommendations { get; set; } = new List<ImmunizationRecommendation>();
+        public IList<ImmunizationRecommendation> Recommendations { get; } = new List<ImmunizationRecommendation>();
     }
 }

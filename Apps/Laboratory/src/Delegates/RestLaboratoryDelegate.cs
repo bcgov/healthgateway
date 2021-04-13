@@ -103,7 +103,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 WriteIndented = true,
                             };
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload, options);
+                            PhsaResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PhsaResult<List<LaboratoryOrder>>>(payload, options);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -165,7 +165,7 @@ namespace HealthGateway.Laboratory.Delegates
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                 client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                var query = new Dictionary<string, string>
+                var query = new Dictionary<string, string?>
                 {
                     ["subjectHdid"] = hdid,
                 };

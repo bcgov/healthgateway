@@ -25,31 +25,25 @@ namespace HealthGateway.Common.Delegates
     /// <summary>
     /// Delegate to encrypt/decrypt using AES.
     /// </summary>
-    public class AESCryptoDelegate : ICryptoDelegate
+    public class AesCryptoDelegate : ICryptoDelegate
     {
         private const string ConfigKey = "AESCrypto";
-        private readonly ILogger<AESCryptoDelegate> logger;
-        private readonly IConfiguration configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AESCryptoDelegate"/> class.
+        /// Initializes a new instance of the <see cref="AesCryptoDelegate"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public AESCryptoDelegate(
-            ILogger<AESCryptoDelegate> logger,
+        public AesCryptoDelegate(
             IConfiguration configuration)
         {
-            this.logger = logger;
-            this.configuration = configuration;
-            this.AesConfig = new AESCryptoDelegateConfig();
-            this.configuration.Bind(ConfigKey, this.AesConfig);
+            this.AesConfig = new AesCryptoDelegateConfig();
+            configuration.Bind(ConfigKey, this.AesConfig);
         }
 
         /// <summary>
         /// Gets or sets the instance configuration.
         /// </summary>
-        public AESCryptoDelegateConfig AesConfig { get; set; }
+        public AesCryptoDelegateConfig AesConfig { get; set; }
 
         /// <inheritdoc />
         public string Encrypt(string key, string plainText)

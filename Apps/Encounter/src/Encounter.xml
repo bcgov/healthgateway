@@ -1,0 +1,361 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Encounter</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Encounter.Controllers.EncounterController">
+            <summary>
+            The Encounter controller.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Encounter.Controllers.EncounterController.httpContextAccessor">
+            <summary>
+            Gets or sets the http context accessor.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Encounter.Controllers.EncounterController.service">
+            <summary>
+            Gets or sets the Encounter data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Controllers.EncounterController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Controllers.EncounterController},HealthGateway.Encounter.Services.IEncounterService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Controllers.EncounterController"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="service">The Encounter data service.</param>
+            <param name="httpContextAccessor">The Http Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Encounter.Controllers.EncounterController.GetEncounters(System.String)">
+            <summary>
+            Gets a json list of encounter records.
+            </summary>
+            <param name="hdid">The hdid patient id.</param>
+            <returns>a list of Encounter records.</returns>
+            <response code="200">Returns the List of Encounter records.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
+        </member>
+        <member name="T:HealthGateway.Encounter.Delegates.IMSPVisitDelegate">
+            <summary>
+            Interface to retrieve MSP Visit History.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Delegates.IMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String)">
+            <summary>
+            Returns a set of MSP Visits.
+            </summary>
+            <param name="query">The Encounter statement query execute against the ODR.</param>
+            <param name="hdid">The HDID of the user querying.</param>
+            <param name="ipAddress">The IP of the user querying.</param>
+            <returns>The Encounter Model response wrapped in an HNMessage.</returns>
+        </member>
+        <member name="T:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate">
+            <summary>
+            ODR Implementation for Rest Medication Statements.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Delegates.RestMSPVisitDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Encounter.Models.Claim">
+            <summary>
+            Represents a row in the MSP Visit Claim.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Claim.ClaimId">
+            <summary>
+            Gets or sets the ClaimId.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Claim.ServiceDate">
+            <summary>
+            Gets or sets the Service Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Claim.FeeDesc">
+            <summary>
+            Gets or sets the Fee Desc.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Claim.DiagnosticCode">
+            <summary>
+            Gets or sets the Diagnostic Code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Claim.SpecialtyDesc">
+            <summary>
+            Gets or sets the Specialty Desc.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Claim.PractitionerName">
+            <summary>
+            Gets or sets the Practitioner Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Claim.LocationName">
+            <summary>
+            Gets or sets the Location Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Claim.LocationAddress">
+            <summary>
+            Gets or sets the Location Address.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Encounter.Models.Clinic">
+            <summary>
+            The Location Address data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Clinic.Name">
+            <summary>
+            Gets or sets the Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Clinic.AddressLine1">
+            <summary>
+            Gets or sets the Address Line 1.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Clinic.AddressLine2">
+            <summary>
+            Gets or sets the Address Line 2.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Clinic.AddressLine3">
+            <summary>
+            Gets or sets the Address Line 3.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Clinic.AddressLine4">
+            <summary>
+            Gets or sets the Address Line 4.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Clinic.City">
+            <summary>
+            Gets or sets the City.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Clinic.PostalCode">
+            <summary>
+            Gets or sets the Postal Code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.Clinic.Province">
+            <summary>
+            Gets or sets the Province.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Encounter.Models.DiagnosticCode">
+            <summary>
+            Represents a row in the Diagnostic Code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.DiagnosticCode.DiagCode1">
+            <summary>
+            Gets or sets the Diagnostic Code 1.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.DiagnosticCode.DiagCode2">
+            <summary>
+            Gets or sets the Diagnostic Code 2.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.DiagnosticCode.DiagCode3">
+            <summary>
+            Gets or sets the Diagnostic Code 3.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Encounter.Models.EncounterModel">
+            <summary>
+            Represents a patient Encounter.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.EncounterModel.Id">
+            <summary>
+            Gets or sets the Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.EncounterModel.EncounterDate">
+            <summary>
+            Gets or sets the EncounterDate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.EncounterModel.SpecialtyDescription">
+            <summary>
+            Gets or sets the Specialty Description.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.EncounterModel.PractitionerName">
+            <summary>
+            Gets or sets the Practitioner Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.EncounterModel.Clinic">
+            <summary>
+            Gets or sets the Location Name.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Models.EncounterModel.FromODRClaimModel(HealthGateway.Encounter.Models.Claim)">
+            <summary>
+            Creates an Encounter object from an ODR model.
+            </summary>
+            <param name="model">The claim result to convert.</param>
+            <returns>The newly created Encounter object.</returns>
+        </member>
+        <member name="M:HealthGateway.Encounter.Models.EncounterModel.FromODRClaimModelList(System.Collections.Generic.IEnumerable{HealthGateway.Encounter.Models.Claim})">
+            <summary>
+            Creates an Encounter list from an ODR model.
+            </summary>
+            <param name="models">The list of ODR models to convert.</param>
+            <returns>A list of Encounter objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Encounter.Models.LocationAddress">
+            <summary>
+            The Location Address data model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.LocationAddress.AddrLine1">
+            <summary>
+            Gets or sets the Address Line 1.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.LocationAddress.AddrLine2">
+            <summary>
+            Gets or sets the Address Line 2.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.LocationAddress.AddrLine3">
+            <summary>
+            Gets or sets the Address Line 3.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.LocationAddress.AddrLine4">
+            <summary>
+            Gets or sets the Address Line 4.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.LocationAddress.City">
+            <summary>
+            Gets or sets the City.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.LocationAddress.PostalCode">
+            <summary>
+            Gets or sets the Postal Code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.LocationAddress.Province">
+            <summary>
+            Gets or sets the Province.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Encounter.Models.ODR.MSPVisitHistory">
+            <summary>
+            Object that defines the MSP Visit History Request/Response model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.ODR.MSPVisitHistory.Query">
+            <summary>
+            Gets or sets the OdrHistoryQuery for the MSPVisitHistory integration.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.ODR.MSPVisitHistory.Response">
+            <summary>
+            Gets or sets the MSPVisitHistoryResponse for the MSPVisitHistory integration.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Encounter.Models.ODR.MSPVisitHistoryResponse">
+            <summary>
+            The ODR MSP Visit History Response.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Encounter.Models.ODR.MSPVisitHistoryResponse.Claims">
+            <summary>
+            Gets or sets the set of Claims.
+            The set is boud by the other class properties.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Encounter.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.Encounter.Program.CreateHostBuilder(System.String[])">
+            <summary>.
+            Creates the IWebHostBuilder.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.Encounter.Services.EncounterService">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Encounter.Services.EncounterService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Services.EncounterService},Microsoft.AspNetCore.Http.IHttpContextAccessor,HealthGateway.Common.Services.IPatientService,HealthGateway.Encounter.Delegates.IMSPVisitDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Services.EncounterService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpAccessor">The injected http context accessor provider.</param>
+            <param name="patientService">The injected patient registry provider.</param>
+            <param name="mspVisitDelegate">The MSPVisit delegate.</param>
+        </member>
+        <member name="M:HealthGateway.Encounter.Services.EncounterService.GetEncounters(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Encounter.Services.IEncounterService">
+            <summary>
+            The Encounter data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Services.IEncounterService.GetEncounters(System.String)">
+            <summary>
+            Gets a of Encounters.
+            </summary>
+            <param name="hdid">The health directed id for the subject.</param>
+            <returns>Returns a list of claims.</returns>
+        </member>
+        <member name="T:HealthGateway.Encounter.Startup">
+            <summary>
+            Configures the application during startup.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Startup"/> class.
+            </summary>
+            <param name="env">The injected Environment provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Encounter.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The injected services provider.</param>
+        </member>
+        <member name="M:HealthGateway.Encounter.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The application builder.</param>
+        </member>
+    </members>
+</doc>

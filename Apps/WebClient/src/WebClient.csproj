@@ -9,8 +9,10 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DocumentationFile>.\WebClient.xml</DocumentationFile>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -88,4 +90,7 @@
     </ItemGroup>
   </Target>
 
+  <ItemGroup>
+    <PackageReference Update="Microsoft.CodeAnalysis" Version="3.9.0" />
+  </ItemGroup>
 </Project>

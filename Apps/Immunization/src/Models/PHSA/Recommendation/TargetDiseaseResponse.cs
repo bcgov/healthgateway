@@ -24,9 +24,26 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
     public class TargetDiseaseResponse
     {
         /// <summary>
-        /// Gets or sets the Target Disese Codes.
+        /// Initializes a new instance of the <see cref="TargetDiseaseResponse"/> class.
+        /// </summary>
+        public TargetDiseaseResponse()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TargetDiseaseResponse"/> class.
+        /// </summary>
+        /// <param name="targetDiseaseCodes">The initialized list of target disease codes.</param>
+        [JsonConstructor]
+        public TargetDiseaseResponse(IList<SystemCode> targetDiseaseCodes)
+        {
+            this.TargetDiseaseCodes = targetDiseaseCodes;
+        }
+
+        /// <summary>
+        /// Gets the Target Disese Codes.
         /// </summary>
         [JsonPropertyName("targetDiseaseCodes")]
-        public IList<SystemCode> targetDiseaseCodes { get; set; } = new List<SystemCode>();
+        public IList<SystemCode> TargetDiseaseCodes { get; } = new List<SystemCode>();
     }
 }

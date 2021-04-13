@@ -19,6 +19,7 @@ namespace HealthGateway.Common.Services
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
+    using System.Security.Cryptography;
     using System.Text.Json;
     using System.Threading.Tasks;
     using Hangfire;
@@ -57,6 +58,24 @@ namespace HealthGateway.Common.Services
             this.jobClient = jobClient;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
+        }
+
+        /// <summary>
+        /// Creates a new 6 digit verification code.
+        /// </summary>
+        /// <returns>The verification code.</returns>
+        public static string CreateVerificationCode()
+        {
+            using (RandomNumberGenerator generator = RandomNumberGenerator.Create())
+            {
+                byte[] data = new byte[4];
+                generator.GetBytes(data);
+                return
+                    BitConverter
+                        .ToUInt32(data)
+                        .ToString("D6", CultureInfo.InvariantCulture)
+                        .Substring(0, 6);
+            }
         }
 
         /// <inheritdoc />
@@ -118,8 +137,7 @@ namespace HealthGateway.Common.Services
             if (notificationSettings.SMSEnabled && string.IsNullOrEmpty(notificationSettings.SMSVerificationCode))
             {
                 // Create the SMS validation code if the SMS is not verified and the caller didn't set it.
-                Random generator = new Random();
-                notificationSettings.SMSVerificationCode = generator.Next(0, 999999).ToString("D6", CultureInfo.InvariantCulture);
+                notificationSettings.SMSVerificationCode = CreateVerificationCode();
             }
 
             return notificationSettings;

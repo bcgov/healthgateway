@@ -17,7 +17,7 @@ namespace HealthGateway.WebClient.Models
 {
     using System;
     using System.Collections.Generic;
-
+    using System.Text.Json.Serialization;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -25,6 +25,23 @@ namespace HealthGateway.WebClient.Models
     /// </summary>
     public class UserProfileModel
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileModel"/> class.
+        /// </summary>
+        public UserProfileModel()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserProfileModel"/> class.
+        /// </summary>
+        /// <param name="preferences">The dictionary of preferences.</param>
+        [JsonConstructor]
+        public UserProfileModel(IDictionary<string, UserPreferenceModel> preferences)
+        {
+            this.Preferences = preferences;
+        }
+
         /// <summary>
         /// Gets or sets the user hdid.
         /// </summary>
@@ -72,9 +89,9 @@ namespace HealthGateway.WebClient.Models
         public DateTime? ClosedDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the user preference.
+        /// Gets the user preference.
         /// </summary>
-        public IDictionary<string, UserPreferenceModel> Preferences { get; set; } = new Dictionary<string, UserPreferenceModel>();
+        public IDictionary<string, UserPreferenceModel> Preferences { get; } = new Dictionary<string, UserPreferenceModel>();
 
         /// <summary>
         /// Constructs a UserProfile model from a UserProfile database model.

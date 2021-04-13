@@ -218,14 +218,14 @@ namespace HealthGateway.WebClient.Services
                                              .GetLeftPart(UriPartial.Authority);
             string hostUrl = activationHost.ToString();
 
-            Dictionary<string, string> keyValues = new()
+            Dictionary<string, string> keyValues = new ()
             {
                 [EmailTemplateVariable.InviteKey] = inviteKey.ToString(),
                 [EmailTemplateVariable.ActivationHost] = hostUrl,
                 [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 
-            MessagingVerification messageVerification = new()
+            MessagingVerification messageVerification = new ()
             {
                 InviteKey = inviteKey,
                 HdId = hdid,
