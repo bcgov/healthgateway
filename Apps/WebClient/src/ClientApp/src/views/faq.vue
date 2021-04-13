@@ -234,7 +234,7 @@
                                 access to information within the regional
                                 systems. We are collaborating with our health
                                 sector partners to ensure we are providing
-                                complimentary services.
+                                complementary services.
                             </p>
                         </div></b-card-text
                     >
