@@ -127,9 +127,9 @@ export default class ImmunizationTimelineComponent extends Vue {
                             <p data-testid="forecastFollowDirections">
                                 For your COVID-19 second dose you will be
                                 notified by email, text or phone call when you
-                                are eligible to book an appointment. For 
-                                information on recommended immunizations,
-                                please visit
+                                are eligible to book an appointment. For
+                                information on recommended immunizations, please
+                                visit
                                 <a href="https://immunizebc.ca/" target="blank_"
                                     >https://immunizebc.ca/</a
                                 >
