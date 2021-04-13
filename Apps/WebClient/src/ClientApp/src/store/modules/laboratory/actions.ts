@@ -2,7 +2,7 @@ import { ActionTree } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
 import { LaboratoryOrder } from "@/models/laboratory";
-import RequestResult from "@/models/requestResult";
+import RequestResult, { ResultError } from "@/models/requestResult";
 import { LaboratoryState, LoadStatus, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -44,19 +44,25 @@ export const actions: ActionTree<LaboratoryState, RootState> = {
                             );
                             resolve(result);
                         } else {
-                            context.commit(
-                                "laboratoryError",
-                                result.resultError
-                            );
+                            context.dispatch("handleError", result.resultError);
                             reject(result.resultError);
                         }
                     })
                     .catch((error) => {
-                        logger.error(`ERROR: ${JSON.stringify(error)}`);
-                        context.commit("laboratoryError", error);
+                        context.dispatch("handleError", error);
                         reject(error);
                     });
             }
         });
+    },
+    handleError(context, error: ResultError) {
+        logger.error(`ERROR: ${JSON.stringify(error)}`);
+        context.commit("laboratoryError", error);
+
+        context.dispatch(
+            "errorBanner/addResultError",
+            { message: "Fetch Laboratory Orders Error", error },
+            { root: true }
+        );
     },
 };
