@@ -66,20 +66,10 @@ describe("Immunization", () => {
             .first()
             .contains("Covid-191");
         cy.get("[data-testid=forecastDueDate]").first().should("be.visible");
-        cy.get("[data-testid=forecastDueDate]").first().contains("2021-01-31");
         cy.get("[data-testid=forecastStatus]").first().should("be.visible");
-        cy.get("[data-testid=forecastStatus]").first().contains("Eligible");
         cy.get("[data-testid=forecastFollowDirections]")
             .first()
-            .contains(
-                " Please follow directions from your COVID vaccine provider for information on COVID-19 2nd dose. For information on recommended immunizations, please visit "
-            );
-        cy.get("[data-testid=forecastFollowDirections]")
-            .first()
-            .contains("https://immunizebc.ca/");
-        cy.get("[data-testid=forecastFollowDirections]")
-            .first()
-            .contains("or contact your local Public Health Unit.");
+            .should("be.visible");
     });
 
     it("Validate Proof of Immunization Card & Download", () => {
