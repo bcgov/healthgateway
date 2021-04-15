@@ -27,47 +27,5 @@ namespace HealthGateway.Encounter.Models
         /// </summary>
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Address Line 1.
-        /// </summary>
-        [JsonPropertyName("addressLine1")]
-        public string AddressLine1 { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Address Line 2.
-        /// </summary>
-        [JsonPropertyName("addressLine2")]
-        public string AddressLine2 { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Address Line 3.
-        /// </summary>
-        [JsonPropertyName("addressLine3")]
-        public string AddressLine3 { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Address Line 4.
-        /// </summary>
-        [JsonPropertyName("addressLine4")]
-        public string AddressLine4 { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the City.
-        /// </summary>
-        [JsonPropertyName("city")]
-        public string City { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Postal Code.
-        /// </summary>
-        [JsonPropertyName("postalCode")]
-        public string PostalCode { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Province.
-        /// </summary>
-        [JsonPropertyName("province")]
-        public string Province { get; set; } = string.Empty;
     }
 }

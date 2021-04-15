@@ -62,13 +62,6 @@ namespace HealthGateway.EncounterTests
                 Clinic = new Clinic()
                 {
                     Name = "LOCATION NAME",
-                    AddressLine1 = "address line 1",
-                    AddressLine2 = "address line 2",
-                    AddressLine3 = "address line 3",
-                    AddressLine4 = "address line 4",
-                    City = "Victoria",
-                    PostalCode = "V9V9V9",
-                    Province = "BC",
                 },
             });
             encounters.Add(new EncounterModel()
@@ -80,13 +73,6 @@ namespace HealthGateway.EncounterTests
                 Clinic = new Clinic()
                 {
                     Name = "LOCATION NAME",
-                    AddressLine1 = "address line 1",
-                    AddressLine2 = "address line 2",
-                    AddressLine3 = "address line 3",
-                    AddressLine4 = "address line 4",
-                    City = "Victoria",
-                    PostalCode = "V9V9V9",
-                    Province = "BC",
                 },
             });
             result.ResourcePayload = encounters;

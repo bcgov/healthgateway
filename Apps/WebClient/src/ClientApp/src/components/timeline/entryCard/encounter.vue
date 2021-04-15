@@ -8,7 +8,6 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
-import PhoneUtil from "@/utility/phoneUtil";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
@@ -29,10 +28,6 @@ export default class EncounterTimelineComponent extends Vue {
 
     private get infoIcon(): IconDefinition {
         return faInfo;
-    }
-
-    private formatPhone(phoneNumber: string): string {
-        return PhoneUtil.formatPhone(phoneNumber);
     }
 }
 </script>
@@ -71,12 +66,6 @@ export default class EncounterTimelineComponent extends Vue {
                 </div>
                 <div data-testid="encounterClinicName">
                     {{ entry.clinic.name }}
-                </div>
-                <div data-testid="encounterClinicAddress">
-                    {{ entry.clinic.address }}
-                </div>
-                <div data-testid="encounterClinicPhone">
-                    {{ formatPhone(entry.clinic.phoneNumber) }}
                 </div>
             </b-col>
         </b-row>
