@@ -26,8 +26,5 @@ describe("MSP Visits", () => {
         entryDetails
             .get("[data-testid=encounterClinicName")
             .should("be.visible");
-        entryDetails
-            .get("[data-testid=encounterClinicAddress")
-            .should("be.visible");
     });
 });

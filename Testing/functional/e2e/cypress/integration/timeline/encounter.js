@@ -16,6 +16,5 @@ describe("MSP Visits", () => {
         cy.get("[data-testid=entryCardDetailsTitle").first().click();
         cy.get("[data-testid=encounterClinicLabel").should("be.visible");
         cy.get("[data-testid=encounterClinicName").should("be.visible");
-        cy.get("[data-testid=encounterClinicAddress").should("be.visible");
     });
 });

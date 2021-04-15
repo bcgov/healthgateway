@@ -123,41 +123,6 @@
             Gets or sets the Name.
             </summary>
         </member>
-        <member name="P:HealthGateway.Encounter.Models.Clinic.AddressLine1">
-            <summary>
-            Gets or sets the Address Line 1.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Encounter.Models.Clinic.AddressLine2">
-            <summary>
-            Gets or sets the Address Line 2.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Encounter.Models.Clinic.AddressLine3">
-            <summary>
-            Gets or sets the Address Line 3.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Encounter.Models.Clinic.AddressLine4">
-            <summary>
-            Gets or sets the Address Line 4.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Encounter.Models.Clinic.City">
-            <summary>
-            Gets or sets the City.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Encounter.Models.Clinic.PostalCode">
-            <summary>
-            Gets or sets the Postal Code.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Encounter.Models.Clinic.Province">
-            <summary>
-            Gets or sets the Province.
-            </summary>
-        </member>
         <member name="T:HealthGateway.Encounter.Models.DiagnosticCode">
             <summary>
             Represents a row in the Diagnostic Code.

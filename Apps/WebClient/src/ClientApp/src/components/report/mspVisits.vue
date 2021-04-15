@@ -81,23 +81,6 @@ export default class MSPVisitsReportComponent extends Vue {
         return new DateWrapper(date).format();
     }
 
-    private formatAddress(encounter: Encounter): string {
-        var clinic = encounter.clinic;
-        return [
-            clinic.addressLine1,
-            clinic.addressLine2,
-            clinic.addressLine3,
-            clinic.addressLine4,
-        ].join(" ");
-    }
-
-    private formatCityProvince(encounter: Encounter): string {
-        var clinic = encounter.clinic;
-        return `${clinic.city || ""} ${clinic.province || ""}, ${
-            clinic.postalCode || ""
-        }`;
-    }
-
     public async generatePdf(): Promise<void> {
         this.logger.debug("generating Health Visits PDF...");
         this.isPreview = false;
@@ -128,7 +111,6 @@ export default class MSPVisitsReportComponent extends Vue {
                     <b-col>Specialty Description</b-col>
                     <b-col>Practitioner</b-col>
                     <b-col>Clinic/Practitioner</b-col>
-                    <b-col>Address</b-col>
                 </b-row>
                 <b-row
                     v-for="item in visibleRecords"
@@ -146,11 +128,6 @@ export default class MSPVisitsReportComponent extends Vue {
                     </b-col>
                     <b-col class="my-auto">
                         {{ item.clinic.name }}
-                    </b-col>
-                    <b-col class="my-auto">
-                        {{ formatAddress(item) }}
-                        <br />
-                        {{ formatCityProvince(item) }}
                     </b-col>
                 </b-row>
             </section>
