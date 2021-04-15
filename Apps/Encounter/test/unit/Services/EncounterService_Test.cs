@@ -119,17 +119,8 @@ namespace HealthGateway.Encounter.Test.Service
                 mockMSPDelegate.Object);
 
             var actualResult = service.GetEncounters(hdid).Result;
-            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Success);
+            Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.Equal(2, actualResult.ResourcePayload.Count()); // should return distint claims only.
-#pragma warning disable CA5351 // Do Not Use Broken Cryptographic Algorithms
-#pragma warning disable SCS0006 // Weak hashing function
-            using var md5CryptoService = MD5.Create();
-#pragma warning restore SCS0006 // Weak hashing function
-#pragma warning restore CA5351 // Do Not Use Broken Cryptographic Algorithms
-            var model = actualResult.ResourcePayload.First();
-            var generatedId = new Guid(md5CryptoService.ComputeHash(Encoding.Default.GetBytes($"{model.EncounterDate:yyyyMMdd}{model.SpecialtyDescription}{model.PractitionerName}{model.Clinic.Name}{model.Clinic.Province}{model.Clinic.City}{model.Clinic.PostalCode}{model.Clinic.AddressLine1}{model.Clinic.AddressLine2}{model.Clinic.AddressLine3}{model.Clinic.AddressLine4}")));
-            var expectedGeneratedId = new Guid(md5CryptoService.ComputeHash(Encoding.Default.GetBytes($"{this.sameClaim.ServiceDate:yyyyMMdd}{this.sameClaim.SpecialtyDesc}{this.sameClaim.PractitionerName}{this.sameClaim.LocationName}{this.sameClaim.LocationAddress.Province}{this.sameClaim.LocationAddress.City}{this.sameClaim.LocationAddress.PostalCode}{this.sameClaim.LocationAddress.AddrLine1}{this.sameClaim.LocationAddress.AddrLine2}{this.sameClaim.LocationAddress.AddrLine3}{this.sameClaim.LocationAddress.AddrLine4}")));
-            Assert.Equal(expectedGeneratedId, generatedId);
         }
 
         [Fact]
