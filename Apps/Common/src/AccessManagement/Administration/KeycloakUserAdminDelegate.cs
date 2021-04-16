@@ -78,7 +78,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <inheritdoc/>
-        public UserRepresentation GetUser(Guid userId, JWTModel jwtModel)
+        public UserRepresentation GetUser(Guid userId, JwtModel jwtModel)
         {
             this.logger.LogInformation($"Keycloak GetUser : {userId.ToString()}");
 
@@ -86,7 +86,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         }
 
         /// <inheritdoc/>
-        public bool DeleteUser(Guid userId, JWTModel jwtModel)
+        public bool DeleteUser(Guid userId, JwtModel jwtModel)
         {
             this.logger.LogInformation($"Keycloak DeleteUser : {userId.ToString()}");
 
@@ -106,7 +106,7 @@ namespace HealthGateway.Common.AccessManagement.Administration
         /// <param name="userId">The user id to delete.</param>
         /// <param name="jwtModel">To get at the base64 access token.</param>
         /// <returns>returns true when user deleted.</returns>
-        private async Task<bool> DeleteUserAsync(Guid userId, JWTModel jwtModel)
+        private async Task<bool> DeleteUserAsync(Guid userId, JwtModel jwtModel)
         {
             Uri baseUri = new Uri(this.configuration.GetSection(KEYCLOAKADMIN).GetValue<string>(DELETEUSERURL));
 

@@ -21,21 +21,23 @@ namespace HealthGateway.CommonTests.Utils
     /// Mock Method Info.
     /// </summary>
     [AuthorizeAttribute]
-    public class MockMethodInfo
+    public static class MockMethodInfo
     {
         /// <summary>
         /// Mock Method.
         /// </summary>
-        public void MockMethod()
+        public static void MockMethod()
         {
+            return;
         }
 
         /// <summary>
         /// Authorized Method.
         /// </summary>
         [Authorize]
-        public void AuthorizedMethod()
+        public static void AuthorizedMethod()
         {
+            return;
         }
     }
 }

@@ -51,18 +51,16 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public async Task<RequestResult<ImmunizationResult>> GetImmunizations(string bearerToken, int pageIndex = 0)
         {
-            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(bearerToken, pageIndex).ConfigureAwait(true);
+            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(bearerToken, pageIndex).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
                 return new RequestResult<ImmunizationResult>()
                 {
                     ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = new ImmunizationResult()
-                    {
-                        LoadState = LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload!.LoadState),
-                        Immunizations = ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
-                        Recommendations = ImmunizationRecommendation.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations),
-                    },
+                    ResourcePayload = new ImmunizationResult(
+                        LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload!.LoadState),
+                        ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
+                        ImmunizationRecommendation.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations)),
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,

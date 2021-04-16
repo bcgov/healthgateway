@@ -6,5 +6,5 @@ export const getters: GetterTree<DrawerState, RootState> = {
     isOpen(state: DrawerState): boolean {
         const { isOpen } = state;
         return isOpen;
-    }
+    },
 };

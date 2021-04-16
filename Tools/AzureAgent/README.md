@@ -10,17 +10,17 @@ A Personal Access Token (PAT) is an authentication method similar to using a pas
 
 An Azure DevOps Administrator will have to:
 
-* Open up a web browser and in the Azure DevOps portal, click user settings where the PAT settings exist.
-* Click on New Token
-* Give it a name and pick an expiry out the maximum
-* In the scopes section Custom defined is selected
-* Scroll to the bottom and click on Show all scopes
-* Under Agent Pools enable Read & Manage
-* Click create and take note of the PAT which will be used during deployment
+-   Open up a web browser and in the Azure DevOps portal, click user settings where the PAT settings exist.
+-   Click on New Token
+-   Give it a name and pick an expiry out the maximum
+-   In the scopes section Custom defined is selected
+-   Scroll to the bottom and click on Show all scopes
+-   Under Agent Pools enable Read & Manage
+-   Click create and take note of the PAT which will be used during deployment
 
 ## Deployment
 
-You need to ensure that the Network Security Policy has been applied to the namespace.  Our reference NSP is located at:
+You need to ensure that the Network Security Policy has been applied to the namespace. Our reference NSP is located at:
 /Tools/BaseBuild
 
 Please reference the [README.md](../BaseBuild/README.md) for detailed deployment instructions.
@@ -51,7 +51,7 @@ buildconfig.build.openshift.io/azure-agent-build created
 deploymentconfig.apps.openshift.io/azure-agent created
 ```
 
-Note:  if you run the script more than once you may see
+Note: if you run the script more than once you may see
 
 ```console
 error: map: map[] does not contain declared merge key: name
@@ -84,8 +84,8 @@ oc delete serviceaccount,rolebinding,en,nsp,cm,secret,is,bc,dc --selector app=az
 
 If you need to update the base image that the Azure agent uses you would
 
-* Update the docker/Dockerfile
-* Commit to the dev branch
-* Trigger a new build in OpenShift UI
+-   Update the docker/Dockerfile
+-   Commit to the dev branch
+-   Trigger a new build in OpenShift UI
 
 This is only required if software version need to change, the Azure Agent itself will update on each start.

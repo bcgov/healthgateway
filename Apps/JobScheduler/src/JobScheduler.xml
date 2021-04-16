@@ -1,0 +1,553 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JobScheduler</name>
+    </assembly>
+    <members>
+        <member name="T:Healthgateway.JobScheduler.Context.HangfireDbContext">
+            <summary>
+            The empty Hanfgire DB Context for intiial DB migration.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Context.HangfireDbContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{Healthgateway.JobScheduler.Context.HangfireDbContext})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Context.HangfireDbContext"/> class.
+            </summary>
+            <param name="options">The passed in DB Options.</param>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.CleanCacheJob">
+            <summary>
+            Removes expired cache entries from the GenericCache table.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.CleanCacheJob.#ctor(System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.CleanCacheJob},HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.CleanCacheJob"/> class.
+            </summary>
+            <param name="serviceProvider">The dotnet service provider.</param>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="dbContext">The db context to use.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.CleanCacheJob.Process">
+            <summary>
+            Reads the configuration and will instantiate and run the class a single time.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.CloseAccountJob">
+            <summary>
+            Confirms if a new Legal Agreement is in place and notifies clients.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.CloseAccountJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.CloseAccountJob},HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Common.AccessManagement.Administration.IUserAdminDelegate,HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.CloseAccountJob"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="profileDelegate">The profile delegate.</param>
+            <param name="emailService">The email service.</param>
+            <param name="authDelegate">The OAuth2 authentication service.</param>
+            <param name="userAdminDelegate">The AccessManagement userAdmin delegate.</param>
+            <param name="dbContext">The db context to use.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.CloseAccountJob.Process">
+            <summary>
+            Deletes any closed accounts that are over n hours old.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.CommunicationJob">
+            <inheritdoc />
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.CommunicationJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.CommunicationJob},HealthGateway.Database.Delegates.ICommunicationDelegate,HealthGateway.Database.Delegates.ICommunicationEmailDelegate,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.CommunicationJob"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="communicationDelegate">The Communication delegate to use.</param>
+            <param name="commEmailDelegate">The Communication Email delegate to use.</param>
+            <param name="emailQueueService">The email queue service to use.</param>
+            <param name="dbContext">The db context to use.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.CommunicationJob.CreateCommunicationEmailsForNewCommunications">
+            <inheritdoc />
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.DBMigrationsJob">
+            <summary>
+            Runs the Database migrations as needed.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.DBMigrationsJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.DBMigrationsJob},HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.DBMigrationsJob"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="dbContext">The db context to use.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.DBMigrationsJob.Migrate">
+            <summary>
+            Runs the Database migrations.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.DeleteEmailJob">
+            <summary>
+            Deletes emails after a configurable amount of days.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.DeleteEmailJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.EmailJob},HealthGateway.Database.Delegates.IEmailDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.DeleteEmailJob"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="emailDelegate">The email delegate to use.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.DeleteEmailJob.DeleteOldEmails">
+            <summary>
+            Deletes a configurable amount of emails (DeleteMaxRows) after a configurable amount of time in days (DeleteAfterDays).
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.EmailJob">
+            <inheritdoc />
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.EmailJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.EmailJob},HealthGateway.Database.Delegates.IEmailDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.EmailJob"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="emailDelegate">The email delegate to use.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.EmailJob.SendEmail(System.Guid)">
+            <inheritdoc />
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.EmailJob.SendLowPriorityEmails">
+            <inheritdoc />
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.EmailJob.SendStandardPriorityEmails">
+            <inheritdoc />
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.EmailJob.SendHighPriorityEmails">
+            <inheritdoc />
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.EmailJob.SendUrgentPriorityEmails">
+            <inheritdoc />
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.FedDrugJob">
+            <summary>
+            Utility program to load the Federal Government Drug Product database.
+            Reads the AllFiles zip as located and documented at
+            https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.FedDrugJob.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.Apps.FedDrugDBApp},HealthGateway.DrugMaintainer.IDrugProductParser,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.FedDrugJob"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="parser">The file parser.</param>
+            <param name="downloadService">The download utility.</param>
+            <param name="configuration">The IConfiguration to use.</param>
+            <param name="drugDBContext">The database context to interact with.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.FedDrugJob.Process(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.NotificationSettingsJob">
+            <inheritdoc />
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.NotificationSettingsJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.NotificationSettingsJob},HealthGateway.Common.Delegates.INotificationSettingsDelegate,HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate,HealthGateway.Database.Delegates.IEventLogDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.NotificationSettingsJob"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="notificationSettingsDelegate">The email delegate to use.</param>
+            <param name="authDelegate">The OAuth2 authentication service.</param>
+            <param name="eventLogDelegate">The Eventlog delegate.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.NotificationSettingsJob.PushNotificationSettings(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.NotifyUpdatedLegalAgreementsJob">
+            <summary>
+            Confirms if a new Legal Agreement is in place and notifies clients.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.NotifyUpdatedLegalAgreementsJob.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.NotifyUpdatedLegalAgreementsJob},HealthGateway.Database.Delegates.IApplicationSettingsDelegate,HealthGateway.Database.Delegates.ILegalAgreementDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,HealthGateway.Common.Services.IEmailQueueService,HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.NotifyUpdatedLegalAgreementsJob"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="applicationSettingsDelegate">The application settings delegate.</param>
+            <param name="legalAgreementDelegate">The legal agreement delegate.</param>
+            <param name="profileDelegate">The profile delegate.</param>
+            <param name="emailService">The email service.</param>
+            <param name="dbContext">The db context to use.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.NotifyUpdatedLegalAgreementsJob.Process">
+            <summary>
+            Determines if any legal agreements notifications need to be sent out to the users.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.OneTimeJob">
+            <summary>
+            The OneTimeJob will run arbitrary IOneTimeTask (configurable) once.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.OneTimeJob.#ctor(System.IServiceProvider,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Jobs.OneTimeJob},HealthGateway.Database.Context.GatewayDbContext,HealthGateway.Database.Delegates.IApplicationSettingsDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.OneTimeJob"/> class.
+            </summary>
+            <param name="serviceProvider">The dotnet service provider.</param>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="dbContext">The db context to use.</param>
+            <param name="applicationSettingsDelegate">The job settings in the DB.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.OneTimeJob.Process">
+            <summary>
+            Reads the configuration and will instantiate and run the class a single time.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Jobs.ProvincialDrugJob">
+            <summary>
+            Utility program to load the BC Government PharmaCare drug file.
+            https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.ProvincialDrugJob.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp},HealthGateway.DrugMaintainer.IPharmaCareDrugParser,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.ProvincialDrugJob"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="parser">The file parser.</param>
+            <param name="downloadService">The download utility.</param>
+            <param name="configuration">The IConfiguration to use.</param>
+            <param name="drugDBContext">The database context to interact with.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Jobs.ProvincialDrugJob.Process(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Models.HNClientResult">
+            <summary>
+            Represents the RocketChat Configuration.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Models.HNClientResult.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Models.HNClientResult"/> class.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.HNClientResult.HL7Message">
+            <summary>
+            Gets or sets the HL7 Message.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.HNClientResult.Error">
+            <summary>
+            Gets or sets a value indicating whether an error has occurred.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.HNClientResult.ErrorMessage">
+            <summary>
+            Gets or sets the Error Message.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Models.JobConfiguration">
+            <summary>
+            Represents configuration for a job instance.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.JobConfiguration.Id">
+            <summary>
+            Gets or sets the Job Id.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.JobConfiguration.Schedule">
+            <summary>
+            Gets or sets the CRON schedule for the job.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.JobConfiguration.Immediate">
+            <summary>
+            Gets or sets a value indicating whether the job should be run near immediately after scheduling.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.JobConfiguration.Delay">
+            <summary>
+            Gets or sets the delay when queueing the immediate job.
+            This value is required as the jobs are schedued async and the DB may not be setup yet.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Models.LegalAgreementConfig">
+            <summary>
+            Represents the LegalAgreement Configuration.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Models.LegalAgreementConfig.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Models.LegalAgreementConfig"/> class.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.LegalAgreementConfig.Name">
+            <summary>
+            Gets or sets the Legal Document name.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.LegalAgreementConfig.Code">
+            <summary>
+            Gets or sets the Legal Agreement code.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.LegalAgreementConfig.LastCheckedKey">
+            <summary>
+            Gets or sets the application setting key to look up the last processed date.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.LegalAgreementConfig.EmailTemplate">
+            <summary>
+            Gets or sets the email template to use for notifications.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.LegalAgreementConfig.Path">
+            <summary>
+            Gets or sets the location to review the agreement relative to the host.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.LegalAgreementConfig.ContactEmail">
+            <summary>
+            Gets or sets the contact email for the agreement.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Models.RocketChatAttachment">
+            <summary>
+            Represents a RocketChat web hook attachment object.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Models.RocketChatAttachment.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Models.RocketChatAttachment"/> class.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatAttachment.Title">
+            <summary>
+            Gets or sets the Title of the attachment.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatAttachment.TitleLink">
+            <summary>
+            Gets or sets the attachment URL link.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatAttachment.Text">
+            <summary>
+            Gets or sets the text associated to the attachment.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatAttachment.ImageUrl">
+            <summary>
+            Gets or sets the image URL for the attachment.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatAttachment.Color">
+            <summary>
+            Gets or sets the color of the text.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Models.RocketChatConfig">
+            <summary>
+            Represents the RocketChat Configuration.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Models.RocketChatConfig.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Models.RocketChatConfig"/> class.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatConfig.Message">
+            <summary>
+            Gets or sets the Rocket Chat Message to be posted.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatConfig.WebHookURL">
+            <summary>
+            Gets or sets the webhook URL to post the message to.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Models.RocketChatMessage">
+            <summary>
+            Represents a RocketChat Web Hook object.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Models.RocketChatMessage.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Models.RocketChatMessage"/> class.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatMessage.IconEmoji">
+            <summary>
+            Gets or sets the Emoji Icon for the message.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatMessage.Text">
+            <summary>
+            Gets or sets the Message text.
+            </summary>
+        </member>
+        <member name="P:Healthgateway.JobScheduler.Models.RocketChatMessage.Attachments">
+            <summary>
+            Gets or sets the list of attachments.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Tasks.IOneTimeTask">
+            <summary>
+            A task that should be invoked only once from the OneTimeJob.
+            Any DB access should not commit and should defer to the Job to do so.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Tasks.IOneTimeTask.Run">
+            <summary>
+            Runs the task that needs to be done for the IOneTimeTask.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA">
+            <summary>
+            Queries the Health Gateway DB for all current users with emails.
+            Queues NotificationSettings job for each.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA},HealthGateway.Database.Context.GatewayDbContext,HealthGateway.Common.Services.INotificationSettingsService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA"/> class.
+            </summary>
+            <param name="configuration">The configuration to use.</param>
+            <param name="logger">The logger to use.</param>
+            <param name="dbContext">The db context to use.</param>
+            <param name="notificationSettingsService">The notification settings service.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA.Run">
+            <summary>
+            Runs the task that needs to be done for the IOneTimeTask.
+            </summary>
+        </member>
+        <member name="T:Healthgateway.JobScheduler.Utils.SchedulerHelper">
+            <summary>
+            Utility class to streamline Scheduling jobs.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Utils.SchedulerHelper.ScheduleDrugLoadJob``1(Microsoft.Extensions.Configuration.IConfiguration,System.String)">
+            <summary>
+            Schedules a Drug Load job, looking up the cron schedule and the jobid from configuration.
+            </summary>
+            <typeparam name="T">The class of Drug Load Program to schedule.</typeparam>
+            <param name="cfg">The Configuration to use.</param>
+            <param name="key">The key to lookup Job configuration.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Utils.SchedulerHelper.ScheduleJob``1(Microsoft.Extensions.Configuration.IConfiguration,System.String,System.Linq.Expressions.Expression{System.Action{``0}})">
+            <summary>
+            Schedules a Drug Load job, looking up the cron schedule and the jobid from configuration.
+            </summary>
+            <typeparam name="T">The class of Drug Load Program to schedule.</typeparam>
+            <param name="cfg">The Configuration to use.</param>
+            <param name="key">The key to lookup Job configuration.</param>
+            <param name="methodCall">The expression to run on the class.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Utils.SchedulerHelper.ScheduleJob``1(Healthgateway.JobScheduler.Models.JobConfiguration,System.TimeZoneInfo,System.Linq.Expressions.Expression{System.Action{``0}})">
+            <summary>
+            Schedules a generic job, according to the Job Configuration.
+            </summary>
+            <typeparam name="T">The class of Drug Load Program to schedule.</typeparam>
+            <param name="cfg">The Job Configuration to use.</param>
+            <param name="tz">The timezone to schedule the job in.</param>
+            <param name="methodCall">The expression to run on the class.</param>
+        </member>
+        <member name="T:HealthGateway.WebClient.Controllers.DumpHeadersController">
+            <summary>
+            HomeController for Vue WebClient app.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.DumpHeadersController.Index">
+            <summary>
+            The default page for the home controller.
+            </summary>
+            <returns>The default view.</returns>
+        </member>
+        <member name="T:HealthGateway.JobScheduler.Controllers.JobSchedulerController">
+            <summary>
+            The JobSchedulerController controller enabling secure web access to JobScheduler.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Controllers.JobSchedulerController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.JobScheduler.Controllers.JobSchedulerController},Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.JobScheduler.Controllers.JobSchedulerController"/> class.
+            </summary>
+            <param name="logger">The injected logger provider.</param>
+            <param name="httpContextAccessor">The injected httpContextAccessor.</param>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Controllers.JobSchedulerController.Login">
+            <summary>
+            Login Challenge.
+            </summary>
+            <returns>EmptyResult if authenticated; otherwise a ChallengeResult.</returns>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Controllers.JobSchedulerController.Logout">
+            <summary>
+            Logout action.
+            </summary>
+            <returns>Redirect to main page.</returns>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Controllers.JobSchedulerController.AccessDenied">
+            <summary>
+            Authorization Failed action.
+            </summary>
+            <returns>Display Authorization Error.</returns>
+        </member>
+        <member name="T:HealthGateway.JobScheduler.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Program.CreateHostBuilder(System.String[])">
+            <summary>.
+            Creates the IWebHostBuilder.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.JobScheduler.Startup">
+            <summary>
+            The startup class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.JobScheduler.Startup"/> class.
+            </summary>
+            <param name="env">The injected Environment provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The passed in Service Collection.</param>
+        </member>
+        <member name="M:HealthGateway.JobScheduler.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The passed in Application Builder.</param>
+            <param name="env">The passed in Environment.</param>
+        </member>
+    </members>
+</doc>

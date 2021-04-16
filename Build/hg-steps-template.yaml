@@ -1,10 +1,10 @@
 parameters:
-  - name: 'toolsNamespace'  # defaults for any parameters that aren't specified
-    type: string 
+  - name: "toolsNamespace" # defaults for any parameters that aren't specified
+    type: string
     default: 0bd5ad
     values:
-    - q6qfzk #OCP3 Namespace
-    - 0bd5ad #Silver Cluster Namespace
+      - q6qfzk #OCP3 Namespace
+      - 0bd5ad #Silver Cluster Namespace
 
   - name: publish
     type: boolean
@@ -17,7 +17,7 @@ steps:
     inputs:
       command: "install"
       workingDir: "$(App.Home)/src/ClientApp"
-            
+
   - task: Npm@1
     displayName: "Running NPM Tests for $(App.Name)"
     condition: and(succeeded(), eq(variables['NPMTests'], true))
@@ -25,7 +25,7 @@ steps:
       command: "custom"
       customCommand: "test"
       workingDir: "$(App.Home)/src/ClientApp"
-            
+
   - task: DotNetCoreCLI@2
     displayName: "Runing Unit Tests for $(App.Name)"
     condition: and(succeeded(), eq(variables['UnitTests'], true))
@@ -40,7 +40,7 @@ steps:
       reportgenerator -reports:$(App.Home)/test/**/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
     displayName: "Creating Code Coverage Report for $(App.Name)"
     condition: and(succeeded(), eq(variables['UnitTests'], true))
-    
+
   - task: PublishCodeCoverageResults@1
     displayName: "Publishing Code Coverage for $(App.Name)"
     condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), eq(variables['UnitTests'], true)))
@@ -49,7 +49,7 @@ steps:
       summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
       pathToSources: "$(App.Home)/src"
       reportDirectory: "$(App.Home)/CodeCoverage"
-        
+
   - task: DotNetCoreCLI@2
     displayName: "Compiling and Publishing code for $(App.Name)"
     inputs:

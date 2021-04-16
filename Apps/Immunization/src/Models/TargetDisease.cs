@@ -44,9 +44,9 @@ namespace HealthGateway.Immunization.Models
         public static IList<TargetDisease> FromPHSAModelList(TargetDiseaseResponse model)
         {
             List<TargetDisease> targetDiseases = new List<TargetDisease>();
-            foreach (SystemCode systemCode in model.targetDiseaseCodes)
+            foreach (SystemCode systemCode in model.TargetDiseaseCodes)
             {
-                targetDiseases.Add(TargetDisease.FromPHSAModel(systemCode));
+                targetDiseases.Add(FromPHSAModel(systemCode));
             }
 
             return targetDiseases;

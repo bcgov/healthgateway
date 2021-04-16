@@ -131,7 +131,13 @@ namespace HealthGateway.WebClient.Controllers
             if (result.ResourcePayload != null)
             {
                 RequestResult<Dictionary<string, UserPreferenceModel>> userPreferences = this.userProfileService.GetUserPreferences(hdid);
-                result.ResourcePayload.Preferences = userPreferences.ResourcePayload != null ? userPreferences.ResourcePayload : new Dictionary<string, UserPreferenceModel>();
+                if (userPreferences.ResourcePayload != null)
+                {
+                    foreach (var preference in userPreferences.ResourcePayload)
+                    {
+                        result.ResourcePayload.Preferences.Add(preference);
+                    }
+                }
             }
 
             return new JsonResult(result);

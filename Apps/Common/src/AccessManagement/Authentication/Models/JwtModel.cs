@@ -20,7 +20,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Models
     /// <summary>
     /// The json web token model.
     /// </summary>
-    public class JWTModel : IAuthModel
+    public class JwtModel : IAuthModel
     {
         /// <inheritdoc/>
         [JsonPropertyName("access_token")]

@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Models.ODR
     /// <summary>
     /// The ODR Medication Response.
     /// </summary>
-    public class ODRHistoryResponse
+    public class OdrHistoryResponse
     {
         /// <summary>
         /// Gets or sets the Id of the request.

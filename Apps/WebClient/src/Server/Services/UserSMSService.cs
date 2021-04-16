@@ -106,7 +106,7 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
             sms = this.SanitizeSMS(sms);
-            string verificationCode = new Random().Next(0, 999999).ToString("D6", CultureInfo.InvariantCulture);
+            string verificationCode = NotificationSettingsService.CreateVerificationCode();
             this.AddVerificationSMS(hdid, sms, verificationCode);
             this.logger.LogDebug($"Finished updating user sms");
             return true;

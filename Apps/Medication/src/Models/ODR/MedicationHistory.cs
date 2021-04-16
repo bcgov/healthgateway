@@ -22,13 +22,13 @@ namespace HealthGateway.Medication.Models.ODR
     /// <summary>
     /// The ODR Medication History Request/Response model.
     /// </summary>
-    public class MedicationHistory : ODRHistoryWrapper
+    public class MedicationHistory : OdrHistoryWrapper
     {
         /// <summary>
         /// Gets or sets the QueryRequest for the MedicationHistory integration.
         /// </summary>
         [JsonPropertyName("getMedicationHistoryRequest")]
-        public ODRHistoryQuery? Query { get; set; }
+        public OdrHistoryQuery? Query { get; set; }
 
         /// <summary>
         /// Gets or sets the MedicationHistoryResponse for the MedicationHistory integration.

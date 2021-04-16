@@ -57,7 +57,12 @@ namespace HealthGateway.JobScheduler.Controllers
 
             this.logger.LogDebug(@"Redirecting to dashboard");
             string basePath = this.httpContextAccessor.HttpContext?.Request.PathBase.Value ?? string.Empty;
-            return new RedirectResult($"{basePath}/");
+            if (this.Url.IsLocalUrl(basePath))
+            {
+                return new RedirectResult($"{basePath}/");
+            }
+
+            return new RedirectResult("/");
 #pragma warning restore CA1303 //Restore literal warning
         }
 

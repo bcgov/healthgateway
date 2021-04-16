@@ -22,25 +22,25 @@ const routes = [
         component: DashboardView,
         meta: {
             requiresAuth: true,
-            validRoles: [UserRoles.Admin, UserRoles.Reviewer]
-        }
+            validRoles: [UserRoles.Admin, UserRoles.Reviewer],
+        },
     },
     {
         path: "/Login",
         name: "Login",
-        meta: { requiresAuth: false }
+        meta: { requiresAuth: false },
     },
     {
         path: "/signin",
         name: "Signin",
         component: LoginView,
-        meta: { requiresAuth: false }
+        meta: { requiresAuth: false },
     },
     {
         path: "/signoff",
         name: "Logout",
         component: LogoutView,
-        meta: { requiresAuth: false }
+        meta: { requiresAuth: false },
     },
     {
         path: "/job-scheduler",
@@ -49,13 +49,13 @@ const routes = [
         beforeEnter() {
             location.href =
                 store.getters["config/serviceEndpoints"]["JobScheduler"];
-        }
+        },
     },
     {
         path: "/admin-email",
         name: "Resend Emails",
         component: ResendEmailView,
-        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] }
+        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
     },
     {
         path: "/user-feedback",
@@ -63,34 +63,34 @@ const routes = [
         component: FeedbackView,
         meta: {
             requiresAuth: true,
-            validRoles: [UserRoles.Admin, UserRoles.Reviewer]
-        }
+            validRoles: [UserRoles.Admin, UserRoles.Reviewer],
+        },
     },
     {
         path: "/communication",
         name: "System Communications",
         component: CommunicationView,
-        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] }
+        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
     },
     {
         path: "/stats",
         name: "System Analytics",
         component: StatsView,
-        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] }
+        meta: { requiresAuth: true, validRoles: [UserRoles.Admin] },
     },
     {
         path: "/unauthorized",
         name: "Unauthorized",
         component: UnauthorizedView,
-        meta: { requiresAuth: false }
+        meta: { requiresAuth: false },
     },
-    { path: "*", redirect: "/" }
+    { path: "*", redirect: "/" },
 ];
 
 const router = new VueRouter({
     mode: "history",
     base: process.env.BASE_URL,
-    routes
+    routes,
 });
 
 router.beforeEach(async (to, from, next) => {
@@ -104,7 +104,7 @@ router.beforeEach(async (to, from, next) => {
             if (
                 !isAuthorized ||
                 !userRoles.some(
-                    userRole =>
+                    (userRole) =>
                         !to.meta.validRoles ||
                         to.meta.validRoles.includes(userRole)
                 )

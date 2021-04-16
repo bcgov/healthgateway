@@ -1,23 +1,23 @@
 parameters:
   - name: Application
-    type: string 
+    type: string
     default: NotSpecified
     values:
-    - AdminWebClient
-    - Common
-    - Database
-    - Encounter
-    - Immunization
-    - JobScheduler
-    - Laboratory
-    - Medication
-    - Patient
-    - WebClient
-    - NotSpecified
+      - AdminWebClient
+      - Common
+      - Database
+      - Encounter
+      - Immunization
+      - JobScheduler
+      - Laboratory
+      - Medication
+      - Patient
+      - WebClient
+      - NotSpecified
 
   - name: OpenShiftName
     type: string
-    default: ''
+    default: ""
 
   - name: DotNetTests
     type: boolean
@@ -30,7 +30,7 @@ parameters:
   - name: NPMTests
     type: boolean
     default: false
-  
+
   - name: Library
     type: boolean
     default: false
@@ -54,35 +54,35 @@ variables:
   EnableSilver: ${{ parameters.EnableSilverCluster }}
   App.Home: $(Build.SourcesDirectory)/Apps/$(App.Name)
   ${{ if parameters.OpenShiftName }}:
-      OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
+    OpenShift.Name: $[lower('${{ parameters.OpenShiftName }}')]
   ${{ if not(parameters.OpenShiftName) }}:
-      OpenShift.Name: $[lower(variables['App.Name'])]
+    OpenShift.Name: $[lower(variables['App.Name'])]
   App.UnitTests: $(App.Home)/test/unit
   PullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
   RunOpenShift: $[and(eq(variables['Library'],false), eq(variables['PullRequest'],false))]
-  ${{ if eq(variables['PullRequest'], true) }}: 
-      BuildPrefix: "PR-$(SourceBranchName)"
-  ${{ if eq(variables['PullRequest'], false) }}: 
-      BuildPrefix: "$(SourceBranchName)"    
-    
-jobs:
-    - job: "GoldCluster"
-      pool:
-        name: "HealthGateway"
-      displayName: "Build ${{ parameters.Application }} in Gold Cluster"
-      condition: eq(variables['EnableGold'], true)
-      steps:
-        - template: /Build/hg-steps-template.yaml
-          parameters:
-            toolsNamespace: "q6qfzk"
+  ${{ if eq(variables['PullRequest'], true) }}:
+    BuildPrefix: "PR-$(SourceBranchName)"
+  ${{ if eq(variables['PullRequest'], false) }}:
+    BuildPrefix: "$(SourceBranchName)"
 
-    - job: "SilverCluster"
-      pool:
-        name: "HealthGateway"
-      displayName: "Build ${{ parameters.Application }} in Silver Cluster"
-      condition: eq(variables['EnableSilver'], true)
-      steps:
-        - template: /Build/hg-steps-template.yaml
-          parameters:
-            toolsNamespace: "0bd5ad"
-            publish: false
+jobs:
+  - job: "GoldCluster"
+    pool:
+      name: "HealthGateway"
+    displayName: "Build ${{ parameters.Application }} in Gold Cluster"
+    condition: eq(variables['EnableGold'], true)
+    steps:
+      - template: /Build/hg-steps-template.yaml
+        parameters:
+          toolsNamespace: "q6qfzk"
+
+  - job: "SilverCluster"
+    pool:
+      name: "HealthGateway"
+    displayName: "Build ${{ parameters.Application }} in Silver Cluster"
+    condition: eq(variables['EnableSilver'], true)
+    steps:
+      - template: /Build/hg-steps-template.yaml
+        parameters:
+          toolsNamespace: "0bd5ad"
+          publish: false

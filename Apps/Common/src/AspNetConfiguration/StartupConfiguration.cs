@@ -334,28 +334,13 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// <param name="services">The passed in IServiceCollection.</param>
         public void ConfigureOpenIdConnectServices(IServiceCollection services)
         {
-            string basePath = this.GetAppBasePath();
-
             services.AddAuthentication(auth =>
                 {
                     auth.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     auth.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
                     auth.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 })
-                .AddCookie(options =>
-                {
-                    options.Cookie.Name = this.environment.ApplicationName;
-                    options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
-                    options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
-                    options.SlidingExpiration = true;
-                    options.Cookie.HttpOnly = true;
-                    if (this.environment.IsDevelopment())
-                    {
-                        // Allows http://localhost to work on Chromium and Edge.
-                        options.Cookie.SameSite = SameSiteMode.Unspecified;
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                    }
-                })
+                .AddCookie(options => this.AddCookies(options))
                 .AddOpenIdConnect(options =>
                 {
                     if (this.environment.IsDevelopment())
@@ -387,14 +372,12 @@ namespace HealthGateway.Common.AspNetConfiguration
                             JwtSecurityToken accessToken = ctx.SecurityToken;
                             if (accessToken != null)
                             {
-                                if (ctx.Principal?.Identity is ClaimsIdentity claimsIdentity)
-                                {
-                                    claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
-                                }
-                                else
+                                if (ctx.Principal?.Identity is not ClaimsIdentity claimsIdentity)
                                 {
                                     throw new TypeAccessException(@"Error setting access_token: ctx.Principal.Identity is not a ClaimsIdentity object.");
                                 }
+
+                                claimsIdentity.AddClaim(new Claim("access_token", accessToken.RawData));
                             }
 
                             return Task.CompletedTask;
@@ -803,6 +786,27 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             this.Logger.LogDebug($"BasePath = {basePath}");
             return basePath;
+        }
+
+        /// <summary>
+        /// Adds cookie authentication with custom configuration to AuthenticationBuilder.
+        /// </summary>
+        /// <param name="options">The cookie options to be setup.</param>
+        private void AddCookies(CookieAuthenticationOptions options)
+        {
+            string basePath = this.GetAppBasePath();
+
+            options.Cookie.Name = this.environment.ApplicationName;
+            options.LoginPath = $"{basePath}{AuthorizationConstants.LoginPath}";
+            options.LogoutPath = $"{basePath}{AuthorizationConstants.LogoutPath}";
+            options.SlidingExpiration = true;
+            options.Cookie.HttpOnly = true;
+            if (this.environment.IsDevelopment())
+            {
+                // Allows http://localhost to work on Chromium and Edge.
+                options.Cookie.SameSite = SameSiteMode.Unspecified;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            }
         }
     }
 }

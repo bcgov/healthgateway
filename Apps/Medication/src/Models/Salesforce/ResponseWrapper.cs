@@ -24,10 +24,27 @@ namespace HealthGateway.Medication.Models.Salesforce
     public class ResponseWrapper
     {
         /// <summary>
-        /// Gets or sets the patientIdentifier.
+        /// Initializes a new instance of the <see cref="ResponseWrapper"/> class.
+        /// </summary>
+        public ResponseWrapper()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseWrapper"/> class.
+        /// </summary>
+        /// <param name="items">The list of items to initialize.</param>
+        [JsonConstructor]
+        public ResponseWrapper(IList<SpecialAuthorityRequest> items)
+        {
+            this.Items = items;
+        }
+
+        /// <summary>
+        /// Gets the patientIdentifier.
         /// </summary>
         [JsonPropertyName("items")]
-        public IList<SpecialAuthorityRequest> Items { get; set; } = new List<SpecialAuthorityRequest>();
+        public IList<SpecialAuthorityRequest> Items { get; } = new List<SpecialAuthorityRequest>();
 
         /// <summary>
         /// Creates a List of Medication Request object from an SpecialAuthorityRequest model.

@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,20 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Common.Models
 {
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// Representation of the load state sent by PHSA.
+    /// The configuration for the AESCrypto delegate.
     /// </summary>
-    public class PHSALoadState
+    public class AesCryptoDelegateConfig
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
+        /// The default key size used for key AES crypto functions.
         /// </summary>
-        [JsonPropertyName("refreshInProgress")]
-        public bool RefreshInProgress { get; set; }
+        public const int DefaultKeySize = 256;
+
+        /// <summary>
+        /// Gets or sets the key size for AES crypto functions.
+        /// </summary>
+        public int KeySize { get; set; } = DefaultKeySize;
+
+        /// <summary>
+        /// Gets or sets the Initialization Vector.
+        /// </summary>
+        public string? IV { get; set; }
     }
 }

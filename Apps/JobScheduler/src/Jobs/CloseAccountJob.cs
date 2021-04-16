@@ -116,7 +116,7 @@ namespace Healthgateway.JobScheduler.Jobs
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
                     }
 
-                    JWTModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
+                    JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
                     bool deleted = this.userAdminDelegate.DeleteUser(profile.IdentityManagementId!.Value, jwtModel);
                 }

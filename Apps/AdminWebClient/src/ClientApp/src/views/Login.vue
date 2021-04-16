@@ -9,8 +9,8 @@ const namespace = "auth";
 
 @Component({
     components: {
-        LoadingComponent
-    }
+        LoadingComponent,
+    },
 })
 export default class LoginView extends Vue {
     public name = "Dashboard";

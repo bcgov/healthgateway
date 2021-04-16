@@ -23,7 +23,7 @@ namespace HealthGateway.Common.Models.ODR
     /// <summary>
     /// The HNClient message request.
     /// </summary>
-    public class ODRHistoryQuery
+    public class OdrHistoryQuery
     {
         /// <summary>
         /// Gets or sets the Start date of the request.

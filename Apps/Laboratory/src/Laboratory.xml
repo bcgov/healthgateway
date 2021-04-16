@@ -1,0 +1,464 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Laboratory</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Laboratory.Controllers.LaboratoryController">
+            <summary>
+            The Immunization controller.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Laboratory.Controllers.LaboratoryController.service">
+            <summary>
+            Gets or sets the laboratory data service.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Laboratory.Controllers.LaboratoryController.httpContextAccessor">
+            <summary>
+            Gets or sets the http context accessor.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Controllers.LaboratoryController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Laboratory.Controllers.LaboratoryController},HealthGateway.Laboratory.Services.ILaboratoryService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Laboratory.Controllers.LaboratoryController"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="svc">The immunization data service.</param>
+            <param name="httpContextAccessor">The Http Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Controllers.LaboratoryController.GetLaboratoryOrders(System.String)">
+            <summary>
+            Gets a json list of laboratory orders.
+            </summary>
+            <param name="hdid">The hdid resource to request the laboratory orders for.</param>
+            <returns>A list of laboratory records wrapped in a request result.</returns>
+            <response code="200">Returns the List of laboratory records.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Controllers.LaboratoryController.GetLaboratoryReport(System.Guid,System.String)">
+            <summary>
+            Gets a a specific Laboratory report.
+            </summary>
+            <param name="reportId">The ID of the report belonging to the authenticated user to fetch.</param>
+            <param name="hdid">The requested HDID which owns the reportId.</param>
+            <returns>A Laboratory PDF Report wrapped in a request result.</returns>
+            <response code="200">Returns the specified PDF lab report.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Delegates.ILaboratoryDelegate">
+            <summary>
+            Interface that defines a delegate to retrieve laboratory information.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.ILaboratoryDelegate.GetLaboratoryOrders(System.String,System.String,System.Int32)">
+            <summary>
+            Returns a List of Lab Orders for the authenticated user.
+            It has a collection of one or more Lab Results depending on the tests ordered.
+            </summary>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <param name="hdid">The requested hdid.</param>
+            <param name="pageIndex">The page index to return.</param>
+            <returns>The list of Lab Reports available for the user identified by the bearerToken.</returns>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.ILaboratoryDelegate.GetLabReport(System.Guid,System.String,System.String)">
+            <summary>
+            Gets the Lab report in binary format for the supplied id belonging to the authenticated user.
+            </summary>
+            <param name="id">The ID of the lab report to get.</param>
+            <param name="hdid">The requested HDID which owns the reportId.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <returns>A base64 encoded PDF.</returns>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Delegates.MockLaboratoryDelegate">
+            <summary>
+            Implementation that uses HTTP to retrieve laboratory information.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.MockLaboratoryDelegate.GetLaboratoryOrders(System.String,System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.MockLaboratoryDelegate.GetLabReport(System.Guid,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Delegates.RestLaboratoryDelegate">
+            <summary>
+            Implementation that uses HTTP to retrieve laboratory information.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.RestLaboratoryDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Laboratory.Delegates.RestLaboratoryDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Laboratory.Delegates.RestLaboratoryDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.RestLaboratoryDelegate.GetLaboratoryOrders(System.String,System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Delegates.RestLaboratoryDelegate.GetLabReport(System.Guid,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Factories.ILaboratoryDelegateFactory">
+            <summary>
+            Creates the Laboratory Delegate dynamically.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Factories.ILaboratoryDelegateFactory.CreateInstance">
+            <summary>
+            Returns a new instance of IImunizationFhirDelegate via configuration.
+            </summary>
+            <returns>The IImunizationFhirDelegate.</returns>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Factories.LaboratoryDelegateFactory">
+            <summary>
+            Creates the Laboratory Delegate dynamically.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Factories.LaboratoryDelegateFactory.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.IServiceProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Laboratory.Factories.LaboratoryDelegateFactory"/> class.
+            </summary>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="serviceProvider">The injected service provider.</param>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Factories.LaboratoryDelegateFactory.CreateInstance">
+            <summary>
+            Creates an instance of ILaboratoryDelegate via configuration.
+            </summary>
+            <returns>The ILaboratoryDelegate.</returns>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Models.LaboratoryConfig">
+            <summary>
+            Provides configuration data for the Laboratory Delegate.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryConfig.Endpoint">
+            <summary>
+            Gets or sets the Lab external endpoint.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryConfig.FetchSize">
+            <summary>
+            Gets or sets the total number of records to retrieve in one call.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Models.LaboratoryModel">
+            <summary>
+            An instance of a Laboratory Model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.Id">
+            <summary>
+            Gets or sets the id for the lab result.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.PHN">
+            <summary>
+            Gets or sets the PHN the report is for.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.OrderProviderIDs">
+            <summary>
+            Gets or sets the Provider IDs for the Model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.OrderingProviders">
+            <summary>
+            Gets or sets the providers names.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.ReportingLab">
+            <summary>
+            Gets or sets the name of the reporting lab.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.Location">
+            <summary>
+            Gets or sets the location.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.LabType">
+            <summary>
+            Gets or sets if this is an Order or Result.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.MessageDateTime">
+            <summary>
+            Gets or sets the Message datetime.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.MessageID">
+            <summary>
+            Gets or sets the message id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.AdditionalData">
+            <summary>
+            Gets or sets additional related data.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.ReportAvailable">
+            <summary>
+            Gets or sets a value indicating whether a report is available.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryModel.LabResults">
+            <summary>
+            Gets or sets the list of lab results.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Models.LaboratoryModel.FromPHSAModel(HealthGateway.Laboratory.Models.LaboratoryOrder)">
+            <summary>
+            Creates a LaboratoryModel object from a PHSA model.
+            </summary>
+            <param name="model">The laboratory result to convert.</param>
+            <returns>The newly created laboratory object.</returns>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Models.LaboratoryModel.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Laboratory.Models.LaboratoryOrder})">
+            <summary>
+            Creates a LaboratoryModel object from a PHSA model.
+            </summary>
+            <param name="models">The list of PHSA models to convert.</param>
+            <returns>A list of LaboratoryModel objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Models.LaboratoryOrder">
+            <summary>
+            An instance of a Laboratory Order.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.Id">
+            <summary>
+            Gets or sets the id for the lab order.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.SourceSystemId">
+            <summary>
+            Gets or sets the sourceSystemId for the lab order.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.PHN">
+            <summary>
+            Gets or sets the PHN the report is for.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.OrderProviderIDs">
+            <summary>
+            Gets or sets the Provider IDs for the Order.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.OrderingProviders">
+            <summary>
+            Gets or sets the providers names.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.ReportingLab">
+            <summary>
+            Gets or sets the name of the reporting lab.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.Location">
+            <summary>
+            Gets or sets the location.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.LabType">
+            <summary>
+            Gets or sets if this is an Order or Result.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.MessageDateTime">
+            <summary>
+            Gets or sets the Message datetime.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.MessageID">
+            <summary>
+            Gets or sets the message id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.AdditionalData">
+            <summary>
+            Gets or sets additional related data.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.ReportAvailable">
+            <summary>
+            Gets or sets a value indicating whether a report is available.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryOrder.LabResults">
+            <summary>
+            Gets or sets the list of lab results.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Models.LaboratoryReport">
+            <summary>
+            An instance of a Laboratory Report.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryReport.MediaType">
+            <summary>
+            Gets or sets the media type for the report data.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryReport.Encoding">
+            <summary>
+            Gets or sets the encoding used for the report binary data.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryReport.Report">
+            <summary>
+            Gets or sets the report data.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Models.LaboratoryResult">
+            <summary>
+            The user representation of laboratory data.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.Id">
+            <summary>
+            Gets or sets the id for the lab result.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.TestType">
+            <summary>
+            Gets or sets the test type.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.OutOfRange">
+            <summary>
+            Gets or sets a value indicating whether the result is out of range.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.CollectedDateTime">
+            <summary>
+            Gets or sets the datetime the lab collection took place.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.TestStatus">
+            <summary>
+            Gets or sets the status of the test.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.LabResultOutcome">
+            <summary>
+            Gets or sets the lab result outcome.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.ResultDescription">
+            <summary>
+            Gets or sets the result description.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.ReceivedDateTime">
+            <summary>
+            Gets or sets the received datetime.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.ResultDateTime">
+            <summary>
+            Gets or sets the result datetime.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.LOINC">
+            <summary>
+            Gets or sets the LOINC code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Laboratory.Models.LaboratoryResult.LOINCName">
+            <summary>
+            Gets or sets the LOINC Name/Description.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Program">
+            <summary>
+            The entry point for the project.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Program.Main(System.String[])">
+            <summary>.
+            The entry point for the class.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Program.CreateHostBuilder(System.String[])">
+            <summary>.
+            Creates the IWebHostBuilder.
+            </summary>
+            <param name="args">The command line arguments to be passed in.</param>
+            <returns>Returns the configured webhost.</returns>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Services.ILaboratoryService">
+            <summary>
+            The laboratory data service.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Services.ILaboratoryService.GetLaboratoryOrders(System.String,System.String,System.Int32)">
+            <summary>
+            Returns a List of lab orders for the authenticated user.
+            It has a collection of one or more Lab Results depending on the tests ordered.
+            </summary>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <param name="hdid">The requested hdid.</param>
+            <param name="pageIndex">The page index to return.</param>
+            <returns>The list of Lab Reports available for the user identified by the bearerToken.</returns>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Services.ILaboratoryService.GetLabReport(System.Guid,System.String,System.String)">
+            <summary>
+            Gets the Lab report for the supplied id belonging to the authenticated user.
+            </summary>
+            <param name="id">The ID of the lab report to get.</param>
+            <param name="hdid">The requested HDID which owns the reportId.</param>
+            <param name="bearerToken">The security token representing the authenticated user.</param>
+            <returns>A base64 encoded PDF.</returns>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Services.LaboratoryService">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Services.LaboratoryService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Laboratory.Services.LaboratoryService},Microsoft.AspNetCore.Http.IHttpContextAccessor,HealthGateway.Laboratory.Factories.ILaboratoryDelegateFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Laboratory.Services.LaboratoryService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpAccessor">The injected http context accessor provider.</param>
+            <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Services.LaboratoryService.GetLaboratoryOrders(System.String,System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Services.LaboratoryService.GetLabReport(System.Guid,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Laboratory.Startup">
+            <summary>
+            Configures the application during startup.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Laboratory.Startup"/> class.
+            </summary>
+            <param name="env">The injected Environment provider.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">The injected services provider.</param>
+        </member>
+        <member name="M:HealthGateway.Laboratory.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">The application builder.</param>
+        </member>
+    </members>
+</doc>

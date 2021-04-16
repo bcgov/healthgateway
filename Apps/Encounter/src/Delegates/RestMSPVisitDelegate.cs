@@ -37,12 +37,12 @@ namespace HealthGateway.Encounter.Delegates
     /// </summary>
     public class RestMSPVisitDelegate : IMSPVisitDelegate
     {
-        private const string ODRConfigSectionKey = "ODR";
+        private const string OdrConfigSectionKey = "ODR";
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly IConfiguration configuration;
-        private readonly ODRConfig odrConfig;
+        private readonly OdrConfig odrConfig;
         private readonly Uri baseURL;
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace HealthGateway.Encounter.Delegates
             this.logger = logger;
             this.httpClientService = httpClientService;
             this.configuration = configuration;
-            this.odrConfig = new ODRConfig();
-            this.configuration.Bind(ODRConfigSectionKey, this.odrConfig);
+            this.odrConfig = new OdrConfig();
+            this.configuration.Bind(OdrConfigSectionKey, this.odrConfig);
             if (this.odrConfig.DynamicServiceLookup)
             {
                 string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");
@@ -83,7 +83,7 @@ namespace HealthGateway.Encounter.Delegates
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestMSPVisitDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<MSPVisitHistoryResponse>> GetMSPVisitHistoryAsync(ODRHistoryQuery query, string hdid, string ipAddress)
+        public async Task<RequestResult<MSPVisitHistoryResponse>> GetMSPVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress)
         {
             using (Source.StartActivity("GetMSPVisitHistoryAsync"))
             {

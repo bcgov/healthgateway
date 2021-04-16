@@ -24,14 +24,32 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
     public class VaccineCode
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="VaccineCode"/> class.
+        /// </summary>
+        public VaccineCode()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VaccineCode"/> class.
+        /// </summary>
+        /// <param name="vaccineCodes">The initialized list of vaccine codes.</param>
+        [JsonConstructor]
+        public VaccineCode(IList<SystemCode> vaccineCodes)
+        {
+            this.VaccineCodes = vaccineCodes;
+        }
+
+        /// <summary>
         /// Gets or sets the Vaccine Code Text.
         /// </summary>
         [JsonPropertyName("vaccineCodeText")]
         public string VaccineCodeText { get; set; } = string.Empty;
+
         /// <summary>
-        /// Gets or sets the Vaccine codes.
+        /// Gets the Vaccine codes.
         /// </summary>
         [JsonPropertyName("vaccineCodes")]
-        public IList<SystemCode> VaccineCodes { get; set; } = new List<SystemCode>();
+        public IList<SystemCode> VaccineCodes { get; } = new List<SystemCode>();
     }
 }

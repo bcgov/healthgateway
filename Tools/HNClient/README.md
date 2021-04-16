@@ -10,7 +10,7 @@ Ensure your computer hostname is 8 characters or less
 
 Open a command window and run
 
-``` bash
+```bash
 hnsetup -d
 ```
 
@@ -54,9 +54,9 @@ Run `HNClient` and enter your password when prompted.
 
 ### Step 7 - Verify HNClient
 
-Return to your original command line window and run 
+Return to your original command line window and run
 
-``` bash
+```bash
 hntimecl D BC00001000
 ```
 

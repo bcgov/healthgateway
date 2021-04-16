@@ -32,6 +32,6 @@ namespace HealthGateway.Encounter.Delegates
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
         /// <returns>The Encounter Model response wrapped in an HNMessage.</returns>
-        Task<RequestResult<MSPVisitHistoryResponse>> GetMSPVisitHistoryAsync(ODRHistoryQuery query, string hdid, string ipAddress);
+        Task<RequestResult<MSPVisitHistoryResponse>> GetMSPVisitHistoryAsync(OdrHistoryQuery query, string hdid, string ipAddress);
     }
 }

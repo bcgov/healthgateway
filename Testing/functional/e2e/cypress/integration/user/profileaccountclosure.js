@@ -1,13 +1,15 @@
-const { AuthMethod } = require("../../support/constants")
+const { AuthMethod } = require("../../support/constants");
 
-describe('Account Closure Profile', () => {
+describe("Account Closure Profile", () => {
     before(() => {
-        cy.login(Cypress.env('keycloak.accountclosure.username'), 
-                 Cypress.env('keycloak.password'), 
-                 AuthMethod.KeyCloak)
-    })
+        cy.login(
+            Cypress.env("keycloak.accountclosure.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+    });
 
-    it('Validate registration', () => {
-        cy.url().should('include', '/registration')
-    })
-})
+    it("Validate registration", () => {
+        cy.url().should("include", "/registration");
+    });
+});

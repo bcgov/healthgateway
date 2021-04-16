@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,32 +13,28 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.ODR
+namespace HealthGateway.Common.Models.PHSA
 {
-    using System;
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// The ODR History Request/Response model.
+    /// Representation of the result sent by PHSA.
     /// </summary>
-    public class ODRHistoryWrapper
+    /// <typeparam name="T">The result object type.</typeparam>
+    public class PhsaResult<T>
     {
         /// <summary>
-        /// Gets or sets the Id of the request.
+        /// Gets or sets the LoadState.
         /// </summary>
-        [JsonPropertyName("uuid")]
-        public Guid Id { get; set; } = default;
+        [JsonPropertyName("loadState")]
+        public PhsaLoadState LoadState { get; set; } = new PhsaLoadState();
 
         /// <summary>
-        /// Gets or sets the HDID of the requestor.
+        /// Gets or sets the result section.
         /// </summary>
-        [JsonPropertyName("hdid")]
-        public string RequestorHDID { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the IP of the requestor.
-        /// </summary>
-        [JsonPropertyName("requestingIP")]
-        public string RequestorIP { get; set; } = string.Empty;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        [JsonPropertyName("result")]
+        public T? Result { get; set; } = default(T);
     }
 }

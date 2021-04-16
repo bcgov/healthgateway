@@ -44,27 +44,9 @@ export default class EncounterTimelineEntry extends TimelineEntry {
 class ClinicViewModel {
     public id: string;
     public name: string;
-    public address: string;
-    public phoneNumber: string;
 
     constructor(model: Clinic) {
         this.id = model.clinicId || "";
         this.name = model.name;
-        this.phoneNumber = model.phoneNumber || "";
-
-        const addressArray = [
-            model.addressLine1,
-            model.addressLine2,
-            model.addressLine3,
-            model.addressLine4,
-        ];
-        this.address =
-            addressArray.filter((val) => val.length > 0).join(" ") +
-            ", " +
-            (model.city || "") +
-            " " +
-            (model.province || "") +
-            ", " +
-            (model.postalCode || "");
     }
 }

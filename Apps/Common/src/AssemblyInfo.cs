@@ -14,7 +14,3 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 [assembly: System.CLSCompliant(false)]
-
-namespace HealthGateway.Common
-{
-}

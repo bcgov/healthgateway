@@ -36,8 +36,6 @@ namespace HealthGateway.Common.Auditing
     {
         private readonly ILogger<IAuditLogger> logger;
 
-        private readonly IConfiguration configuration;
-
         private readonly IWriteAuditEventDelegate writeEventDelegate;
 
         /// <summary>
@@ -45,11 +43,9 @@ namespace HealthGateway.Common.Auditing
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="writeEventDelegate">The audit event delegate.</param>
-        /// <param name="config">The configuration.</param>
-        public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate, IConfiguration config)
+        public AuditLogger(ILogger<IAuditLogger> logger, IWriteAuditEventDelegate writeEventDelegate)
         {
             this.logger = logger;
-            this.configuration = config;
             this.writeEventDelegate = writeEventDelegate;
         }
 
@@ -74,7 +70,7 @@ namespace HealthGateway.Common.Auditing
         public void PopulateWithHttpContext(HttpContext context, AuditEvent auditEvent)
         {
             ClaimsIdentity? claimsIdentity = context.User.Identity as ClaimsIdentity;
-            Claim? hdidClaim = claimsIdentity?.Claims.Where(c => c.Type == "hdid").FirstOrDefault();
+            Claim? hdidClaim = claimsIdentity?.Claims.FirstOrDefault(c => c.Type == "hdid");
             string? hdid = hdidClaim?.Value;
 
             auditEvent.ApplicationType = GetApplicationType();
