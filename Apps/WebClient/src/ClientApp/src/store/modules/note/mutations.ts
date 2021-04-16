@@ -1,15 +1,11 @@
 import Vue from "vue";
-import { MutationTree } from "vuex";
 
-import {
-    LoadStatus,
-    NoteState,
-    Operation,
-    OperationType,
-} from "@/models/storeState";
+import { LoadStatus, Operation, OperationType } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 
-export const mutations: MutationTree<NoteState> = {
+import { NoteMutations, NoteState } from "./types";
+
+export const mutations: NoteMutations = {
     setRequested(state: NoteState) {
         state.status = LoadStatus.REQUESTED;
     },

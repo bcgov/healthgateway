@@ -1,13 +1,9 @@
-import { GetterTree } from "vuex";
-
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import {
-    LoadStatus,
-    MedicationStatementState,
-    RootState,
-} from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const getters: GetterTree<MedicationStatementState, RootState> = {
+import { MedicationStatementGetters, MedicationStatementState } from "./types";
+
+export const getters: MedicationStatementGetters = {
     medicationStatements(
         state: MedicationStatementState
     ): MedicationStatementHistory[] {

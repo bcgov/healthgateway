@@ -1,16 +1,12 @@
-import { ActionTree } from "vuex";
-
 import { ResultType } from "@/constants/resulttype";
 import MedicationRequest from "@/models/MedicationRequest";
 import RequestResult, { ResultError } from "@/models/requestResult";
-import {
-    LoadStatus,
-    MedicationRequestState,
-    RootState,
-} from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IMedicationService } from "@/services/interfaces";
+
+import { MedicationRequestActions } from "./types";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -18,7 +14,7 @@ const medicationService: IMedicationService = container.get<IMedicationService>(
     SERVICE_IDENTIFIER.MedicationService
 );
 
-export const actions: ActionTree<MedicationRequestState, RootState> = {
+export const actions: MedicationRequestActions = {
     retrieveMedicationRequests(
         context,
         params: { hdid: string }

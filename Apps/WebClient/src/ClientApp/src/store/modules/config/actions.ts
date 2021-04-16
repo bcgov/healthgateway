@@ -1,17 +1,18 @@
-import { ActionTree, Commit } from "vuex";
+import { Commit } from "vuex";
 
 import { ExternalConfiguration } from "@/models/configData";
-import { ConfigState, RootState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IConfigService } from "@/services/interfaces";
+
+import { ConfigActions } from "./types";
 
 function handleError(commit: Commit, error: Error) {
     console.log("ERROR:" + error);
     commit("configurationError");
 }
 
-export const actions: ActionTree<ConfigState, RootState> = {
+export const actions: ConfigActions = {
     initialize(context): Promise<ExternalConfiguration> {
         console.log("Initializing the config store...");
         const configService: IConfigService = container.get(

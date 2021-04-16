@@ -1,12 +1,11 @@
-import { Module } from "vuex";
-
-import { ImmunizationState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { ImmunizationModule, ImmunizationState } from "./types";
 
-export const state: ImmunizationState = {
+const state: ImmunizationState = {
     statusMessage: "",
     immunizations: [],
     recommendations: [],
@@ -16,7 +15,7 @@ export const state: ImmunizationState = {
 
 const namespaced = true;
 
-export const immunization: Module<ImmunizationState, RootState> = {
+export const immunization: ImmunizationModule = {
     namespaced,
     state,
     getters,

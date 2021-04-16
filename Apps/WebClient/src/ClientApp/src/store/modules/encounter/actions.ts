@@ -1,12 +1,12 @@
-import { ActionTree } from "vuex";
-
 import { ResultType } from "@/constants/resulttype";
 import Encounter from "@/models/encounter";
 import RequestResult, { ResultError } from "@/models/requestResult";
-import { EncounterState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IEncounterService, ILogger } from "@/services/interfaces";
+
+import { EncounterActions } from "./types";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -14,7 +14,7 @@ const encounterService: IEncounterService = container.get<IEncounterService>(
     SERVICE_IDENTIFIER.EncounterService
 );
 
-export const actions: ActionTree<EncounterState, RootState> = {
+export const actions: EncounterActions = {
     retrieve(
         context,
         params: { hdid: string }

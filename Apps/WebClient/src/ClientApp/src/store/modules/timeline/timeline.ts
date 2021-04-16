@@ -1,14 +1,12 @@
-import { Module } from "vuex";
-
 import { DateWrapper } from "@/models/dateWrapper";
-import { RootState, TimelineState } from "@/models/storeState";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { TimelineModule, TimelineState } from "./types";
 
-export const state: TimelineState = {
+const state: TimelineState = {
     filter: TimelineFilterBuilder.buildEmpty(),
     keyword: "",
     isLinearView: true,
@@ -19,7 +17,7 @@ export const state: TimelineState = {
 
 const namespaced = true;
 
-export const timeline: Module<TimelineState, RootState> = {
+export const timeline: TimelineModule = {
     namespaced,
     state,
     getters,

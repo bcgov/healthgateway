@@ -1,10 +1,9 @@
-import { ActionTree, Commit } from "vuex";
+import { Commit } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/requestResult";
-import { RootState, UserState } from "@/models/storeState";
 import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
@@ -13,6 +12,8 @@ import {
     IPatientService,
     IUserProfileService,
 } from "@/services/interfaces";
+
+import { UserActions } from "./types";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -29,7 +30,7 @@ const patientService: IPatientService = container.get<IPatientService>(
     SERVICE_IDENTIFIER.PatientService
 );
 
-export const actions: ActionTree<UserState, RootState> = {
+export const actions: UserActions = {
     checkRegistration(context): Promise<boolean> {
         return new Promise((resolve, reject) => {
             return userProfileService

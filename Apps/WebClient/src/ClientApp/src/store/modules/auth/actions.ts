@@ -1,6 +1,3 @@
-import { ActionTree } from "vuex";
-
-import { AuthState, RootState } from "@/models/storeState";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import {
@@ -8,6 +5,8 @@ import {
     IHttpDelegate,
     ILogger,
 } from "@/services/interfaces";
+
+import { AuthActions } from "./types";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -18,7 +17,7 @@ const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
     DELEGATE_IDENTIFIER.HttpDelegate
 );
 
-export const actions: ActionTree<AuthState, RootState> = {
+export const actions: AuthActions = {
     oidcCheckUser(context): Promise<boolean> {
         return new Promise<boolean>((resolve) => {
             const isAuthenticatedInStore =

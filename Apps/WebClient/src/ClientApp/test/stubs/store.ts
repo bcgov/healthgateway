@@ -1,25 +1,76 @@
+import { ActionTree } from "vuex";
+
+import { RegistrationStatus } from "@/constants/registrationStatus";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import { Dictionary } from "@/models/baseTypes";
 import { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { LaboratoryOrder } from "@/models/laboratory";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import {
-    CommentState,
-    ErrorBannerState,
-    ImmunizationState,
-    LaboratoryState,
-    MedicationStatementState,
-    NavbarState,
-    RootState,
-} from "@/models/storeState";
 import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
-import { ActionTree } from "vuex";
+import { CommentState } from "@/store/modules/comment/types";
+import { ErrorBannerState } from "@/store/modules/error/types";
+import { ImmunizationState } from "@/store/modules/immunization/types";
+import { LaboratoryState } from "@/store/modules/laboratory/types";
+import { MedicationStatementState } from "@/store/modules/medication/modules/statement/types";
+import { NavbarState } from "@/store/modules/navbar/types";
+import { RootState } from "@/store/types";
 
-let userGetters = {
+const today = new DateWrapper();
+const yesterday = today.subtract({ day: 1 });
+
+const medicationStatements: MedicationStatementHistory[] = [
+    {
+        medicationSummary: {
+            din: "1233",
+            brandName: "brand_name_A",
+            genericName: "generic_name_A",
+            isPin: false,
+        },
+        prescriptionIdentifier: "abcmed1",
+        dispensedDate: today.toISODate(),
+        dispensingPharmacy: {},
+    },
+    {
+        medicationSummary: {
+            din: "1234",
+            brandName: "brand_name_B",
+            genericName: "generic_name_B",
+            isPin: false,
+        },
+        prescriptionIdentifier: "abcmed2",
+        dispensedDate: today.toISODate(),
+        dispensingPharmacy: {},
+    },
+    {
+        medicationSummary: {
+            din: "1235",
+            brandName: "brand_name_C",
+            genericName: "generic_name_C",
+            isPin: true,
+        },
+        prescriptionIdentifier: "abcmed3",
+        dispensedDate: yesterday.toISODate(),
+        dispensingPharmacy: {},
+    },
+];
+
+const a: WebClientConfiguration = {
+    logLevel: "",
+    timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
+    registrationStatus: "closed" as RegistrationStatus,
+    externalURLs: {},
+    modules: { Note: true },
+    hoursForDeletion: 1,
+    minPatientAge: 16,
+    maxDependentAge: 12,
+};
+
+const userGetters = {
     user: (): User => {
         return new User();
     },
@@ -182,12 +233,11 @@ const errorBannerActions: ActionTree<ErrorBannerState, RootState> = {
     },
 };
 
-let storeOptions = {
+export const storeOptions = {
     modules: {
         user: {
             namespaced: true,
             getters: userGetters,
-            actions: userModule.actions,
         },
         config: {
             namespaced: true,

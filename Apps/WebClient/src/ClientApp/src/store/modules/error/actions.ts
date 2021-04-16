@@ -1,11 +1,10 @@
-import { ActionTree } from "vuex";
-
 import BannerError from "@/models/bannerError";
 import { ResultError } from "@/models/requestResult";
-import { ErrorBannerState, RootState } from "@/models/storeState";
 import ErrorTranslator from "@/utility/errorTranslator";
 
-export const actions: ActionTree<ErrorBannerState, RootState> = {
+import { ErrorBannerActions } from "./types";
+
+export const actions: ErrorBannerActions = {
     dismiss(context) {
         context.commit("dismiss");
     },

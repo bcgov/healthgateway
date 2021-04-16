@@ -1,18 +1,15 @@
-import { Module } from "vuex";
-
-import { IdleState, RootState } from "@/models/storeState";
-
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { IdleModule, IdleState } from "./types";
 
-export const state: IdleState = {
+const state: IdleState = {
     isVisible: false,
 };
 
 const namespaced = true;
 
-export const idle: Module<IdleState, RootState> = {
+export const idle: IdleModule = {
     namespaced,
     state,
     getters,
