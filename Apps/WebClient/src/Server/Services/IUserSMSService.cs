@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using HealthGateway.Database.Models;
+
     /// <summary>
     /// The User SMS service.
     /// </summary>
@@ -34,7 +36,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="hdid">The user hdid.</param>
         /// <param name="sms">SMS number to be set for the user.</param>
         /// <returns>returns true if the sms number was sucessfully created.</returns>
-        bool CreateUserSMS(string hdid, string sms);
+        MessagingVerification CreateUserSMS(string hdid, string sms);
 
         /// <summary>
         /// Updates the user SMS number.

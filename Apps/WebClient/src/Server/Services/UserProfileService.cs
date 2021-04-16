@@ -218,6 +218,8 @@ namespace HealthGateway.WebClient.Services
                 string? requestedSMSNumber = createProfileRequest.Profile.SMSNumber;
                 string? requestedEmail = createProfileRequest.Profile.Email;
 
+                NotificationSettingsRequest notificationRequest = new (createdProfile, requestedEmail, requestedSMSNumber);
+
                 // Add email verification
                 if (!string.IsNullOrWhiteSpace(requestedEmail))
                 {
@@ -227,10 +229,11 @@ namespace HealthGateway.WebClient.Services
                 // Add SMS verification
                 if (!string.IsNullOrWhiteSpace(requestedSMSNumber))
                 {
-                    this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
+                    MessagingVerification smsVerification = this.userSMSService.CreateUserSMS(hdid, requestedSMSNumber);
+                    notificationRequest.SMSVerificationCode = smsVerification.SMSValidationCode;
                 }
 
-                this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(createdProfile, requestedEmail, requestedSMSNumber));
+                this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
 
                 this.logger.LogDebug($"Finished creating user profile. {JsonSerializer.Serialize(insertResult)}");
                 return new RequestResult<UserProfileModel>()

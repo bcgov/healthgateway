@@ -2394,15 +2394,6 @@
             Will use access_token acquired from system account authenication.
             </summary>
             <param name="notificationSettings">The Notification Settings Request object.</param>
-            <returns>The notification settings request queued.</returns>
-        </member>
-        <member name="M:HealthGateway.Common.Services.INotificationSettingsService.SendNotificationSettings(HealthGateway.Common.Models.NotificationSettingsRequest,System.String)">
-            <summary>
-            Sends the Notifications Settings to PHSA immediately.
-            </summary>
-            <param name="notificationSettings">The Notification Settings Request object.</param>
-            <param name="bearerToken">The bearer token of the authenticated user.</param>
-            <returns>A Notification Settings Response object mapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.Common.Services.IPatientService">
             <summary>
@@ -2496,25 +2487,15 @@
             A simple service to queue and send email.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Services.NotificationSettingsService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.Services.NotificationSettingsService},Hangfire.IBackgroundJobClient,HealthGateway.Common.Delegates.INotificationSettingsDelegate,HealthGateway.Database.Delegates.IResourceDelegateDelegate)">
+        <member name="M:HealthGateway.Common.Services.NotificationSettingsService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.Services.NotificationSettingsService},Hangfire.IBackgroundJobClient,HealthGateway.Database.Delegates.IResourceDelegateDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Common.Services.NotificationSettingsService"/> class.
             </summary>
             <param name="logger">The injected logger provider.</param>
             <param name="jobClient">The JobScheduler queue client.</param>
-            <param name="notificationSettingsDelegate">Notification Settings delegate to be used.</param>
             <param name="resourceDelegateDelegate">The injected db user delegate delegate.</param>
         </member>
-        <member name="M:HealthGateway.Common.Services.NotificationSettingsService.CreateVerificationCode">
-            <summary>
-            Creates a new 6 digit verification code.
-            </summary>
-            <returns>The verification code.</returns>
-        </member>
         <member name="M:HealthGateway.Common.Services.NotificationSettingsService.QueueNotificationSettings(HealthGateway.Common.Models.NotificationSettingsRequest)">
-            <inheritdoc />
-        </member>
-        <member name="M:HealthGateway.Common.Services.NotificationSettingsService.SendNotificationSettings(HealthGateway.Common.Models.NotificationSettingsRequest,System.String)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Common.Services.PatientService">
