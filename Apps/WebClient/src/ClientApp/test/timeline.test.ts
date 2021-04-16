@@ -12,54 +12,23 @@ import TimelineComponent from "@/views/timeline.vue";
 const userWithResults = new User();
 userWithResults.hdid = "hdid_with_results";
 
+/*LoadingComponent,
+        ProtectiveWordComponent,
+        CovidModalComponent,
+        NoteEditComponent,
+        EntryDetailsComponent,
+         LinearTimelineComponent,
+         CalendarTimelineComponent,
+        ErrorCardComponent,
+        FilterComponent,
+        ImmunizationCardComponent,
+        */
+
 function createWrapper(): Wrapper<TimelineComponent> {
     const localVue = createLocalVue();
     localVue.use(Vuex);
     localVue.use(VueRouter);
     localVue.use(VueContentPlaceholders);
-    /*const customStore = new Vuex.Store({
-        modules: {
-            user: {
-                namespaced: true,
-                getters: userGetters,
-                actions: userModule.actions,
-            },
-            config: {
-                namespaced: true,
-                getters: configGetters,
-            },
-            laboratory: {
-                namespaced: true,
-                getters: laboratoryGetters,
-                actions: laboratoryActions,
-            },
-            medication: {
-                namespaced: true,
-                getters: medicationGetters,
-                actions: medicationActions,
-            },
-            immunization: {
-                namespaced: true,
-                getters: immunizationGetters,
-                actions: immunizationActions,
-            },
-            comment: {
-                namespaced: true,
-                getters: commentGetters,
-                actions: commentActions,
-            },
-            sidebar: {
-                namespaced: true,
-                getters: sidebarGetters,
-                actions: sidebarActions,
-            },
-            errorBanner: {
-                namespaced: true,
-                getters: errorBannerGetters,
-                actions: errorBannerActions,
-            },
-        },
-    });*/
 
     return mount(TimelineComponent, {
         localVue,

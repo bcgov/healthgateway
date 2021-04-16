@@ -1,6 +1,5 @@
 import { ActionTree } from "vuex";
 
-import { RegistrationStatus } from "@/constants/registrationStatus";
 import { ResultType } from "@/constants/resulttype";
 import BannerError from "@/models/bannerError";
 import { Dictionary } from "@/models/baseTypes";
@@ -10,7 +9,6 @@ import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { LaboratoryOrder } from "@/models/laboratory";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 import { CommentState } from "@/store/modules/comment/types";
 import { ErrorBannerState } from "@/store/modules/error/types";
@@ -18,7 +16,9 @@ import { ImmunizationState } from "@/store/modules/immunization/types";
 import { LaboratoryState } from "@/store/modules/laboratory/types";
 import { MedicationStatementState } from "@/store/modules/medication/modules/statement/types";
 import { NavbarState } from "@/store/modules/navbar/types";
-import { RootState } from "@/store/types";
+import { GatewayStoreOptions, RootState } from "@/store/types";
+import userStub from "./user";
+import configStub from "./config";
 
 const today = new DateWrapper();
 const yesterday = today.subtract({ day: 1 });
@@ -58,23 +58,6 @@ const medicationStatements: MedicationStatementHistory[] = [
         dispensingPharmacy: {},
     },
 ];
-
-const a: WebClientConfiguration = {
-    logLevel: "",
-    timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
-    registrationStatus: "closed" as RegistrationStatus,
-    externalURLs: {},
-    modules: { Note: true },
-    hoursForDeletion: 1,
-    minPatientAge: 16,
-    maxDependentAge: 12,
-};
-
-const userGetters = {
-    user: (): User => {
-        return new User();
-    },
-};
 
 const laboratoryActions: ActionTree<LaboratoryState, RootState> = {
     getOrders(): Promise<RequestResult<LaboratoryOrder[]>> {
@@ -233,45 +216,15 @@ const errorBannerActions: ActionTree<ErrorBannerState, RootState> = {
     },
 };
 
-export const storeOptions = {
+export const storeOptions: GatewayStoreOptions = {
     modules: {
-        user: {
-            namespaced: true,
-            getters: userGetters,
-        },
-        config: {
-            namespaced: true,
-            getters: configGetters,
-        },
-        laboratory: {
-            namespaced: true,
-            getters: laboratoryGetters,
-            actions: laboratoryActions,
-        },
-        medication: {
-            namespaced: true,
-            getters: medicationGetters,
-            actions: medicationActions,
-        },
-        immunization: {
-            namespaced: true,
-            getters: immunizationGetters,
-            actions: immunizationActions,
-        },
-        comment: {
-            namespaced: true,
-            getters: commentGetters,
-            actions: commentActions,
-        },
-        sidebar: {
-            namespaced: true,
-            getters: sidebarGetters,
-            actions: sidebarActions,
-        },
-        errorBanner: {
-            namespaced: true,
-            getters: errorBannerGetters,
-            actions: errorBannerActions,
-        },
+        user: userStub,
+        config: configStub,
+        laboratory: laboratoryStub,
+        medication: medicationStub,
+        immunization: immunizationStub,
+        comment: commentStub,
+        sidebar: sidebarStub,
+        errorBanner: errorStub,
     },
 };
