@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
-    using System.Threading.Tasks;
     using HealthGateway.Common.Models;
 
     /// <summary>
@@ -28,15 +27,6 @@ namespace HealthGateway.Common.Services
         /// Will use access_token acquired from system account authenication.
         /// </summary>
         /// <param name="notificationSettings">The Notification Settings Request object.</param>
-        /// <returns>The notification settings request queued.</returns>
-        NotificationSettingsRequest QueueNotificationSettings(NotificationSettingsRequest notificationSettings);
-
-        /// <summary>
-        /// Sends the Notifications Settings to PHSA immediately.
-        /// </summary>
-        /// <param name="notificationSettings">The Notification Settings Request object.</param>
-        /// <param name="bearerToken">The bearer token of the authenticated user.</param>
-        /// <returns>A Notification Settings Response object mapped in a RequestResult.</returns>
-        Task<RequestResult<NotificationSettingsResponse>> SendNotificationSettings(NotificationSettingsRequest notificationSettings, string bearerToken);
+        void QueueNotificationSettings(NotificationSettingsRequest notificationSettings);
     }
 }
