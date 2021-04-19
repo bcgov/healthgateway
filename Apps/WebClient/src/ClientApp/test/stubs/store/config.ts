@@ -13,14 +13,11 @@ import {
     ConfigMutations,
     ConfigState,
 } from "@/store/modules/config/types";
-import {
-    LaboratoryModule,
-    LaboratoryState,
-} from "@/store/modules/laboratory/types";
 
-const laboratoryState: LaboratoryState = {
-    laboratoryOrders: [],
+const configState: ConfigState = {
     statusMessage: "",
+    config: new ExternalConfiguration(),
+    error: false,
     status: LoadStatus.NONE,
 };
 
@@ -67,12 +64,12 @@ const configMutations: ConfigMutations = {
     configurationError(): void {},
 };
 
-const laboratoryStub: LaboratoryModule = {
-    state: laboratoryState,
+const configStub: ConfigModule = {
+    state: configState,
     namespaced: true,
     getters: configGetters,
     actions: configActions,
     mutations: configMutations,
 };
 
-export default laboratoryStub;
+export default configStub;

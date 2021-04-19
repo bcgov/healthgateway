@@ -1,75 +1,51 @@
-import { RegistrationStatus } from "@/constants/registrationStatus";
-import {
-    ExternalConfiguration,
-    IdentityProviderConfiguration,
-    OpenIdConnectConfiguration,
-    WebClientConfiguration,
-} from "@/models/configData";
+import { LaboratoryOrder } from "@/models/laboratory";
+import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import {
-    ConfigActions,
-    ConfigGetters,
-    ConfigModule,
-    ConfigMutations,
-    ConfigState,
-} from "@/store/modules/config/types";
+    LaboratoryActions,
+    LaboratoryGetters,
+    LaboratoryModule,
+    LaboratoryMutations,
+    LaboratoryState,
+} from "@/store/modules/laboratory/types";
 
-const configState: ConfigState = {
+const laboratoryState: LaboratoryState = {
+    laboratoryOrders: [],
     statusMessage: "",
-    config: new ExternalConfiguration(),
-    error: false,
     status: LoadStatus.NONE,
 };
 
-const configGetters: ConfigGetters = {
-    identityProviders(): IdentityProviderConfiguration[] {
+const laboratoryGetters: LaboratoryGetters = {
+    laboratoryOrders(): LaboratoryOrder[] {
         return [];
     },
-    openIdConnect(): OpenIdConnectConfiguration {
-        return {
-            authority: "",
-            audience: "",
-            clientId: "",
-            responseType: "",
-            scope: "",
-            callbacks: {},
-        };
+    laboratoryCount(): number {
+        return 0;
     },
-    webClient(): WebClientConfiguration {
-        return {
-            logLevel: "",
-            timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
-            registrationStatus: RegistrationStatus.Open,
-            externalURLs: {},
-            modules: { Note: true },
-            hoursForDeletion: 1,
-            minPatientAge: 16,
-            maxDependentAge: 12,
-        };
-    },
-    isOffline(): boolean {
+    isLoading(): boolean {
         return false;
     },
 };
 
-const configActions: ConfigActions = {
-    initialize(): Promise<ExternalConfiguration> {
+const laboratoryActions: LaboratoryActions = {
+    retrieve(): Promise<RequestResult<LaboratoryOrder[]>> {
         return new Promise(() => {});
     },
+    handleError(): void {},
 };
 
-const configMutations: ConfigMutations = {
-    configurationRequest(): void {},
-    configurationLoaded(): void {},
-    configurationError(): void {},
+const laboratoryMutations: LaboratoryMutations = {
+    setRequested(): void {},
+    setLaboratoryOrders(): void {},
+    laboratoryError(): void {},
 };
 
-const configStub: ConfigModule = {
-    state: configState,
+const laboratoryStub: LaboratoryModule = {
     namespaced: true,
-    getters: configGetters,
-    actions: configActions,
-    mutations: configMutations,
+    state: laboratoryState,
+    getters: laboratoryGetters,
+    actions: laboratoryActions,
+    mutations: laboratoryMutations,
 };
 
-export default configStub;
+export default laboratoryStub;

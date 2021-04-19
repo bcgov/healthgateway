@@ -44,7 +44,6 @@ export interface MedicationRequestActions
 export interface MedicationRequestMutations
     extends MutationTree<MedicationRequestState> {
     setMedicationRequestRequested(state: MedicationRequestState): void;
-
     setMedicationRequestResult(
         state: MedicationRequestState,
         medicationRequestResult: RequestResult<MedicationRequest[]>
