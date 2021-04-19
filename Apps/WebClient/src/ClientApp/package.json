@@ -50,7 +50,7 @@
         "jest-sonar-reporter": "^2.0.0",
         "jest-transform-stub": "^2.0.0",
         "jquery": "^3.6.0",
-        "mini-css-extract-plugin": "^1.4.1",
+        "mini-css-extract-plugin": "^1.5.0",
         "node-sass": "^5.0.0",
         "popper.js": "^1.16.1",
         "prettier": "^2.2.1",
