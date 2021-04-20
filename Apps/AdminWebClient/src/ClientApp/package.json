@@ -12,7 +12,7 @@
         "@fortawesome/fontawesome-svg-core": "^1.2.35",
         "@fortawesome/free-solid-svg-icons": "^5.15.3",
         "@fortawesome/vue-fontawesome": "^2.0.2",
-        "core-js": "^3.10.1",
+        "core-js": "^3.10.2",
         "date-fns": "^2.21.1",
         "inversify": "^5.0.5",
         "luxon": "^1.26.0",
