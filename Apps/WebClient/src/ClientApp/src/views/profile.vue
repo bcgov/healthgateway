@@ -20,7 +20,7 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
-import BaseButtonComponent from "@/components/shared/baseButton.vue";
+import HgButton from "@/components/shared/hgButton.vue";
 import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import StatusLabelComponent from "@/components/shared/statusLabel.vue";
 import BannerError from "@/models/bannerError";
@@ -44,7 +44,7 @@ const authNamespace = "auth";
 
 @Component({
     components: {
-        BaseButtonComponent,
+        "hg-button": HgButton,
         LoadingComponent,
         VerifySMSComponent,
         PageTitleComponent,
@@ -536,7 +536,7 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <BaseButtonComponent
+                                                <hg-button
                                                     v-if="
                                                         !emailVerified &&
                                                         !isEmailEditable &&
@@ -554,7 +554,7 @@ export default class ProfileView extends Vue {
                                                     "
                                                 >
                                                     Resend Verification
-                                                </BaseButtonComponent>
+                                                </hg-button>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.email.email"
@@ -615,7 +615,7 @@ export default class ProfileView extends Vue {
                                 </b-row>
                                 <b-row v-if="isEmailEditable" class="mb-3">
                                     <b-col>
-                                        <BaseButtonComponent
+                                        <hg-button
                                             id="editEmailCancelBtn"
                                             data-testid="editEmailCancelBtn"
                                             variant="secondary"
@@ -624,8 +624,8 @@ export default class ProfileView extends Vue {
                                             @click="cancelEmailEdit()"
                                         >
                                             Cancel
-                                        </BaseButtonComponent>
-                                        <BaseButtonComponent
+                                        </hg-button>
+                                        <hg-button
                                             id="editSMSSaveBtn"
                                             data-testid="editEmailSaveBtn"
                                             variant="primary"
@@ -638,7 +638,7 @@ export default class ProfileView extends Vue {
                                             @click="saveEmailEdit($event)"
                                         >
                                             Save
-                                        </BaseButtonComponent>
+                                        </hg-button>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -692,7 +692,7 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <BaseButtonComponent
+                                                <hg-button
                                                     v-if="
                                                         !smsVerified &&
                                                         !isSMSEditable &&
@@ -705,7 +705,7 @@ export default class ProfileView extends Vue {
                                                     @click="verifySMS()"
                                                 >
                                                     Verify
-                                                </BaseButtonComponent>
+                                                </hg-button>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.smsNumber.sms"
@@ -769,7 +769,7 @@ export default class ProfileView extends Vue {
                                 </b-row>
                                 <b-row v-if="isSMSEditable" class="mb-3">
                                     <b-col>
-                                        <BaseButtonComponent
+                                        <hg-button
                                             id="cancelBtn"
                                             data-testid="cancelSMSEditBtn"
                                             variant="secondary"
@@ -777,8 +777,8 @@ export default class ProfileView extends Vue {
                                             class="mr-2"
                                             @click="cancelSMSEdit()"
                                             >Cancel
-                                        </BaseButtonComponent>
-                                        <BaseButtonComponent
+                                        </hg-button>
+                                        <hg-button
                                             id="saveBtn"
                                             data-testid="saveSMSEditBtn"
                                             variant="primary"
@@ -787,7 +787,7 @@ export default class ProfileView extends Vue {
                                             :disabled="tempSMS === smsNumber"
                                             @click="saveSMSEdit()"
                                             >Save
-                                        </BaseButtonComponent>
+                                        </hg-button>
                                     </b-col>
                                 </b-row>
                             </b-col>
