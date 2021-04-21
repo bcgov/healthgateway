@@ -58,6 +58,7 @@ namespace HealthGateway.Database.Delegates
                                             .Include(a => a.ActiveIngredient)
                                             .Include(f => f.Form)
                                             .Where(dp => uniqueDrugIdentifers.Contains(dp.DrugIdentificationNumber))
+                                            .AsEnumerable()
                                             .GroupBy(dp => dp.DrugIdentificationNumber)
                                             .Select(drug => drug.OrderByDescending(o => o.LastUpdate).First())
                                             .ToList();
@@ -75,6 +76,7 @@ namespace HealthGateway.Database.Delegates
             DateTime now = DateTime.UtcNow;
             IList<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
                 .Where(dp => uniqueDrugIdentifers.Contains(dp.DINPIN) && (now > dp.EffectiveDate && now <= dp.EndDate))
+                .AsEnumerable()
                 .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).First())
                 .ToList();
 
