@@ -106,6 +106,9 @@ export const actions: ActionTree<UserState, RootState> = {
                     params.userPreference
                 )
                 .then((result) => {
+                    logger.debug(
+                        `updateUserPreference: ${JSON.stringify(result)}`
+                    );
                     if (result) {
                         context.commit(
                             "setUserPreference",
@@ -131,6 +134,9 @@ export const actions: ActionTree<UserState, RootState> = {
                     params.userPreference
                 )
                 .then((result) => {
+                    logger.debug(
+                        `createUserPreference: ${JSON.stringify(result)}`
+                    );
                     if (result) {
                         context.commit(
                             "setUserPreference",

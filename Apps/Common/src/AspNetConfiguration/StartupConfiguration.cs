@@ -499,8 +499,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                     clientRegistriesEndpoint);
                 client.ClientCredentials.ClientCertificate.Certificate = clientRegistriesCertificate;
                 client.Endpoint.EndpointBehaviors.Add(s.GetService<IEndpointBehavior>());
-
-                // TODO: - HACK - Remove this once we can get the server certificate to be trusted.
                 client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
                     new X509ServiceCertificateAuthentication()
                     {

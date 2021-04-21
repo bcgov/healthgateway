@@ -20,7 +20,7 @@ import {
     IDashboardService,
     IEmailAdminService,
     IHttpDelegate,
-    IUserFeedbackService,
+    IUserFeedbackService
 } from "@/services/interfaces";
 import store from "@/store/store";
 
@@ -29,7 +29,7 @@ Vue.config.productionTip = false;
 Vue.use(DatetimePicker);
 Vue.use(TiptapVuetifyPlugin, {
     vuetify,
-    iconsGroup: "md",
+    iconsGroup: "md"
 });
 Vue.filter("date", dateFilter);
 Vue.component("FontAwesomeIcon", FontAwesomeIcon);
@@ -75,6 +75,6 @@ function initializeVue() {
         vuetify,
         router,
         store,
-        render: (h) => h(App),
+        render: h => h(App)
     }).$mount("#app");
 }

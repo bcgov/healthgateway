@@ -198,10 +198,7 @@ namespace Healthgateway.JobScheduler.Jobs
             {
                 email.LastRetryDateTime = DateTime.UtcNow;
                 email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
-                if (caught is SmtpCommandException)
-                {
-                    email.SmtpStatusCode = (int)((SmtpCommandException)caught).StatusCode;
-                }
+                email.SmtpStatusCode = (int)((SmtpCommandException)caught).StatusCode;
 
                 this.emailDelegate.UpdateEmail(email);
 

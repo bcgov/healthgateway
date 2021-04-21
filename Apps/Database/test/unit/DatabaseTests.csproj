@@ -2,15 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <!-- SonarQube needs this -->
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.DatabaseTests</RootNamespace>
-    <nowarn>SA0001</nowarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>SA0001; CA1707; SA1600</NoWarn>
+    <DocumentationFile>.\DatabaseTests.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />
@@ -45,9 +39,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Database.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Context\" />
-    <Folder Include="Delegates\" />
   </ItemGroup>
 </Project>

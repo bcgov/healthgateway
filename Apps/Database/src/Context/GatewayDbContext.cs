@@ -82,7 +82,7 @@ namespace HealthGateway.Database.Context
             modelBuilder.HasDefaultSchema("gateway");
 
             Contract.Requires(modelBuilder != null);
-            modelBuilder.HasSequence<long>(Sequence.PHARMANET_TRACE)
+            modelBuilder.HasSequence<long>(Sequence.PharmanetTrace)
             .StartsAt(1)
             .IncrementsBy(1)
             .HasMin(1)

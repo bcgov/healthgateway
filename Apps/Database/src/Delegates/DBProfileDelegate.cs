@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
@@ -28,6 +29,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public class DBProfileDelegate : IUserProfileDelegate
     {
         private readonly ILogger logger;
@@ -154,11 +156,8 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset)
         {
-            /*int result = this.dbContext.UserProfile
-                .Count(w => w.AcceptedTermsOfService);*/
-
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
-                            .Where(x => x.AcceptedTermsOfService == true)
+                            .Where(x => x.AcceptedTermsOfService)
                             .Select(x => new { x.HdId, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
                             .GroupBy(x => x.createdDate).Select(x => new { createdDate = x.Key, count = x.Count() })
                             .OrderBy(x => x.createdDate)

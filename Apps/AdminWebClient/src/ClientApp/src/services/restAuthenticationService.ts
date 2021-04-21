@@ -31,7 +31,7 @@ export class RestAuthenticationService implements IAuthenticationService {
 
         Router.push({
             path: "/Login",
-            query: { redirectUri: fullRedirectUrl.href },
+            query: { redirectUri: fullRedirectUrl.href }
         });
         // Triggers a page refresh so the server side route can redirect to the oidc flow
         Router.go(0);
@@ -41,10 +41,10 @@ export class RestAuthenticationService implements IAuthenticationService {
         return new Promise((resolve, reject) => {
             this.http
                 .getWithCors<AuthenticationData>(`${this.AUTH_BASE_URI}/`)
-                .then((result) => {
+                .then(result => {
                     return resolve(result);
                 })
-                .catch((err) => {
+                .catch(err => {
                     console.log("Fetch error:" + err.toString());
                     reject(err);
                 });
@@ -52,10 +52,7 @@ export class RestAuthenticationService implements IAuthenticationService {
     }
 
     public refreshToken(): Promise<AuthenticationData> {
-        return new Promise((resolve, reject) => {
-            // NOT IMPLEMENTED
-            reject("refresh token not implemented.");
-        });
+        return Promise.reject("refresh token not implemented.");
     }
 
     public destroyToken(): Promise<void> {

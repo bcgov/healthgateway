@@ -44,7 +44,6 @@ namespace HealthGateway.Immunization.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration configuration;
         private readonly ImmunizationConfig immunizationConfig;
 
         /// <summary>
@@ -60,9 +59,8 @@ namespace HealthGateway.Immunization.Delegates
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.configuration = configuration;
             this.immunizationConfig = new ImmunizationConfig();
-            this.configuration.Bind(ImmunizationConfigSectionKey, this.immunizationConfig);
+            configuration.Bind(ImmunizationConfigSectionKey, this.immunizationConfig);
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestImmunizationDelegate));

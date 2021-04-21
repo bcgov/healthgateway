@@ -230,11 +230,13 @@
             <summary>
             ValidateEmail - Happy Path.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldValidateEmailWithEmailNotFound">
             <summary>
             ValidateEmail - Email not found error.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldUpdateUserSMSNumber">
             <summary>
@@ -520,16 +522,19 @@
             <summary>
             InsertUserProfile - Happy Path.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldInsertUserProfileWithClosedRegistration">
             <summary>
             InsertUserProfile - Closed Registration Error.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldQueueNotificationUpdate">
             <summary>
             CreateUserProfile - Happy Path with notification update.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldValidateAgeAsync">
             <summary>
@@ -592,22 +597,22 @@
             RecoverUserProfile - Alraedy active happy Path.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Test.Services.UserSMSServiceTests">
+        <member name="T:HealthGateway.WebClient.Test.Services.UserSmsServiceTests">
             <summary>
-            Unit Tests for UserSMSServiceTests.
+            Unit Tests for UserSmsServiceTests.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldValidateSMS">
-            <summary>
-            ValidateSMS - Happy path scenario.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldValidateSMSWithInvalidInvite">
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSmsServiceTests.ShouldValidateSMS">
             <summary>
             ValidateSMS - Happy path scenario.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldSanitizeSMS">
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSmsServiceTests.ShouldValidateSMSWithInvalidInvite">
+            <summary>
+            ValidateSMS - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSmsServiceTests.ShouldSanitizeSMS">
             <summary>
             ValidateSMS - Happy path scenario.
             </summary>

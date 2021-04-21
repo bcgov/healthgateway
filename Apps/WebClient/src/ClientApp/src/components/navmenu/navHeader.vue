@@ -113,9 +113,7 @@ export default class HeaderComponent extends Vue {
     }
 
     private mounted() {
-        if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
-        }
+        this.onPropertyChanged();
     }
 
     private destroyed() {

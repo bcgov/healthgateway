@@ -208,74 +208,69 @@ export default class RegistrationView extends Vue {
         this.$v.$touch();
         if (this.$v.$invalid) {
             this.submitStatus = "ERROR";
-        } else {
-            this.submitStatus = "PENDING";
-            if (this.smsNumber) {
-                this.smsNumber = this.smsNumber.replace(/\D+/g, "");
-            }
-            this.loadingTermsOfService = true;
-            this.userProfileService
-                .createProfile({
-                    profile: {
-                        hdid: this.oidcUser.hdid,
-                        acceptedTermsOfService: this.accepted,
-                        email: this.email || "",
-                        isEmailVerified: false,
-                        smsNumber: this.smsNumber || "",
-                        isSMSNumberVerified: false,
-                        preferences: {},
-                    },
-                    inviteCode: this.inviteKey || "",
-                })
-                .then((result) => {
-                    this.logger.debug(
-                        `Create Profile result: ${JSON.stringify(result)}`
-                    );
-                    this.checkRegistration().then((isRegistered: boolean) => {
-                        if (isRegistered) {
-                            if (this.smsNumber === "" && this.email === "")
-                                this.$router.push({ path: "/timeline" });
-                            else {
-                                this.$router.push({
-                                    path: "/profile",
-                                    query: {
-                                        toVerifyPhone:
-                                            this.smsNumber === ""
-                                                ? "false"
-                                                : "true",
-                                        toVerifyEmail:
-                                            this.email === ""
-                                                ? "false"
-                                                : "true",
-                                    },
-                                });
-                            }
-                        } else {
-                            this.addError({
-                                title: "User profile creation",
-                                description: "Profile already created",
-                                detail: "",
-                                errorCode: "",
-                            });
-                        }
-                    });
-                })
-                .catch((err) => {
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "User profile creation",
-                            err
-                        )
-                    );
-                })
-                .finally(() => {
-                    this.loadingTermsOfService = false;
-                });
+            event.preventDefault();
+            return;
         }
+
+        this.submitStatus = "PENDING";
+        if (this.smsNumber) {
+            this.smsNumber = this.smsNumber.replace(/\D+/g, "");
+        }
+        this.loadingTermsOfService = true;
+        this.userProfileService
+            .createProfile({
+                profile: {
+                    hdid: this.oidcUser.hdid,
+                    acceptedTermsOfService: this.accepted,
+                    email: this.email || "",
+                    isEmailVerified: false,
+                    smsNumber: this.smsNumber || "",
+                    isSMSNumberVerified: false,
+                    preferences: {},
+                },
+                inviteCode: this.inviteKey || "",
+            })
+            .then((result) => {
+                this.logger.debug(
+                    `Create Profile result: ${JSON.stringify(result)}`
+                );
+                this.redirect();
+            })
+            .catch((err) => {
+                this.addError(
+                    ErrorTranslator.toBannerError("User profile creation", err)
+                );
+            })
+            .finally(() => {
+                this.loadingTermsOfService = false;
+            });
 
         event.preventDefault();
     }
 
+    private redirect(): void {
+        this.checkRegistration().then((isRegistered: boolean) => {
+            if (!isRegistered) {
+                this.addError({
+                    title: "User profile creation",
+                    description: "Profile already created",
+                    detail: "",
+                    errorCode: "",
+                });
+                return;
+            }
+            this.$router.push({
+                path:
+                    this.smsNumber === "" && this.email === ""
+                        ? "/timeline"
+                        : "/profile",
+                query: {
+                    toVerifyPhone: this.smsNumber === "" ? "false" : "true",
+                    toVerifyEmail: this.email === "" ? "false" : "true",
+                },
+            });
+        });
+    }
     private onEmailOptout(isChecked: boolean): void {
         if (!isChecked) {
             this.emailConfirmation = "";

@@ -1093,13 +1093,6 @@
             <param name="lhs">The first type to compare, or null.</param>
             <param name="rhs">The second type to compare, or null.</param>
         </member>
-        <member name="M:HealthGateway.Common.Constants.OidType.Equals(System.Object)">
-            <summary>
-            Definition of the equal operator.
-            </summary>
-            <returns>True if the value of a is equal; otherwise, false.</returns>
-            <param name="obj">The object to compare against for equality.</param>
-        </member>
         <member name="M:HealthGateway.Common.Constants.OidType.GetHashCode">
             <summary>
             Gets the hash code for this OIDType.
@@ -1111,6 +1104,13 @@
             Gets string representation of this type.
             </summary>
             <returns>The string representation.</returns>
+        </member>
+        <member name="M:HealthGateway.Common.Constants.OidType.Equals(System.Object)">
+            <summary>
+            Definition of the equal operator.
+            </summary>
+            <returns>True if the value of a is equal; otherwise, false.</returns>
+            <param name="obj">The object to compare against for equality.</param>
         </member>
         <member name="M:HealthGateway.Common.Constants.OidType.Equals(HealthGateway.Common.Constants.OidType)">
             <summary>

@@ -107,7 +107,6 @@ namespace HealthGateway.Common.Delegates
                         retVal.TotalResultCount = 0;
                         break;
                     case HttpStatusCode.Forbidden:
-                        // TODO: Parse Problem Details.
                         this.logger.LogError($"Error Details: {payload}");
                         retVal.ResultError = new RequestResultError() { ResultMessage = $"DID Claim is missing or can not resolve PHN, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.PHSA) };
                         break;

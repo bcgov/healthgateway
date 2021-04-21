@@ -46,7 +46,6 @@ namespace HealthGateway.Medication.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration configuration;
         private readonly IGenericCacheDelegate genericCacheDelegate;
         private readonly IHashDelegate hashDelegate;
         private readonly OdrConfig odrConfig;
@@ -69,11 +68,10 @@ namespace HealthGateway.Medication.Delegates
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.configuration = configuration;
             this.genericCacheDelegate = genericCacheDelegate;
             this.hashDelegate = hashDelegate;
             this.odrConfig = new OdrConfig();
-            this.configuration.Bind(OdrConfigSectionKey, this.odrConfig);
+            configuration.Bind(OdrConfigSectionKey, this.odrConfig);
             if (this.odrConfig.DynamicServiceLookup)
             {
                 string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");

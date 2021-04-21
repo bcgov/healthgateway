@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MedicationTests</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Medication.Controllers.Test.MedicationControllerTests">
+            <summary>
+            MedicationController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.Test.MedicationControllerTests.ShouldNotGetSingleMedication">
+            <summary>
+            GetMedications - Not Found.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.Test.MedicationControllerTests.ShouldGetSingleMedication">
+            <summary>
+            GetMedications - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.Test.MedicationControllerTests.ShouldGetMultipleMedications">
+            <summary>
+            GetMedications - Happy Path (Multiple).
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Controllers.Test.MedicationStatementControllerTests">
+            <summary>
+            MedicationStatementController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Controllers.Test.MedicationStatementControllerTests.GetMedications">
+            <summary>
+            GetMedications - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="T:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests">
+            <summary>
+            MedicationDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.ValidateGetMedicationStatement">
+            <summary>
+            GetMedicationStatements - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.ValidateGetMedicationStatementCachedKeyword">
+            <summary>
+            GetMedicationStatements - Happy Path (Cached Keyword).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.InvalidProtectiveWord">
+            <summary>
+            GetMedicationStatements - Invalid Keyword.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.ValidateGetMedicationStatementHttpError">
+            <summary>
+            GetMedicationStatements - Http Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.ValidateGetMedicationStatementHttpException">
+            <summary>
+            GetMedicationStatements - Http Exception.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.ValidateGetProtectiveWordHttpError">
+            <summary>
+            GetMedicationStatements - Keyword Http Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.ValidateGetProtectiveWordJSONParseError">
+            <summary>
+            GetMedicationStatements - Keyword JSON Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.ValidateGetProtectiveWordParseException">
+            <summary>
+            GetMedicationStatements - Keyword Parse Exception.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.SetProtectiveWordNotImplemented">
+            <summary>
+            SetProtectiveWord - Not Implemented Exception.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.MedicationDelegateTests.DeleteProtectiveWordNotImplemented">
+            <summary>
+            DeleteProtectiveWord - Not Implemented Exception.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Delegates.Test.SalesforceDelegateTests">
+            <summary>
+            SalesforceDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.SalesforceDelegateTests.ShouldRetrieveMedicationRequests">
+            <summary>
+            GetMedicationRequests - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.SalesforceDelegateTests.ShouldErrorIfNoAuthToken">
+            <summary>
+            GetMedicationRequests - Unauthorized.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.SalesforceDelegateTests.ShouldErrorIfForbiden">
+            <summary>
+            GetMedicationRequests - Forbidden.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Delegates.Test.SalesforceDelegateTests.ShouldEmptyIfNoContent">
+            <summary>
+            GetMedicationRequests - Not Found.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.Test.MedicationRequestServiceTests">
+            <summary>
+            MedicationRequestService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationRequestServiceTests.ShouldGetMedications">
+            <summary>
+            GetMedicationRequests - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationRequestServiceTests.ShouldErrorIfNoPatient">
+            <summary>
+            GetMedicationRequests - No Patient Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationRequestServiceTests.ShouldErrorIfDelegateError">
+            <summary>
+            GetMedicationRequests - Delegate Error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.Test.MedicationServiceTests">
+            <summary>
+            MedicationService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationServiceTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.Test.MedicationServiceTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationServiceTests.ShouldGetMedications">
+            <summary>
+            GetMedications - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationServiceTests.ShouldGetMedicationsNoFederal">
+            <summary>
+            GetMedications - Happy Path (No Federal).
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests">
+            <summary>
+            MedicationStatementService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.InvalidProtectiveWord">
+            <summary>
+            GetMedicationStatementsHistory - Invalid Keyword.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.ValidProtectiveWord">
+            <summary>
+            GetMedicationStatementsHistory - Valid Keyword.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.ShouldGetMedications">
+            <summary>
+            GetMedicationStatementsHistory - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.ShouldGetMedicationsDrugInfoMissing">
+            <summary>
+            GetMedicationStatementsHistory - Happy Path (Missing Drug Info).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.ShouldGetMedicationsProvLookup">
+            <summary>
+            GetMedicationStatementsHistory - Happy Path (Prov Drug Info).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.ShouldGetEmptyMedications">
+            <summary>
+            GetMedicationStatementsHistory - Empty.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.ShouldGetPatientError">
+            <summary>
+            GetMedicationStatementsHistory - Get Patient Error.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+    </members>
+</doc>

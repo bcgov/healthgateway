@@ -20,7 +20,7 @@ namespace HealthGateway.Common.Constants
     /// <summary>
     /// A class with constants representing the various OID values.
     /// </summary>
-    public class OidType : IEquatable<OidType>
+    public sealed class OidType : IEquatable<OidType>
     {
         /// <summary>
         /// Gets or sets the value that holds the internal representation of the OidType.
@@ -85,24 +85,6 @@ namespace HealthGateway.Common.Constants
         }
 
         /// <summary>
-        /// Definition of the equal operator.
-        /// </summary>
-        /// <returns>True if the value of a is equal; otherwise, false.</returns>
-        /// <param name="obj">The object to compare against for equality.</param>
-        public override bool Equals(object? obj)
-        {
-            // Check for null and compare run-time types.
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-            {
-                return false;
-            }
-            else
-            {
-                return this.Equals((OidType)obj);
-            }
-        }
-
-        /// <summary>
         /// Gets the hash code for this OIDType.
         /// </summary>
         /// <returns>The computed hash code.</returns>
@@ -118,6 +100,24 @@ namespace HealthGateway.Common.Constants
         public override string ToString()
         {
             return this.value;
+        }
+
+        /// <summary>
+        /// Definition of the equal operator.
+        /// </summary>
+        /// <returns>True if the value of a is equal; otherwise, false.</returns>
+        /// <param name="obj">The object to compare against for equality.</param>
+        public override bool Equals(object? obj)
+        {
+            // Check for null and compare run-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                return this.Equals((OidType)obj);
+            }
         }
 
         /// <summary>

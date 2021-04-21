@@ -38,12 +38,12 @@
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
             <response code="503">The service is unavailable for use.</response>
         </member>
-        <member name="T:HealthGateway.Encounter.Delegates.IMSPVisitDelegate">
+        <member name="T:HealthGateway.Encounter.Delegates.IMspVisitDelegate">
             <summary>
-            Interface to retrieve MSP Visit History.
+            Interface to retrieve Msp Visit History.
             </summary>
         </member>
-        <member name="M:HealthGateway.Encounter.Delegates.IMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String)">
+        <member name="M:HealthGateway.Encounter.Delegates.IMspVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String)">
             <summary>
             Returns a set of MSP Visits.
             </summary>
@@ -52,20 +52,20 @@
             <param name="ipAddress">The IP of the user querying.</param>
             <returns>The Encounter Model response wrapped in an HNMessage.</returns>
         </member>
-        <member name="T:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate">
+        <member name="T:HealthGateway.Encounter.Delegates.RestMspVisitDelegate">
             <summary>
             ODR Implementation for Rest Medication Statements.
             </summary>
         </member>
-        <member name="M:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Delegates.RestMSPVisitDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Encounter.Delegates.RestMspVisitDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Delegates.RestMspVisitDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Delegates.RestMspVisitDelegate"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="httpClientService">The injected http client service.</param>
             <param name="configuration">The injected configuration provider.</param>
         </member>
-        <member name="M:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String)">
+        <member name="M:HealthGateway.Encounter.Delegates.RestMspVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Encounter.Models.Claim">
@@ -227,27 +227,27 @@
             Gets or sets the Province.
             </summary>
         </member>
-        <member name="T:HealthGateway.Encounter.Models.ODR.MSPVisitHistory">
+        <member name="T:HealthGateway.Encounter.Models.ODR.MspVisitHistory">
             <summary>
             Object that defines the MSP Visit History Request/Response model.
             </summary>
         </member>
-        <member name="P:HealthGateway.Encounter.Models.ODR.MSPVisitHistory.Query">
+        <member name="P:HealthGateway.Encounter.Models.ODR.MspVisitHistory.Query">
             <summary>
             Gets or sets the OdrHistoryQuery for the MSPVisitHistory integration.
             </summary>
         </member>
-        <member name="P:HealthGateway.Encounter.Models.ODR.MSPVisitHistory.Response">
+        <member name="P:HealthGateway.Encounter.Models.ODR.MspVisitHistory.Response">
             <summary>
             Gets or sets the MSPVisitHistoryResponse for the MSPVisitHistory integration.
             </summary>
         </member>
-        <member name="T:HealthGateway.Encounter.Models.ODR.MSPVisitHistoryResponse">
+        <member name="T:HealthGateway.Encounter.Models.ODR.MspVisitHistoryResponse">
             <summary>
             The ODR MSP Visit History Response.
             </summary>
         </member>
-        <member name="P:HealthGateway.Encounter.Models.ODR.MSPVisitHistoryResponse.Claims">
+        <member name="P:HealthGateway.Encounter.Models.ODR.MspVisitHistoryResponse.Claims">
             <summary>
             Gets or sets the set of Claims.
             The set is boud by the other class properties.
@@ -274,7 +274,7 @@
         <member name="T:HealthGateway.Encounter.Services.EncounterService">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Encounter.Services.EncounterService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Services.EncounterService},Microsoft.AspNetCore.Http.IHttpContextAccessor,HealthGateway.Common.Services.IPatientService,HealthGateway.Encounter.Delegates.IMSPVisitDelegate)">
+        <member name="M:HealthGateway.Encounter.Services.EncounterService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Services.EncounterService},Microsoft.AspNetCore.Http.IHttpContextAccessor,HealthGateway.Common.Services.IPatientService,HealthGateway.Encounter.Delegates.IMspVisitDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Services.EncounterService"/> class.
             </summary>

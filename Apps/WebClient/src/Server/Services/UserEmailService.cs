@@ -80,7 +80,7 @@ namespace HealthGateway.WebClient.Services
             MessagingVerification? matchingVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
             if (matchingVerification == null ||
                 matchingVerification.HdId != hdid ||
-                matchingVerification.Deleted == true)
+                matchingVerification.Deleted)
             {
                 // Invalid Verification Attempt
                 MessagingVerification? lastEmailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
@@ -117,7 +117,7 @@ namespace HealthGateway.WebClient.Services
                     ResultError = ErrorTranslator.ActionRequired("Email Verification Expired", ActionType.Expired),
                 };
             }
-            else if (matchingVerification.Validated == true)
+            else if (matchingVerification.Validated)
             {
                 this.logger.LogDebug($"Email already validated");
 

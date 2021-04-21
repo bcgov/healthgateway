@@ -20,7 +20,7 @@ namespace HealthGateway.WebClient.Services
     /// <summary>
     /// The User SMS service.
     /// </summary>
-    public interface IUserSMSService
+    public interface IUserSmsService
     {
         /// <summary>
         /// Validates the sms number that matches the given validation code.

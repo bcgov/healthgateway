@@ -46,7 +46,6 @@ namespace HealthGateway.WebClient
     {
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
-        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -56,7 +55,6 @@ namespace HealthGateway.WebClient
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-            this.logger = this.startupConfig.Logger;
             this.configuration = configuration;
         }
 
@@ -88,7 +86,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<INoteService, NoteService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICommunicationService, CommunicationService>();
-            services.AddTransient<IUserSMSService, UserSMSService>();
+            services.AddTransient<IUserSmsService, UserSmsService>();
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
             services.AddTransient<IDependentService, DependentService>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
@@ -189,7 +187,9 @@ namespace HealthGateway.WebClient
                 if (env.IsDevelopment() && !Debugger.IsAttached)
                 {
                     // change this to whatever webpack dev server says it's running on
+#pragma warning disable S1075
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
+#pragma warning restore S1075
                 }
             });
 

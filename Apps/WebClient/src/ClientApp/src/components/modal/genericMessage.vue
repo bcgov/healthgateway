@@ -22,13 +22,11 @@ export default class MessageModalComponent extends Vue {
     @Emit()
     private submit() {
         this.isVisible = false;
-        return;
     }
 
     @Emit()
     private cancel() {
         this.hideModal();
-        return;
     }
 
     private handleSubmit(bvModalEvt: Event) {

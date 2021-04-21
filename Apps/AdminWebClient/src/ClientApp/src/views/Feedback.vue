@@ -15,7 +15,7 @@
                             :items="feedbackList"
                             :items-per-page="50"
                             :footer-props="{
-                                'items-per-page-options': [25, 50, 100, -1],
+                                'items-per-page-options': [25, 50, 100, -1]
                             }"
                         >
                             <template #item.createdDateTime="{ item }">
@@ -69,8 +69,8 @@ import { IUserFeedbackService } from "@/services/interfaces";
 @Component({
     components: {
         LoadingComponent,
-        BannerFeedbackComponent,
-    },
+        BannerFeedbackComponent
+    }
 })
 export default class FeedbackView extends Vue {
     private isLoading = true;
@@ -78,30 +78,30 @@ export default class FeedbackView extends Vue {
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
-        message: "",
+        message: ""
     };
 
     private tableHeaders = [
         {
             text: "Date",
             value: "createdDateTime",
-            width: "20%",
+            width: "20%"
         },
         {
             text: "Email",
             value: "email",
-            width: "20%",
+            width: "20%"
         },
         {
             text: "Comments",
             value: "comment",
-            width: "55%",
+            width: "55%"
         },
         {
             text: "Reviewed?",
             value: "isReviewed",
-            width: "5%",
-        },
+            width: "5%"
+        }
     ];
 
     private feedbackList: UserFeedback[] = [];
@@ -119,16 +119,16 @@ export default class FeedbackView extends Vue {
     private loadFeedbackList() {
         this.userFeedbackService
             .getFeedbackList()
-            .then((userFeedbacks) => {
+            .then(userFeedbacks => {
                 this.feedbackList = [];
                 this.feedbackList.push(...userFeedbacks);
             })
-            .catch((err) => {
+            .catch(err => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Error loading user feedbacks",
+                    message: "Error loading user feedbacks"
                 };
                 console.log(err);
             })
@@ -151,16 +151,16 @@ export default class FeedbackView extends Vue {
                 this.bannerFeedback = {
                     type: ResultType.Success,
                     title: "Feedback Reviewed",
-                    message: "Successfully Reviewed User Feedback.",
+                    message: "Successfully Reviewed User Feedback."
                 };
                 this.loadFeedbackList();
             })
-            .catch((err) => {
+            .catch(err => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Reviewing feedback failed, please try again.",
+                    message: "Reviewing feedback failed, please try again."
                 };
                 console.log(err);
             })

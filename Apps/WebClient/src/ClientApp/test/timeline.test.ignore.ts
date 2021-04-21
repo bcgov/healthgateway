@@ -183,15 +183,15 @@ const immunizationGetters = {
 
 const immunizationActions: ActionTree<ImmunizationState, RootState> = {
     retrieve(): Promise<RequestResult<ImmunizationEvent[]>> {
-        return new Promise((resolve) => {
+        return new Promise((resolve) =>
             resolve({
                 pageIndex: 0,
                 pageSize: 0,
                 resourcePayload: [],
                 resultStatus: ResultType.Success,
                 totalResultCount: 0,
-            });
-        });
+            })
+        );
     },
 };
 

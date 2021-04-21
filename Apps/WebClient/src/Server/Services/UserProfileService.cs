@@ -40,7 +40,7 @@ namespace HealthGateway.WebClient.Services
         private readonly ILogger logger;
         private readonly IPatientService patientService;
         private readonly IUserEmailService userEmailService;
-        private readonly IUserSMSService userSMSService;
+        private readonly IUserSmsService userSMSService;
         private readonly IConfigurationService configurationService;
         private readonly IEmailQueueService emailQueueService;
         private readonly INotificationSettingsService notificationSettingsService;
@@ -71,7 +71,7 @@ namespace HealthGateway.WebClient.Services
             ILogger<UserProfileService> logger,
             IPatientService patientService,
             IUserEmailService userEmailService,
-            IUserSMSService userSMSService,
+            IUserSmsService userSMSService,
             IConfigurationService configurationService,
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,

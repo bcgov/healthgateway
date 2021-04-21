@@ -83,9 +83,7 @@ export default class LinearTimelineComponent extends Vue {
             this.currentPage * this.pageSize,
             this.timelineEntries.length
         );
-        let entries = this.timelineEntries.slice(lowerIndex, upperIndex);
-
-        return entries;
+        return this.timelineEntries.slice(lowerIndex, upperIndex);
     }
 
     private get dateGroups(): DateGroup[] {

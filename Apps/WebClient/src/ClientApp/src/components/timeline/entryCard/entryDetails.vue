@@ -64,10 +64,12 @@ export default class EntryDetailsComponent extends Vue {
 
     @Watch("lastNoteOperation")
     private onLastNoteOperation() {
-        if (this.lastNoteOperation !== null && this.entry !== null) {
-            if (this.lastNoteOperation.id === this.entry.id) {
-                this.handleClose();
-            }
+        if (
+            this.lastNoteOperation !== null &&
+            this.entry !== null &&
+            this.lastNoteOperation.id === this.entry.id
+        ) {
+            this.handleClose();
         }
     }
     private created() {

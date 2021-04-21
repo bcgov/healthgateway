@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ImmunizationTests</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.Immunization.Test.Controllers.ImmunizationControllerTests">
+            <summary>
+            ImmunizationController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Controllers.ImmunizationControllerTests.ShouldGetImmunizations">
+            <summary>
+            GetImmunizations - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests">
+            <summary>
+            RestImmunizationDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.Ok">
+            <summary>
+            GetImmunizations - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.BadData">
+            <summary>
+            GetImmunizations - Bad Data.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.NoContent">
+            <summary>
+            GetImmunizations - No Content.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.Forbidden">
+            <summary>
+            GetImmunizations - Forbidden.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.RequestTimeout">
+            <summary>
+            GetImmunizations - RequestTimeout.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.Exception">
+            <summary>
+            GetImmunizations - HttpRequestException.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Immunization.Test.Services.ImmsServiceTests">
+            <summary>
+            ImmunizationService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Services.ImmsServiceTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetImmunizations">
+            <summary>
+            GetImmunizations - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetRecomendation">
+            <summary>
+            GetImmunizations - Happy Path (With Recommendations).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ValidateImmunizationError">
+            <summary>
+            GetImmunizations - Request Error.
+            </summary>
+        </member>
+    </members>
+</doc>

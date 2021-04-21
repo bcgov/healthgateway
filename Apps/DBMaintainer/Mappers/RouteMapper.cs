@@ -33,7 +33,7 @@ namespace HealthGateway.DrugMaintainer
         public RouteMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            this.Map(m => m.DrugProductId).Convert(converter => drugProducts.Where(d => d.DrugCode == converter.Row.GetField(0)).First().Id);
+            this.Map(m => m.DrugProductId).Convert(converter => drugProducts.First(d => d.DrugCode == converter.Row.GetField(0)).Id);
 
             // ROUTE_OF_ADMINISTRATION_CODE
             this.Map(m => m.AdministrationCode).Index(1);

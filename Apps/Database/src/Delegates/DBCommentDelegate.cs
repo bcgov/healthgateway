@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -28,6 +29,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the Comment delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBCommentDelegate : ICommentDelegate
     {
         private readonly ILogger<DBNoteDelegate> logger;
@@ -53,19 +55,6 @@ namespace HealthGateway.Database.Delegates
             DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
             result.Payload = this.dbContext.Comment
                     .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
-                    .OrderBy(o => o.CreatedDateTime)
-                    .ToList();
-            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
-            return result;
-        }
-
-        /// <inheritdoc />
-        public DBResult<IEnumerable<Comment>> GetAll(string hdId)
-        {
-            this.logger.LogTrace($"Getting Comments for user {hdId}...");
-            DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
-            result.Payload = this.dbContext.Comment
-                    .Where(p => p.UserProfileId == hdId)
                     .OrderBy(o => o.CreatedDateTime)
                     .ToList();
             result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
@@ -155,6 +144,19 @@ namespace HealthGateway.Database.Delegates
             }
 
             this.logger.LogDebug($"Finished deleting Comment in DB");
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<IEnumerable<Comment>> GetAll(string hdId)
+        {
+            this.logger.LogTrace($"Getting Comments for user {hdId}...");
+            DBResult<IEnumerable<Comment>> result = new DBResult<IEnumerable<Comment>>();
+            result.Payload = this.dbContext.Comment
+                    .Where(p => p.UserProfileId == hdId)
+                    .OrderBy(o => o.CreatedDateTime)
+                    .ToList();
+            result.Status = result.Payload != null ? DBStatusCode.Read : DBStatusCode.NotFound;
             return result;
         }
 

@@ -26,5 +26,5 @@ export const mutations: MutationTree<AuthState> = {
         state.statusMessage = "";
         state.authentication = undefined;
         state.stateType = StateType.INITIALIZED;
-    },
+    }
 };

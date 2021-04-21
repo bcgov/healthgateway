@@ -15,13 +15,14 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Diagnostics.Contracts;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     public class DBWriteAuditEventDelegate : IWriteAuditEventDelegate
     {
         private readonly ILogger logger;

@@ -37,7 +37,6 @@ namespace Healthgateway.JobScheduler.Jobs
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
 
         private readonly IServiceProvider serviceProvider;
-        private readonly IConfiguration configuration;
         private readonly IConfiguration jobConfig;
         private readonly ILogger<OneTimeJob> logger;
         private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
@@ -60,11 +59,10 @@ namespace Healthgateway.JobScheduler.Jobs
             IApplicationSettingsDelegate applicationSettingsDelegate)
         {
             this.serviceProvider = serviceProvider;
-            this.configuration = configuration;
             this.logger = logger;
             this.dbContext = dbContext;
             this.applicationSettingsDelegate = applicationSettingsDelegate;
-            this.jobConfig = this.configuration.GetSection($"{JobKey}");
+            this.jobConfig = configuration.GetSection($"{JobKey}");
         }
 
         /// <summary>

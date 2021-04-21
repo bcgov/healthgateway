@@ -40,7 +40,7 @@ export class DateGroup {
             },
             {}
         );
-        const groupArrays = Object.keys(groups).map<DateGroup>((dateKey) => {
+        return Object.keys(groups).map<DateGroup>((dateKey) => {
             return new DateGroup(
                 dateKey,
                 groups[dateKey][0].date,
@@ -49,7 +49,6 @@ export class DateGroup {
                 )
             );
         });
-        return groupArrays;
     }
 
     public static sortGroups(

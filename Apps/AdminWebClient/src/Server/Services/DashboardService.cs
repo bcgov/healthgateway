@@ -28,7 +28,6 @@ namespace HealthGateway.Admin.Services
         private readonly IResourceDelegateDelegate dependentDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IConfiguration configuration;
-        private readonly AdminConfiguration adminConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
@@ -47,8 +46,6 @@ namespace HealthGateway.Admin.Services
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.configuration = config;
-            this.adminConfiguration = new AdminConfiguration();
-            this.configuration.GetSection("Admin").Bind(this.adminConfiguration);
         }
 
         /// <inheritdoc />

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Database.Context;
     using Microsoft.Extensions.Logging;
     using Npgsql;
@@ -23,6 +24,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the sequence delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBSequenceDelegate : ISequenceDelegate
     {
         private readonly ILogger logger;

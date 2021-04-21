@@ -32,7 +32,6 @@ namespace Healthgateway.JobScheduler.Jobs
     public class CommunicationJob : ICommunicationJob
     {
         private const int ConcurrencyTimeout = 30 * 60; // 30 minutes
-        private readonly IConfiguration configuration;
         private readonly ILogger<CommunicationJob> logger;
         private readonly ICommunicationDelegate communicationDelegate;
         private readonly ICommunicationEmailDelegate commEmailDelegate;
@@ -51,16 +50,21 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="commEmailDelegate">The Communication Email delegate to use.</param>
         /// <param name="emailQueueService">The email queue service to use.</param>
         /// <param name="dbContext">The db context to use.</param>
-        public CommunicationJob(IConfiguration configuration, ILogger<CommunicationJob> logger, ICommunicationDelegate communicationDelegate, ICommunicationEmailDelegate commEmailDelegate, IEmailQueueService emailQueueService, GatewayDbContext dbContext)
+        public CommunicationJob(
+            IConfiguration configuration,
+            ILogger<CommunicationJob> logger,
+            ICommunicationDelegate communicationDelegate,
+            ICommunicationEmailDelegate commEmailDelegate,
+            IEmailQueueService emailQueueService,
+            GatewayDbContext dbContext)
         {
-            this.configuration = configuration;
             this.logger = logger;
             this.communicationDelegate = communicationDelegate;
             this.commEmailDelegate = commEmailDelegate;
             this.emailQueueService = emailQueueService;
             this.dbContext = dbContext;
 
-            IConfigurationSection commEmailJobSection = this.configuration.GetSection("CreateCommEmailsForNewCommunications");
+            IConfigurationSection commEmailJobSection = configuration.GetSection("CreateCommEmailsForNewCommunications");
             this.fromEmailAddressHGDonotreply = commEmailJobSection.GetValue<string>("FromEmailAddressHGDonotreply");
             this.maxFetchSize = commEmailJobSection.GetValue<int>("MaxFetchSize", 250);
         }
@@ -81,7 +85,7 @@ namespace Healthgateway.JobScheduler.Jobs
 #pragma warning disable CA1031 //We want to catch exception.
                     try
                     {
-                        IList<UserProfile> usersToSendCommEmails = new List<UserProfile>();
+                        IList<UserProfile> usersToSendCommEmails;
                         bool moreUsersToCreateCommunicationEmails = false;
 
                         if (communication.CommunicationStatusCode != CommunicationStatus.Processing)

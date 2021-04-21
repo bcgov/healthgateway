@@ -161,15 +161,6 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IUserProfileDelegate> profileDelegateMock = new Mock<IUserProfileDelegate>();
             profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDBResult);
 
-            UserComment userComment = new UserComment()
-            {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1),
-            };
-
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
                 new Mock<ICommentDelegate>().Object,

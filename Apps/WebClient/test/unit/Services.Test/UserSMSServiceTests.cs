@@ -26,9 +26,9 @@ namespace HealthGateway.WebClient.Test.Services
     using Xunit;
 
     /// <summary>
-    /// Unit Tests for UserSMSServiceTests.
+    /// Unit Tests for UserSmsServiceTests.
     /// </summary>
-    public class UserSMSServiceTests
+    public class UserSmsServiceTests
     {
         private const string HdIdMock = "hdIdMock";
 
@@ -59,8 +59,8 @@ namespace HealthGateway.WebClient.Test.Services
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new Database.Wrapper.DBResult<UserProfile>());
 
-            IUserSMSService service = new UserSMSService(
-                new Mock<ILogger<UserSMSService>>().Object,
+            IUserSmsService service = new UserSmsService(
+                new Mock<ILogger<UserSmsService>>().Object,
                 messagingVerificationDelegate.Object,
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
@@ -97,8 +97,8 @@ namespace HealthGateway.WebClient.Test.Services
             userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new Database.Wrapper.DBResult<UserProfile>());
 
-            IUserSMSService service = new UserSMSService(
-                new Mock<ILogger<UserSMSService>>().Object,
+            IUserSmsService service = new UserSmsService(
+                new Mock<ILogger<UserSmsService>>().Object,
                 messagingVerificationDelegate.Object,
                 userProfileDelegate.Object,
                 new Mock<INotificationSettingsService>().Object);
@@ -121,8 +121,8 @@ namespace HealthGateway.WebClient.Test.Services
                 .Setup(
                     s => s.Insert(It.IsAny<MessagingVerification>())).Returns(default(Guid));
 
-            IUserSMSService service = new UserSMSService(
-                new Mock<ILogger<UserSMSService>>().Object,
+            IUserSmsService service = new UserSmsService(
+                new Mock<ILogger<UserSmsService>>().Object,
                 messagingVerificationDelegateMock.Object,
                 new Mock<IUserProfileDelegate>().Object,
                 new Mock<INotificationSettingsService>().Object);

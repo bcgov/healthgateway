@@ -6,5 +6,5 @@ export default {
     error: "#f55a4e",
     info: "#00d3ee",
     success: "#5cb860",
-    warning: "#ffa21a",
+    warning: "#ffa21a"
 };

@@ -501,6 +501,7 @@ export default class TimelineView extends Vue {
 }
 .sticky-top {
     transition: all 0.3s;
+    z-index: 49 !important;
 }
 
 .column-wrapper {
@@ -558,9 +559,5 @@ export default class TimelineView extends Vue {
 
 .z-index-large {
     z-index: 50;
-}
-
-.sticky-top {
-    z-index: 49 !important;
 }
 </style>

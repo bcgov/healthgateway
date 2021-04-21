@@ -2,7 +2,7 @@ import { GetterTree } from "vuex";
 
 import {
     AdminClientConfiguration,
-    OpenIdConnectConfiguration,
+    OpenIdConnectConfiguration
 } from "@/models/externalConfiguration";
 import { ConfigState, RootState } from "@/models/storeState";
 
@@ -20,5 +20,5 @@ export const getters: GetterTree<ConfigState, RootState> = {
         const { config } = state;
         const { admin } = config;
         return admin;
-    },
+    }
 };

@@ -10,6 +10,7 @@ module.exports = {
         "@vue/typescript/recommended",
         "@vue/prettier",
         "@vue/prettier/@typescript-eslint",
+        "plugin:sonarjs/recommended",
     ],
     rules: {
         "no-console": "off",
@@ -19,8 +20,14 @@ module.exports = {
         "simple-import-sort/imports": "error",
         "simple-import-sort/exports": "error",
     },
+    parser: "vue-eslint-parser",
     parserOptions: {
         parser: "@typescript-eslint/parser",
     },
-    plugins: ["sonarjs", "prettier", "simple-import-sort"],
+    plugins: [
+        "sonarjs",
+        "prettier",
+        "simple-import-sort",
+        "@typescript-eslint",
+    ],
 };

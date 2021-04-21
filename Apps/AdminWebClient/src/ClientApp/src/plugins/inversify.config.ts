@@ -12,7 +12,7 @@ import {
     IDashboardService,
     IEmailAdminService,
     IHttpDelegate,
-    IUserFeedbackService,
+    IUserFeedbackService
 } from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthenticationService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
