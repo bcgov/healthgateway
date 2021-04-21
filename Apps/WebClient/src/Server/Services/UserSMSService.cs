@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using System.Globalization;
+    using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -102,29 +103,25 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool CreateUserSMS(string hdid, string sms)
+        public MessagingVerification CreateUserSMS(string hdid, string sms)
         {
             this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
-            sms = this.SanitizeSMS(sms);
-            string verificationCode = NotificationSettingsService.CreateVerificationCode();
-            this.AddVerificationSMS(hdid, sms, verificationCode);
+            string sanitizedSms = this.SanitizeSMS(sms);
+            MessagingVerification messagingVerification = this.AddVerificationSMS(hdid, sanitizedSms);
             this.logger.LogDebug($"Finished updating user sms");
-            return true;
+            return messagingVerification;
         }
 
         /// <inheritdoc />
         public bool UpdateUserSMS(string hdid, string sms)
         {
             this.logger.LogTrace($"Removing user sms number ${hdid}");
-            sms = this.SanitizeSMS(sms);
+            string sanitizedSms = this.SanitizeSMS(sms);
             UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
             userProfile.SMSNumber = null;
             this.profileDelegate.Update(userProfile);
 
-            // Update the notification settings
-            NotificationSettingsRequest queuedNotification = this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, sms));
-
-            bool isDeleted = string.IsNullOrEmpty(sms);
+            bool isDeleted = string.IsNullOrEmpty(sanitizedSms);
             MessagingVerification? lastSMSVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.SMS);
             if (lastSMSVerification != null)
             {
@@ -132,14 +129,35 @@ namespace HealthGateway.WebClient.Services
                 this.messageVerificationDelegate.Expire(lastSMSVerification, isDeleted);
             }
 
+            NotificationSettingsRequest notificationRequest = new (userProfile, userProfile.Email, sanitizedSms);
             if (!isDeleted)
             {
-                this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
-                this.AddVerificationSMS(hdid, sms, queuedNotification.SMSVerificationCode);
+                this.logger.LogInformation($"Adding new sms verification for user ${hdid}");
+                MessagingVerification messagingVerification = this.AddVerificationSMS(hdid, sanitizedSms);
+                notificationRequest.SMSVerificationCode = messagingVerification.SMSValidationCode;
             }
+
+            // Update the notification settings
+            this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
 
             this.logger.LogDebug($"Finished updating user sms");
             return true;
+        }
+
+        /// <summary>
+        /// Creates a new 6 digit verification code.
+        /// </summary>
+        /// <returns>The verification code.</returns>
+        private static string CreateVerificationCode()
+        {
+            using RandomNumberGenerator generator = RandomNumberGenerator.Create();
+            byte[] data = new byte[4];
+            generator.GetBytes(data);
+            return
+                BitConverter
+                    .ToUInt32(data)
+                    .ToString("D6", CultureInfo.InvariantCulture)
+                    .Substring(0, 6);
         }
 
         private string SanitizeSMS(string smsNumber)
@@ -147,19 +165,20 @@ namespace HealthGateway.WebClient.Services
             return this.validSMSRegex.Replace(smsNumber, string.Empty);
         }
 
-        private void AddVerificationSMS(string hdid, string sms, string smsVerificationCode)
+        private MessagingVerification AddVerificationSMS(string hdid, string sms)
         {
             this.logger.LogInformation($"Sending new sms verification for user ${hdid}");
             MessagingVerification messagingVerification = new ()
             {
                 HdId = hdid,
                 SMSNumber = sms,
-                SMSValidationCode = smsVerificationCode,
+                SMSValidationCode = CreateVerificationCode(),
                 VerificationType = MessagingVerificationType.SMS,
                 ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays),
             };
 
             this.messageVerificationDelegate.Insert(messagingVerification);
+            return messagingVerification;
         }
     }
 }
