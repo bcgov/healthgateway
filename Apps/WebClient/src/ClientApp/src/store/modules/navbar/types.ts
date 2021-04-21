@@ -1,4 +1,3 @@
-import { RootState } from "@/store/types";
 import {
     ActionContext,
     ActionTree,
@@ -6,6 +5,8 @@ import {
     Module,
     MutationTree,
 } from "vuex";
+
+import { RootState } from "@/store/types";
 
 export interface NavbarState {
     isSidebarOpen: boolean;

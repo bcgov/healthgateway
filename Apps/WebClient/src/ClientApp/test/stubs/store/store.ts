@@ -1,56 +1,29 @@
-import { DateWrapper } from "@/models/dateWrapper";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { GatewayStoreOptions } from "@/store/types";
-import userStub from "./user";
+
+import authStub from "./auth";
+import commentStub from "./comment";
 import configStub from "./config";
+import encounterStub from "./encounter";
+import errorBannerStub from "./error";
+import idleStub from "./idle";
+import immunizationStub from "./immunization";
 import laboratoryStub from "./laboratory";
 import medicationStub from "./medication";
-import immunizationStub from "./immunization";
-import commentStub from "./comment";
 import navbarStub from "./navbar";
-import encounterStub from "./encounter";
-import authStub from "./auth";
+import noteStub from "./note";
+import timelineStub from "./timeline";
+import userStub from "./user";
 
-const today = new DateWrapper();
-const yesterday = today.subtract({ day: 1 });
-
-const medicationStatements: MedicationStatementHistory[] = [
-    {
-        medicationSummary: {
-            din: "1233",
-            brandName: "brand_name_A",
-            genericName: "generic_name_A",
-            isPin: false,
-        },
-        prescriptionIdentifier: "abcmed1",
-        dispensedDate: today.toISODate(),
-        dispensingPharmacy: {},
+export var storeStub: GatewayStoreOptions = {
+    actions: {
+        setIsMobile(): void {},
     },
-    {
-        medicationSummary: {
-            din: "1234",
-            brandName: "brand_name_B",
-            genericName: "generic_name_B",
-            isPin: false,
-        },
-        prescriptionIdentifier: "abcmed2",
-        dispensedDate: today.toISODate(),
-        dispensingPharmacy: {},
+    getters: {
+        isMobile: (): void => {},
     },
-    {
-        medicationSummary: {
-            din: "1235",
-            brandName: "brand_name_C",
-            genericName: "generic_name_C",
-            isPin: true,
-        },
-        prescriptionIdentifier: "abcmed3",
-        dispensedDate: yesterday.toISODate(),
-        dispensingPharmacy: {},
+    mutations: {
+        setIsMobile(): void {},
     },
-];
-
-export const storeOptions: GatewayStoreOptions = {
     modules: {
         auth: authStub,
         config: configStub,
@@ -60,10 +33,10 @@ export const storeOptions: GatewayStoreOptions = {
         comment: commentStub,
         immunization: immunizationStub,
         encounter: encounterStub,
-        note: NoteModule,
+        note: noteStub,
         navbar: navbarStub,
-        idle: IdleModule,
-        errorBanner: ErrorBannerModule,
-        timeline: TimelineModule,
+        idle: idleStub,
+        errorBanner: errorBannerStub,
+        timeline: timelineStub,
     },
 };

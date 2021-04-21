@@ -53,7 +53,6 @@ export interface MedicationRequestMutations
 
 export interface MedicationRequestModule
     extends Module<MedicationRequestState, RootState> {
-    state: MedicationRequestState;
     getters: MedicationRequestGetters;
     actions: MedicationRequestActions;
     mutations: MedicationRequestMutations;

@@ -9,13 +9,13 @@ import {
     LaboratoryState,
 } from "@/store/modules/laboratory/types";
 
-const laboratoryState: LaboratoryState = {
+var laboratoryState: LaboratoryState = {
     laboratoryOrders: [],
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-const laboratoryGetters: LaboratoryGetters = {
+var laboratoryGetters: LaboratoryGetters = {
     laboratoryOrders(): LaboratoryOrder[] {
         return [];
     },
@@ -27,20 +27,20 @@ const laboratoryGetters: LaboratoryGetters = {
     },
 };
 
-const laboratoryActions: LaboratoryActions = {
+var laboratoryActions: LaboratoryActions = {
     retrieve(): Promise<RequestResult<LaboratoryOrder[]>> {
         return new Promise(() => {});
     },
     handleError(): void {},
 };
 
-const laboratoryMutations: LaboratoryMutations = {
+var laboratoryMutations: LaboratoryMutations = {
     setRequested(): void {},
     setLaboratoryOrders(): void {},
     laboratoryError(): void {},
 };
 
-const laboratoryStub: LaboratoryModule = {
+var laboratoryStub: LaboratoryModule = {
     namespaced: true,
     state: laboratoryState,
     getters: laboratoryGetters,

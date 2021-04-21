@@ -1,6 +1,3 @@
-import AuthenticationData from "@/models/authenticationData";
-import { LoadStatus } from "@/models/storeOperations";
-import { RootState } from "@/store/types";
 import { User as OidcUser } from "oidc-client";
 import {
     ActionContext,
@@ -9,6 +6,10 @@ import {
     Module,
     MutationTree,
 } from "vuex";
+
+import AuthenticationData from "@/models/authenticationData";
+import { LoadStatus } from "@/models/storeOperations";
+import { RootState } from "@/store/types";
 
 export interface AuthState {
     authentication: AuthenticationData;

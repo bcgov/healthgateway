@@ -9,13 +9,13 @@ import {
     CommentState,
 } from "@/store/modules/comment/types";
 
-const commentState: CommentState = {
+var commentState: CommentState = {
     profileComments: {},
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-const commentGetters: CommentGetters = {
+var commentGetters: CommentGetters = {
     comments(): Dictionary<UserComment[]> {
         return {};
     },
@@ -30,7 +30,7 @@ const commentGetters: CommentGetters = {
     },
 };
 
-const commentActions: CommentActions = {
+var commentActions: CommentActions = {
     retrieve(): Promise<void> {
         return new Promise(() => {});
     },
@@ -46,7 +46,7 @@ const commentActions: CommentActions = {
     handleError(): void {},
 };
 
-const commentMutations: CommentMutations = {
+var commentMutations: CommentMutations = {
     setRequested(): void {},
     setProfileComments(): void {},
     addComment(): void {},
@@ -55,7 +55,7 @@ const commentMutations: CommentMutations = {
     commentError(): void {},
 };
 
-const commentStub: CommentModule = {
+var commentStub: CommentModule = {
     namespaced: true,
     state: commentState,
     getters: commentGetters,

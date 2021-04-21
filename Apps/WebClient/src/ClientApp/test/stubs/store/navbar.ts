@@ -1,17 +1,17 @@
 import {
-    NavbarState,
-    NavbarGetters,
     NavbarActions,
-    NavbarMutations,
+    NavbarGetters,
     NavbarModule,
+    NavbarMutations,
+    NavbarState,
 } from "@/store/modules/navbar/types";
 
-const navbarState: NavbarState = {
+var navbarState: NavbarState = {
     isSidebarOpen: false,
     isHeaderShown: false,
 };
 
-const navbarGetters: NavbarGetters = {
+var navbarGetters: NavbarGetters = {
     isSidebarOpen(): boolean {
         return false;
     },
@@ -20,21 +20,21 @@ const navbarGetters: NavbarGetters = {
     },
 };
 
-const navbarActions: NavbarActions = {
+var navbarActions: NavbarActions = {
     toggleSidebar(): void {},
     setSidebarState(): void {},
     toggleHeader(): void {},
     setHeaderState(): void {},
 };
 
-const navbarMutations: NavbarMutations = {
-    toggleSidebar(state: NavbarState): void {},
-    setSidebarState(state: NavbarState, isOpen: boolean): void {},
-    toggleHeader(state: NavbarState): void {},
-    setHeaderState(state: NavbarState, isOpen: boolean): void {},
+var navbarMutations: NavbarMutations = {
+    toggleSidebar(): void {},
+    setSidebarState(): void {},
+    toggleHeader(): void {},
+    setHeaderState(): void {},
 };
 
-const navbarStub: NavbarModule = {
+var navbarStub: NavbarModule = {
     namespaced: true,
     state: navbarState,
     getters: navbarGetters,

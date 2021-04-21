@@ -3,7 +3,6 @@ import PatientData from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
-import { ConfigModule } from "@/store/modules/config/types";
 import {
     UserActions,
     UserGetters,
@@ -12,7 +11,7 @@ import {
     UserState,
 } from "@/store/modules/user/types";
 
-const userState: UserState = {
+var userState: UserState = {
     statusMessage: "",
     user: new User(),
     patientData: new PatientData(),
@@ -20,7 +19,7 @@ const userState: UserState = {
     status: LoadStatus.NONE,
 };
 
-const userActions: UserActions = {
+var userActions: UserActions = {
     checkRegistration(): Promise<boolean> {
         return new Promise(() => {});
     },
@@ -34,10 +33,10 @@ const userActions: UserActions = {
     createUserPreference(): Promise<void> {
         return new Promise(() => {});
     },
-    closeUserAccount(context): Promise<void> {
+    closeUserAccount(): Promise<void> {
         return new Promise(() => {});
     },
-    recoverUserAccount(context): Promise<void> {
+    recoverUserAccount(): Promise<void> {
         return new Promise(() => {});
     },
     getPatientData(): Promise<void> {
@@ -46,30 +45,28 @@ const userActions: UserActions = {
     handleError() {},
 };
 
-const userGetters: UserGetters = {
+var userGetters: UserGetters = {
     user: (): User => {
         return new User();
     },
-    userIsRegistered(state: UserState): boolean {
+    userIsRegistered(): boolean {
         return true;
     },
-    userIsActive(state: UserState): boolean {
+    userIsActive(): boolean {
         return true;
     },
-    smsResendDateTime(state: UserState): DateWrapper | undefined {
+    smsResendDateTime(): DateWrapper | undefined {
         return undefined;
     },
-    getPreference: (state: UserState) => (
-        preferenceName: string
-    ): UserPreference | undefined => {
+    getPreference: () => (): UserPreference | undefined => {
         return undefined;
     },
-    patientData(state: UserState): PatientData {
+    patientData(): PatientData {
         return new PatientData();
     },
 };
 
-const userMutations: UserMutation = {
+var userMutations: UserMutation = {
     setOidcUserData() {},
     setProfileUserData() {},
     setSMSResendDateTime() {},
@@ -79,9 +76,9 @@ const userMutations: UserMutation = {
     userError() {},
 };
 
-const userStub: UserModule = {
-    state: userState,
+var userStub: UserModule = {
     namespaced: true,
+    state: userState,
     getters: userGetters,
     actions: userActions,
     mutations: userMutations,

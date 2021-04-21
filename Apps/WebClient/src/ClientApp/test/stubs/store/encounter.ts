@@ -2,20 +2,20 @@ import Encounter from "@/models/encounter";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import {
-    EncounterState,
-    EncounterGetters,
     EncounterActions,
-    EncounterMutations,
+    EncounterGetters,
     EncounterModule,
+    EncounterMutations,
+    EncounterState,
 } from "@/store/modules/encounter/types";
 
-const encounterState: EncounterState = {
+var encounterState: EncounterState = {
     patientEncounters: [],
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-const encounterGetters: EncounterGetters = {
+var encounterGetters: EncounterGetters = {
     patientEncounters(): Encounter[] {
         return [];
     },
@@ -27,20 +27,20 @@ const encounterGetters: EncounterGetters = {
     },
 };
 
-const encounterActions: EncounterActions = {
+var encounterActions: EncounterActions = {
     retrieve(): Promise<RequestResult<Encounter[]>> {
         return new Promise(() => {});
     },
     handleError(): void {},
 };
 
-const encounterMutations: EncounterMutations = {
+var encounterMutations: EncounterMutations = {
     setRequested(state: EncounterState): void {},
     setPatientEncounters(): void {},
     encounterError(): void {},
 };
 
-const encounterStub: EncounterModule = {
+var encounterStub: EncounterModule = {
     namespaced: true,
     state: encounterState,
     getters: encounterGetters,

@@ -1,13 +1,13 @@
 import { LoadStatus } from "@/models/storeOperations";
 import {
-    AuthState,
-    AuthGetters,
     AuthActions,
-    AuthMutations,
+    AuthGetters,
     AuthModule,
+    AuthMutations,
+    AuthState,
 } from "@/store/modules/auth/types";
 
-const authState: AuthState = {
+var authState: AuthState = {
     authentication: {
         isChecked: true,
         identityProvider: "",
@@ -18,7 +18,7 @@ const authState: AuthState = {
     status: LoadStatus.NONE,
 };
 
-const authGetters: AuthGetters = {
+var authGetters: AuthGetters = {
     authenticationStatus(): string {
         return "";
     },
@@ -39,7 +39,7 @@ const authGetters: AuthGetters = {
     },
 };
 
-const authActions: AuthActions = {
+var authActions: AuthActions = {
     oidcCheckUser(): Promise<boolean> {
         return new Promise(() => {});
     },
@@ -63,14 +63,14 @@ const authActions: AuthActions = {
     clearStorage(): void {},
 };
 
-const authMutations: AuthMutations = {
+var authMutations: AuthMutations = {
     setOidcAuth(): void {},
     unsetOidcAuth(): void {},
     setOidcAuthIsChecked(): void {},
     setOidcError(): void {},
 };
 
-const authStub: AuthModule = {
+var authStub: AuthModule = {
     namespaced: true,
     state: authState,
     getters: authGetters,

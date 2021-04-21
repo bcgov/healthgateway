@@ -1,6 +1,4 @@
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
-import { LaboratoryOrder } from "@/models/laboratory";
-import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     ImmunizationActions,
@@ -10,14 +8,14 @@ import {
     ImmunizationState,
 } from "@/store/modules/immunization/types";
 
-const immunizationState: ImmunizationState = {
+var immunizationState: ImmunizationState = {
     immunizations: [],
     recommendations: [],
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-const immunizationGetters: ImmunizationGetters = {
+var immunizationGetters: ImmunizationGetters = {
     immunizations(): ImmunizationEvent[] {
         return [];
     },
@@ -35,20 +33,20 @@ const immunizationGetters: ImmunizationGetters = {
     },
 };
 
-const immunizationActions: ImmunizationActions = {
+var immunizationActions: ImmunizationActions = {
     retrieve(): Promise<void> {
         return new Promise(() => {});
     },
     handleError(): void {},
 };
 
-const immunizationMutations: ImmunizationMutations = {
+var immunizationMutations: ImmunizationMutations = {
     setRequested(state: ImmunizationState): void {},
     setImmunizationResult(): void {},
     immunizationError(): void {},
 };
 
-const immunizationStub: ImmunizationModule = {
+var immunizationStub: ImmunizationModule = {
     namespaced: true,
     state: immunizationState,
     getters: immunizationGetters,

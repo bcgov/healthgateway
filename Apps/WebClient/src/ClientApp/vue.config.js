@@ -1,3 +1,4 @@
+/* eslint-disable */
 const CompressionPlugin = require("compression-webpack-plugin");
 module.exports = {
     productionSourceMap: false,

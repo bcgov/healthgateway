@@ -14,14 +14,14 @@ import {
     ConfigState,
 } from "@/store/modules/config/types";
 
-const configState: ConfigState = {
+var configState: ConfigState = {
     statusMessage: "",
     config: new ExternalConfiguration(),
     error: false,
     status: LoadStatus.NONE,
 };
 
-const configGetters: ConfigGetters = {
+var configGetters: ConfigGetters = {
     identityProviders(): IdentityProviderConfiguration[] {
         return [];
     },
@@ -52,19 +52,19 @@ const configGetters: ConfigGetters = {
     },
 };
 
-const configActions: ConfigActions = {
+var configActions: ConfigActions = {
     initialize(): Promise<ExternalConfiguration> {
         return new Promise(() => {});
     },
 };
 
-const configMutations: ConfigMutations = {
+var configMutations: ConfigMutations = {
     configurationRequest(): void {},
     configurationLoaded(): void {},
     configurationError(): void {},
 };
 
-const configStub: ConfigModule = {
+var configStub: ConfigModule = {
     state: configState,
     namespaced: true,
     getters: configGetters,

@@ -1,21 +1,22 @@
+import RequestResult from "@/models/requestResult";
 import { LoadStatus, Operation } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import {
-    NoteState,
-    NoteGetters,
     NoteActions,
-    NoteMutations,
+    NoteGetters,
     NoteModule,
+    NoteMutations,
+    NoteState,
 } from "@/store/modules/note/types";
 
-const noteState: NoteState = {
+var noteState: NoteState = {
     notes: [],
     statusMessage: "",
     status: LoadStatus.LOADED,
     lastOperation: null,
 };
 
-const noteGetters: NoteGetters = {
+var noteGetters: NoteGetters = {
     notes(): UserNote[] {
         return [];
     },
@@ -30,38 +31,23 @@ const noteGetters: NoteGetters = {
     },
 };
 
-const noteActions: NoteActions = {
-    oidcCheckUser(): Promise<boolean> {
+var noteActions: NoteActions = {
+    retrieve(): Promise<RequestResult<UserNote[]>> {
         return new Promise(() => {});
     },
-    noteenticateOidc(): Promise<void> {
-        return new Promise(() => {});
-    },
-    oidcSignInCallback(): Promise<string> {
-        return new Promise(() => {});
-    },
-    noteenticateOidcSilent(): Promise<void> {
-        return new Promise(() => {});
-    },
-    oidcWasNoteenticated(): void {},
-    getOidcUser(): Promise<void> {
-        return new Promise(() => {});
-    },
-    signOutOidc(): void {},
-    signOutOidcCallback(): Promise<string> {
-        return new Promise(() => {});
-    },
-    clearStorage(): void {},
+    handleError(): void {},
 };
 
-const noteMutations: NoteMutations = {
-    setOidcNote(): void {},
-    unsetOidcNote(): void {},
-    setOidcNoteIsChecked(): void {},
-    setOidcError(): void {},
+var noteMutations: NoteMutations = {
+    setRequested(): void {},
+    setNotes(): void {},
+    addNote(): void {},
+    updateNote(): void {},
+    deleteNote(): void {},
+    noteError(): void {},
 };
 
-const noteStub: NoteModule = {
+var noteStub: NoteModule = {
     namespaced: true,
     state: noteState,
     getters: noteGetters,

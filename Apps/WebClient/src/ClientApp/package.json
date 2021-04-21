@@ -4,10 +4,10 @@
     "version": "0.2.0",
     "scripts": {
         "serve": "vue-cli-service serve",
-        "build": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 0 --no-fix && vue-cli-service build",
+        "build": "vue-cli-service lint --max-warnings 0 --no-fix && vue-cli-service build",
         "test": "vue-cli-service test:unit --no-cache",
-        "lint": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --max-warnings 0",
-        "lintfix": "vue-cli-service lint \"**/*.ts\" \"**/*.vue\" --fix",
+        "lint": "vue-cli-service lint --max-warnings 0",
+        "lintfix": "vue-cli-service lint --fix",
         "vue-help": "vue-cli-service help"
     },
     "devDependencies": {
@@ -47,6 +47,7 @@
         "file-loader": "^6.2.0",
         "isomorphic-fetch": "^3.0.0",
         "jest": "^26.6.3",
+        "jest-canvas-mock": "^2.3.1",
         "jest-sonar-reporter": "^2.0.0",
         "jest-transform-stub": "^2.0.0",
         "jquery": "^3.6.0",

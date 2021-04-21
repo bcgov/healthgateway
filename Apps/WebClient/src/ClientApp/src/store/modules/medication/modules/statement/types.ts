@@ -55,7 +55,6 @@ export interface MedicationStatementMutations
 
 export interface MedicationStatementModule
     extends Module<MedicationStatementState, RootState> {
-    state: MedicationStatementState;
     getters: MedicationStatementGetters;
     actions: MedicationStatementActions;
     mutations: MedicationStatementMutations;
