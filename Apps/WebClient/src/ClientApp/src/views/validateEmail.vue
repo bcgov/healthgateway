@@ -5,7 +5,6 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import HgButton from "@/components/shared/hgButton.vue";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -13,11 +12,7 @@ import container from "@/plugins/inversify.config";
 import { IUserProfileService } from "@/services/interfaces";
 library.add(faTimesCircle);
 
-@Component({
-    components: {
-        "hg-button": HgButton,
-    },
-})
+@Component
 export default class ValidateEmailView extends Vue {
     @Prop() inviteKey!: string;
 
