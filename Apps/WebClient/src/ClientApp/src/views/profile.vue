@@ -20,9 +20,6 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
-import HgButton from "@/components/shared/hgButton.vue";
-import PageTitleComponent from "@/components/shared/pageTitle.vue";
-import StatusLabelComponent from "@/components/shared/statusLabel.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -44,11 +41,8 @@ const authNamespace = "auth";
 
 @Component({
     components: {
-        "hg-button": HgButton,
         LoadingComponent,
         VerifySMSComponent,
-        PageTitleComponent,
-        StatusLabelComponent,
     },
 })
 export default class ProfileView extends Vue {
@@ -470,7 +464,7 @@ export default class ProfileView extends Vue {
                         If you didn't receive one, please check your junk mail.
                     </span>
                 </b-alert>
-                <PageTitleComponent title="Profile" />
+                <page-title title="Profile" />
                 <div v-if="!isLoading">
                     <div v-if="isActiveProfile">
                         <b-row class="mb-3">
@@ -573,13 +567,13 @@ export default class ProfileView extends Vue {
                                                 id="emailStatus"
                                                 data-testid="emailStatus"
                                             >
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-if="emailVerified"
                                                     status="Verified"
                                                     variant="success"
                                                     data-testid="emailStatusVerified"
                                                 />
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-else-if="
                                                         email == null ||
                                                         email === ''
@@ -587,7 +581,7 @@ export default class ProfileView extends Vue {
                                                     status="Opted Out"
                                                     data-testid="emailStatusOptedOut"
                                                 />
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-else
                                                     status="Not Verified"
                                                     variant="danger"
@@ -726,13 +720,13 @@ export default class ProfileView extends Vue {
                                                 id="smsStatus"
                                                 data-testid="smsStatus"
                                             >
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-if="smsVerified"
                                                     status="Verified"
                                                     variant="success"
                                                     data-testid="smsStatusVerified"
                                                 />
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-else-if="
                                                         smsNumber == null ||
                                                         smsNumber === ''
@@ -740,7 +734,7 @@ export default class ProfileView extends Vue {
                                                     status="Opted Out"
                                                     data-testid="smsStatusOptedOut"
                                                 />
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-else
                                                     status="Not Verified"
                                                     variant="danger"
