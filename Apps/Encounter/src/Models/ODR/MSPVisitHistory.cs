@@ -21,13 +21,13 @@ namespace HealthGateway.Encounter.Models.ODR
     /// <summary>
     /// Object that defines the MSP Visit History Request/Response model.
     /// </summary>
-    public class MSPVisitHistory : OdrHistoryWrapper
+    public class MSPVisitHistory : ODRHistoryWrapper
     {
         /// <summary>
-        /// Gets or sets the OdrHistoryQuery for the MSPVisitHistory integration.
+        /// Gets or sets the ODRHistoryQuery for the MSPVisitHistory integration.
         /// </summary>
         [JsonPropertyName("getMSPVisitHistoryRequest")]
-        public OdrHistoryQuery? Query { get; set; }
+        public ODRHistoryQuery? Query { get; set; }
 
         /// <summary>
         /// Gets or sets the MSPVisitHistoryResponse for the MSPVisitHistory integration.

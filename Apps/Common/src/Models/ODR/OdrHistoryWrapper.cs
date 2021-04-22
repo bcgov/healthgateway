@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Models.ODR
     /// <summary>
     /// The ODR History Request/Response model.
     /// </summary>
-    public class OdrHistoryWrapper
+    public class ODRHistoryWrapper
     {
         /// <summary>
         /// Gets or sets the Id of the request.

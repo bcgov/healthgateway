@@ -111,7 +111,7 @@ namespace HealthGateway.Encounter.Test.Service
             string hdid = "MOCKHDID";
 
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
-            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
+            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
 
             var mockPatientService = new Mock<IPatientService>();
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).ReturnsAsync(this.patientResult);
@@ -150,7 +150,7 @@ namespace HealthGateway.Encounter.Test.Service
             string hdid = "MOCKHDID";
 
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
-            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             var mockPatientService = new Mock<IPatientService>();
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>())).Returns(Task.FromResult(this.patientResult));
@@ -183,7 +183,7 @@ namespace HealthGateway.Encounter.Test.Service
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
-            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<ODRHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             RequestResult<PatientModel> errorPatientResult = new RequestResult<PatientModel>()
             {

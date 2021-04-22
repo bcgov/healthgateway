@@ -1862,139 +1862,139 @@
             </summary>
             <param name="notificationSettings">Initialize values from passed in object.</param>
         </member>
-        <member name="T:HealthGateway.Common.Models.OdrConfig">
+        <member name="T:HealthGateway.Common.Models.ODRConfig">
             <summary>
             The configuration for the ODR portion of the ResetMedStatement delegate.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.ServiceName">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.ServiceName">
             <summary>
             Gets or sets the OpenShift service name.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.ServiceHostSuffix">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.ServiceHostSuffix">
             <summary>
             Gets or sets the host suffix used to lookup the service host.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.ServicePortSuffix">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.ServicePortSuffix">
             <summary>
             Gets or sets the port suffix used to lookup the service port.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.BaseEndpoint">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.BaseEndpoint">
             <summary>
             Gets or sets the base Url used to connect to the ODR Proxy.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.PatientProfileEndpoint">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.PatientProfileEndpoint">
             <summary>
             Gets or sets the endpoint path for the patient profile service.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.MSPVisitsEndpoint">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.MSPVisitsEndpoint">
             <summary>
             Gets or sets the endpoint path for the msp visits service.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.ProtectiveWordEndpoint">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.ProtectiveWordEndpoint">
             <summary>
             Gets or sets the endpoint path for the protective word service.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.CacheTTL">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.CacheTTL">
             <summary>
             Gets or sets the time to live for cache objects.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.OdrConfig.DynamicServiceLookup">
+        <member name="P:HealthGateway.Common.Models.ODRConfig.DynamicServiceLookup">
             <summary>
             Gets or sets a value indicating whether dynamic service lookup should occur.
             if enabled, the Url will be created using environment variables.
             If not enabled, the configured Url will be used.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.Models.ODR.OdrHistoryQuery">
+        <member name="T:HealthGateway.Common.Models.ODR.ODRHistoryQuery">
             <summary>
             The HNClient message request.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryQuery.StartDate">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryQuery.StartDate">
             <summary>
             Gets or sets the Start date of the request.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryQuery.FormattedStartDate">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryQuery.FormattedStartDate">
             <summary>
             Gets the FormattedStartDate.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryQuery.EndDate">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryQuery.EndDate">
             <summary>
             Gets or sets the End date of the request.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryQuery.FormattedEndDate">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryQuery.FormattedEndDate">
             <summary>
             Gets the FormattedEndDate.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryQuery.PHN">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryQuery.PHN">
             <summary>
             Gets or sets the PHN for the request.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryQuery.PageSize">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryQuery.PageSize">
             <summary>
             Gets or sets the page size for the returned result set.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryQuery.PageNumber">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryQuery.PageNumber">
             <summary>
             Gets or sets the page number being requested.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryQuery.Order">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryQuery.Order">
             <summary>
             Gets or sets the order by for the result set.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.Models.ODR.OdrHistoryResponse">
+        <member name="T:HealthGateway.Common.Models.ODR.ODRHistoryResponse">
             <summary>
             The ODR Medication Response.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryResponse.Id">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryResponse.Id">
             <summary>
             Gets or sets the Id of the request.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryResponse.TotalRecords">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryResponse.TotalRecords">
             <summary>
             Gets or sets the total records available from the server for the query excluding page limits.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryResponse.Pages">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryResponse.Pages">
             <summary>
             Gets or sets the Total Pages available.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.Models.ODR.OdrHistoryWrapper">
+        <member name="T:HealthGateway.Common.Models.ODR.ODRHistoryWrapper">
             <summary>
             The ODR History Request/Response model.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryWrapper.Id">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryWrapper.Id">
             <summary>
             Gets or sets the Id of the request.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryWrapper.RequestorHDID">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryWrapper.RequestorHDID">
             <summary>
             Gets or sets the HDID of the requestor.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.ODR.OdrHistoryWrapper.RequestorIP">
+        <member name="P:HealthGateway.Common.Models.ODR.ODRHistoryWrapper.RequestorIP">
             <summary>
             Gets or sets the IP of the requestor.
             </summary>

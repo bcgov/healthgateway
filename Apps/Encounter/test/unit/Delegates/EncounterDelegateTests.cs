@@ -104,7 +104,7 @@ namespace HealthGateway.Encounter.Test.Delegates
                 new Mock<ILogger<RestMSPVisitDelegate>>().Object,
                 mockHttpClientService.Object,
                 this.configuration);
-            OdrHistoryQuery query = new OdrHistoryQuery()
+            ODRHistoryQuery query = new ODRHistoryQuery()
             {
                 PHN = "123456789",
             };
@@ -141,7 +141,7 @@ namespace HealthGateway.Encounter.Test.Delegates
                 new Mock<ILogger<RestMSPVisitDelegate>>().Object,
                 mockHttpClientService.Object,
                 GetLocalConfig());
-            OdrHistoryQuery query = new OdrHistoryQuery()
+            ODRHistoryQuery query = new ODRHistoryQuery()
             {
                 PHN = "123456789",
             };
@@ -176,7 +176,7 @@ namespace HealthGateway.Encounter.Test.Delegates
                 new Mock<ILogger<RestMSPVisitDelegate>>().Object,
                 mockHttpClientService.Object,
                 this.configuration);
-            OdrHistoryQuery query = new OdrHistoryQuery()
+            ODRHistoryQuery query = new ODRHistoryQuery()
             {
                 PHN = "123456789",
             };
@@ -206,7 +206,7 @@ namespace HealthGateway.Encounter.Test.Delegates
                 loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
                 mockHttpClientService.Object,
                 this.configuration);
-            OdrHistoryQuery query = new OdrHistoryQuery()
+            ODRHistoryQuery query = new ODRHistoryQuery()
             {
                 PHN = "123456789",
             };

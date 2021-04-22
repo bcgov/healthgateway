@@ -51,12 +51,12 @@ namespace HealthGateway.Medication.Delegates.Test
         private readonly string phn = "9735361219";
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private readonly string ip = "10.0.0.1";
-        private readonly OdrConfig odrConfig = new OdrConfig();
+        private readonly ODRConfig odrConfig = new ODRConfig();
         private readonly string odrConfigSectionKey = "ODR";
         private readonly Uri baseURI;
         private readonly Uri patientProfileEndpoint;
         private readonly Uri protectiveWordEndpoint;
-        private readonly OdrHistoryQuery query = new ()
+        private readonly ODRHistoryQuery query = new ()
         {
             StartDate = DateTime.Parse("1990/01/01", CultureInfo.CurrentCulture),
             EndDate = DateTime.Now,
