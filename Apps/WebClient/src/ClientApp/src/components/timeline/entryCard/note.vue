@@ -1,9 +1,6 @@
 <script lang="ts">
-import {
-    faEdit,
-    faEllipsisV,
-    IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEdit, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -17,6 +14,8 @@ import UserNote from "@/models/userNote";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
+
+library.add(faEdit, faEllipsisV);
 
 @Component({
     components: {
@@ -38,14 +37,6 @@ export default class NoteTimelineComponent extends Vue {
 
     private isSaving = false;
     private eventBus = EventBus;
-
-    private get entryIcon(): IconDefinition {
-        return faEdit;
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
-    }
 
     private get canShowDetails(): boolean {
         return (
@@ -81,7 +72,7 @@ export default class NoteTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="'note-' + entry.title"
-        :entry-icon="entryIcon"
+        entry-icon="edit"
         :icon-class="'note-icon'"
         :title="entry.title"
         :subtitle="entry.textSummary"
@@ -99,12 +90,12 @@ export default class NoteTimelineComponent extends Vue {
             >
                 <!-- Using 'button-content' slot -->
                 <template slot="button-content">
-                    <font-awesome-icon
+                    <hg-icon
+                        icon="ellipsis-v"
+                        size="small"
                         data-testid="noteMenuBtn"
                         class="noteMenu"
-                        :icon="menuIcon"
-                        size="1x"
-                    ></font-awesome-icon>
+                    />
                 </template>
                 <b-dropdown-item
                     data-testid="editNoteMenuBtn"

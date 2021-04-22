@@ -1,9 +1,6 @@
 <script lang="ts">
-import {
-    faArrowCircleUp,
-    faLock,
-    IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faArrowCircleUp, faLock } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -14,6 +11,8 @@ import type { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
+
+library.add(faArrowCircleUp, faLock);
 
 @Component
 export default class AddCommentComponent extends Vue {
@@ -30,14 +29,6 @@ export default class AddCommentComponent extends Vue {
     private commentInput = "";
     private logger!: ILogger;
     private isSaving = false;
-
-    private get lockIcon(): IconDefinition {
-        return faLock;
-    }
-
-    private get postIcon(): IconDefinition {
-        return faArrowCircleUp;
-    }
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -90,8 +81,7 @@ export default class AddCommentComponent extends Vue {
     <b-row>
         <b-col cols="auto" class="pl-0 pr-2 align-self-center">
             <div :id="'tooltip-' + comment.parentEntryId" class="tooltip-info">
-                <font-awesome-icon :icon="lockIcon" size="1x">
-                </font-awesome-icon>
+                <hg-icon icon="lock" size="small" />
             </div>
             <b-tooltip
                 variant="secondary"
@@ -128,12 +118,13 @@ export default class AddCommentComponent extends Vue {
                         class="btn-circle"
                         :disabled="commentInput === '' || isSaving"
                         @click="onSubmit"
-                        ><font-awesome-icon
-                            :icon="postIcon"
-                            size="lg"
+                    >
+                        <hg-icon
+                            icon="arrow-circle-up"
+                            size="medium"
                             fixed-width
-                        ></font-awesome-icon
-                    ></b-button>
+                        />
+                    </b-button>
                 </b-input-group-append>
             </b-input-group>
         </b-col>

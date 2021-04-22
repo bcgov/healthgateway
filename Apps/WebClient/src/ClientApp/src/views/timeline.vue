@@ -1,5 +1,6 @@
 <script lang="ts">
-import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -34,6 +35,8 @@ import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
+
+library.add(faSearch);
 
 @Component({
     components: {
@@ -252,10 +255,6 @@ export default class TimelineView extends Vue {
         return this.user.hasTermsOfServiceUpdated;
     }
 
-    private get searchIcon(): IconDefinition {
-        return faSearch;
-    }
-
     private get isLoading(): boolean {
         return (
             this.isMedicationRequestLoading ||
@@ -427,11 +426,11 @@ export default class TimelineView extends Vue {
                     <b-row class="no-print justify-content-between">
                         <b-col>
                             <div class="form-group has-filter">
-                                <font-awesome-icon
-                                    :icon="searchIcon"
+                                <hg-icon
+                                    icon="search"
+                                    size="medium"
                                     class="form-control-feedback"
-                                    fixed-width
-                                ></font-awesome-icon>
+                                />
                                 <b-form-input
                                     v-model="filterText"
                                     data-testid="filterTextInput"
@@ -533,21 +532,24 @@ export default class TimelineView extends Vue {
     }
 }
 
-.has-filter .form-control {
-    padding-left: 2.375rem;
-}
+.has-filter {
+    $icon-size: 1rem;
+    $icon-size-padded: 2.375rem;
+    $icon-padding: ($icon-size-padded - $icon-size) / 2;
 
-.has-filter .form-control-feedback {
-    position: absolute;
-    z-index: 2;
-    display: block;
-    width: 2.375rem;
-    height: 2.375rem;
-    line-height: 2.375rem;
-    text-align: center;
-    pointer-events: none;
-    color: #aaa;
-    padding: 12px;
+    .form-control {
+        padding-left: $icon-size-padded;
+    }
+
+    .form-control-feedback {
+        position: absolute;
+        z-index: 2;
+        display: block;
+        text-align: center;
+        pointer-events: none;
+        color: #aaa;
+        padding: $icon-padding;
+    }
 }
 
 .btn-light {

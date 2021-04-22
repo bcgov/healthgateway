@@ -1,9 +1,6 @@
 <script lang="ts">
-import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faCheck,
-    faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { Duration } from "luxon";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
@@ -278,10 +275,6 @@ export default class ProfileView extends Vue {
 
         timeRemaining = duration.as("seconds");
         return this.pluralize(timeRemaining, "second");
-    }
-
-    private get verifiedIcon(): IconDefinition {
-        return faCheck;
     }
 
     private pluralize(count: number, message: string): string {
@@ -598,13 +591,17 @@ export default class ProfileView extends Vue {
                                     <b-col
                                         class="font-weight-bold text-primary text-center"
                                     >
-                                        <font-awesome-icon
+                                        <hg-icon
                                             icon="exclamation-triangle"
+                                            size="medium"
                                             aria-hidden="true"
-                                        ></font-awesome-icon>
-                                        Removing your email address will disable
-                                        future email communications from the
-                                        Health Gateway
+                                            class="mr-2"
+                                        />
+                                        <span
+                                            >Removing your email address will
+                                            disable future email communications
+                                            from the Health Gateway.</span
+                                        >
                                     </b-col>
                                 </b-row>
                                 <b-row v-if="isEmailEditable" class="mb-3">
@@ -752,13 +749,17 @@ export default class ProfileView extends Vue {
                                     <b-col
                                         class="font-weight-bold text-primary text-center"
                                     >
-                                        <font-awesome-icon
+                                        <hg-icon
                                             icon="exclamation-triangle"
+                                            size="medium"
                                             aria-hidden="true"
-                                        ></font-awesome-icon>
-                                        Removing your phone number will disable
-                                        future SMS communications from the
-                                        Health Gateway
+                                            class="mr-2"
+                                        />
+                                        <span
+                                            >Removing your phone number will
+                                            disable future SMS communications
+                                            from the Health Gateway.</span
+                                        >
                                     </b-col>
                                 </b-row>
                                 <b-row v-if="isSMSEditable" class="mb-3">
@@ -790,15 +791,13 @@ export default class ProfileView extends Vue {
                     <div v-else>
                         <b-row class="mb-3">
                             <b-col>
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="exclamation-triangle"
+                                    size="medium"
                                     aria-hidden="true"
-                                    class="text-danger"
-                                ></font-awesome-icon>
-                                <label
-                                    for="deletionWarning"
-                                    class="hg-label ml-1"
-                                >
+                                    class="text-danger mr-2"
+                                />
+                                <label for="deletionWarning" class="hg-label">
                                     Account marked for removal
                                 </label>
                                 <div id="deletionWarning">
@@ -848,15 +847,20 @@ export default class ProfileView extends Vue {
                                         class="font-weight-bold text-danger text-center"
                                     >
                                         <hr />
-                                        <font-awesome-icon
+                                        <hg-icon
                                             icon="exclamation-triangle"
+                                            size="medium"
                                             aria-hidden="true"
-                                        ></font-awesome-icon>
-                                        Your account will be marked for removal,
-                                        preventing you from accessing your
-                                        information on the Health Gateway. After
-                                        a set period of time it will be removed
-                                        permanently.
+                                            class="mr-2"
+                                        />
+                                        <span
+                                            >Your account will be marked for
+                                            removal, preventing you from
+                                            accessing your information on the
+                                            Health Gateway. After a set period
+                                            of time it will be removed
+                                            permanently.</span
+                                        >
                                     </b-col>
                                 </b-row>
                                 <b-row
