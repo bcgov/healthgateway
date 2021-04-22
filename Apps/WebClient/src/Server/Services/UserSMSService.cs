@@ -28,7 +28,7 @@ namespace HealthGateway.WebClient.Services
     using Newtonsoft.Json;
 
     /// <inheritdoc />
-    public class UserSmsService : IUserSmsService
+    public class UserSMSService : IUserSMSService
     {
         /// <summary>
         /// The maximum verification attempts.
@@ -42,14 +42,14 @@ namespace HealthGateway.WebClient.Services
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserSmsService"/> class.
+        /// Initializes a new instance of the <see cref="UserSMSService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="messageVerificationDelegate">The message verification delegate to interact with the DB.</param>
         /// <param name="profileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
-        public UserSmsService(
-            ILogger<UserSmsService> logger,
+        public UserSMSService(
+            ILogger<UserSMSService> logger,
             IMessagingVerificationDelegate messageVerificationDelegate,
             IUserProfileDelegate profileDelegate,
             INotificationSettingsService notificationSettingsService)

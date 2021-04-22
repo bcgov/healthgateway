@@ -597,22 +597,22 @@
             RecoverUserProfile - Alraedy active happy Path.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Test.Services.UserSmsServiceTests">
+        <member name="T:HealthGateway.WebClient.Test.Services.UserSMSServiceTests">
             <summary>
-            Unit Tests for UserSmsServiceTests.
+            Unit Tests for UserSMSServiceTests.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.UserSmsServiceTests.ShouldValidateSMS">
-            <summary>
-            ValidateSMS - Happy path scenario.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.UserSmsServiceTests.ShouldValidateSMSWithInvalidInvite">
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldValidateSMS">
             <summary>
             ValidateSMS - Happy path scenario.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.UserSmsServiceTests.ShouldSanitizeSMS">
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldValidateSMSWithInvalidInvite">
+            <summary>
+            ValidateSMS - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldSanitizeSMS">
             <summary>
             ValidateSMS - Happy path scenario.
             </summary>

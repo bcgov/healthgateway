@@ -46,7 +46,7 @@ namespace HealthGateway.WebClient.Controllers
         private readonly IUserProfileService userProfileService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IUserEmailService userEmailService;
-        private readonly IUserSmsService userSMSService;
+        private readonly IUserSMSService userSMSService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileController"/> class.
@@ -61,7 +61,7 @@ namespace HealthGateway.WebClient.Controllers
             IUserProfileService userProfileService,
             IHttpContextAccessor httpContextAccessor,
             IUserEmailService userEmailService,
-            IUserSmsService userSMSService)
+            IUserSMSService userSMSService)
         {
             this.logger = logger;
             this.userProfileService = userProfileService;
