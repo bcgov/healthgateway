@@ -20,11 +20,6 @@
         },
         "lib": ["esnext", "dom", "dom.iterable", "scripthost", "es2018.promise"]
     },
-    "include": [
-        "./src/**/*.ts",
-        "./src/**/*.vue",
-        "./test/**/*.ts",
-        "test/stubs/store/config.ts2"
-    ],
+    "include": ["./src/**/*.ts", "./src/**/*.vue", "./test/**/*.ts"],
     "exclude": ["node_modules"]
 }
