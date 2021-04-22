@@ -40,7 +40,7 @@
         </member>
         <member name="T:HealthGateway.Encounter.Delegates.IMSPVisitDelegate">
             <summary>
-            Interface to retrieve Msp Visit History.
+            Interface to retrieve MSP Visit History.
             </summary>
         </member>
         <member name="M:HealthGateway.Encounter.Delegates.IMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String)">

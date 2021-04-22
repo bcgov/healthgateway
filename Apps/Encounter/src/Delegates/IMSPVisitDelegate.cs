@@ -21,7 +21,7 @@ namespace HealthGateway.Encounter.Delegates
     using HealthGateway.Encounter.Models.ODR;
 
     /// <summary>
-    /// Interface to retrieve Msp Visit History.
+    /// Interface to retrieve MSP Visit History.
     /// </summary>
     public interface IMSPVisitDelegate
     {
