@@ -1,6 +1,12 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+    faBars,
+    faSignInAlt,
+    faSignOutAlt,
+    faTimes,
+    faUserCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -10,8 +16,8 @@ import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
-library.add(faSignInAlt);
-library.add(faSignOutAlt);
+
+library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUserCircle);
 
 const auth = "auth";
 const user = "user";
@@ -188,12 +194,11 @@ export default class HeaderComponent extends Vue {
                 displayMenu
                 @click="handleToggleClick"
             >
-                <b-icon
-                    v-if="isSidebarOpen"
-                    icon="x"
+                <hg-icon
+                    :icon="isSidebarOpen ? 'times' : 'bars'"
+                    size="medium"
                     class="menu-icon"
-                ></b-icon>
-                <b-icon v-else icon="list" class="menu-icon"></b-icon>
+                />
             </span>
 
             <!-- Brand -->
@@ -235,19 +240,21 @@ export default class HeaderComponent extends Vue {
                     menu-class="drop-menu-position"
                     data-testid="headerDropdownBtn"
                     :no-caret="true"
-                    toggle-class="p-0 m-0 pr-1"
+                    toggle-class="p-0 m-0 mr-1"
                     right
                 >
                     <!-- Using 'button-content' slot -->
                     <template #button-content class="align-middle">
                         <b-row class="p-0 m-0 align-items-center">
                             <b-col class="p-0 m-0">
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="user-circle"
-                                    class="profile-menu p-0 m-0"
-                                ></font-awesome-icon>
+                                    size="large"
+                                    fixed-width
+                                    class="profile-menu"
+                                />
                             </b-col>
-                            <b-col v-if="!isMobileWidth" class="p-0 m-0 pl-2">
+                            <b-col v-if="!isMobileWidth" class="p-0 m-0 ml-2">
                                 <span data-testid="profileButtonUserName">{{
                                     userName
                                 }}</span>
@@ -256,17 +263,10 @@ export default class HeaderComponent extends Vue {
                     </template>
 
                     <span v-if="isMobileWidth">
-                        <b-dropdown-item>
-                            <b-row>
-                                <b-col cols="1"></b-col>
-                                <b-col>
-                                    <span
-                                        data-testid="profileUserNameMobileOnly"
-                                    >
-                                        {{ userName }}
-                                    </span>
-                                </b-col>
-                            </b-row>
+                        <b-dropdown-item class="text-center">
+                            <span data-testid="profileUserNameMobileOnly">
+                                {{ userName }}
+                            </span>
                         </b-dropdown-item>
                         <b-dropdown-divider />
                     </span>
@@ -275,37 +275,28 @@ export default class HeaderComponent extends Vue {
                         data-testid="profileBtn"
                         to="/profile"
                     >
-                        <b-row>
-                            <b-col cols="1">
-                                <font-awesome-icon
-                                    data-testid="profileDropDownIcon"
-                                    icon="user-circle"
-                                    class="p-0 m-0"
-                                >
-                                </font-awesome-icon>
-                            </b-col>
-                            <b-col
-                                ><span data-testid="profileDropDownLabel"
-                                    >Profile</span
-                                >
-                            </b-col>
-                        </b-row>
+                        <hg-icon
+                            icon="user-circle"
+                            size="medium"
+                            data-testid="profileDropDownIcon"
+                            class="mr-2"
+                            fixed-width
+                        /><span data-testid="profileDropDownLabel"
+                            >Profile</span
+                        >
                     </b-dropdown-item>
                     <b-dropdown-item-button
                         data-testid="logoutBtn"
                         @click="handleLogoutClick()"
                     >
-                        <b-row>
-                            <b-col cols="1">
-                                <font-awesome-icon
-                                    data-testid="logoutDropDownIcon"
-                                    icon="sign-out-alt"
-                                    class="p-0 m-0"
-                                >
-                                </font-awesome-icon>
-                            </b-col>
-                            <b-col>Logout</b-col>
-                        </b-row>
+                        <hg-icon
+                            icon="sign-out-alt"
+                            size="medium"
+                            data-testid="logoutDropDownIcon"
+                            class="mr-2"
+                            fixed-width
+                        />
+                        <span>Logout</span>
                     </b-dropdown-item-button>
                 </b-nav-item-dropdown>
 
@@ -313,11 +304,11 @@ export default class HeaderComponent extends Vue {
                     v-else-if="!isOffline"
                     id="menuBtnLogin"
                     data-testid="loginBtn"
-                    class="nav-link"
+                    class="nav-link d-flex align-items-center"
                     to="/login"
                 >
-                    <font-awesome-icon icon="sign-in-alt"></font-awesome-icon>
-                    <span class="pl-1">Login</span>
+                    <hg-icon icon="sign-in-alt" size="large" class="mr-2" />
+                    <span>Login</span>
                 </router-link>
             </b-navbar-nav>
             <RatingComponent

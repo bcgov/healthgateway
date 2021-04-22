@@ -1,5 +1,6 @@
 <script lang="ts">
-import { faClipboard, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
@@ -8,6 +9,8 @@ import { DateWrapper } from "@/models/dateWrapper";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
+
+library.add(faClipboard);
 
 @Component({
     components: {
@@ -20,10 +23,6 @@ export default class MedicationRequestTimelineComponent extends Vue {
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
 
-    private get entryIcon(): IconDefinition {
-        return faClipboard;
-    }
-
     private formatDate(dateValue: string): string {
         return DateWrapper.format(dateValue, DateTimeFormat.formatDateString);
     }
@@ -33,7 +32,7 @@ export default class MedicationRequestTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        :entry-icon="entryIcon"
+        entry-icon="clipboard"
         :title="entry.drugName"
         :subtitle="'Status: ' + entry.requestStatus"
         :entry="entry"

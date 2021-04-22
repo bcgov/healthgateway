@@ -1,6 +1,14 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faQuestion, faStream } from "@fortawesome/free-solid-svg-icons";
+import {
+    faAngleDoubleLeft,
+    faChartLine,
+    faClipboardList,
+    faEdit,
+    faQuestion,
+    faStream,
+    faUserFriends,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -14,7 +22,16 @@ import type { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
-library.add(faStream, faQuestion);
+
+library.add(
+    faAngleDoubleLeft,
+    faChartLine,
+    faClipboardList,
+    faEdit,
+    faQuestion,
+    faStream,
+    faUserFriends
+);
 
 const auth = "auth";
 const user = "user";
@@ -268,10 +285,10 @@ export default class SidebarComponent extends Vue {
                                 title="Timeline"
                                 :class="{ 'col-3': isOpen }"
                             >
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="stream"
+                                    size="large"
                                     class="button-icon"
-                                    size="3x"
                                 />
                             </b-col>
                             <b-col
@@ -299,10 +316,10 @@ export default class SidebarComponent extends Vue {
                                 title="Add a Note"
                                 :class="{ 'col-4': isOpen }"
                             >
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="edit"
+                                    size="medium"
                                     class="button-icon sub-menu m-auto"
-                                    size="2x"
                                 />
                             </b-col>
                             <b-col
@@ -364,10 +381,10 @@ export default class SidebarComponent extends Vue {
                                 class="button-spacer"
                             ></b-col>
                             <b-col title="Reports" :class="{ 'col-3': isOpen }">
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="user-friends"
+                                    size="large"
                                     class="button-icon"
-                                    size="2x"
                                 />
                             </b-col>
                             <b-col
@@ -401,10 +418,10 @@ export default class SidebarComponent extends Vue {
                                 title="Export Records"
                                 :class="{ 'col-3': isOpen }"
                             >
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="clipboard-list"
+                                    size="large"
                                     class="button-icon"
-                                    size="3x"
                                 />
                             </b-col>
                             <b-col
@@ -471,10 +488,10 @@ export default class SidebarComponent extends Vue {
                                 title="Health Insights"
                                 :class="{ 'col-3': isOpen }"
                             >
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="chart-line"
+                                    size="large"
                                     class="button-icon"
-                                    size="3x"
                                 />
                             </b-col>
                             <b-col
@@ -504,10 +521,10 @@ export default class SidebarComponent extends Vue {
                                 class="button-spacer"
                             ></b-col>
                             <b-col title="FAQ" :class="{ 'col-3': isOpen }">
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="question"
+                                    size="large"
                                     class="button-icon"
-                                    size="3x"
                                 />
                             </b-col>
                             <b-col
@@ -529,21 +546,21 @@ export default class SidebarComponent extends Vue {
                     <span v-show="!isMobileWidth">
                         <hr />
                         <b-row
-                            class="align-items-center my-4"
-                            :class="[isOpen ? 'mx-4' : 'button-container']"
+                            class="align-items-center my-3"
+                            :class="[isOpen ? 'mx-2' : 'button-container']"
                         >
                             <b-col
                                 :title="`${
                                     isOpen ? 'Collapse' : 'Expand'
                                 } Menu`"
-                                :class="{ 'ml-auto col-2': isOpen }"
+                                :class="{ 'ml-auto col-3': isOpen }"
                             >
-                                <font-awesome-icon
+                                <hg-icon
+                                    icon="angle-double-left"
+                                    size="large"
                                     data-testid="sidebarToggle"
                                     class="arrow-icon p-2"
-                                    icon="angle-double-left"
                                     aria-hidden="true"
-                                    size="3x"
                                     @click="toggleOpen"
                                 />
                             </b-col>
@@ -658,20 +675,6 @@ export default class SidebarComponent extends Vue {
     text-decoration: underline;
     cursor: pointer;
     background-color: $lightBlue !important;
-}
-
-#sidebar .button-icon {
-    display: inline-block;
-    margin: auto !important;
-    &.sub-menu {
-        font-size: 1.3em;
-    }
-    @media (max-width: 767px) {
-        font-size: 1.5em;
-        &.sub-menu {
-            font-size: 1em;
-        }
-    }
 }
 
 #sidebar .button-title {

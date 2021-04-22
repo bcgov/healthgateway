@@ -1,9 +1,6 @@
 <script lang="ts">
-import {
-    faEdit,
-    faEllipsisV,
-    IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
@@ -17,6 +14,8 @@ import { DateWrapper } from "@/models/dateWrapper";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
+
+library.add(faEdit);
 
 @Component({
     components: {
@@ -60,16 +59,8 @@ export default class NoteEditComponent extends Vue {
     private readonly unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
 
-    private get entryIcon(): IconDefinition {
-        return faEdit;
-    }
-
     private get modalTitle(): string {
         return this.isNewNote ? "Add Note" : "Update Note";
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
     }
 
     private get isBlankNote(): boolean {
@@ -247,10 +238,7 @@ export default class NoteEditComponent extends Vue {
             <b-row class="w-100 h-100">
                 <b-col cols="auto">
                     <div class="icon">
-                        <font-awesome-icon
-                            :icon="entryIcon"
-                            size="lg"
-                        ></font-awesome-icon>
+                        <hg-icon icon="edit" size="large" />
                     </div>
                 </b-col>
                 <b-col>

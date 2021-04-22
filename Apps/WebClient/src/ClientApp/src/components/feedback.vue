@@ -1,13 +1,13 @@
 <script lang="ts">
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import {
-    faCheckCircle,
+    faCheckCircle as farCheckCircle,
     faTimesCircle as farTimesCircle,
 } from "@fortawesome/free-regular-svg-icons";
 import {
     faComments,
     faExclamationCircle,
-    faMinus,
+    faWindowMinimize,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
@@ -17,7 +17,8 @@ import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IUserFeedbackService } from "@/services/interfaces";
-library.add(faComments, faExclamationCircle, faMinus);
+
+library.add(faComments, faExclamationCircle, faWindowMinimize);
 
 const navbar = "navbar";
 const user = "user";
@@ -50,7 +51,7 @@ export default class FeedbackComponent extends Vue {
     }
 
     private get resultIcon(): IconDefinition {
-        return this.isSuccess ? faCheckCircle : farTimesCircle;
+        return this.isSuccess ? farCheckCircle : farTimesCircle;
     }
 
     private get resultDescription(): string {
@@ -144,12 +145,7 @@ export default class FeedbackComponent extends Vue {
                         'col-2 col-md-4 text-right pr-2': isSidebarOpen,
                     }"
                 >
-                    <font-awesome-icon
-                        icon="comments"
-                        aria-hidden="true"
-                        size="1x"
-                        class="m-0"
-                    />
+                    <hg-icon icon="comments" size="large" aria-hidden="true" />
                 </b-col>
                 <b-col
                     v-show="isSidebarOpen"
@@ -158,21 +154,19 @@ export default class FeedbackComponent extends Vue {
                     <span> Feedback </span>
                 </b-col>
                 <b-col v-show="isSidebarOpen && visible" cols="auto">
-                    <font-awesome-icon
-                        icon="minus"
+                    <hg-icon
+                        icon="window-minimize"
+                        size="medium"
                         aria-hidden="true"
-                        size="1x"
-                        class="m-0 minimize-icon"
                     />
                 </b-col>
             </b-row>
             <b-row v-show="hasSubmitted">
                 <b-col>
-                    <font-awesome-icon
+                    <hg-icon
                         :icon="resultIcon"
+                        size="large"
                         aria-hidden="true"
-                        size="2x"
-                        class="m-0"
                     />
                 </b-col>
             </b-row>
@@ -234,11 +228,11 @@ export default class FeedbackComponent extends Vue {
                 </b-row>
                 <b-row v-if="isSuccess && !hasEmail" class="mb-4">
                     <b-col class="col-3 text-right p-0 m-0">
-                        <font-awesome-icon
+                        <hg-icon
                             icon="exclamation-circle"
+                            size="medium"
                             aria-hidden="true"
-                            size="2x"
-                            class="m-0 text-warning"
+                            class="text-warning"
                         />
                     </b-col>
                     <b-col class="text-left px-3 small" cols="9">
@@ -329,8 +323,5 @@ export default class FeedbackComponent extends Vue {
 .submit-button-container {
     height: 36px;
     overflow: hidden;
-}
-.minimize-icon {
-    font-size: 0.8em;
 }
 </style>

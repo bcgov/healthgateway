@@ -1,4 +1,6 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Getter } from "vuex-class";
@@ -11,6 +13,8 @@ import Image04 from "@/assets/images/registration/004_USB-Card-Reader.png";
 import Image05 from "@/assets/images/registration/005_Mobile-Card.png";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
+
+library.add(faChevronDown, faChevronUp);
 
 @Component
 export default class RegistrationInfoView extends Vue {
@@ -112,24 +116,27 @@ export default class RegistrationInfoView extends Vue {
                             "
                         >
                             <span v-show="!signupProcessVisible">
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="chevron-down"
+                                    size="medium"
                                     aria-hidden="true"
-                                ></font-awesome-icon>
+                                />
                             </span>
                             <span v-show="signupProcessVisible">
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="chevron-up"
+                                    size="medium"
                                     aria-hidden="true"
-                                ></font-awesome-icon>
+                                />
                             </span>
-
-                            I have a BC Services Card, but how do I use it?
+                            <span class="ml-2"
+                                >I have a BC Services Card, but how do I use
+                                it?</span
+                            >
                         </b-button>
                         <b-collapse
                             id="collapse-1"
                             v-model="signupProcessVisible"
-                            class="mt-2"
                         >
                             <b-row class="m-5">
                                 <b-col>
@@ -226,25 +233,22 @@ export default class RegistrationInfoView extends Vue {
                             @click="dongleVisible = !dongleVisible"
                         >
                             <span v-show="!dongleVisible">
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="chevron-down"
+                                    size="medium"
                                     aria-hidden="true"
-                                ></font-awesome-icon>
+                                />
                             </span>
                             <span v-show="dongleVisible">
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="chevron-up"
+                                    size="medium"
                                     aria-hidden="true"
-                                ></font-awesome-icon>
+                                />
                             </span>
-
-                            Is there another option?
+                            <span class="ml-2">Is there another option?</span>
                         </b-button>
-                        <b-collapse
-                            id="collapse-4"
-                            v-model="dongleVisible"
-                            class="mt-2"
-                        >
+                        <b-collapse id="collapse-4" v-model="dongleVisible">
                             <div class="m-5 px-4">
                                 <b-row>
                                     <b-col>
