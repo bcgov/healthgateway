@@ -270,10 +270,10 @@ export default class SidebarComponent extends Vue {
                         id="menuBtnTimeline"
                         data-testid="menuBtnTimelineLink"
                         to="/timeline"
-                        class="my-4"
+                        class="my-3"
                     >
                         <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
+                            class="align-items-center name-wrapper my-3 button-container"
                             :class="{ selected: isTimeline }"
                         >
                             <b-col
@@ -307,7 +307,7 @@ export default class SidebarComponent extends Vue {
                             v-show="isNoteEnabled"
                             id="add-a-note-row"
                             data-testid="addNoteBtn"
-                            class="align-items-center border rounded-pill py-2 button-container my-4"
+                            class="align-items-center border rounded-pill button-container my-3"
                             :class="{ 'sub-menu': isOpen }"
                             @click="createNote"
                         >
@@ -369,10 +369,10 @@ export default class SidebarComponent extends Vue {
                         id="menuBtnDependents"
                         data-testid="menuBtnDependentsLink"
                         to="/dependents"
-                        class="my-4"
+                        class="my-3"
                     >
                         <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
+                            class="align-items-center name-wrapper my-3 button-container"
                             :class="{ selected: isDependents }"
                         >
                             <b-col
@@ -402,11 +402,11 @@ export default class SidebarComponent extends Vue {
                         id="menuBtnReports"
                         data-testid="menuBtnReportsLink"
                         to="/reports"
-                        class="my-4"
+                        class="my-3"
                     >
                         <b-row
                             id="export-records-row"
-                            class="align-items-center name-wrapper my-4 button-container"
+                            class="align-items-center name-wrapper my-3 button-container"
                             :class="{ selected: isReports }"
                         >
                             <b-col
@@ -473,10 +473,10 @@ export default class SidebarComponent extends Vue {
                         id="menuBtnHealthInsights"
                         data-testid="menuBtnHealthInsightsLink"
                         to="/healthInsights"
-                        class="my-4"
+                        class="my-3"
                     >
                         <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
+                            class="align-items-center name-wrapper my-3 button-container"
                             :class="{ selected: isHealthInsights }"
                         >
                             <b-col
@@ -509,10 +509,10 @@ export default class SidebarComponent extends Vue {
                         id="menuBtnFAQ"
                         data-testid="menuBtnFAQ"
                         to="/faq"
-                        class="my-4"
+                        class="my-3"
                     >
                         <b-row
-                            class="align-items-center name-wrapper my-4 button-container"
+                            class="align-items-center name-wrapper my-3 button-container"
                             :class="{ selected: isFAQ }"
                         >
                             <b-col
@@ -667,14 +667,17 @@ export default class SidebarComponent extends Vue {
 }
 
 #sidebar .button-spacer {
-    width: 100%;
-    height: 100%;
+    align-self: stretch;
 }
 
 #sidebar .button-container:hover {
     text-decoration: underline;
     cursor: pointer;
     background-color: $lightBlue !important;
+}
+
+#sidebar .button-icon {
+    padding: 0.5em;
 }
 
 #sidebar .button-title {
@@ -695,12 +698,8 @@ export default class SidebarComponent extends Vue {
 }
 
 #sidebar .name-wrapper {
-    height: 70px;
     display: flex;
     align-items: center;
-    @media (max-width: 767px) {
-        height: 55px;
-    }
 }
 
 #sidebar hr {
