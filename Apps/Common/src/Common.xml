@@ -1261,23 +1261,23 @@
         <member name="M:HealthGateway.Common.Delegates.ClientRegistriesDelegate.GetDemographicsByPHNAsync(System.String)">
             <inheritdoc />
         </member>
-        <member name="T:HealthGateway.Common.Delegates.HmacHashDelegate">
+        <member name="T:HealthGateway.Common.Delegates.HMACHashDelegate">
             <summary>
             Delegate to create and validate HMAC hashes.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HmacHashDelegate.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.HmacHashDelegate"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.HMACHashDelegate"/> class.
             </summary>
             <param name="configuration">The injected configuration provider.</param>
         </member>
-        <member name="P:HealthGateway.Common.Delegates.HmacHashDelegate.HashConfig">
+        <member name="P:HealthGateway.Common.Delegates.HMACHashDelegate.HashConfig">
             <summary>
             Gets or sets the instance configuration.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HmacHashDelegate.HmacHash(System.String,System.Byte[],Microsoft.AspNetCore.Cryptography.KeyDerivation.KeyDerivationPrf,System.Int32)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.HmacHash(System.String,System.Byte[],Microsoft.AspNetCore.Cryptography.KeyDerivation.KeyDerivationPrf,System.Int32)">
             <summary>
             Generates the HMAC Hash object.
             </summary>
@@ -1287,7 +1287,7 @@
             <param name="iterations">The number of iterations to process over the hash.</param>
             <returns>The hash object.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HmacHashDelegate.Compare(System.String,HealthGateway.Database.Models.Cacheable.HmacHash)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.Compare(System.String,HealthGateway.Database.Models.Cacheable.HmacHash)">
             <summary>
             Validates that the supplied key will hash to the compareHash.
             </summary>
@@ -1295,20 +1295,20 @@
             <param name="compareHash">The hash object to compare.</param>
             <returns>true if the key generates the same hash.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HmacHashDelegate.GenerateSalt(System.Int32)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.GenerateSalt(System.Int32)">
             <summary>
             Creates a secure random salt of the specified length in bytes.
             </summary>
             <param name="saltLength">The length of the salt in bytes, defaults to 16 bytes.</param>
             <returns>A byte array containing the salt.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HmacHashDelegate.Hash(System.String)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.Hash(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HmacHashDelegate.Compare(System.String,HealthGateway.Database.Models.Cacheable.IHash)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.Compare(System.String,HealthGateway.Database.Models.Cacheable.IHash)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HmacHashDelegate.HmacHash(System.String)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.HmacHash(System.String)">
             <summary>
             Creates a hash given the instance configuration.
             </summary>
@@ -1715,37 +1715,37 @@
             Gets or sets the Initialization Vector.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.Models.HmacHashDelegateConfig">
+        <member name="T:HealthGateway.Common.Models.HMACHashDelegateConfig">
             <summary>
             The configuration for the HMACHash delegate.
             </summary>
         </member>
-        <member name="F:HealthGateway.Common.Models.HmacHashDelegateConfig.DefaultIterations">
+        <member name="F:HealthGateway.Common.Models.HMACHashDelegateConfig.DefaultIterations">
             <summary>
             The default number of iterations for the hash.
             </summary>
         </member>
-        <member name="F:HealthGateway.Common.Models.HmacHashDelegateConfig.DefaultPseudoRandomFunction">
+        <member name="F:HealthGateway.Common.Models.HMACHashDelegateConfig.DefaultPseudoRandomFunction">
             <summary>
             The default PseudoRandomFunction to use for the hash generation.
             </summary>
         </member>
-        <member name="F:HealthGateway.Common.Models.HmacHashDelegateConfig.DefaultSaltLength">
+        <member name="F:HealthGateway.Common.Models.HMACHashDelegateConfig.DefaultSaltLength">
             <summary>
             The default salth length in bytes for the hash.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.HmacHashDelegateConfig.PseudoRandomFunction">
+        <member name="P:HealthGateway.Common.Models.HMACHashDelegateConfig.PseudoRandomFunction">
             <summary>
             Gets or sets the PseudoRandomFunction to use for the hash generation.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.HmacHashDelegateConfig.Iterations">
+        <member name="P:HealthGateway.Common.Models.HMACHashDelegateConfig.Iterations">
             <summary>
             Gets or sets the the number of iterations for the hash.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.HmacHashDelegateConfig.SaltLength">
+        <member name="P:HealthGateway.Common.Models.HMACHashDelegateConfig.SaltLength">
             <summary>
             Gets or sets the salt length in bytes.
             </summary>

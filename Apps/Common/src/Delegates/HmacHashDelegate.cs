@@ -27,24 +27,24 @@ namespace HealthGateway.Common.Delegates
     /// <summary>
     /// Delegate to create and validate HMAC hashes.
     /// </summary>
-    public class HmacHashDelegate : IHashDelegate
+    public class HMACHashDelegate : IHashDelegate
     {
         private const string ConfigKey = "HMACHash";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HmacHashDelegate"/> class.
+        /// Initializes a new instance of the <see cref="HMACHashDelegate"/> class.
         /// </summary>
         /// <param name="configuration">The injected configuration provider.</param>
-        public HmacHashDelegate(IConfiguration configuration)
+        public HMACHashDelegate(IConfiguration configuration)
         {
-            this.HashConfig = new HmacHashDelegateConfig();
+            this.HashConfig = new HMACHashDelegateConfig();
             configuration.Bind(ConfigKey, this.HashConfig);
         }
 
         /// <summary>
         /// Gets or sets the instance configuration.
         /// </summary>
-        public HmacHashDelegateConfig HashConfig { get; set; }
+        public HMACHashDelegateConfig HashConfig { get; set; }
 
         /// <summary>
         /// Generates the HMAC Hash object.
@@ -57,8 +57,8 @@ namespace HealthGateway.Common.Delegates
         public static HmacHash HmacHash(
             string? key,
             byte[] salt,
-            KeyDerivationPrf prf = HmacHashDelegateConfig.DefaultPseudoRandomFunction,
-            int iterations = HmacHashDelegateConfig.DefaultIterations)
+            KeyDerivationPrf prf = HMACHashDelegateConfig.DefaultPseudoRandomFunction,
+            int iterations = HMACHashDelegateConfig.DefaultIterations)
         {
             HmacHash retHash = new HmacHash()
             {
@@ -128,7 +128,7 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="saltLength">The length of the salt in bytes, defaults to 16 bytes.</param>
         /// <returns>A byte array containing the salt.</returns>
-        public static byte[] GenerateSalt(int saltLength = HmacHashDelegateConfig.DefaultSaltLength)
+        public static byte[] GenerateSalt(int saltLength = HMACHashDelegateConfig.DefaultSaltLength)
         {
             byte[] salt = new byte[saltLength];
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();

@@ -20,7 +20,7 @@ namespace HealthGateway.Common.Models
     /// <summary>
     /// The configuration for the HMACHash delegate.
     /// </summary>
-    public class HmacHashDelegateConfig
+    public class HMACHashDelegateConfig
     {
         /// <summary>
         /// The default number of iterations for the hash.

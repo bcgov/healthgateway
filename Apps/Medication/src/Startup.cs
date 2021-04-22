@@ -82,7 +82,7 @@ namespace HealthGateway.Medication
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
             services.AddTransient<IGenericCacheDelegate, DBGenericCacheDelegate>();
-            services.AddTransient<IHashDelegate, HmacHashDelegate>();
+            services.AddTransient<IHashDelegate, HMACHashDelegate>();
             services.AddTransient<IMedicationRequestDelegate, SalesforeceDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
         }

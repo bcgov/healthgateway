@@ -268,42 +268,42 @@
             </summary>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
-        <member name="T:HealthGateway.CommonTests.Delegates.HmacHashDelegateTests">
+        <member name="T:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests">
             <summary>
-            HmacHashDelegate's Unit Tests.
+            HMACHashDelegate's Unit Tests.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.HmacHashDelegateTests.VerifyConfigurationBinding">
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyConfigurationBinding">
             <summary>
-            HmacHashDelegate - Configuration Binding.
+            HMACHashDelegate - Configuration Binding.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.HmacHashDelegateTests.VerifyDefaultConfigurationBinding">
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyDefaultConfigurationBinding">
             <summary>
-            HmacHashDelegate - Default Configuration Binding.
+            HMACHashDelegate - Default Configuration Binding.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.HmacHashDelegateTests.VerifyHash">
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyHash">
             <summary>
             Hash - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.HmacHashDelegateTests.VerifyHMACSHA1Hash">
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyHMACSHA1Hash">
             <summary>
             Hash - Happy Path (HMACSHA1).
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.HmacHashDelegateTests.VerifyHMACSHA256Hash">
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyHMACSHA256Hash">
             <summary>
             Hash - Happy Path (HMACSHA256).
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.HmacHashDelegateTests.VerifyHMACSHA512Hash">
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyHMACSHA512Hash">
             <summary>
             Hash - Happy Path (HMACSHA512).
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.HmacHashDelegateTests.VerifyNullKey">
+        <member name="M:HealthGateway.CommonTests.Delegates.HMACHashDelegateTests.VerifyNullKey">
             <summary>
             Hash - Happy Path (Null Key).
             </summary>
