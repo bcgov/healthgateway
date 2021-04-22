@@ -53,7 +53,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<KeycloakUserAdminDelegate> logger = loggerFactory.CreateLogger<KeycloakUserAdminDelegate>();
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, new Mock<IHttpClientService>().Object, this.configuration);
-            Assert.Throws<NotImplementedException>(() => keycloakDelegate.GetUser(Guid.NewGuid(), new Common.AccessManagement.Authentication.Models.JwtModel()));
+            Assert.Throws<NotImplementedException>(() => keycloakDelegate.GetUser(Guid.NewGuid(), new Common.AccessManagement.Authentication.Models.JWTModel()));
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, mockHttpClientService.Object, this.configuration);
 
-            HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel()
+            HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel()
             {
                 AccessToken = "Bearer Token",
             };
@@ -120,7 +120,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Administration
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             IUserAdminDelegate keycloakDelegate = new KeycloakUserAdminDelegate(logger, mockHttpClientService.Object, this.configuration);
 
-            HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel()
+            HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel jwt = new HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel()
             {
                 AccessToken = "Bearer Token",
             };

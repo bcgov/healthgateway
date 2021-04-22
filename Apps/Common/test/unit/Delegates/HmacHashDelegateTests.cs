@@ -117,7 +117,7 @@ namespace HealthGateway.CommonTests.Delegates
             string valueToHash = "qwerty";
             string salt = "/KzcYC/PC4c4ucgriabmhA==";
             string expectedValue = "s+QcBH+1K1kIPk2GnGMPMJFzBVA=";
-            IHash hash = HMACHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA1);
+            IHash hash = HMACHashDelegate.HMACHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA1);
 
             Assert.True(hash.Hash == expectedValue);
         }
@@ -131,7 +131,7 @@ namespace HealthGateway.CommonTests.Delegates
             string valueToHash = "qwerty";
             string salt = "GPQ/DRGs6RSYjOh1EE1CZwKNCqCP8Zhb4DAhczEQYpE=";
             string expectedValue = "eY+j2PXHewxRiVrz+ngCEfwHXqsmF151Y3M+xrL2HlM=";
-            IHash hash = HMACHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA256);
+            IHash hash = HMACHashDelegate.HMACHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA256);
 
             Assert.True(hash.Hash == expectedValue);
         }
@@ -145,7 +145,7 @@ namespace HealthGateway.CommonTests.Delegates
             string valueToHash = "qwerty";
             string salt = "/KzcYC/PC4c4ucgriabmhA==";
             string expectedValue = "EYxkddpZRM2KTR+fjT8G9jA2bYtjUMSrr8CfOgWyI2VXUYU3LrPPC2F9kVx7mRoGR0YaDEZppXXvkgCymDKWJQ==";
-            IHash hash = HMACHashDelegate.HmacHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA512);
+            IHash hash = HMACHashDelegate.HMACHash(valueToHash, Convert.FromBase64String(salt), KeyDerivationPrf.HMACSHA512);
 
             Assert.True(hash.Hash == expectedValue);
         }

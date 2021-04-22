@@ -25,30 +25,30 @@ namespace HealthGateway.Common.Delegates
     /// <summary>
     /// Delegate to encrypt/decrypt using AES.
     /// </summary>
-    public class AesCryptoDelegate : ICryptoDelegate
+    public class AESCryptoDelegate : ICryptoDelegate
     {
         private const string ConfigKey = "AESCrypto";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AesCryptoDelegate"/> class.
+        /// Initializes a new instance of the <see cref="AESCryptoDelegate"/> class.
         /// </summary>
         /// <param name="configuration">The injected configuration provider.</param>
-        public AesCryptoDelegate(
+        public AESCryptoDelegate(
             IConfiguration configuration)
         {
-            this.AesConfig = new AesCryptoDelegateConfig();
-            configuration.Bind(ConfigKey, this.AesConfig);
+            this.AESConfig = new AESCryptoDelegateConfig();
+            configuration.Bind(ConfigKey, this.AESConfig);
         }
 
         /// <summary>
         /// Gets or sets the instance configuration.
         /// </summary>
-        public AesCryptoDelegateConfig AesConfig { get; set; }
+        public AESCryptoDelegateConfig AESConfig { get; set; }
 
         /// <inheritdoc />
         public string Encrypt(string key, string plainText)
         {
-            return this.Encrypt(key, this.AesConfig.IV, plainText);
+            return this.Encrypt(key, this.AESConfig.IV, plainText);
         }
 
         /// <summary>
@@ -61,8 +61,8 @@ namespace HealthGateway.Common.Delegates
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5401:Do not use CreateEncryptor with non-default IV", Justification = "Team decision")]
         public string Encrypt(string key, string? iv, string plainText)
         {
-            using Aes aes = Aes.Create();
-            aes.KeySize = this.AesConfig.KeySize;
+            using AES aes = AES.Create();
+            aes.KeySize = this.AESConfig.KeySize;
             aes.Key = Convert.FromBase64String(key);
             aes.IV = iv != null ? Convert.FromBase64String(iv) : new byte[16];
             ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
@@ -78,7 +78,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc />
         public string Decrypt(string key, string encryptedText)
         {
-            return this.Decrypt(key, this.AesConfig.IV, encryptedText);
+            return this.Decrypt(key, this.AESConfig.IV, encryptedText);
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace HealthGateway.Common.Delegates
         {
             string? plaintext = null;
             byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
-            using Aes aes = Aes.Create();
-            aes.KeySize = this.AesConfig.KeySize;
+            using AES aes = AES.Create();
+            aes.KeySize = this.AESConfig.KeySize;
             aes.Key = Convert.FromBase64String(key);
             aes.IV = iv != null ? Convert.FromBase64String(iv) : new byte[16];
             ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
@@ -107,8 +107,8 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc />
         public string GenerateKey()
         {
-            using Aes aes = Aes.Create();
-            aes.KeySize = this.AesConfig.KeySize;
+            using AES aes = AES.Create();
+            aes.KeySize = this.AESConfig.KeySize;
             aes.GenerateKey();
             return Convert.ToBase64String(aes.Key);
         }

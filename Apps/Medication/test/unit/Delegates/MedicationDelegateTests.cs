@@ -241,7 +241,7 @@ namespace HealthGateway.Medication.Delegates.Test
             var handlerMock = GetHttpMessageHandler(protectedHttpResponseMessage, this.protectiveWordEndpoint);
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HmacHash()
+            IHash hash = new HMACHash()
             {
                 Hash = $"{protectiveWordjson}-HASH",
             };
@@ -288,7 +288,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HmacHash()
+            IHash hash = new HMACHash()
             {
                 Hash = string.Empty,
             };
@@ -337,7 +337,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HmacHash()
+            IHash hash = new HMACHash()
             {
                 Hash = string.Empty,
             };
@@ -375,7 +375,7 @@ namespace HealthGateway.Medication.Delegates.Test
             var handlerMock = GetHttpMessageHandler(protectiveWordResponseMessage, this.protectiveWordEndpoint);
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HmacHash()
+            IHash hash = new HMACHash()
             {
                 Hash = string.Empty,
             };
@@ -445,7 +445,7 @@ namespace HealthGateway.Medication.Delegates.Test
 
             Mock<IGenericCacheDelegate> mockCacheDelegate = new Mock<IGenericCacheDelegate>();
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HmacHash()
+            IHash hash = new HMACHash()
             {
                 Hash = string.Empty,
             };
@@ -552,7 +552,7 @@ namespace HealthGateway.Medication.Delegates.Test
         private static IHashDelegate GetHashDelegate(string hashString = "")
         {
             Mock<IHashDelegate> mockHashDelegate = new Mock<IHashDelegate>();
-            IHash hash = new HmacHash()
+            IHash hash = new HMACHash()
             {
                 Hash = hashString,
             };

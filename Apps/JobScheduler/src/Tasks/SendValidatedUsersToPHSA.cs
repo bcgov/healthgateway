@@ -28,23 +28,23 @@ namespace Healthgateway.JobScheduler.Tasks
     /// Queries the Health Gateway DB for all current users with emails.
     /// Queues NotificationSettings job for each.
     /// </summary>
-    public class SendValidatedUsersToPhsa : IOneTimeTask
+    public class SendValidatedUsersToPHSA : IOneTimeTask
     {
         private readonly IConfiguration configuration;
-        private readonly ILogger<SendValidatedUsersToPhsa> logger;
+        private readonly ILogger<SendValidatedUsersToPHSA> logger;
         private readonly GatewayDbContext dbContext;
         private readonly INotificationSettingsService notificationSettingsService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendValidatedUsersToPhsa"/> class.
+        /// Initializes a new instance of the <see cref="SendValidatedUsersToPHSA"/> class.
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
         /// <param name="notificationSettingsService">The notification settings service.</param>
-        public SendValidatedUsersToPhsa(
+        public SendValidatedUsersToPHSA(
                 IConfiguration configuration,
-                ILogger<SendValidatedUsersToPhsa> logger,
+                ILogger<SendValidatedUsersToPHSA> logger,
                 GatewayDbContext dbContext,
                 INotificationSettingsService notificationSettingsService)
         {

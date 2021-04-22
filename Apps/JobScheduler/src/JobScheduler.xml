@@ -414,22 +414,22 @@
             Runs the task that needs to be done for the IOneTimeTask.
             </summary>
         </member>
-        <member name="T:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPhsa">
+        <member name="T:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA">
             <summary>
             Queries the Health Gateway DB for all current users with emails.
             Queues NotificationSettings job for each.
             </summary>
         </member>
-        <member name="M:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPhsa.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPhsa},HealthGateway.Database.Context.GatewayDbContext,HealthGateway.Common.Services.INotificationSettingsService)">
+        <member name="M:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA},HealthGateway.Database.Context.GatewayDbContext,HealthGateway.Common.Services.INotificationSettingsService)">
             <summary>
-            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPhsa"/> class.
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA"/> class.
             </summary>
             <param name="configuration">The configuration to use.</param>
             <param name="logger">The logger to use.</param>
             <param name="dbContext">The db context to use.</param>
             <param name="notificationSettingsService">The notification settings service.</param>
         </member>
-        <member name="M:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPhsa.Run">
+        <member name="M:Healthgateway.JobScheduler.Tasks.SendValidatedUsersToPHSA.Run">
             <summary>
             Runs the task that needs to be done for the IOneTimeTask.
             </summary>

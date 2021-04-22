@@ -101,7 +101,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<ILegalAgreementDelegate, DBLegalAgreementDelegate>();
             services.AddTransient<INoteDelegate, DBNoteDelegate>();
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();
-            services.AddTransient<ICryptoDelegate, AesCryptoDelegate>();
+            services.AddTransient<ICryptoDelegate, AESCryptoDelegate>();
             services.AddTransient<ICommunicationDelegate, DBCommunicationDelegate>();
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();

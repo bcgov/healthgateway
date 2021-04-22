@@ -9,7 +9,7 @@
             The UserDelegate IAM Admin Service interface.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.AccessManagement.Administration.IUserAdminDelegate.GetUser(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel)">
+        <member name="M:HealthGateway.Common.AccessManagement.Administration.IUserAdminDelegate.GetUser(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel)">
             <summary>
             Look up a User account by username in the Identity and Access Management system.
             </summary>
@@ -17,7 +17,7 @@
             <param name="jwtModel">Json Web Token model for authenticating the call.</param>
             <returns>A resulting UserRepresentation object.</returns>
         </member>
-        <member name="M:HealthGateway.Common.AccessManagement.Administration.IUserAdminDelegate.DeleteUser(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel)">
+        <member name="M:HealthGateway.Common.AccessManagement.Administration.IUserAdminDelegate.DeleteUser(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel)">
             <summary>
             Delete a User account from the Identity and Access Management system.
             </summary>
@@ -68,13 +68,13 @@
             <param name="httpClientService">injected HTTP client service.</param>
             <param name="configuration">Injected configuration.</param>
         </member>
-        <member name="M:HealthGateway.Common.AccessManagement.Administration.KeycloakUserAdminDelegate.GetUser(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel)">
+        <member name="M:HealthGateway.Common.AccessManagement.Administration.KeycloakUserAdminDelegate.GetUser(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.AccessManagement.Administration.KeycloakUserAdminDelegate.DeleteUser(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel)">
+        <member name="M:HealthGateway.Common.AccessManagement.Administration.KeycloakUserAdminDelegate.DeleteUser(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.AccessManagement.Administration.KeycloakUserAdminDelegate.DeleteUserAsync(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel)">
+        <member name="M:HealthGateway.Common.AccessManagement.Administration.KeycloakUserAdminDelegate.DeleteUserAsync(System.Guid,HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel)">
             <summary>
             Deletes the User account from Keycloak.
             </summary>
@@ -160,7 +160,7 @@
             </summary>
             <param name="tokenUri">Uri to request the the token from.</param>
             <param name="tokenRequest">Token request configuration.</param>
-            <returns>An instance fo the <see cref="T:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel"/> class.</returns>
+            <returns>An instance fo the <see cref="T:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel"/> class.</returns>
         </member>
         <member name="M:HealthGateway.Common.AccessManagement.Authentication.IAuthenticationDelegate.AuthenticateAsUser(System.Uri,HealthGateway.Common.AccessManagement.Authentication.Models.ClientCredentialsTokenRequest)">
             <summary>
@@ -168,7 +168,7 @@
             </summary>
             <param name="tokenUri">Uri to request the the token from.</param>
             <param name="tokenRequest">Token request configuration.</param>
-            <returns>An instance fo the <see cref="T:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel"/> class.</returns>
+            <returns>An instance fo the <see cref="T:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel"/> class.</returns>
         </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authentication.Models.ClientCredentialsTokenRequest">
             <summary>
@@ -250,33 +250,33 @@
             Gets or sets the scope.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel">
+        <member name="T:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel">
             <summary>
             The json web token model.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel.AccessToken">
+        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel.AccessToken">
             <inheritdoc/>
         </member>
-        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel.ExpiresIn">
+        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel.ExpiresIn">
             <inheritdoc/>
         </member>
-        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel.RefreshExpiresIn">
+        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel.RefreshExpiresIn">
             <inheritdoc/>
         </member>
-        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel.RefreshToken">
+        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel.RefreshToken">
             <inheritdoc/>
         </member>
-        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel.TokenType">
+        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel.TokenType">
             <inheritdoc/>
         </member>
-        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel.NotBeforePolicy">
+        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel.NotBeforePolicy">
             <inheritdoc/>
         </member>
-        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel.SessionState">
+        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel.SessionState">
             <inheritdoc/>
         </member>
-        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JwtModel.Scope">
+        <member name="P:HealthGateway.Common.AccessManagement.Authentication.Models.JWTModel.Scope">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authorization.Claims.GatewayClaims">
@@ -1057,27 +1057,27 @@
             Specifies that the target is for Imaging.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.Constants.OidType">
+        <member name="T:HealthGateway.Common.Constants.OIDType">
             <summary>
             A class with constants representing the various OID values.
             </summary>
         </member>
-        <member name="F:HealthGateway.Common.Constants.OidType.value">
+        <member name="F:HealthGateway.Common.Constants.OIDType.value">
             <summary>
-            Gets or sets the value that holds the internal representation of the OidType.
+            Gets or sets the value that holds the internal representation of the OIDType.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Constants.OidType.HDID">
-            <summary>
-            Gets an OID representing hdid.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Common.Constants.OidType.PHN">
+        <member name="P:HealthGateway.Common.Constants.OIDType.HDID">
             <summary>
             Gets an OID representing hdid.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Constants.OidType.op_Equality(HealthGateway.Common.Constants.OidType,HealthGateway.Common.Constants.OidType)">
+        <member name="P:HealthGateway.Common.Constants.OIDType.PHN">
+            <summary>
+            Gets an OID representing hdid.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Constants.OIDType.op_Equality(HealthGateway.Common.Constants.OIDType,HealthGateway.Common.Constants.OIDType)">
             <summary>
             Determines whether two specified types have the same value.
             </summary>
@@ -1085,7 +1085,7 @@
             <param name="lhs">The first type to compare, or null.</param>
             <param name="rhs">The second type to compare, or null.</param>
         </member>
-        <member name="M:HealthGateway.Common.Constants.OidType.op_Inequality(HealthGateway.Common.Constants.OidType,HealthGateway.Common.Constants.OidType)">
+        <member name="M:HealthGateway.Common.Constants.OIDType.op_Inequality(HealthGateway.Common.Constants.OIDType,HealthGateway.Common.Constants.OIDType)">
             <summary>
             Determines whether two specified types have different values.
             </summary>
@@ -1093,26 +1093,26 @@
             <param name="lhs">The first type to compare, or null.</param>
             <param name="rhs">The second type to compare, or null.</param>
         </member>
-        <member name="M:HealthGateway.Common.Constants.OidType.GetHashCode">
+        <member name="M:HealthGateway.Common.Constants.OIDType.GetHashCode">
             <summary>
             Gets the hash code for this OIDType.
             </summary>
             <returns>The computed hash code.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Constants.OidType.ToString">
+        <member name="M:HealthGateway.Common.Constants.OIDType.ToString">
             <summary>
             Gets string representation of this type.
             </summary>
             <returns>The string representation.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Constants.OidType.Equals(System.Object)">
+        <member name="M:HealthGateway.Common.Constants.OIDType.Equals(System.Object)">
             <summary>
             Definition of the equal operator.
             </summary>
             <returns>True if the value of a is equal; otherwise, false.</returns>
             <param name="obj">The object to compare against for equality.</param>
         </member>
-        <member name="M:HealthGateway.Common.Constants.OidType.Equals(HealthGateway.Common.Constants.OidType)">
+        <member name="M:HealthGateway.Common.Constants.OIDType.Equals(HealthGateway.Common.Constants.OIDType)">
             <summary>
             Determines whether two specified types have the same value.
             </summary>
@@ -1199,26 +1199,26 @@
             Represents that the request needs an user action.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.Delegates.AesCryptoDelegate">
+        <member name="T:HealthGateway.Common.Delegates.AESCryptoDelegate">
             <summary>
             Delegate to encrypt/decrypt using AES.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.AesCryptoDelegate.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Common.Delegates.AESCryptoDelegate.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.AesCryptoDelegate"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.AESCryptoDelegate"/> class.
             </summary>
             <param name="configuration">The injected configuration provider.</param>
         </member>
-        <member name="P:HealthGateway.Common.Delegates.AesCryptoDelegate.AesConfig">
+        <member name="P:HealthGateway.Common.Delegates.AESCryptoDelegate.AESConfig">
             <summary>
             Gets or sets the instance configuration.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.AesCryptoDelegate.Encrypt(System.String,System.String)">
+        <member name="M:HealthGateway.Common.Delegates.AESCryptoDelegate.Encrypt(System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Common.Delegates.AesCryptoDelegate.Encrypt(System.String,System.String,System.String)">
+        <member name="M:HealthGateway.Common.Delegates.AESCryptoDelegate.Encrypt(System.String,System.String,System.String)">
             <summary>
             Encrypts the plaintext using the key and initialization vector supplied.
             </summary>
@@ -1227,10 +1227,10 @@
             <param name="plainText">The text to encrypt.</param>
             <returns>The encrypted text.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.AesCryptoDelegate.Decrypt(System.String,System.String)">
+        <member name="M:HealthGateway.Common.Delegates.AESCryptoDelegate.Decrypt(System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Common.Delegates.AesCryptoDelegate.Decrypt(System.String,System.String,System.String)">
+        <member name="M:HealthGateway.Common.Delegates.AESCryptoDelegate.Decrypt(System.String,System.String,System.String)">
             <summary>
             Decrypts the encrypted text using the key and initialization vector supplied.
             </summary>
@@ -1239,7 +1239,7 @@
             <param name="encryptedText">The text to decrypt.</param>
             <returns>The decrypted text.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.AesCryptoDelegate.GenerateKey">
+        <member name="M:HealthGateway.Common.Delegates.AESCryptoDelegate.GenerateKey">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Common.Delegates.ClientRegistriesDelegate">
@@ -1277,7 +1277,7 @@
             Gets or sets the instance configuration.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.HmacHash(System.String,System.Byte[],Microsoft.AspNetCore.Cryptography.KeyDerivation.KeyDerivationPrf,System.Int32)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.HMACHash(System.String,System.Byte[],Microsoft.AspNetCore.Cryptography.KeyDerivation.KeyDerivationPrf,System.Int32)">
             <summary>
             Generates the HMAC Hash object.
             </summary>
@@ -1287,7 +1287,7 @@
             <param name="iterations">The number of iterations to process over the hash.</param>
             <returns>The hash object.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.Compare(System.String,HealthGateway.Database.Models.Cacheable.HmacHash)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.Compare(System.String,HealthGateway.Database.Models.Cacheable.HMACHash)">
             <summary>
             Validates that the supplied key will hash to the compareHash.
             </summary>
@@ -1308,7 +1308,7 @@
         <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.Compare(System.String,HealthGateway.Database.Models.Cacheable.IHash)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.HmacHash(System.String)">
+        <member name="M:HealthGateway.Common.Delegates.HMACHashDelegate.HMACHash(System.String)">
             <summary>
             Creates a hash given the instance configuration.
             </summary>
@@ -1695,22 +1695,22 @@
             </summary>
             <param name="notificationSettingsJSON">The Notification settings serialized to send to PHSA.</param>
         </member>
-        <member name="T:HealthGateway.Common.Models.AesCryptoDelegateConfig">
+        <member name="T:HealthGateway.Common.Models.AESCryptoDelegateConfig">
             <summary>
             The configuration for the AESCrypto delegate.
             </summary>
         </member>
-        <member name="F:HealthGateway.Common.Models.AesCryptoDelegateConfig.DefaultKeySize">
+        <member name="F:HealthGateway.Common.Models.AESCryptoDelegateConfig.DefaultKeySize">
             <summary>
             The default key size used for key AES crypto functions.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.AesCryptoDelegateConfig.KeySize">
+        <member name="P:HealthGateway.Common.Models.AESCryptoDelegateConfig.KeySize">
             <summary>
             Gets or sets the key size for AES crypto functions.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.AesCryptoDelegateConfig.IV">
+        <member name="P:HealthGateway.Common.Models.AESCryptoDelegateConfig.IV">
             <summary>
             Gets or sets the Initialization Vector.
             </summary>
@@ -2084,28 +2084,28 @@
             Gets or sets the patients gender.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.Models.PHSA.PhsaLoadState">
+        <member name="T:HealthGateway.Common.Models.PHSA.PHSALoadState">
             <summary>
             Representation of the load state sent by PHSA.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.PHSA.PhsaLoadState.RefreshInProgress">
+        <member name="P:HealthGateway.Common.Models.PHSA.PHSALoadState.RefreshInProgress">
             <summary>
             Gets or sets a value indicating whether the PHSA Load State is in the RefreshInProgress status.
             </summary>
         </member>
-        <member name="T:HealthGateway.Common.Models.PHSA.PhsaResult`1">
+        <member name="T:HealthGateway.Common.Models.PHSA.PHSAResult`1">
             <summary>
             Representation of the result sent by PHSA.
             </summary>
             <typeparam name="T">The result object type.</typeparam>
         </member>
-        <member name="P:HealthGateway.Common.Models.PHSA.PhsaResult`1.LoadState">
+        <member name="P:HealthGateway.Common.Models.PHSA.PHSAResult`1.LoadState">
             <summary>
             Gets or sets the LoadState.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.PHSA.PhsaResult`1.Result">
+        <member name="P:HealthGateway.Common.Models.PHSA.PHSAResult`1.Result">
             <summary>
             Gets or sets the result section.
             </summary>

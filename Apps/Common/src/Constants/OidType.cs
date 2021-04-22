@@ -20,14 +20,14 @@ namespace HealthGateway.Common.Constants
     /// <summary>
     /// A class with constants representing the various OID values.
     /// </summary>
-    public sealed class OidType : IEquatable<OidType>
+    public sealed class OIDType : IEquatable<OIDType>
     {
         /// <summary>
-        /// Gets or sets the value that holds the internal representation of the OidType.
+        /// Gets or sets the value that holds the internal representation of the OIDType.
         /// </summary>
         private readonly string value;
 
-        private OidType(string value)
+        private OIDType(string value)
         {
             this.value = value;
         }
@@ -35,17 +35,17 @@ namespace HealthGateway.Common.Constants
         /// <summary>
         /// Gets an OID representing hdid.
         /// </summary>
-        public static OidType HDID
+        public static OIDType HDID
         {
-            get { return new OidType("2.16.840.1.113883.3.51.1.1.6"); }
+            get { return new OIDType("2.16.840.1.113883.3.51.1.1.6"); }
         }
 
         /// <summary>
         /// Gets an OID representing hdid.
         /// </summary>
-        public static OidType PHN
+        public static OIDType PHN
         {
-            get { return new OidType("2.16.840.1.113883.3.51.1.1.6.1"); }
+            get { return new OIDType("2.16.840.1.113883.3.51.1.1.6.1"); }
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace HealthGateway.Common.Constants
         /// <returns>True if the value of a is equal from the value of b; otherwise, false.</returns>
         /// <param name="lhs">The first type to compare, or null.</param>
         /// <param name="rhs">The second type to compare, or null.</param>
-        public static bool operator ==(OidType lhs, OidType rhs)
+        public static bool operator ==(OIDType lhs, OIDType rhs)
         {
             // Check for null on left side.
             if (object.ReferenceEquals(lhs, null))
@@ -79,7 +79,7 @@ namespace HealthGateway.Common.Constants
         /// <returns>True if the value of a is different from the value b; otherwise, false.</returns>
         /// <param name="lhs">The first type to compare, or null.</param>
         /// <param name="rhs">The second type to compare, or null.</param>
-        public static bool operator !=(OidType lhs, OidType rhs)
+        public static bool operator !=(OIDType lhs, OIDType rhs)
         {
             return !(lhs == rhs);
         }
@@ -116,7 +116,7 @@ namespace HealthGateway.Common.Constants
             }
             else
             {
-                return this.Equals((OidType)obj);
+                return this.Equals((OIDType)obj);
             }
         }
 
@@ -125,7 +125,7 @@ namespace HealthGateway.Common.Constants
         /// </summary>
         /// <returns>True if the value of a is equal; otherwise, false.</returns>
         /// <param name="other">The object to compare against for equality.</param>
-        public bool Equals(OidType? other)
+        public bool Equals(OIDType? other)
         {
             return this.value == other?.value;
         }

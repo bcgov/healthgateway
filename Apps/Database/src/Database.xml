@@ -1834,27 +1834,27 @@
             Gets or sets the duration of the transaction in milliseconds.
             </summary>
         </member>
-        <member name="T:HealthGateway.Database.Models.Cacheable.HmacHash">
+        <member name="T:HealthGateway.Database.Models.Cacheable.HMACHash">
             <summary>
             A hash of something.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.Cacheable.HmacHash.PseudoRandomFunction">
+        <member name="P:HealthGateway.Database.Models.Cacheable.HMACHash.PseudoRandomFunction">
             <summary>
             Gets or sets the pseudo random function that was used to generate this hash.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.Cacheable.HmacHash.Iterations">
+        <member name="P:HealthGateway.Database.Models.Cacheable.HMACHash.Iterations">
             <summary>
             Gets or sets the iterations used to generate this hash.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.Cacheable.HmacHash.Salt">
+        <member name="P:HealthGateway.Database.Models.Cacheable.HMACHash.Salt">
             <summary>
             Gets or sets the base64 salt that was used in generating the hash.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.Cacheable.HmacHash.Hash">
+        <member name="P:HealthGateway.Database.Models.Cacheable.HMACHash.Hash">
             <summary>
             Gets or sets the base64 encoded hash.
             </summary>

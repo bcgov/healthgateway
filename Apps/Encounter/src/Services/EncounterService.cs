@@ -36,7 +36,7 @@ namespace HealthGateway.Encounter.Services
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IPatientService patientService;
-        private readonly IMspVisitDelegate mspVisitDelegate;
+        private readonly IMSPVisitDelegate mspVisitDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncounterService"/> class.
@@ -49,7 +49,7 @@ namespace HealthGateway.Encounter.Services
             ILogger<EncounterService> logger,
             IHttpContextAccessor httpAccessor,
             IPatientService patientService,
-            IMspVisitDelegate mspVisitDelegate)
+            IMSPVisitDelegate mspVisitDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpAccessor;
@@ -83,7 +83,7 @@ namespace HealthGateway.Encounter.Services
                     };
                     IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
                     string ipv4Address = address.MapToIPv4().ToString();
-                    RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
+                    RequestResult<MSPVisitHistoryResponse> response = await this.mspVisitDelegate.GetMSPVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
                     result.ResultStatus = response.ResultStatus;
                     result.ResultError = response.ResultError;
                     if (response.ResultStatus == ResultType.Success)

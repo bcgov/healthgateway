@@ -20,7 +20,7 @@ namespace HealthGateway.Database.Models.Cacheable
     /// <summary>
     /// A hash of something.
     /// </summary>
-    public class HmacHash : IHash
+    public class HMACHash : IHash
     {
         /// <summary>
         /// Gets or sets the pseudo random function that was used to generate this hash.

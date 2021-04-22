@@ -18,7 +18,7 @@ namespace HealthGateway.Common.Models
     /// <summary>
     /// The configuration for the AESCrypto delegate.
     /// </summary>
-    public class AesCryptoDelegateConfig
+    public class AESCryptoDelegateConfig
     {
         /// <summary>
         /// The default key size used for key AES crypto functions.

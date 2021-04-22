@@ -56,7 +56,7 @@ namespace HealthGateway.Encounter.Test.Delegates
                    { 
                         ""uuid"": ""7c51465c-7a7d-489f-b186-8755ae094d09"",
                         ""hdid"": ""P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"",
-                        ""getMspVisitHistoryResponse"": {
+                        ""getMSPVisitHistoryResponse"": {
                             ""totalRecords"":  1,
                             ""totalPages"": 1,
                             ""claims"": [
@@ -100,15 +100,15 @@ namespace HealthGateway.Encounter.Test.Delegates
                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
-                new Mock<ILogger<RestMspVisitDelegate>>().Object,
+            IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
+                new Mock<ILogger<RestMSPVisitDelegate>>().Object,
                 mockHttpClientService.Object,
                 this.configuration);
             OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 PHN = "123456789",
             };
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
             Assert.Single(actualResult?.ResourcePayload?.Claims);
             Assert.Equal(1, actualResult?.TotalResultCount);
@@ -137,15 +137,15 @@ namespace HealthGateway.Encounter.Test.Delegates
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
 
-            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
-                new Mock<ILogger<RestMspVisitDelegate>>().Object,
+            IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
+                new Mock<ILogger<RestMSPVisitDelegate>>().Object,
                 mockHttpClientService.Object,
                 GetLocalConfig());
             OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 PHN = "123456789",
             };
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () =>
+            RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () =>
                 await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
@@ -172,15 +172,15 @@ namespace HealthGateway.Encounter.Test.Delegates
                .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
-                new Mock<ILogger<RestMspVisitDelegate>>().Object,
+            IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
+                new Mock<ILogger<RestMSPVisitDelegate>>().Object,
                 mockHttpClientService.Object,
                 this.configuration);
             OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 PHN = "123456789",
             };
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
             Assert.Equal(Common.Constants.ResultType.Error, actualResult.ResultStatus);
         }
 
@@ -202,15 +202,15 @@ namespace HealthGateway.Encounter.Test.Delegates
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
-            IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
-                loggerFactory.CreateLogger<RestMspVisitDelegate>(),
+            IMSPVisitDelegate mspVisitDelegate = new RestMSPVisitDelegate(
+                loggerFactory.CreateLogger<RestMSPVisitDelegate>(),
                 mockHttpClientService.Object,
                 this.configuration);
             OdrHistoryQuery query = new OdrHistoryQuery()
             {
                 PHN = "123456789",
             };
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MSPVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMSPVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
             Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error && actualResult?.ResultError?.ErrorCode == "testhostServer-CE-ODR");
         }
 

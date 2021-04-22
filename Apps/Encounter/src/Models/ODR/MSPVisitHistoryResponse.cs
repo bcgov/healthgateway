@@ -23,7 +23,7 @@ namespace HealthGateway.Encounter.Models.ODR
     /// <summary>
     /// The ODR MSP Visit History Response.
     /// </summary>
-    public class MspVisitHistoryResponse : OdrHistoryResponse
+    public class MSPVisitHistoryResponse : OdrHistoryResponse
     {
         /// <summary>
         /// Gets or sets the set of Claims.

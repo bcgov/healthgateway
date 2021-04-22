@@ -189,52 +189,52 @@
             PopulateWithHttpContext - Happy Path.
             </summary>
         </member>
-        <member name="T:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests">
+        <member name="T:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests">
             <summary>
-            AesCryptoDelegate's Unit Tests.
+            AESCryptoDelegate's Unit Tests.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyConfigurationBinding">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyConfigurationBinding">
             <summary>
-            AesCryptoDelegateTests - Configuration Binding.
+            AESCryptoDelegateTests - Configuration Binding.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyDefaultConfigurationBinding">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyDefaultConfigurationBinding">
             <summary>
-            AesCryptoDelegateTests - Default Configuration Binding.
+            AESCryptoDelegateTests - Default Configuration Binding.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyKeyGeneration">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyKeyGeneration">
             <summary>
             GenerateKey - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyEncryption">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyEncryption">
             <summary>
             Encrypt - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyEncrypedStringLength100">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyEncrypedStringLength100">
             <summary>
             Encrypt - Happy Path (Validate Length 100).
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyEncrypedStringLength1000">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyEncrypedStringLength1000">
             <summary>
             Encrypt - Happy Path (Validate Length 1000).
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyDecryption">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyDecryption">
             <summary>
             Decrypt - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyEncryptionWithIV">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyEncryptionWithIV">
             <summary>
             Encrypt - Happy Path (With IV).
             </summary>
         </member>
-        <member name="M:HealthGateway.CommonTests.Delegates.AesCryptoDelegateTests.VerifyDecryptionWithIV">
+        <member name="M:HealthGateway.CommonTests.Delegates.AESCryptoDelegateTests.VerifyDecryptionWithIV">
             <summary>
             Decrypt - Happy Path (With IV).
             </summary>

@@ -68,7 +68,7 @@ namespace HealthGateway.Immunization.Test.Delegates
                 OccurrenceDateTime = DateTime.ParseExact("2020/09/10 17:16:10.809", "yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
             };
 
-            PhsaResult<ImmunizationResponse> phsaResponse = new PhsaResult<ImmunizationResponse>()
+            PHSAResult<ImmunizationResponse> phsaResponse = new PHSAResult<ImmunizationResponse>()
             {
                 Result = new ImmunizationResponse(
                     new List<ImmunizationViewResponse>() { expectedViewResponse },

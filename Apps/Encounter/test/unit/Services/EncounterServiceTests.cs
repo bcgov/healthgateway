@@ -93,12 +93,12 @@ namespace HealthGateway.Encounter.Test.Service
         [Fact]
         public void ValidateEncounters()
         {
-            RequestResult<MspVisitHistoryResponse> delegateResult = new RequestResult<MspVisitHistoryResponse>()
+            RequestResult<MSPVisitHistoryResponse> delegateResult = new RequestResult<MSPVisitHistoryResponse>()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = new MspVisitHistoryResponse()
+                ResourcePayload = new MSPVisitHistoryResponse()
                 {
                     Claims = new List<Claim>()
                     {
@@ -110,7 +110,7 @@ namespace HealthGateway.Encounter.Test.Service
             };
             string hdid = "MOCKHDID";
 
-            var mockMSPDelegate = new Mock<IMspVisitDelegate>();
+            var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
 
             var mockPatientService = new Mock<IPatientService>();
@@ -136,12 +136,12 @@ namespace HealthGateway.Encounter.Test.Service
         [Fact]
         public void NoClaims()
         {
-            RequestResult<MspVisitHistoryResponse> delegateResult = new RequestResult<MspVisitHistoryResponse>()
+            RequestResult<MSPVisitHistoryResponse> delegateResult = new RequestResult<MSPVisitHistoryResponse>()
             {
                 ResultStatus = ResultType.Success,
                 PageSize = 100,
                 PageIndex = 1,
-                ResourcePayload = new MspVisitHistoryResponse()
+                ResourcePayload = new MSPVisitHistoryResponse()
                 {
                     Claims = null,
                 },
@@ -149,7 +149,7 @@ namespace HealthGateway.Encounter.Test.Service
 
             string hdid = "MOCKHDID";
 
-            var mockMSPDelegate = new Mock<IMspVisitDelegate>();
+            var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             var mockPatientService = new Mock<IPatientService>();
@@ -175,14 +175,14 @@ namespace HealthGateway.Encounter.Test.Service
         [Fact]
         public void PatientError()
         {
-            RequestResult<MspVisitHistoryResponse> delegateResult = new RequestResult<MspVisitHistoryResponse>()
+            RequestResult<MSPVisitHistoryResponse> delegateResult = new RequestResult<MSPVisitHistoryResponse>()
             {
             };
 
             string hdid = "MOCKHDID";
             using Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
-            var mockMSPDelegate = new Mock<IMspVisitDelegate>();
+            var mockMSPDelegate = new Mock<IMSPVisitDelegate>();
             mockMSPDelegate.Setup(s => s.GetMSPVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             RequestResult<PatientModel> errorPatientResult = new RequestResult<PatientModel>()

@@ -54,13 +54,13 @@ namespace HealthGateway.Common.Delegates
         /// <param name="prf">The pseudorandom function to use for the hash.</param>
         /// <param name="iterations">The number of iterations to process over the hash.</param>
         /// <returns>The hash object.</returns>
-        public static HmacHash HmacHash(
+        public static HMACHash HMACHash(
             string? key,
             byte[] salt,
             KeyDerivationPrf prf = HMACHashDelegateConfig.DefaultPseudoRandomFunction,
             int iterations = HMACHashDelegateConfig.DefaultIterations)
         {
-            HmacHash retHash = new HmacHash()
+            HMACHash retHash = new HMACHash()
             {
                 PseudoRandomFunction = HashFunction.HMACSHA512,
                 Iterations = iterations,
@@ -102,12 +102,12 @@ namespace HealthGateway.Common.Delegates
         /// <param name="key">The key to hash and compare.</param>
         /// <param name="compareHash">The hash object to compare.</param>
         /// <returns>true if the key generates the same hash.</returns>
-        public static bool Compare(string? key, HmacHash? compareHash)
+        public static bool Compare(string? key, HMACHash? compareHash)
         {
             bool result = false;
             if (key != null && compareHash != null && compareHash.Hash != null && compareHash.Salt != null)
             {
-                HmacHash keyHash = HmacHash(
+                HMACHash keyHash = HMACHash(
                     key,
                     Convert.FromBase64String(compareHash.Salt),
                     (KeyDerivationPrf)compareHash.PseudoRandomFunction,
@@ -139,13 +139,13 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc />
         public IHash Hash(string? key)
         {
-            return this.HmacHash(key);
+            return this.HMACHash(key);
         }
 
         /// <inheritdoc />
         public bool Compare(string? key, IHash compareHash)
         {
-            return Compare(key, compareHash as HmacHash);
+            return Compare(key, compareHash as HMACHash);
         }
 
         /// <summary>
@@ -153,9 +153,9 @@ namespace HealthGateway.Common.Delegates
         /// </summary>
         /// <param name="key">The string to hash.</param>
         /// <returns>The newly created HMAC Hash.</returns>
-        public HmacHash HmacHash(string? key)
+        public HMACHash HMACHash(string? key)
         {
-            return HmacHash(
+            return HMACHash(
                 key,
                 GenerateSalt(this.HashConfig.SaltLength),
                 this.HashConfig.PseudoRandomFunction,
