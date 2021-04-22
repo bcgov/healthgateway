@@ -19,7 +19,7 @@ export class RestEmailAdminService implements IEmailAdminService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<Email[]>>(`${this.BASE_URI}`)
-                .then(requestResult => {
+                .then((requestResult) => {
                     console.debug(`getEmails ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
@@ -27,7 +27,7 @@ export class RestEmailAdminService implements IEmailAdminService {
                         reject
                     );
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });
@@ -44,7 +44,7 @@ export class RestEmailAdminService implements IEmailAdminService {
                     JSON.stringify(emailIds),
                     headers
                 )
-                .then(requestResult => {
+                .then((requestResult) => {
                     console.debug(`resendEmails ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
@@ -52,7 +52,7 @@ export class RestEmailAdminService implements IEmailAdminService {
                         reject
                     );
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });

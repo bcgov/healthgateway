@@ -8,7 +8,7 @@ import EmailModal from "@/components/core/modals/EmailModal.vue";
 import { ResultType } from "@/constants/resulttype";
 import Communication, {
     CommunicationStatus,
-    CommunicationType
+    CommunicationType,
 } from "@/models/adminCommunication";
 import BannerFeedback from "@/models/bannerFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -18,8 +18,8 @@ import { ICommunicationService } from "@/services/interfaces";
 @Component({
     components: {
         BannerModal,
-        EmailModal
-    }
+        EmailModal,
+    },
 })
 export default class CommunicationTable extends Vue {
     private communicationList: Communication[] = [];
@@ -31,7 +31,7 @@ export default class CommunicationTable extends Vue {
     private bannerFeedback: BannerFeedback = {
         type: ResultType.NONE,
         title: "",
-        message: ""
+        message: "",
     };
     // 0: Banners, 1: Emails
     private tab = 0;
@@ -47,9 +47,7 @@ export default class CommunicationTable extends Vue {
         version: 0,
         scheduledDateTime: moment(new Date()).toDate(),
         effectiveDateTime: moment(new Date()).toDate(),
-        expiryDateTime: moment(new Date())
-            .add(1, "days")
-            .toDate()
+        expiryDateTime: moment(new Date()).add(1, "days").toDate(),
     };
 
     private editedEmail: Communication = {
@@ -62,7 +60,7 @@ export default class CommunicationTable extends Vue {
         scheduledDateTime: moment(new Date()).toDate(),
         effectiveDateTime: moment(new Date()).toDate(),
         expiryDateTime: moment(new Date()).toDate(),
-        version: 0
+        version: 0,
     };
 
     private defaultBanner: Communication = {
@@ -75,9 +73,7 @@ export default class CommunicationTable extends Vue {
         priority: 10,
         scheduledDateTime: moment(new Date()).toDate(),
         effectiveDateTime: moment(new Date()).toDate(),
-        expiryDateTime: moment(new Date())
-            .add(1, "days")
-            .toDate()
+        expiryDateTime: moment(new Date()).add(1, "days").toDate(),
     };
 
     private defaultEmail: Communication = {
@@ -90,7 +86,7 @@ export default class CommunicationTable extends Vue {
         scheduledDateTime: moment(new Date()).toDate(),
         effectiveDateTime: moment(new Date()).toDate(),
         expiryDateTime: moment(new Date()).toDate(),
-        version: 0
+        version: 0,
     };
 
     private mounted() {
@@ -120,32 +116,32 @@ export default class CommunicationTable extends Vue {
             value: "subject",
             align: "start",
             width: "20%",
-            sortable: false
+            sortable: false,
         },
         {
             text: "Status",
             value: "communicationStatusCode",
             width: "130px",
-            sortable: false
+            sortable: false,
         },
         {
             text: "Effective On",
-            value: "effectiveDateTime"
+            value: "effectiveDateTime",
         },
         {
             text: "Expires On",
-            value: "expiryDateTime"
+            value: "expiryDateTime",
         },
         {
             text: "Text",
             value: "text",
-            sortable: false
+            sortable: false,
         },
         {
             text: "Actions",
             value: "actions",
-            sortable: false
-        }
+            sortable: false,
+        },
     ];
 
     private emailHeaders: DataTableHeader[] = [
@@ -154,25 +150,25 @@ export default class CommunicationTable extends Vue {
             value: "subject",
             align: "start",
             width: "20%",
-            sortable: false
+            sortable: false,
         },
         {
             text: "Scheduled For",
-            value: "scheduledDateTime"
+            value: "scheduledDateTime",
         },
         {
             text: "Priority",
-            value: "priority"
+            value: "priority",
         },
         {
             text: "Status",
-            value: "communicationStatusCode"
+            value: "communicationStatusCode",
         },
         {
             text: "Actions",
             value: "actions",
-            sortable: false
-        }
+            sortable: false,
+        },
     ];
 
     private formatDate(date: Date): string {
@@ -280,12 +276,12 @@ export default class CommunicationTable extends Vue {
             .then((banners: Communication[]) => {
                 this.parseComms(banners);
             })
-            .catch(err => {
+            .catch((err) => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Error loading banners"
+                    message: "Error loading banners",
                 };
                 console.log(err);
             })
@@ -323,23 +319,23 @@ export default class CommunicationTable extends Vue {
                 version: 0,
                 scheduledDateTime: comm.scheduledDateTime,
                 effectiveDateTime: comm.effectiveDateTime,
-                expiryDateTime: comm.expiryDateTime
+                expiryDateTime: comm.expiryDateTime,
             })
             .then(() => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Success,
                     title: "Success",
-                    message: "Communication Added."
+                    message: "Communication Added.",
                 };
                 this.loadCommunicationList();
             })
-            .catch(err => {
+            .catch((err) => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Add communication failed, please try again"
+                    message: "Add communication failed, please try again",
                 };
                 console.log(err);
             })
@@ -363,23 +359,23 @@ export default class CommunicationTable extends Vue {
                 version: comm.version,
                 scheduledDateTime: comm.scheduledDateTime,
                 effectiveDateTime: comm.effectiveDateTime,
-                expiryDateTime: comm.expiryDateTime
+                expiryDateTime: comm.expiryDateTime,
             })
             .then(() => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Success,
                     title: "Success",
-                    message: "Communication Updated."
+                    message: "Communication Updated.",
                 };
                 this.loadCommunicationList();
             })
-            .catch(err => {
+            .catch((err) => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Error updating communication. Please try again."
+                    message: "Error updating communication. Please try again.",
                 };
                 console.log(err);
             })
@@ -399,16 +395,16 @@ export default class CommunicationTable extends Vue {
                 this.bannerFeedback = {
                     type: ResultType.Success,
                     title: "Success",
-                    message: "Communication Deleted."
+                    message: "Communication Deleted.",
                 };
                 this.loadCommunicationList();
             })
-            .catch(err => {
+            .catch((err) => {
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
                     title: "Error",
-                    message: "Error deleting communication. Please try again."
+                    message: "Error deleting communication. Please try again.",
                 };
                 console.log(err);
             })

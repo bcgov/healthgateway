@@ -25,7 +25,7 @@ export class RestCommunicationService implements ICommunicationService {
                     communication,
                     headers
                 )
-                .then(requestResult => {
+                .then((requestResult) => {
                     console.debug(`add ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
@@ -33,7 +33,7 @@ export class RestCommunicationService implements ICommunicationService {
                         reject
                     );
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });
@@ -44,7 +44,7 @@ export class RestCommunicationService implements ICommunicationService {
         return new Promise((resolve, reject) => {
             this.http
                 .get<RequestResult<Communication[]>>(`${this.BASE_URI}`)
-                .then(requestResult => {
+                .then((requestResult) => {
                     console.debug(`getAll ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
@@ -52,7 +52,7 @@ export class RestCommunicationService implements ICommunicationService {
                         reject
                     );
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });
@@ -63,7 +63,7 @@ export class RestCommunicationService implements ICommunicationService {
         return new Promise((resolve, reject) => {
             this.http
                 .put<RequestResult<void>>(`${this.BASE_URI}/`, communication)
-                .then(requestResult => {
+                .then((requestResult) => {
                     console.debug(`update ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
@@ -71,7 +71,7 @@ export class RestCommunicationService implements ICommunicationService {
                         reject
                     );
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });
@@ -82,7 +82,7 @@ export class RestCommunicationService implements ICommunicationService {
         return new Promise((resolve, reject) => {
             this.http
                 .delete<RequestResult<void>>(`${this.BASE_URI}/`, communication)
-                .then(requestResult => {
+                .then((requestResult) => {
                     console.debug(`delete ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
@@ -90,7 +90,7 @@ export class RestCommunicationService implements ICommunicationService {
                         reject
                     );
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     return reject(err);
                 });

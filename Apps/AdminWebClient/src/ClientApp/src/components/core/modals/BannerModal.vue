@@ -59,7 +59,7 @@
                                 v-model="editedItem.subject"
                                 label="Subject"
                                 maxlength="100"
-                                :rules="[v => !!v || 'Subject is required']"
+                                :rules="[(v) => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
                             ></v-text-field>

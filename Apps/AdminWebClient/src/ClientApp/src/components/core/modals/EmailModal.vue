@@ -17,7 +17,7 @@
                             <v-text-field
                                 v-model="editedItem.subject"
                                 label="Subject"
-                                :rules="[v => !!v || 'Subject is required']"
+                                :rules="[(v) => !!v || 'Subject is required']"
                                 validate-on-blur
                                 required
                             ></v-text-field>
@@ -36,7 +36,7 @@
                                 item-text="text"
                                 item-value="number"
                                 label="Priority"
-                                :rules="[v => !!v || 'Priority is required']"
+                                :rules="[(v) => !!v || 'Priority is required']"
                                 validate-on-blur
                                 required
                             ></v-select>

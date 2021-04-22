@@ -18,8 +18,8 @@ const namespace = "auth";
 
 @Component({
     components: {
-        LoadingComponent
-    }
+        LoadingComponent,
+    },
 })
 export default class LoginView extends Vue {
     @Action("logout", { namespace }) private logout!: () => Promise<void>;

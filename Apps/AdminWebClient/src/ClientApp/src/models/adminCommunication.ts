@@ -1,6 +1,6 @@
 export const enum CommunicationType {
     Email = "Email",
-    Banner = "Banner"
+    Banner = "Banner",
 }
 
 export const enum CommunicationStatus {
@@ -9,7 +9,7 @@ export const enum CommunicationStatus {
     Error = "Error",
     Pending = "Pending",
     Processing = "Processing",
-    Draft = "Draft"
+    Draft = "Draft",
 }
 
 // Model that provides a user representation of admin communications.
