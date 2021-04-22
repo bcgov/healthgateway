@@ -61,7 +61,7 @@ namespace HealthGateway.Common.Delegates
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5401:Do not use CreateEncryptor with non-default IV", Justification = "Team decision")]
         public string Encrypt(string key, string? iv, string plainText)
         {
-            using AES aes = AES.Create();
+            using Aes aes = Aes.Create();
             aes.KeySize = this.AESConfig.KeySize;
             aes.Key = Convert.FromBase64String(key);
             aes.IV = iv != null ? Convert.FromBase64String(iv) : new byte[16];
@@ -92,7 +92,7 @@ namespace HealthGateway.Common.Delegates
         {
             string? plaintext = null;
             byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
-            using AES aes = AES.Create();
+            using Aes aes = Aes.Create();
             aes.KeySize = this.AESConfig.KeySize;
             aes.Key = Convert.FromBase64String(key);
             aes.IV = iv != null ? Convert.FromBase64String(iv) : new byte[16];
@@ -107,7 +107,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc />
         public string GenerateKey()
         {
-            using AES aes = AES.Create();
+            using Aes aes = Aes.Create();
             aes.KeySize = this.AESConfig.KeySize;
             aes.GenerateKey();
             return Convert.ToBase64String(aes.Key);
