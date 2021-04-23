@@ -1,16 +1,11 @@
-import { Module } from "vuex";
-
-import {
-    LoadStatus,
-    MedicationStatementState,
-    RootState,
-} from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { MedicationStatementModule, MedicationStatementState } from "./types";
 
-export const state: MedicationStatementState = {
+const state: MedicationStatementState = {
     medicationStatements: [],
     protectiveWordAttempts: 0,
     status: LoadStatus.NONE,
@@ -18,7 +13,7 @@ export const state: MedicationStatementState = {
     statusMessage: "",
 };
 
-export const statement: Module<MedicationStatementState, RootState> = {
+export const statement: MedicationStatementModule = {
     state,
     getters,
     actions,

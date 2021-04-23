@@ -1,9 +1,9 @@
-import { GetterTree } from "vuex";
-
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
-import { ImmunizationState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const getters: GetterTree<ImmunizationState, RootState> = {
+import { ImmunizationGetters, ImmunizationState } from "./types";
+
+export const getters: ImmunizationGetters = {
     immunizations(state: ImmunizationState): ImmunizationEvent[] {
         return state.immunizations;
     },

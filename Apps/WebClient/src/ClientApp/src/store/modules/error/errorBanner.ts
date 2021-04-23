@@ -1,19 +1,16 @@
-import { Module } from "vuex";
-
-import { ErrorBannerState, RootState } from "@/models/storeState";
-
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { ErrorBannerModule, ErrorBannerState } from "./types";
 
-export const state: ErrorBannerState = {
+const state: ErrorBannerState = {
     isShowing: false,
     errors: [],
 };
 
 const namespaced = true;
 
-export const errorBanner: Module<ErrorBannerState, RootState> = {
+export const errorBanner: ErrorBannerModule = {
     namespaced,
     state,
     getters,

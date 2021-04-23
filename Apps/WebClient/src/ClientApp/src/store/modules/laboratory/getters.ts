@@ -1,9 +1,9 @@
-import { GetterTree } from "vuex";
-
 import { LaboratoryOrder } from "@/models/laboratory";
-import { LaboratoryState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const getters: GetterTree<LaboratoryState, RootState> = {
+import { LaboratoryGetters, LaboratoryState } from "./types";
+
+export const getters: LaboratoryGetters = {
     laboratoryOrders(state: LaboratoryState): LaboratoryOrder[] {
         return state.laboratoryOrders;
     },

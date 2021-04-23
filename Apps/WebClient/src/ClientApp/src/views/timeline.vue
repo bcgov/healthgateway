@@ -329,7 +329,7 @@ export default class TimelineView extends Vue {
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <div class="px-2">
                     <b-alert
-                        :show="hasNewTermsOfService"
+                        v-show="hasNewTermsOfService"
                         dismissible
                         variant="info"
                         class="no-print"
@@ -348,7 +348,8 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="unverifiedEmail || unverifiedSMS"
+                        v-show="unverifiedEmail || unverifiedSMS"
+                        id="incomplete-profile-banner"
                         dismissible
                         variant="info"
                         class="no-print"
@@ -368,7 +369,7 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="!isPacificTime"
+                        v-show="!isPacificTime"
                         dismissible
                         variant="info"
                         class="no-print"
@@ -379,8 +380,9 @@ export default class TimelineView extends Vue {
                             displayed in Pacific Time.
                         </span>
                     </b-alert>
+                    {{ showImmunizationAlert }} {{ immunizationIsDeferred }}
                     <b-alert
-                        :show="
+                        v-show="
                             showImmunizationAlert && immunizationIsDeferred
                                 ? alertExpirySeconds
                                 : false
@@ -394,7 +396,7 @@ export default class TimelineView extends Vue {
                         </h4>
                     </b-alert>
                     <b-alert
-                        :show="
+                        v-show="
                             showImmunizationAlert && !immunizationIsDeferred
                                 ? alertExpirySeconds
                                 : false

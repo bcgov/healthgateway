@@ -1,9 +1,9 @@
-import { MutationTree } from "vuex";
-
 import ImmunizationResult from "@/models/immunizationResult";
-import { ImmunizationState, LoadStatus } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const mutations: MutationTree<ImmunizationState> = {
+import { ImmunizationMutations, ImmunizationState } from "./types";
+
+export const mutations: ImmunizationMutations = {
     setRequested(state: ImmunizationState) {
         state.status =
             state.status === LoadStatus.DEFERRED

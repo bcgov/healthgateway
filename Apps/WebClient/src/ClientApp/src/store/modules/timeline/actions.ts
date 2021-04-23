@@ -1,10 +1,9 @@
-import { ActionTree } from "vuex";
-
 import { DateWrapper } from "@/models/dateWrapper";
-import { RootState, TimelineState } from "@/models/storeState";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 
-export const actions: ActionTree<TimelineState, RootState> = {
+import { TimelineActions } from "./types";
+
+export const actions: TimelineActions = {
     setFilter(context, filterBuilder: TimelineFilterBuilder) {
         context.commit("setFilter", filterBuilder.build());
     },

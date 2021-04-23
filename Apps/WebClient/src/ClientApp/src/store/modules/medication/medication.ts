@@ -1,18 +1,17 @@
-import { Module } from "vuex";
-
-import { LoadStatus, MedicationState, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
 import { request } from "./modules/request/request";
 import { statement } from "./modules/statement/statement";
+import { MedicationModule, MedicationState } from "./types";
 
-export const state: MedicationState = {
+const state: MedicationState = {
     status: LoadStatus.NONE,
 };
 
 const namespaced = true;
 
-export const medication: Module<MedicationState, RootState> = {
+export const medication: MedicationModule = {
     namespaced,
     state,
-    modules: { statement, request },
+    modules: { statement: statement, request: request },
 };

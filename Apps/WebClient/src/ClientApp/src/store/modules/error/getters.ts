@@ -1,9 +1,8 @@
-import { GetterTree } from "vuex";
-
 import BannerError from "@/models/bannerError";
-import { ErrorBannerState, RootState } from "@/models/storeState";
 
-export const getters: GetterTree<ErrorBannerState, RootState> = {
+import { ErrorBannerGetters, ErrorBannerState } from "./types";
+
+export const getters: ErrorBannerGetters = {
     isShowing(state: ErrorBannerState): boolean {
         return state.isShowing;
     },

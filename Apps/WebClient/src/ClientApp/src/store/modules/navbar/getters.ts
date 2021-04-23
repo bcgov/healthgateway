@@ -1,8 +1,6 @@
-import { GetterTree } from "vuex";
+import { NavbarGetters, NavbarState } from "./types";
 
-import { NavbarState, RootState } from "@/models/storeState";
-
-export const getters: GetterTree<NavbarState, RootState> = {
+export const getters: NavbarGetters = {
     isSidebarOpen(state: NavbarState): boolean {
         return state.isSidebarOpen;
     },

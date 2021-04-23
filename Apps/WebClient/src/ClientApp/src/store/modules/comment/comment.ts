@@ -1,12 +1,11 @@
-import { Module } from "vuex";
-
-import { CommentState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { CommentModule, CommentState } from "./types";
 
-export const state: CommentState = {
+const state: CommentState = {
     statusMessage: "",
     profileComments: {},
     error: undefined,
@@ -15,7 +14,7 @@ export const state: CommentState = {
 
 const namespaced = true;
 
-export const comment: Module<CommentState, RootState> = {
+export const comment: CommentModule = {
     namespaced,
     state,
     getters,

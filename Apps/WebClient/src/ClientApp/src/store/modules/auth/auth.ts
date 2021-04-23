@@ -1,10 +1,9 @@
-import { Module } from "vuex";
-
-import { AuthState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { AuthModule, AuthState } from "./types";
 
 export const state: AuthState = {
     statusMessage: "",
@@ -16,7 +15,7 @@ export const state: AuthState = {
 
 const namespaced = true;
 
-export const auth: Module<AuthState, RootState> = {
+export const auth: AuthModule = {
     namespaced,
     state,
     getters,

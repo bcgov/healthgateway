@@ -1,10 +1,10 @@
-import { GetterTree } from "vuex";
-
 import { Dictionary } from "@/models/baseTypes";
-import { CommentState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 
-export const getters: GetterTree<CommentState, RootState> = {
+import { CommentGetters, CommentState } from "./types";
+
+export const getters: CommentGetters = {
     comments(state: CommentState): Dictionary<UserComment[]> {
         return state.profileComments;
     },

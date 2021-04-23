@@ -1,9 +1,9 @@
-import { MutationTree } from "vuex";
-
 import Encounter from "@/models/encounter";
-import { EncounterState, LoadStatus } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const mutations: MutationTree<EncounterState> = {
+import { EncounterMutations, EncounterState } from "./types";
+
+export const mutations: EncounterMutations = {
     setRequested(state: EncounterState) {
         state.status = LoadStatus.REQUESTED;
     },
