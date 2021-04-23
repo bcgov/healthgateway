@@ -89,9 +89,7 @@ describe("Timeline view", () => {
         options.modules.user.getters.user = () => user;
         var wrapper = createWrapper(options);
 
-        expect(wrapper.find("#incomplete-profile-banner").isVisible()).toBe(
-            true
-        );
+        expect(wrapper.find("#incomplete-profile-banner").exists()).toBe(true);
     });
 
     test("Shows Email incomplete profile banner", () => {
@@ -104,9 +102,7 @@ describe("Timeline view", () => {
         options.modules.user.getters.user = () => user;
         var wrapper = createWrapper(options);
 
-        expect(wrapper.find("#incomplete-profile-banner").isVisible()).toBe(
-            true
-        );
+        expect(wrapper.find("#incomplete-profile-banner").exists()).toBe(true);
     });
 
     test("Hides incomplete profile banner when verified", () => {
@@ -121,9 +117,7 @@ describe("Timeline view", () => {
         options.modules.user.getters.user = () => user;
         var wrapper = createWrapper(options);
 
-        expect(wrapper.find("#incomplete-profile-banner").isVisible()).toBe(
-            false
-        );
+        expect(wrapper.find("#incomplete-profile-banner").exists()).toBe(false);
     });
 
     test("Shows Loading immunization", () => {
@@ -139,15 +133,15 @@ describe("Timeline view", () => {
             state.status === LoadStatus.DEFERRED;
 
         var wrapper = createWrapper(options);
-        expect(
-            wrapper.find("[data-testid=immunizationLoading]").isVisible()
-        ).toBe(false);
+        expect(wrapper.find("[data-testid=immunizationLoading]").exists()).toBe(
+            false
+        );
 
         store.commit("immunization/setStatus", LoadStatus.DEFERRED);
 
         wrapper.vm.$nextTick().then(() => {
             expect(
-                wrapper.find("[data-testid=immunizationLoading]").isVisible()
+                wrapper.find("[data-testid=immunizationLoading]").exists()
             ).toBe(true);
         });
     });

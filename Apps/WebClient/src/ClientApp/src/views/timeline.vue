@@ -329,7 +329,8 @@ export default class TimelineView extends Vue {
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <div class="px-2">
                     <b-alert
-                        v-show="hasNewTermsOfService"
+                        v-if="hasNewTermsOfService"
+                        show
                         dismissible
                         variant="info"
                         class="no-print"
@@ -348,8 +349,9 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        v-show="unverifiedEmail || unverifiedSMS"
+                        v-if="unverifiedEmail || unverifiedSMS"
                         id="incomplete-profile-banner"
+                        show
                         dismissible
                         variant="info"
                         class="no-print"
@@ -369,7 +371,8 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        v-show="!isPacificTime"
+                        v-if="!isPacificTime"
+                        show
                         dismissible
                         variant="info"
                         class="no-print"
@@ -380,13 +383,9 @@ export default class TimelineView extends Vue {
                             displayed in Pacific Time.
                         </span>
                     </b-alert>
-                    {{ showImmunizationAlert }} {{ immunizationIsDeferred }}
                     <b-alert
-                        v-show="
-                            showImmunizationAlert && immunizationIsDeferred
-                                ? alertExpirySeconds
-                                : false
-                        "
+                        v-if="showImmunizationAlert && immunizationIsDeferred"
+                        :show="alertExpirySeconds"
                         dismissible
                         variant="info"
                         class="no-print"
@@ -396,11 +395,8 @@ export default class TimelineView extends Vue {
                         </h4>
                     </b-alert>
                     <b-alert
-                        v-show="
-                            showImmunizationAlert && !immunizationIsDeferred
-                                ? alertExpirySeconds
-                                : false
-                        "
+                        v-if="showImmunizationAlert && !immunizationIsDeferred"
+                        :show="alertExpirySeconds"
                         dismissible
                         variant="info"
                         class="no-print"
