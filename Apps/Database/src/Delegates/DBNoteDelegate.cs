@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -28,6 +29,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the Note delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBNoteDelegate : INoteDelegate
     {
         private readonly ILogger<DBNoteDelegate> logger;

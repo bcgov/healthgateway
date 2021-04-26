@@ -37,7 +37,8 @@ export default class CovidModalComponent extends Vue {
     private get isVisible(): boolean {
         if (this.isLoading || this.isDismissed) {
             return false;
-        } else if (this.laboratoryOrders.length > 0) {
+        }
+        if (this.laboratoryOrders.length > 0) {
             const preference = this.getPreference(
                 UserPreferenceType.ActionedCovidModalAt
             );
@@ -46,17 +47,18 @@ export default class CovidModalComponent extends Vue {
                 const mostRecentLabTime = new DateWrapper(
                     this.laboratoryOrders[0].messageDateTime
                 );
+
                 if (actionedCovidModalAt.isAfter(mostRecentLabTime)) {
                     return false;
-                } else {
-                    return true;
                 }
+
+                return true;
             } else {
                 return true;
             }
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     private updateCovidPreference() {

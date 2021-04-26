@@ -95,15 +95,15 @@
             <param name="downloadedFile">The file to verify.</param>
             <returns>True if the file has been previously processed.</returns>
         </member>
-        <member name="T:HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp">
+        <member name="T:HealthGateway.DrugMaintainer.Apps.BcpProvDrugDbApp">
             <summary>
             Utility program to load the BC Government PharmaCare drug file.
             See https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files for reference.
             </summary>
         </member>
-        <member name="M:HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp},HealthGateway.DrugMaintainer.IPharmaCareDrugParser,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BcpProvDrugDbApp.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.Apps.BcpProvDrugDbApp},HealthGateway.DrugMaintainer.IPharmaCareDrugParser,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.DrugMaintainer.Apps.BcpProvDrugDbApp"/> class.
             </summary>
             <param name="logger">The logger to use.</param>
             <param name="parser">The parser to use.</param>
@@ -111,7 +111,7 @@
             <param name="configuration">The Configuration.</param>
             <param name="drugDBContext">The database context.</param>
         </member>
-        <member name="M:HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp.ProcessDownload(System.String,HealthGateway.Database.Models.FileDownload)">
+        <member name="M:HealthGateway.DrugMaintainer.Apps.BcpProvDrugDbApp.ProcessDownload(System.String,HealthGateway.Database.Models.FileDownload)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.DrugMaintainer.Apps.FedDrugDBApp">

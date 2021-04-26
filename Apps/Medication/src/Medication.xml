@@ -127,7 +127,7 @@
             Interface to retrieve Medication Statements.
             </summary>
         </member>
-        <member name="M:HealthGateway.Medication.Delegates.IMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String,System.String)">
+        <member name="M:HealthGateway.Medication.Delegates.IMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String,System.String)">
             <summary>
             Returns a set of Medication Statements.
             </summary>
@@ -183,7 +183,7 @@
             <param name="genericCacheDelegate">The delegate responsible for caching.</param>
             <param name="hashDelegate">The delegate responsible for hashing.</param>
         </member>
-        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String,System.String)">
+        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.SetProtectiveWord(System.String,System.String,System.String,System.String,System.String)">

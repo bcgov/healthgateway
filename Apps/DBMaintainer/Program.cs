@@ -55,7 +55,7 @@ namespace HealthGateway.DrugMaintainer
             }
 
             // Process Provincial file
-            BCPProvDrugDBApp? bcDrugApp = host.Services.GetService<BCPProvDrugDBApp>();
+            BcpProvDrugDbApp? bcDrugApp = host.Services.GetService<BcpProvDrugDbApp>();
             if (bcDrugApp != null)
             {
                 bcDrugApp.Process("PharmaCareDrugFile");
@@ -99,7 +99,7 @@ namespace HealthGateway.DrugMaintainer
 
                            // Add app
                            services.AddTransient<FedDrugDBApp>();
-                           services.AddTransient<BCPProvDrugDBApp>();
+                           services.AddTransient<BcpProvDrugDbApp>();
                        })
                        .ConfigureLogging(logging =>
                        {

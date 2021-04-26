@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Context;
@@ -27,6 +28,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Implementation of IDrugLookupDelegate that uses a DB connection for data management.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBDrugLookupDelegate : IDrugLookupDelegate
     {
         private readonly ILogger logger;
@@ -56,7 +58,7 @@ namespace HealthGateway.Database.Delegates
                                             .Include(a => a.ActiveIngredient)
                                             .Include(f => f.Form)
                                             .Where(dp => uniqueDrugIdentifers.Contains(dp.DrugIdentificationNumber))
-                                            .ToList()
+                                            .AsEnumerable()
                                             .GroupBy(dp => dp.DrugIdentificationNumber)
                                             .Select(drug => drug.OrderByDescending(o => o.LastUpdate).First())
                                             .ToList();
@@ -73,7 +75,8 @@ namespace HealthGateway.Database.Delegates
             IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
             DateTime now = DateTime.UtcNow;
             IList<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
-                .Where(dp => uniqueDrugIdentifers.Contains(dp.DINPIN) && (now > dp.EffectiveDate && now <= dp.EndDate)).ToList()
+                .Where(dp => uniqueDrugIdentifers.Contains(dp.DINPIN) && (now > dp.EffectiveDate && now <= dp.EndDate))
+                .AsEnumerable()
                 .GroupBy(pcd => pcd.DINPIN).Select(g => g.OrderByDescending(p => p.EndDate).First())
                 .ToList();
 
@@ -85,7 +88,6 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public Dictionary<string, string> GetDrugsBrandNameByDIN(IList<string> drugIdentifiers)
         {
-            // Contract.Requires(drugIdentifiers != null);
             this.logger.LogDebug("Getting drug brand names from DB");
             this.logger.LogTrace($"Identifiers: {JsonSerializer.Serialize(drugIdentifiers)}");
             List<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();

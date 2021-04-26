@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -26,6 +27,7 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the Application Settings delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBApplicationSettingsDelegate : IApplicationSettingsDelegate
     {
         private readonly ILogger<DBApplicationSettingsDelegate> logger;

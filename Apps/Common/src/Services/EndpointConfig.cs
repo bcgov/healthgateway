@@ -31,7 +31,9 @@ namespace ServiceReference
         /// </summary>
         /// <param name="serviceEndpoint">the service endpoint.</param>
         /// <param name="clientCredentials">the client credentials.</param>
+#pragma warning disable S1172
         static partial void ConfigureEndpoint(ServiceEndpoint serviceEndpoint, ClientCredentials clientCredentials)
+#pragma warning restore S1172
         {
             BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
             binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Certificate;

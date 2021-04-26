@@ -102,13 +102,6 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldCreateUserFeedbackWithBadRequestResultError()
         {
-            var userFeedback = new UserFeedback()
-            {
-                UserProfileId = Hdid,
-                CreatedBy = Hdid,
-                UpdatedBy = Hdid,
-            };
-
             DBResult<UserFeedback> mockedDBResult = new DBResult<UserFeedback>()
             {
                 Status = Database.Constants.DBStatusCode.Error,

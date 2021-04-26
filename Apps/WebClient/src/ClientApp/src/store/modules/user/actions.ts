@@ -107,6 +107,9 @@ export const actions: UserActions = {
                     params.userPreference
                 )
                 .then((result) => {
+                    logger.debug(
+                        `updateUserPreference: ${JSON.stringify(result)}`
+                    );
                     if (result) {
                         context.commit(
                             "setUserPreference",
@@ -132,6 +135,9 @@ export const actions: UserActions = {
                     params.userPreference
                 )
                 .then((result) => {
+                    logger.debug(
+                        `createUserPreference: ${JSON.stringify(result)}`
+                    );
                     if (result) {
                         context.commit(
                             "setUserPreference",

@@ -28,7 +28,7 @@ namespace HealthGateway.CommonTests.Utils
         /// </summary>
         public static void MockMethod()
         {
-            return;
+            // Empty Swagger method.
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace HealthGateway.CommonTests.Utils
         [Authorize]
         public static void AuthorizedMethod()
         {
-            return;
+            // Empty Swagger method.
         }
     }
 }

@@ -19,6 +19,8 @@ indent_size = 2
 # Code files
 [*.cs]
 
+# S101: Types should be named in PascalCase
+dotnet_diagnostic.S101.severity = none
 
 # CA1000: Do not declare static members on generic types
 dotnet_diagnostic.CA1000.severity = warning

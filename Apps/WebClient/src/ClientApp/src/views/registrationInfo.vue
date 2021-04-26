@@ -273,6 +273,7 @@ export default class RegistrationInfoView extends Vue {
                                 <b-row>
                                     <b-col
                                         ><a
+                                            rel="noopener"
                                             target="_blank"
                                             href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card/login-with-card/card-readers-passcodes"
                                             >Learn more about using your BC

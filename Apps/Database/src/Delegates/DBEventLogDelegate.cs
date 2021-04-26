@@ -15,9 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -27,6 +25,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public class DBEventLogDelegate : IEventLogDelegate
     {
         private readonly ILogger logger;

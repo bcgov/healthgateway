@@ -53,8 +53,7 @@ export class FragmentedStorage implements Storage {
             const fragmentSection = this.getFragmentSection(storedItem);
 
             const fragmentNames = this.getFragmentNames(fragmentSection);
-            const item = this.assembleFragments(fragmentNames);
-            return item;
+            return this.assembleFragments(fragmentNames);
         }
 
         return storedItem;
@@ -83,11 +82,7 @@ export class FragmentedStorage implements Storage {
     }
 
     private getFragmentSection(fragment: string): string {
-        const fragmentSection = fragment.substr(
-            this.fragmentIndicator.length,
-            fragment?.length
-        );
-        return fragmentSection;
+        return fragment.substr(this.fragmentIndicator.length, fragment?.length);
     }
 
     private getFragmentNames(fragmentSection: string): string[] {

@@ -27,7 +27,7 @@ namespace Healthgateway.JobScheduler.Jobs
     /// Utility program to load the BC Government PharmaCare drug file.
     /// https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files.
     /// </summary>
-    public class ProvincialDrugJob : BCPProvDrugDBApp
+    public class ProvincialDrugJob : BcpProvDrugDbApp
     {
         private const int ConcurrencyTimeout = 5 * 60; // Set the ConcurrentTimeout to 5 minutes
 
@@ -39,7 +39,7 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
         /// <param name="drugDBContext">The database context to interact with.</param>
-        public ProvincialDrugJob(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
+        public ProvincialDrugJob(ILogger<BcpProvDrugDbApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
         }

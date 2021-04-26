@@ -41,15 +41,14 @@ namespace HealthGateway.Medication.Delegates
     /// </summary>
     public class RestMedStatementDelegate : IMedStatementDelegate
     {
-        private const string OdrConfigSectionKey = "ODR";
+        private const string ODRConfigSectionKey = "ODR";
         private const string ProtectiveWordCacheDomain = "ProtectiveWord";
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration configuration;
         private readonly IGenericCacheDelegate genericCacheDelegate;
         private readonly IHashDelegate hashDelegate;
-        private readonly OdrConfig odrConfig;
+        private readonly ODRConfig odrConfig;
         private readonly Uri baseURL;
 
         /// <summary>
@@ -69,11 +68,10 @@ namespace HealthGateway.Medication.Delegates
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.configuration = configuration;
             this.genericCacheDelegate = genericCacheDelegate;
             this.hashDelegate = hashDelegate;
-            this.odrConfig = new OdrConfig();
-            this.configuration.Bind(OdrConfigSectionKey, this.odrConfig);
+            this.odrConfig = new ODRConfig();
+            configuration.Bind(ODRConfigSectionKey, this.odrConfig);
             if (this.odrConfig.DynamicServiceLookup)
             {
                 string? serviceHost = Environment.GetEnvironmentVariable($"{this.odrConfig.ServiceName}{this.odrConfig.ServiceHostSuffix}");
@@ -98,7 +96,7 @@ namespace HealthGateway.Medication.Delegates
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch all required")]
-        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(OdrHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
+        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(ODRHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
         {
             using (Source.StartActivity("GetMedicationStatementsAsync"))
             {

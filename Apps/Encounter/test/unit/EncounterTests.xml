@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EncounterTests</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.EncounterTests.EncounterControllerTests">
+            <summary>
+            EncounterController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.EncounterTests.EncounterControllerTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.EncounterTests.EncounterControllerTests"/> class.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Encounter.Test.Delegates.EncounterDelegateTests">
+            <summary>
+            EncounterDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Delegates.EncounterDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Test.Delegates.EncounterDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Delegates.EncounterDelegateTests.ShouldGetMSPVisits">
+            <summary>
+            GetMSPVisits - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Delegates.EncounterDelegateTests.ShouldErrorDynamicLookup">
+            <summary>
+            GetMSPVisits - Dynamic Lookup Error.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Delegates.EncounterDelegateTests.ShouldErrorGetMSPVisits">
+            <summary>
+            GetMSPVisits - Unauthorized.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Delegates.EncounterDelegateTests.ShouldException">
+            <summary>
+            GetMSPVisits - Unknown Error.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Encounter.Test.Service.EncounterServiceTests">
+            <summary>
+            EncounterService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Service.EncounterServiceTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Test.Service.EncounterServiceTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Service.EncounterServiceTests.ValidateEncounters">
+            <summary>
+            GetEncounters - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Service.EncounterServiceTests.NoClaims">
+            <summary>
+            GetEncounters - Empty Claims.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Encounter.Test.Service.EncounterServiceTests.PatientError">
+            <summary>
+            GetEncounters - Patient Error.
+            </summary>
+        </member>
+    </members>
+</doc>

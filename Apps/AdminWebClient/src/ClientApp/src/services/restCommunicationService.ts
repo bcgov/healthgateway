@@ -26,6 +26,7 @@ export class RestCommunicationService implements ICommunicationService {
                     headers
                 )
                 .then((requestResult) => {
+                    console.debug(`add ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -44,6 +45,7 @@ export class RestCommunicationService implements ICommunicationService {
             this.http
                 .get<RequestResult<Communication[]>>(`${this.BASE_URI}`)
                 .then((requestResult) => {
+                    console.debug(`getAll ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -62,6 +64,7 @@ export class RestCommunicationService implements ICommunicationService {
             this.http
                 .put<RequestResult<void>>(`${this.BASE_URI}/`, communication)
                 .then((requestResult) => {
+                    console.debug(`update ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -80,6 +83,7 @@ export class RestCommunicationService implements ICommunicationService {
             this.http
                 .delete<RequestResult<void>>(`${this.BASE_URI}/`, communication)
                 .then((requestResult) => {
+                    console.debug(`delete ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,

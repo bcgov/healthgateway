@@ -40,12 +40,12 @@ namespace HealthGateway.Immunization.Models.PHSA
         /// Gets the list of Immunization Views.
         /// </summary>
         [JsonPropertyName("immunizationViews")]
-        public IList<ImmunizationViewResponse> ImmunizationViews { get; } = new List<ImmunizationViewResponse>();
+        public IList<ImmunizationViewResponse> ImmunizationViews { get; }
 
         /// <summary>
         /// Gets the list of Immunization Recommendations.
         /// </summary>
         [JsonPropertyName("immunizationRecommendations")]
-        public IList<ImmunizationRecommendationResponse> Recommendations { get; } = new List<ImmunizationRecommendationResponse>();
+        public IList<ImmunizationRecommendationResponse> Recommendations { get; }
     }
 }

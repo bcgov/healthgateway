@@ -50,7 +50,7 @@
             </summary>
             <param name="bearerToken">The security token representing the authenticated user.</param>
             <param name="pageIndex">The page index to return.</param>
-            <returns>The PhsaResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
+            <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
         </member>
         <member name="T:HealthGateway.Immunization.Delegates.RestImmunizationDelegate">
             <summary>
@@ -356,7 +356,7 @@
             Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Models.LoadStateModel.FromPHSAModel(HealthGateway.Common.Models.PHSA.PhsaLoadState)">
+        <member name="M:HealthGateway.Immunization.Models.LoadStateModel.FromPHSAModel(HealthGateway.Common.Models.PHSA.PHSALoadState)">
             <summary>
             Creates a Load State Model object from a PHSA model.
             </summary>

@@ -77,7 +77,7 @@ namespace HealthGateway.Immunization.Models
         /// Gets the Target Diseases.
         /// </summary>
         [JsonPropertyName("targetDiseases")]
-        public IList<TargetDisease> TargetDiseases { get; } = new List<TargetDisease>();
+        public IList<TargetDisease> TargetDiseases { get; }
 
         /// <summary>
         /// Gets or sets the Immunization definition.
