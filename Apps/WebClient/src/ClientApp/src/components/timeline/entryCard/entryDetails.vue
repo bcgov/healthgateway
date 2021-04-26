@@ -57,7 +57,7 @@ export default class EntryDetailsComponent extends Vue {
 
     @Watch("isMobile")
     private onIsMobile() {
-        if (!this.isMobile) {
+        if (this.isVisible && !this.isMobile) {
             this.handleClose();
         }
     }
