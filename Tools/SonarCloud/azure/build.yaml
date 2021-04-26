@@ -28,13 +28,13 @@ jobs:
             /k:hg-database \
             /n:"HealthGateway Database Library" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.login="b81603b305c3bb5e36a5fda4f09e4a010a0b7ec7" \
+            /d:sonar.login="$(database.login)" \
             /d:sonar.scm.disabled="true" \
             /d:sonar.coverage.exclusions="**Tests*.cs" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
           dotnet build    
-          dotnet sonarscanner end /d:sonar.login="b81603b305c3bb5e36a5fda4f09e4a010a0b7ec7"
+          dotnet sonarscanner end /d:sonar.login="${database.login}"
           echo "$@" >&2
         displayName: "Database - Perform Static Code Analysis"
         continueOnError: true
@@ -282,6 +282,7 @@ jobs:
             /p:CoverletOutputFormat=opencover \
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
+          npm install --only=dev
           npm --prefix src/ClientApp test
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
