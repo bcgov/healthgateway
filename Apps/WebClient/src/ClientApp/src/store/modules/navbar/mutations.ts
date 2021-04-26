@@ -1,13 +1,12 @@
-import { MutationTree } from "vuex";
-
-import { NavbarState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
 
+import { NavbarMutations, NavbarState } from "./types";
+
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-export const mutations: MutationTree<NavbarState> = {
+export const mutations: NavbarMutations = {
     toggleSidebar(state: NavbarState) {
         logger.verbose(`SidebarState:toggleSidebar`);
         state.isSidebarOpen = !state.isSidebarOpen;

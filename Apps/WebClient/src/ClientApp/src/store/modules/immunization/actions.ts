@@ -1,11 +1,11 @@
-import { ActionTree } from "vuex";
-
 import { ResultType } from "@/constants/resulttype";
 import { ResultError } from "@/models/requestResult";
-import { ImmunizationState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IImmunizationService, ILogger } from "@/services/interfaces";
+
+import { ImmunizationActions } from "./types";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -13,7 +13,7 @@ const immunizationService: IImmunizationService = container.get<IImmunizationSer
     SERVICE_IDENTIFIER.ImmunizationService
 );
 
-export const actions: ActionTree<ImmunizationState, RootState> = {
+export const actions: ImmunizationActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {

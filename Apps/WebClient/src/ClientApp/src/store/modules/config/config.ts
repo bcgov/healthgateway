@@ -1,13 +1,12 @@
-import { Module } from "vuex";
-
 import { ExternalConfiguration } from "@/models/configData";
-import { ConfigState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { ConfigModule, ConfigState } from "./types";
 
-export const state: ConfigState = {
+const state: ConfigState = {
     statusMessage: "",
     config: new ExternalConfiguration(),
     error: false,
@@ -16,7 +15,7 @@ export const state: ConfigState = {
 
 const namespaced = true;
 
-export const config: Module<ConfigState, RootState> = {
+export const config: ConfigModule = {
     namespaced,
     state,
     getters,

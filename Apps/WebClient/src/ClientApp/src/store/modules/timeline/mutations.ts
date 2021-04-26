@@ -1,15 +1,14 @@
-import { MutationTree } from "vuex";
-
 import { DateWrapper } from "@/models/dateWrapper";
-import { TimelineState } from "@/models/storeState";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
 
+import { TimelineMutations, TimelineState } from "./types";
+
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-export const mutations: MutationTree<TimelineState> = {
+export const mutations: TimelineMutations = {
     setFilter(state: TimelineState, filter: TimelineFilter) {
         logger.verbose(`TimelineState:setFilter`);
         state.filter = filter;
@@ -26,17 +25,14 @@ export const mutations: MutationTree<TimelineState> = {
         logger.verbose(`TimelineState:clearFilter`);
         state.filter = TimelineFilterBuilder.buildEmpty();
     },
-
     setLinearDate(state: TimelineState, linearDate: DateWrapper) {
         logger.verbose(`TimelineState:setLinearDate`);
         state.linearDate = linearDate;
     },
-
     setCalendarDate(state: TimelineState, calendarDate: DateWrapper) {
         logger.verbose(`TimelineState:setCalendarDate`);
         state.calendarDate = calendarDate;
     },
-
     setSelectedDate(state: TimelineState, selectedDate: DateWrapper | null) {
         logger.verbose(`TimelineState:setSelectedDate`);
         state.selectedDate = selectedDate;

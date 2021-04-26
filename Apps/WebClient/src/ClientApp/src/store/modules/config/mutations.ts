@@ -1,9 +1,9 @@
-import { MutationTree } from "vuex";
-
 import { ExternalConfiguration } from "@/models/configData";
-import { ConfigState, LoadStatus } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const mutations: MutationTree<ConfigState> = {
+import { ConfigMutations, ConfigState } from "./types";
+
+export const mutations: ConfigMutations = {
     configurationRequest(state: ConfigState) {
         state.error = false;
         state.statusMessage = "loading";

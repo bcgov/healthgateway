@@ -1,14 +1,13 @@
-import { Module } from "vuex";
-
 import PatientData from "@/models/patientData";
-import { LoadStatus, RootState, UserState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { UserModule, UserState } from "./types";
 
-export const state: UserState = {
+const state: UserState = {
     statusMessage: "",
     user: new User(),
     patientData: new PatientData(),
@@ -18,7 +17,7 @@ export const state: UserState = {
 
 const namespaced = true;
 
-export const user: Module<UserState, RootState> = {
+export const user: UserModule = {
     namespaced,
     state,
     getters,

@@ -1,12 +1,12 @@
-import { ActionTree } from "vuex";
-
 import { ResultType } from "@/constants/resulttype";
 import RequestResult, { ResultError } from "@/models/requestResult";
-import { LoadStatus, NoteState, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IUserNoteService } from "@/services/interfaces";
+
+import { NoteActions } from "./types";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -14,7 +14,7 @@ const noteService: IUserNoteService = container.get<IUserNoteService>(
     SERVICE_IDENTIFIER.UserNoteService
 );
 
-export const actions: ActionTree<NoteState, RootState> = {
+export const actions: NoteActions = {
     retrieve(
         context,
         params: { hdid: string }

@@ -1,12 +1,12 @@
-import { ActionTree } from "vuex";
-
 import { ResultType } from "@/constants/resulttype";
 import { LaboratoryOrder } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
-import { LaboratoryState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
+
+import { LaboratoryActions } from "./types";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -14,7 +14,7 @@ const laboratoryService: ILaboratoryService = container.get<ILaboratoryService>(
     SERVICE_IDENTIFIER.LaboratoryService
 );
 
-export const actions: ActionTree<LaboratoryState, RootState> = {
+export const actions: LaboratoryActions = {
     retrieve(
         context,
         params: { hdid: string }

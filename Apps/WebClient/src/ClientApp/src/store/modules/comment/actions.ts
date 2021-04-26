@@ -1,12 +1,12 @@
-import { ActionTree } from "vuex";
-
 import { ResultType } from "@/constants/resulttype";
 import { ResultError } from "@/models/requestResult";
-import { CommentState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
+
+import { CommentActions } from "./types";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
@@ -14,7 +14,7 @@ const commentService: IUserCommentService = container.get<IUserCommentService>(
     SERVICE_IDENTIFIER.UserCommentService
 );
 
-export const actions: ActionTree<CommentState, RootState> = {
+export const actions: CommentActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {

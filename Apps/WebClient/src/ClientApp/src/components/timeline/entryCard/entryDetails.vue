@@ -8,7 +8,7 @@ import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import EventBus, { EventMessageName } from "@/eventbus";
-import { Operation } from "@/models/storeState";
+import { Operation } from "@/models/storeOperations";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
 

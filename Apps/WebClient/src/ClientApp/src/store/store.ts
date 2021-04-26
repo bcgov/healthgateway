@@ -1,7 +1,5 @@
 import Vue from "vue";
-import Vuex, { StoreOptions } from "vuex";
-
-import { RootState } from "@/models/storeState";
+import Vuex from "vuex";
 
 import { auth } from "./modules/auth/auth";
 import { comment } from "./modules/comment/comment";
@@ -16,10 +14,11 @@ import { navbar } from "./modules/navbar/navbar";
 import { note } from "./modules/note/note";
 import { timeline } from "./modules/timeline/timeline";
 import { user } from "./modules/user/user";
+import { GatewayStoreOptions, RootState } from "./types";
 
 Vue.use(Vuex);
 
-const storeOptions: StoreOptions<RootState> = {
+const storeOptions: GatewayStoreOptions = {
     state: {
         version: "1.0.0",
         isMobile: false,

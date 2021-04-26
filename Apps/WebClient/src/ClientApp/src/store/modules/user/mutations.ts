@@ -1,10 +1,9 @@
 import { User as OidcUser } from "oidc-client";
 import Vue from "vue";
-import { MutationTree } from "vuex";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
-import { LoadStatus, UserState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile from "@/models/userProfile";
@@ -12,8 +11,11 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
 
+import { UserMutation, UserState } from "./types";
+
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-export const mutations: MutationTree<UserState> = {
+
+export const mutations: UserMutation = {
     setOidcUserData(state: UserState, oidcUser: OidcUser) {
         Vue.set(state.user, "hdid", oidcUser.profile.hdid);
         state.error = false;

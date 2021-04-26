@@ -1,14 +1,13 @@
-import { GetterTree } from "vuex";
-
 import {
     IdentityProviderConfiguration,
     OpenIdConnectConfiguration,
     WebClientConfiguration,
 } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ConfigState, RootState } from "@/models/storeState";
 
-export const getters: GetterTree<ConfigState, RootState> = {
+import { ConfigGetters, ConfigState } from "./types";
+
+export const getters: ConfigGetters = {
     identityProviders(state: ConfigState): IdentityProviderConfiguration[] {
         const { config } = state;
         const { identityProviders = [] } = config;
