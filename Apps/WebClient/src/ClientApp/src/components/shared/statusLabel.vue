@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component
-export default class StatusLabel extends Vue {
+export default class StatusLabelComponent extends Vue {
     @Prop({ required: true }) status!: string;
     @Prop({ required: false, default: "" }) variant!: string;
     @Prop({ required: false, default: "Status" }) heading!: string;

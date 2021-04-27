@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component
-export default class PageTitle extends Vue {
+export default class PageTitleComponent extends Vue {
     @Prop() title!: string;
 }
 </script>
