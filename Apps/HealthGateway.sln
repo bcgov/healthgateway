@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseTests", "Database\t
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClientTests", "WebClient\test\unit\WebClientTests.csproj", "{622DA0CD-5DF2-4FF1-9BE6-524CA0549976}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medication", "Medication\src\Medication.csproj", "{24607238-4330-4732-8988-9D8E496A0C59}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedicationTests", "Medication\test\unit\MedicationTests.csproj", "{99BD4ECB-32B2-4429-95E3-3AFFAF89BD02}"
 EndProject

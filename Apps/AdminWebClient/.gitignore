@@ -1,8 +1,0 @@
-src/AdminWebClient.xml
-#SonarQube files
-sonar_reports/
-test*/coverage.opencover.xml
-test*/xUnitResults/
-
-# Visual Studio files, often local developer environment specific, so ignore.
-.vs/*
