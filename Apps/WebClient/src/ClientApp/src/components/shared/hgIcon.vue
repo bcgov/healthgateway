@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component
-export default class HgIcon extends Vue {
+export default class HgIconComponent extends Vue {
     @Prop({ required: false, default: "medium" }) size!: string;
 
     private get classes(): string[] {

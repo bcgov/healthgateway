@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 @Component
-export default class HgButton extends Vue {
+export default class HgButtonComponent extends Vue {
     @Prop({ required: true }) variant!: string;
     @Prop({ required: false, default: "" }) size!: string;
 
