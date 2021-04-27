@@ -9,11 +9,7 @@ import { SnowplowWindow } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-const storeWrapper: IStoreProvider = container.get(
-    STORE_IDENTIFIER.StoreWrapper
-);
-const store = storeWrapper.getStore();
+
 declare let window: SnowplowWindow;
 
 const ProfileView = () =>
@@ -66,7 +62,7 @@ const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
 
-enum UserState {
+export enum UserState {
     unauthenticated = "unauthenticated",
     notRegistered = "notRegistered",
     registered = "registered",
@@ -76,6 +72,10 @@ enum UserState {
 }
 
 function calculateUserState() {
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     const isOffline = store.getters["config/isOffline"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isValid: boolean = store.getters["auth/isValidIdentityProvider"];
@@ -109,6 +109,10 @@ export enum ClientModule {
 }
 
 function getAvailableModules() {
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     const availableModules: string[] = [];
     const configModules: Dictionary<boolean> =
         store.getters["config/webClient"].modules;
@@ -280,8 +284,11 @@ export const beforeEachGuard: NavigationGuard = (
     from: Route,
     next: NavigationGuardNext<Vue>
 ) => {
-    to.matched[0].components.default.name;
-
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     logger.debug(
         `from.fullPath: ${JSON.stringify(
             from.fullPath
@@ -296,7 +303,7 @@ export const beforeEachGuard: NavigationGuard = (
             logger.info("User is valid: " + isValid);
 
             const currentUserState = calculateUserState();
-            logger.debug(`current state: ${currentUserState}`);
+            logger.info(`Current state: ${currentUserState}`);
             const isValidState = to.meta.validStates.includes(currentUserState);
             const availableModules = getAvailableModules();
             const hasRequiredModules =
@@ -305,6 +312,7 @@ export const beforeEachGuard: NavigationGuard = (
                     : to.meta.requiredModules.every((val: string) =>
                           availableModules.includes(val)
                       );
+
             if (isValidState && hasRequiredModules) {
                 next();
             } else {

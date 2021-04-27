@@ -1,3 +1,4 @@
+import "@/plugins/inversify.config";
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
@@ -6,7 +7,7 @@ import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import { storeOptionsStub } from "@test/stubs/store/store";
+import { StoreOptionsStub } from "@test/stubs/store/store";
 
 describe("NavBar Header Component", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -16,7 +17,7 @@ describe("NavBar Header Component", () => {
     localVue.use(Vuex);
     const router = new VueRouter();
 
-    let options = storeOptionsStub;
+    const options = new StoreOptionsStub();
     options.modules.navbar.getters.isSidebarOpen = () => true;
     options.modules.navbar.getters.isHeaderShown = () => true;
 
@@ -26,7 +27,7 @@ describe("NavBar Header Component", () => {
     options.modules.user.getters.userIsRegistered = () => true;
     options.modules.user.getters.userIsActive = () => true;
 
-    let customStore = new Vuex.Store(storeOptionsStub);
+    let customStore = new Vuex.Store(options);
 
     const wrapper = shallowMount(HeaderComponent, {
         localVue,

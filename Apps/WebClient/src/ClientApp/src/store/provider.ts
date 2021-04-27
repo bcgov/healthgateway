@@ -1,23 +1,27 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import Vue from "vue";
 import Vuex, { Store } from "vuex";
 
+import { STORE_IDENTIFIER } from "@/plugins/inversify";
 import { IStoreProvider } from "@/services/interfaces";
 
-import { storeOptions } from "./options";
-import { RootState } from "./types";
+import type { GatewayStoreOptions, RootState } from "./types";
 
 Vue.use(Vuex);
 
 @injectable()
 export default class StoreProvider implements IStoreProvider {
-    private store!: Store<RootState>;
+    private readonly store: Store<RootState>;
+
+    constructor(
+        @inject(STORE_IDENTIFIER.StoreOptions) options: GatewayStoreOptions
+    ) {
+        this.store = new Vuex.Store<RootState>(options);
+    }
 
     public getStore(): Store<RootState> {
-        console.log(this.store);
         if (this.store === undefined) {
-            console.log("Initializing store...");
-            this.store = new Vuex.Store<RootState>(storeOptions);
+            throw Error("Store not initialized");
         }
 
         return this.store;

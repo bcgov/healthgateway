@@ -25,6 +25,8 @@ module.exports = {
         "!**/node_modules/**",
         "!**/vendor/**",
         "!**/test/**",
+        "!**/main.ts",
+        "!**/shims-vue.d.ts",
     ],
     coverageDirectory: "<rootDir>/../../sonar_reports/jest.out",
     testMatch: ["**/test/**/*.test.(ts)|**/__tests__/*.(ts)"],

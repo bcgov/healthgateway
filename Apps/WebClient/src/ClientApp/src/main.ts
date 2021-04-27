@@ -111,7 +111,7 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
         SERVICE_IDENTIFIER.DependentService
     );
     const storeProvider: IStoreProvider = container.get(
-        STORE_IDENTIFIER.StoreWrapper
+        STORE_IDENTIFIER.StoreProvider
     );
 
     const store = storeProvider.getStore();

@@ -1,3 +1,4 @@
+import "@/plugins/inversify.config";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import Vuex from "vuex";
 
@@ -6,7 +7,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import LoginComponent from "@/views/login.vue";
-import { storeOptionsStub } from "./stubs/store/store";
+import { StoreOptionsStub } from "./stubs/store/store";
 import { GatewayStoreOptions } from "@/store/types";
 
 const pushMethod = jest.fn();
@@ -24,7 +25,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<LoginComponent> {
     localVue.use(Vuex);
 
     if (options === undefined) {
-        options = storeOptionsStub;
+        options = new StoreOptionsStub();
     }
 
     let store = new Vuex.Store(options);
@@ -75,7 +76,7 @@ describe("Login view", () => {
     });
 
     test("if authenticated but not registered sets router path to registration", () => {
-        let options = storeOptionsStub;
+        const options = new StoreOptionsStub();
         options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
         options.modules.user.getters.userIsRegistered = (): boolean => false;
         const wrapper = createWrapper(options);
@@ -86,7 +87,7 @@ describe("Login view", () => {
     });
 
     test("if authenticated and registered sets router path", () => {
-        let options = storeOptionsStub;
+        const options = new StoreOptionsStub();
         options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
         options.modules.user.getters.userIsRegistered = (): boolean => true;
         const wrapper = createWrapper(options);
@@ -97,7 +98,7 @@ describe("Login view", () => {
     });
 
     test("if not authenticated does not set router path", () => {
-        let options = storeOptionsStub;
+        const options = new StoreOptionsStub();
         options.modules.auth.getters.oidcIsAuthenticated = (): boolean => false;
         options.modules.user.getters.userIsRegistered = (): boolean => false;
         const wrapper = createWrapper(options);
@@ -120,7 +121,7 @@ describe("Login view", () => {
             hint: "bceid",
             disabled: false,
         };
-        let options = storeOptionsStub;
+        const options = new StoreOptionsStub();
         options.modules.config.getters.identityProviders = (): IdentityProviderConfiguration[] => [
             bceidProvider,
             keycloakProvider,

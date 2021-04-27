@@ -22,5 +22,6 @@ export const DELEGATE_IDENTIFIER = {
 };
 
 export const STORE_IDENTIFIER = {
-    StoreWrapper: Symbol.for("StoreWrapper"),
+    StoreProvider: Symbol.for("StoreWrapper"),
+    StoreOptions: Symbol.for("StoreOptions"),
 };

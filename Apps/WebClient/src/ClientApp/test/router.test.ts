@@ -1,7 +1,6 @@
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
-import "@/plugins/inversify.config";
-import router, { beforeEachGuard, ClientModule } from "@/router";
+import router, { beforeEachGuard, ClientModule, UserState } from "@/router";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 import NotFoundComponent from "@/views/errors/notFound.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
@@ -11,8 +10,62 @@ import LogoutComponent from "@/views/logout.vue";
 import ProfileComponent from "@/views/profile.vue";
 import RegistrationComponent from "@/views/registration.vue";
 import { Route } from "vue-router";
+import { GatewayStoreOptions } from "@/store/types";
+import { StoreOptionsStub } from "./stubs/store/store";
+import { WebClientConfiguration } from "@/models/configData";
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import { WinstonLogger } from "@/services/winstonLogger";
+import StoreProvider from "@/store/provider";
+
+function flushPromises() {
+    return new Promise((resolve) => setImmediate(resolve));
+}
+
+function setOidcCheckUser(options: GatewayStoreOptions, value: boolean): void {
+    options.modules.auth.actions.oidcCheckUser = (): Promise<boolean> => {
+        return new Promise<boolean>((resolve) => {
+            resolve(value);
+        });
+    };
+}
+
+function createToRoute(meta: {}): Route {
+    return {
+        path: "/stateles",
+        hash: "abc123",
+        query: {},
+        params: {},
+        fullPath: "base/stateles",
+        matched: [],
+        meta: meta,
+    };
+}
+
+const webclientConfig: WebClientConfiguration = {
+    logLevel: "debug",
+    timeouts: { idle: 50, logoutRedirect: "", resendSMS: 3 },
+    registrationStatus: RegistrationStatus.Open,
+    externalURLs: {},
+    modules: {},
+    hoursForDeletion: 1,
+    minPatientAge: 21,
+    maxDependentAge: 21,
+};
 
 describe("Router", () => {
+    container
+        .bind<ILogger>(SERVICE_IDENTIFIER.Logger)
+        .to(WinstonLogger)
+        .inSingletonScope();
+    container
+        .bind<IStoreProvider>(STORE_IDENTIFIER.StoreProvider)
+        .to(StoreProvider)
+        .inRequestScope();
+    container
+        .bind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+        .to(StoreOptionsStub)
+        .inRequestScope();
+
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
     test("has landing route", () => {
@@ -55,28 +108,9 @@ describe("Router", () => {
     });
 
     it("To Stateless route", () => {
-        /*if (to.meta.routeIsOidcCallback || to.meta.stateless) {
-            next();
-        }*/
+        const from = router.resolve("/").route;
+        const to = createToRoute({ stateless: true });
 
-        const from: Route = {
-            path: "/",
-            hash: "abc1234",
-            query: {},
-            params: {},
-            fullPath: "base",
-            matched: [],
-        };
-
-        const to: Route = {
-            path: "/timeline",
-            hash: "abc123",
-            query: {},
-            params: {},
-            fullPath: "base/timeline",
-            matched: [],
-            meta: { stateless: true },
-        };
         const next = jest.fn();
 
         beforeEachGuard(to, from, next);
@@ -84,66 +118,212 @@ describe("Router", () => {
     });
 
     it("To routeIsOidcCallback route", () => {
-        /*if (to.meta.routeIsOidcCallback || to.meta.stateless) {
-            next();
-        }*/
-        const from: Route = {
-            path: "/",
-            hash: "abc1234",
-            query: {},
-            params: {},
-            fullPath: "base",
-            matched: [],
-        };
-
-        const to: Route = {
-            path: "/timeline",
-            hash: "abc123",
-            query: {},
-            params: {},
-            fullPath: "base/timeline",
-            matched: [],
-            meta: { routeIsOidcCallback: true },
-        };
+        const from = router.resolve("/").route;
+        const to = createToRoute({
+            routeIsOidcCallback: true,
+        });
         const next = jest.fn();
 
         beforeEachGuard(to, from, next);
         expect(next).toHaveBeenCalledWith();
     });
 
-    it("With required modules", () => {
-        /*if (to.meta.routeIsOidcCallback || to.meta.stateless) {
-            next();
-        }*/
+    it("With required modules", async () => {
+        const from = router.resolve("/").route;
+        const to = createToRoute({
+            requiredModules: [ClientModule.Dependent],
+            validStates: [UserState.registered],
+        });
+
+        // Config store
+        const options = new StoreOptionsStub();
+        setOidcCheckUser(options, true);
+        webclientConfig.modules = { [ClientModule.Dependent]: true };
+        options.modules.config.getters.webClient = (): WebClientConfiguration => {
+            return webclientConfig;
+        };
+        container
+            .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+            .toConstantValue(options);
+
         const next = jest.fn();
-        const storeWrapper: IStoreProvider = container.get(
-            STORE_IDENTIFIER.StoreWrapper
-        );
-
-        //app.vm.$router.push("/timeline");
-
-        //expect(router.beforeEach).toHaveBeenCalledWith();
-
-        const from: Route = {
-            path: "/",
-            hash: "abc1234",
-            query: {},
-            params: {},
-            fullPath: "base",
-            matched: [],
-        };
-
-        const to: Route = {
-            path: "/timeline",
-            hash: "abc123",
-            query: {},
-            params: {},
-            fullPath: "base/timeline",
-            matched: [],
-            meta: { requiredModules: [ClientModule.Dependent] },
-        };
-
         beforeEachGuard(to, from, next);
+        await flushPromises();
         expect(next).toHaveBeenCalledWith();
+    });
+
+    it("Offline Default Path", async () => {
+        // Config store
+        const options = new StoreOptionsStub();
+        setOidcCheckUser(options, true);
+        options.modules.config.getters.isOffline = (): boolean => {
+            return true;
+        };
+        container
+            .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+            .toConstantValue(options);
+
+        // Setup params
+        const from = router.resolve("/").route;
+        const to = router.resolve("/timeline").route;
+        const next = jest.fn();
+
+        // Execute test
+        beforeEachGuard(to, from, next);
+        await flushPromises();
+
+        // Assert
+        expect(next).toHaveBeenCalledWith({ path: "/" });
+    });
+
+    it("PendingDeletion Default Path", async () => {
+        // Config store
+        const options = new StoreOptionsStub();
+        setOidcCheckUser(options, true);
+        options.modules.config.getters.isOffline = (): boolean => {
+            return false;
+        };
+        options.modules.user.getters.userIsActive = (): boolean => {
+            return false;
+        };
+
+        container
+            .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+            .toConstantValue(options);
+
+        // Setup params
+        const from = router.resolve("/").route;
+        const to = router.resolve("/timeline").route;
+        const next = jest.fn();
+
+        // Execute test
+        beforeEachGuard(to, from, next);
+        await flushPromises();
+
+        // Assert
+        expect(next).toHaveBeenCalledWith({ path: "/profile" });
+    });
+
+    it("Timeline Default Path", async () => {
+        // Config store
+        const options = new StoreOptionsStub();
+        setOidcCheckUser(options, true);
+        options.modules.config.getters.isOffline = (): boolean => {
+            return false;
+        };
+        options.modules.user.getters.userIsActive = (): boolean => {
+            return true;
+        };
+        container
+            .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+            .toConstantValue(options);
+
+        // Setup params
+        const from = router.resolve("/").route;
+        const to = router.resolve("/registration").route;
+        const next = jest.fn();
+
+        // Execute test
+        beforeEachGuard(to, from, next);
+        await flushPromises();
+
+        // Assert
+        expect(next).toHaveBeenCalledWith({ path: "/timeline" });
+    });
+
+    it("Unregistered Default Path", async () => {
+        // Config store
+        const options = new StoreOptionsStub();
+        setOidcCheckUser(options, true);
+        options.modules.config.getters.isOffline = (): boolean => {
+            return false;
+        };
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => {
+            return true;
+        };
+        options.modules.auth.getters.isValidIdentityProvider = (): boolean => {
+            return true;
+        };
+        options.modules.user.getters.userIsRegistered = (): boolean => {
+            return false;
+        };
+        container
+            .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+            .toConstantValue(options);
+
+        // Setup params
+        const from = router.resolve("/").route;
+        const to = router.resolve("/timeline").route;
+        const next = jest.fn();
+
+        // Execute test
+        beforeEachGuard(to, from, next);
+        await flushPromises();
+
+        // Assert
+        expect(next).toHaveBeenCalledWith({ path: "/registration" });
+    });
+
+    it("Bad idp Default Path", async () => {
+        // Config store
+        const options = new StoreOptionsStub();
+        setOidcCheckUser(options, true);
+        options.modules.config.getters.isOffline = (): boolean => {
+            return false;
+        };
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => {
+            return true;
+        };
+        options.modules.auth.getters.isValidIdentityProvider = (): boolean => {
+            return false;
+        };
+        options.modules.user.getters.userIsRegistered = (): boolean => {
+            return false;
+        };
+        container
+            .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+            .toConstantValue(options);
+
+        // Setup params
+        const from = router.resolve("/").route;
+        const to = router.resolve("/timeline").route;
+        const next = jest.fn();
+
+        // Execute test
+        beforeEachGuard(to, from, next);
+        await flushPromises();
+
+        // Assert
+        expect(next).toHaveBeenCalledWith({ path: "/idirLoggedIn" });
+    });
+
+    it("Not authenticated Default Path", async () => {
+        // Config store
+        const options = new StoreOptionsStub();
+        setOidcCheckUser(options, true);
+        options.modules.config.getters.isOffline = (): boolean => {
+            return false;
+        };
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => {
+            return false;
+        };
+        container
+            .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+            .toConstantValue(options);
+
+        // Setup params
+        const from = router.resolve("/").route;
+        const to = router.resolve("/timeline").route;
+        const next = jest.fn();
+
+        // Execute test
+        beforeEachGuard(to, from, next);
+        await flushPromises();
+
+        // Assert
+        expect(next).toHaveBeenCalledWith({
+            path: "/login",
+            query: { redirect: to.path },
+        });
     });
 });

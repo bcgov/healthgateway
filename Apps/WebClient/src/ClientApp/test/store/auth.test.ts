@@ -1,3 +1,4 @@
+import "@/plugins/inversify.config";
 import { User as OidcUser, UserSettings } from "oidc-client";
 
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

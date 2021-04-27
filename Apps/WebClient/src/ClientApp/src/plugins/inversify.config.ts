@@ -44,6 +44,8 @@ import { RestUserRatingService } from "@/services/restUserRatingService";
 import { WinstonLogger } from "@/services/winstonLogger";
 import StoreProvider from "@/store/provider";
 import container from "./inversify.container";
+import { GatewayStoreOptions } from "@/store/types";
+import { StoreOptions } from "@/store/options";
 
 container
     .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
@@ -110,6 +112,10 @@ container
     .to(HttpDelegate)
     .inSingletonScope();
 container
-    .bind<IStoreProvider>(STORE_IDENTIFIER.StoreWrapper)
+    .bind<IStoreProvider>(STORE_IDENTIFIER.StoreProvider)
     .to(StoreProvider)
     .inSingletonScope();
+container
+    .bind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+    .to(StoreOptions)
+    .inRequestScope();

@@ -1,3 +1,4 @@
+import "@/plugins/inversify.config";
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
@@ -6,7 +7,7 @@ import AppComponent from "@/app.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import { storeOptionsStub } from "./stubs/store/store";
+import { StoreOptionsStub } from "./stubs/store/store";
 
 describe("Home view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -16,7 +17,7 @@ describe("Home view", () => {
     localVue.use(Vuex);
     localVue.use(VueRouter);
 
-    let store = new Vuex.Store(storeOptionsStub);
+    let store = new Vuex.Store(new StoreOptionsStub());
 
     const wrapper = shallowMount(AppComponent, {
         localVue,
