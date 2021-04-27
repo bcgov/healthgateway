@@ -1,8 +1,13 @@
 <script lang="ts">
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
-@Component
+@Component({
+    components: {
+        FontAwesomeIcon,
+    },
+})
 export default class HgIconComponent extends Vue {
     @Prop({ required: false, default: "medium" }) size!: string;
 
