@@ -3,19 +3,18 @@ import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 
 import { CommentActions } from "./types";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-const commentService: IUserCommentService = container.get<IUserCommentService>(
-    SERVICE_IDENTIFIER.UserCommentService
-);
-
 export const actions: CommentActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        const commentService: IUserCommentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
                 logger.debug(`Comments found stored, not quering!`);
@@ -48,6 +47,9 @@ export const actions: CommentActions = {
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<UserComment | undefined> {
+        const commentService: IUserCommentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
         return new Promise((resolve, reject) => {
             commentService
                 .createComment(params.hdid, params.comment)
@@ -65,6 +67,9 @@ export const actions: CommentActions = {
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<UserComment> {
+        const commentService: IUserCommentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
         return new Promise((resolve, reject) => {
             commentService
                 .updateComment(params.hdid, params.comment)
@@ -82,6 +87,9 @@ export const actions: CommentActions = {
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<void> {
+        const commentService: IUserCommentService = container.get<IUserCommentService>(
+            SERVICE_IDENTIFIER.UserCommentService
+        );
         return new Promise((resolve, reject) => {
             commentService
                 .deleteComment(params.hdid, params.comment)
@@ -96,6 +104,8 @@ export const actions: CommentActions = {
         });
     },
     handleError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit("commentError", error);
         context.dispatch(

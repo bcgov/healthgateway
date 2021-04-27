@@ -1,6 +1,3 @@
-import Vue from "vue";
-import Vuex from "vuex";
-
 import { auth } from "./modules/auth/auth";
 import { comment } from "./modules/comment/comment";
 import { config } from "./modules/config/config";
@@ -14,11 +11,9 @@ import { navbar } from "./modules/navbar/navbar";
 import { note } from "./modules/note/note";
 import { timeline } from "./modules/timeline/timeline";
 import { user } from "./modules/user/user";
-import { GatewayStoreOptions, RootState } from "./types";
+import { GatewayStoreOptions } from "./types";
 
-Vue.use(Vuex);
-
-const storeOptions: GatewayStoreOptions = {
+export const storeOptions: GatewayStoreOptions = {
     state: {
         version: "1.0.0",
         isMobile: false,
@@ -54,5 +49,3 @@ const storeOptions: GatewayStoreOptions = {
         timeline,
     },
 };
-
-export default new Vuex.Store<RootState>(storeOptions);

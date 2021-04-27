@@ -6,7 +6,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/requestResult";
 import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     ILogger,
     IPatientService,
@@ -15,27 +15,25 @@ import {
 
 import { UserActions } from "./types";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
 function handleError(commit: Commit, error: Error) {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.error(`UserProfile ERROR: ${error}`);
     commit("userError");
 }
 
-const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-    SERVICE_IDENTIFIER.UserProfileService
-);
-
-const patientService: IPatientService = container.get<IPatientService>(
-    SERVICE_IDENTIFIER.PatientService
-);
-
 export const actions: UserActions = {
     checkRegistration(context): Promise<boolean> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             return userProfileService
                 .getProfile(context.state.user.hdid)
                 .then((userProfile) => {
+                    const logger: ILogger = container.get(
+                        SERVICE_IDENTIFIER.Logger
+                    );
                     logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
@@ -81,6 +79,10 @@ export const actions: UserActions = {
         });
     },
     updateUserEmail(context, params: { emailAddress: string }): Promise<void> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .updateEmail(context.state.user.hdid, params.emailAddress)
@@ -100,6 +102,10 @@ export const actions: UserActions = {
         context,
         params: { userPreference: UserPreference }
     ): Promise<void> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .updateUserPreference(
@@ -125,6 +131,10 @@ export const actions: UserActions = {
         context,
         params: { userPreference: UserPreference }
     ): Promise<void> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .createUserPreference(
@@ -147,6 +157,10 @@ export const actions: UserActions = {
         });
     },
     closeUserAccount(context): Promise<void> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .closeAccount(context.state.user.hdid)
@@ -161,10 +175,17 @@ export const actions: UserActions = {
         });
     },
     recoverUserAccount(context): Promise<void> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .recoverAccount(context.state.user.hdid)
                 .then((userProfile) => {
+                    const logger: ILogger = container.get(
+                        SERVICE_IDENTIFIER.Logger
+                    );
                     logger.debug(
                         `recoverUserAccount User Profile: ${JSON.stringify(
                             userProfile
@@ -180,6 +201,9 @@ export const actions: UserActions = {
         });
     },
     getPatientData(context): Promise<void> {
+        const patientService: IPatientService = container.get<IPatientService>(
+            SERVICE_IDENTIFIER.PatientService
+        );
         return new Promise((resolve, reject) => {
             if (context.getters.patientData.hdid === undefined) {
                 patientService
@@ -204,6 +228,7 @@ export const actions: UserActions = {
         });
     },
     handleError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit("userError", error);
 

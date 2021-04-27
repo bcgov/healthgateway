@@ -8,7 +8,7 @@ import { Action, Getter } from "vuex-class";
 import RatingComponent from "@/components/modal/rating.vue";
 import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
 library.add(faSignInAlt);
 library.add(faSignOutAlt);

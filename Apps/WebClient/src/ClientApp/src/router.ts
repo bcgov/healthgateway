@@ -1,12 +1,19 @@
-import VueRouter, { Route } from "vue-router";
+import VueRouter, {
+    NavigationGuard,
+    NavigationGuardNext,
+    Route,
+} from "vue-router";
 
 import { Dictionary } from "@/models/baseTypes";
 import { SnowplowWindow } from "@/plugins/extensions";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
-import store from "@/store/store";
+import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger, IStoreProvider } from "@/services/interfaces";
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+const storeWrapper: IStoreProvider = container.get(
+    STORE_IDENTIFIER.StoreWrapper
+);
+const store = storeWrapper.getStore();
 declare let window: SnowplowWindow;
 
 const ProfileView = () =>
@@ -90,7 +97,7 @@ function calculateUserState() {
     }
 }
 
-enum ClientModule {
+export enum ClientModule {
     Immunization = "Immunization",
     Medication = "Medication",
     Laboratory = "Laboratory",
@@ -268,17 +275,19 @@ const routes = [
     }, // Not found; Will catch all other paths not covered previously
 ];
 
-const router = new VueRouter({
-    mode: "history",
-    routes,
-});
+export const beforeEachGuard: NavigationGuard = (
+    to: Route,
+    from: Route,
+    next: NavigationGuardNext<Vue>
+) => {
+    to.matched[0].components.default.name;
 
-router.beforeEach(async (to, from, next) => {
     logger.debug(
         `from.fullPath: ${JSON.stringify(
             from.fullPath
         )}; to.fullPath: ${JSON.stringify(to.fullPath)}`
     );
+
     if (to.meta.routeIsOidcCallback || to.meta.stateless) {
         next();
     } else {
@@ -322,7 +331,14 @@ router.beforeEach(async (to, from, next) => {
             }
         });
     }
+};
+
+const router = new VueRouter({
+    mode: "history",
+    routes,
 });
+
+router.beforeEach(beforeEachGuard);
 
 router.afterEach(() => {
     window.snowplow("trackPageView");

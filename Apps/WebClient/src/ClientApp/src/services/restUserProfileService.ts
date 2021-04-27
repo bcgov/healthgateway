@@ -7,7 +7,7 @@ import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILogger,

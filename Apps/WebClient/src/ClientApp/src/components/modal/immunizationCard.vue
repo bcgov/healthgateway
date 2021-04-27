@@ -9,7 +9,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import PatientData from "@/models/patientData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
 

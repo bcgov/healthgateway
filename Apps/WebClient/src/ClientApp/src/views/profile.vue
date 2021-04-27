@@ -29,7 +29,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import User, { OidcUserProfile } from "@/models/user";
 import UserProfile from "@/models/userProfile";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IAuthenticationService,
     ILogger,

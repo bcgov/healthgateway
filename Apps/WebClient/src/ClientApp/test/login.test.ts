@@ -3,11 +3,11 @@ import Vuex from "vuex";
 
 import { IdentityProviderConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import { auth as authModule } from "@/store/modules/auth/auth";
-import { user as userModule } from "@/store/modules/user/user";
 import LoginComponent from "@/views/login.vue";
+import { storeOptionsStub } from "./stubs/store/store";
+import { GatewayStoreOptions } from "@/store/types";
 
 const pushMethod = jest.fn();
 
@@ -19,44 +19,19 @@ let $route = {
     },
 };
 
-let authGetters = {
-    oidcIsAuthenticated: (): boolean => false,
-};
-
-let userGetters = {
-    userIsRegistered: (): boolean => false,
-};
-
-let configGetters = {
-    identityProviders: (): IdentityProviderConfiguration[] => [],
-};
-
-function createWrapper(): Wrapper<LoginComponent> {
+function createWrapper(options?: GatewayStoreOptions): Wrapper<LoginComponent> {
     const localVue = createLocalVue();
     localVue.use(Vuex);
 
-    const customStore = new Vuex.Store({
-        modules: {
-            auth: {
-                namespaced: true,
-                getters: authGetters,
-                actions: userModule.actions,
-            },
-            user: {
-                namespaced: true,
-                getters: userGetters,
-                actions: authModule.actions,
-            },
-            config: {
-                namespaced: true,
-                getters: configGetters,
-            },
-        },
-    });
+    if (options === undefined) {
+        options = storeOptionsStub;
+    }
+
+    let store = new Vuex.Store(options);
 
     return shallowMount(LoginComponent, {
         localVue,
-        store: customStore,
+        store: store,
         mocks: {
             $route,
             $router,
@@ -100,13 +75,10 @@ describe("Login view", () => {
     });
 
     test("if authenticated but not registered sets router path to registration", () => {
-        authGetters = {
-            oidcIsAuthenticated: (): boolean => true,
-        };
-        userGetters = {
-            userIsRegistered: (): boolean => false,
-        };
-        const wrapper = createWrapper();
+        let options = storeOptionsStub;
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
+        options.modules.user.getters.userIsRegistered = (): boolean => false;
+        const wrapper = createWrapper(options);
         expect(wrapper.vm.$data.redirectPath).toBe("/registrationInfo");
         expect(pushMethod).toHaveBeenCalledWith({
             path: wrapper.vm.$data.redirectPath,
@@ -114,13 +86,10 @@ describe("Login view", () => {
     });
 
     test("if authenticated and registered sets router path", () => {
-        authGetters = {
-            oidcIsAuthenticated: (): boolean => true,
-        };
-        userGetters = {
-            userIsRegistered: (): boolean => true,
-        };
-        const wrapper = createWrapper();
+        let options = storeOptionsStub;
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
+        options.modules.user.getters.userIsRegistered = (): boolean => true;
+        const wrapper = createWrapper(options);
         expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
         expect(pushMethod).toHaveBeenCalledWith({
             path: wrapper.vm.$data.redirectPath,
@@ -128,13 +97,10 @@ describe("Login view", () => {
     });
 
     test("if not authenticated does not set router path", () => {
-        authGetters = {
-            oidcIsAuthenticated: (): boolean => false,
-        };
-        userGetters = {
-            userIsRegistered: (): boolean => false,
-        };
-        const wrapper = createWrapper();
+        let options = storeOptionsStub;
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => false;
+        options.modules.user.getters.userIsRegistered = (): boolean => false;
+        const wrapper = createWrapper(options);
         expect(wrapper.vm.$data.redirectPath).toBe($route.query.redirect);
         expect(pushMethod).not.toHaveBeenCalledTimes(0);
     });
@@ -154,14 +120,12 @@ describe("Login view", () => {
             hint: "bceid",
             disabled: false,
         };
-
-        configGetters = {
-            identityProviders: (): IdentityProviderConfiguration[] => [
-                bceidProvider,
-                keycloakProvider,
-            ],
-        };
-        const wrapper = createWrapper();
+        let options = storeOptionsStub;
+        options.modules.config.getters.identityProviders = (): IdentityProviderConfiguration[] => [
+            bceidProvider,
+            keycloakProvider,
+        ];
+        const wrapper = createWrapper(options);
         expect(
             wrapper
                 .find(`#${bceidProvider.id}Btn`)

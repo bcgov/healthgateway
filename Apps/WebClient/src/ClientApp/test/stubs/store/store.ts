@@ -14,7 +14,7 @@ import noteStub from "./note";
 import timelineStub from "./timeline";
 import userStub from "./user";
 
-export var storeStub: GatewayStoreOptions = {
+export var storeOptionsStub: GatewayStoreOptions = {
     actions: {
         setIsMobile(): void {},
     },

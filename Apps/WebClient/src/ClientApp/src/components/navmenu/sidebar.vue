@@ -12,7 +12,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 library.add(faStream, faQuestion);
 

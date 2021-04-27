@@ -96,7 +96,7 @@ import { Action, Getter } from "vuex-class";
 
 import Process, { EnvironmentType } from "@/constants/process";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 library.add(
     faUser,

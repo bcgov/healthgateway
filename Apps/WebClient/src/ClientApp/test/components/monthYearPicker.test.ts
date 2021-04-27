@@ -1,20 +1,30 @@
-import { shallowMount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
+
+import Vuex from "vuex";
 
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
+import { storeOptionsStub } from "@test/stubs/store/store";
 
 describe("MonthYearPickerComponent", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    const localVue = createLocalVue();
+    localVue.use(Vuex);
+
+    let store = new Vuex.Store(storeOptionsStub);
+
     logger.initialize("info");
     test("renders component correctly", () => {
         const wrapper = shallowMount(MonthYearPickerComponent, {
+            localVue,
             propsData: {
                 currentMonth: new DateWrapper(),
                 availableMonths: [new DateWrapper()],
             },
+            store: store,
             stubs: {
                 "font-awesome-icon": true,
             },

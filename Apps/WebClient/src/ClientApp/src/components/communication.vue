@@ -4,7 +4,7 @@ import { Component } from "vue-property-decorator";
 
 import Communication from "@/models/communication";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ICommunicationService, ILogger } from "@/services/interfaces";
 
 @Component

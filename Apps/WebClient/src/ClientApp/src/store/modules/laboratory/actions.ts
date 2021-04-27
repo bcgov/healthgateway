@@ -3,22 +3,21 @@ import { LaboratoryOrder } from "@/models/laboratory";
 import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 
 import { LaboratoryActions } from "./types";
-
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-const laboratoryService: ILaboratoryService = container.get<ILaboratoryService>(
-    SERVICE_IDENTIFIER.LaboratoryService
-);
 
 export const actions: LaboratoryActions = {
     retrieve(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<LaboratoryOrder[]>> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const laboratoryService: ILaboratoryService = container.get<ILaboratoryService>(
+            SERVICE_IDENTIFIER.LaboratoryService
+        );
+
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] =
                 context.getters.laboratoryOrders;
@@ -56,6 +55,8 @@ export const actions: LaboratoryActions = {
         });
     },
     handleError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit("laboratoryError", error);
 

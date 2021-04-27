@@ -5,7 +5,7 @@ import { Component } from "vue-property-decorator";
 import HtmlTextAreaComponent from "@/components/htmlTextarea.vue";
 import LoadingComponent from "@/components/loading.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 @Component({

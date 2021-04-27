@@ -6,7 +6,7 @@ import { ServiceName } from "@/models/errorInterfaces";
 import { LaboratoryOrder, LaboratoryReport } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILaboratoryService,
