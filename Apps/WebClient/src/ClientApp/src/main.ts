@@ -3,7 +3,6 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import "@/plugins/registerComponentHooks";
 
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { BBadge, BFormTag, BFormTags, BPopover } from "bootstrap-vue";
 import IdleVue from "idle-vue";
 import Vue from "vue";
@@ -41,7 +40,6 @@ import {
 } from "@/services/interfaces";
 import store from "@/store/store";
 
-Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 Vue.component("BPopover", BPopover);
 Vue.component("BBadge", BBadge);
 Vue.component("BFormTags", BFormTags);
