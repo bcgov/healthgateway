@@ -34,7 +34,7 @@ jobs:
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.cs.xunit.reportsPaths="**/xUnitResults/results.xml" 
           dotnet build    
-          dotnet sonarscanner end /d:sonar.login="${database.login}"
+          dotnet sonarscanner end /d:sonar.login="$(database.login)"
           echo "$@" >&2
         displayName: "Database - Perform Static Code Analysis"
         continueOnError: true
@@ -282,7 +282,7 @@ jobs:
             /p:CoverletOutputFormat=opencover \
             --logger:"xunit;LogFileName=results.xml" \
             -r ./xUnitResults 
-          npm install --only=dev
+          npm --prefix src/ClientApp install --only=dev
           npm --prefix src/ClientApp test
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
