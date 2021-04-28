@@ -235,16 +235,10 @@ export default class NoteEditComponent extends Vue {
             </span>
         </b-alert>
         <template #modal-header>
-            <b-row class="w-100 h-100">
-                <b-col cols="auto">
-                    <div class="icon">
-                        <hg-icon icon="edit" size="large" />
-                    </div>
-                </b-col>
-                <b-col>
-                    <h5>{{ modalTitle }}</h5>
-                </b-col>
-            </b-row>
+            <h5 class="mb-0">
+                <hg-icon icon="edit" size="large" class="mr-2" />
+                <span>{{ modalTitle }}</span>
+            </h5>
         </template>
         <form>
             <b-row>
@@ -341,13 +335,6 @@ export default class NoteEditComponent extends Vue {
 .entryDetails {
     word-wrap: break-word;
     padding-left: 15px;
-}
-
-.icon {
-    color: white;
-    text-align: center;
-    padding-top: 0px;
-    font-size: 1em;
 }
 
 .editableEntryDetails {
