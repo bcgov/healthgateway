@@ -10,7 +10,6 @@ import { GatewayStoreOptions, RootState } from "@/store/types";
 import HealthInsightsView from "@/views/healthInsights.vue";
 
 import { storeStub } from "./stubs/store/store";
-import { DateTime } from "luxon";
 
 let store: Store<RootState>;
 
@@ -31,7 +30,7 @@ function createWrapper(
         localVue,
         store: store,
         stubs: {
-            "font-awesome-icon": true,
+            "hg-icon": true,
         },
     });
 }
