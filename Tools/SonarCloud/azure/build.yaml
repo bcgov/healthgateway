@@ -24,7 +24,7 @@ jobs:
           npm --prefix WebClient/src/ClientApp test
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
-            /k:healthgateway \
+            /k:bcgov_healthgateway \
             /n:"HealthGateway" \
             /d:sonar.login="$(common.login)" \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
