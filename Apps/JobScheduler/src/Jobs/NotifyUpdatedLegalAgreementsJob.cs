@@ -147,7 +147,6 @@ namespace Healthgateway.JobScheduler.Jobs
 
                     this.logger.LogInformation($"Sent {profileResult.Payload.Count} emails");
 
-                    // TODO: Resume functionality??
                     this.dbContext.SaveChanges(); // commit after every page
                     page++;
                 }

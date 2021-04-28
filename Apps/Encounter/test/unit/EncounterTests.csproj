@@ -2,16 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <!-- SonarQube needs this -->
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.EncounterTests</RootNamespace>
-    <nowarn>SA0001</nowarn>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>SA0001; CA1707; SA1600</NoWarn>
+    <DocumentationFile>.\EncounterTests.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />

@@ -48,13 +48,11 @@ export default class MSPVisitsReportComponent extends Vue {
             const firstDate = new DateWrapper(a.encounterDate);
             const secondDate = new DateWrapper(b.encounterDate);
 
-            const value = firstDate.isAfter(secondDate)
+            return firstDate.isAfter(secondDate)
                 ? 1
                 : firstDate.isBefore(secondDate)
                 ? -1
                 : 0;
-
-            return value;
         });
 
         return records;

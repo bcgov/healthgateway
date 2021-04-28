@@ -102,7 +102,6 @@ namespace HealthGateway.WebClient.Test.Services
         {
             Tuple<RequestResult<UserNote>, UserNote> deleteNotesResult = this.ExecuteCreateNote(Database.Constants.DBStatusCode.Error);
             var actualResult = deleteNotesResult.Item1;
-            var userNote = deleteNotesResult.Item2;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);

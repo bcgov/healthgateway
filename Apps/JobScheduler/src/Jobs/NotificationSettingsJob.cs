@@ -36,7 +36,6 @@ namespace Healthgateway.JobScheduler.Jobs
         private const string JobConfigKey = "NotificationSettings";
         private const string JobEnabledKey = "Enabled";
         private const string AuthConfigSectionName = "ClientAuthentication";
-        private readonly IConfiguration configuration;
         private readonly ILogger<NotificationSettingsJob> logger;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
         private readonly IAuthenticationDelegate authDelegate;
@@ -60,12 +59,11 @@ namespace Healthgateway.JobScheduler.Jobs
             IAuthenticationDelegate authDelegate,
             IEventLogDelegate eventLogDelegate)
         {
-            this.configuration = configuration!;
             this.logger = logger;
             this.notificationSettingsDelegate = notificationSettingsDelegate;
             this.authDelegate = authDelegate;
             this.eventLogDelegate = eventLogDelegate;
-            this.jobEnabled = this.configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, true);
+            this.jobEnabled = configuration.GetSection(JobConfigKey).GetValue<bool>(JobEnabledKey, true);
 
             IConfigurationSection? configSection = configuration?.GetSection(AuthConfigSectionName);
             this.tokenUri = configSection.GetValue<Uri>(@"TokenUri");

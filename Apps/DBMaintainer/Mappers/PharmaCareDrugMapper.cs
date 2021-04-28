@@ -55,15 +55,6 @@ namespace HealthGateway.DrugMaintainer
             this.Map(m => m.FormularyListDate).Name("Formulary List Date");
             this.Map(m => m.LimitedUseFlag).Name("Ltd Use Flag");
 
-            // Additional fields in file without documentation
-            // Map(m => m.).Name("Max Daily Qty");
-            // Map(m => m.).Name("Max Period Qty");
-            // Map(m => m.).Name("Max Period Qty Days");
-            // Map(m => m.).Name("Max Annual Qty");
-            // Map(m => m.).Name("BGTS Cat Cd");
-            // Map(m => m.).Name("BGTS Cat Desc");
-            // Map(m => m.).Name("BGTS Max Annual Qty");
-
             // Map the Filedownload to each object
             this.Map(m => m.FileDownload).Convert(row => filedownload);
         }

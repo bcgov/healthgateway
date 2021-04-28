@@ -40,7 +40,6 @@ namespace HealthGateway.Common.Services
         /// The injected logger delegate.
         /// </summary>
         private readonly ILogger<PatientService> logger;
-        private readonly IConfiguration configuration;
         private readonly IClientRegistriesDelegate patientDelegate;
         private readonly IGenericCacheDelegate cacheDelegate;
         private readonly int cacheTTL;
@@ -55,10 +54,9 @@ namespace HealthGateway.Common.Services
         public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IClientRegistriesDelegate patientDelegate, IGenericCacheDelegate genericCacheDelegate)
         {
             this.logger = logger;
-            this.configuration = configuration;
             this.patientDelegate = patientDelegate;
             this.cacheDelegate = genericCacheDelegate;
-            this.cacheTTL = this.configuration.GetSection("PatientService").GetValue<int>("CacheTTL", 0);
+            this.cacheTTL = configuration.GetSection("PatientService").GetValue<int>("CacheTTL", 0);
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(PatientService));
@@ -72,7 +70,6 @@ namespace HealthGateway.Common.Services
                 ResultError = new RequestResultError() { ResultMessage = "Error during PHN retrieval", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries) },
                 ResultStatus = Constants.ResultType.Error,
             };
-            string retrievedPhn = string.Empty;
             RequestResult<PatientModel> patientResult = await this.GetPatient(hdid).ConfigureAwait(true);
             if (patientResult != null)
             {

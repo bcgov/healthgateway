@@ -1,5 +1,7 @@
 import { DateTime, Duration, DurationObject, DurationUnit } from "luxon";
 
+const timezone = "America/Vancouver";
+
 /**
  * Typed representation of a ISO Date, time is not relevant.
  */
@@ -60,45 +62,46 @@ export class DateWrapper {
         param?: StringISODate | StringISODateTime | DateWrapper | DateTime,
         options?: ParseOptions
     ) {
-        if (param) {
-            if (param instanceof DateWrapper) {
-                this._date_source = "DateWrapper";
-                this._raw_string_value = param.toISO();
-                this._internal_date = param.internalDate;
-            } else if (param instanceof DateTime) {
-                this._date_source = "DateTime";
-                this._raw_string_value = param.toISO();
-                this._internal_date = param;
-            } else {
-                this._date_source = "string";
-                this._raw_string_value = param;
-                if (param.includes("z")) {
-                    this._internal_date = DateTime.fromISO(param);
-                } else if (options?.isUtc) {
-                    this._internal_date = DateTime.fromISO(param, {
-                        zone: "utc",
-                    }).setZone("America/Vancouver");
-                } else if (options?.hasTime) {
-                    this._internal_date = DateTime.fromISO(param, {
-                        zone: "America/Vancouver",
-                    });
-                } else {
-                    this._internal_date = DateTime.fromISO(param, {
-                        zone: "America/Vancouver",
-                    });
-                    // DST times at 00:00 can be ambigious. Coherse the internal representation to be the day.
-                    // 3 Hours bypases the ambiguousness of Move forward and fallback
-                    if (this._internal_date.isInDST) {
-                        this._internal_date = this._internal_date.plus({
-                            hour: 3,
-                        });
-                    }
-                }
-            }
-        } else {
+        if (!param) {
             this._date_source = "new empty Object";
             this._internal_date = DateTime.local();
             this._raw_string_value = this.toISO();
+            return;
+        }
+
+        if (param instanceof DateWrapper) {
+            this._date_source = "DateWrapper";
+            this._raw_string_value = param.toISO();
+            this._internal_date = param.internalDate;
+        } else if (param instanceof DateTime) {
+            this._date_source = "DateTime";
+            this._raw_string_value = param.toISO();
+            this._internal_date = param;
+        } else {
+            this._date_source = "string";
+            this._raw_string_value = param;
+            if (param.includes("z")) {
+                this._internal_date = DateTime.fromISO(param);
+            } else if (options?.isUtc) {
+                this._internal_date = DateTime.fromISO(param, {
+                    zone: "utc",
+                }).setZone(timezone);
+            } else if (options?.hasTime) {
+                this._internal_date = DateTime.fromISO(param, {
+                    zone: timezone,
+                });
+            } else {
+                this._internal_date = DateTime.fromISO(param, {
+                    zone: timezone,
+                });
+                // DST times at 00:00 can be ambigious. Coherse the internal representation to be the day.
+                // 3 Hours bypases the ambiguousness of Move forward and fallback
+                if (this._internal_date.isInDST) {
+                    this._internal_date = this._internal_date.plus({
+                        hour: 3,
+                    });
+                }
+            }
         }
     }
 

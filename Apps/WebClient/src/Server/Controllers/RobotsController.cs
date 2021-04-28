@@ -26,7 +26,6 @@ namespace HealthGateway.WebClient.Controllers
     /// </summary>
     public class RobotsController : Controller
     {
-        private readonly IConfiguration configuration;
         private readonly string? robotsContent;
 
         /// <summary>
@@ -36,10 +35,9 @@ namespace HealthGateway.WebClient.Controllers
         public RobotsController(IConfiguration configuration)
         {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-            this.configuration = configuration;
             string? defaultRobotsAssetContent = Common.Utils.AssetReader.Read("HealthGateway.WebClient.Server.Assets.Robots.txt");
             string? envRobotsAssetContent = Common.Utils.AssetReader.Read($"HealthGateway.WebClient.Server.Assets.Robots.{environment}.txt");
-            this.robotsContent = this.configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
+            this.robotsContent = configuration.GetValue("robots.txt", envRobotsAssetContent ?? defaultRobotsAssetContent);
         }
 
         /// <summary>

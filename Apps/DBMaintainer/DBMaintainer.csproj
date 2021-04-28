@@ -1,16 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>HealthGateway.DBMaintainer</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DocumentationFile>.\DBMaintainer.xml</DocumentationFile>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Database\**" />
     <EmbeddedResource Remove="Database\**" />
@@ -20,7 +13,6 @@
     <ProjectReference Include="..\Common\src\Common.csproj" />
     <ProjectReference Include="..\Database\src\Database.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="26.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">

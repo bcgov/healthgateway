@@ -27,17 +27,17 @@ namespace HealthGateway.DrugMaintainer.Apps
     /// Utility program to load the BC Government PharmaCare drug file.
     /// See https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files for reference.
     /// </summary>
-    public class BCPProvDrugDBApp : BaseDrugApp<IPharmaCareDrugParser>
+    public class BcpProvDrugDbApp : BaseDrugApp<IPharmaCareDrugParser>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BCPProvDrugDBApp"/> class.
+        /// Initializes a new instance of the <see cref="BcpProvDrugDbApp"/> class.
         /// </summary>
         /// <param name="logger">The logger to use.</param>
         /// <param name="parser">The parser to use.</param>
         /// <param name="downloadService">The Download Service Utility.</param>
         /// <param name="configuration">The Configuration.</param>
         /// <param name="drugDBContext">The database context.</param>
-        public BCPProvDrugDBApp(ILogger<BCPProvDrugDBApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
+        public BcpProvDrugDbApp(ILogger<BcpProvDrugDbApp> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDBContext)
             : base(logger, parser, downloadService, configuration, drugDBContext)
         {
         }

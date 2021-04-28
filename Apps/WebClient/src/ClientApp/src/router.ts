@@ -11,7 +11,6 @@ import container from "@/plugins/inversify.container";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 
 declare let window: SnowplowWindow;
-
 const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingView = () =>
@@ -125,6 +124,7 @@ function getAvailableModules() {
     return availableModules;
 }
 
+const UNAUTHORIZED_PATH = "/unauthorized";
 const REGISTRATION_PATH = "/registration";
 const REGISTRATION_INFO_PATH = "/registrationInfo";
 
@@ -266,7 +266,7 @@ const routes = [
         meta: { validStates: [UserState.invalidLogin] },
     },
     {
-        path: "/unauthorized",
+        path: UNAUTHORIZED_PATH,
         component: UnauthorizedView,
         meta: { stateless: true },
     },
@@ -297,48 +297,58 @@ export const beforeEachGuard: NavigationGuard = (
 
     if (to.meta.routeIsOidcCallback || to.meta.stateless) {
         next();
-    } else {
-        // Make sure that the route accepts the current state
-        store.dispatch("auth/oidcCheckUser").then((isValid: boolean) => {
-            logger.info("User is valid: " + isValid);
-
-            const currentUserState = calculateUserState();
-            logger.info(`Current state: ${currentUserState}`);
-            const isValidState = to.meta.validStates.includes(currentUserState);
-            const availableModules = getAvailableModules();
-            const hasRequiredModules =
-                to.meta.requiredModules === undefined
-                    ? true
-                    : to.meta.requiredModules.every((val: string) =>
-                          availableModules.includes(val)
-                      );
-
-            if (isValidState && hasRequiredModules) {
-                next();
-            } else {
-                // If the route does not accept the state, go to one of the default locations
-                if (currentUserState === UserState.offline) {
-                    next({ path: "/" });
-                } else if (currentUserState === UserState.pendingDeletion) {
-                    next({ path: "/profile" });
-                } else if (currentUserState === UserState.registered) {
-                    if (hasRequiredModules) {
-                        next({ path: "/timeline" });
-                    } else {
-                        next({ path: "/unauthorized" });
-                    }
-                } else if (currentUserState === UserState.notRegistered) {
-                    next({ path: REGISTRATION_PATH });
-                } else if (currentUserState === UserState.invalidLogin) {
-                    next({ path: "/idirLoggedIn" });
-                } else if (currentUserState === UserState.unauthenticated) {
-                    next({ path: "/login", query: { redirect: to.path } });
-                } else {
-                    next({ path: "/unauthorized" });
-                }
-            }
-        });
+        return;
     }
+
+    // Make sure that the route accepts the current state
+    store.dispatch("auth/oidcCheckUser").then((isValid: boolean) => {
+        logger.info("User is valid: " + isValid);
+
+        const currentUserState = calculateUserState();
+        logger.debug(`current state: ${currentUserState}`);
+        const isValidState = to.meta.validStates.includes(currentUserState);
+        const availableModules = getAvailableModules();
+        const hasRequiredModules =
+            to.meta.requiredModules === undefined ||
+            to.meta.requiredModules.every((val: string) =>
+                availableModules.includes(val)
+            );
+
+        if (isValidState && hasRequiredModules) {
+            next();
+            return;
+        }
+
+        // If the route does not accept the state, go to one of the default locations
+        switch (currentUserState) {
+            case UserState.offline:
+                next({ path: "/" });
+                break;
+            case UserState.pendingDeletion:
+                next({ path: "/profile" });
+                break;
+            case UserState.registered:
+                if (hasRequiredModules) {
+                    next({ path: "/timeline" });
+                } else {
+                    next({ path: UNAUTHORIZED_PATH });
+                }
+
+                break;
+            case UserState.notRegistered:
+                next({ path: REGISTRATION_PATH });
+                break;
+            case UserState.invalidLogin:
+                next({ path: "/idirLoggedIn" });
+                break;
+            case UserState.unauthenticated:
+                next({ path: "/login", query: { redirect: to.path } });
+                break;
+            default:
+                next({ path: UNAUTHORIZED_PATH });
+                break;
+        }
+    });
 };
 
 const router = new VueRouter({

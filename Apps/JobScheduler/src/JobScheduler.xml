@@ -219,7 +219,7 @@
             https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/health-industry-professionals/downloadable-drug-data-files.
             </summary>
         </member>
-        <member name="M:Healthgateway.JobScheduler.Jobs.ProvincialDrugJob.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.Apps.BCPProvDrugDBApp},HealthGateway.DrugMaintainer.IPharmaCareDrugParser,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
+        <member name="M:Healthgateway.JobScheduler.Jobs.ProvincialDrugJob.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.DrugMaintainer.Apps.BcpProvDrugDbApp},HealthGateway.DrugMaintainer.IPharmaCareDrugParser,HealthGateway.Common.FileDownload.IFileDownloadService,Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Context.GatewayDbContext)">
             <summary>
             Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Jobs.ProvincialDrugJob"/> class.
             </summary>

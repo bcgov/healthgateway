@@ -344,7 +344,7 @@
             That static constant used for the Pharmanet Trace DB sequence.
             </summary>
         </member>
-        <member name="F:HealthGateway.Database.Constants.Sequence.PHARMANET_TRACE">
+        <member name="F:HealthGateway.Database.Constants.Sequence.PharmanetTrace">
             <summary>
             The DB name for the Pharmanet Trace ID Sequence.
             </summary>
@@ -507,9 +507,6 @@
         <member name="M:HealthGateway.Database.Delegates.DBCommentDelegate.GetByParentEntry(System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Database.Delegates.DBCommentDelegate.GetAll(System.String)">
-            <inheritdoc />
-        </member>
         <member name="M:HealthGateway.Database.Delegates.DBCommentDelegate.Add(HealthGateway.Database.Models.Comment,System.Boolean)">
             <inheritdoc />
         </member>
@@ -517,6 +514,9 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBCommentDelegate.Delete(HealthGateway.Database.Models.Comment,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBCommentDelegate.GetAll(System.String)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBCommentDelegate.GetAll(System.Int32,System.Int32)">
@@ -954,13 +954,6 @@
             <param name="parentEntryId">The parent entry id.</param>
             <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.ICommentDelegate.GetAll(System.String)">
-            <summary>
-            Gets a list of comments ordered by the created datetime for the given HdId.
-            </summary>
-            <param name="hdId">The users health identifier id.</param>
-            <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
-        </member>
         <member name="M:HealthGateway.Database.Delegates.ICommentDelegate.Add(HealthGateway.Database.Models.Comment,System.Boolean)">
             <summary>
             Add the given note.
@@ -984,6 +977,13 @@
             <param name="comment">The comment to be deleted in the database.</param>
             <param name="commit">if true the transaction is persisted immediately.</param>
             <returns>A comment wrapped in a DBResult.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.ICommentDelegate.GetAll(System.String)">
+            <summary>
+            Gets a list of comments ordered by the created datetime for the given HdId.
+            </summary>
+            <param name="hdId">The users health identifier id.</param>
+            <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
         </member>
         <member name="M:HealthGateway.Database.Delegates.ICommentDelegate.GetAll(System.Int32,System.Int32)">
             <summary>
@@ -1834,27 +1834,27 @@
             Gets or sets the duration of the transaction in milliseconds.
             </summary>
         </member>
-        <member name="T:HealthGateway.Database.Models.Cacheable.HmacHash">
+        <member name="T:HealthGateway.Database.Models.Cacheable.HMACHash">
             <summary>
             A hash of something.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.Cacheable.HmacHash.PseudoRandomFunction">
+        <member name="P:HealthGateway.Database.Models.Cacheable.HMACHash.PseudoRandomFunction">
             <summary>
             Gets or sets the pseudo random function that was used to generate this hash.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.Cacheable.HmacHash.Iterations">
+        <member name="P:HealthGateway.Database.Models.Cacheable.HMACHash.Iterations">
             <summary>
             Gets or sets the iterations used to generate this hash.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.Cacheable.HmacHash.Salt">
+        <member name="P:HealthGateway.Database.Models.Cacheable.HMACHash.Salt">
             <summary>
             Gets or sets the base64 salt that was used in generating the hash.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.Cacheable.HmacHash.Hash">
+        <member name="P:HealthGateway.Database.Models.Cacheable.HMACHash.Hash">
             <summary>
             Gets or sets the base64 encoded hash.
             </summary>

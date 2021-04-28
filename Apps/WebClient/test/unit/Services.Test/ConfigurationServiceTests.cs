@@ -28,9 +28,9 @@ namespace HealthGateway.WebClient.Test.Services
     /// </summary>
     public class ConfigurationServiceTests
     {
-        private IConfiguration config;
-        private Mock<ILogger<ConfigurationService>> mockLog;
-        private ConfigurationService service;
+        private readonly IConfiguration config;
+        private readonly Mock<ILogger<ConfigurationService>> mockLog;
+        private readonly ConfigurationService service;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationServiceTests"/> class.

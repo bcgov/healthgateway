@@ -5,12 +5,7 @@
     <!-- SonarQube needs this -->
     <SonarQubeTestProject>true</SonarQubeTestProject>
     <RootNamespace>HealthGateway.MedicationTests</RootNamespace>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>SA0001; CA1707; SA1600; CA1506; CA1502</NoWarn>
+    <DocumentationFile>.\MedicationTests.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\stylecop.json" />

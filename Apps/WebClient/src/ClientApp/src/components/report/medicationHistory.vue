@@ -66,13 +66,11 @@ export default class MedicationHistoryReportComponent extends Vue {
             const firstDate = new DateWrapper(a.dispensedDate);
             const secondDate = new DateWrapper(b.dispensedDate);
 
-            const value = firstDate.isAfter(secondDate)
+            return firstDate.isAfter(secondDate)
                 ? 1
                 : firstDate.isBefore(secondDate)
                 ? -1
                 : 0;
-
-            return value;
         });
 
         if (this.isPreview) {

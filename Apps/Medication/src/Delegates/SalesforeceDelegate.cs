@@ -42,7 +42,6 @@ namespace HealthGateway.Medication.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration configuration;
         private readonly Models.Salesforce.Config salesforceConfig;
         private readonly IAuthenticationDelegate authDelegate;
 
@@ -61,11 +60,10 @@ namespace HealthGateway.Medication.Delegates
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.configuration = configuration;
             this.authDelegate = authDelegate;
 
             this.salesforceConfig = new Models.Salesforce.Config();
-            this.configuration.Bind(SalesforceConfigSectionKey, this.salesforceConfig);
+            configuration.Bind(SalesforceConfigSectionKey, this.salesforceConfig);
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(ClientRegistriesDelegate));

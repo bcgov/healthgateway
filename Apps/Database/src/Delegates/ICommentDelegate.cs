@@ -33,13 +33,6 @@ namespace HealthGateway.Database.Delegates
         DBResult<IEnumerable<Comment>> GetByParentEntry(string hdId, string parentEntryId);
 
         /// <summary>
-        /// Gets a list of comments ordered by the created datetime for the given HdId.
-        /// </summary>
-        /// <param name="hdId">The users health identifier id.</param>
-        /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
-        DBResult<IEnumerable<Comment>> GetAll(string hdId);
-
-        /// <summary>
         /// Add the given note.
         /// </summary>
         /// <param name="comment">The comment to be added to the database.</param>
@@ -62,6 +55,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A comment wrapped in a DBResult.</returns>
         DBResult<Comment> Delete(Comment comment, bool commit = true);
+
+        /// <summary>
+        /// Gets a list of comments ordered by the created datetime for the given HdId.
+        /// </summary>
+        /// <param name="hdId">The users health identifier id.</param>
+        /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
+        DBResult<IEnumerable<Comment>> GetAll(string hdId);
 
         /// <summary>
         /// Gets a list of all the comments ordered by the CreatedDateTime in assending order.

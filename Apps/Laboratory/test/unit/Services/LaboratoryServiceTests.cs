@@ -49,7 +49,6 @@ namespace HealthGateway.LaboratoryTests
             var service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Success);
             var actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
 
-            List<LaboratoryOrder>? resultLabOrders = actualResult!.Result!.ResourcePayload! as List<LaboratoryOrder>;
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
             var count = 0;
             foreach (LaboratoryModel model in actualResult.Result!.ResourcePayload!)

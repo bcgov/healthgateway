@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
@@ -27,6 +28,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public class DBResourceDelegateDelegate : IResourceDelegateDelegate
     {
         private readonly ILogger logger;
@@ -46,7 +48,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit = true)
+        public DBResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit)
         {
             this.logger.LogTrace($"Inserting resource delegate to DB... {JsonSerializer.Serialize(resourceDelegate)}");
             DBResult<ResourceDelegate> result = new DBResult<ResourceDelegate>()

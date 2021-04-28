@@ -33,8 +33,6 @@ namespace Healthgateway.JobScheduler.Jobs
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
 
         private readonly IServiceProvider serviceProvider;
-        private readonly IConfiguration configuration;
-        private readonly IConfiguration jobConfig;
         private readonly ILogger<CleanCacheJob> logger;
         private readonly GatewayDbContext dbContext;
         private readonly int deleteMaxRows;
@@ -53,11 +51,10 @@ namespace Healthgateway.JobScheduler.Jobs
             GatewayDbContext dbContext)
         {
             this.serviceProvider = serviceProvider;
-            this.configuration = configuration;
             this.logger = logger;
             this.dbContext = dbContext;
-            this.jobConfig = this.configuration.GetSection($"{JobKey}");
-            this.deleteMaxRows = this.jobConfig.GetValue<int>("DeleteMaxRows", 1000);
+            var jobConfig = configuration.GetSection($"{JobKey}");
+            this.deleteMaxRows = jobConfig.GetValue<int>("DeleteMaxRows", 1000);
         }
 
         /// <summary>

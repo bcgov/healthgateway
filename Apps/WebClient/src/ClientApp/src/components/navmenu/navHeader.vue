@@ -91,7 +91,7 @@ export default class HeaderComponent extends Vue {
     }
 
     @Watch("oidcIsAuthenticated")
-    private onPropertyChanged() {
+    private loadOidcUserOnChange() {
         // If there is no name in the scope, retrieve it from the service.
         if (this.oidcIsAuthenticated) {
             this.loadOidcUser();
@@ -113,9 +113,7 @@ export default class HeaderComponent extends Vue {
     }
 
     private mounted() {
-        if (this.oidcIsAuthenticated) {
-            this.loadOidcUser();
-        }
+        this.loadOidcUserOnChange();
     }
 
     private destroyed() {

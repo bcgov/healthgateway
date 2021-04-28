@@ -33,7 +33,7 @@ namespace HealthGateway.DrugMaintainer
         public ActiveIngredientMapper(IEnumerable<DrugProduct> drugProducts)
         {
             // DRUG_CODE
-            this.Map(m => m.DrugProductId).Convert(converter => drugProducts.Where(d => d.DrugCode == converter.Row.GetField(0)).First().Id);
+            this.Map(m => m.DrugProductId).Convert(converter => drugProducts.First(d => d.DrugCode == converter.Row.GetField(0)).Id);
 
             // ACTIVE_INGREDIENT_CODE
             this.Map(m => m.ActiveIngredientCode).Index(1);
