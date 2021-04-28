@@ -19,8 +19,7 @@ jobs:
           dotnet test \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
-            --logger:"xunit;LogFileName=results.xml" \
-            -r ./xUnitResults 
+            --logger:"xunit;LogFileName=results.xml"
           npm --prefix WebClient/src/ClientApp install --only=dev
           npm --prefix WebClient/src/ClientApp test
           dotnet sonarscanner begin \
