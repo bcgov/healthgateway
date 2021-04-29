@@ -38,7 +38,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<LoginComponent> {
             $router,
         },
         stubs: {
-            "font-awesome-icon": true,
+            "hg-icon": true,
         },
     });
 }

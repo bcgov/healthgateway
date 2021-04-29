@@ -139,9 +139,9 @@ describe("Router", () => {
         const options = new StoreOptionsStub();
         setOidcCheckUser(options, true);
         webclientConfig.modules = { [ClientModule.Dependent]: true };
-        options.modules.config.getters.webClient = (): WebClientConfiguration => {
-            return webclientConfig;
-        };
+        options.modules.config.getters.webClient = (): WebClientConfiguration =>
+            webclientConfig;
+
         container
             .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
             .toConstantValue(options);
@@ -180,12 +180,8 @@ describe("Router", () => {
         // Config store
         const options = new StoreOptionsStub();
         setOidcCheckUser(options, true);
-        options.modules.config.getters.isOffline = (): boolean => {
-            return false;
-        };
-        options.modules.user.getters.userIsActive = (): boolean => {
-            return false;
-        };
+        options.modules.config.getters.isOffline = (): boolean => false;
+        options.modules.user.getters.userIsActive = (): boolean => false;
 
         container
             .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
@@ -208,12 +204,8 @@ describe("Router", () => {
         // Config store
         const options = new StoreOptionsStub();
         setOidcCheckUser(options, true);
-        options.modules.config.getters.isOffline = (): boolean => {
-            return false;
-        };
-        options.modules.user.getters.userIsActive = (): boolean => {
-            return true;
-        };
+        options.modules.config.getters.isOffline = (): boolean => false;
+        options.modules.user.getters.userIsActive = (): boolean => true;
         container
             .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
             .toConstantValue(options);
@@ -235,18 +227,11 @@ describe("Router", () => {
         // Config store
         const options = new StoreOptionsStub();
         setOidcCheckUser(options, true);
-        options.modules.config.getters.isOffline = (): boolean => {
-            return false;
-        };
-        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => {
-            return true;
-        };
-        options.modules.auth.getters.isValidIdentityProvider = (): boolean => {
-            return true;
-        };
-        options.modules.user.getters.userIsRegistered = (): boolean => {
-            return false;
-        };
+        options.modules.config.getters.isOffline = (): boolean => false;
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
+        options.modules.auth.getters.isValidIdentityProvider = (): boolean =>
+            true;
+        options.modules.user.getters.userIsRegistered = (): boolean => false;
         container
             .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
             .toConstantValue(options);
@@ -268,18 +253,11 @@ describe("Router", () => {
         // Config store
         const options = new StoreOptionsStub();
         setOidcCheckUser(options, true);
-        options.modules.config.getters.isOffline = (): boolean => {
-            return false;
-        };
-        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => {
-            return true;
-        };
-        options.modules.auth.getters.isValidIdentityProvider = (): boolean => {
-            return false;
-        };
-        options.modules.user.getters.userIsRegistered = (): boolean => {
-            return false;
-        };
+        options.modules.config.getters.isOffline = (): boolean => false;
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => true;
+        options.modules.auth.getters.isValidIdentityProvider = (): boolean =>
+            false;
+        options.modules.user.getters.userIsRegistered = (): boolean => false;
         container
             .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
             .toConstantValue(options);
@@ -301,12 +279,8 @@ describe("Router", () => {
         // Config store
         const options = new StoreOptionsStub();
         setOidcCheckUser(options, true);
-        options.modules.config.getters.isOffline = (): boolean => {
-            return false;
-        };
-        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => {
-            return false;
-        };
+        options.modules.config.getters.isOffline = (): boolean => false;
+        options.modules.auth.getters.oidcIsAuthenticated = (): boolean => false;
         container
             .rebind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
             .toConstantValue(options);

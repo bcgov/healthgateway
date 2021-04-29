@@ -34,7 +34,7 @@ describe("NavBar Header Component", () => {
         store: customStore,
         router,
         stubs: {
-            "font-awesome-icon": true,
+            "hg-icon": true,
         },
     });
 

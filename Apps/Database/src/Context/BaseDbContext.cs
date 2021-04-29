@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Context
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using HealthGateway.Database.Models;
@@ -26,6 +27,7 @@ namespace HealthGateway.Database.Context
     /// <summary>
     /// The common database context to be used by all other HealthGateway contexts.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public abstract class BaseDbContext : DbContext
     {
         /// <summary>

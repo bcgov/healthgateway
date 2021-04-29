@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Context
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
@@ -31,6 +32,7 @@ namespace HealthGateway.Database.Context
     /// The database context used by the web client application.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
+    [ExcludeFromCodeCoverage]
     public class GatewayDbContext : BaseDbContext
     {
         /// <summary>

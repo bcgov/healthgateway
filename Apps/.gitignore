@@ -442,5 +442,8 @@ TEST-results.xml
 
 #SonarQube
 **/.sonarqube
+**/sonar_reports/
+**/coverage.opencover.xml
+**/xUnitResults/
 
 

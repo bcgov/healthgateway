@@ -3,6 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faBars,
     faCalendarDay,
+    faChevronDown,
     faSlidersH,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
@@ -18,7 +19,8 @@ import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-library.add(faBars, faCalendarDay, faSlidersH);
+
+library.add(faBars, faCalendarDay, faChevronDown, faSlidersH);
 
 // Entry filter model
 interface EntryTypeFilter {
@@ -223,20 +225,20 @@ export default class FilterComponent extends Vue {
                 tabindex="0"
                 @click="toggleMenu"
             >
-                Options
+                <span>Options</span>
                 <b-badge
                     v-show="hasFilterSelected"
                     variant="light"
-                    class="badge-style"
+                    class="badge-style ml-2"
                 >
                     {{ activeFilterCount }}
                     <span class="sr-only">filters applied</span>
                 </b-badge>
-                <font-awesome-icon
+                <hg-icon
                     icon="chevron-down"
-                    size="xs"
+                    size="small"
                     aria-hidden="true"
-                    class="ml-1"
+                    class="ml-2"
                 />
             </b-button>
             <b-popover
@@ -327,10 +329,7 @@ export default class FilterComponent extends Vue {
                                 :class="{ active: isListViewToggle }"
                                 @click.stop="toggleListView"
                             >
-                                <font-awesome-icon
-                                    icon="bars"
-                                    size="1x"
-                                ></font-awesome-icon>
+                                <hg-icon icon="bars" size="medium" />
                             </b-btn>
                         </b-col>
                         <b-col cols="auto" class="pl-0">
@@ -340,10 +339,7 @@ export default class FilterComponent extends Vue {
                                 :class="{ active: !isListViewToggle }"
                                 @click.stop="toggleMonthView"
                             >
-                                <font-awesome-icon
-                                    icon="calendar-day"
-                                    size="1x"
-                                ></font-awesome-icon>
+                                <hg-icon icon="calendar-day" size="medium" />
                             </b-btn>
                         </b-col>
                     </b-row>
@@ -380,7 +376,7 @@ export default class FilterComponent extends Vue {
             variant="outline-primary"
             @click.stop="toggleMobileView"
         >
-            <font-awesome-icon icon="sliders-h" aria-hidden="true" size="1x" />
+            <hg-icon icon="sliders-h" size="medium" aria-hidden="true" />
         </b-button>
         <b-modal
             id="generic-message"
@@ -467,10 +463,7 @@ export default class FilterComponent extends Vue {
                             :class="{ active: isListViewToggle }"
                             @click.stop="toggleListView"
                         >
-                            <font-awesome-icon
-                                icon="bars"
-                                size="1x"
-                            ></font-awesome-icon>
+                            <hg-icon icon="bars" size="medium" />
                         </b-btn>
                     </b-col>
                     <b-col cols="auto" class="pl-0">
@@ -480,10 +473,7 @@ export default class FilterComponent extends Vue {
                             :class="{ active: !isListViewToggle }"
                             @click.stop="toggleMonthView"
                         >
-                            <font-awesome-icon
-                                icon="calendar-day"
-                                size="1x"
-                            ></font-awesome-icon>
+                            <hg-icon icon="calendar-day" size="medium" />
                         </b-btn>
                     </b-col>
                 </b-row>

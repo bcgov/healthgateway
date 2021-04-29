@@ -1,5 +1,5 @@
 <script lang="ts">
-import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
 import { BTab, BTabs } from "bootstrap-vue";
 import Vue from "vue";
@@ -29,7 +29,8 @@ import {
     ILogger,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-library.add(faFileDownload);
+
+library.add(faEllipsisV, faFileDownload);
 
 @Component({
     components: {
@@ -81,10 +82,6 @@ export default class DependentCardComponent extends Vue {
             now.diff(birthDate, "year").years >
             this.webClientConfig.maxDependentAge
         );
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
     }
 
     private created() {
@@ -359,10 +356,10 @@ export default class DependentCardComponent extends Vue {
                                         showSensitiveDocumentDownloadModal(item)
                                     "
                                 >
-                                    <font-awesome-icon
+                                    <hg-icon
                                         icon="file-download"
+                                        size="medium"
                                         aria-hidden="true"
-                                        size="1x"
                                     />
                                 </b-btn>
                             </td>
@@ -431,12 +428,12 @@ export default class DependentCardComponent extends Vue {
                                         :no-caret="true"
                                     >
                                         <template slot="button-content">
-                                            <font-awesome-icon
+                                            <hg-icon
+                                                icon="ellipsis-v"
+                                                size="medium"
                                                 data-testid="dependentMenuBtn"
                                                 class="dependentMenu"
-                                                :icon="menuIcon"
-                                                size="1x"
-                                            ></font-awesome-icon>
+                                            />
                                         </template>
                                         <b-dropdown-item
                                             data-testid="deleteDependentMenuBtn"

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { email, helpers, requiredIf, sameAs } from "vuelidate/lib/validators";
@@ -22,7 +22,7 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
-library.add(faCheck);
+library.add(faExclamationTriangle);
 
 @Component({
     components: {
@@ -408,13 +408,17 @@ export default class RegistrationView extends Vue {
                     </b-row>
                     <b-row v-if="!isEmailChecked && !isSMSNumberChecked">
                         <b-col class="font-weight-bold text-primary">
-                            <font-awesome-icon
+                            <hg-icon
                                 icon="exclamation-triangle"
+                                size="medium"
                                 aria-hidden="true"
-                            ></font-awesome-icon>
-                            You won't receive notifications from the Health
-                            Gateway. You can update this from your Profile Page
-                            later.
+                                class="mr-2"
+                            />
+                            <span
+                                >You won't receive notifications from the Health
+                                Gateway. You can update this from your Profile
+                                Page later.</span
+                            >
                         </b-col>
                     </b-row>
                     <b-row class="mt-4">

@@ -1,9 +1,6 @@
 <script lang="ts">
-import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faCheck,
-    faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { Duration } from "luxon";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
@@ -20,9 +17,6 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import VerifySMSComponent from "@/components/modal/verifySMS.vue";
-import BaseButtonComponent from "@/components/shared/baseButton.vue";
-import PageTitleComponent from "@/components/shared/pageTitle.vue";
-import StatusLabelComponent from "@/components/shared/statusLabel.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -44,11 +38,8 @@ const authNamespace = "auth";
 
 @Component({
     components: {
-        BaseButtonComponent,
         LoadingComponent,
         VerifySMSComponent,
-        PageTitleComponent,
-        StatusLabelComponent,
     },
 })
 export default class ProfileView extends Vue {
@@ -286,10 +277,6 @@ export default class ProfileView extends Vue {
         return this.pluralize(timeRemaining, "second");
     }
 
-    private get verifiedIcon(): IconDefinition {
-        return faCheck;
-    }
-
     private pluralize(count: number, message: string): string {
         let roundCount = Math.floor(count);
         return (
@@ -470,7 +457,7 @@ export default class ProfileView extends Vue {
                         If you didn't receive one, please check your junk mail.
                     </span>
                 </b-alert>
-                <PageTitleComponent title="Profile" />
+                <page-title title="Profile" />
                 <div v-if="!isLoading">
                     <div v-if="isActiveProfile">
                         <b-row class="mb-3">
@@ -536,7 +523,7 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <BaseButtonComponent
+                                                <hg-button
                                                     v-if="
                                                         !emailVerified &&
                                                         !isEmailEditable &&
@@ -554,7 +541,7 @@ export default class ProfileView extends Vue {
                                                     "
                                                 >
                                                     Resend Verification
-                                                </BaseButtonComponent>
+                                                </hg-button>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.email.email"
@@ -573,13 +560,13 @@ export default class ProfileView extends Vue {
                                                 id="emailStatus"
                                                 data-testid="emailStatus"
                                             >
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-if="emailVerified"
                                                     status="Verified"
                                                     variant="success"
                                                     data-testid="emailStatusVerified"
                                                 />
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-else-if="
                                                         email == null ||
                                                         email === ''
@@ -587,7 +574,7 @@ export default class ProfileView extends Vue {
                                                     status="Opted Out"
                                                     data-testid="emailStatusOptedOut"
                                                 />
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-else
                                                     status="Not Verified"
                                                     variant="danger"
@@ -604,18 +591,22 @@ export default class ProfileView extends Vue {
                                     <b-col
                                         class="font-weight-bold text-primary text-center"
                                     >
-                                        <font-awesome-icon
+                                        <hg-icon
                                             icon="exclamation-triangle"
+                                            size="medium"
                                             aria-hidden="true"
-                                        ></font-awesome-icon>
-                                        Removing your email address will disable
-                                        future email communications from the
-                                        Health Gateway
+                                            class="mr-2"
+                                        />
+                                        <span
+                                            >Removing your email address will
+                                            disable future email communications
+                                            from the Health Gateway.</span
+                                        >
                                     </b-col>
                                 </b-row>
                                 <b-row v-if="isEmailEditable" class="mb-3">
                                     <b-col>
-                                        <BaseButtonComponent
+                                        <hg-button
                                             id="editEmailCancelBtn"
                                             data-testid="editEmailCancelBtn"
                                             variant="secondary"
@@ -624,8 +615,8 @@ export default class ProfileView extends Vue {
                                             @click="cancelEmailEdit()"
                                         >
                                             Cancel
-                                        </BaseButtonComponent>
-                                        <BaseButtonComponent
+                                        </hg-button>
+                                        <hg-button
                                             id="editSMSSaveBtn"
                                             data-testid="editEmailSaveBtn"
                                             variant="primary"
@@ -638,7 +629,7 @@ export default class ProfileView extends Vue {
                                             @click="saveEmailEdit($event)"
                                         >
                                             Save
-                                        </BaseButtonComponent>
+                                        </hg-button>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -692,7 +683,7 @@ export default class ProfileView extends Vue {
                                                             : false
                                                     "
                                                 />
-                                                <BaseButtonComponent
+                                                <hg-button
                                                     v-if="
                                                         !smsVerified &&
                                                         !isSMSEditable &&
@@ -705,7 +696,7 @@ export default class ProfileView extends Vue {
                                                     @click="verifySMS()"
                                                 >
                                                     Verify
-                                                </BaseButtonComponent>
+                                                </hg-button>
                                             </div>
                                             <b-form-invalid-feedback
                                                 :state="$v.smsNumber.sms"
@@ -726,13 +717,13 @@ export default class ProfileView extends Vue {
                                                 id="smsStatus"
                                                 data-testid="smsStatus"
                                             >
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-if="smsVerified"
                                                     status="Verified"
                                                     variant="success"
                                                     data-testid="smsStatusVerified"
                                                 />
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-else-if="
                                                         smsNumber == null ||
                                                         smsNumber === ''
@@ -740,7 +731,7 @@ export default class ProfileView extends Vue {
                                                     status="Opted Out"
                                                     data-testid="smsStatusOptedOut"
                                                 />
-                                                <StatusLabelComponent
+                                                <status-label
                                                     v-else
                                                     status="Not Verified"
                                                     variant="danger"
@@ -758,18 +749,22 @@ export default class ProfileView extends Vue {
                                     <b-col
                                         class="font-weight-bold text-primary text-center"
                                     >
-                                        <font-awesome-icon
+                                        <hg-icon
                                             icon="exclamation-triangle"
+                                            size="medium"
                                             aria-hidden="true"
-                                        ></font-awesome-icon>
-                                        Removing your phone number will disable
-                                        future SMS communications from the
-                                        Health Gateway
+                                            class="mr-2"
+                                        />
+                                        <span
+                                            >Removing your phone number will
+                                            disable future SMS communications
+                                            from the Health Gateway.</span
+                                        >
                                     </b-col>
                                 </b-row>
                                 <b-row v-if="isSMSEditable" class="mb-3">
                                     <b-col>
-                                        <BaseButtonComponent
+                                        <hg-button
                                             id="cancelBtn"
                                             data-testid="cancelSMSEditBtn"
                                             variant="secondary"
@@ -777,8 +772,8 @@ export default class ProfileView extends Vue {
                                             class="mr-2"
                                             @click="cancelSMSEdit()"
                                             >Cancel
-                                        </BaseButtonComponent>
-                                        <BaseButtonComponent
+                                        </hg-button>
+                                        <hg-button
                                             id="saveBtn"
                                             data-testid="saveSMSEditBtn"
                                             variant="primary"
@@ -787,7 +782,7 @@ export default class ProfileView extends Vue {
                                             :disabled="tempSMS === smsNumber"
                                             @click="saveSMSEdit()"
                                             >Save
-                                        </BaseButtonComponent>
+                                        </hg-button>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -796,15 +791,13 @@ export default class ProfileView extends Vue {
                     <div v-else>
                         <b-row class="mb-3">
                             <b-col>
-                                <font-awesome-icon
+                                <hg-icon
                                     icon="exclamation-triangle"
+                                    size="medium"
                                     aria-hidden="true"
-                                    class="text-danger"
-                                ></font-awesome-icon>
-                                <label
-                                    for="deletionWarning"
-                                    class="hg-label ml-1"
-                                >
+                                    class="text-danger mr-2"
+                                />
+                                <label for="deletionWarning" class="hg-label">
                                     Account marked for removal
                                 </label>
                                 <div id="deletionWarning">
@@ -854,15 +847,20 @@ export default class ProfileView extends Vue {
                                         class="font-weight-bold text-danger text-center"
                                     >
                                         <hr />
-                                        <font-awesome-icon
+                                        <hg-icon
                                             icon="exclamation-triangle"
+                                            size="medium"
                                             aria-hidden="true"
-                                        ></font-awesome-icon>
-                                        Your account will be marked for removal,
-                                        preventing you from accessing your
-                                        information on the Health Gateway. After
-                                        a set period of time it will be removed
-                                        permanently.
+                                            class="mr-2"
+                                        />
+                                        <span
+                                            >Your account will be marked for
+                                            removal, preventing you from
+                                            accessing your information on the
+                                            Health Gateway. After a set period
+                                            of time it will be removed
+                                            permanently.</span
+                                        >
                                     </b-col>
                                 </b-row>
                                 <b-row

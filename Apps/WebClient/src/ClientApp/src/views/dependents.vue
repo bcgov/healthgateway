@@ -1,4 +1,6 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -14,6 +16,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { IDependentService, ILogger } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+
+library.add(faUserPlus);
 
 @Component({
     components: {
@@ -97,13 +101,13 @@ export default class DependentsView extends Vue {
                                     class="float-right"
                                     @click="showModal()"
                                 >
-                                    <font-awesome-icon
+                                    <hg-icon
                                         icon="user-plus"
+                                        size="medium"
                                         class="mr-2"
-                                    >
-                                    </font-awesome-icon
-                                    >Add a new dependent</b-btn
-                                >
+                                    />
+                                    <span>Add a new dependent</span>
+                                </b-btn>
                             </b-col>
                         </b-row>
                         <hr />

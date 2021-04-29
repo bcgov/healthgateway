@@ -37,7 +37,7 @@ describe("Landing view", () => {
         localVue,
         store: store,
         stubs: {
-            "font-awesome-icon": true,
+            "hg-icon": true,
         },
     });
 

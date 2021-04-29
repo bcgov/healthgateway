@@ -50,95 +50,28 @@ Vue.use(IconsPlugin);
 Vue.use(VueTheMask);
 
 // Load general icons
-import { config, library } from "@fortawesome/fontawesome-svg-core";
+import { config } from "@fortawesome/fontawesome-svg-core";
 // Prevent auto adding CSS to the header since that breaks Content security policies.
 config.autoAddCss = false;
 // Add font awesome styles manually
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
-import {
-    faAddressCard,
-    faAngleDoubleLeft,
-    faChartBar,
-    faChartLine,
-    faCheckCircle,
-    faChevronDown,
-    faChevronLeft,
-    faChevronRight,
-    faChevronUp,
-    faClipboardList,
-    faCommentAlt,
-    faEdit,
-    faEllipsisV,
-    faExclamationTriangle,
-    faFileAlt,
-    faFlask,
-    faLock,
-    faPaperclip,
-    faPills,
-    faPrint,
-    faSpinner,
-    faStream,
-    faSyringe,
-    faTimes,
-    faTimesCircle,
-    faUser,
-    faUserCircle,
-    faUserFriends,
-    faUserMd,
-    faUserPlus,
-    faUserSecret,
-} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import VueTheMask from "vue-the-mask";
 import { Action, Getter } from "vuex-class";
-
-import Process, { EnvironmentType } from "@/constants/process";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
-import { ILogger } from "@/services/interfaces";
-library.add(
-    faUser,
-    faUserCircle,
-    faAddressCard,
-    faUserSecret,
-    faEdit,
-    faChevronUp,
-    faChevronDown,
-    faChevronLeft,
-    faChevronRight,
-    faSpinner,
-    faCheckCircle,
-    faTimes,
-    faTimesCircle,
-    faEllipsisV,
-    faPrint,
-    faAngleDoubleLeft,
-    faFileAlt,
-    faChartBar,
-    faCommentAlt,
-    faLock,
-    faExclamationTriangle,
-    faFlask,
-    faPills,
-    faSyringe,
-    faUserMd,
-    faClipboardList,
-    faChartLine,
-    faStream,
-    faUserPlus,
-    faUserFriends,
-    faPaperclip
-);
 
 import ErrorCard from "@/components/errorCard.vue";
 import IdleComponent from "@/components/modal/idle.vue";
 import FooterComponent from "@/components/navmenu/navFooter.vue";
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import SidebarComponent from "@/components/navmenu/sidebar.vue";
+import Process, { EnvironmentType } from "@/constants/process";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 import ScreenWidth from "./constants/screenWidth";
+import container from "./plugins/inversify.container";
 
 const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 

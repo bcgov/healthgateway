@@ -34,7 +34,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<TimelineView> {
         localVue,
         store: store,
         stubs: {
-            "font-awesome-icon": true,
+            "hg-icon": true,
         },
     });
 }

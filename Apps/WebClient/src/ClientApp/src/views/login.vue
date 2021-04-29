@@ -1,4 +1,10 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faAddressCard,
+    faUser,
+    faUserSecret,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import VueRouter from "vue-router";
@@ -6,6 +12,8 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/loading.vue";
 import { IdentityProviderConfiguration } from "@/models/configData";
+
+library.add(faAddressCard, faUser, faUserSecret); // icons listed in config
 
 const namespace = "auth";
 
@@ -119,11 +127,12 @@ export default class LoginView extends Vue {
                                     >
                                         <b-row>
                                             <b-col class="col-2">
-                                                <font-awesome-icon
+                                                <hg-icon
                                                     :icon="`${provider.icon}`"
-                                                ></font-awesome-icon>
+                                                    size="medium"
+                                                />
                                             </b-col>
-                                            <b-col class="text-justify">
+                                            <b-col class="text-left">
                                                 <span>{{ provider.name }}</span>
                                             </b-col>
                                         </b-row>
