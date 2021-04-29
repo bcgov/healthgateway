@@ -1,4 +1,13 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faEdit,
+    faExclamationTriangle,
+    faFlask,
+    faPills,
+    faSyringe,
+    faUserMd,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
@@ -13,12 +22,20 @@ import CommunicationComponent from "@/components/communication.vue";
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 
+library.add(
+    faEdit,
+    faExclamationTriangle,
+    faFlask,
+    faPills,
+    faSyringe,
+    faUserMd
+);
+
 interface Icon {
     name: string;
     label: string;
     definition: string;
     active: boolean;
-    color: string;
 }
 
 interface Tile {
@@ -55,42 +72,36 @@ export default class LandingView extends Vue {
             name: "Medication",
             definition: "pills",
             label: "Prescription Medications (Dec 2019)",
-            color: "",
             active: false,
         },
         {
             name: "Note",
             definition: "edit",
             label: "Add Notes to Records (Mar 2020)",
-            color: "#fcba19",
             active: false,
         },
         {
             name: "Laboratory",
             definition: "exclamation-triangle",
             label: "COVID-19 Test Results (Sep 2020)",
-            color: "#dc3545",
             active: true,
         },
         {
             name: "Immunization",
             definition: "syringe",
             label: "Immunization Records (Dec 2020)",
-            color: "",
             active: false,
         },
         {
             name: "Encounter",
             definition: "user-md",
             label: "Health Visits (Mar 2021)",
-            color: "",
             active: false,
         },
         {
             name: "Laboratory-Inactive",
             definition: "flask",
             label: "Lab Results",
-            color: "",
             active: false,
         },
     ];
@@ -186,27 +197,19 @@ export default class LandingView extends Vue {
                 <b-row
                     v-for="icon in icons"
                     :key="icon.label"
-                    class="icon-wrapper my-2 ml-auto justify-content-start"
+                    class="my-4 ml-auto justify-content-start"
                     :class="icon.active ? 'status-active' : 'status-inactive'"
                 >
-                    <b-col
-                        class="mr-2 px-0 icon"
-                        :style="{ background: icon.color }"
-                        cols="0"
-                    >
-                        <font-awesome-icon
-                            :icon="icon.definition"
-                            size="lg"
-                        ></font-awesome-icon>
-                    </b-col>
-                    <b-col class="px-0 text-left" cols="auto">
-                        <span
-                            >{{ icon.label }}
-                            <span v-if="!icon.active">
-                                (Coming soon)</span
-                            ></span
-                        >
-                    </b-col>
+                    <hg-icon
+                        :icon="icon.definition"
+                        size="large"
+                        fixed-width
+                        class="mr-2"
+                    />
+                    <span>
+                        <span>{{ icon.label }}</span>
+                        <span v-if="!icon.active"> (Coming soon)</span>
+                    </span>
                 </b-row>
                 <b-row
                     v-if="!oidcIsAuthenticated"
@@ -344,32 +347,12 @@ export default class LandingView extends Vue {
             color: $primary;
             max-width: 500px !important;
 
-            .icon-wrapper {
-                line-height: 40px;
-                height: 40px;
-            }
-
-            .icon {
-                text-align: center;
-                border-radius: 50%;
-                height: 40px;
-                width: 40px;
-            }
-
             .status-active {
                 color: $primary;
-                .icon {
-                    background-color: $primary;
-                    color: white;
-                }
             }
 
             .status-inactive {
                 color: darkgray;
-                .icon {
-                    background-color: darkgray;
-                    color: white;
-                }
             }
 
             #btnLogin {

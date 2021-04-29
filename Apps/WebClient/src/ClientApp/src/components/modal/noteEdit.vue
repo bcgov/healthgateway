@@ -1,9 +1,6 @@
 <script lang="ts">
-import {
-    faEdit,
-    faEllipsisV,
-    IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { required } from "vuelidate/lib/validators";
@@ -17,6 +14,8 @@ import { DateWrapper } from "@/models/dateWrapper";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
+
+library.add(faEdit);
 
 @Component({
     components: {
@@ -60,16 +59,8 @@ export default class NoteEditComponent extends Vue {
     private readonly unsavedChangesText =
         "You have unsaved changes. Are you sure you want to leave?";
 
-    private get entryIcon(): IconDefinition {
-        return faEdit;
-    }
-
     private get modalTitle(): string {
         return this.isNewNote ? "Add Note" : "Update Note";
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
     }
 
     private get isBlankNote(): boolean {
@@ -244,19 +235,10 @@ export default class NoteEditComponent extends Vue {
             </span>
         </b-alert>
         <template #modal-header>
-            <b-row class="w-100 h-100">
-                <b-col cols="auto">
-                    <div class="icon">
-                        <font-awesome-icon
-                            :icon="entryIcon"
-                            size="lg"
-                        ></font-awesome-icon>
-                    </div>
-                </b-col>
-                <b-col>
-                    <h5>{{ modalTitle }}</h5>
-                </b-col>
-            </b-row>
+            <h5 class="mb-0">
+                <hg-icon icon="edit" size="large" class="mr-2" />
+                <span>{{ modalTitle }}</span>
+            </h5>
         </template>
         <form>
             <b-row>
@@ -353,13 +335,6 @@ export default class NoteEditComponent extends Vue {
 .entryDetails {
     word-wrap: break-word;
     padding-left: 15px;
-}
-
-.icon {
-    color: white;
-    text-align: center;
-    padding-top: 0px;
-    font-size: 1em;
 }
 
 .editableEntryDetails {

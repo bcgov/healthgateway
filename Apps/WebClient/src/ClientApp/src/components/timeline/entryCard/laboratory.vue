@@ -1,10 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faFileDownload,
-    faFlask,
-    IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFileDownload, faFlask } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
@@ -20,7 +16,8 @@ import container from "@/plugins/inversify.config";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
-library.add(faFileDownload);
+
+library.add(faFileDownload, faFlask);
 
 @Component({
     components: {
@@ -42,10 +39,6 @@ export default class LaboratoryTimelineComponent extends Vue {
 
     private isLoadingDocument = false;
     private logger!: ILogger;
-
-    private get entryIcon(): IconDefinition {
-        return faFlask;
-    }
 
     private get reportAvailable(): boolean {
         return this.entry.reportAvailable;
@@ -96,7 +89,7 @@ export default class LaboratoryTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        :entry-icon="entryIcon"
+        entry-icon="flask"
         :title="entry.summaryTitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
@@ -124,10 +117,10 @@ export default class LaboratoryTimelineComponent extends Vue {
                         variant="link"
                         @click="showConfirmationModal()"
                     >
-                        <font-awesome-icon
+                        <hg-icon
                             icon="file-download"
+                            size="medium"
                             aria-hidden="true"
-                            size="1x"
                         />
                     </b-btn>
                 </span>

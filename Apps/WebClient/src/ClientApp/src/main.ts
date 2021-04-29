@@ -3,7 +3,6 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import "@/plugins/registerComponentHooks";
 
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { BBadge, BFormTag, BFormTags, BPopover } from "bootstrap-vue";
 import IdleVue from "idle-vue";
 import Vue from "vue";
@@ -12,6 +11,10 @@ import VueRouter from "vue-router";
 import Vuelidate from "vuelidate";
 
 const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
+import HgButtonComponent from "@/components/shared/hgButton.vue";
+import HgIconComponent from "@/components/shared/hgIcon.vue";
+import PageTitleComponent from "@/components/shared/pageTitle.vue";
+import StatusLabelComponent from "@/components/shared/statusLabel.vue";
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -37,11 +40,14 @@ import {
 } from "@/services/interfaces";
 import store from "@/store/store";
 
-Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 Vue.component("BPopover", BPopover);
 Vue.component("BBadge", BBadge);
 Vue.component("BFormTags", BFormTags);
 Vue.component("BFormTag", BFormTag);
+Vue.component("HgButton", HgButtonComponent);
+Vue.component("HgIcon", HgIconComponent);
+Vue.component("PageTitle", PageTitleComponent);
+Vue.component("StatusLabel", StatusLabelComponent);
 
 Vue.use(VueRouter);
 Vue.use(Vuelidate);

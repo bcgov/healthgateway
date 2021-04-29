@@ -1,5 +1,6 @@
 <script lang="ts">
-import { faPills, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faPills } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
@@ -7,6 +8,8 @@ import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import PhoneUtil from "@/utility/phoneUtil";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
+
+library.add(faPills);
 
 @Component({
     components: {
@@ -19,10 +22,6 @@ export default class MedicationTimelineComponent extends Vue {
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
 
-    private get entryIcon(): IconDefinition {
-        return faPills;
-    }
-
     private formatPhone(phoneNumber: string): string {
         return PhoneUtil.formatPhone(phoneNumber);
     }
@@ -32,7 +31,7 @@ export default class MedicationTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        :entry-icon="entryIcon"
+        entry-icon="pills"
         :title="entry.medication.brandName"
         :subtitle="entry.medication.genericName"
         :entry="entry"
