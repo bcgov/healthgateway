@@ -24,12 +24,11 @@
             Web API to handle patient notes interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.CommentController.#ctor(HealthGateway.WebClient.Services.ICommentService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:HealthGateway.WebClient.Controllers.CommentController.#ctor(HealthGateway.WebClient.Services.ICommentService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.CommentController"/> class.
             </summary>
             <param name="commentService">The injected comment service.</param>
-            <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.CommentController.Create(System.String,HealthGateway.WebClient.Models.UserComment)">
             <summary>
@@ -182,12 +181,11 @@
             Web API to handle patient notes interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(HealthGateway.WebClient.Services.INoteService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:HealthGateway.WebClient.Controllers.NoteController.#ctor(HealthGateway.WebClient.Services.INoteService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.NoteController"/> class.
             </summary>
             <param name="noteService">The injected patient notes service.</param>
-            <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.NoteController.CreateNote(System.String,HealthGateway.WebClient.Models.UserNote)">
             <summary>
@@ -253,12 +251,11 @@
             Web API to handle user feedback interactions.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.#ctor(HealthGateway.WebClient.Services.IUserFeedbackService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.#ctor(HealthGateway.WebClient.Services.IUserFeedbackService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.UserFeedbackController"/> class.
             </summary>
             <param name="userFeedbackService">The injected user feedback service.</param>
-            <param name="httpContextAccessor">The injected http context accessor provider.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.UserFeedbackController.CreateUserFeedback(System.String,HealthGateway.Database.Models.UserFeedback)">
             <summary>
@@ -430,12 +427,11 @@
             Implements the abstract DB Listener and listens on the BannerChange channel.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Listeners.BannerListener.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Listeners.BannerListener},Microsoft.Extensions.Configuration.IConfiguration,System.IServiceProvider)">
+        <member name="M:HealthGateway.WebClient.Listeners.BannerListener.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Listeners.BannerListener},System.IServiceProvider)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Listeners.BannerListener"/> class.
             </summary>
             <param name="logger">The injected logger.</param>
-            <param name="configuration">The injected configuration.</param>
             <param name="services">The set of application services available.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Listeners.BannerListener.ExecuteAsync(System.Threading.CancellationToken)">

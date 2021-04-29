@@ -40,7 +40,6 @@ namespace HealthGateway.Immunization
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-            this.configuration = configuration;
         }
 
         /// <summary>

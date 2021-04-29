@@ -891,11 +891,10 @@
             The Medication data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Medication.Services.MedicationRequestService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Medication.Services.MedicationRequestService},HealthGateway.Common.Services.IPatientService,HealthGateway.Medication.Delegates.IMedicationRequestDelegate)">
+        <member name="M:HealthGateway.Medication.Services.MedicationRequestService.#ctor(HealthGateway.Common.Services.IPatientService,HealthGateway.Medication.Delegates.IMedicationRequestDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.MedicationRequestService"/> class.
             </summary>
-            <param name="logger">Injected Logger Provider.</param>
             <param name="patientService">The injected patient registry provider.</param>
             <param name="medicationRequestDelegate">Injected medication statement delegate.</param>
         </member>

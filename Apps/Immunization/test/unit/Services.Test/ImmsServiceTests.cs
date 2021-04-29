@@ -38,21 +38,11 @@ namespace HealthGateway.Immunization.Test.Services
     /// </summary>
     public class ImmsServiceTests
     {
-        private readonly IConfiguration configuration;
-
         private readonly string recomendationSetId = "set-recomendation-id";
         private readonly string diseaseEligibleDateString = "2021-02-02";
         private readonly string diseaseName = "Human papillomavirus infection";
         private readonly string vaccineName = "Human Papillomavirus-HPV9 Vaccine";
         private readonly string antigenName = "HPV-9";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImmsServiceTests"/> class.
-        /// </summary>
-        public ImmsServiceTests()
-        {
-            this.configuration = GetIConfigurationRoot();
-        }
 
         /// <summary>
         /// GetImmunizations - Happy Path.
@@ -97,7 +87,7 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(new Mock<ILogger<ImmunizationService>>().Object, mockDelegate.Object);
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
             var actualResult = service.GetImmunizations(string.Empty, 0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
@@ -125,7 +115,7 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(new Mock<ILogger<ImmunizationService>>().Object, mockDelegate.Object);
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
             var actualResult = service.GetImmunizations(string.Empty, 0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
@@ -170,21 +160,10 @@ namespace HealthGateway.Immunization.Test.Services
             };
 
             mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(new Mock<ILogger<ImmunizationService>>().Object, mockDelegate.Object);
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
             var actualResult = service.GetImmunizations(string.Empty, 0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .Build();
         }
 
         private static RequestResult<PHSAResult<ImmunizationResponse>> GetPHSAResult(ImmunizationRecommendationResponse immzRecommendationResponse)

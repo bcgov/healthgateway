@@ -40,10 +40,8 @@ namespace HealthGateway.Admin.Test.Services
 
             // Set up service
             IDashboardService service = new DashboardService(
-                new Mock<INoteDelegate>().Object,
                 dependentDelegateMock.Object,
-                new Mock<IUserProfileDelegate>().Object,
-                new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build());
+                new Mock<IUserProfileDelegate>().Object);
 
             IDictionary<DateTime, int> actualResult = service.GetDailyDependentCount(5);
 

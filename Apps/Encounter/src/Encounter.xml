@@ -9,23 +9,17 @@
             The Encounter controller.
             </summary>
         </member>
-        <member name="F:HealthGateway.Encounter.Controllers.EncounterController.httpContextAccessor">
-            <summary>
-            Gets or sets the http context accessor.
-            </summary>
-        </member>
         <member name="F:HealthGateway.Encounter.Controllers.EncounterController.service">
             <summary>
             Gets or sets the Encounter data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Encounter.Controllers.EncounterController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Controllers.EncounterController},HealthGateway.Encounter.Services.IEncounterService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:HealthGateway.Encounter.Controllers.EncounterController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Controllers.EncounterController},HealthGateway.Encounter.Services.IEncounterService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Controllers.EncounterController"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="service">The Encounter data service.</param>
-            <param name="httpContextAccessor">The Http Context accessor.</param>
         </member>
         <member name="M:HealthGateway.Encounter.Controllers.EncounterController.GetEncounters(System.String)">
             <summary>

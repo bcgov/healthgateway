@@ -259,13 +259,11 @@
             Web API to handle user feedback review.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.#ctor(HealthGateway.Admin.Services.IUserFeedbackService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.AspNetCore.Authorization.IAuthorizationService)">
+        <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.#ctor(HealthGateway.Admin.Services.IUserFeedbackService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.UserFeedbackController"/> class.
             </summary>
             <param name="feedbackService">The injected user feedback service.</param>
-            <param name="httpContextAccessor">The injected http context accessor provider.</param>
-            <param name="authorizationService">The injected authorization service.</param>
         </member>
         <member name="M:HealthGateway.Admin.Controllers.UserFeedbackController.GetFeedbackList">
             <summary>
@@ -806,14 +804,12 @@
         <member name="T:HealthGateway.Admin.Services.DashboardService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.INoteDelegate,HealthGateway.Database.Delegates.IResourceDelegateDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Admin.Services.DashboardService.#ctor(HealthGateway.Database.Delegates.IResourceDelegateDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.DashboardService"/> class.
             </summary>
-            <param name="noteDelegate">The note delegate to interact with the DB.</param>
             <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
             <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-            <param name="config">The configuration provider.</param>
         </member>
         <member name="M:HealthGateway.Admin.Services.DashboardService.GetDailyRegisteredUsersCount(System.Int32)">
             <inheritdoc />
@@ -829,12 +825,11 @@
             Service that provides functionality to admin emails.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Services.EmailAdminService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Logging.ILogger{HealthGateway.Admin.Services.EmailAdminService},HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate)">
+        <member name="M:HealthGateway.Admin.Services.EmailAdminService.#ctor(Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.Database.Delegates.IEmailDelegate,HealthGateway.Database.Delegates.IMessagingVerificationDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Services.EmailAdminService"/> class.
             </summary>
             <param name="configuration">Injected configuration provider.</param>
-            <param name="logger">Injected Logger Provider.</param>
             <param name="emailDelegate">The email delegate to interact with the DB.</param>
             <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         </member>

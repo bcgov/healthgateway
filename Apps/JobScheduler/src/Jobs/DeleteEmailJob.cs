@@ -38,8 +38,8 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="logger">The logger to use.</param>
         /// <param name="emailDelegate">The email delegate to use.</param>
         public DeleteEmailJob(
-            IConfiguration configuration, 
-            ILogger<EmailJob> logger, 
+            IConfiguration configuration,
+            ILogger<EmailJob> logger,
             IEmailDelegate emailDelegate)
         {
             this.logger = logger;

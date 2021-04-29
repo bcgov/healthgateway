@@ -145,11 +145,6 @@
             MedicationService's Unit Tests.
             </summary>
         </member>
-        <member name="M:HealthGateway.Medication.Services.Test.MedicationServiceTests.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.Test.MedicationServiceTests"/> class.
-            </summary>
-        </member>
         <member name="M:HealthGateway.Medication.Services.Test.MedicationServiceTests.ShouldGetMedications">
             <summary>
             GetMedications - Happy Path.
@@ -163,11 +158,6 @@
         <member name="T:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests">
             <summary>
             MedicationStatementService's Unit Tests.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests"/> class.
             </summary>
         </member>
         <member name="M:HealthGateway.Medication.Services.Test.MedicationStatementServiceTests.InvalidProtectiveWord">

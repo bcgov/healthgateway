@@ -89,20 +89,5 @@ namespace HealthGateway.CommonTests.FileDownload
             Assert.ThrowsAsync<AggregateException>(() => Task.Run(async () => await service.GetFileFromUrl(new System.Uri("https://localhost/fake.txt"), targetFolder, true).ConfigureAwait(true)));
             Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), targetFolder));
         }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            var myConfiguration = new Dictionary<string, string>
-            {
-                { "Section:Config", string.Empty },
-            };
-
-            return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .AddInMemoryCollection(myConfiguration)
-                .Build();
-        }
     }
 }

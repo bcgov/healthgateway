@@ -34,19 +34,15 @@ namespace HealthGateway.WebClient.Controllers
     public class CommentController
     {
         private readonly ICommentService commentService;
-        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommentController"/> class.
         /// </summary>
         /// <param name="commentService">The injected comment service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public CommentController(
-            ICommentService commentService,
-            IHttpContextAccessor httpContextAccessor)
+            ICommentService commentService)
         {
             this.commentService = commentService;
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
