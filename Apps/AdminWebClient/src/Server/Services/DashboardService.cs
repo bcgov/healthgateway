@@ -24,28 +24,20 @@ namespace HealthGateway.Admin.Services
     /// <inheritdoc />
     public class DashboardService : IDashboardService
     {
-        private readonly INoteDelegate noteDelegate;
         private readonly IResourceDelegateDelegate dependentDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
-        /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
         /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="config">The configuration provider.</param>
         public DashboardService(
-            INoteDelegate noteDelegate,
             IResourceDelegateDelegate dependentDelegate,
-            IUserProfileDelegate userProfileDelegate,
-            IConfiguration config)
+            IUserProfileDelegate userProfileDelegate)
         {
-            this.noteDelegate = noteDelegate;
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
-            this.configuration = config;
         }
 
         /// <inheritdoc />

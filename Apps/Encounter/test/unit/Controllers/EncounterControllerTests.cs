@@ -33,7 +33,6 @@ namespace HealthGateway.EncounterTests
     public class EncounterControllerTests
     {
         private readonly Mock<IEncounterService> encounterService;
-        private readonly EncounterController encounterController;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncounterControllerTests"/> class.
@@ -41,11 +40,7 @@ namespace HealthGateway.EncounterTests
         public EncounterControllerTests()
         {
             this.encounterService = new Mock<IEncounterService>();
-            var loggerService = new Mock<ILogger<EncounterController>>();
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             this.encounterService.Setup(x => x.GetEncounters(It.IsAny<string>())).ReturnsAsync(GetEncounters());
-
-            this.encounterController = new EncounterController(loggerService.Object, this.encounterService.Object, httpContextAccessorMock.Object);
         }
 
         private static RequestResult<IEnumerable<EncounterModel>> GetEncounters()

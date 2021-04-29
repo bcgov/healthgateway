@@ -422,12 +422,10 @@
         <member name="T:HealthGateway.Laboratory.Services.LaboratoryService">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Laboratory.Services.LaboratoryService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Laboratory.Services.LaboratoryService},Microsoft.AspNetCore.Http.IHttpContextAccessor,HealthGateway.Laboratory.Factories.ILaboratoryDelegateFactory)">
+        <member name="M:HealthGateway.Laboratory.Services.LaboratoryService.#ctor(HealthGateway.Laboratory.Factories.ILaboratoryDelegateFactory)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Laboratory.Services.LaboratoryService"/> class.
             </summary>
-            <param name="logger">Injected Logger Provider.</param>
-            <param name="httpAccessor">The injected http context accessor provider.</param>
             <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
         </member>
         <member name="M:HealthGateway.Laboratory.Services.LaboratoryService.GetLaboratoryOrders(System.String,System.String,System.Int32)">

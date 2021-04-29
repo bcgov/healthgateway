@@ -34,16 +34,6 @@ namespace HealthGateway.Medication.Services.Test
     /// </summary>
     public class MedicationServiceTests
     {
-        private readonly IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationServiceTests"/> class.
-        /// </summary>
-        public MedicationServiceTests()
-        {
-            this.configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
-        }
-
         /// <summary>
         /// GetMedications - Happy Path.
         /// </summary>

@@ -40,11 +40,6 @@ namespace HealthGateway.Encounter.Controllers
         private readonly ILogger logger;
 
         /// <summary>
-        /// Gets or sets the http context accessor.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
         /// Gets or sets the Encounter data service.
         /// </summary>
         private readonly IEncounterService service;
@@ -54,15 +49,12 @@ namespace HealthGateway.Encounter.Controllers
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="service">The Encounter data service.</param>
-        /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public EncounterController(
             ILogger<EncounterController> logger,
-            IEncounterService service,
-            IHttpContextAccessor httpContextAccessor)
+            IEncounterService service)
         {
             this.logger = logger;
             this.service = service;
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>

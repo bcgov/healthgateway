@@ -49,11 +49,6 @@
             EncounterService's Unit Tests.
             </summary>
         </member>
-        <member name="M:HealthGateway.Encounter.Test.Service.EncounterServiceTests.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Test.Service.EncounterServiceTests"/> class.
-            </summary>
-        </member>
         <member name="M:HealthGateway.Encounter.Test.Service.EncounterServiceTests.ValidateEncounters">
             <summary>
             GetEncounters - Happy Path.
