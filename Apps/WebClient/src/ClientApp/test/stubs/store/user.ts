@@ -11,7 +11,9 @@ import {
     UserState,
 } from "@/store/modules/user/types";
 
-var userState: UserState = {
+import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+
+const userState: UserState = {
     statusMessage: "",
     user: new User(),
     patientData: new PatientData(),
@@ -19,33 +21,19 @@ var userState: UserState = {
     status: LoadStatus.NONE,
 };
 
-var userActions: UserActions = {
-    checkRegistration(): Promise<boolean> {
-        return new Promise(() => {});
-    },
-    updateUserEmail(): Promise<void> {
-        return new Promise(() => {});
-    },
-    updateSMSResendDateTime(): void {},
-    updateUserPreference(): Promise<void> {
-        return new Promise(() => {});
-    },
-    createUserPreference(): Promise<void> {
-        return new Promise(() => {});
-    },
-    closeUserAccount(): Promise<void> {
-        return new Promise(() => {});
-    },
-    recoverUserAccount(): Promise<void> {
-        return new Promise(() => {});
-    },
-    getPatientData(): Promise<void> {
-        return new Promise(() => {});
-    },
-    handleError() {},
+const userActions: UserActions = {
+    checkRegistration: stubbedPromise,
+    updateUserEmail: stubbedPromise,
+    updateSMSResendDateTime: stubbedVoid,
+    updateUserPreference: stubbedPromise,
+    createUserPreference: stubbedPromise,
+    closeUserAccount: stubbedPromise,
+    recoverUserAccount: stubbedPromise,
+    getPatientData: stubbedPromise,
+    handleError: stubbedVoid,
 };
 
-var userGetters: UserGetters = {
+const userGetters: UserGetters = {
     user: (): User => {
         return new User();
     },
@@ -66,17 +54,17 @@ var userGetters: UserGetters = {
     },
 };
 
-var userMutations: UserMutation = {
-    setOidcUserData() {},
-    setProfileUserData() {},
-    setSMSResendDateTime() {},
-    setUserPreference() {},
-    setPatientData() {},
-    clearUserData() {},
-    userError() {},
+const userMutations: UserMutation = {
+    setOidcUserData: stubbedVoid,
+    setProfileUserData: stubbedVoid,
+    setSMSResendDateTime: stubbedVoid,
+    setUserPreference: stubbedVoid,
+    setPatientData: stubbedVoid,
+    clearUserData: stubbedVoid,
+    userError: stubbedVoid,
 };
 
-var userStub: UserModule = {
+const userStub: UserModule = {
     namespaced: true,
     state: userState,
     getters: userGetters,

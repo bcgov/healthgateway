@@ -6,12 +6,14 @@ import {
     NavbarState,
 } from "@/store/modules/navbar/types";
 
-var navbarState: NavbarState = {
+import { stubbedVoid } from "../../utility/stubUtil";
+
+const navbarState: NavbarState = {
     isSidebarOpen: false,
     isHeaderShown: false,
 };
 
-var navbarGetters: NavbarGetters = {
+const navbarGetters: NavbarGetters = {
     isSidebarOpen(): boolean {
         return false;
     },
@@ -20,21 +22,21 @@ var navbarGetters: NavbarGetters = {
     },
 };
 
-var navbarActions: NavbarActions = {
-    toggleSidebar(): void {},
-    setSidebarState(): void {},
-    toggleHeader(): void {},
-    setHeaderState(): void {},
+const navbarActions: NavbarActions = {
+    toggleSidebar: stubbedVoid,
+    setSidebarState: stubbedVoid,
+    toggleHeader: stubbedVoid,
+    setHeaderState: stubbedVoid,
 };
 
-var navbarMutations: NavbarMutations = {
-    toggleSidebar(): void {},
-    setSidebarState(): void {},
-    toggleHeader(): void {},
-    setHeaderState(): void {},
+const navbarMutations: NavbarMutations = {
+    toggleSidebar: stubbedVoid,
+    setSidebarState: stubbedVoid,
+    toggleHeader: stubbedVoid,
+    setHeaderState: stubbedVoid,
 };
 
-var navbarStub: NavbarModule = {
+const navbarStub: NavbarModule = {
     namespaced: true,
     state: navbarState,
     getters: navbarGetters,

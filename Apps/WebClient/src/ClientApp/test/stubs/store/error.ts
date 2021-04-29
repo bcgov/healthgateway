@@ -7,12 +7,14 @@ import {
     ErrorBannerState,
 } from "@/store/modules/error/types";
 
-var errorBannerState: ErrorBannerState = {
+import { stubbedVoid } from "../../utility/stubUtil";
+
+const errorBannerState: ErrorBannerState = {
     isShowing: false,
     errors: [],
 };
 
-var errorBannerGetters: ErrorBannerGetters = {
+const errorBannerGetters: ErrorBannerGetters = {
     isShowing(): boolean {
         return false;
     },
@@ -21,22 +23,22 @@ var errorBannerGetters: ErrorBannerGetters = {
     },
 };
 
-var errorBannerActions: ErrorBannerActions = {
-    dismiss(): void {},
-    show(): void {},
-    setError(): void {},
-    addError(): void {},
-    addResultError(): void {},
+const errorBannerActions: ErrorBannerActions = {
+    dismiss: stubbedVoid,
+    show: stubbedVoid,
+    setError: stubbedVoid,
+    addError: stubbedVoid,
+    addResultError: stubbedVoid,
 };
 
-var errorBannerMutations: ErrorBannerMutations = {
-    dissmiss(): void {},
-    show(): void {},
-    setError(): void {},
-    addError(): void {},
+const errorBannerMutations: ErrorBannerMutations = {
+    dissmiss: stubbedVoid,
+    show: stubbedVoid,
+    setError: stubbedVoid,
+    addError: stubbedVoid,
 };
 
-var errorBannerStub: ErrorBannerModule = {
+const errorBannerStub: ErrorBannerModule = {
     namespaced: true,
     state: errorBannerState,
     getters: errorBannerGetters,

@@ -6,25 +6,27 @@ import {
     IdleState,
 } from "@/store/modules/idle/types";
 
-var idleState: IdleState = {
+import { stubbedVoid } from "../../utility/stubUtil";
+
+const idleState: IdleState = {
     isVisible: false,
 };
 
-var idleGetters: IdleGetters = {
+const idleGetters: IdleGetters = {
     isVisible(): boolean {
         return false;
     },
 };
 
-var idleActions: IdleActions = {
-    setVisibleState(): void {},
+const idleActions: IdleActions = {
+    setVisibleState: stubbedVoid,
 };
 
-var idleMutations: IdleMutations = {
-    setVisibleState(): void {},
+const idleMutations: IdleMutations = {
+    setVisibleState: stubbedVoid,
 };
 
-var idleStub: IdleModule = {
+const idleStub: IdleModule = {
     namespaced: true,
     state: idleState,
     getters: idleGetters,

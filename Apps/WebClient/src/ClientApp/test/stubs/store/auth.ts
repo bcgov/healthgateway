@@ -7,7 +7,9 @@ import {
     AuthState,
 } from "@/store/modules/auth/types";
 
-var authState: AuthState = {
+import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+
+const authState: AuthState = {
     authentication: {
         isChecked: true,
         identityProvider: "",
@@ -18,7 +20,7 @@ var authState: AuthState = {
     status: LoadStatus.NONE,
 };
 
-var authGetters: AuthGetters = {
+const authGetters: AuthGetters = {
     authenticationStatus(): string {
         return "";
     },
@@ -39,38 +41,26 @@ var authGetters: AuthGetters = {
     },
 };
 
-var authActions: AuthActions = {
-    oidcCheckUser(): Promise<boolean> {
-        return new Promise(() => {});
-    },
-    authenticateOidc(): Promise<void> {
-        return new Promise(() => {});
-    },
-    oidcSignInCallback(): Promise<string> {
-        return new Promise(() => {});
-    },
-    authenticateOidcSilent(): Promise<void> {
-        return new Promise(() => {});
-    },
-    oidcWasAuthenticated(): void {},
-    getOidcUser(): Promise<void> {
-        return new Promise(() => {});
-    },
-    signOutOidc(): void {},
-    signOutOidcCallback(): Promise<string> {
-        return new Promise(() => {});
-    },
-    clearStorage(): void {},
+const authActions: AuthActions = {
+    oidcCheckUser: stubbedPromise,
+    authenticateOidc: stubbedPromise,
+    oidcSignInCallback: stubbedPromise,
+    authenticateOidcSilent: stubbedPromise,
+    oidcWasAuthenticated: stubbedVoid,
+    getOidcUser: stubbedPromise,
+    signOutOidc: stubbedVoid,
+    signOutOidcCallback: stubbedPromise,
+    clearStorage: stubbedVoid,
 };
 
-var authMutations: AuthMutations = {
-    setOidcAuth(): void {},
-    unsetOidcAuth(): void {},
-    setOidcAuthIsChecked(): void {},
-    setOidcError(): void {},
+const authMutations: AuthMutations = {
+    setOidcAuth: stubbedVoid,
+    unsetOidcAuth: stubbedVoid,
+    setOidcAuthIsChecked: stubbedVoid,
+    setOidcError: stubbedVoid,
 };
 
-var authStub: AuthModule = {
+const authStub: AuthModule = {
     namespaced: true,
     state: authState,
     getters: authGetters,

@@ -1,3 +1,5 @@
+import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+
 import { Dictionary } from "@/models/baseTypes";
 import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
@@ -9,13 +11,13 @@ import {
     CommentState,
 } from "@/store/modules/comment/types";
 
-var commentState: CommentState = {
+const commentState: CommentState = {
     profileComments: {},
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-var commentGetters: CommentGetters = {
+const commentGetters: CommentGetters = {
     comments(): Dictionary<UserComment[]> {
         return {};
     },
@@ -30,32 +32,24 @@ var commentGetters: CommentGetters = {
     },
 };
 
-var commentActions: CommentActions = {
-    retrieve(): Promise<void> {
-        return new Promise(() => {});
-    },
-    createComment(): Promise<UserComment | undefined> {
-        return new Promise(() => {});
-    },
-    updateComment(): Promise<UserComment> {
-        return new Promise(() => {});
-    },
-    deleteComment(): Promise<void> {
-        return new Promise(() => {});
-    },
-    handleError(): void {},
+const commentActions: CommentActions = {
+    retrieve: stubbedPromise,
+    createComment: stubbedPromise,
+    updateComment: stubbedPromise,
+    deleteComment: stubbedPromise,
+    handleError: stubbedVoid,
 };
 
-var commentMutations: CommentMutations = {
-    setRequested(): void {},
-    setProfileComments(): void {},
-    addComment(): void {},
-    updateComment(): void {},
-    deleteComment(): void {},
-    commentError(): void {},
+const commentMutations: CommentMutations = {
+    setRequested: stubbedVoid,
+    setProfileComments: stubbedVoid,
+    addComment: stubbedVoid,
+    updateComment: stubbedVoid,
+    deleteComment: stubbedVoid,
+    commentError: stubbedVoid,
 };
 
-var commentStub: CommentModule = {
+const commentStub: CommentModule = {
     namespaced: true,
     state: commentState,
     getters: commentGetters,

@@ -29,7 +29,7 @@ const storeOptions: GatewayStoreOptions = {
         },
     },
     getters: {
-        isMobile: (state) => {
+        isMobile: (state): boolean => {
             return state.isMobile;
         },
     },

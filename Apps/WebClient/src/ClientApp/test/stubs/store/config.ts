@@ -14,14 +14,16 @@ import {
     ConfigState,
 } from "@/store/modules/config/types";
 
-var configState: ConfigState = {
+import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+
+const configState: ConfigState = {
     statusMessage: "",
     config: new ExternalConfiguration(),
     error: false,
     status: LoadStatus.NONE,
 };
 
-var configGetters: ConfigGetters = {
+const configGetters: ConfigGetters = {
     identityProviders(): IdentityProviderConfiguration[] {
         return [];
     },
@@ -52,19 +54,17 @@ var configGetters: ConfigGetters = {
     },
 };
 
-var configActions: ConfigActions = {
-    initialize(): Promise<ExternalConfiguration> {
-        return new Promise(() => {});
-    },
+const configActions: ConfigActions = {
+    initialize: stubbedPromise,
 };
 
-var configMutations: ConfigMutations = {
-    configurationRequest(): void {},
-    configurationLoaded(): void {},
-    configurationError(): void {},
+const configMutations: ConfigMutations = {
+    configurationRequest: stubbedVoid,
+    configurationLoaded: stubbedVoid,
+    configurationError: stubbedVoid,
 };
 
-var configStub: ConfigModule = {
+const configStub: ConfigModule = {
     state: configState,
     namespaced: true,
     getters: configGetters,

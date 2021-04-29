@@ -8,14 +8,16 @@ import {
     ImmunizationState,
 } from "@/store/modules/immunization/types";
 
-var immunizationState: ImmunizationState = {
+import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+
+const immunizationState: ImmunizationState = {
     immunizations: [],
     recommendations: [],
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-var immunizationGetters: ImmunizationGetters = {
+const immunizationGetters: ImmunizationGetters = {
     immunizations(): ImmunizationEvent[] {
         return [];
     },
@@ -33,20 +35,18 @@ var immunizationGetters: ImmunizationGetters = {
     },
 };
 
-var immunizationActions: ImmunizationActions = {
-    retrieve(): Promise<void> {
-        return new Promise(() => {});
-    },
-    handleError(): void {},
+const immunizationActions: ImmunizationActions = {
+    retrieve: stubbedPromise,
+    handleError: stubbedVoid,
 };
 
-var immunizationMutations: ImmunizationMutations = {
-    setRequested(state: ImmunizationState): void {},
-    setImmunizationResult(): void {},
-    immunizationError(): void {},
+const immunizationMutations: ImmunizationMutations = {
+    setRequested: (state: ImmunizationState) => stubbedVoid(),
+    setImmunizationResult: stubbedVoid,
+    immunizationError: stubbedVoid,
 };
 
-var immunizationStub: ImmunizationModule = {
+const immunizationStub: ImmunizationModule = {
     namespaced: true,
     state: immunizationState,
     getters: immunizationGetters,

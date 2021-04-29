@@ -1,5 +1,6 @@
 import { GatewayStoreOptions } from "@/store/types";
 
+import { stubbedVoid } from "../../utility/stubUtil";
 import authStub from "./auth";
 import commentStub from "./comment";
 import configStub from "./config";
@@ -14,15 +15,15 @@ import noteStub from "./note";
 import timelineStub from "./timeline";
 import userStub from "./user";
 
-export var storeStub: GatewayStoreOptions = {
+export const storeStub: GatewayStoreOptions = {
     actions: {
-        setIsMobile(): void {},
+        setIsMobile: stubbedVoid,
     },
     getters: {
-        isMobile: (): void => {},
+        isMobile: (): boolean => false,
     },
     mutations: {
-        setIsMobile(): void {},
+        setIsMobile: stubbedVoid,
     },
     modules: {
         auth: authStub,

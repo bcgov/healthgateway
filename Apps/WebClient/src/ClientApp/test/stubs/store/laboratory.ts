@@ -1,5 +1,4 @@
 import { LaboratoryOrder } from "@/models/laboratory";
-import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     LaboratoryActions,
@@ -9,13 +8,15 @@ import {
     LaboratoryState,
 } from "@/store/modules/laboratory/types";
 
-var laboratoryState: LaboratoryState = {
+import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+
+const laboratoryState: LaboratoryState = {
     laboratoryOrders: [],
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-var laboratoryGetters: LaboratoryGetters = {
+const laboratoryGetters: LaboratoryGetters = {
     laboratoryOrders(): LaboratoryOrder[] {
         return [];
     },
@@ -27,20 +28,18 @@ var laboratoryGetters: LaboratoryGetters = {
     },
 };
 
-var laboratoryActions: LaboratoryActions = {
-    retrieve(): Promise<RequestResult<LaboratoryOrder[]>> {
-        return new Promise(() => {});
-    },
-    handleError(): void {},
+const laboratoryActions: LaboratoryActions = {
+    retrieve: stubbedPromise,
+    handleError: stubbedVoid,
 };
 
-var laboratoryMutations: LaboratoryMutations = {
-    setRequested(): void {},
-    setLaboratoryOrders(): void {},
-    laboratoryError(): void {},
+const laboratoryMutations: LaboratoryMutations = {
+    setRequested: stubbedVoid,
+    setLaboratoryOrders: stubbedVoid,
+    laboratoryError: stubbedVoid,
 };
 
-var laboratoryStub: LaboratoryModule = {
+const laboratoryStub: LaboratoryModule = {
     namespaced: true,
     state: laboratoryState,
     getters: laboratoryGetters,

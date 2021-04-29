@@ -1,4 +1,3 @@
-import RequestResult from "@/models/requestResult";
 import { LoadStatus, Operation } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import {
@@ -9,14 +8,16 @@ import {
     NoteState,
 } from "@/store/modules/note/types";
 
-var noteState: NoteState = {
+import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+
+const noteState: NoteState = {
     notes: [],
     statusMessage: "",
     status: LoadStatus.LOADED,
     lastOperation: null,
 };
 
-var noteGetters: NoteGetters = {
+const noteGetters: NoteGetters = {
     notes(): UserNote[] {
         return [];
     },
@@ -31,23 +32,21 @@ var noteGetters: NoteGetters = {
     },
 };
 
-var noteActions: NoteActions = {
-    retrieve(): Promise<RequestResult<UserNote[]>> {
-        return new Promise(() => {});
-    },
-    handleError(): void {},
+const noteActions: NoteActions = {
+    retrieve: stubbedPromise,
+    handleError: stubbedVoid,
 };
 
-var noteMutations: NoteMutations = {
-    setRequested(): void {},
-    setNotes(): void {},
-    addNote(): void {},
-    updateNote(): void {},
-    deleteNote(): void {},
-    noteError(): void {},
+const noteMutations: NoteMutations = {
+    setRequested: stubbedVoid,
+    setNotes: stubbedVoid,
+    addNote: stubbedVoid,
+    updateNote: stubbedVoid,
+    deleteNote: stubbedVoid,
+    noteError: stubbedVoid,
 };
 
-var noteStub: NoteModule = {
+const noteStub: NoteModule = {
     namespaced: true,
     state: noteState,
     getters: noteGetters,
