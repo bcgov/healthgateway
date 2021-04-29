@@ -16,7 +16,7 @@ describe("MonthYearPickerComponent", () => {
                 availableMonths: [new DateWrapper()],
             },
             stubs: {
-                "font-awesome-icon": true,
+                "hg-icon": true,
             },
         });
 

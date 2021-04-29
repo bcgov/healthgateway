@@ -1,4 +1,13 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faClipboardList,
+    faEdit,
+    faFlask,
+    faPills,
+    faSyringe,
+    faUserMd,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action } from "vuex-class";
@@ -13,6 +22,8 @@ import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import TimelineEntry, { DateGroup, EntryType } from "@/models/timelineEntry";
 
 import { CalendarEntry, CalendarWeek } from "./models";
+
+library.add(faClipboardList, faEdit, faFlask, faPills, faSyringe, faUserMd);
 
 @Component({})
 export default class CalendarBodyComponent extends Vue {
@@ -225,7 +236,11 @@ export default class CalendarBodyComponent extends Vue {
                                     class="icon"
                                     :class="getBackground(event)"
                                 >
-                                    <font-awesome-icon :icon="getIcon(event)" />
+                                    <hg-icon
+                                        :icon="getIcon(event)"
+                                        size="medium"
+                                        fixed-width
+                                    />
                                 </div>
                                 <b-tooltip
                                     variant="secondary"
@@ -320,11 +335,8 @@ export default class CalendarBodyComponent extends Vue {
                         .icon {
                             text-align: center;
                             border-radius: 50%;
-                            width: 34px;
-                            height: 34px;
-                            line-height: 34px;
+                            padding: 0.375em 0.5em;
                             color: white;
-                            font-size: 20px;
                         }
                     }
                     /* Small Devices */
@@ -333,10 +345,11 @@ export default class CalendarBodyComponent extends Vue {
                             padding: 1px;
                             margin: 1px;
                             .icon {
-                                width: 30px;
-                                height: 30px;
-                                line-height: 30px;
-                                font-size: 18px;
+                                padding: 0.0625rem 0.265625rem;
+
+                                .hg-icon {
+                                    font-size: 0.875rem;
+                                }
                             }
                         }
                     }

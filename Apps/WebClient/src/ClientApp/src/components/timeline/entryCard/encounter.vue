@@ -1,15 +1,14 @@
 <script lang="ts">
-import {
-    faInfo,
-    faUserMd,
-    IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faInfoCircle, faUserMd } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
 import EntrycardTimelineComponent from "./entrycard.vue";
+
+library.add(faInfoCircle, faUserMd);
 
 @Component({
     components: {
@@ -21,21 +20,13 @@ export default class EncounterTimelineComponent extends Vue {
     @Prop() index!: number;
     @Prop() datekey!: string;
     @Prop() isMobileDetails!: boolean;
-
-    private get entryIcon(): IconDefinition {
-        return faUserMd;
-    }
-
-    private get infoIcon(): IconDefinition {
-        return faInfo;
-    }
 }
 </script>
 
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        :entry-icon="entryIcon"
+        entry-icon="user-md"
         :title="entry.specialtyDescription"
         :subtitle="entry.practitionerName"
         :entry="entry"
@@ -47,10 +38,10 @@ export default class EncounterTimelineComponent extends Vue {
                     <strong>Clinic/Practitioner:</strong>
                     <div
                         :id="`tooltip-info${index}-${datekey}`"
-                        class="infoIcon ml-2 mt-1"
+                        class="infoIcon ml-2"
                         tabindex="0"
                     >
-                        <font-awesome-icon :icon="infoIcon" />
+                        <hg-icon icon="info-circle" size="medium" />
                     </div>
                     <b-tooltip
                         variant="secondary"
@@ -84,12 +75,6 @@ export default class EncounterTimelineComponent extends Vue {
     margin: 0px;
 }
 .infoIcon {
-    background-color: $aquaBlue;
-    color: $primary_text;
-    text-align: center;
-    border-radius: 50%;
-    height: 15px;
-    width: 15px;
-    font-size: 0.5em;
+    color: $aquaBlue;
 }
 </style>

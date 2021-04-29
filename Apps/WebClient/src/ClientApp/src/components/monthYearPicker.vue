@@ -1,9 +1,16 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faChevronLeft,
+    faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { directive as onClickaway } from "vue-clickaway";
 import { Component, Emit, Prop, Watch } from "vue-property-decorator";
 
 import { DateWrapper } from "@/models/dateWrapper";
+
+library.add(faChevronLeft, faChevronRight);
 
 class MonthToDisplay {
     public title = "";
@@ -183,7 +190,7 @@ export default class MonthYearPickerComponent extends Vue {
                     variant="light"
                     @click="previousYear()"
                 >
-                    <font-awesome-icon icon="chevron-left" size="sm" />
+                    <hg-icon icon="chevron-left" size="small" />
                 </b-btn>
             </b-col>
             <b-col class="col-8 p-0">
@@ -205,7 +212,7 @@ export default class MonthYearPickerComponent extends Vue {
                     variant="light"
                     @click="nextYear()"
                 >
-                    <font-awesome-icon icon="chevron-right" size="sm" />
+                    <hg-icon icon="chevron-right" size="small" />
                 </b-btn>
             </b-col>
             <b-col

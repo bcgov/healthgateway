@@ -1,4 +1,9 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faChevronLeft,
+    faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
@@ -7,6 +12,8 @@ import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 
 import CalendarBody from "./body.vue";
+
+library.add(faChevronLeft, faChevronRight);
 
 @Component({
     components: {
@@ -101,7 +108,7 @@ export default class CalendarComponent extends Vue {
                 class="arrow-icon left-button px-2 m-0"
                 @click.stop="previousMonth"
             >
-                <font-awesome-icon icon="chevron-left" />
+                <hg-icon icon="chevron-left" size="medium" />
             </b-btn>
         </b-col>
         <b-col cols="col-sm-auto">
@@ -120,7 +127,7 @@ export default class CalendarComponent extends Vue {
                 class="arrow-icon right-button px-2 m-0"
                 @click.stop="nextMonth"
             >
-                <font-awesome-icon icon="chevron-right" />
+                <hg-icon icon="chevron-right" size="medium" />
             </b-btn>
         </b-col>
     </b-row>

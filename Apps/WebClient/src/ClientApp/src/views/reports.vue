@@ -14,7 +14,6 @@ import ImmunizationHistoryReportComponent from "@/components/report/immunization
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
-import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -25,7 +24,6 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 @Component({
     components: {
         LoadingComponent,
-        PageTitleComponent,
         MessageModalComponent,
         MedicationHistoryReportComponent,
         MSPVisitsReportComponent,
@@ -210,7 +208,7 @@ export default class ReportsView extends Vue {
         <div>
             <b-row>
                 <b-col class="col-12 col-md-10 col-lg-9 column-wrapper">
-                    <PageTitleComponent title="Export Records" />
+                    <page-title title="Export Records" />
                     <div class="my-3 px-3 py-4 form">
                         <b-row>
                             <b-col>
