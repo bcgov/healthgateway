@@ -39,8 +39,6 @@ namespace HealthGateway.Admin.Services
         private const string MaxEmailsConfigKey = "MaxEmails";
         private const int DefaultMaxEmails = 1000;
 
-        private readonly IConfiguration configuration;
-        private readonly ILogger<EmailAdminService> logger;
         private readonly IEmailDelegate emailDelegate;
         private readonly IMessagingVerificationDelegate emailInviteDelegate;
         private readonly int maxEmails;
@@ -49,17 +47,13 @@ namespace HealthGateway.Admin.Services
         /// Initializes a new instance of the <see cref="EmailAdminService"/> class.
         /// </summary>
         /// <param name="configuration">Injected configuration provider.</param>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="emailDelegate">The email delegate to interact with the DB.</param>
         /// <param name="emailInviteDelegate">The email invite delegate to interact with the DB.</param>
         public EmailAdminService(
             IConfiguration configuration,
-            ILogger<EmailAdminService> logger,
             IEmailDelegate emailDelegate,
             IMessagingVerificationDelegate emailInviteDelegate)
         {
-            this.configuration = configuration;
-            this.logger = logger;
             this.emailDelegate = emailDelegate;
             this.emailInviteDelegate = emailInviteDelegate;
             IConfigurationSection section = configuration!.GetSection(EmailAdminSectionConfigKey);

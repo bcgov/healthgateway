@@ -32,7 +32,6 @@ namespace Healthgateway.JobScheduler.Jobs
         private const string JobKey = "CleanCache";
         private const int ConcurrencyTimeout = 5 * 60; // 5 Minutes
 
-        private readonly IServiceProvider serviceProvider;
         private readonly ILogger<CleanCacheJob> logger;
         private readonly GatewayDbContext dbContext;
         private readonly int deleteMaxRows;
@@ -40,17 +39,14 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <summary>
         /// Initializes a new instance of the <see cref="CleanCacheJob"/> class.
         /// </summary>
-        /// <param name="serviceProvider">The dotnet service provider.</param>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
         public CleanCacheJob(
-            IServiceProvider serviceProvider,
             IConfiguration configuration,
             ILogger<CleanCacheJob> logger,
             GatewayDbContext dbContext)
         {
-            this.serviceProvider = serviceProvider;
             this.logger = logger;
             this.dbContext = dbContext;
             var jobConfig = configuration.GetSection($"{JobKey}");

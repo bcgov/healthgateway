@@ -26,7 +26,6 @@ namespace Healthgateway.JobScheduler.Jobs
     public class DeleteEmailJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
-        private readonly IConfiguration configuration;
         private readonly ILogger<EmailJob> logger;
         private readonly IEmailDelegate emailDelegate;
         private readonly int deleteMaxRows;
@@ -38,9 +37,11 @@ namespace Healthgateway.JobScheduler.Jobs
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="emailDelegate">The email delegate to use.</param>
-        public DeleteEmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IEmailDelegate emailDelegate)
+        public DeleteEmailJob(
+            IConfiguration configuration, 
+            ILogger<EmailJob> logger, 
+            IEmailDelegate emailDelegate)
         {
-            this.configuration = configuration!;
             this.logger = logger;
             this.emailDelegate = emailDelegate!;
             IConfigurationSection section = configuration!.GetSection("Smtp");

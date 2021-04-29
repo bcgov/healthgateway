@@ -31,7 +31,6 @@ namespace HealthGateway.Immunization
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
