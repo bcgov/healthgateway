@@ -17,23 +17,21 @@ describe("Landing view", () => {
     const localVue = createLocalVue();
     localVue.use(Vuex);
 
-    const a: WebClientConfiguration = {
-        logLevel: "",
-        timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
-        registrationStatus: "open" as RegistrationStatus,
-        externalURLs: {},
-        modules: {},
-        hoursForDeletion: 1,
-        minPatientAge: 16,
-        maxDependentAge: 12,
-    };
-
     const options = new StoreOptionsStub();
     options.modules.config.getters.webClient = (): WebClientConfiguration => {
-        return a;
+        return {
+            logLevel: "",
+            timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
+            registrationStatus: "open" as RegistrationStatus,
+            externalURLs: {},
+            modules: {},
+            hoursForDeletion: 1,
+            minPatientAge: 16,
+            maxDependentAge: 12,
+        };
     };
 
-    let store = new Vuex.Store(options);
+    const store = new Vuex.Store(options);
 
     const wrapper = shallowMount(LandingComponent, {
         localVue,
