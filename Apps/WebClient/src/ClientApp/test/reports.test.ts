@@ -1,22 +1,23 @@
 import "@/plugins/inversify.config";
+
 import { createLocalVue, shallowMount, Stubs, Wrapper } from "@vue/test-utils";
+import { BForm, BFormInput, BFormSelect, BFormTag } from "bootstrap-vue";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
 
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import { WebClientConfiguration } from "@/models/configData";
+import { DateWrapper } from "@/models/dateWrapper";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ClientModule } from "@/router";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
 import ReportsView from "@/views/reports.vue";
 
 import { StoreOptionsStub } from "./stubs/store/store";
-import container from "@/plugins/inversify.container";
-import { RegistrationStatus } from "@/constants/registrationStatus";
-import { WebClientConfiguration } from "@/models/configData";
-import { ClientModule } from "@/router";
-import { BFormSelect, BFormInput, BFormTag, BForm } from "bootstrap-vue";
-import { DateWrapper } from "@/models/dateWrapper";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
 
 interface ReportComponent extends Vue {
     generatePdf(): Promise<void>;
@@ -49,7 +50,7 @@ function createWrapper(
     options?: GatewayStoreOptions,
     customStubs?: Stubs
 ): Wrapper<ReportsView> {
-    var localVue = createLocalVue();
+    const localVue = createLocalVue();
     localVue.use(Vuex);
     localVue.use(VueRouter);
     localVue.use(VueContentPlaceholders);
@@ -74,11 +75,16 @@ function createWrapper(
 }
 
 describe("Report view", () => {
-    var logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
 
+    const reportIdTag = "#reportType";
+    const testIdExclussion = "[data-testid=medicationExclusionFilter]";
+    const testIdSelectedDates = "[data-testid=selectedDatesFilter]";
+    const testIdClearFilter = "[data-testid=clearFilter]";
+
     test("is a Vue instance", () => {
-        var wrapper = createWrapper();
+        const wrapper = createWrapper();
         expect(wrapper).toBeTruthy();
     });
 
@@ -90,14 +96,14 @@ describe("Report view", () => {
         const options = new StoreOptionsStub();
         options.modules.config.getters.webClient = (): WebClientConfiguration =>
             webclientConfig;
-        var wrapperSingleReport = createWrapper(options);
+        const wrapperSingleReport = createWrapper(options);
 
         // Check values
         expect(
-            wrapperSingleReport.find("#reportType").props()["options"].length
+            wrapperSingleReport.find(reportIdTag).props()["options"].length
         ).toBe(2);
         expect(
-            wrapperSingleReport.find("#reportType").props()["options"][1].text
+            wrapperSingleReport.find(reportIdTag).props()["options"][1].text
         ).toBe("Medications");
     });
 
@@ -113,11 +119,11 @@ describe("Report view", () => {
         const options = new StoreOptionsStub();
         options.modules.config.getters.webClient = (): WebClientConfiguration =>
             webclientConfig;
-        var wrapperMultipleReport = createWrapper(options);
+        const wrapperMultipleReport = createWrapper(options);
 
         // Check values
         expect(
-            wrapperMultipleReport.find("#reportType").props()["options"].length
+            wrapperMultipleReport.find(reportIdTag).props()["options"].length
         ).toBe(6);
     });
 
@@ -133,20 +139,16 @@ describe("Report view", () => {
         const storeOptions = new StoreOptionsStub();
         storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
             webclientConfig;
-        var wrapper = createWrapper(storeOptions, {
+        const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
         });
 
         // Check values
-        expect(
-            wrapper.find("[data-testid=medicationExclusionFilter]").isVisible()
-        ).toBe(false);
-        const comboOptions = wrapper.find("#reportType").findAll("option");
+        expect(wrapper.find(testIdExclussion).isVisible()).toBe(false);
+        const comboOptions = wrapper.find(reportIdTag).findAll("option");
         await comboOptions.at(1).setSelected();
 
-        expect(
-            wrapper.find("[data-testid=medicationExclusionFilter]").isVisible()
-        ).toBe(true);
+        expect(wrapper.find(testIdExclussion).isVisible()).toBe(true);
     });
 
     test("Advanced canel", async () => {
@@ -161,15 +163,13 @@ describe("Report view", () => {
         const storeOptions = new StoreOptionsStub();
         storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
             webclientConfig;
-        var wrapper = createWrapper(storeOptions, {
+        const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
             "hg-date-picker": BFormInput,
         });
 
-        expect(wrapper.find("[data-testid=selectedDatesFilter]").exists()).toBe(
-            false
-        );
-        expect(wrapper.find("[data-testid=clearFilter]").exists()).toBe(false);
+        expect(wrapper.find(testIdSelectedDates).exists()).toBe(false);
+        expect(wrapper.find(testIdClearFilter).exists()).toBe(false);
 
         // Select a start date
         const startInput = wrapper.find("[data-testid=startDateInput]");
@@ -178,9 +178,7 @@ describe("Report view", () => {
 
         // Clear the filter
         await wrapper.find("[data-testid=clearBtn]").trigger("click");
-        expect(wrapper.find("[data-testid=selectedDatesFilter]").exists()).toBe(
-            false
-        );
+        expect(wrapper.find(testIdSelectedDates).exists()).toBe(false);
         expect(startInput.props().value).toBe(null);
     });
 
@@ -196,16 +194,14 @@ describe("Report view", () => {
         const storeOptions = new StoreOptionsStub();
         storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
             webclientConfig;
-        var wrapper = createWrapper(storeOptions, {
+        const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
             "hg-date-picker": BFormInput,
             "b-form-tag": BFormTag,
         });
 
-        expect(wrapper.find("[data-testid=selectedDatesFilter]").exists()).toBe(
-            false
-        );
-        expect(wrapper.find("[data-testid=clearFilter]").exists()).toBe(false);
+        expect(wrapper.find(testIdSelectedDates).exists()).toBe(false);
+        expect(wrapper.find(testIdClearFilter).exists()).toBe(false);
 
         // Select a start date
         const startInput = wrapper.find("[data-testid=startDateInput]");
@@ -214,21 +210,14 @@ describe("Report view", () => {
 
         // Apply the filter
         await wrapper.find("[data-testid=applyFilterBtn]").trigger("click");
-        expect(wrapper.find("[data-testid=selectedDatesFilter]").exists()).toBe(
-            true
-        );
-        expect(wrapper.find("[data-testid=clearFilter]").exists()).toBe(true);
+        expect(wrapper.find(testIdSelectedDates).exists()).toBe(true);
+        expect(wrapper.find(testIdClearFilter).exists()).toBe(true);
         expect(startInput.props().value).toBe(today.toISODate());
 
         // Clear the filter
-        await wrapper
-            .find("[data-testid=clearFilter]")
-            .find("button")
-            .trigger("click");
-        expect(wrapper.find("[data-testid=selectedDatesFilter]").exists()).toBe(
-            false
-        );
-        expect(wrapper.find("[data-testid=clearFilter]").exists()).toBe(false);
+        await wrapper.find(testIdClearFilter).find("button").trigger("click");
+        expect(wrapper.find(testIdSelectedDates).exists()).toBe(false);
+        expect(wrapper.find(testIdClearFilter).exists()).toBe(false);
     });
 
     test("Export button", async () => {
@@ -244,11 +233,13 @@ describe("Report view", () => {
         storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
             webclientConfig;
 
-        var wrapper = createWrapper(storeOptions, {
+        const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
             "message-modal": BForm,
         });
-        const comboOptions = wrapper.find("#reportType").findAll("option");
+        const comboOptions = wrapper.find(reportIdTag).findAll("option");
+
+        const testIdModal = "[data-testid=messageModal]";
 
         // Execute Medication report
         await comboOptions.at(1).setSelected();
@@ -256,7 +247,7 @@ describe("Report view", () => {
         (wrapper.vm.$refs
             .medicationHistoryReport as ReportComponent).generatePdf = mockedMedMethod;
 
-        await wrapper.find("[data-testid=messageModal]").trigger("submit");
+        await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Encounter report
         await comboOptions.at(2).setSelected();
@@ -264,7 +255,7 @@ describe("Report view", () => {
         (wrapper.vm.$refs
             .mspVisitsReport as ReportComponent).generatePdf = mockedEncMethod;
 
-        await wrapper.find("[data-testid=messageModal]").trigger("submit");
+        await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Lab report
         await comboOptions.at(3).setSelected();
@@ -272,7 +263,7 @@ describe("Report view", () => {
         (wrapper.vm.$refs
             .covid19Report as ReportComponent).generatePdf = mockedLabMethod;
 
-        await wrapper.find("[data-testid=messageModal]").trigger("submit");
+        await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Immz report
         await comboOptions.at(4).setSelected();
@@ -280,7 +271,7 @@ describe("Report view", () => {
         (wrapper.vm.$refs
             .immunizationHistoryReport as ReportComponent).generatePdf = mockedImmzMethod;
 
-        await wrapper.find("[data-testid=messageModal]").trigger("submit");
+        await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Med Request report
         await comboOptions.at(5).setSelected();
@@ -288,11 +279,11 @@ describe("Report view", () => {
         (wrapper.vm.$refs
             .medicationRequestReport as ReportComponent).generatePdf = mockedMedRequestMethod;
 
-        await wrapper.find("[data-testid=messageModal]").trigger("submit");
+        await wrapper.find(testIdModal).trigger("submit");
 
         // Execute No recors does nothing
         await comboOptions.at(0).setSelected();
-        await wrapper.find("[data-testid=messageModal]").trigger("submit");
+        await wrapper.find(testIdModal).trigger("submit");
 
         expect(mockedMedMethod).toHaveBeenCalledTimes(1);
         expect(mockedEncMethod).toHaveBeenCalledTimes(1);
@@ -320,25 +311,19 @@ describe("Report view", () => {
         storeOptions.modules.medication.modules.statement.getters.medicationStatements = (): MedicationStatementHistory[] => {
             return [firstMed, seconMed, thirdMed, fourthMed];
         };
-        var wrapper = createWrapper(storeOptions, {
+        const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
         });
 
         // Check values
-        expect(
-            wrapper.find("[data-testid=medicationExclusionFilter]").isVisible()
-        ).toBe(false);
-        const comboOptions = wrapper.find("#reportType").findAll("option");
+        expect(wrapper.find(testIdExclussion).isVisible()).toBe(false);
+        const comboOptions = wrapper.find(reportIdTag).findAll("option");
         await comboOptions.at(1).setSelected();
 
-        expect(
-            wrapper.find("[data-testid=medicationExclusionFilter]").isVisible()
-        ).toBe(true);
+        expect(wrapper.find(testIdExclussion).isVisible()).toBe(true);
 
-        expect(
-            wrapper.find("[data-testid=medicationExclusionFilter]").props()[
-                "options"
-            ].length
-        ).toBe(3);
+        expect(wrapper.find(testIdExclussion).props()["options"].length).toBe(
+            3
+        );
     });
 });

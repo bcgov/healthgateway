@@ -1,4 +1,4 @@
-import { voidPromise, voidMethod } from "@test/stubs/util";
+import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import { LaboratoryOrder } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";

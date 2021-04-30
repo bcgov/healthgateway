@@ -1,4 +1,4 @@
-import { voidPromise, voidMethod } from "@test/stubs/util";
+import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";

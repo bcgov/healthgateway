@@ -1,7 +1,14 @@
+import { Route } from "vue-router";
+
+import { RegistrationStatus } from "@/constants/registrationStatus";
+import { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import router, { beforeEachGuard, ClientModule, UserState } from "@/router";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
+import { WinstonLogger } from "@/services/winstonLogger";
+import StoreProvider from "@/store/provider";
+import { GatewayStoreOptions } from "@/store/types";
 import NotFoundComponent from "@/views/errors/notFound.vue";
 import UnauthorizedComponent from "@/views/errors/unauthorized.vue";
 import LandingComponent from "@/views/landing.vue";
@@ -9,13 +16,8 @@ import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
 import ProfileComponent from "@/views/profile.vue";
 import RegistrationComponent from "@/views/registration.vue";
-import { Route } from "vue-router";
-import { GatewayStoreOptions } from "@/store/types";
+
 import { StoreOptionsStub } from "./stubs/store/store";
-import { WebClientConfiguration } from "@/models/configData";
-import { RegistrationStatus } from "@/constants/registrationStatus";
-import { WinstonLogger } from "@/services/winstonLogger";
-import StoreProvider from "@/store/provider";
 
 function flushPromises() {
     return new Promise((resolve) => setImmediate(resolve));
@@ -29,7 +31,14 @@ function setOidcCheckUser(options: GatewayStoreOptions, value: boolean): void {
     };
 }
 
-function createToRoute(meta: {}): Route {
+interface RouteMeta {
+    stateless?: boolean;
+    routeIsOidcCallback?: boolean;
+    requiredModules?: ClientModule[];
+    validStates?: UserState[];
+}
+
+function createToRoute(meta: RouteMeta): Route {
     return {
         path: "/stateles",
         hash: "abc123",
@@ -68,6 +77,9 @@ describe("Router", () => {
 
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
+
+    const registrationPath = "/registration";
+
     test("has landing route", () => {
         const actualComponent = router.getMatchedComponents("/")[0];
         expect(actualComponent.name).toBe(LandingComponent.name);
@@ -81,7 +93,9 @@ describe("Router", () => {
     });
 
     test("has registration route", () => {
-        const actualComponent = router.getMatchedComponents("/registration")[0];
+        const actualComponent = router.getMatchedComponents(
+            registrationPath
+        )[0];
         expect(actualComponent.name).toBe(RegistrationComponent.name);
     });
 
@@ -212,7 +226,7 @@ describe("Router", () => {
 
         // Setup params
         const from = router.resolve("/").route;
-        const to = router.resolve("/registration").route;
+        const to = router.resolve(registrationPath).route;
         const next = jest.fn();
 
         // Execute test
@@ -246,7 +260,7 @@ describe("Router", () => {
         await flushPromises();
 
         // Assert
-        expect(next).toHaveBeenCalledWith({ path: "/registration" });
+        expect(next).toHaveBeenCalledWith({ path: registrationPath });
     });
 
     it("Bad idp Default Path", async () => {

@@ -1,4 +1,4 @@
-import { voidPromise, voidMethod } from "@test/stubs/util";
+import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -17,14 +17,7 @@ import {
     MedicationStatementMutations,
     MedicationStatementState,
 } from "@/store/modules/medication/modules/statement/types";
-import {
-    MedicationModule,
-    MedicationState,
-} from "@/store/modules/medication/types";
-
-const medicationState: MedicationState = {
-    status: LoadStatus.NONE,
-};
+import { MedicationModule } from "@/store/modules/medication/types";
 
 const medicationStatementState: MedicationStatementState = {
     medicationStatements: [],
