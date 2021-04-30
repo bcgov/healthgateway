@@ -22,7 +22,7 @@ import { LaboratoryResult } from "@/models/laboratory";
 import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IDependentService,
     ILaboratoryService,

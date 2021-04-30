@@ -1,3 +1,8 @@
+// eslint-disable-next-line
+import container from "@/plugins/inversify.container";
+
+import "@/plugins/inversify.config";
+
 import "core-js/stable";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
@@ -9,16 +14,21 @@ import Vue from "vue";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuelidate from "vuelidate";
+import { Store } from "vuex";
 
-const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
 import HgButtonComponent from "@/components/shared/hgButton.vue";
 import HgIconComponent from "@/components/shared/hgIcon.vue";
 import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import StatusLabelComponent from "@/components/shared/statusLabel.vue";
+
 import { ExternalConfiguration } from "@/models/configData";
 import User from "@/models/user";
-import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import {
+    DELEGATE_IDENTIFIER,
+    SERVICE_IDENTIFIER,
+    STORE_IDENTIFIER,
+} from "@/plugins/inversify";
+
 import router from "@/router";
 import {
     IAuthenticationService,
@@ -32,13 +42,15 @@ import {
     ILogger,
     IMedicationService,
     IPatientService,
+    IStoreProvider,
     IUserCommentService,
     IUserFeedbackService,
     IUserNoteService,
     IUserProfileService,
     IUserRatingService,
 } from "@/services/interfaces";
-import store from "@/store/store";
+
+import { RootState } from "./store/types";
 
 Vue.component("BPopover", BPopover);
 Vue.component("BBadge", BBadge);
@@ -61,8 +73,9 @@ const configService: IConfigService = container.get(
 );
 
 configService.initialize(httpDelegate);
-// Initialize the store only then start the app
-store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
+
+// Retrieve configuration and initialize services
+configService.getConfiguration().then((config: ExternalConfiguration) => {
     // Retrieve service interfaces
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     const authService: IAuthenticationService = container.get(
@@ -104,6 +117,13 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
     const dependentService: IDependentService = container.get(
         SERVICE_IDENTIFIER.DependentService
     );
+    const storeProvider: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+
+    const store = storeProvider.getStore();
+    store.dispatch("config/initialize", config);
+
     logger.initialize(config.webClient.logLevel);
 
     // Initialize services
@@ -128,7 +148,7 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
         startAtIdle: false,
     });
     if (window.location.pathname === "/loginCallback") {
-        initializeVue();
+        initializeVue(store);
     } else {
         store.dispatch("auth/getOidcUser").then(() => {
             const isValid: boolean =
@@ -136,16 +156,18 @@ store.dispatch("config/initialize").then((config: ExternalConfiguration) => {
             const user: User = store.getters["user/user"];
             if (user.hdid && isValid) {
                 store.dispatch("user/checkRegistration").then(() => {
-                    initializeVue();
+                    initializeVue(store);
                 });
             } else {
-                initializeVue();
+                initializeVue(store);
             }
         });
     }
 });
 
-function initializeVue() {
+const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
+
+function initializeVue(store: Store<RootState>) {
     new Vue({
         el: "#app-root",
         store,

@@ -3,6 +3,7 @@ import {
     User as OidcUser,
     UserManagerSettings,
 } from "oidc-client";
+import { Store } from "vuex";
 
 import AddDependentRequest from "@/models/addDependentRequest";
 import { Dictionary } from "@/models/baseTypes";
@@ -27,6 +28,7 @@ import UserNote from "@/models/userNote";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
+import { RootState } from "@/store/types";
 
 export interface IAuthenticationService {
     initialize(config: OpenIdConnectConfiguration, http: IHttpDelegate): void;
@@ -193,4 +195,8 @@ export interface ILogger {
     info(message: string): void;
     verbose(message: string): void;
     debug(message: string): void;
+}
+
+export interface IStoreProvider {
+    getStore(): Store<RootState>;
 }

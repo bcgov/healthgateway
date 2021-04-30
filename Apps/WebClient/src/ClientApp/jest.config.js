@@ -15,6 +15,7 @@ module.exports = {
     },
     moduleNameMapper: {
         "@/(.*)$": "<rootDir>/src/$1",
+        "@test/(.*)$": "<rootDir>/test/$1",
         "\\.(css)$": "<rootDir>/test/mocks/styleMock.js",
     },
     transformIgnorePatterns: ["/node_modules/"],
@@ -24,6 +25,8 @@ module.exports = {
         "!**/node_modules/**",
         "!**/vendor/**",
         "!**/test/**",
+        "!**/main.ts",
+        "!**/shims-vue.d.ts",
     ],
     coverageDirectory: "<rootDir>/../../sonar_reports/jest.out",
     testMatch: ["**/test/**/*.test.(ts)|**/__tests__/*.(ts)"],

@@ -1,8 +1,12 @@
+/*eslint-disable */
+
 import "reflect-metadata";
 
-import { Container } from "inversify";
-
-import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    DELEGATE_IDENTIFIER,
+    SERVICE_IDENTIFIER,
+    STORE_IDENTIFIER,
+} from "@/plugins/inversify";
 import HttpDelegate from "@/services/httpDelegate";
 import {
     IAuthenticationService,
@@ -16,6 +20,7 @@ import {
     ILogger,
     IMedicationService,
     IPatientService,
+    IStoreProvider,
     IUserCommentService,
     IUserFeedbackService,
     IUserNoteService,
@@ -37,8 +42,11 @@ import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserRatingService } from "@/services/restUserRatingService";
 import { WinstonLogger } from "@/services/winstonLogger";
+import StoreProvider from "@/store/provider";
+import container from "./inversify.container";
+import { GatewayStoreOptions } from "@/store/types";
+import { StoreOptions } from "@/store/options";
 
-const container = new Container();
 container
     .bind<IConfigService>(SERVICE_IDENTIFIER.ConfigService)
     .to(RestConfigService)
@@ -103,5 +111,11 @@ container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)
     .to(HttpDelegate)
     .inSingletonScope();
-
-export default container;
+container
+    .bind<IStoreProvider>(STORE_IDENTIFIER.StoreProvider)
+    .to(StoreProvider)
+    .inSingletonScope();
+container
+    .bind<GatewayStoreOptions>(STORE_IDENTIFIER.StoreOptions)
+    .to(StoreOptions)
+    .inRequestScope();

@@ -20,3 +20,8 @@ export const SERVICE_IDENTIFIER = {
 export const DELEGATE_IDENTIFIER = {
     HttpDelegate: Symbol.for("HttpDelegate"),
 };
+
+export const STORE_IDENTIFIER = {
+    StoreProvider: Symbol.for("StoreWrapper"),
+    StoreOptions: Symbol.for("StoreOptions"),
+};

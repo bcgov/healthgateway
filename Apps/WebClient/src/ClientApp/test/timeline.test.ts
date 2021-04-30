@@ -1,3 +1,4 @@
+import "@/plugins/inversify.config";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
@@ -5,14 +6,14 @@ import Vuex, { Store } from "vuex";
 
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
 import TimelineView from "@/views/timeline.vue";
 
-import { storeStub } from "./stubs/store/store";
+import { StoreOptionsStub } from "./stubs/store/store";
 import { ImmunizationState } from "@/store/modules/immunization/types";
 import { LoadStatus } from "@/models/storeOperations";
+import container from "@/plugins/inversify.container";
 
 var store: Store<RootState>;
 
@@ -22,8 +23,10 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<TimelineView> {
     localVue.use(VueRouter);
     localVue.use(VueContentPlaceholders);
     if (options === undefined) {
-        options = storeStub;
+        options = new StoreOptionsStub();
     }
+
+    options = options as GatewayStoreOptions;
 
     store = new Vuex.Store(options);
 
@@ -47,8 +50,8 @@ describe("Timeline view", () => {
 
     test("Loading state", () => {
         // Setup vuex store
-        var options = storeStub;
-        storeStub.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
+        var options = new StoreOptionsStub();
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
             true;
         var wrapper = createWrapper(options);
 
@@ -59,8 +62,8 @@ describe("Timeline view", () => {
 
     test("Active", () => {
         // Setup vuex store
-        var options = storeStub;
-        storeStub.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
+        var options = new StoreOptionsStub();
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
             false;
         var wrapper = createWrapper(options);
 
@@ -71,7 +74,7 @@ describe("Timeline view", () => {
 
     test("Shows Calendar", () => {
         // Setup vuex store
-        var options = storeStub;
+        var options = new StoreOptionsStub();
         options.modules.timeline.getters.isLinearView = () => false;
         var wrapper = createWrapper(options);
 
@@ -85,7 +88,7 @@ describe("Timeline view", () => {
         user.verifiedSMS = false;
 
         // Setup vuex store
-        var options = storeStub;
+        var options = new StoreOptionsStub();
         options.modules.user.getters.user = () => user;
         var wrapper = createWrapper(options);
 
@@ -98,7 +101,7 @@ describe("Timeline view", () => {
         user.verifiedEmail = false;
 
         // Setup vuex store
-        var options = storeStub;
+        var options = new StoreOptionsStub();
         options.modules.user.getters.user = () => user;
         var wrapper = createWrapper(options);
 
@@ -113,7 +116,7 @@ describe("Timeline view", () => {
         user.verifiedSMS = true;
 
         // Setup vuex store
-        var options = storeStub;
+        var options = new StoreOptionsStub();
         options.modules.user.getters.user = () => user;
         var wrapper = createWrapper(options);
 
@@ -122,9 +125,12 @@ describe("Timeline view", () => {
 
     test("Shows Loading immunization", () => {
         // Setup vuex store
-        var options = storeStub;
+        var options = new StoreOptionsStub();
         var module = options.modules.immunization;
-        module.mutations.setStatus = (state, loadStatus: LoadStatus) => {
+        module.mutations.setStatus = (
+            state: ImmunizationState,
+            loadStatus: LoadStatus
+        ) => {
             state.status = loadStatus;
         };
 

@@ -8,12 +8,10 @@ import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile from "@/models/userProfile";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 import { UserMutation, UserState } from "./types";
-
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
 export const mutations: UserMutation = {
     setOidcUserData(state: UserState, oidcUser: OidcUser) {
@@ -23,6 +21,8 @@ export const mutations: UserMutation = {
         state.status = LoadStatus.LOADED;
     },
     setProfileUserData(state: UserState, userProfile: UserProfile) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         Vue.set(
             state.user,
             "acceptedTermsOfService",
@@ -69,6 +69,7 @@ export const mutations: UserMutation = {
         state.status = LoadStatus.LOADED;
     },
     setUserPreference(state: UserState, userPreference: UserPreference) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.debug(
             `setUserPreference: preference.name: ${JSON.stringify(
                 userPreference.preference

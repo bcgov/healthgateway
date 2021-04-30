@@ -12,7 +12,7 @@ import { LaboratoryReport } from "@/models/laboratory";
 import LaboratoryTimelineEntry from "@/models/laboratoryTimelineEntry";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 
 import EntrycardTimelineComponent from "./entrycard.vue";

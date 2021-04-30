@@ -1,12 +1,15 @@
-import VueRouter, { Route } from "vue-router";
+import VueRouter, {
+    NavigationGuard,
+    NavigationGuardNext,
+    Route,
+} from "vue-router";
 
 import { Dictionary } from "@/models/baseTypes";
 import { SnowplowWindow } from "@/plugins/extensions";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
-import store from "@/store/store";
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger, IStoreProvider } from "@/services/interfaces";
+
 declare let window: SnowplowWindow;
 const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
@@ -58,7 +61,7 @@ const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
 
-enum UserState {
+export enum UserState {
     unauthenticated = "unauthenticated",
     notRegistered = "notRegistered",
     registered = "registered",
@@ -68,6 +71,10 @@ enum UserState {
 }
 
 function calculateUserState() {
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     const isOffline = store.getters["config/isOffline"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isValid: boolean = store.getters["auth/isValidIdentityProvider"];
@@ -89,7 +96,7 @@ function calculateUserState() {
     }
 }
 
-enum ClientModule {
+export enum ClientModule {
     Immunization = "Immunization",
     Medication = "Medication",
     Laboratory = "Laboratory",
@@ -101,6 +108,10 @@ enum ClientModule {
 }
 
 function getAvailableModules() {
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     const availableModules: string[] = [];
     const configModules: Dictionary<boolean> =
         store.getters["config/webClient"].modules;
@@ -268,17 +279,22 @@ const routes = [
     }, // Not found; Will catch all other paths not covered previously
 ];
 
-const router = new VueRouter({
-    mode: "history",
-    routes,
-});
-
-router.beforeEach(async (to, from, next) => {
+export const beforeEachGuard: NavigationGuard = (
+    to: Route,
+    from: Route,
+    next: NavigationGuardNext<Vue>
+) => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     logger.debug(
         `from.fullPath: ${JSON.stringify(
             from.fullPath
         )}; to.fullPath: ${JSON.stringify(to.fullPath)}`
     );
+
     if (to.meta.routeIsOidcCallback || to.meta.stateless) {
         next();
         return;
@@ -317,6 +333,7 @@ router.beforeEach(async (to, from, next) => {
                 } else {
                     next({ path: UNAUTHORIZED_PATH });
                 }
+
                 break;
             case UserState.notRegistered:
                 next({ path: REGISTRATION_PATH });
@@ -332,7 +349,14 @@ router.beforeEach(async (to, from, next) => {
                 break;
         }
     });
+};
+
+const router = new VueRouter({
+    mode: "history",
+    routes,
 });
+
+router.beforeEach(beforeEachGuard);
 
 router.afterEach(() => {
     window.snowplow("trackPageView");

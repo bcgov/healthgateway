@@ -31,7 +31,7 @@ export interface ConfigGetters extends GetterTree<ConfigState, RootState> {
 
 type StoreContext = ActionContext<ConfigState, RootState>;
 export interface ConfigActions extends ActionTree<ConfigState, RootState> {
-    initialize(context: StoreContext): Promise<ExternalConfiguration>;
+    initialize(context: StoreContext, config: ExternalConfiguration): void;
 }
 
 export interface ConfigMutations extends MutationTree<ConfigState> {

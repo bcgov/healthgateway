@@ -33,7 +33,7 @@ import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 library.add(faSearch);

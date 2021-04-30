@@ -3,7 +3,7 @@ import { injectable } from "inversify";
 
 import { Dictionary } from "@/models/baseTypes";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IHttpDelegate, ILogger } from "@/services/interfaces";
 
 @injectable()

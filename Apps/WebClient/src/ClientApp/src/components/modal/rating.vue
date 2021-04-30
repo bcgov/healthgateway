@@ -5,7 +5,7 @@ import { Getter } from "vuex-class";
 
 import type { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
 
 @Component

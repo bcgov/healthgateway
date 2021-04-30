@@ -1,5 +1,5 @@
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IAuthenticationService,
     IHttpDelegate,
@@ -8,20 +8,16 @@ import {
 
 import { AuthActions } from "./types";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-const authService: IAuthenticationService = container.get<IAuthenticationService>(
-    SERVICE_IDENTIFIER.AuthenticationService
-);
-const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
-    DELEGATE_IDENTIFIER.HttpDelegate
-);
-
 export const actions: AuthActions = {
     oidcCheckUser(context): Promise<boolean> {
         return new Promise<boolean>((resolve) => {
             const isAuthenticatedInStore =
                 context.state.authentication.idToken !== undefined;
+
+            const authService: IAuthenticationService = container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
+            const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
             return authService.getUser().then((oidcUser) => {
                 if (!oidcUser || oidcUser.expired) {
@@ -46,6 +42,11 @@ export const actions: AuthActions = {
         params: { idpHint: string; redirectPath: string }
     ): Promise<void> {
         return new Promise((resolve, reject) => {
+            const authService: IAuthenticationService = container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
+            const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
             authService
                 .signinRedirect(params.idpHint, params.redirectPath)
                 .then(() => {
@@ -60,6 +61,11 @@ export const actions: AuthActions = {
         });
     },
     oidcSignInCallback(context): Promise<string> {
+        const authService: IAuthenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         return new Promise((resolve, reject) => {
             authService
                 .signinRedirectCallback()
@@ -92,6 +98,10 @@ export const actions: AuthActions = {
         });
     },
     authenticateOidcSilent(context): Promise<void> {
+        const authService: IAuthenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+
         return authService
             .signinSilent()
             .then((oidcUser) => {
@@ -103,12 +113,22 @@ export const actions: AuthActions = {
             });
     },
     oidcWasAuthenticated(context, oidcUser): void {
+        const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
+            DELEGATE_IDENTIFIER.HttpDelegate
+        );
+
         httpDelegate.setAuthorizationHeader(oidcUser.access_token);
         context.commit("setOidcAuth", oidcUser);
         context.commit("user/setOidcUserData", oidcUser, { root: true });
         context.commit("setOidcAuthIsChecked");
     },
     getOidcUser(context): Promise<void> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
+        const authService: IAuthenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+
         return authService
             .getUser()
             .then((oidcUser) => {
@@ -125,9 +145,15 @@ export const actions: AuthActions = {
             });
     },
     signOutOidc(): void {
+        const authService: IAuthenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
         authService.logout();
     },
     signOutOidcCallback(context): Promise<string> {
+        const authService: IAuthenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
         return new Promise((resolve, reject) => {
             authService
                 .signoutRedirectCallback()
@@ -141,6 +167,12 @@ export const actions: AuthActions = {
         });
     },
     clearStorage(context): void {
+        const authService: IAuthenticationService = container.get<IAuthenticationService>(
+            SERVICE_IDENTIFIER.AuthenticationService
+        );
+        const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
+            DELEGATE_IDENTIFIER.HttpDelegate
+        );
         authService.clearStaleState();
         authService.removeUser().finally(() => {
             httpDelegate.unsetAuthorizationHeader();

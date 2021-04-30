@@ -1,15 +1,15 @@
+import "@/plugins/inversify.config";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuex, { Store } from "vuex";
 
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
 import HealthInsightsView from "@/views/healthInsights.vue";
-
-import { storeStub } from "./stubs/store/store";
+import { StoreOptionsStub } from "./stubs/store/store";
+import container from "@/plugins/inversify.container";
 
 let store: Store<RootState>;
 
@@ -21,7 +21,7 @@ function createWrapper(
     localVue.use(VueRouter);
     localVue.use(VueContentPlaceholders);
     if (options === undefined) {
-        options = storeStub;
+        options = new StoreOptionsStub();
     }
 
     store = new Vuex.Store(options);
@@ -46,8 +46,8 @@ describe("HealthInsights view", () => {
 
     test("Loading state", () => {
         // Setup vuex store
-        const options = storeStub;
-        storeStub.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
+        const options = new StoreOptionsStub();
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
             true;
         const wrapper = createWrapper(options);
         // Check values
@@ -57,10 +57,10 @@ describe("HealthInsights view", () => {
 
     test("Active", () => {
         // Setup vuex store
-        const options = storeStub;
-        storeStub.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
+        const options = new StoreOptionsStub();
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
             false;
-        storeStub.modules.medication.modules.statement.getters.medicationStatements = () => [
+        options.modules.medication.modules.statement.getters.medicationStatements = () => [
             {
                 prescriptionIdentifier: "",
                 dispensedDate: "",
