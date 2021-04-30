@@ -8,7 +8,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import { StoreOptionsStub } from "@test/stubs/store/store";
+import { StoreOptionsStub } from "@test/stubs/store/storeOptionsStub";
 
 describe("MonthYearPickerComponent", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

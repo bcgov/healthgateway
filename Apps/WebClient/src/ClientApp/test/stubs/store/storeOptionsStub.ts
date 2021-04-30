@@ -3,22 +3,22 @@ import { injectable } from "inversify";
 
 import { GatewayStoreOptions } from "@/store/types";
 
-import authStub from "./auth";
-import commentStub from "./comment";
-import configStub from "./config";
-import encounterStub from "./encounter";
-import errorBannerStub from "./error";
-import idleStub from "./idle";
-import immunizationStub from "./immunization";
-import laboratoryStub from "./laboratory";
-import medicationStub from "./medication";
-import navbarStub from "./navbar";
-import noteStub from "./note";
-import timelineStub from "./timeline";
-import userStub from "./user";
+import authStub from "./authStub";
+import commentStub from "./commentStub";
+import configStub from "./configStub";
+import encounterStub from "./encounterStub";
+import errorBannerStub from "./errorBannerStub";
+import idleStub from "./idleStub";
+import immunizationStub from "./immunizationStub";
+import laboratoryStub from "./laboratoryStub";
+import medicationStub from "./medicationStub";
+import navbarStub from "./navbarStub";
+import noteStub from "./noteStub";
+import timelineStub from "./timelineStub";
+import userStub from "./userStub";
 
 @injectable()
-export class StoreOptionsStub implements GatewayStoreOptions {
+export default class StoreOptionsStub implements GatewayStoreOptions {
     actions = {
         setIsMobile: voidMethod,
     };

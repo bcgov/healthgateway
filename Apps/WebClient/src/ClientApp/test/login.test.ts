@@ -1,4 +1,6 @@
 import "@/plugins/inversify.config";
+
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import Vuex from "vuex";
 
@@ -6,9 +8,8 @@ import { IdentityProviderConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import LoginComponent from "@/views/login.vue";
-import { StoreOptionsStub } from "./stubs/store/store";
 import { GatewayStoreOptions } from "@/store/types";
+import LoginComponent from "@/views/login.vue";
 
 const pushMethod = jest.fn();
 

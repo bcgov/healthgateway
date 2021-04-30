@@ -82,7 +82,7 @@ export default class LoginView extends Vue {
 </script>
 
 <template>
-    <div class="container my-5" align="center">
+    <div class="container my-5">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-row>
             <b-col>
