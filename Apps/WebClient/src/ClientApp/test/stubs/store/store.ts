@@ -1,5 +1,7 @@
-import { GatewayStoreOptions } from "@/store/types";
+import { voidMethod } from "@test/stubs/util";
 import { injectable } from "inversify";
+
+import { GatewayStoreOptions } from "@/store/types";
 
 import authStub from "./auth";
 import commentStub from "./comment";
@@ -18,13 +20,13 @@ import userStub from "./user";
 @injectable()
 export class StoreOptionsStub implements GatewayStoreOptions {
     actions = {
-        setIsMobile(): void {},
+        setIsMobile: voidMethod,
     };
     getters = {
-        isMobile: (): void => {},
+        isMobile: (): boolean => false,
     };
     mutations = {
-        setIsMobile(): void {},
+        setIsMobile: voidMethod,
     };
     modules = {
         auth: authStub,

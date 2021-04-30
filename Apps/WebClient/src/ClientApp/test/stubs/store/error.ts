@@ -1,3 +1,5 @@
+import { voidMethod } from "@test/stubs/util";
+
 import BannerError from "@/models/bannerError";
 import {
     ErrorBannerActions,
@@ -7,12 +9,12 @@ import {
     ErrorBannerState,
 } from "@/store/modules/error/types";
 
-var errorBannerState: ErrorBannerState = {
+const errorBannerState: ErrorBannerState = {
     isShowing: false,
     errors: [],
 };
 
-var errorBannerGetters: ErrorBannerGetters = {
+const errorBannerGetters: ErrorBannerGetters = {
     isShowing(): boolean {
         return false;
     },
@@ -21,22 +23,22 @@ var errorBannerGetters: ErrorBannerGetters = {
     },
 };
 
-var errorBannerActions: ErrorBannerActions = {
-    dismiss(): void {},
-    show(): void {},
-    setError(): void {},
-    addError(): void {},
-    addResultError(): void {},
+const errorBannerActions: ErrorBannerActions = {
+    dismiss: voidMethod,
+    show: voidMethod,
+    setError: voidMethod,
+    addError: voidMethod,
+    addResultError: voidMethod,
 };
 
-var errorBannerMutations: ErrorBannerMutations = {
-    dissmiss(): void {},
-    show(): void {},
-    setError(): void {},
-    addError(): void {},
+const errorBannerMutations: ErrorBannerMutations = {
+    dissmiss: voidMethod,
+    show: voidMethod,
+    setError: voidMethod,
+    addError: voidMethod,
 };
 
-var errorBannerStub: ErrorBannerModule = {
+const errorBannerStub: ErrorBannerModule = {
     namespaced: true,
     state: errorBannerState,
     getters: errorBannerGetters,

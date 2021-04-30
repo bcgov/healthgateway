@@ -1,3 +1,5 @@
+import { voidMethod } from "@test/stubs/util";
+
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import {
@@ -8,7 +10,7 @@ import {
     TimelineState,
 } from "@/store/modules/timeline/types";
 
-var timelineState: TimelineState = {
+const timelineState: TimelineState = {
     filter: TimelineFilterBuilder.buildEmpty(),
     keyword: "",
     isLinearView: true,
@@ -17,7 +19,7 @@ var timelineState: TimelineState = {
     selectedDate: null,
 };
 
-var timelineGetters: TimelineGetters = {
+const timelineGetters: TimelineGetters = {
     filter(): TimelineFilter {
         return TimelineFilterBuilder.buildEmpty();
     },
@@ -41,27 +43,27 @@ var timelineGetters: TimelineGetters = {
     },
 };
 
-var timelineActions: TimelineActions = {
-    setFilter(): void {},
-    setKeyword(): void {},
-    setLinearView(): void {},
-    clearFilter(): void {},
-    setLinearDate(): void {},
-    setCalendarDate(): void {},
-    setSelectedDate(): void {},
+const timelineActions: TimelineActions = {
+    setFilter: voidMethod,
+    setKeyword: voidMethod,
+    setLinearView: voidMethod,
+    clearFilter: voidMethod,
+    setLinearDate: voidMethod,
+    setCalendarDate: voidMethod,
+    setSelectedDate: voidMethod,
 };
 
-var timelineMutations: TimelineMutations = {
-    setFilter(): void {},
-    setKeyword(): void {},
-    setLinearView(): void {},
-    clearFilter(): void {},
-    setLinearDate(): void {},
-    setCalendarDate(): void {},
-    setSelectedDate(): void {},
+const timelineMutations: TimelineMutations = {
+    setFilter: voidMethod,
+    setKeyword: voidMethod,
+    setLinearView: voidMethod,
+    clearFilter: voidMethod,
+    setLinearDate: voidMethod,
+    setCalendarDate: voidMethod,
+    setSelectedDate: voidMethod,
 };
 
-var timelineStub: TimelineModule = {
+const timelineStub: TimelineModule = {
     namespaced: true,
     state: timelineState,
     getters: timelineGetters,

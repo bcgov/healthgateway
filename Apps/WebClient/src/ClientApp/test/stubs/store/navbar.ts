@@ -1,3 +1,5 @@
+import { voidMethod } from "@test/stubs/util";
+
 import {
     NavbarActions,
     NavbarGetters,
@@ -6,12 +8,12 @@ import {
     NavbarState,
 } from "@/store/modules/navbar/types";
 
-var navbarState: NavbarState = {
+const navbarState: NavbarState = {
     isSidebarOpen: false,
     isHeaderShown: false,
 };
 
-var navbarGetters: NavbarGetters = {
+const navbarGetters: NavbarGetters = {
     isSidebarOpen(): boolean {
         return false;
     },
@@ -20,21 +22,21 @@ var navbarGetters: NavbarGetters = {
     },
 };
 
-var navbarActions: NavbarActions = {
-    toggleSidebar(): void {},
-    setSidebarState(): void {},
-    toggleHeader(): void {},
-    setHeaderState(): void {},
+const navbarActions: NavbarActions = {
+    toggleSidebar: voidMethod,
+    setSidebarState: voidMethod,
+    toggleHeader: voidMethod,
+    setHeaderState: voidMethod,
 };
 
-var navbarMutations: NavbarMutations = {
-    toggleSidebar(): void {},
-    setSidebarState(): void {},
-    toggleHeader(): void {},
-    setHeaderState(): void {},
+const navbarMutations: NavbarMutations = {
+    toggleSidebar: voidMethod,
+    setSidebarState: voidMethod,
+    toggleHeader: voidMethod,
+    setHeaderState: voidMethod,
 };
 
-var navbarStub: NavbarModule = {
+const navbarStub: NavbarModule = {
     namespaced: true,
     state: navbarState,
     getters: navbarGetters,

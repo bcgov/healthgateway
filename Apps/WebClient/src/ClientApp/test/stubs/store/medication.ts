@@ -1,6 +1,7 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     MedicationRequestActions,
@@ -21,18 +22,18 @@ import {
     MedicationState,
 } from "@/store/modules/medication/types";
 
-var medicationState: MedicationState = {
+const medicationState: MedicationState = {
     status: LoadStatus.NONE,
 };
 
-var medicationStatementState: MedicationStatementState = {
+const medicationStatementState: MedicationStatementState = {
     medicationStatements: [],
     protectiveWordAttempts: 0,
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-var medicationStatementGetters: MedicationStatementGetters = {
+const medicationStatementGetters: MedicationStatementGetters = {
     medicationStatements(): MedicationStatementHistory[] {
         return [];
     },
@@ -50,34 +51,31 @@ var medicationStatementGetters: MedicationStatementGetters = {
     },
 };
 
-var medicationStatementActions: MedicationStatementActions = {
-    retrieveMedicationStatements(): Promise<
-        RequestResult<MedicationStatementHistory[]>
-    > {
-        return new Promise(() => {});
-    },
-    handleStatementError(): void {},
+const medicationStatementActions: MedicationStatementActions = {
+    retrieveMedicationStatements: stubbedPromise,
+    handleStatementError: voidMethod,
 };
 
-var medicationStatementMutations: MedicationStatementMutations = {
-    setMedicationStatementRequested(): void {},
-    setMedicationStatementResult(): void {},
-    medicationStatementError(): void {},
+const medicationStatementMutations: MedicationStatementMutations = {
+    setMedicationStatementRequested: voidMethod,
+    setMedicationStatementResult: voidMethod,
+    medicationStatementError: voidMethod,
 };
 
-var medicationStatementStub: MedicationStatementModule = {
+const medicationStatementStub: MedicationStatementModule = {
+    state: medicationStatementState,
     getters: medicationStatementGetters,
     actions: medicationStatementActions,
     mutations: medicationStatementMutations,
 };
 
-var medicationRequestState: MedicationRequestState = {
+const medicationRequestState: MedicationRequestState = {
     medicationRequests: [],
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-var medicationRequestGetters: MedicationRequestGetters = {
+const medicationRequestGetters: MedicationRequestGetters = {
     medicationRequests(): MedicationRequest[] {
         return [];
     },
@@ -89,27 +87,27 @@ var medicationRequestGetters: MedicationRequestGetters = {
     },
 };
 
-var medicationRequestActions: MedicationRequestActions = {
-    retrieveMedicationRequests(): Promise<RequestResult<MedicationRequest[]>> {
-        return new Promise(() => {});
-    },
-    handleRequestError(): void {},
+const medicationRequestActions: MedicationRequestActions = {
+    retrieveMedicationRequests: stubbedPromise,
+    handleRequestError: voidMethod,
 };
 
-var medicationRequestMutations: MedicationRequestMutations = {
-    setMedicationRequestRequested(): void {},
-    setMedicationRequestResult(): void {},
-    medicationRequestError(): void {},
+const medicationRequestMutations: MedicationRequestMutations = {
+    setMedicationRequestRequested: voidMethod,
+    setMedicationRequestResult: voidMethod,
+    medicationRequestError: voidMethod,
 };
 
-var medicationRequestStub: MedicationRequestModule = {
+const medicationRequestStub: MedicationRequestModule = {
+    state: medicationRequestState,
     getters: medicationRequestGetters,
     actions: medicationRequestActions,
     mutations: medicationRequestMutations,
 };
 
-var medicationStub: MedicationModule = {
+const medicationStub: MedicationModule = {
     namespaced: true,
+    state: medicationState,
     modules: {
         statement: medicationStatementStub,
         request: medicationRequestStub,

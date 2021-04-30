@@ -16,12 +16,12 @@ jobs:
       - script: |
           set -e
           export SONAR_SCANNER_OPTS="-Xmx3072m"
+          npm --prefix WebClient/src/ClientApp install --only=dev
+          npm --prefix WebClient/src/ClientApp test
           dotnet test \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
             --logger:"xunit;LogFileName=results.xml"
-          npm --prefix WebClient/src/ClientApp install --only=dev
-          npm --prefix WebClient/src/ClientApp test
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
             /k:bcgov_healthgateway \
