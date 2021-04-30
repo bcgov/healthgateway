@@ -1,3 +1,5 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import { LoadStatus } from "@/models/storeOperations";
 import {
     AuthActions,
@@ -6,8 +8,6 @@ import {
     AuthMutations,
     AuthState,
 } from "@/store/modules/auth/types";
-
-import { stubbedPromise, voidMethod } from "../util";
 
 const authState: AuthState = {
     authentication: {

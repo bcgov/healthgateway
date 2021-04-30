@@ -1,3 +1,5 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import { LoadStatus, Operation } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import {
@@ -7,8 +9,6 @@ import {
     NoteMutations,
     NoteState,
 } from "@/store/modules/note/types";
-
-import { stubbedPromise, voidMethod } from "../util";
 
 const noteState: NoteState = {
     notes: [],

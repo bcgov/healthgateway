@@ -1,6 +1,7 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
-import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     MedicationRequestActions,
@@ -20,8 +21,6 @@ import {
     MedicationModule,
     MedicationState,
 } from "@/store/modules/medication/types";
-
-import { stubbedPromise, voidMethod } from "../util";
 
 const medicationState: MedicationState = {
     status: LoadStatus.NONE,
@@ -53,11 +52,7 @@ const medicationStatementGetters: MedicationStatementGetters = {
 };
 
 const medicationStatementActions: MedicationStatementActions = {
-    retrieveMedicationStatements(): Promise<
-        RequestResult<MedicationStatementHistory[]>
-    > {
-        return new Promise(() => {});
-    },
+    retrieveMedicationStatements: stubbedPromise,
     handleStatementError: voidMethod,
 };
 
@@ -68,6 +63,7 @@ const medicationStatementMutations: MedicationStatementMutations = {
 };
 
 const medicationStatementStub: MedicationStatementModule = {
+    state: medicationStatementState,
     getters: medicationStatementGetters,
     actions: medicationStatementActions,
     mutations: medicationStatementMutations,
@@ -103,6 +99,7 @@ const medicationRequestMutations: MedicationRequestMutations = {
 };
 
 const medicationRequestStub: MedicationRequestModule = {
+    state: medicationRequestState,
     getters: medicationRequestGetters,
     actions: medicationRequestActions,
     mutations: medicationRequestMutations,
@@ -110,6 +107,7 @@ const medicationRequestStub: MedicationRequestModule = {
 
 const medicationStub: MedicationModule = {
     namespaced: true,
+    state: medicationState,
     modules: {
         statement: medicationStatementStub,
         request: medicationRequestStub,

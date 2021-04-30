@@ -1,3 +1,5 @@
+import { voidMethod } from "@test/stubs/util";
+
 import BannerError from "@/models/bannerError";
 import {
     ErrorBannerActions,
@@ -6,8 +8,6 @@ import {
     ErrorBannerMutations,
     ErrorBannerState,
 } from "@/store/modules/error/types";
-
-import { voidMethod } from "../util";
 
 const errorBannerState: ErrorBannerState = {
     isShowing: false,

@@ -1,3 +1,5 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import {
     ExternalConfiguration,
@@ -13,8 +15,6 @@ import {
     ConfigMutations,
     ConfigState,
 } from "@/store/modules/config/types";
-
-import { stubbedPromise, voidMethod } from "../util";
 
 const configState: ConfigState = {
     statusMessage: "",

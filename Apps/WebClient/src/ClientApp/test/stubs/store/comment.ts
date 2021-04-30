@@ -1,4 +1,4 @@
-import { stubbedPromise, voidMethod } from "../util";
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
 
 import { Dictionary } from "@/models/baseTypes";
 import { LoadStatus } from "@/models/storeOperations";

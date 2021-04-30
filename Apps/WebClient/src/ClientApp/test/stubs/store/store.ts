@@ -1,8 +1,8 @@
+import { voidMethod } from "@test/stubs/util";
 import { injectable } from "inversify";
 
 import { GatewayStoreOptions } from "@/store/types";
 
-import { voidMethod } from "../util";
 import authStub from "./auth";
 import commentStub from "./comment";
 import configStub from "./config";

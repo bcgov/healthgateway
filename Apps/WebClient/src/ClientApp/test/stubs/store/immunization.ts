@@ -1,3 +1,5 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -7,8 +9,6 @@ import {
     ImmunizationMutations,
     ImmunizationState,
 } from "@/store/modules/immunization/types";
-
-import { stubbedPromise, voidMethod } from "../util";
 
 const immunizationState: ImmunizationState = {
     immunizations: [],
@@ -41,7 +41,7 @@ const immunizationActions: ImmunizationActions = {
 };
 
 const immunizationMutations: ImmunizationMutations = {
-    setRequested: (state: ImmunizationState) => voidMethod(),
+    setRequested: voidMethod,
     setImmunizationResult: voidMethod,
     immunizationError: voidMethod,
 };

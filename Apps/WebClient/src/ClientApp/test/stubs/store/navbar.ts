@@ -1,3 +1,5 @@
+import { voidMethod } from "@test/stubs/util";
+
 import {
     NavbarActions,
     NavbarGetters,
@@ -5,8 +7,6 @@ import {
     NavbarMutations,
     NavbarState,
 } from "@/store/modules/navbar/types";
-
-import { voidMethod } from "../util";
 
 const navbarState: NavbarState = {
     isSidebarOpen: false,

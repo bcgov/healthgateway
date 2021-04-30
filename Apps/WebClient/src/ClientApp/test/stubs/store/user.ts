@@ -1,3 +1,5 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
 import { LoadStatus } from "@/models/storeOperations";
@@ -10,8 +12,6 @@ import {
     UserMutation,
     UserState,
 } from "@/store/modules/user/types";
-
-import { stubbedPromise, voidMethod } from "../util";
 
 const userState: UserState = {
     statusMessage: "",

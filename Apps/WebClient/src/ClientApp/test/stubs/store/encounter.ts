@@ -1,3 +1,5 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import Encounter from "@/models/encounter";
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -7,8 +9,6 @@ import {
     EncounterMutations,
     EncounterState,
 } from "@/store/modules/encounter/types";
-
-import { stubbedPromise, voidMethod } from "../util";
 
 const encounterState: EncounterState = {
     patientEncounters: [],
@@ -34,7 +34,7 @@ const encounterActions: EncounterActions = {
 };
 
 const encounterMutations: EncounterMutations = {
-    setRequested: (state: EncounterState) => stubbedPromise(),
+    setRequested: voidMethod,
     setPatientEncounters: voidMethod,
     encounterError: voidMethod,
 };

@@ -1,3 +1,5 @@
+import { voidMethod } from "@test/stubs/util";
+
 import { DateWrapper } from "@/models/dateWrapper";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import {
@@ -7,8 +9,6 @@ import {
     TimelineMutations,
     TimelineState,
 } from "@/store/modules/timeline/types";
-
-import { voidMethod } from "../util";
 
 const timelineState: TimelineState = {
     filter: TimelineFilterBuilder.buildEmpty(),

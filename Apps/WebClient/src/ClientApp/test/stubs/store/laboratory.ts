@@ -1,3 +1,5 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import { LaboratoryOrder } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -7,8 +9,6 @@ import {
     LaboratoryMutations,
     LaboratoryState,
 } from "@/store/modules/laboratory/types";
-
-import { stubbedPromise, voidMethod } from "../util";
 
 const laboratoryState: LaboratoryState = {
     laboratoryOrders: [],
