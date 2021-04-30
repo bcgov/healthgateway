@@ -7,7 +7,7 @@ import {
     ErrorBannerState,
 } from "@/store/modules/error/types";
 
-import { stubbedVoid } from "../../utility/stubUtil";
+import { voidMethod } from "../util";
 
 const errorBannerState: ErrorBannerState = {
     isShowing: false,
@@ -24,18 +24,18 @@ const errorBannerGetters: ErrorBannerGetters = {
 };
 
 const errorBannerActions: ErrorBannerActions = {
-    dismiss: stubbedVoid,
-    show: stubbedVoid,
-    setError: stubbedVoid,
-    addError: stubbedVoid,
-    addResultError: stubbedVoid,
+    dismiss: voidMethod,
+    show: voidMethod,
+    setError: voidMethod,
+    addError: voidMethod,
+    addResultError: voidMethod,
 };
 
 const errorBannerMutations: ErrorBannerMutations = {
-    dissmiss: stubbedVoid,
-    show: stubbedVoid,
-    setError: stubbedVoid,
-    addError: stubbedVoid,
+    dissmiss: voidMethod,
+    show: voidMethod,
+    setError: voidMethod,
+    addError: voidMethod,
 };
 
 const errorBannerStub: ErrorBannerModule = {

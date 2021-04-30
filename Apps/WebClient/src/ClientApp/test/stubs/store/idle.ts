@@ -6,7 +6,7 @@ import {
     IdleState,
 } from "@/store/modules/idle/types";
 
-import { stubbedVoid } from "../../utility/stubUtil";
+import { voidMethod } from "../util";
 
 const idleState: IdleState = {
     isVisible: false,
@@ -19,11 +19,11 @@ const idleGetters: IdleGetters = {
 };
 
 const idleActions: IdleActions = {
-    setVisibleState: stubbedVoid,
+    setVisibleState: voidMethod,
 };
 
 const idleMutations: IdleMutations = {
-    setVisibleState: stubbedVoid,
+    setVisibleState: voidMethod,
 };
 
 const idleStub: IdleModule = {

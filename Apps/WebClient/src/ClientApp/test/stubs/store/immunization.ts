@@ -8,7 +8,7 @@ import {
     ImmunizationState,
 } from "@/store/modules/immunization/types";
 
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 const immunizationState: ImmunizationState = {
     immunizations: [],
@@ -37,13 +37,13 @@ const immunizationGetters: ImmunizationGetters = {
 
 const immunizationActions: ImmunizationActions = {
     retrieve: stubbedPromise,
-    handleError: stubbedVoid,
+    handleError: voidMethod,
 };
 
 const immunizationMutations: ImmunizationMutations = {
-    setRequested: (state: ImmunizationState) => stubbedVoid(),
-    setImmunizationResult: stubbedVoid,
-    immunizationError: stubbedVoid,
+    setRequested: (state: ImmunizationState) => voidMethod(),
+    setImmunizationResult: voidMethod,
+    immunizationError: voidMethod,
 };
 
 const immunizationStub: ImmunizationModule = {

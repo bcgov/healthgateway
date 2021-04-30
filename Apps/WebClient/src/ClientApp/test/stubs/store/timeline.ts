@@ -8,7 +8,7 @@ import {
     TimelineState,
 } from "@/store/modules/timeline/types";
 
-import { stubbedVoid } from "../../utility/stubUtil";
+import { voidMethod } from "../util";
 
 const timelineState: TimelineState = {
     filter: TimelineFilterBuilder.buildEmpty(),
@@ -44,23 +44,23 @@ const timelineGetters: TimelineGetters = {
 };
 
 const timelineActions: TimelineActions = {
-    setFilter: stubbedVoid,
-    setKeyword: stubbedVoid,
-    setLinearView: stubbedVoid,
-    clearFilter: stubbedVoid,
-    setLinearDate: stubbedVoid,
-    setCalendarDate: stubbedVoid,
-    setSelectedDate: stubbedVoid,
+    setFilter: voidMethod,
+    setKeyword: voidMethod,
+    setLinearView: voidMethod,
+    clearFilter: voidMethod,
+    setLinearDate: voidMethod,
+    setCalendarDate: voidMethod,
+    setSelectedDate: voidMethod,
 };
 
 const timelineMutations: TimelineMutations = {
-    setFilter: stubbedVoid,
-    setKeyword: stubbedVoid,
-    setLinearView: stubbedVoid,
-    clearFilter: stubbedVoid,
-    setLinearDate: stubbedVoid,
-    setCalendarDate: stubbedVoid,
-    setSelectedDate: stubbedVoid,
+    setFilter: voidMethod,
+    setKeyword: voidMethod,
+    setLinearView: voidMethod,
+    clearFilter: voidMethod,
+    setLinearDate: voidMethod,
+    setCalendarDate: voidMethod,
+    setSelectedDate: voidMethod,
 };
 
 const timelineStub: TimelineModule = {

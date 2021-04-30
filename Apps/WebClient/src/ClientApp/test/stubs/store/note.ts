@@ -8,7 +8,7 @@ import {
     NoteState,
 } from "@/store/modules/note/types";
 
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 const noteState: NoteState = {
     notes: [],
@@ -34,16 +34,16 @@ const noteGetters: NoteGetters = {
 
 const noteActions: NoteActions = {
     retrieve: stubbedPromise,
-    handleError: stubbedVoid,
+    handleError: voidMethod,
 };
 
 const noteMutations: NoteMutations = {
-    setRequested: stubbedVoid,
-    setNotes: stubbedVoid,
-    addNote: stubbedVoid,
-    updateNote: stubbedVoid,
-    deleteNote: stubbedVoid,
-    noteError: stubbedVoid,
+    setRequested: voidMethod,
+    setNotes: voidMethod,
+    addNote: voidMethod,
+    updateNote: voidMethod,
+    deleteNote: voidMethod,
+    noteError: voidMethod,
 };
 
 const noteStub: NoteModule = {

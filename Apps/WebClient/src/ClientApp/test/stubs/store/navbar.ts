@@ -6,7 +6,7 @@ import {
     NavbarState,
 } from "@/store/modules/navbar/types";
 
-import { stubbedVoid } from "../../utility/stubUtil";
+import { voidMethod } from "../util";
 
 const navbarState: NavbarState = {
     isSidebarOpen: false,
@@ -23,17 +23,17 @@ const navbarGetters: NavbarGetters = {
 };
 
 const navbarActions: NavbarActions = {
-    toggleSidebar: stubbedVoid,
-    setSidebarState: stubbedVoid,
-    toggleHeader: stubbedVoid,
-    setHeaderState: stubbedVoid,
+    toggleSidebar: voidMethod,
+    setSidebarState: voidMethod,
+    toggleHeader: voidMethod,
+    setHeaderState: voidMethod,
 };
 
 const navbarMutations: NavbarMutations = {
-    toggleSidebar: stubbedVoid,
-    setSidebarState: stubbedVoid,
-    toggleHeader: stubbedVoid,
-    setHeaderState: stubbedVoid,
+    toggleSidebar: voidMethod,
+    setSidebarState: voidMethod,
+    toggleHeader: voidMethod,
+    setHeaderState: voidMethod,
 };
 
 const navbarStub: NavbarModule = {

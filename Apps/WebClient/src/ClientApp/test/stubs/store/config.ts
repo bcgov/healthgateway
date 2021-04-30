@@ -14,7 +14,7 @@ import {
     ConfigState,
 } from "@/store/modules/config/types";
 
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 const configState: ConfigState = {
     statusMessage: "",
@@ -59,9 +59,9 @@ const configActions: ConfigActions = {
 };
 
 const configMutations: ConfigMutations = {
-    configurationRequest: stubbedVoid,
-    configurationLoaded: stubbedVoid,
-    configurationError: stubbedVoid,
+    configurationRequest: voidMethod,
+    configurationLoaded: voidMethod,
+    configurationError: voidMethod,
 };
 
 const configStub: ConfigModule = {

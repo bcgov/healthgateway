@@ -8,7 +8,7 @@ import {
     LaboratoryState,
 } from "@/store/modules/laboratory/types";
 
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 const laboratoryState: LaboratoryState = {
     laboratoryOrders: [],
@@ -30,13 +30,13 @@ const laboratoryGetters: LaboratoryGetters = {
 
 const laboratoryActions: LaboratoryActions = {
     retrieve: stubbedPromise,
-    handleError: stubbedVoid,
+    handleError: voidMethod,
 };
 
 const laboratoryMutations: LaboratoryMutations = {
-    setRequested: stubbedVoid,
-    setLaboratoryOrders: stubbedVoid,
-    laboratoryError: stubbedVoid,
+    setRequested: voidMethod,
+    setLaboratoryOrders: voidMethod,
+    laboratoryError: voidMethod,
 };
 
 const laboratoryStub: LaboratoryModule = {

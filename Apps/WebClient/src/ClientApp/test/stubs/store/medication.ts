@@ -21,7 +21,7 @@ import {
     MedicationState,
 } from "@/store/modules/medication/types";
 
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 const medicationState: MedicationState = {
     status: LoadStatus.NONE,
@@ -58,13 +58,13 @@ const medicationStatementActions: MedicationStatementActions = {
     > {
         return new Promise(() => {});
     },
-    handleStatementError: stubbedVoid,
+    handleStatementError: voidMethod,
 };
 
 const medicationStatementMutations: MedicationStatementMutations = {
-    setMedicationStatementRequested: stubbedVoid,
-    setMedicationStatementResult: stubbedVoid,
-    medicationStatementError: stubbedVoid,
+    setMedicationStatementRequested: voidMethod,
+    setMedicationStatementResult: voidMethod,
+    medicationStatementError: voidMethod,
 };
 
 const medicationStatementStub: MedicationStatementModule = {
@@ -93,13 +93,13 @@ const medicationRequestGetters: MedicationRequestGetters = {
 
 const medicationRequestActions: MedicationRequestActions = {
     retrieveMedicationRequests: stubbedPromise,
-    handleRequestError: stubbedVoid,
+    handleRequestError: voidMethod,
 };
 
 const medicationRequestMutations: MedicationRequestMutations = {
-    setMedicationRequestRequested: stubbedVoid,
-    setMedicationRequestResult: stubbedVoid,
-    medicationRequestError: stubbedVoid,
+    setMedicationRequestRequested: voidMethod,
+    setMedicationRequestResult: voidMethod,
+    medicationRequestError: voidMethod,
 };
 
 const medicationRequestStub: MedicationRequestModule = {

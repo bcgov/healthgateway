@@ -1,4 +1,4 @@
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 import { Dictionary } from "@/models/baseTypes";
 import { LoadStatus } from "@/models/storeOperations";
@@ -37,16 +37,16 @@ const commentActions: CommentActions = {
     createComment: stubbedPromise,
     updateComment: stubbedPromise,
     deleteComment: stubbedPromise,
-    handleError: stubbedVoid,
+    handleError: voidMethod,
 };
 
 const commentMutations: CommentMutations = {
-    setRequested: stubbedVoid,
-    setProfileComments: stubbedVoid,
-    addComment: stubbedVoid,
-    updateComment: stubbedVoid,
-    deleteComment: stubbedVoid,
-    commentError: stubbedVoid,
+    setRequested: voidMethod,
+    setProfileComments: voidMethod,
+    addComment: voidMethod,
+    updateComment: voidMethod,
+    deleteComment: voidMethod,
+    commentError: voidMethod,
 };
 
 const commentStub: CommentModule = {

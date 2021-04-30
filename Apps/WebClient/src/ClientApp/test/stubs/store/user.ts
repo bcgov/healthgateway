@@ -11,7 +11,7 @@ import {
     UserState,
 } from "@/store/modules/user/types";
 
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 const userState: UserState = {
     statusMessage: "",
@@ -24,13 +24,13 @@ const userState: UserState = {
 const userActions: UserActions = {
     checkRegistration: stubbedPromise,
     updateUserEmail: stubbedPromise,
-    updateSMSResendDateTime: stubbedVoid,
+    updateSMSResendDateTime: voidMethod,
     updateUserPreference: stubbedPromise,
     createUserPreference: stubbedPromise,
     closeUserAccount: stubbedPromise,
     recoverUserAccount: stubbedPromise,
     getPatientData: stubbedPromise,
-    handleError: stubbedVoid,
+    handleError: voidMethod,
 };
 
 const userGetters: UserGetters = {
@@ -55,13 +55,13 @@ const userGetters: UserGetters = {
 };
 
 const userMutations: UserMutation = {
-    setOidcUserData: stubbedVoid,
-    setProfileUserData: stubbedVoid,
-    setSMSResendDateTime: stubbedVoid,
-    setUserPreference: stubbedVoid,
-    setPatientData: stubbedVoid,
-    clearUserData: stubbedVoid,
-    userError: stubbedVoid,
+    setOidcUserData: voidMethod,
+    setProfileUserData: voidMethod,
+    setSMSResendDateTime: voidMethod,
+    setUserPreference: voidMethod,
+    setPatientData: voidMethod,
+    clearUserData: voidMethod,
+    userError: voidMethod,
 };
 
 const userStub: UserModule = {

@@ -8,7 +8,7 @@ import {
     EncounterState,
 } from "@/store/modules/encounter/types";
 
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 const encounterState: EncounterState = {
     patientEncounters: [],
@@ -30,13 +30,13 @@ const encounterGetters: EncounterGetters = {
 
 const encounterActions: EncounterActions = {
     retrieve: stubbedPromise,
-    handleError: stubbedVoid,
+    handleError: voidMethod,
 };
 
 const encounterMutations: EncounterMutations = {
     setRequested: (state: EncounterState) => stubbedPromise(),
-    setPatientEncounters: stubbedVoid,
-    encounterError: stubbedVoid,
+    setPatientEncounters: voidMethod,
+    encounterError: voidMethod,
 };
 
 const encounterStub: EncounterModule = {

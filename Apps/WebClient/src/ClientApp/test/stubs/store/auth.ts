@@ -7,7 +7,7 @@ import {
     AuthState,
 } from "@/store/modules/auth/types";
 
-import { stubbedPromise, stubbedVoid } from "../../utility/stubUtil";
+import { stubbedPromise, voidMethod } from "../util";
 
 const authState: AuthState = {
     authentication: {
@@ -46,18 +46,18 @@ const authActions: AuthActions = {
     authenticateOidc: stubbedPromise,
     oidcSignInCallback: stubbedPromise,
     authenticateOidcSilent: stubbedPromise,
-    oidcWasAuthenticated: stubbedVoid,
+    oidcWasAuthenticated: voidMethod,
     getOidcUser: stubbedPromise,
-    signOutOidc: stubbedVoid,
+    signOutOidc: voidMethod,
     signOutOidcCallback: stubbedPromise,
-    clearStorage: stubbedVoid,
+    clearStorage: voidMethod,
 };
 
 const authMutations: AuthMutations = {
-    setOidcAuth: stubbedVoid,
-    unsetOidcAuth: stubbedVoid,
-    setOidcAuthIsChecked: stubbedVoid,
-    setOidcError: stubbedVoid,
+    setOidcAuth: voidMethod,
+    unsetOidcAuth: voidMethod,
+    setOidcAuthIsChecked: voidMethod,
+    setOidcError: voidMethod,
 };
 
 const authStub: AuthModule = {
