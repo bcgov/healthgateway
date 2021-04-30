@@ -67,7 +67,6 @@ namespace HealthGateway.Medication.Services.Test
                     .ReturnsAsync(expectedDelegateResult);
 
             IMedicationRequestService service = new MedicationRequestService(
-                CreateLogger(),
                 mockPatientService.Object,
                 mockDelegate.Object);
 
@@ -98,7 +97,6 @@ namespace HealthGateway.Medication.Services.Test
             Mock<IPatientService> mockPatientService = CreatePatientService(hdid, patientResult);
 
             IMedicationRequestService service = new MedicationRequestService(
-                CreateLogger(),
                 mockPatientService.Object,
                 new Mock<IMedicationRequestDelegate>().Object);
 
@@ -139,7 +137,6 @@ namespace HealthGateway.Medication.Services.Test
                     .ReturnsAsync(expectedDelegateResult);
 
             IMedicationRequestService service = new MedicationRequestService(
-                CreateLogger(),
                 mockPatientService.Object,
                 mockDelegate.Object);
 
@@ -149,12 +146,6 @@ namespace HealthGateway.Medication.Services.Test
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
-        }
-
-        private static ILogger<MedicationRequestService> CreateLogger()
-        {
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            return loggerFactory.CreateLogger<MedicationRequestService>();
         }
 
         private static Mock<IPatientService> CreatePatientService(string hdid, RequestResult<PatientModel> response)

@@ -1,3 +1,5 @@
+import { voidMethod } from "@test/stubs/util";
+
 import {
     IdleActions,
     IdleGetters,
@@ -6,25 +8,25 @@ import {
     IdleState,
 } from "@/store/modules/idle/types";
 
-var idleState: IdleState = {
+const idleState: IdleState = {
     isVisible: false,
 };
 
-var idleGetters: IdleGetters = {
+const idleGetters: IdleGetters = {
     isVisible(): boolean {
         return false;
     },
 };
 
-var idleActions: IdleActions = {
-    setVisibleState(): void {},
+const idleActions: IdleActions = {
+    setVisibleState: voidMethod,
 };
 
-var idleMutations: IdleMutations = {
-    setVisibleState(): void {},
+const idleMutations: IdleMutations = {
+    setVisibleState: voidMethod,
 };
 
-var idleStub: IdleModule = {
+const idleStub: IdleModule = {
     namespaced: true,
     state: idleState,
     getters: idleGetters,

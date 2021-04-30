@@ -11,8 +11,7 @@
 
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Component, Vue } from "vue-property-decorator";
 
 import Footer from "@/components/core/Footer.vue";

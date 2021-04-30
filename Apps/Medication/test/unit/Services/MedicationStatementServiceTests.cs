@@ -50,15 +50,6 @@ namespace HealthGateway.Medication.Services.Test
         private readonly string ipAddress = "10.0.0.1";
         private readonly string din = "00000000";
         private readonly string protectiveWord = "TestWord";
-        private readonly IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MedicationStatementServiceTests"/> class.
-        /// </summary>
-        public MedicationStatementServiceTests()
-        {
-            this.configuration = new ConfigurationBuilder().AddJsonFile("UnitTest.json").Build();
-        }
 
         /// <summary>
         /// GetMedicationStatementsHistory - Invalid Keyword.

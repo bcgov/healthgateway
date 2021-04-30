@@ -276,5 +276,3 @@ export default class Dashboard extends Vue {
         </v-row>
     </v-container>
 </template>
-
-<style scoped></style>

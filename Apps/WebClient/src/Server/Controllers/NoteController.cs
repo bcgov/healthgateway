@@ -37,19 +37,14 @@ namespace HealthGateway.WebClient.Controllers
     {
         private readonly INoteService noteService;
 
-        private readonly IHttpContextAccessor httpContextAccessor;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NoteController"/> class.
         /// </summary>
         /// <param name="noteService">The injected patient notes service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         public NoteController(
-            INoteService noteService,
-            IHttpContextAccessor httpContextAccessor)
+            INoteService noteService)
         {
             this.noteService = noteService;
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>

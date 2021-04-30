@@ -43,7 +43,6 @@ namespace HealthGateway.Encounter.Test.Service
     /// </summary>
     public class EncounterServiceTests
     {
-        private readonly IConfiguration configuration;
         private readonly string ipAddress = "127.0.0.1";
         private readonly Claim sameClaim = new Claim()
         {
@@ -78,14 +77,6 @@ namespace HealthGateway.Encounter.Test.Service
                 Birthdate = DateTime.ParseExact("1983/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
             },
         };
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EncounterServiceTests"/> class.
-        /// </summary>
-        public EncounterServiceTests()
-        {
-            this.configuration = GetIConfigurationRoot();
-        }
 
         /// <summary>
         /// GetEncounters - Happy Path.
@@ -210,17 +201,6 @@ namespace HealthGateway.Encounter.Test.Service
             var actualResult = service.GetEncounters(hdid).Result;
             Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error &&
                         actualResult.ResultError.IsDeepEqual(errorPatientResult.ResultError));
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            return new ConfigurationBuilder()
-
-                // .SetBasePath(outputPath)
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile("appsettings.Development.json", optional: true)
-                .AddJsonFile("appsettings.local.json", optional: true)
-                .Build();
         }
 
         private HttpContext GetHttpContext()

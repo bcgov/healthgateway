@@ -1,3 +1,5 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -8,14 +10,14 @@ import {
     ImmunizationState,
 } from "@/store/modules/immunization/types";
 
-var immunizationState: ImmunizationState = {
+const immunizationState: ImmunizationState = {
     immunizations: [],
     recommendations: [],
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-var immunizationGetters: ImmunizationGetters = {
+const immunizationGetters: ImmunizationGetters = {
     immunizations(): ImmunizationEvent[] {
         return [];
     },
@@ -33,20 +35,18 @@ var immunizationGetters: ImmunizationGetters = {
     },
 };
 
-var immunizationActions: ImmunizationActions = {
-    retrieve(): Promise<void> {
-        return new Promise(() => {});
-    },
-    handleError(): void {},
+const immunizationActions: ImmunizationActions = {
+    retrieve: stubbedPromise,
+    handleError: voidMethod,
 };
 
-var immunizationMutations: ImmunizationMutations = {
-    setRequested(state: ImmunizationState): void {},
-    setImmunizationResult(): void {},
-    immunizationError(): void {},
+const immunizationMutations: ImmunizationMutations = {
+    setRequested: voidMethod,
+    setImmunizationResult: voidMethod,
+    immunizationError: voidMethod,
 };
 
-var immunizationStub: ImmunizationModule = {
+const immunizationStub: ImmunizationModule = {
     namespaced: true,
     state: immunizationState,
     getters: immunizationGetters,

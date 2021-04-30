@@ -46,22 +46,18 @@ namespace HealthGateway.WebClient.Listeners
         private const int SleepDuration = 10000;
 
         private readonly ILogger<BannerListener> logger;
-        private readonly IConfiguration configuration;
         private readonly IServiceProvider services;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BannerListener"/> class.
         /// </summary>
         /// <param name="logger">The injected logger.</param>
-        /// <param name="configuration">The injected configuration.</param>
         /// <param name="services">The set of application services available.</param>
         public BannerListener(
             ILogger<BannerListener> logger,
-            IConfiguration configuration,
             IServiceProvider services)
         {
             this.logger = logger;
-            this.configuration = configuration;
             this.services = services;
         }
 

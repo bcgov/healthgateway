@@ -60,11 +60,6 @@
             ImmunizationService's Unit Tests.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Services.ImmsServiceTests"/> class.
-            </summary>
-        </member>
         <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetImmunizations">
             <summary>
             GetImmunizations - Happy Path.

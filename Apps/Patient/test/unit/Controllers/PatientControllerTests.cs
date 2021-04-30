@@ -45,8 +45,6 @@ namespace HealthGateway.Patient.Test.Controllers
         public void GetPatients()
         {
             Mock<IPatientService> patientService = new Mock<IPatientService>();
-            var loggerService = new Mock<ILogger<PatientController>>();
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             var expectedResult = new RequestResult<PatientModel>()
             {
                 ResourcePayload = new PatientModel()
@@ -62,7 +60,7 @@ namespace HealthGateway.Patient.Test.Controllers
             };
             patientService.Setup(x => x.GetPatient(It.IsAny<string>(), Common.Constants.PatientIdentifierType.HDID)).ReturnsAsync(expectedResult);
 
-            PatientController patientController = new PatientController(loggerService.Object, httpContextAccessorMock.Object, patientService.Object);
+            PatientController patientController = new PatientController(patientService.Object);
             var actualResult = patientController.GetPatient("123");
             Assert.IsType<JsonResult>(actualResult.Result);
             Assert.True(((JsonResult)actualResult.Result).Value.IsDeepEqual(expectedResult));
