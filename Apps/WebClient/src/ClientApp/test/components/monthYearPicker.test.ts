@@ -1,6 +1,7 @@
 import "@/plugins/inversify.config";
-import { createLocalVue, shallowMount } from "@vue/test-utils";
 
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 
 import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
@@ -8,7 +9,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-import { StoreOptionsStub } from "@test/stubs/store/storeOptionsStub";
 
 describe("MonthYearPickerComponent", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
