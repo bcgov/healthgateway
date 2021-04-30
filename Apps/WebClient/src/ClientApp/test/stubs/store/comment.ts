@@ -1,4 +1,4 @@
-import { stubbedPromise, voidMethod } from "@test/stubs/util";
+import { voidPromise, voidMethod } from "@test/stubs/util";
 
 import { Dictionary } from "@/models/baseTypes";
 import { LoadStatus } from "@/models/storeOperations";
@@ -33,10 +33,10 @@ const commentGetters: CommentGetters = {
 };
 
 const commentActions: CommentActions = {
-    retrieve: stubbedPromise,
-    createComment: stubbedPromise,
-    updateComment: stubbedPromise,
-    deleteComment: stubbedPromise,
+    retrieve: voidPromise,
+    createComment: voidPromise,
+    updateComment: voidPromise,
+    deleteComment: voidPromise,
     handleError: voidMethod,
 };
 

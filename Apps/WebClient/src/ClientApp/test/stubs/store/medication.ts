@@ -1,4 +1,4 @@
-import { stubbedPromise, voidMethod } from "@test/stubs/util";
+import { voidPromise, voidMethod } from "@test/stubs/util";
 
 import MedicationRequest from "@/models/MedicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -52,7 +52,7 @@ const medicationStatementGetters: MedicationStatementGetters = {
 };
 
 const medicationStatementActions: MedicationStatementActions = {
-    retrieveMedicationStatements: stubbedPromise,
+    retrieveMedicationStatements: voidPromise,
     handleStatementError: voidMethod,
 };
 
@@ -88,7 +88,7 @@ const medicationRequestGetters: MedicationRequestGetters = {
 };
 
 const medicationRequestActions: MedicationRequestActions = {
-    retrieveMedicationRequests: stubbedPromise,
+    retrieveMedicationRequests: voidPromise,
     handleRequestError: voidMethod,
 };
 

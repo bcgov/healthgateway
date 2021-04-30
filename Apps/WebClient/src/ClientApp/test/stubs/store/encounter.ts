@@ -1,4 +1,4 @@
-import { stubbedPromise, voidMethod } from "@test/stubs/util";
+import { voidPromise, voidMethod } from "@test/stubs/util";
 
 import Encounter from "@/models/encounter";
 import { LoadStatus } from "@/models/storeOperations";
@@ -29,7 +29,7 @@ const encounterGetters: EncounterGetters = {
 };
 
 const encounterActions: EncounterActions = {
-    retrieve: stubbedPromise,
+    retrieve: voidPromise,
     handleError: voidMethod,
 };
 

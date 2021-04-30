@@ -1,4 +1,4 @@
-import { stubbedPromise, voidMethod } from "@test/stubs/util";
+import { voidPromise, voidMethod } from "@test/stubs/util";
 
 import { LoadStatus } from "@/models/storeOperations";
 import {
@@ -42,14 +42,14 @@ const authGetters: AuthGetters = {
 };
 
 const authActions: AuthActions = {
-    oidcCheckUser: stubbedPromise,
-    authenticateOidc: stubbedPromise,
-    oidcSignInCallback: stubbedPromise,
-    authenticateOidcSilent: stubbedPromise,
+    oidcCheckUser: voidPromise,
+    authenticateOidc: voidPromise,
+    oidcSignInCallback: voidPromise,
+    authenticateOidcSilent: voidPromise,
     oidcWasAuthenticated: voidMethod,
-    getOidcUser: stubbedPromise,
+    getOidcUser: voidPromise,
     signOutOidc: voidMethod,
-    signOutOidcCallback: stubbedPromise,
+    signOutOidcCallback: voidPromise,
     clearStorage: voidMethod,
 };
 
