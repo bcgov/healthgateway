@@ -39,7 +39,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<TimelineView> {
     });
 }
 
-describe("Timeline view", () => {
+describe("Report View", () => {
     var logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
 
