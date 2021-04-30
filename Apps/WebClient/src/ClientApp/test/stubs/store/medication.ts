@@ -107,7 +107,6 @@ const medicationRequestStub: MedicationRequestModule = {
 
 const medicationStub: MedicationModule = {
     namespaced: true,
-    state: medicationState,
     modules: {
         statement: medicationStatementStub,
         request: medicationRequestStub,
