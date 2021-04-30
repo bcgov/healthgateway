@@ -1,12 +1,14 @@
+import "@/plugins/inversify.config";
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import LandingComponent from "@/views/landing.vue";
+import { StoreOptionsStub } from "./stubs/store/store";
 
 describe("Landing view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
@@ -15,35 +17,25 @@ describe("Landing view", () => {
     const localVue = createLocalVue();
     localVue.use(Vuex);
 
-    const a: WebClientConfiguration = {
-        logLevel: "",
-        timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
-        registrationStatus: "open" as RegistrationStatus,
-        externalURLs: {},
-        modules: {},
-        hoursForDeletion: 1,
-        minPatientAge: 16,
-        maxDependentAge: 12,
+    const options = new StoreOptionsStub();
+    options.modules.config.getters.webClient = (): WebClientConfiguration => {
+        return {
+            logLevel: "",
+            timeouts: { idle: 0, logoutRedirect: "", resendSMS: 1 },
+            registrationStatus: "open" as RegistrationStatus,
+            externalURLs: {},
+            modules: {},
+            hoursForDeletion: 1,
+            minPatientAge: 16,
+            maxDependentAge: 12,
+        };
     };
 
-    const configGetters = {
-        webClient: (): WebClientConfiguration => {
-            return a;
-        },
-    };
-
-    const customStore = new Vuex.Store({
-        modules: {
-            config: {
-                namespaced: true,
-                getters: configGetters,
-            },
-        },
-    });
+    const store = new Vuex.Store(options);
 
     const wrapper = shallowMount(LandingComponent, {
         localVue,
-        store: customStore,
+        store: store,
         stubs: {
             "hg-icon": true,
         },

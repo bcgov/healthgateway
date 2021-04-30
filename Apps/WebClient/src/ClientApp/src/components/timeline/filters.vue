@@ -17,7 +17,7 @@ import { StringISODate } from "@/models/dateWrapper";
 import { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 library.add(faBars, faCalendarDay, faChevronDown, faSlidersH);

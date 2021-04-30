@@ -6,7 +6,7 @@ import Encounter from "@/models/encounter";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IEncounterService,
     IHttpDelegate,

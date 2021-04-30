@@ -1,4 +1,5 @@
 import { GatewayStoreOptions } from "@/store/types";
+import { injectable } from "inversify";
 
 import authStub from "./auth";
 import commentStub from "./comment";
@@ -14,17 +15,18 @@ import noteStub from "./note";
 import timelineStub from "./timeline";
 import userStub from "./user";
 
-export var storeStub: GatewayStoreOptions = {
-    actions: {
+@injectable()
+export class StoreOptionsStub implements GatewayStoreOptions {
+    actions = {
         setIsMobile(): void {},
-    },
-    getters: {
+    };
+    getters = {
         isMobile: (): void => {},
-    },
-    mutations: {
+    };
+    mutations = {
         setIsMobile(): void {},
-    },
-    modules: {
+    };
+    modules = {
         auth: authStub,
         config: configStub,
         user: userStub,
@@ -38,5 +40,5 @@ export var storeStub: GatewayStoreOptions = {
         idle: idleStub,
         errorBanner: errorBannerStub,
         timeline: timelineStub,
-    },
-};
+    };
+}

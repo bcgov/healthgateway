@@ -1,5 +1,5 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { injectable } from "inversify";
+import { ActionContext } from "vuex";
 
 import { auth } from "./modules/auth/auth";
 import { comment } from "./modules/comment/comment";
@@ -16,29 +16,31 @@ import { timeline } from "./modules/timeline/timeline";
 import { user } from "./modules/user/user";
 import { GatewayStoreOptions, RootState } from "./types";
 
-Vue.use(Vuex);
-
-const storeOptions: GatewayStoreOptions = {
-    state: {
+@injectable()
+export class StoreOptions implements GatewayStoreOptions {
+    state = {
         version: "1.0.0",
         isMobile: false,
-    },
-    actions: {
-        setIsMobile(context, isMobile: boolean) {
+    };
+    actions = {
+        setIsMobile(
+            context: ActionContext<RootState, RootState>,
+            isMobile: boolean
+        ): void {
             context.commit("setIsMobile", isMobile);
         },
-    },
-    getters: {
-        isMobile: (state) => {
+    };
+    getters = {
+        isMobile: (state: RootState): boolean => {
             return state.isMobile;
         },
-    },
-    mutations: {
-        setIsMobile(state, isMobile: boolean) {
+    };
+    mutations = {
+        setIsMobile(state: RootState, isMobile: boolean): void {
             state.isMobile = isMobile;
         },
-    },
-    modules: {
+    };
+    modules = {
         auth,
         config,
         user,
@@ -52,7 +54,5 @@ const storeOptions: GatewayStoreOptions = {
         idle,
         errorBanner,
         timeline,
-    },
-};
-
-export default new Vuex.Store<RootState>(storeOptions);
+    };
+}
