@@ -79,7 +79,7 @@ describe("Report view", () => {
     logger.initialize("info");
 
     const reportIdTag = "#reportType";
-    const testIdExclussion = "[data-testid=medicationExclusionFilter]";
+    const testIdExclusion = "[data-testid=medicationExclusionFilter]";
     const testIdSelectedDates = "[data-testid=selectedDatesFilter]";
     const testIdClearFilter = "[data-testid=clearFilter]";
 
@@ -88,7 +88,7 @@ describe("Report view", () => {
         expect(wrapper).toBeTruthy();
     });
 
-    test("Availiable report types - single", () => {
+    test("Available report types - single", () => {
         // Setup vuex store
         webclientConfig.modules = {
             [ClientModule.Medication]: true,
@@ -107,7 +107,7 @@ describe("Report view", () => {
         ).toBe("Medications");
     });
 
-    test("Availiable report types - multiple", () => {
+    test("Available report types - multiple", () => {
         // Setup vuex store
         webclientConfig.modules = {
             ["Medication"]: true,
@@ -144,14 +144,14 @@ describe("Report view", () => {
         });
 
         // Check values
-        expect(wrapper.find(testIdExclussion).isVisible()).toBe(false);
+        expect(wrapper.find(testIdExclusion).isVisible()).toBe(false);
         const comboOptions = wrapper.find(reportIdTag).findAll("option");
         await comboOptions.at(1).setSelected();
 
-        expect(wrapper.find(testIdExclussion).isVisible()).toBe(true);
+        expect(wrapper.find(testIdExclusion).isVisible()).toBe(true);
     });
 
-    test("Advanced canel", async () => {
+    test("Advanced cancel", async () => {
         // Setup vuex store
         webclientConfig.modules = {
             ["Medication"]: true,
@@ -316,14 +316,12 @@ describe("Report view", () => {
         });
 
         // Check values
-        expect(wrapper.find(testIdExclussion).isVisible()).toBe(false);
+        expect(wrapper.find(testIdExclusion).isVisible()).toBe(false);
         const comboOptions = wrapper.find(reportIdTag).findAll("option");
         await comboOptions.at(1).setSelected();
 
-        expect(wrapper.find(testIdExclussion).isVisible()).toBe(true);
+        expect(wrapper.find(testIdExclusion).isVisible()).toBe(true);
 
-        expect(wrapper.find(testIdExclussion).props()["options"].length).toBe(
-            3
-        );
+        expect(wrapper.find(testIdExclusion).props()["options"].length).toBe(3);
     });
 });
