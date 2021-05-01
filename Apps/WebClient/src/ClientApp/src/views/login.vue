@@ -101,7 +101,7 @@ export default class LoginView extends Vue {
                 <b-card
                     v-if="identityProviders && identityProviders.length > 0"
                     id="loginPicker"
-                    class="shadow-lg bg-white"
+                    class="shadow-lg bg-white mx-auto"
                     style="max-width: 25rem"
                     align="center"
                 >
