@@ -60,7 +60,7 @@ describe("Encounter Service", () => {
         });
     });
 
-    it("Verify Dinctint Encounters", () => {
+    it("Verify Distinct Encounters", () => {
         const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         cy.get("@tokens").then((tokens) => {
             cy.log("Tokens", tokens);
