@@ -26,13 +26,13 @@ namespace HealthGateway.Encounter.Models.ODR
         /// <summary>
         /// Gets or sets the ODRHistoryQuery for the MSPVisitHistory integration.
         /// </summary>
-        [JsonPropertyName("getMSPVisitHistoryRequest")]
+        [JsonPropertyName("getMspVisitHistoryRequest")]
         public ODRHistoryQuery? Query { get; set; }
 
         /// <summary>
         /// Gets or sets the MSPVisitHistoryResponse for the MSPVisitHistory integration.
         /// </summary>
-        [JsonPropertyName("getMSPVisitHistoryResponse")]
+        [JsonPropertyName("getMspVisitHistoryResponse")]
         public MSPVisitHistoryResponse? Response { get; set; }
     }
 }
