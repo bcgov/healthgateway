@@ -28,7 +28,6 @@ describe("Immunization", () => {
     it("Validate Immunization Loading", () => {
         cy.get("[data-testid=immunizationLoading]").should("be.visible");
         cy.get("[data-testid=immunizationLoading]").should("not.exist");
-        cy.get("[data-testid=immunizationReady]").should("be.visible");
     });
 
     it("Validate COVID-19 Immunization Attachment Icons", () => {
@@ -52,7 +51,8 @@ describe("Immunization", () => {
     });
 
     it("Validate Card Details", () => {
-        cy.get("[data-testid=timelineCard").first().click();
+      cy.get("[data-testid=cardBtn]")
+        .closest("[data-testid=timelineCard]").first().click()
         cy.get("[data-testid=immunizationTitle]").should("be.visible");
         cy.get("[data-testid=immunizationProductTitle]").should("be.visible");
         cy.get("[data-testid=immunizationProviderTitle]").should("be.visible");
@@ -64,7 +64,7 @@ describe("Immunization", () => {
             .should("be.visible");
         cy.get("[data-testid=forecastDisplayName]")
             .first()
-            .contains("Covid-191");
+            .contains("COVID-19");
         cy.get("[data-testid=forecastDueDate]").first().should("be.visible");
         cy.get("[data-testid=forecastStatus]").first().should("be.visible");
         cy.get("[data-testid=forecastFollowDirections]")
@@ -81,8 +81,8 @@ describe("Immunization", () => {
             "be.visible",
             "not.be.empty"
         );
-        cy.get("[data-testid=doseDate]").first().contains("2010-Mar-28");
-        cy.get("[data-testid=doseDate]").last().contains("2013-Sep-20");
+        cy.get("[data-testid=doseDate]").first().contains("2021-Jan-06");
+        cy.get("[data-testid=doseDate]").last().contains("2021-Feb-11");
 
         cy.get("[data-testid=exportCardBtn]")
             .should("be.enabled", "be.visible")
