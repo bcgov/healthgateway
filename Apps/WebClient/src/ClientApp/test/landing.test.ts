@@ -1,5 +1,6 @@
 import "@/plugins/inversify.config";
 
+import { StoreOptionsStub } from "@test/stubs/store/options";
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 
@@ -9,8 +10,6 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import LandingComponent from "@/views/landing.vue";
-
-import { StoreOptionsStub } from "./stubs/store/store";
 
 describe("Landing view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

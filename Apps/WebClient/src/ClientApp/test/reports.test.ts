@@ -1,5 +1,6 @@
 import "@/plugins/inversify.config";
 
+import { StoreOptionsStub } from "@test/stubs/store/options";
 import { createLocalVue, shallowMount, Stubs, Wrapper } from "@vue/test-utils";
 import { BForm, BFormInput, BFormSelect, BFormTag } from "bootstrap-vue";
 import VueContentPlaceholders from "vue-content-placeholders";
@@ -16,8 +17,6 @@ import { ClientModule } from "@/router";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions } from "@/store/types";
 import ReportsView from "@/views/reports.vue";
-
-import { StoreOptionsStub } from "./stubs/store/store";
 
 interface ReportComponent extends Vue {
     generatePdf(): Promise<void>;

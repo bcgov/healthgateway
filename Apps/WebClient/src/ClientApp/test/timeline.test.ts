@@ -1,5 +1,6 @@
 import "@/plugins/inversify.config";
 
+import { StoreOptionsStub } from "@test/stubs/store/options";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
@@ -13,8 +14,6 @@ import { ILogger } from "@/services/interfaces";
 import { ImmunizationState } from "@/store/modules/immunization/types";
 import { GatewayStoreOptions, RootState } from "@/store/types";
 import TimelineView from "@/views/timeline.vue";
-
-import { StoreOptionsStub } from "./stubs/store/store";
 
 let store: Store<RootState>;
 

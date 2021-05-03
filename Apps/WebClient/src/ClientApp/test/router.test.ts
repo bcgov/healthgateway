@@ -1,9 +1,13 @@
+// eslint-disable-next-line
+import container from "@/plugins/inversify.container";
+
+import { StoreOptionsStub } from "@test/stubs/store/options";
 import { Route } from "vue-router";
 
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
+
 import router, { beforeEachGuard, ClientModule, UserState } from "@/router";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 import { WinstonLogger } from "@/services/winstonLogger";
@@ -16,8 +20,6 @@ import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
 import ProfileComponent from "@/views/profile.vue";
 import RegistrationComponent from "@/views/registration.vue";
-
-import { StoreOptionsStub } from "./stubs/store/store";
 
 function flushPromises() {
     return new Promise((resolve) => setImmediate(resolve));

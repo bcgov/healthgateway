@@ -1,5 +1,6 @@
 import "@/plugins/inversify.config";
 
+import { StoreOptionsStub } from "@test/stubs/store/options";
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
@@ -8,8 +9,6 @@ import AppComponent from "@/app.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
-
-import { StoreOptionsStub } from "./stubs/store/store";
 
 describe("Home view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);

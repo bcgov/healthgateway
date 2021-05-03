@@ -1,5 +1,6 @@
 import "@/plugins/inversify.config";
 
+import { StoreOptionsStub } from "@test/stubs/store/options";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
@@ -10,8 +11,6 @@ import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
 import HealthInsightsView from "@/views/healthInsights.vue";
-
-import { StoreOptionsStub } from "./stubs/store/store";
 
 let store: Store<RootState>;
 
