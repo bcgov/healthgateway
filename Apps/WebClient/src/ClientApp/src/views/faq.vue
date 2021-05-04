@@ -9,7 +9,7 @@
             </b-col>
         </b-row>
         <b-row class="m-1 fluid text-right">
-            <b-col> Last updated: <strong>2021-Mar-31</strong> </b-col>
+            <b-col> Last updated: <strong>2021-May-05</strong> </b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
@@ -79,6 +79,18 @@
                                         View the last seven years of your health
                                         visits, consultations and procedures
                                         billed to the BC Medical Services Plan.
+                                    </div>
+                                </li>
+                                <li>
+                                    <strong>Special Authority Drug Requests</strong>
+                                    <div>
+                                        View the status of your 
+                                        <a
+                                            href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/what-we-cover/drug-coverage/drugs-requiring-pre-approval"
+                                            target="blank_"
+                                            >Special Authority</a
+                                        >
+                                        drug coverage requests made since March 2021.
                                     </div>
                                 </li>
                             </ul>
@@ -284,10 +296,42 @@
                     block
                     variant="info"
                     class="text-left"
-                    >How frequently do you add new features?</b-button
+                    >Why can’t I see all my Special Authority requests in the Health Gateway?</b-button
                 >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer7" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
+                                Special Authority request(s) that your prescriber 
+                                has made since March 2021 are being added gradually 
+                                to the Health Gateway. If a request is not here yet, 
+                                please check back. If you have any questions, talk to 
+                                your prescriber or pharmacist, or call 1-800-663-7100 
+                                (toll-free) or 604-683-7151 (from the Lower Mainland).
+                            </p>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse>
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer8
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
+                    >How frequently do you add new features?</b-button
+                >
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer8" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
