@@ -41,7 +41,7 @@
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-prettier-vue": "^3.0.0",
         "eslint-plugin-simple-import-sort": "^7.0.0",
-        "eslint-plugin-sonarjs": "^0.6.0",
+        "eslint-plugin-sonarjs": "^0.7.0",
         "eslint-plugin-vue": "^7.9.0",
         "event-source-polyfill": "^1.0.24",
         "file-loader": "^6.2.0",
