@@ -341,7 +341,7 @@
                                 enhancements based on your feedback, and we
                                 encourage you to provide suggestions by
                                 e-mailing
-                                <a href="HealthGateway@gov.bc.ca"
+                                <a href="mailto:HealthGateway@gov.bc.ca"
                                     >HealthGateway@gov.bc.ca</a
                                 >.
                             </p>
