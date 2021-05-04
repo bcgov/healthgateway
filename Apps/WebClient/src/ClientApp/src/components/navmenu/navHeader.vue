@@ -366,7 +366,6 @@ nav {
 }
 
 .profile-menu {
-    // todo mandad
     font-size: 2em;
     color: white;
 }
