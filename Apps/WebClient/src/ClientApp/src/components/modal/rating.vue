@@ -102,12 +102,12 @@ export default class RatingComponent extends Vue {
             <template #modal-footer>
                 <b-row>
                     <b-col>
-                        <b-button
+                        <hg-button
                             id="skipButton"
                             data-testid="ratingModalSkipBtn"
-                            variant="outline-primary"
+                            variant="secondary"
                             @click="handleRating(0, true)"
-                            >Skip</b-button
+                            >Skip</hg-button
                         >
                     </b-col>
                 </b-row>

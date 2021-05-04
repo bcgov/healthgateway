@@ -158,13 +158,13 @@ export default class ImmunizationCardComponent extends Vue {
                 /></b-col>
                 <b-col cols="auto" class="align-self-center">
                     <!-- Emulate built in modal header close button action -->
-                    <b-button
+                    <hg-button
                         data-html2canvas-ignore="true"
-                        type="button"
-                        class="close text-light"
+                        class="close"
                         aria-label="Close"
+                        variant="icon"
                         @click="close()"
-                        >×</b-button
+                        >×</hg-button
                     >
                 </b-col>
             </b-row>
@@ -258,14 +258,13 @@ export default class ImmunizationCardComponent extends Vue {
         </b-row>
         <b-row data-html2canvas-ignore="true" class="mt-2">
             <b-col class="d-flex justify-content-center">
-                <b-button
-                    variant="outline-primary"
+                <hg-button
                     data-testid="exportCardBtn"
-                    class="mb-1"
+                    variant="secondary"
                     @click="showConfirmationModal"
                 >
                     Download PDF
-                </b-button>
+                </hg-button>
             </b-col>
         </b-row>
         <MessageModalComponent
@@ -349,5 +348,11 @@ div[class*=" row"] {
 @import "@/assets/scss/_variables.scss";
 .immunization-covid-card-modal-header {
     background-color: $primary;
+    .close {
+        color: white;
+        text-shadow: none;
+        opacity: 1;
+        font-size: 1.5em;
+    }
 }
 </style>

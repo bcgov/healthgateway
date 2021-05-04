@@ -108,7 +108,10 @@ export default class LoginView extends Vue {
                     <h3 slot="header">Log In</h3>
                     <p v-if="hasMultipleProviders || isRetry" slot="footer">
                         Not yet registered?
-                        <b-link to="/registrationInfo">Sign up</b-link>
+
+                        <hg-button to="/registrationInfo" variant="link"
+                            >Sign up</hg-button
+                        >
                     </p>
                     <b-card-body v-if="hasMultipleProviders || isRetry">
                         <div
@@ -117,12 +120,12 @@ export default class LoginView extends Vue {
                         >
                             <b-row>
                                 <b-col>
-                                    <b-button
+                                    <hg-button
                                         :id="`${provider.id}Btn`"
                                         :data-testid="`${provider.id}Btn`"
-                                        block
                                         :disabled="provider.disabled"
                                         variant="primary"
+                                        block
                                         @click="oidcLogin(provider.hint)"
                                     >
                                         <b-row>
@@ -136,7 +139,7 @@ export default class LoginView extends Vue {
                                                 <span>{{ provider.name }}</span>
                                             </b-col>
                                         </b-row>
-                                    </b-button>
+                                    </hg-button>
                                 </b-col>
                             </b-row>
                             <b-row

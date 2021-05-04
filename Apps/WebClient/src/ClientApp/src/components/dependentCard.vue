@@ -238,8 +238,10 @@ export default class DependentCardComponent extends Vue {
                         </b-row>
                         <b-row>
                             <b-col class="d-flex justify-content-center">
-                                <b-button type="link" @click="deleteDependent()"
-                                    >Remove Dependent</b-button
+                                <hg-button
+                                    variant="secondary"
+                                    @click="deleteDependent()"
+                                    >Remove Dependent</hg-button
                                 >
                             </b-col>
                         </b-row>

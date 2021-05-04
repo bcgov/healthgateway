@@ -116,7 +116,7 @@ export default class ProtectiveWordComponent extends Vue {
                 <b-col>
                     <b-row>
                         <b-col>
-                            <b-button
+                            <hg-button
                                 data-testid="protectiveWordContinueBtn"
                                 size="lg"
                                 variant="primary"
@@ -124,7 +124,7 @@ export default class ProtectiveWordComponent extends Vue {
                                 @click="handleOk($event)"
                             >
                                 Continue
-                            </b-button>
+                            </hg-button>
                         </b-col>
                     </b-row>
                     <br />

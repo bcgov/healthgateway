@@ -87,8 +87,6 @@ export default class SidebarComponent extends Vue {
     })
     isOffline!: boolean;
 
-    private UserPreferenceType = UserPreferenceType;
-
     private eventBus = EventBus;
 
     private logger!: ILogger;
@@ -102,7 +100,8 @@ export default class SidebarComponent extends Vue {
     }
 
     @Watch("isOpen")
-    private onIsOpen() {
+    private onIsOpen(val: boolean) {
+        console.log("isOpen", val);
         this.isNoteTutorialEnabled = false;
         this.isExportTutorialEnabled = false;
     }
@@ -117,28 +116,33 @@ export default class SidebarComponent extends Vue {
     }
 
     private mounted() {
-        // Setup the transition listener to avoid text wrapping
-        var transition = document.querySelector("#sidebar");
-        transition?.addEventListener("transitionend", (event: Event) => {
-            let transitionEvent = event as TransitionEvent;
-            if (
-                transition !== transitionEvent.target ||
-                transitionEvent.propertyName !== "max-width"
-            ) {
-                return;
-            }
-
-            this.isNoteTutorialEnabled = true;
-            this.isExportTutorialEnabled = true;
-
-            document.querySelectorAll(".button-title").forEach((button) => {
-                if (transition?.classList.contains("collapsed")) {
-                    button?.classList.add("d-none");
-                } else {
-                    button?.classList.remove("d-none");
+        this.$nextTick().then(() => {
+            // Setup the transition listener to avoid text wrapping
+            var transition = document.querySelector("#sidebar");
+            transition?.addEventListener("transitionend", (event: Event) => {
+                let transitionEvent = event as TransitionEvent;
+                if (
+                    transition !== transitionEvent.target ||
+                    transitionEvent.propertyName !== "max-width"
+                ) {
+                    return;
                 }
+
+                this.isNoteTutorialEnabled = true;
+                this.isExportTutorialEnabled = true;
+
+                document.querySelectorAll(".button-text").forEach((button) => {
+                    if (transition?.classList.contains("collapsed")) {
+                        button?.classList.add("d-none");
+                    } else {
+                        button?.classList.remove("d-none");
+                    }
+                });
             });
         });
+
+        this.isNoteTutorialEnabled = true;
+        this.isExportTutorialEnabled = true;
     }
 
     private toggleOpen() {
@@ -262,74 +266,65 @@ export default class SidebarComponent extends Vue {
     >
         <!-- Sidebar -->
         <nav id="sidebar" data-testid="sidebar" :class="{ collapsed: !isOpen }">
-            <b-row class="row-container m-0 p-0">
-                <b-col class="m-0 p-0">
+            <b-row class="row-container">
+                <b-col>
                     <!-- Timeline button -->
-                    <router-link
+                    <hg-button
                         v-show="isActiveProfile"
                         id="menuBtnTimeline"
                         data-testid="menuBtnTimelineLink"
                         to="/timeline"
-                        class="my-3"
+                        variant="nav"
+                        :class="{ selected: isTimeline }"
                     >
-                        <b-row
-                            class="align-items-center name-wrapper my-3 button-container"
-                            :class="{ selected: isTimeline }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                cols="1"
-                                class="button-spacer"
-                            ></b-col>
+                        <b-row class="align-items-center">
                             <b-col
                                 title="Timeline"
                                 :class="{ 'col-3': isOpen }"
                             >
-                                <hg-icon
-                                    icon="stream"
-                                    size="large"
-                                    class="button-icon"
-                                />
+                                <hg-icon icon="stream" size="large" />
                             </b-col>
                             <b-col
                                 v-show="isOpen"
                                 data-testid="timelineLabel"
-                                cols="7"
-                                class="button-title"
+                                class="button-text"
                             >
                                 <span>Timeline</span>
                             </b-col>
                         </b-row>
-                    </router-link>
+                    </hg-button>
                     <div v-show="isTimeline && isActiveProfile">
                         <!-- Note button -->
-                        <b-row
+                        <hg-button
                             v-show="isNoteEnabled"
                             id="add-a-note-row"
                             data-testid="addNoteBtn"
-                            class="align-items-center border rounded-pill button-container my-3"
+                            class="align-items-center my-2 p-0 m-0"
                             :class="{ 'sub-menu': isOpen }"
+                            variant="nav"
                             @click="createNote"
                         >
-                            <b-col
-                                id="add-a-note-btn"
-                                title="Add a Note"
-                                :class="{ 'col-4': isOpen }"
-                            >
-                                <hg-icon
-                                    icon="edit"
-                                    size="medium"
-                                    class="button-icon sub-menu m-auto"
-                                />
-                            </b-col>
-                            <b-col
-                                v-show="isOpen"
-                                cols="8"
-                                class="button-title sub-menu"
-                            >
-                                <span>Add a Note</span>
-                            </b-col>
-                        </b-row>
+                            <b-row>
+                                <b-col
+                                    id="add-a-note-btn"
+                                    title="Add a Note"
+                                    :class="{ 'col-4': isOpen }"
+                                >
+                                    <hg-icon
+                                        icon="edit"
+                                        size="medium"
+                                        class="sub-menu m-auto"
+                                    />
+                                </b-col>
+                                <b-col
+                                    v-show="isOpen"
+                                    cols="8"
+                                    class="button-text sub-menu"
+                                >
+                                    <span>Add a Note</span>
+                                </b-col>
+                            </b-row>
+                        </hg-button>
                         <b-popover
                             ref="popover"
                             triggers="manual"
@@ -342,8 +337,9 @@ export default class SidebarComponent extends Vue {
                             boundary="viewport"
                         >
                             <div>
-                                <b-button
+                                <hg-button
                                     class="pop-over-close"
+                                    variant="icon"
                                     @click="
                                         dismissTutorial(
                                             user.preferences[
@@ -352,7 +348,7 @@ export default class SidebarComponent extends Vue {
                                             ]
                                         )
                                     "
-                                    >x</b-button
+                                    >x</hg-button
                                 >
                             </div>
                             <div
@@ -364,71 +360,47 @@ export default class SidebarComponent extends Vue {
                             </div>
                         </b-popover>
                     </div>
-                    <router-link
+                    <hg-button
                         v-show="isDependentEnabled && isActiveProfile"
                         id="menuBtnDependents"
                         data-testid="menuBtnDependentsLink"
                         to="/dependents"
                         class="my-3"
+                        :class="{ selected: isDependents }"
+                        variant="nav"
                     >
-                        <b-row
-                            class="align-items-center name-wrapper my-3 button-container"
-                            :class="{ selected: isDependents }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                cols="1"
-                                class="button-spacer"
-                            ></b-col>
+                        <b-row class="align-items-center">
                             <b-col title="Reports" :class="{ 'col-3': isOpen }">
-                                <hg-icon
-                                    icon="user-friends"
-                                    size="large"
-                                    class="button-icon"
-                                />
+                                <hg-icon icon="user-friends" size="large" />
                             </b-col>
-                            <b-col
-                                v-show="isOpen"
-                                cols="7"
-                                class="button-title"
-                            >
+                            <b-col v-show="isOpen" class="button-text">
                                 <span>Dependents</span>
                             </b-col>
                         </b-row>
-                    </router-link>
+                    </hg-button>
                     <!-- Reports button -->
-                    <router-link
+                    <hg-button
                         v-show="isActiveProfile"
                         id="menuBtnReports"
                         data-testid="menuBtnReportsLink"
                         to="/reports"
-                        class="my-3"
+                        variant="nav"
+                        :class="{ selected: isReports }"
                     >
                         <b-row
                             id="export-records-row"
-                            class="align-items-center name-wrapper my-3 button-container"
-                            :class="{ selected: isReports }"
+                            class="align-items-center"
                         >
-                            <b-col
-                                v-show="isOpen"
-                                cols="1"
-                                class="button-spacer"
-                            ></b-col>
                             <b-col
                                 title="Export Records"
                                 :class="{ 'col-3': isOpen }"
                             >
-                                <hg-icon
-                                    icon="clipboard-list"
-                                    size="large"
-                                    class="button-icon"
-                                />
+                                <hg-icon icon="clipboard-list" size="large" />
                             </b-col>
                             <b-col
                                 v-show="isOpen"
                                 id="export-records-col"
-                                cols="7"
-                                class="button-title"
+                                class="button-text"
                             >
                                 <span>Export Records</span>
                             </b-col>
@@ -445,8 +417,9 @@ export default class SidebarComponent extends Vue {
                             boundary="viewport"
                         >
                             <div>
-                                <b-button
+                                <hg-button
                                     class="pop-over-close"
+                                    variant="icon"
                                     @click="
                                         dismissTutorial(
                                             user.preferences[
@@ -455,7 +428,7 @@ export default class SidebarComponent extends Vue {
                                             ]
                                         )
                                     "
-                                    >x</b-button
+                                    >x</hg-button
                                 >
                             </div>
                             <div
@@ -466,76 +439,48 @@ export default class SidebarComponent extends Vue {
                                 test proof for employers.
                             </div>
                         </b-popover>
-                    </router-link>
+                    </hg-button>
                     <!-- Health Insights button -->
-                    <router-link
+                    <hg-button
                         v-show="isActiveProfile"
                         id="menuBtnHealthInsights"
                         data-testid="menuBtnHealthInsightsLink"
                         to="/healthInsights"
                         class="my-3"
+                        variant="nav"
+                        :class="{ selected: isHealthInsights }"
                     >
-                        <b-row
-                            class="align-items-center name-wrapper my-3 button-container"
-                            :class="{ selected: isHealthInsights }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                cols="1"
-                                class="button-spacer"
-                            ></b-col>
+                        <b-row class="align-items-center">
                             <b-col
                                 title="Health Insights"
                                 :class="{ 'col-3': isOpen }"
                             >
-                                <hg-icon
-                                    icon="chart-line"
-                                    size="large"
-                                    class="button-icon"
-                                />
+                                <hg-icon icon="chart-line" size="large" />
                             </b-col>
-                            <b-col
-                                v-show="isOpen"
-                                cols="7"
-                                class="button-title"
-                            >
+                            <b-col v-show="isOpen" class="button-text">
                                 <span>Health Insights</span>
                             </b-col>
                         </b-row>
-                    </router-link>
+                    </hg-button>
 
                     <!-- FAQ button -->
-                    <router-link
+                    <hg-button
                         id="menuBtnFAQ"
                         data-testid="menuBtnFAQ"
                         to="/faq"
                         class="my-3"
+                        variant="nav"
+                        :class="{ selected: isFAQ }"
                     >
-                        <b-row
-                            class="align-items-center name-wrapper my-3 button-container"
-                            :class="{ selected: isFAQ }"
-                        >
-                            <b-col
-                                v-show="isOpen"
-                                cols="1"
-                                class="button-spacer"
-                            ></b-col>
+                        <b-row class="align-items-center name-wrappe">
                             <b-col title="FAQ" :class="{ 'col-3': isOpen }">
-                                <hg-icon
-                                    icon="question"
-                                    size="large"
-                                    class="button-icon"
-                                />
+                                <hg-icon icon="question" size="large" />
                             </b-col>
-                            <b-col
-                                v-show="isOpen"
-                                cols="7"
-                                class="button-title"
-                            >
+                            <b-col v-show="isOpen" class="button-text">
                                 <span>FAQ</span>
                             </b-col>
                         </b-row>
-                    </router-link>
+                    </hg-button>
                     <br />
                 </b-col>
             </b-row>
@@ -545,27 +490,29 @@ export default class SidebarComponent extends Vue {
                     <!-- Collapse Button -->
                     <span v-show="!isMobileWidth">
                         <hr />
-                        <b-row
-                            class="align-items-center my-3"
-                            :class="[isOpen ? 'mx-2' : 'button-container']"
-                        >
-                            <b-col
-                                :title="`${
-                                    isOpen ? 'Collapse' : 'Expand'
-                                } Menu`"
-                                :class="{ 'ml-auto col-3': isOpen }"
+                        <hg-button variant="nav" @click="toggleOpen">
+                            <b-row
+                                class="align-items-center"
+                                :class="[isOpen ? 'mx-2' : '']"
                             >
-                                <hg-icon
-                                    icon="angle-double-left"
-                                    size="large"
-                                    data-testid="sidebarToggle"
-                                    class="arrow-icon p-2"
-                                    aria-hidden="true"
-                                    @click="toggleOpen"
-                                />
-                            </b-col>
-                        </b-row>
+                                <b-col
+                                    :title="`${
+                                        isOpen ? 'Collapse' : 'Expand'
+                                    } Menu`"
+                                    :class="{ 'ml-auto col-3': isOpen }"
+                                >
+                                    <hg-icon
+                                        icon="angle-double-left"
+                                        size="large"
+                                        data-testid="sidebarToggle"
+                                        class="arrow-icon p-2"
+                                        aria-hidden="true"
+                                    />
+                                </b-col>
+                            </b-row>
+                        </hg-button>
                     </span>
+
                     <!-- Feedback section -->
                     <FeedbackComponent />
                 </b-col>
@@ -584,11 +531,6 @@ export default class SidebarComponent extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.sidebarDivider {
-    border-top: 10px solid;
-    color: white;
-}
-
 .wrapper {
     display: flex;
     align-items: stretch;
@@ -598,14 +540,20 @@ export default class SidebarComponent extends Vue {
     min-width: 300px;
     max-width: 300px;
     background: $primary;
-    color: #fff;
+
     transition: all 0.3s;
-    text-align: center;
+
     height: 100%;
     z-index: $z_sidebar;
     position: static;
     display: flex;
     flex-direction: column;
+
+    &.collapsed {
+        min-width: 80px;
+        max-width: 80px;
+    }
+
     /* Small devices */
     @media (max-width: 767px) {
         min-width: 185px;
@@ -637,72 +585,19 @@ export default class SidebarComponent extends Vue {
     }
 }
 
-#sidebar.collapsed {
-    min-width: 80px;
-    max-width: 80px;
-}
-
-#sidebar.collapsed .button-container {
-    border-color: $primary !important;
-    margin: 0px;
-    border-radius: 0px !important;
-}
-
-#sidebar .button-container {
-    margin-right: 0em;
-    &.sub-menu {
-        margin-left: 5em;
-        margin-right: 2em;
-        @media (max-width: 767px) {
-            margin-left: 3em;
-            margin-right: 0.5em;
-        }
-    }
-    &.selected {
-        background-color: $lightBlue;
-        .button-spacer {
-            background-color: $aquaBlue !important;
-        }
-    }
-}
-
-#sidebar .button-spacer {
-    align-self: stretch;
-}
-
-#sidebar .button-container:hover {
-    text-decoration: underline;
-    cursor: pointer;
-    background-color: $lightBlue !important;
-}
-
-#sidebar .button-icon {
-    padding: 0.5em;
-}
-
-#sidebar .button-title {
-    display: inline;
-    font-size: 1.3em;
+.button-text {
     text-align: left;
-    margin: 0px;
-    padding: 0px;
     &.sub-menu {
         font-size: 1em;
     }
     @media (max-width: 767px) {
-        font-size: 1.1em;
         &.sub-menu {
             font-size: 0.8em;
         }
     }
 }
 
-#sidebar .name-wrapper {
-    display: flex;
-    align-items: center;
-}
-
-#sidebar hr {
+hr {
     border-top: 2px solid white;
     margin-left: 10px;
     margin-right: 10px;
@@ -710,22 +605,6 @@ export default class SidebarComponent extends Vue {
 
 #sidebar.collapsed .arrow-icon {
     transform: scaleX(-1);
-}
-
-#sidebar .arrow-icon:hover {
-    text-decoration: underline;
-    cursor: pointer;
-    background-color: $lightBlue !important;
-}
-
-#sidebar a {
-    text-decoration: none;
-    color: white !important;
-    caret-color: white !important;
-}
-
-#sidebar a:hover {
-    text-decoration: underline;
 }
 
 .overlay {
@@ -745,21 +624,17 @@ export default class SidebarComponent extends Vue {
     overflow: hidden;
 }
 
-#sidebar .row-container {
+.row-container {
     flex: 1 0 auto;
 }
 
-#sidebar .sidebar-footer {
+.sidebar-footer {
     width: 100%;
     flex-shrink: 0;
     position: sticky;
     bottom: 0rem;
     align-self: flex-end;
     background-color: $primary;
-}
-
-.popover-body {
-    padding: 0.5px 0px 0.5px 0px !important;
 }
 
 .pop-over-close {

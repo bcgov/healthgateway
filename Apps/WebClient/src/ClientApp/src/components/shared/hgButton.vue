@@ -17,6 +17,18 @@ export default class HgButtonComponent extends Vue {
             case "secondary":
                 result.push("hg-button", "hg-secondary");
                 break;
+            case "link":
+                result.push("hg-button", "hg-link");
+                break;
+            case "icon":
+                result.push("hg-button", "hg-icon");
+                break;
+            case "icon-light":
+                result.push("hg-button", "hg-icon hg-icon-light");
+                break;
+            case "nav":
+                result.push("hg-button", "hg-nav", "btn-block");
+                break;
             default:
                 return [];
         }
@@ -34,6 +46,10 @@ export default class HgButtonComponent extends Vue {
                 return "primary";
             case "secondary":
                 return "outline-primary";
+            case "link":
+                return "link";
+            case "nav":
+                return "nav";
             default:
                 return "";
         }
@@ -75,14 +91,12 @@ export default class HgButtonComponent extends Vue {
             color: $hg-button-primary-disabled-text;
         }
 
-        &:hover,
-        &:active {
-            &:enabled {
-                background: $hg-button-primary-hover;
-                border-color: $hg-button-primary-hover-border;
-                color: $hg-button-primary-hover-text;
-                text-decoration-color: $hg-button-primary-hover-text;
-            }
+        &:hover:not([disabled]),
+        &:active:not([disabled]) {
+            background: $hg-button-primary-hover;
+            border-color: $hg-button-primary-hover-border;
+            color: $hg-button-primary-hover-text;
+            text-decoration-color: $hg-button-primary-hover-text;
         }
     }
 
@@ -97,19 +111,79 @@ export default class HgButtonComponent extends Vue {
             color: $hg-button-secondary-disabled-text;
         }
 
-        &:hover,
-        &:active {
-            &:enabled {
-                background: $hg-button-secondary-hover;
-                border-color: $hg-button-secondary-hover-border;
-                color: $hg-button-secondary-hover-text;
-                text-decoration-color: $hg-button-secondary-hover-text;
-            }
+        &:hover:not([disabled]),
+        &:active:not([disabled]) {
+            background: $hg-button-secondary-hover;
+            border-color: $hg-button-secondary-hover-border;
+            color: $hg-button-secondary-hover-text;
+            text-decoration-color: $hg-button-secondary-hover-text;
+            text-decoration-line: underline;
         }
+    }
+
+    &.hg-link {
+        background: $hg-button-link;
+        border-color: $hg-button-link-border;
+        color: $hg-button-link-text;
+        text-decoration-color: $hg-button-link-text;
+        text-decoration-line: underline;
+
+        &:disabled {
+            color: $hg-button-link-disabled-text;
+            text-decoration-color: $hg-button-link-disabled-text;
+        }
+
+        &:hover:not([disabled]),
+        &:active:not([disabled]) {
+            color: $hg-button-link-hover-text;
+            text-decoration-color: $hg-button-link-hover-text;
+        }
+    }
+
+    &.hg-icon {
+        background: none;
+        border: none;
+        text-decoration-line: none;
+
+        &.selected {
+            color: $hg-button-icon-selected-text;
+            background-color: $hg-button-icon-selected;
+            text-decoration-line: none;
+        }
+
+        &:disabled {
+            color: $hg-button-icon-disabled-text;
+        }
+    }
+
+    &.hg-icon-light {
+        color: $hg-button-icon-light-text;
     }
 
     &.hg-small {
         width: 80px;
+    }
+
+    &.hg-nav {
+        //padding: 0;
+        border-radius: 0;
+        background: $hg-button-nav;
+        color: $hg-button-nav-text;
+        border: none;
+
+        &.selected {
+            color: $hg-button-nav-selected-text;
+            background-color: $hg-button-nav-selected;
+            text-decoration-line: none;
+        }
+
+        &:hover:not([disabled], .selected),
+        &:active:not([disabled], .selected) {
+            color: $hg-button-nav-hover-text;
+            background-color: $hg-button-nav-hover;
+            text-decoration-line: underline;
+            text-decoration-color: $hg-button-nav-hover-text;
+        }
     }
 }
 </style>

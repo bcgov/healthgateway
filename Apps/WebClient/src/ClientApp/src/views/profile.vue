@@ -868,13 +868,13 @@ export default class ProfileView extends Vue {
                                     class="mb-3 justify-content-end"
                                 >
                                     <b-col class="text-right">
-                                        <b-button
+                                        <hg-button
                                             id="closeAccountCancelBtn"
                                             data-testid="closeAccountCancelBtn"
-                                            class="mx-2"
+                                            variant="secondary"
                                             @click="cancelClose()"
                                             >Cancel
-                                        </b-button>
+                                        </hg-button>
                                         <b-button
                                             id="closeAccountBtn"
                                             data-testid="closeAccountBtn"

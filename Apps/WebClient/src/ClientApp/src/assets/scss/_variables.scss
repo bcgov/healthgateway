@@ -53,9 +53,42 @@ $hg-button-primary-disabled-text: white;
 $hg-button-secondary: white;
 $hg-button-secondary-border: $hg-button-primary;
 $hg-button-secondary-text: $hg-button-primary;
-$hg-button-secondary-hover: #3b5a84;
-$hg-button-secondary-hover-border: $hg-button-secondary-hover;
-$hg-button-secondary-hover-text: white;
+$hg-button-secondary-hover: white;
+$hg-button-secondary-hover-border: #335c85;
+$hg-button-secondary-hover-text: #335c85;
 $hg-button-secondary-disabled: white;
 $hg-button-secondary-disabled-border: $hg-button-disabled;
 $hg-button-secondary-disabled-text: $hg-button-disabled;
+
+$hg-button-link: none;
+$hg-button-link-border: none;
+$hg-button-link-text: $hg-button-primary;
+$hg-button-link-hover: none;
+$hg-button-link-hover-border: none;
+$hg-button-link-hover-text: #2666ca;
+$hg-button-link-disabled: none;
+$hg-button-link-disabled-border: none;
+$hg-button-link-disabled-text: $hg-button-disabled;
+
+$hg-button-icon: none;
+$hg-button-icon-border: none;
+$hg-button-icon-text: white;
+$hg-button-icon-hover: none;
+$hg-button-icon-hover-border: none;
+$hg-button-icon-hover-text: white;
+$hg-button-icon-disabled: none;
+$hg-button-icon-disabled-border: #899bb5;
+$hg-button-icon-disabled-text: #899bb5;
+$hg-button-icon-selected: #0092f1;
+$hg-button-icon-selected-text: white;
+
+$hg-button-icon-light-text: #313132;
+
+$hg-button-nav: $hg-brand-primary;
+$hg-button-nav-text: white;
+$hg-button-nav-hover: #335c85;
+$hg-button-nav-hover-text: white;
+$hg-button-nav-disabled: none;
+$hg-button-nav-disabled-text: #546f8a;
+$hg-button-nav-selected: #0092f1;
+$hg-button-nav-selected-text: white;
