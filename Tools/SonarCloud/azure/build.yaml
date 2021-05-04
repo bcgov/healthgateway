@@ -14,24 +14,48 @@ jobs:
     timeoutInMinutes: 120
     steps:
       - script: |
-          set -e
-          export SONAR_SCANNER_OPTS="-Xmx3072m"
           npm --prefix WebClient/src/ClientApp install --only=dev
           npm --prefix WebClient/src/ClientApp test
+        displayName: "Run npm Tests"
+        continueOnError: true
+        workingDirectory: $(Build.SourcesDirectory)/Apps/
+        enabled: true
+
+      - script: |
           dotnet test \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
             --logger:"xunit;LogFileName=results.xml"
+        displayName: "Run dotnet Tests"
+        continueOnError: true
+        workingDirectory: $(Build.SourcesDirectory)/Apps/
+        enabled: true
+
+      - script: |
+          set -e
+          export SONAR_SCANNER_OPTS="-Xmx3072m"
           dotnet sonarscanner begin \
             /o:bcgov-sonarcloud \
             /k:bcgov_healthgateway \
             /n:"HealthGateway" \
             /d:sonar.login="$(common.login)" \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
+        displayName: "Begin Static Code Analysis"
+        continueOnError: true
+        workingDirectory: $(Build.SourcesDirectory)/Apps/
+        enabled: "true"
+
+      - script: |
           dotnet build    
+        displayName: "Build Solution"
+        continueOnError: true
+        workingDirectory: $(Build.SourcesDirectory)/Apps/
+        enabled: "true"
+
+      - script: |
           dotnet sonarscanner end /d:sonar.login="$(common.login)"
           echo "$@" >&2
-        displayName: "Perform Static Code Analysis"
+        displayName: "End Static Code Analysis"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
         enabled: "true"
