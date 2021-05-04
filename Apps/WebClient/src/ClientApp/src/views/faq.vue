@@ -82,15 +82,18 @@
                                     </div>
                                 </li>
                                 <li>
-                                    <strong>Special Authority Drug Requests</strong>
+                                    <strong
+                                        >Special Authority Drug Requests</strong
+                                    >
                                     <div>
-                                        View the status of your 
+                                        View the status of your
                                         <a
                                             href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/what-we-cover/drug-coverage/drugs-requiring-pre-approval"
                                             target="blank_"
                                             >Special Authority</a
                                         >
-                                        drug coverage requests made since March 2021.
+                                        drug coverage requests made since March
+                                        2021.
                                     </div>
                                 </li>
                             </ul>
@@ -296,7 +299,8 @@
                     block
                     variant="info"
                     class="text-left"
-                    >Why can’t I see all my Special Authority requests in the Health Gateway?</b-button
+                    >Why can’t I see all my Special Authority requests in the
+                    Health Gateway?</b-button
                 >
             </b-card-header>
             <b-collapse id="accordion-faqAnswer7" role="tabpanel">
@@ -304,12 +308,14 @@
                     <b-card-text
                         ><div data-testid="answerTxt">
                             <p>
-                                Special Authority request(s) that your prescriber 
-                                has made since March 2021 are being added gradually 
-                                to the Health Gateway. If a request is not here yet, 
-                                please check back. If you have any questions, talk to 
-                                your prescriber or pharmacist, or call 1-800-663-7100 
-                                (toll-free) or 604-683-7151 (from the Lower Mainland).
+                                Special Authority request(s) that your
+                                prescriber has made since March 2021 are being
+                                added gradually to the Health Gateway. If a
+                                request is not here yet, please check back. If
+                                you have any questions, talk to your prescriber
+                                or pharmacist, or call 1-800-663-7100
+                                (toll-free) or 604-683-7151 (from the Lower
+                                Mainland).
                             </p>
                         </div></b-card-text
                     >
