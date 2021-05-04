@@ -1,91 +1,108 @@
 {
-  "folders": [
-    {
-      "name": "ClientApp",
-      "path": "WebClient/src/ClientApp"
-    },
-    {
-      "name": "Admin_ClientApp",
-      "path": "AdminWebClient/src/ClientApp"
-    },
-    {
-      "name": "AdminWebClient",
-      "path": "AdminWebClient"
-    },
-    {
-      "name": "Common",
-      "path": "Common"
-    },
-    {
-      "name": "Database",
-      "path": "Database"
-    },
-    {
-      "name": "DBMaintainer",
-      "path": "DBMaintainer"
-    },
-    {
-      "name": "Documentation",
-      "path": "Documentation"
-    },
-    {
-      "name": "Immunization",
-      "path": "Immunization"
-    },
-    {
-      "name": "JobScheduler",
-      "path": "JobScheduler"
-    },
-    {
-      "name": "Laboratory",
-      "path": "Laboratory"
-    },
-    {
-      "name": "Medication",
-      "path": "Medication"
-    },
-    {
-      "name": "ODRProxy",
-      "path": "ODRProxy"
-    },
-    {
-      "name": "Patient",
-      "path": "Patient"
-    },
-    {
-      "name": "WebClient",
-      "path": "WebClient"
-    },
-    {
-      "path": "Encounter"
-    },
-    {
-      "path": "../Testing/functional/e2e"
-    },
-    {
-      "path": "../Tools/Dev/Design/sampler"
-    },
-    {
-      "path": "../Tools/Dev/Design"
-    }
-  ],
-  "settings": {
-    "eslint.workingDirectories": [
-      {"mode": "auto"}
+    "folders": [
+        {
+            "name": "ClientApp",
+            "path": "WebClient/src/ClientApp"
+        },
+        {
+            "name": "Admin_ClientApp",
+            "path": "AdminWebClient/src/ClientApp"
+        },
+        {
+            "name": "AdminWebClient",
+            "path": "AdminWebClient"
+        },
+        {
+            "name": "Common",
+            "path": "Common"
+        },
+        {
+            "name": "Database",
+            "path": "Database"
+        },
+        {
+            "name": "DBMaintainer",
+            "path": "DBMaintainer"
+        },
+        {
+            "name": "Documentation",
+            "path": "Documentation"
+        },
+        {
+            "name": "Immunization",
+            "path": "Immunization"
+        },
+        {
+            "name": "JobScheduler",
+            "path": "JobScheduler"
+        },
+        {
+            "name": "Laboratory",
+            "path": "Laboratory"
+        },
+        {
+            "name": "Medication",
+            "path": "Medication"
+        },
+        {
+            "name": "ODRProxy",
+            "path": "ODRProxy"
+        },
+        {
+            "name": "Patient",
+            "path": "Patient"
+        },
+        {
+            "name": "WebClient",
+            "path": "WebClient"
+        },
+        {
+            "path": "Encounter"
+        },
+        {
+            "path": "../Testing/functional/e2e"
+        },
+        {
+            "path": "../Tools/Dev/Design/sampler"
+        },
+        {
+            "path": "../Tools/Dev/Design"
+        }
     ],
-    "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
-    "search.exclude": {
-        "**/bin": true,
-        "**/obj": true,
-        "**/dist": true,
-        "**/node_modules": true
-      },
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true,
-      "[csharp]": {
-        "editor.defaultFormatter": "ms-dotnettools.csharp",
-        "editor.formatOnSave": false
-      },
-      "omnisharp.defaultLaunchSolution": "HealthGateway.sln"
-  }
+    "settings": {
+        "eslint.workingDirectories": [{ "mode": "auto" }],
+        "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
+        "search.exclude": {
+            "**/bin": true,
+            "**/obj": true,
+            "**/dist": true,
+            "**/node_modules": true
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "[csharp]": {
+            "editor.defaultFormatter": "ms-dotnettools.csharp",
+            "editor.formatOnSave": false
+        },
+        "omnisharp.defaultLaunchSolution": "HealthGateway.sln",
+        "jest.disabledWorkspaceFolders": [
+            "Admin_ClientApp",
+            "AdminWebClient",
+            "Common",
+            "Database",
+            "DBMaintainer",
+            "Documentation",
+            "Immunization",
+            "JobScheduler",
+            "Laboratory",
+            "Medication",
+            "ODRProxy",
+            "Patient",
+            "WebClient",
+            "Encounter",
+            "e2e",
+            "sampler",
+            "Design"
+        ]
+    }
 }
