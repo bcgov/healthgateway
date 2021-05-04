@@ -82,7 +82,7 @@ export default class LoginView extends Vue {
 </script>
 
 <template>
-    <div class="container my-5" align="center">
+    <div class="container my-5">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-row>
             <b-col>
@@ -101,7 +101,7 @@ export default class LoginView extends Vue {
                 <b-card
                     v-if="identityProviders && identityProviders.length > 0"
                     id="loginPicker"
-                    class="shadow-lg bg-white"
+                    class="shadow-lg bg-white mx-auto"
                     style="max-width: 25rem"
                     align="center"
                 >

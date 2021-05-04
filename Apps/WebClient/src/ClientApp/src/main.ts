@@ -168,7 +168,7 @@ configService.getConfiguration().then((config: ExternalConfiguration) => {
 const App = () => import(/* webpackChunkName: "entry" */ "./app.vue");
 
 function initializeVue(store: Store<RootState>) {
-    new Vue({
+    return new Vue({
         el: "#app-root",
         store,
         router,
