@@ -374,15 +374,15 @@ export default class FilterComponent extends Vue {
         </div>
 
         <!-- Mobile view specific modal-->
-        <b-button
+        <hg-button
             data-testid="mobileFilterDropdown"
             class="d-sm-inline d-md-none"
             :class="{ 'filter-selected': hasFilterSelected }"
-            variant="outline-primary"
+            variant="secondary"
             @click.stop="toggleMobileView"
         >
             <hg-icon icon="sliders-h" size="medium" aria-hidden="true" />
-        </b-button>
+        </hg-button>
         <b-modal
             id="generic-message"
             v-model="isModalVisible"
@@ -402,13 +402,13 @@ export default class FilterComponent extends Vue {
                 <b-row class="w-100 text-center" align-h="between">
                     <b-col cols="auto"><h5>Filter</h5> </b-col>
                     <b-col class="col-auto">
-                        <b-button
+                        <hg-button
                             variant="link"
                             class="btn-mobile"
                             @click="clearOptions()"
                         >
                             Clear
-                        </b-button>
+                        </hg-button>
                     </b-col>
                 </b-row>
             </div>

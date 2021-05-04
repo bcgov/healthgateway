@@ -20,15 +20,23 @@ export default class HgButtonComponent extends Vue {
             case "link":
                 result.push("hg-button", "hg-link");
                 break;
+            case "link-danger":
+                result.push("hg-button", "hg-link hg-link-danger");
+                break;
             case "icon":
                 result.push("hg-button", "hg-icon");
                 break;
             case "icon-light":
                 result.push("hg-button", "hg-icon hg-icon-light");
                 break;
+
             case "nav":
                 result.push("hg-button", "hg-nav", "btn-block");
                 break;
+            case "danger":
+                result.push("hg-button", "hg-danger");
+                break;
+
             default:
                 return [];
         }
@@ -50,6 +58,8 @@ export default class HgButtonComponent extends Vue {
                 return "link";
             case "nav":
                 return "nav";
+            case "danger":
+                return "danger";
             default:
                 return "";
         }
@@ -123,20 +133,33 @@ export default class HgButtonComponent extends Vue {
 
     &.hg-link {
         background: $hg-button-link;
-        border-color: $hg-button-link-border;
         color: $hg-button-link-text;
         text-decoration-color: $hg-button-link-text;
         text-decoration-line: underline;
+        border: 0px;
 
         &:disabled {
+            background: $hg-button-link;
             color: $hg-button-link-disabled-text;
             text-decoration-color: $hg-button-link-disabled-text;
         }
 
         &:hover:not([disabled]),
         &:active:not([disabled]) {
+            background: $hg-button-link;
             color: $hg-button-link-hover-text;
             text-decoration-color: $hg-button-link-hover-text;
+        }
+    }
+
+    &.hg-link-danger {
+        color: $hg-button-link-danger-text;
+        text-decoration-color: $hg-button-link-danger-text;
+
+        &:hover:not([disabled]),
+        &:active:not([disabled]) {
+            color: $hg-button-link-danger-hover-text;
+            text-decoration-color: $hg-button-link-danger-hover-text;
         }
     }
 

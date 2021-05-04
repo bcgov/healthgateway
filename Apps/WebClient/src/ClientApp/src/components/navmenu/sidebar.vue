@@ -87,6 +87,8 @@ export default class SidebarComponent extends Vue {
     })
     isOffline!: boolean;
 
+    private UserPreferenceType = UserPreferenceType;
+
     private eventBus = EventBus;
 
     private logger!: ILogger;
