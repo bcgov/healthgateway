@@ -56,7 +56,7 @@ namespace HealthGateway.Encounter.Test.Delegates
                    { 
                         ""uuid"": ""7c51465c-7a7d-489f-b186-8755ae094d09"",
                         ""hdid"": ""P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A"",
-                        ""getMSPVisitHistoryResponse"": {
+                        ""getMspVisitHistoryResponse"": {
                             ""totalRecords"":  1,
                             ""totalPages"": 1,
                             ""claims"": [

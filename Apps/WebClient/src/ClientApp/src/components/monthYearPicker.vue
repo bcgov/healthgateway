@@ -90,25 +90,16 @@ export default class MonthYearPickerComponent extends Vue {
         return this.selectedDate.format("MMMM yyyy");
     }
 
-    private getDisplayYearCss(year: number) {
-        return `item col-12 ${
-            this.currentMonth.year() === year ? "selected" : ""
-        }`;
+    private isCurrentYear(year: number): boolean {
+        return this.currentMonth.year() === year;
     }
 
-    private getDisplayMonthCss(displayMonth: MonthToDisplay) {
-        if (displayMonth.hasData) {
-            // Months are indexed 0-11
-            const monthIndex = this.currentMonth.month() - 1;
-            return `item col-4 ${
-                monthIndex === this.monthsToDisplay.indexOf(displayMonth) &&
-                this.currentMonth.year() === this.selectedYear
-                    ? "selected"
-                    : ""
-            }`;
-        } else {
-            return "item col-4 no-data";
-        }
+    private isCurrentMonth(displayMonth: MonthToDisplay): boolean {
+        const monthIndex = this.currentMonth.month() - 1;
+        return (
+            monthIndex === this.monthsToDisplay.indexOf(displayMonth) &&
+            this.currentMonth.year() === this.selectedYear
+        );
     }
 
     private selectYear(year: number): void {
@@ -160,126 +151,132 @@ export default class MonthYearPickerComponent extends Vue {
 </script>
 
 <template>
-    <div v-on-clickaway="close" class="select">
-        <b-btn
+    <div v-on-clickaway="close" class="picker-wrapper">
+        <hg-button
             id="currentDate"
+            variant="secondary"
             squared
-            class="m-0"
-            :variant="isOpen ? 'primary' : 'light'"
+            block
             @click="open()"
         >
             {{ dateText }}
-        </b-btn>
-        <b-row class="items years" :class="{ selectHide: !isYearOpen }">
-            <b-col
-                v-for="(year, i) of years"
-                :key="i"
-                :data-testid="`yearBtn${year}`"
-                :class="getDisplayYearCss(year)"
-                @click="selectYear(year)"
-            >
-                {{ year }}
-            </b-col>
-        </b-row>
-        <b-row class="items" :class="{ selectHide: !isMonthOpen }">
-            <b-col class="col-2 p-0">
-                <b-btn
-                    squared
-                    class="m-0 w-100 h-100"
-                    :disabled="years.indexOf(selectedYear) == years.length - 1"
-                    variant="light"
-                    @click="previousYear()"
+        </hg-button>
+        <span class="picker-body">
+            <b-row v-show="isYearOpen" class="years-wrapper">
+                <b-col
+                    v-for="(year, i) of years"
+                    :key="i"
+                    :data-testid="`yearBtn${year}`"
+                    cols="12"
                 >
-                    <hg-icon icon="chevron-left" size="small" />
-                </b-btn>
-            </b-col>
-            <b-col class="col-8 p-0">
-                <b-btn
-                    id="selectedYearBtn"
-                    squared
-                    class="m-0 w-100 h-100"
-                    variant="light"
-                    @click="open()"
-                >
-                    {{ selectedYear }}
-                </b-btn>
-            </b-col>
-            <b-col class="col-2 p-0">
-                <b-btn
-                    squared
-                    class="m-0 w-100 h-100"
-                    :disabled="years.indexOf(selectedYear) == 0"
-                    variant="light"
-                    @click="nextYear()"
-                >
-                    <hg-icon icon="chevron-right" size="small" />
-                </b-btn>
-            </b-col>
-            <b-col
-                v-for="(month, i) of monthsToDisplay"
-                :key="i"
-                :data-testid="`monthBtn${month.title}`"
-                :variant="month == selectedMonth ? 'primary' : 'light'"
-                :class="getDisplayMonthCss(month)"
-                @click="selectMonth(i)"
-            >
-                {{ month.title }}
-            </b-col>
-        </b-row>
+                    <hg-button
+                        :class="{ selected: isCurrentYear(year) }"
+                        variant="icon-light"
+                        block
+                        @click="selectYear(year)"
+                    >
+                        {{ year }}
+                    </hg-button>
+                </b-col>
+            </b-row>
+            <span v-show="isMonthOpen">
+                <b-row>
+                    <b-col class="col-2">
+                        <hg-button
+                            squared
+                            :disabled="
+                                years.indexOf(selectedYear) == years.length - 1
+                            "
+                            variant="icon-light"
+                            @click="previousYear()"
+                        >
+                            <hg-icon icon="chevron-left" size="small" />
+                        </hg-button>
+                    </b-col>
+                    <b-col class="col-8">
+                        <hg-button
+                            id="selectedYearBtn"
+                            variant="icon-light"
+                            squared
+                            block
+                            @click="open()"
+                        >
+                            {{ selectedYear }}
+                        </hg-button>
+                    </b-col>
+                    <b-col class="col-2">
+                        <hg-button
+                            squared
+                            :disabled="years.indexOf(selectedYear) == 0"
+                            variant="icon-light"
+                            @click="nextYear()"
+                        >
+                            <hg-icon icon="chevron-right" size="small" />
+                        </hg-button>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col
+                        v-for="(month, i) of monthsToDisplay"
+                        :key="i"
+                        cols="4"
+                    >
+                        <hg-button
+                            :data-testid="`monthBtn${month.title}`"
+                            variant="icon-light"
+                            class="month-item"
+                            :class="{ selected: isCurrentMonth(month) }"
+                            :disabled="!month.hasData"
+                            block
+                            @click="selectMonth(i)"
+                        >
+                            {{ month.title }}</hg-button
+                        >
+                    </b-col>
+                </b-row>
+            </span>
+        </span>
     </div>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-#currentDate {
-    width: 140px;
-}
-.select {
-    position: relative;
-    width: 100%;
-    text-align: left;
-    outline: none;
+div[class^="col"],
+div[class*=" col"] {
+    padding: 0px;
+    margin: 0px;
 }
 
-.items {
-    margin-top: 2px;
-    line-height: 45px;
-    min-width: 200px;
-    overflow: hidden;
+div[class^="row"],
+div[class*=" row"] {
+    padding: 0px;
+    margin: 0px;
+}
+
+.picker-wrapper {
+    min-width: 140px;
+    max-width: 140px;
+    z-index: 10000;
+}
+
+.picker-body {
+    position: absolute;
     box-shadow: $lightGrey 4px 4px 4px;
     border-right: 1px solid $soft_background;
     border-left: 1px solid $soft_background;
     border-bottom: 1px solid $soft_background;
-    position: absolute;
-    background-color: $light_background;
+    top: 50px;
     left: 0;
     right: 0;
+    min-width: 200px;
+    max-width: 200px;
     z-index: 10000;
+    background-color: $light_background;
 }
 
-.years {
+.years-wrapper {
     max-height: 250px;
     overflow-y: scroll;
-}
-
-.item {
-    color: $soft_text;
-    cursor: pointer;
-    text-align: center;
-}
-
-.item:hover,
-.selected {
-    background-color: $primary;
-    color: $primary_text;
-}
-
-.selectHide {
-    display: none;
-}
-
-.no-data {
-    background-color: lightgray;
 }
 </style>

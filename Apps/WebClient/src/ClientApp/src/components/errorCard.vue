@@ -28,7 +28,7 @@ export default class ErrorCardComponent extends Vue {
         :show="isShowing"
     >
         <h4>Whoops, something went wrong... Try refreshing the page</h4>
-        <b-btn
+        <hg-button
             v-b-toggle.errorDetails
             data-testid="errorDetailsBtn"
             variant="link"
@@ -48,7 +48,7 @@ export default class ErrorCardComponent extends Vue {
                 class="when-opened mr-2"
             />
             <span class="when-opened">Hide Details</span>
-        </b-btn>
+        </hg-button>
         <b-collapse id="errorDetails">
             <div v-for="(error, index) in errors" :key="index" class="py-2">
                 <h6>{{ error.title }} | {{ error.errorCode }}</h6>

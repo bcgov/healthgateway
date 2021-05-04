@@ -1,6 +1,6 @@
 import "@/plugins/inversify.config";
 
-import { StoreOptionsStub } from "@test/stubs/store/options";
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";

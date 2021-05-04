@@ -1,6 +1,6 @@
 import "@/plugins/inversify.config";
 
-import { StoreOptionsStub } from "@test/stubs/store/options";
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import Vuex from "vuex";
 
@@ -40,6 +40,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<LoginComponent> {
         },
         stubs: {
             "hg-icon": true,
+            "hg-button": true,
         },
     });
 }
@@ -146,8 +147,9 @@ describe("Login view", () => {
         expect(wrapper.find(`#${keycloakProvider.id}Btn`).text()).toBe(
             keycloakProvider.name
         );
+        console.log(wrapper.html());
         expect(
-            wrapper.find(`#loginPicker`).findAll("[type=button]").length
-        ).toBe(2);
+            wrapper.find("#loginPicker").findAll("hg-button-stub").length
+        ).toBe(3);
     });
 });

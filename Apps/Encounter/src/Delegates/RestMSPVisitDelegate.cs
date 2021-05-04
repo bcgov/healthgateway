@@ -122,7 +122,7 @@ namespace HealthGateway.Encounter.Delegates
                     else
                     {
                         retVal.ResultStatus = Common.Constants.ResultType.Error;
-                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of ${response.StatusCode} from ODR with reason ${response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Invalid HTTP Response code of {response.StatusCode} from ODR with reason {response.ReasonPhrase}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ODRRecords) };
                         this.logger.LogError(retVal.ResultError.ResultMessage);
                     }
                 }

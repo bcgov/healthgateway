@@ -188,18 +188,16 @@ export default class HeaderComponent extends Vue {
     <header class="sticky-top" :class="{ 'nav-up': !isHeaderShown }">
         <b-navbar toggleable="md" type="dark">
             <!-- Hamburger toggle -->
-            <span
-                v-if="displayMenu"
-                class="navbar-toggler mr-1"
-                displayMenu
+            <hg-button
+                v-if="displayMenu && isMobileWidth"
+                class="mr-2"
+                variant="icon"
                 @click="handleToggleClick"
-            >
-                <hg-icon
+                ><hg-icon
                     :icon="isSidebarOpen ? 'times' : 'bars'"
-                    size="medium"
+                    size="large"
                     class="menu-icon"
-                />
-            </span>
+            /></hg-button>
 
             <!-- Brand -->
             <b-navbar-brand class="mx-0">
@@ -341,8 +339,8 @@ export default class HeaderComponent extends Vue {
 }
 
 .menu-icon {
-    width: 1.5em;
-    height: 1.5em;
+    min-width: 1em;
+    min-height: 1em;
 }
 
 nav {

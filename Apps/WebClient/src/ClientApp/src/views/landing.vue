@@ -215,7 +215,7 @@ export default class LandingView extends Vue {
                     v-if="!oidcIsAuthenticated"
                     class="py-1 justify-content-center justify-content-lg-start"
                 >
-                    <b-button
+                    <hg-button
                         id="btnStart"
                         data-testid="btnStart"
                         :to="
@@ -223,17 +223,17 @@ export default class LandingView extends Vue {
                                 ? 'registration'
                                 : 'registrationInfo'
                         "
-                        role="button"
+                        variant="primary"
                         class="col-12 col-sm-5 col-lg-4 my-2 m-sm-2 mx-lg-3"
-                        >Register</b-button
+                        >Register</hg-button
                     >
-                    <b-button
+                    <hg-button
                         id="btnLogin"
                         data-testid="btnLogin"
                         to="login"
-                        variant="outline-secondary"
+                        variant="secondary"
                         class="col-12 col-sm-5 col-lg-4 my-2 m-sm-2 mx-lg-3"
-                        >Log in</b-button
+                        >Log in</hg-button
                     >
                 </b-row>
             </b-col>
@@ -354,14 +354,6 @@ export default class LandingView extends Vue {
             .status-inactive {
                 color: darkgray;
             }
-
-            #btnLogin {
-                color: $primary;
-            }
-        }
-
-        #btnStart {
-            background-color: $primary;
         }
     }
 

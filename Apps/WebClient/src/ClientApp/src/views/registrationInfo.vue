@@ -82,7 +82,7 @@ export default class RegistrationInfoView extends Vue {
                         <b-row class="mt-5">
                             <b-col>
                                 <router-link :to="registrationLink">
-                                    <b-button
+                                    <hg-button
                                         size="lg"
                                         variant="primary"
                                         data-testid="registerBtn"
@@ -93,7 +93,7 @@ export default class RegistrationInfoView extends Vue {
                                             height="40"
                                             alt="BC Services Card App Icon"
                                         />Register for Health Gateway
-                                    </b-button>
+                                    </hg-button>
                                 </router-link>
                             </b-col>
                         </b-row>
@@ -101,7 +101,7 @@ export default class RegistrationInfoView extends Vue {
                 </b-row>
                 <b-row>
                     <b-col class="text-left mt-5">
-                        <b-button
+                        <hg-button
                             id="servicesCardBtn"
                             data-testid="servicesCardBtn"
                             :class="signupProcessVisible ? 'collapsed' : null"
@@ -109,8 +109,7 @@ export default class RegistrationInfoView extends Vue {
                                 signupProcessVisible ? 'true' : 'false'
                             "
                             aria-controls="collapse-1"
-                            size="lg"
-                            variant="light"
+                            variant="secondary"
                             @click="
                                 signupProcessVisible = !signupProcessVisible
                             "
@@ -133,7 +132,7 @@ export default class RegistrationInfoView extends Vue {
                                 >I have a BC Services Card, but how do I use
                                 it?</span
                             >
-                        </b-button>
+                        </hg-button>
                         <b-collapse
                             id="collapse-1"
                             v-model="signupProcessVisible"
@@ -221,15 +220,14 @@ export default class RegistrationInfoView extends Vue {
                 </b-row>
                 <b-row class="mb-5">
                     <b-col>
-                        <b-button
+                        <hg-button
                             id="moreOptionsBtn"
                             data-testid="moreOptionsBtn"
                             class="my-3"
                             :class="dongleVisible ? 'collapsed' : null"
                             :aria-expanded="dongleVisible ? 'true' : 'false'"
                             aria-controls="collapse-4"
-                            size="lg"
-                            variant="light"
+                            variant="secondary"
                             @click="dongleVisible = !dongleVisible"
                         >
                             <span v-show="!dongleVisible">
@@ -247,7 +245,7 @@ export default class RegistrationInfoView extends Vue {
                                 />
                             </span>
                             <span class="ml-2">Is there another option?</span>
-                        </b-button>
+                        </hg-button>
                         <b-collapse id="collapse-4" v-model="dongleVisible">
                             <div class="m-5 px-4">
                                 <b-row>

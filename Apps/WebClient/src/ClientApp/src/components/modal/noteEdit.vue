@@ -288,22 +288,22 @@ export default class NoteEditComponent extends Vue {
         <template #modal-footer>
             <b-row>
                 <div class="mr-2">
-                    <b-btn
+                    <hg-button
+                        data-testid="cancelRegistrationBtn"
+                        variant="secondary"
+                        :disabled="isSaving"
+                        @click="hideModal"
+                        >Cancel</hg-button
+                    >
+                </div>
+                <div>
+                    <hg-button
                         data-testid="saveNoteBtn"
                         variant="primary"
                         type="submit"
                         :disabled="isSaving"
                         @click="handleOk"
-                        >Save</b-btn
-                    >
-                </div>
-                <div>
-                    <b-btn
-                        data-testid="cancelRegistrationBtn"
-                        variant="secondary"
-                        :disabled="isSaving"
-                        @click="hideModal"
-                        >Cancel</b-btn
+                        >Save</hg-button
                     >
                 </div>
             </b-row>

@@ -82,7 +82,7 @@ export default class LoginView extends Vue {
 </script>
 
 <template>
-    <div class="container my-5" align="center">
+    <div class="container my-5">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-row>
             <b-col>
@@ -101,14 +101,17 @@ export default class LoginView extends Vue {
                 <b-card
                     v-if="identityProviders && identityProviders.length > 0"
                     id="loginPicker"
-                    class="shadow-lg bg-white"
+                    class="shadow-lg bg-white mx-auto"
                     style="max-width: 25rem"
                     align="center"
                 >
                     <h3 slot="header">Log In</h3>
                     <p v-if="hasMultipleProviders || isRetry" slot="footer">
                         Not yet registered?
-                        <b-link to="/registrationInfo">Sign up</b-link>
+
+                        <hg-button to="/registrationInfo" variant="link"
+                            >Sign up</hg-button
+                        >
                     </p>
                     <b-card-body v-if="hasMultipleProviders || isRetry">
                         <div
@@ -117,12 +120,12 @@ export default class LoginView extends Vue {
                         >
                             <b-row>
                                 <b-col>
-                                    <b-button
+                                    <hg-button
                                         :id="`${provider.id}Btn`"
                                         :data-testid="`${provider.id}Btn`"
-                                        block
                                         :disabled="provider.disabled"
                                         variant="primary"
+                                        block
                                         @click="oidcLogin(provider.hint)"
                                     >
                                         <b-row>
@@ -136,7 +139,7 @@ export default class LoginView extends Vue {
                                                 <span>{{ provider.name }}</span>
                                             </b-col>
                                         </b-row>
-                                    </b-button>
+                                    </hg-button>
                                 </b-col>
                             </b-row>
                             <b-row
