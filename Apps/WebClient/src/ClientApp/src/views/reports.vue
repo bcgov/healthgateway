@@ -226,14 +226,14 @@ export default class ReportsView extends Vue {
                                 </b-form-select>
                             </b-col>
                             <b-col class="p-0 px-3" cols="auto">
-                                <b-button
+                                <hg-button
                                     v-b-toggle.advanced-panel
                                     variant="link"
                                     data-testid="advancedBtn"
                                 >
                                     Advanced
-                                </b-button>
-                                <b-button
+                                </hg-button>
+                                <hg-button
                                     variant="primary"
                                     data-testid="exportRecordBtn"
                                     class="mb-1 ml-2"
@@ -245,7 +245,7 @@ export default class ReportsView extends Vue {
                                     @click="showConfirmationModal"
                                 >
                                     Download PDF
-                                </b-button>
+                                </hg-button>
                             </b-col>
                         </b-row>
                         <b-row
@@ -343,26 +343,26 @@ export default class ReportsView extends Vue {
                             </b-row>
                             <b-row align-h="end" class="pt-4">
                                 <b-col cols="auto">
-                                    <b-button
+                                    <hg-button
                                         v-b-toggle.advanced-panel
-                                        variant="link"
+                                        variant="secondary"
                                         data-testid="clearBtn"
-                                        class="mb-1 mr-2 text-muted"
+                                        class="mb-1 mr-1"
                                         :disabled="isLoading"
                                         @click="cancelFilter"
                                     >
                                         Cancel
-                                    </b-button>
-                                    <b-button
+                                    </hg-button>
+                                    <hg-button
                                         v-b-toggle.advanced-panel
                                         variant="primary"
                                         data-testid="applyFilterBtn"
-                                        class="mb-1 ml-2"
+                                        class="mb-1 ml-1"
                                         :disabled="isLoading"
                                         @click="updateFilter"
                                     >
                                         Apply
-                                    </b-button>
+                                    </hg-button>
                                 </b-col>
                             </b-row>
                         </b-collapse>

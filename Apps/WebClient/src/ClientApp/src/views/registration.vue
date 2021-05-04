@@ -451,14 +451,13 @@ export default class RegistrationView extends Vue {
                     </b-row>
                     <b-row class="mb-5">
                         <b-col class="justify-content-right">
-                            <b-button
+                            <hg-button
                                 class="px-5 float-right"
                                 type="submit"
                                 data-testid="registerButton"
-                                size="lg"
                                 variant="primary"
-                                :class="{ disabled: !accepted }"
-                                >Register</b-button
+                                :disabled="!accepted"
+                                >Register</hg-button
                             >
                         </b-col>
                     </b-row>

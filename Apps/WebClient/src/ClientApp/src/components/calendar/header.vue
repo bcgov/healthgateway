@@ -101,15 +101,15 @@ export default class CalendarComponent extends Vue {
 <template>
     <b-row class="calendar-header">
         <b-col cols="col-sm-auto">
-            <b-btn
+            <hg-button
                 v-show="hasAvailableMonths"
-                variant="light"
+                variant="secondary"
                 :disabled="monthIndex == 0"
                 class="arrow-icon left-button px-2 m-0"
                 @click.stop="previousMonth"
             >
                 <hg-icon icon="chevron-left" size="medium" />
-            </b-btn>
+            </hg-button>
         </b-col>
         <b-col cols="col-sm-auto">
             <MonthYearPickerComponent
@@ -120,48 +120,35 @@ export default class CalendarComponent extends Vue {
             />
         </b-col>
         <b-col cols="col-sm-auto">
-            <b-btn
+            <hg-button
                 v-show="hasAvailableMonths"
-                variant="light"
+                variant="secondary"
                 :disabled="monthIndex == availableMonths.length - 1"
                 class="arrow-icon right-button px-2 m-0"
                 @click.stop="nextMonth"
             >
                 <hg-icon icon="chevron-right" size="medium" />
-            </b-btn>
+            </hg-button>
         </b-col>
     </b-row>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.row {
-    margin: 0px;
+
+div[class^="col"],
+div[class*=" col"] {
     padding: 0px;
+    margin: 0px;
 }
 
-.col {
-    margin: 0px;
+div[class^="row"],
+div[class*=" row"] {
     padding: 0px;
+    margin: 0px;
 }
 
 .calendar-header {
-    .btn-outline-primary {
-        font-size: 2em;
-        background-color: white;
-    }
-    .btn-outline-primary:focus {
-        color: $primary;
-        background-color: white;
-    }
-    .btn-outline-primary:hover {
-        color: white;
-        background-color: $primary;
-    }
-    .btn-outline-primary:active {
-        color: white;
-    }
-
     .arrow-icon {
         font-size: 1em;
     }
@@ -171,6 +158,7 @@ export default class CalendarComponent extends Vue {
     }
     .right-button {
         border-radius: 0px 5px 5px 0px;
+        border-left: 0px;
     }
 }
 </style>

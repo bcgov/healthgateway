@@ -238,7 +238,7 @@ const routes = [
         path: "/login",
         component: LoginView,
         props: (route: Route) => ({
-            isRetry: route.query.isRetry,
+            isRetry: route.query.isRetry === "true",
         }),
         meta: { validStates: [UserState.unauthenticated] },
     },

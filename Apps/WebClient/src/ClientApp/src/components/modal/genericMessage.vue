@@ -85,20 +85,20 @@ export default class MessageModalComponent extends Vue {
                 <b-col>
                     <b-row>
                         <b-col>
-                            <b-button
+                            <hg-button
                                 data-testid="genericMessageSubmitBtn"
                                 class="mr-2"
                                 variant="primary"
                                 @click="handleSubmit($event)"
                             >
                                 Continue
-                            </b-button>
-                            <b-button
+                            </hg-button>
+                            <hg-button
                                 variant="secondary"
                                 @click="handleCancel($event)"
                             >
                                 Cancel
-                            </b-button>
+                            </hg-button>
                         </b-col>
                     </b-row>
                 </b-col>

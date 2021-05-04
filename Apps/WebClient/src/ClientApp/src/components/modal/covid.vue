@@ -155,13 +155,13 @@ export default class CovidModalComponent extends Vue {
         <template #modal-footer>
             <b-row>
                 <b-col>
-                    <b-button
+                    <hg-button
                         data-testid="covidViewResultBtn"
-                        variant="outline-primary"
+                        variant="secondary"
                         @click="handleSubmit($event)"
                     >
                         View Result
-                    </b-button>
+                    </hg-button>
                 </b-col>
             </b-row>
         </template>

@@ -258,15 +258,15 @@ export default class VerifySMSComponent extends Vue {
             <b-row class="w-100">
                 <b-col v-if="!tooManyRetries && allowRetry">
                     Didn't receive a code?
-                    <b-button
+                    <hg-button
                         id="resendSMSVerification"
                         variant="link"
-                        class="ml-0 pl-0"
+                        class="m-0 p-0"
                         :disabled="smsVerificationSent"
                         @click="sendUserSMSUpdate()"
                     >
                         Resend
-                    </b-button>
+                    </hg-button>
                 </b-col>
                 <b-col v-if="!allowRetry">
                     <countdown :time="getTimeout()">
@@ -282,7 +282,7 @@ export default class VerifySMSComponent extends Vue {
                     </countdown>
                 </b-col>
                 <b-col v-if="tooManyRetries">
-                    <b-button
+                    <hg-button
                         id="resendSMSVerification"
                         variant="link"
                         class="text-center w-100"
@@ -290,7 +290,7 @@ export default class VerifySMSComponent extends Vue {
                         @click="sendUserSMSUpdate()"
                     >
                         Send new code
-                    </b-button>
+                    </hg-button>
                 </b-col>
             </b-row>
         </template>

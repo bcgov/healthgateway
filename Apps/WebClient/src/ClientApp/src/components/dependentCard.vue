@@ -238,8 +238,10 @@ export default class DependentCardComponent extends Vue {
                         </b-row>
                         <b-row>
                             <b-col class="d-flex justify-content-center">
-                                <b-button type="link" @click="deleteDependent()"
-                                    >Remove Dependent</b-button
+                                <hg-button
+                                    variant="secondary"
+                                    @click="deleteDependent()"
+                                    >Remove Dependent</hg-button
                                 >
                             </b-col>
                         </b-row>
@@ -345,7 +347,7 @@ export default class DependentCardComponent extends Vue {
                                 {{ formatResult(item.labResults[0]) }}
                             </td>
                             <td>
-                                <b-btn
+                                <hg-button
                                     v-if="
                                         item.reportAvailable &&
                                         checkResultReady(item.labResults[0])
@@ -361,7 +363,7 @@ export default class DependentCardComponent extends Vue {
                                         size="medium"
                                         aria-hidden="true"
                                     />
-                                </b-btn>
+                                </hg-button>
                             </td>
                         </tr>
                     </table>
