@@ -134,15 +134,15 @@ export default class LoadingComponent extends Vue {
     display: block;
 }
 .spinner {
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
     position: absolute;
-    margin: 100px auto;
+    margin: 60px auto;
 
     top: 50%;
     left: 50%;
-    margin-top: -50px;
-    margin-left: -50px;
+    margin-top: -30px;
+    margin-left: -30px;
 }
 .text {
     color: $primary;
