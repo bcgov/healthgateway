@@ -35,31 +35,17 @@ namespace HealthGateway.Patient.Controllers
     public class PatientController : ControllerBase
     {
         /// <summary>
-        /// The injected logger delegate.
-        /// </summary>
-        private readonly ILogger<PatientController> logger;
-
-        /// <summary>
         /// Gets or sets the patient data service.
         /// </summary>
         private readonly IPatientService service;
 
         /// <summary>
-        /// Gets or sets the http context accessor.
-        /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PatientController"/> class.
         /// </summary>
-        /// <param name="logger">The injected logger provider.</param>
         /// <param name="patientService">The patient data service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        public PatientController(ILogger<PatientController> logger, IHttpContextAccessor httpContextAccessor, IPatientService patientService)
+        public PatientController(IPatientService patientService)
         {
-            this.logger = logger;
             this.service = patientService;
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>

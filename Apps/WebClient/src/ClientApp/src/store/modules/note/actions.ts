@@ -3,22 +3,21 @@ import RequestResult, { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger, IUserNoteService } from "@/services/interfaces";
 
 import { NoteActions } from "./types";
-
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-const noteService: IUserNoteService = container.get<IUserNoteService>(
-    SERVICE_IDENTIFIER.UserNoteService
-);
 
 export const actions: NoteActions = {
     retrieve(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<UserNote[]>> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const noteService: IUserNoteService = container.get<IUserNoteService>(
+            SERVICE_IDENTIFIER.UserNoteService
+        );
+
         return new Promise((resolve, reject) => {
             const userNotes: UserNote[] = context.getters.notes;
             if (context.state.status === LoadStatus.LOADED) {
@@ -55,6 +54,10 @@ export const actions: NoteActions = {
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<UserNote | undefined> {
+        const noteService: IUserNoteService = container.get<IUserNoteService>(
+            SERVICE_IDENTIFIER.UserNoteService
+        );
+
         return new Promise((resolve, reject) => {
             noteService
                 .createNote(params.hdid, params.note)
@@ -72,6 +75,9 @@ export const actions: NoteActions = {
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<UserNote> {
+        const noteService: IUserNoteService = container.get<IUserNoteService>(
+            SERVICE_IDENTIFIER.UserNoteService
+        );
         return new Promise<UserNote>((resolve, reject) => {
             noteService
                 .updateNote(params.hdid, params.note)
@@ -89,6 +95,9 @@ export const actions: NoteActions = {
         context,
         params: { hdid: string; note: UserNote }
     ): Promise<void> {
+        const noteService: IUserNoteService = container.get<IUserNoteService>(
+            SERVICE_IDENTIFIER.UserNoteService
+        );
         return new Promise((resolve, reject) => {
             noteService
                 .deleteNote(params.hdid, params.note)
@@ -103,6 +112,8 @@ export const actions: NoteActions = {
         });
     },
     handleError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit("noteError", error);
         context.dispatch(

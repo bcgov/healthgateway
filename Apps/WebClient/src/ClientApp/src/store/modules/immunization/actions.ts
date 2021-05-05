@@ -2,19 +2,18 @@ import { ResultType } from "@/constants/resulttype";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IImmunizationService, ILogger } from "@/services/interfaces";
 
 import { ImmunizationActions } from "./types";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-
-const immunizationService: IImmunizationService = container.get<IImmunizationService>(
-    SERVICE_IDENTIFIER.ImmunizationService
-);
-
 export const actions: ImmunizationActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const immunizationService: IImmunizationService = container.get<IImmunizationService>(
+            SERVICE_IDENTIFIER.ImmunizationService
+        );
+
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
                 logger.debug(`Immunizations found stored, not quering!`);
@@ -50,6 +49,8 @@ export const actions: ImmunizationActions = {
         });
     },
     handleError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit("immunizationError", error);
 

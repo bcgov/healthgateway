@@ -14,7 +14,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IDependentService } from "@/services/interfaces";
 
 @Component({
@@ -339,19 +339,19 @@ export default class NewDependentComponent extends Vue {
         <template #modal-footer>
             <b-row>
                 <div class="mr-2">
-                    <b-btn
-                        data-testid="registerDependentBtn"
-                        variant="primary"
-                        @click="handleOk"
-                        >Register dependent</b-btn
-                    >
-                </div>
-                <div>
-                    <b-btn
+                    <hg-button
                         data-testid="cancelRegistrationBtn"
                         variant="secondary"
                         @click="hideModal"
-                        >Cancel</b-btn
+                        >Cancel</hg-button
+                    >
+                </div>
+                <div>
+                    <hg-button
+                        data-testid="registerDependentBtn"
+                        variant="primary"
+                        @click="handleOk"
+                        >Register dependent</hg-button
                     >
                 </div>
             </b-row>

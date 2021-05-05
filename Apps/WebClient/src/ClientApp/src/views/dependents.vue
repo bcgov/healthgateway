@@ -13,7 +13,7 @@ import type { WebClientConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IDependentService, ILogger } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
@@ -95,10 +95,10 @@ export default class DependentsView extends Vue {
                                 <h1 id="Subject">Dependents</h1>
                             </b-col>
                             <b-col cols="5" align-self="end">
-                                <b-btn
+                                <hg-button
                                     data-testid="addNewDependentBtn"
-                                    variant="primary"
                                     class="float-right"
+                                    variant="secondary"
                                     @click="showModal()"
                                 >
                                     <hg-icon
@@ -107,7 +107,7 @@ export default class DependentsView extends Vue {
                                         class="mr-2"
                                     />
                                     <span>Add a new dependent</span>
-                                </b-btn>
+                                </hg-button>
                             </b-col>
                         </b-row>
                         <hr />

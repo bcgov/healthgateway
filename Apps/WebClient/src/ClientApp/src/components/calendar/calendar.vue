@@ -6,7 +6,7 @@ import { Action, Getter } from "vuex-class";
 import { DateWrapper } from "@/models/dateWrapper";
 import { DateGroup } from "@/models/timelineEntry";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 import CalendarBody from "./body.vue";

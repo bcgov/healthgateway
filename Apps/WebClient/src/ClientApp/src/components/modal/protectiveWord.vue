@@ -8,7 +8,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 const med = "medication";
@@ -116,7 +116,7 @@ export default class ProtectiveWordComponent extends Vue {
                 <b-col>
                     <b-row>
                         <b-col>
-                            <b-button
+                            <hg-button
                                 data-testid="protectiveWordContinueBtn"
                                 size="lg"
                                 variant="primary"
@@ -124,7 +124,7 @@ export default class ProtectiveWordComponent extends Vue {
                                 @click="handleOk($event)"
                             >
                                 Continue
-                            </b-button>
+                            </hg-button>
                         </b-col>
                     </b-row>
                     <br />

@@ -1,39 +1,14 @@
-import { Commit } from "vuex";
-
 import { ExternalConfiguration } from "@/models/configData";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { IConfigService } from "@/services/interfaces";
 
 import { ConfigActions } from "./types";
 
-function handleError(commit: Commit, error: Error) {
-    console.log("ERROR:" + error);
-    commit("configurationError");
-}
-
 export const actions: ConfigActions = {
-    initialize(context): Promise<ExternalConfiguration> {
+    initialize(context, config: ExternalConfiguration): void {
         console.log("Initializing the config store...");
-        const configService: IConfigService = container.get(
-            SERVICE_IDENTIFIER.ConfigService
-        );
 
-        return new Promise((resolve, reject) => {
-            configService
-                .getConfiguration()
-                .then((value) => {
-                    console.log("Configuration: ", value);
-                    context.commit("configurationLoaded", value);
-                    resolve(value);
-                })
-                .catch((error) => {
-                    handleError(context.commit, error);
-                    reject(error);
-                })
-                .finally(() => {
-                    console.log("Finished initialization");
-                });
-        });
+        console.log("Configuration: ", config);
+        context.commit("configurationLoaded", config);
+
+        console.log("Finished initialization");
     },
 };

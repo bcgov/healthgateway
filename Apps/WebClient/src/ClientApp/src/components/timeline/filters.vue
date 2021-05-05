@@ -17,7 +17,7 @@ import { StringISODate } from "@/models/dateWrapper";
 import { EntryType } from "@/models/timelineEntry";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 library.add(faBars, faCalendarDay, faChevronDown, faSlidersH);
@@ -216,12 +216,12 @@ export default class FilterComponent extends Vue {
 <template>
     <div class="filters-wrapper">
         <div class="filters-width d-none d-md-block">
-            <b-button
+            <hg-button
                 id="filterBtn"
                 class="w-100"
-                :class="{ 'filter-selected': hasFilterSelected }"
                 data-testid="filterDropdown"
-                variant="outline-primary"
+                :class="{ selected: hasFilterSelected }"
+                variant="secondary"
                 tabindex="0"
                 @click="toggleMenu"
             >
@@ -240,7 +240,7 @@ export default class FilterComponent extends Vue {
                     aria-hidden="true"
                     class="ml-2"
                 />
-            </b-button>
+            </hg-button>
             <b-popover
                 target="filterBtn"
                 :show.sync="isMenuVisible"
@@ -255,13 +255,13 @@ export default class FilterComponent extends Vue {
                 <b-row class="px-4">
                     <b-col><strong>Filter</strong> </b-col>
                     <b-col class="col-auto">
-                        <b-button
+                        <hg-button
                             variant="link"
                             class="btn-mobile"
                             @click="clearOptions()"
                         >
                             Clear
-                        </b-button>
+                        </hg-button>
                     </b-col>
                 </b-row>
 
@@ -323,45 +323,51 @@ export default class FilterComponent extends Vue {
 
                     <b-row class="view-selector mt-1">
                         <b-col cols="auto" class="pr-0">
-                            <b-btn
+                            <hg-button
                                 data-testid="listViewToggle"
-                                class="list-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: isListViewToggle }"
+                                class="list-view-btn px-2 m-0"
+                                :variant="
+                                    isListViewToggle ? 'primary' : 'secondary'
+                                "
                                 @click.stop="toggleListView"
                             >
                                 <hg-icon icon="bars" size="medium" />
-                            </b-btn>
+                            </hg-button>
                         </b-col>
                         <b-col cols="auto" class="pl-0">
-                            <b-btn
+                            <hg-button
                                 data-testid="monthViewToggle"
-                                class="month-view-btn btn-outline-primary px-2 m-0"
-                                :class="{ active: !isListViewToggle }"
+                                class="month-view-btn px-2 m-0"
+                                :variant="
+                                    !isListViewToggle ? 'primary' : 'secondary'
+                                "
                                 @click.stop="toggleMonthView"
                             >
                                 <hg-icon icon="calendar-day" size="medium" />
-                            </b-btn>
+                            </hg-button>
                         </b-col>
                     </b-row>
 
                     <b-row class="mt-1" align-h="end">
                         <b-col cols="auto" class="pr-0">
-                            <b-btn
+                            <hg-button
                                 data-testid="btnFilterCancel"
-                                class="btn-outline-primary px-2 m-0"
+                                class="px-2 m-0"
+                                variant="secondary"
                                 @click.stop="cancel"
                             >
                                 Cancel
-                            </b-btn>
+                            </hg-button>
                         </b-col>
                         <b-col cols="auto" class="pl-2">
-                            <b-btn
+                            <hg-button
                                 data-testid="btnFilterApply"
                                 class="btn-primary px-2 m-0"
+                                variant="primary"
                                 @click.stop="apply"
                             >
                                 Apply
-                            </b-btn>
+                            </hg-button>
                         </b-col>
                     </b-row>
                 </div>
@@ -369,15 +375,15 @@ export default class FilterComponent extends Vue {
         </div>
 
         <!-- Mobile view specific modal-->
-        <b-button
+        <hg-button
             data-testid="mobileFilterDropdown"
             class="d-sm-inline d-md-none"
             :class="{ 'filter-selected': hasFilterSelected }"
-            variant="outline-primary"
+            variant="secondary"
             @click.stop="toggleMobileView"
         >
             <hg-icon icon="sliders-h" size="medium" aria-hidden="true" />
-        </b-button>
+        </hg-button>
         <b-modal
             id="generic-message"
             v-model="isModalVisible"
@@ -397,13 +403,13 @@ export default class FilterComponent extends Vue {
                 <b-row class="w-100 text-center" align-h="between">
                     <b-col cols="auto"><h5>Filter</h5> </b-col>
                     <b-col class="col-auto">
-                        <b-button
+                        <hg-button
                             variant="link"
                             class="btn-mobile"
                             @click="clearOptions()"
                         >
                             Clear
-                        </b-button>
+                        </hg-button>
                     </b-col>
                 </b-row>
             </div>
@@ -457,46 +463,54 @@ export default class FilterComponent extends Vue {
                 <strong>View Type</strong>
                 <b-row class="view-selector">
                     <b-col cols="auto" class="pr-0">
-                        <b-btn
+                        <hg-button
                             data-testid="listViewToggle"
-                            class="list-view-btn btn-outline-primary px-2 m-0"
+                            class="list-view-btn"
                             :class="{ active: isListViewToggle }"
+                            :variant="
+                                isListViewToggle ? 'primary' : 'secondary'
+                            "
                             @click.stop="toggleListView"
                         >
                             <hg-icon icon="bars" size="medium" />
-                        </b-btn>
+                        </hg-button>
                     </b-col>
                     <b-col cols="auto" class="pl-0">
-                        <b-btn
+                        <hg-button
                             data-testid="monthViewToggle"
-                            class="month-view-btn btn-outline-primary px-2 m-0"
+                            class="month-view-btn"
                             :class="{ active: !isListViewToggle }"
+                            :variant="
+                                !isListViewToggle ? 'primary' : 'secondary'
+                            "
                             @click.stop="toggleMonthView"
                         >
                             <hg-icon icon="calendar-day" size="medium" />
-                        </b-btn>
+                        </hg-button>
                     </b-col>
                 </b-row>
             </div>
 
             <b-row class="mt-1" align-h="end">
                 <b-col cols="auto" class="pr-0">
-                    <b-btn
+                    <hg-button
                         data-testid="btnFilterCancel"
-                        class="btn-outline-primary px-2 m-0"
+                        class="px-2 m-0"
+                        variant="secondary"
                         @click.stop="cancel"
                     >
                         Cancel
-                    </b-btn>
+                    </hg-button>
                 </b-col>
                 <b-col cols="auto" class="pl-2">
-                    <b-btn
+                    <hg-button
                         data-testid="btnFilterApply"
-                        class="btn-primary px-2 m-0"
+                        class="px-2 m-0"
+                        variant="primary"
                         @click.stop="apply"
                     >
                         Apply
-                    </b-btn>
+                    </hg-button>
                 </b-col>
             </b-row>
         </b-modal>
@@ -554,18 +568,6 @@ export default class FilterComponent extends Vue {
 
 .view-selector {
     min-width: 170px;
-    .btn-outline-primary {
-        font-size: 1em;
-        background-color: white;
-    }
-    .btn-outline-primary:focus {
-        color: white;
-        background-color: $primary;
-    }
-    .btn-outline-primary:hover {
-        color: white;
-        background-color: $primary;
-    }
     .list-view-btn {
         border-radius: 5px 0px 0px 5px;
         border-right: 0px;
@@ -573,32 +575,5 @@ export default class FilterComponent extends Vue {
     .month-view-btn {
         border-radius: 0px 5px 5px 0px;
     }
-}
-
-.btn-primary {
-    font-size: 1em;
-    color: white;
-    background-color: $primary;
-}
-.btn-primary:focus {
-    color: $primary;
-    background-color: white;
-}
-.btn-primary:hover {
-    color: $primary;
-    background-color: white;
-}
-
-.btn-outline-primary {
-    font-size: 1em;
-    background-color: white;
-}
-.btn-outline-primary:focus {
-    color: white;
-    background-color: $primary;
-}
-.btn-outline-primary:hover {
-    color: white;
-    background-color: $primary;
 }
 </style>

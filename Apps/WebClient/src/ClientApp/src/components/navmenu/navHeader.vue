@@ -14,7 +14,7 @@ import { Action, Getter } from "vuex-class";
 import RatingComponent from "@/components/modal/rating.vue";
 import User, { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUserCircle);
@@ -188,18 +188,16 @@ export default class HeaderComponent extends Vue {
     <header class="sticky-top" :class="{ 'nav-up': !isHeaderShown }">
         <b-navbar toggleable="md" type="dark">
             <!-- Hamburger toggle -->
-            <span
-                v-if="displayMenu"
-                class="navbar-toggler mr-1"
-                displayMenu
+            <hg-button
+                v-if="displayMenu && isMobileWidth"
+                class="mr-2"
+                variant="icon"
                 @click="handleToggleClick"
-            >
-                <hg-icon
+                ><hg-icon
                     :icon="isSidebarOpen ? 'times' : 'bars'"
-                    size="medium"
+                    size="large"
                     class="menu-icon"
-                />
-            </span>
+            /></hg-button>
 
             <!-- Brand -->
             <b-navbar-brand class="mx-0">
@@ -341,8 +339,8 @@ export default class HeaderComponent extends Vue {
 }
 
 .menu-icon {
-    width: 1.5em;
-    height: 1.5em;
+    min-width: 1em;
+    min-height: 1em;
 }
 
 nav {

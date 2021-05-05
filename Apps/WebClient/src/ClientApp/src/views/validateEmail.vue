@@ -11,7 +11,7 @@ import { Action, Getter } from "vuex-class";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IUserProfileService } from "@/services/interfaces";
 
 library.add(faCheckCircle, faTimesCircle);

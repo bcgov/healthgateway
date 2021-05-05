@@ -128,17 +128,6 @@ export default class HttpDelegate implements IHttpDelegate {
                     console.log(errorMessage);
                     return reject(errorMessage);
                 });
-            // TODO: Axios has bug with the delete method not using data fields.
-            // Change it back once a new version that fixes it comes availiable
-            /*Axios.delete(url, config)
-                .then(response => {
-                    return resolve(response.data);
-                })
-                .catch(err => {
-                    const errorMessage: string = `DELETE error: ${err.toString()}`;
-                    console.log(errorMessage);
-                    return reject(errorMessage);
-                });*/
         });
     }
 }

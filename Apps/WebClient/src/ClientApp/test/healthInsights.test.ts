@@ -1,15 +1,16 @@
+import "@/plugins/inversify.config";
+
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import { createLocalVue, shallowMount, Wrapper } from "@vue/test-utils";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuex, { Store } from "vuex";
 
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import { GatewayStoreOptions, RootState } from "@/store/types";
 import HealthInsightsView from "@/views/healthInsights.vue";
-
-import { storeStub } from "./stubs/store/store";
 
 let store: Store<RootState>;
 
@@ -21,7 +22,7 @@ function createWrapper(
     localVue.use(VueRouter);
     localVue.use(VueContentPlaceholders);
     if (options === undefined) {
-        options = storeStub;
+        options = new StoreOptionsStub();
     }
 
     store = new Vuex.Store(options);
@@ -31,6 +32,7 @@ function createWrapper(
         store: store,
         stubs: {
             "hg-icon": true,
+            "hg-button": true,
         },
     });
 }
@@ -46,8 +48,8 @@ describe("HealthInsights view", () => {
 
     test("Loading state", () => {
         // Setup vuex store
-        const options = storeStub;
-        storeStub.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
+        const options = new StoreOptionsStub();
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
             true;
         const wrapper = createWrapper(options);
         // Check values
@@ -57,10 +59,10 @@ describe("HealthInsights view", () => {
 
     test("Active", () => {
         // Setup vuex store
-        const options = storeStub;
-        storeStub.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
+        const options = new StoreOptionsStub();
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
             false;
-        storeStub.modules.medication.modules.statement.getters.medicationStatements = () => [
+        options.modules.medication.modules.statement.getters.medicationStatements = () => [
             {
                 prescriptionIdentifier: "",
                 dispensedDate: "",

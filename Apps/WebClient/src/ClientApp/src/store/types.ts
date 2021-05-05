@@ -27,7 +27,7 @@ export interface GatewayStoreOptions extends StoreOptions<RootState> {
         ): void;
     };
     getters: {
-        isMobile: (state: RootState) => void;
+        isMobile: (state: RootState) => boolean;
     };
     mutations: {
         setIsMobile(state: RootState, isMobile: boolean): void;

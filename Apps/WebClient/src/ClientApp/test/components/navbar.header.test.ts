@@ -1,10 +1,13 @@
+import "@/plugins/inversify.config";
+
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
 
 import HeaderComponent from "@/components/navmenu/navHeader.vue";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 describe("NavBar Header Component", () => {
@@ -15,43 +18,17 @@ describe("NavBar Header Component", () => {
     localVue.use(Vuex);
     const router = new VueRouter();
 
-    const customStore = new Vuex.Store({
-        modules: {
-            navbar: {
-                namespaced: true,
-                getters: {
-                    isSidebarOpen: () => {
-                        return true;
-                    },
-                    isHeaderShown: () => {
-                        return true;
-                    },
-                },
-            },
-            auth: {
-                namespaced: true,
-                getters: {
-                    oidcIsAuthenticated: () => {
-                        return false;
-                    },
-                    isValidIdentityProvider: () => {
-                        return true;
-                    },
-                },
-            },
-            user: {
-                namespaced: true,
-                getters: {
-                    userIsRegistered: () => {
-                        return true;
-                    },
-                    userIsActive: () => {
-                        return true;
-                    },
-                },
-            },
-        },
-    });
+    const options = new StoreOptionsStub();
+    options.modules.navbar.getters.isSidebarOpen = () => true;
+    options.modules.navbar.getters.isHeaderShown = () => true;
+
+    options.modules.auth.getters.oidcIsAuthenticated = () => false;
+    options.modules.auth.getters.isValidIdentityProvider = () => true;
+
+    options.modules.user.getters.userIsRegistered = () => true;
+    options.modules.user.getters.userIsActive = () => true;
+
+    let customStore = new Vuex.Store(options);
 
     const wrapper = shallowMount(HeaderComponent, {
         localVue,
@@ -59,6 +36,7 @@ describe("NavBar Header Component", () => {
         router,
         stubs: {
             "hg-icon": true,
+            "hg-button": true,
         },
     });
 

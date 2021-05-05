@@ -1,5 +1,6 @@
+import { stubbedPromise, voidMethod } from "@test/stubs/util";
+
 import Encounter from "@/models/encounter";
-import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import {
     EncounterActions,
@@ -9,13 +10,13 @@ import {
     EncounterState,
 } from "@/store/modules/encounter/types";
 
-var encounterState: EncounterState = {
+const encounterState: EncounterState = {
     patientEncounters: [],
     statusMessage: "",
     status: LoadStatus.NONE,
 };
 
-var encounterGetters: EncounterGetters = {
+const encounterGetters: EncounterGetters = {
     patientEncounters(): Encounter[] {
         return [];
     },
@@ -27,20 +28,18 @@ var encounterGetters: EncounterGetters = {
     },
 };
 
-var encounterActions: EncounterActions = {
-    retrieve(): Promise<RequestResult<Encounter[]>> {
-        return new Promise(() => {});
-    },
-    handleError(): void {},
+const encounterActions: EncounterActions = {
+    retrieve: stubbedPromise,
+    handleError: voidMethod,
 };
 
-var encounterMutations: EncounterMutations = {
-    setRequested(state: EncounterState): void {},
-    setPatientEncounters(): void {},
-    encounterError(): void {},
+const encounterMutations: EncounterMutations = {
+    setRequested: voidMethod,
+    setPatientEncounters: voidMethod,
+    encounterError: voidMethod,
 };
 
-var encounterStub: EncounterModule = {
+const encounterStub: EncounterModule = {
     namespaced: true,
     state: encounterState,
     getters: encounterGetters,

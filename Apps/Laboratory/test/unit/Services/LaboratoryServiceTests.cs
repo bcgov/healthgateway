@@ -108,10 +108,7 @@ namespace HealthGateway.LaboratoryTests
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
-            ILaboratoryService service = new LaboratoryService(
-                new Mock<ILogger<LaboratoryService>>().Object,
-                mockHttpContextAccessor.Object,
-                mockLaboratoryDelegateFactory.Object);
+            ILaboratoryService service = new LaboratoryService(mockLaboratoryDelegateFactory.Object);
             var actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
 
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
@@ -166,10 +163,7 @@ namespace HealthGateway.LaboratoryTests
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
-            ILaboratoryService service = new LaboratoryService(
-                new Mock<ILogger<LaboratoryService>>().Object,
-                mockHttpContextAccessor.Object,
-                mockLaboratoryDelegateFactory.Object);
+            ILaboratoryService service = new LaboratoryService(mockLaboratoryDelegateFactory.Object);
             return service;
         }
     }

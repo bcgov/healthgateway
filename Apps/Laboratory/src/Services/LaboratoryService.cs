@@ -29,23 +29,15 @@ namespace HealthGateway.Laboratory.Services
     /// <inheritdoc/>
     public class LaboratoryService : ILaboratoryService
     {
-        private readonly ILogger logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILaboratoryDelegate laboratoryDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="httpAccessor">The injected http context accessor provider.</param>
         /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
         public LaboratoryService(
-            ILogger<LaboratoryService> logger,
-            IHttpContextAccessor httpAccessor,
             ILaboratoryDelegateFactory laboratoryDelegateFactory)
         {
-            this.logger = logger;
-            this.httpContextAccessor = httpAccessor;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
         }
 
