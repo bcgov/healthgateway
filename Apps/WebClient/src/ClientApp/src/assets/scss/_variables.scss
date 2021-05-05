@@ -60,6 +60,17 @@ $hg-button-secondary-disabled: white;
 $hg-button-secondary-disabled-border: $hg-button-disabled;
 $hg-button-secondary-disabled-text: $hg-button-disabled;
 
+$hg-button-secondary-selected: #0092f1;
+$hg-button-secondary-selected-border: #0092f1;
+$hg-button-secondary-selected-text: white;
+$hg-button-secondary-selected-hover: #33a8fa;
+$hg-button-secondary-selected-hover-border: #33a8fa;
+$hg-button-secondary-selected-hover-text: white;
+$hg-button-secondary-selected-disabled: white;
+$hg-button-secondary-selected-disabled: $hg-button-disabled;
+$hg-button-secondary-selected-disabled-border: $hg-button-primary-disabled;
+$hg-button-secondary-selected-disabled-text: white;
+
 $hg-button-link: none;
 $hg-button-link-border: none;
 $hg-button-link-text: $hg-button-primary;

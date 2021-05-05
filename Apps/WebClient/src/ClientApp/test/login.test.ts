@@ -147,7 +147,7 @@ describe("Login view", () => {
         expect(wrapper.find(`#${keycloakProvider.id}Btn`).text()).toBe(
             keycloakProvider.name
         );
-        console.log(wrapper.html());
+
         expect(
             wrapper.find("#loginPicker").findAll("hg-button-stub").length
         ).toBe(3);
