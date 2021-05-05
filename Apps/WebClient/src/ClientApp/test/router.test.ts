@@ -1,10 +1,12 @@
+// eslint-disable-next-line
+import container from "@/plugins/inversify.container";
+
 import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import { Route } from "vue-router";
 
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.container";
 import router, { beforeEachGuard, ClientModule, UserState } from "@/router";
 import { ILogger, IStoreProvider } from "@/services/interfaces";
 import { WinstonLogger } from "@/services/winstonLogger";
