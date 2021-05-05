@@ -129,6 +129,27 @@ export default class HgButtonComponent extends Vue {
             text-decoration-color: $hg-button-secondary-hover-text;
             text-decoration-line: underline;
         }
+
+        &.selected {
+            background-color: $hg-button-secondary-selected;
+            color: $hg-button-secondary-selected-text;
+            border-color: $hg-button-secondary-selected-border;
+
+            &:disabled {
+                background: $hg-button-secondary-selected-disabled;
+                border-color: $hg-button-secondary-selected-disabled-border;
+                color: $hg-button-secondary-selected-disabled-text;
+            }
+
+            &:hover:not([disabled]),
+            &:active:not([disabled]) {
+                background: $hg-button-secondary-selected-hover;
+                border-color: $hg-button-secondary-selected-hover-border;
+                color: $hg-button-secondary-selected-hover-text;
+                text-decoration-color: $hg-button-secondary-selected-hover-text;
+                text-decoration-line: underline;
+            }
+        }
     }
 
     &.hg-link {
