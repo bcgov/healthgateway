@@ -49,7 +49,6 @@ namespace HealthGateway.LaboratoryTests
             var service = GetLabServiceForLabOrdersTests(Common.Constants.ResultType.Success);
             var actualResult = service.GetLaboratoryOrders(BearerToken, HdId, 0);
 
-            List<LaboratoryOrder>? resultLabOrders = actualResult!.Result!.ResourcePayload! as List<LaboratoryOrder>;
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
             var count = 0;
             foreach (LaboratoryModel model in actualResult.Result!.ResourcePayload!)
@@ -109,10 +108,7 @@ namespace HealthGateway.LaboratoryTests
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
-            ILaboratoryService service = new LaboratoryService(
-                new Mock<ILogger<LaboratoryService>>().Object,
-                mockHttpContextAccessor.Object,
-                mockLaboratoryDelegateFactory.Object);
+            ILaboratoryService service = new LaboratoryService(mockLaboratoryDelegateFactory.Object);
             var actualResult = service.GetLabReport(Guid.NewGuid(), string.Empty, BearerToken);
 
             Assert.True(actualResult.Result.ResultStatus == Common.Constants.ResultType.Success);
@@ -167,10 +163,7 @@ namespace HealthGateway.LaboratoryTests
             context.Request.Headers.Add("Authorization", "MockJWTHeader");
             mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
-            ILaboratoryService service = new LaboratoryService(
-                new Mock<ILogger<LaboratoryService>>().Object,
-                mockHttpContextAccessor.Object,
-                mockLaboratoryDelegateFactory.Object);
+            ILaboratoryService service = new LaboratoryService(mockLaboratoryDelegateFactory.Object);
             return service;
         }
     }

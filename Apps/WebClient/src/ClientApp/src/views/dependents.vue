@@ -1,4 +1,6 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -11,9 +13,11 @@ import type { WebClientConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IDependentService, ILogger } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+
+library.add(faUserPlus);
 
 @Component({
     components: {
@@ -91,19 +95,19 @@ export default class DependentsView extends Vue {
                                 <h1 id="Subject">Dependents</h1>
                             </b-col>
                             <b-col cols="5" align-self="end">
-                                <b-btn
+                                <hg-button
                                     data-testid="addNewDependentBtn"
-                                    variant="primary"
                                     class="float-right"
+                                    variant="secondary"
                                     @click="showModal()"
                                 >
-                                    <font-awesome-icon
+                                    <hg-icon
                                         icon="user-plus"
+                                        size="medium"
                                         class="mr-2"
-                                    >
-                                    </font-awesome-icon
-                                    >Add a new dependent</b-btn
-                                >
+                                    />
+                                    <span>Add a new dependent</span>
+                                </hg-button>
                             </b-col>
                         </b-row>
                         <hr />

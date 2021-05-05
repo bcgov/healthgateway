@@ -14,7 +14,6 @@ import ImmunizationHistoryReportComponent from "@/components/report/immunization
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
-import PageTitleComponent from "@/components/shared/pageTitle.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -25,7 +24,6 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 @Component({
     components: {
         LoadingComponent,
-        PageTitleComponent,
         MessageModalComponent,
         MedicationHistoryReportComponent,
         MSPVisitsReportComponent,
@@ -210,7 +208,7 @@ export default class ReportsView extends Vue {
         <div>
             <b-row>
                 <b-col class="col-12 col-md-10 col-lg-9 column-wrapper">
-                    <PageTitleComponent title="Export Records" />
+                    <page-title title="Export Records" />
                     <div class="my-3 px-3 py-4 form">
                         <b-row>
                             <b-col>
@@ -228,14 +226,14 @@ export default class ReportsView extends Vue {
                                 </b-form-select>
                             </b-col>
                             <b-col class="p-0 px-3" cols="auto">
-                                <b-button
+                                <hg-button
                                     v-b-toggle.advanced-panel
                                     variant="link"
                                     data-testid="advancedBtn"
                                 >
                                     Advanced
-                                </b-button>
-                                <b-button
+                                </hg-button>
+                                <hg-button
                                     variant="primary"
                                     data-testid="exportRecordBtn"
                                     class="mb-1 ml-2"
@@ -247,7 +245,7 @@ export default class ReportsView extends Vue {
                                     @click="showConfirmationModal"
                                 >
                                     Download PDF
-                                </b-button>
+                                </hg-button>
                             </b-col>
                         </b-row>
                         <b-row
@@ -345,26 +343,26 @@ export default class ReportsView extends Vue {
                             </b-row>
                             <b-row align-h="end" class="pt-4">
                                 <b-col cols="auto">
-                                    <b-button
+                                    <hg-button
                                         v-b-toggle.advanced-panel
-                                        variant="link"
+                                        variant="secondary"
                                         data-testid="clearBtn"
-                                        class="mb-1 mr-2 text-muted"
+                                        class="mb-1 mr-1"
                                         :disabled="isLoading"
                                         @click="cancelFilter"
                                     >
                                         Cancel
-                                    </b-button>
-                                    <b-button
+                                    </hg-button>
+                                    <hg-button
                                         v-b-toggle.advanced-panel
                                         variant="primary"
                                         data-testid="applyFilterBtn"
-                                        class="mb-1 ml-2"
+                                        class="mb-1 ml-1"
                                         :disabled="isLoading"
                                         @click="updateFilter"
                                     >
                                         Apply
-                                    </b-button>
+                                    </hg-button>
                                 </b-col>
                             </b-row>
                         </b-collapse>

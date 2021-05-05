@@ -1,19 +1,19 @@
 import { User as OidcUser } from "oidc-client";
 import Vue from "vue";
-import { MutationTree } from "vuex";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
-import { LoadStatus, UserState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile from "@/models/userProfile";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-export const mutations: MutationTree<UserState> = {
+import { UserMutation, UserState } from "./types";
+
+export const mutations: UserMutation = {
     setOidcUserData(state: UserState, oidcUser: OidcUser) {
         Vue.set(state.user, "hdid", oidcUser.profile.hdid);
         state.error = false;
@@ -21,6 +21,8 @@ export const mutations: MutationTree<UserState> = {
         state.status = LoadStatus.LOADED;
     },
     setProfileUserData(state: UserState, userProfile: UserProfile) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         Vue.set(
             state.user,
             "acceptedTermsOfService",
@@ -67,6 +69,7 @@ export const mutations: MutationTree<UserState> = {
         state.status = LoadStatus.LOADED;
     },
     setUserPreference(state: UserState, userPreference: UserPreference) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.debug(
             `setUserPreference: preference.name: ${JSON.stringify(
                 userPreference.preference

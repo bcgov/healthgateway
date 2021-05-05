@@ -1,5 +1,6 @@
 <script lang="ts">
-import { faEllipsisV, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -8,8 +9,10 @@ import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
 import type { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
+
+library.add(faEllipsisV);
 
 @Component
 export default class CommentComponent extends Vue {
@@ -33,10 +36,6 @@ export default class CommentComponent extends Vue {
     private logger!: ILogger;
     private isEditMode = false;
     private isLoading = false;
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
-    }
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -132,11 +131,11 @@ export default class CommentComponent extends Vue {
                             variant="link"
                         >
                             <template slot="button-content">
-                                <font-awesome-icon
+                                <hg-icon
+                                    icon="ellipsis-v"
+                                    size="small"
                                     class="comment-menu"
-                                    :icon="menuIcon"
-                                    size="1x"
-                                ></font-awesome-icon>
+                                />
                             </template>
                             <b-dropdown-item
                                 class="menuItem"

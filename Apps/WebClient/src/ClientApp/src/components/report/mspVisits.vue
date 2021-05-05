@@ -9,7 +9,7 @@ import Encounter from "@/models/encounter";
 import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
 
@@ -48,13 +48,11 @@ export default class MSPVisitsReportComponent extends Vue {
             const firstDate = new DateWrapper(a.encounterDate);
             const secondDate = new DateWrapper(b.encounterDate);
 
-            const value = firstDate.isAfter(secondDate)
+            return firstDate.isAfter(secondDate)
                 ? 1
                 : firstDate.isBefore(secondDate)
                 ? -1
                 : 0;
-
-            return value;
         });
 
         return records;

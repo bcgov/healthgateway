@@ -1,8 +1,6 @@
-import { ActionTree } from "vuex";
+import { NavbarActions } from "./types";
 
-import { NavbarState, RootState } from "@/models/storeState";
-
-export const actions: ActionTree<NavbarState, RootState> = {
+export const actions: NavbarActions = {
     toggleSidebar(context) {
         context.commit("toggleSidebar");
     },

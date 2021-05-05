@@ -53,6 +53,7 @@ export default class ContactUsView extends Vue {}
                             <b-col>
                                 <strong>
                                     <a
+                                        rel="noopener"
                                         href="https://www.healthlinkbc.ca/"
                                         target="_blank"
                                         >HealthLink BC</a
@@ -71,6 +72,7 @@ export default class ContactUsView extends Vue {}
                             <b-col>
                                 <strong>
                                     <a
+                                        rel="noopener"
                                         href="http://www.bccdc.ca/health-info/diseases-conditions/covid-19/testing/testing-information"
                                         target="_blank"
                                     >

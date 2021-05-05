@@ -11,7 +11,7 @@ import {
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IAuthenticationService,
     IHttpDelegate,

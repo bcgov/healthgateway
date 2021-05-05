@@ -1,9 +1,13 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import BannerError from "@/models/bannerError";
+
+library.add(faChevronDown, faChevronUp);
 
 @Component
 export default class ErrorCardComponent extends Vue {
@@ -24,27 +28,27 @@ export default class ErrorCardComponent extends Vue {
         :show="isShowing"
     >
         <h4>Whoops, something went wrong... Try refreshing the page</h4>
-        <b-btn
+        <hg-button
             v-b-toggle.errorDetails
             data-testid="errorDetailsBtn"
             variant="link"
             class="detailsButton"
         >
-            <span class="when-opened">
-                <font-awesome-icon
-                    icon="chevron-up"
-                    aria-hidden="true"
-                ></font-awesome-icon
-            ></span>
-            <span class="when-closed">
-                <font-awesome-icon
-                    icon="chevron-down"
-                    aria-hidden="true"
-                ></font-awesome-icon
-            ></span>
+            <hg-icon
+                icon="chevron-down"
+                size="medium"
+                aria-hidden="true"
+                class="when-closed mr-2"
+            />
             <span class="when-closed">View Details</span>
+            <hg-icon
+                icon="chevron-up"
+                size="medium"
+                aria-hidden="true"
+                class="when-opened mr-2"
+            />
             <span class="when-opened">Hide Details</span>
-        </b-btn>
+        </hg-button>
         <b-collapse id="errorDetails">
             <div v-for="(error, index) in errors" :key="index" class="py-2">
                 <h6>{{ error.title }} | {{ error.errorCode }}</h6>

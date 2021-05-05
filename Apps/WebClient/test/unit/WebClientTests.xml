@@ -230,11 +230,13 @@
             <summary>
             ValidateEmail - Happy Path.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldValidateEmailWithEmailNotFound">
             <summary>
             ValidateEmail - Email not found error.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Controllers.UserProfileControllerTests.ShouldUpdateUserSMSNumber">
             <summary>
@@ -520,16 +522,19 @@
             <summary>
             InsertUserProfile - Happy Path.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldInsertUserProfileWithClosedRegistration">
             <summary>
             InsertUserProfile - Closed Registration Error.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldQueueNotificationUpdate">
             <summary>
             CreateUserProfile - Happy Path with notification update.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Test.Services.UserProfileServiceTests.ShouldValidateAgeAsync">
             <summary>

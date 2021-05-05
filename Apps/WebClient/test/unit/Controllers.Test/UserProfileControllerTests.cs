@@ -79,13 +79,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public async Task ShouldCreateUserProfile()
         {
-            string hdid = "1234567890123456789012345678901234567890123456789012";
-            string token = "Fake Access Token";
-            string userId = "1001";
-
             UserProfile userProfile = new UserProfile
             {
-                HdId = hdid,
+                HdId = this.hdid,
                 AcceptedTermsOfService = true,
             };
 
@@ -100,7 +96,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = ResultType.Success,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
             userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<DateTime>())).ReturnsAsync(expected);
@@ -113,7 +109,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object);
-            IActionResult actualResult = await service.CreateUserProfile(hdid, createUserRequest).ConfigureAwait(true);
+            IActionResult actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
             Assert.True(((JsonResult)actualResult).Value?.IsDeepEqual(expected));
@@ -126,21 +122,11 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public async Task ShouldValidateAge()
         {
-            string hdid = "1234567890123456789012345678901234567890123456789012";
-            string token = "Fake Access Token";
-            string userId = "1001";
-
-            UserProfile userProfile = new UserProfile
-            {
-                HdId = hdid,
-                AcceptedTermsOfService = true,
-            };
-
             PrimitiveRequestResult<bool> expected = new PrimitiveRequestResult<bool>() { ResultStatus = ResultType.Success, ResourcePayload = true };
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(token, userId, hdid);
+            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new Mock<IUserProfileService>();
-            userProfileServiceMock.Setup(s => s.ValidateMinimumAge(hdid)).ReturnsAsync(expected);
+            userProfileServiceMock.Setup(s => s.ValidateMinimumAge(this.hdid)).ReturnsAsync(expected);
 
             UserProfileController controller = new UserProfileController(
                 new Mock<ILogger<UserProfileController>>().Object,
@@ -148,7 +134,7 @@ namespace HealthGateway.WebClient.Test.Controllers
                 httpContextAccessorMock.Object,
                 new Mock<IUserEmailService>().Object,
                 new Mock<IUserSMSService>().Object);
-            IActionResult actualResult = await controller.Validate(hdid).ConfigureAwait(true);
+            IActionResult actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
 
             Assert.IsType<JsonResult>(actualResult);
             Assert.Equal(expected, ((JsonResult)actualResult).Value);
@@ -318,8 +304,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         /// <summary>
         /// ValidateEmail - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async void ShouldValidateEmail()
+        public async Task ShouldValidateEmail()
         {
             PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
             {
@@ -347,8 +334,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         /// <summary>
         /// ValidateEmail - Email not found error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async void ShouldValidateEmailWithEmailNotFound()
+        public async Task ShouldValidateEmailWithEmailNotFound()
         {
             PrimitiveRequestResult<bool> primitiveRequestResult = new PrimitiveRequestResult<bool>()
             {

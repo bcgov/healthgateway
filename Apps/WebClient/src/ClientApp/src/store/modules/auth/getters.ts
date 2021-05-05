@@ -1,8 +1,6 @@
-import { GetterTree } from "vuex";
+import { AuthGetters, AuthState } from "./types";
 
-import { AuthState, RootState } from "@/models/storeState";
-
-export const getters: GetterTree<AuthState, RootState> = {
+export const getters: AuthGetters = {
     authenticationStatus(state: AuthState): string {
         return state.statusMessage;
     },

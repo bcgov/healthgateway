@@ -50,7 +50,7 @@
             </summary>
             <param name="bearerToken">The security token representing the authenticated user.</param>
             <param name="pageIndex">The page index to return.</param>
-            <returns>The PhsaResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
+            <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
         </member>
         <member name="T:HealthGateway.Immunization.Delegates.RestImmunizationDelegate">
             <summary>
@@ -356,7 +356,7 @@
             Gets or sets a value indicating whether the Load State is in the RefreshInProgress status.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Models.LoadStateModel.FromPHSAModel(HealthGateway.Common.Models.PHSA.PhsaLoadState)">
+        <member name="M:HealthGateway.Immunization.Models.LoadStateModel.FromPHSAModel(HealthGateway.Common.Models.PHSA.PHSALoadState)">
             <summary>
             Creates a Load State Model object from a PHSA model.
             </summary>
@@ -754,11 +754,10 @@
             The Immunization data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.ImmunizationService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Services.ImmunizationService},HealthGateway.Immunization.Delegates.IImmunizationDelegate)">
+        <member name="M:HealthGateway.Immunization.Services.ImmunizationService.#ctor(HealthGateway.Immunization.Delegates.IImmunizationDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Services.ImmunizationService"/> class.
             </summary>
-            <param name="logger">Injected Logger Provider.</param>
             <param name="immunizationDelegate">The factory to create immunization delegates.</param>
         </member>
         <member name="M:HealthGateway.Immunization.Services.ImmunizationService.GetImmunizations(System.String,System.Int32)">

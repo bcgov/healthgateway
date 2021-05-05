@@ -7,7 +7,7 @@ import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILogger,
@@ -34,6 +34,7 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
+                    this.logger.debug(`getProfile ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -41,7 +42,7 @@ export class RestUserProfileService implements IUserProfileService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    this.logger.error(`getProfile ${this.FETCH_ERROR}: ${err}`);
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -62,6 +63,7 @@ export class RestUserProfileService implements IUserProfileService {
                     createRequest
                 )
                 .then((requestResult) => {
+                    this.logger.debug(`createProfile ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -69,7 +71,9 @@ export class RestUserProfileService implements IUserProfileService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    this.logger.error(
+                        `createProfile ${this.FETCH_ERROR}: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -87,6 +91,7 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/${hdid}`
                 )
                 .then((requestResult) => {
+                    this.logger.debug(`closeAccount ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -94,7 +99,9 @@ export class RestUserProfileService implements IUserProfileService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    this.logger.error(
+                        `closeAccount ${this.FETCH_ERROR}: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -112,6 +119,7 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/${hdid}/recover`
                 )
                 .then((requestResult) => {
+                    this.logger.debug(`recoverAccount ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -119,7 +127,9 @@ export class RestUserProfileService implements IUserProfileService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    this.logger.error(
+                        `recoverAccount ${this.FETCH_ERROR}: ${err}`
+                    );
                     reject(err);
                 });
         });
@@ -132,6 +142,7 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/${hdid}/Validate`
                 )
                 .then((requestResult) => {
+                    this.logger.debug(`validateAge ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -139,7 +150,9 @@ export class RestUserProfileService implements IUserProfileService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    this.logger.error(
+                        `validateAge ${this.FETCH_ERROR}: ${err}`
+                    );
                     reject(err);
                 });
         });
@@ -152,6 +165,7 @@ export class RestUserProfileService implements IUserProfileService {
                     `${this.USER_PROFILE_BASE_URI}/termsofservice`
                 )
                 .then((requestResult) => {
+                    this.logger.debug(`getTermsOfService ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -159,7 +173,9 @@ export class RestUserProfileService implements IUserProfileService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    this.logger.error(
+                        `getTermsOfService ${this.FETCH_ERROR}: ${err}`
+                    );
                     reject(err);
                 });
         });
@@ -299,7 +315,9 @@ export class RestUserProfileService implements IUserProfileService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(`${this.FETCH_ERROR}: ${err}`);
+                    this.logger.error(
+                        `createUserPreference ${this.FETCH_ERROR}: ${err}`
+                    );
                     reject(
                         ErrorTranslator.internalNetworkError(
                             err,

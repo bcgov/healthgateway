@@ -20,6 +20,7 @@ export class RestEmailAdminService implements IEmailAdminService {
             this.http
                 .get<RequestResult<Email[]>>(`${this.BASE_URI}`)
                 .then((requestResult) => {
+                    console.debug(`getEmails ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -44,6 +45,7 @@ export class RestEmailAdminService implements IEmailAdminService {
                     headers
                 )
                 .then((requestResult) => {
+                    console.debug(`resendEmails ${requestResult}`);
                     return RequestResultUtil.handleResult(
                         requestResult,
                         resolve,

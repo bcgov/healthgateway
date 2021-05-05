@@ -1,8 +1,6 @@
-import { ActionTree } from "vuex";
+import { IdleActions } from "./types";
 
-import { IdleState, RootState } from "@/models/storeState";
-
-export const actions: ActionTree<IdleState, RootState> = {
+export const actions: IdleActions = {
     setVisibleState(context, isVisible: boolean) {
         context.commit("setVisibleState", isVisible);
     },

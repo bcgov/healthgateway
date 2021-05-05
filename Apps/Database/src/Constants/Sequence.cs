@@ -15,9 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Constants
 {
-    #pragma warning disable CA1707 // The name of an identifier contains the underscore (_) character.
-    #pragma warning disable SA1310 // A field name in C# contains an underscore.
-
     /// <summary>
     /// That static constant used for the Pharmanet Trace DB sequence.
     /// </summary>
@@ -26,8 +23,6 @@ namespace HealthGateway.Database.Constants
         /// <summary>
         /// The DB name for the Pharmanet Trace ID Sequence.
         /// </summary>
-        public const string PHARMANET_TRACE = @"gateway.trace_seq";
+        public const string PharmanetTrace = @"gateway.trace_seq";
     }
-    #pragma warning restore SA1310
-    #pragma warning restore CA1707
 }

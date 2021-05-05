@@ -35,8 +35,6 @@ namespace HealthGateway.WebClient.Test.Controllers
     public class NoteControllerTests
     {
         private const string Hdid = "mockedHdId";
-        private const string Token = "Access Token Mock";
-        private const string UserId = "User ID Mock";
 
         /// <summary>
         /// CreateNote - Happy path scenario.
@@ -55,11 +53,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<INoteService> noteServiceMock = new Mock<INoteService>();
             noteServiceMock.Setup(s => s.CreateNote(It.IsAny<UserNote>())).Returns(expectedResult);
 
-            NoteController controller = new NoteController(noteServiceMock.Object, httpContextAccessorMock.Object);
+            NoteController controller = new NoteController(noteServiceMock.Object);
             var actualResult = controller.CreateNote(Hdid, expectedResult.ResourcePayload);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
@@ -80,11 +77,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<INoteService> noteServiceMock = new Mock<INoteService>();
             noteServiceMock.Setup(s => s.UpdateNote(It.IsAny<UserNote>())).Returns(expectedResult);
 
-            NoteController controller = new NoteController(noteServiceMock.Object, httpContextAccessorMock.Object);
+            NoteController controller = new NoteController(noteServiceMock.Object);
             var actualResult = controller.UpdateNote(Hdid, expectedResult.ResourcePayload);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
@@ -105,11 +101,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<INoteService> noteServiceMock = new Mock<INoteService>();
             noteServiceMock.Setup(s => s.DeleteNote(It.IsAny<UserNote>())).Returns(expectedResult);
 
-            NoteController controller = new NoteController(noteServiceMock.Object, httpContextAccessorMock.Object);
+            NoteController controller = new NoteController(noteServiceMock.Object);
             var actualResult = controller.DeleteNote(expectedResult.ResourcePayload);
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
         }
@@ -136,58 +131,13 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResourcePayload = mockedNotes,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<INoteService> noteServiceMock = new Mock<INoteService>();
             noteServiceMock.Setup(s => s.GetNotes(It.IsAny<string>(), 0, 500)).Returns(expectedResult);
 
-            NoteController service = new NoteController(noteServiceMock.Object, httpContextAccessorMock.Object);
+            NoteController service = new NoteController(noteServiceMock.Object);
             var actualResult = service.GetAll(Hdid);
             RequestResult<IEnumerable<UserNote>> actualRequestResult = (RequestResult<IEnumerable<UserNote>>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
-        }
-
-        private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
-        {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            headerDictionary.Add("referer", "http://localhost/");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-
-            List<Claim> claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim("hdid", hdid),
-                new Claim("auth_time", "123"),
-                new Claim("access_token", token),
-            };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
-
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties?.StoreTokens(new[]
-            {
-                new AuthenticationToken
-                {
-                    Name = "access_token",
-                    Value = token,
-                },
-            });
-            authenticationMock
-                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
-                .ReturnsAsync(authResult);
-
-            httpContextAccessorMock
-                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
-                .Returns(authenticationMock.Object);
-            return httpContextAccessorMock;
         }
     }
 }

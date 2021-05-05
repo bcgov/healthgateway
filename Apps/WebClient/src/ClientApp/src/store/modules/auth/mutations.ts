@@ -1,16 +1,15 @@
 import { User as OidcUser } from "oidc-client";
 import Vue from "vue";
-import { MutationTree } from "vuex";
 
-import { AuthState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+import { AuthMutations, AuthState } from "./types";
 
-export const mutations: MutationTree<AuthState> = {
+export const mutations: AuthMutations = {
     setOidcAuth(state: AuthState, user: OidcUser) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.verbose("setOidcAuth");
         Vue.set(state.authentication, "accessToken", user.access_token);
         Vue.set(state.authentication, "scopes", user.scopes);
@@ -25,6 +24,7 @@ export const mutations: MutationTree<AuthState> = {
         state.error = null;
     },
     unsetOidcAuth(state: AuthState) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.verbose("unsetOidcAuth");
         Vue.set(state.authentication, "accessToken", undefined);
         Vue.set(state.authentication, "scopes", undefined);
@@ -33,10 +33,12 @@ export const mutations: MutationTree<AuthState> = {
         state.isAuthenticated = false;
     },
     setOidcAuthIsChecked(state: AuthState) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.verbose("setOidcAuthIsChecked");
         Vue.set(state.authentication, "isChecked", true);
     },
     setOidcError(state: AuthState, error: unknown) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.verbose("setOidcError...");
         state.error = error;
     },

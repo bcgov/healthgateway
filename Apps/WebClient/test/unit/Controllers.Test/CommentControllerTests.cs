@@ -36,8 +36,6 @@ namespace HealthGateway.WebClient.Test.Controllers
     public class CommentControllerTests
     {
         private const string Hdid = "mockedHdId";
-        private const string Token = "Access Token Mock";
-        private const string UserId = "User ID Mock";
 
         /// <summary>
         /// Successfully Create Comment - Happy Path scenario.
@@ -54,11 +52,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
             commentServiceMock.Setup(s => s.Add(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
 
             Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
@@ -76,11 +73,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
             commentServiceMock.Setup(s => s.Add(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Create(Hdid, expectedResult.ResourcePayload);
             Assert.IsType<BadRequestResult>(actualResult);
         }
@@ -101,11 +97,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
             commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
             RequestResult<UserComment> actualRequestResult = (RequestResult<UserComment>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
@@ -127,11 +122,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Error,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
             commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
             Assert.IsType<ForbidResult>(actualResult);
@@ -149,11 +143,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Error,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
             commentServiceMock.Setup(s => s.Update(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Update(Hdid, expectedResult.ResourcePayload);
 
             Assert.IsType<BadRequestResult>(actualResult);
@@ -175,11 +168,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
             commentServiceMock.Setup(s => s.Delete(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
             RequestResult<UserComment> actualRequestResult = (RequestResult<UserComment>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
@@ -201,11 +193,10 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Error,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
             commentServiceMock.Setup(s => s.Delete(expectedResult.ResourcePayload)).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.Delete(Hdid, expectedResult.ResourcePayload);
 
             Assert.IsType<ForbidResult>(actualResult);
@@ -233,58 +224,13 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResourcePayload = mockedComments,
             };
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(Token, UserId, Hdid);
             Mock<ICommentService> commentServiceMock = new Mock<ICommentService>();
             commentServiceMock.Setup(s => s.GetEntryComments(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
-            CommentController service = new CommentController(commentServiceMock.Object, httpContextAccessorMock.Object);
+            CommentController service = new CommentController(commentServiceMock.Object);
             var actualResult = service.GetAllForEntry(Hdid, "parentEntryIdMock");
             RequestResult<IEnumerable<UserComment>> actualRequestResult = (RequestResult<IEnumerable<UserComment>>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
-        }
-
-        private static Mock<IHttpContextAccessor> CreateValidHttpContext(string token, string userId, string hdid)
-        {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", token);
-            headerDictionary.Add("referer", "http://localhost/");
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-
-            List<Claim> claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim("hdid", hdid),
-                new Claim("auth_time", "123"),
-                new Claim("access_token", token),
-            };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
-
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties?.StoreTokens(new[]
-            {
-                new AuthenticationToken
-                {
-                    Name = "access_token",
-                    Value = token,
-                },
-            });
-            authenticationMock
-                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
-                .ReturnsAsync(authResult);
-
-            httpContextAccessorMock
-                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
-                .Returns(authenticationMock.Object);
-            return httpContextAccessorMock;
         }
     }
 }

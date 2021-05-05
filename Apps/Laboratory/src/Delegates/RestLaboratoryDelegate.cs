@@ -42,7 +42,6 @@ namespace HealthGateway.Laboratory.Delegates
 
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-        private readonly IConfiguration configuration;
         private readonly LaboratoryConfig labConfig;
 
         /// <summary>
@@ -58,9 +57,8 @@ namespace HealthGateway.Laboratory.Delegates
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
-            this.configuration = configuration;
             this.labConfig = new LaboratoryConfig();
-            this.configuration.Bind(LabConfigSectionKey, this.labConfig);
+            configuration.Bind(LabConfigSectionKey, this.labConfig);
         }
 
         private static ActivitySource Source { get; } = new ActivitySource(nameof(RestLaboratoryDelegate));
@@ -103,7 +101,7 @@ namespace HealthGateway.Laboratory.Delegates
                                 WriteIndented = true,
                             };
                             this.logger.LogTrace($"Response payload: {payload}");
-                            PhsaResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PhsaResult<List<LaboratoryOrder>>>(payload, options);
+                            PHSAResult<List<LaboratoryOrder>>? phsaResult = JsonSerializer.Deserialize<PHSAResult<List<LaboratoryOrder>>>(payload, options);
                             if (phsaResult != null && phsaResult.Result != null)
                             {
                                 retVal.ResultStatus = Common.Constants.ResultType.Success;

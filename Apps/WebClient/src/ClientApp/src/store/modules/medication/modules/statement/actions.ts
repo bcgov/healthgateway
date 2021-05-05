@@ -1,28 +1,23 @@
-import { ActionTree } from "vuex";
-
 import { ResultType } from "@/constants/resulttype";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult, { ResultError } from "@/models/requestResult";
-import {
-    LoadStatus,
-    MedicationStatementState,
-    RootState,
-} from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger, IMedicationService } from "@/services/interfaces";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+import { MedicationStatementActions } from "./types";
 
-const medicationService: IMedicationService = container.get<IMedicationService>(
-    SERVICE_IDENTIFIER.MedicationService
-);
-
-export const actions: ActionTree<MedicationStatementState, RootState> = {
+export const actions: MedicationStatementActions = {
     retrieveMedicationStatements(
         context,
         params: { hdid: string; protectiveWord?: string }
     ): Promise<RequestResult<MedicationStatementHistory[]>> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const medicationService: IMedicationService = container.get<IMedicationService>(
+            SERVICE_IDENTIFIER.MedicationService
+        );
+
         return new Promise((resolve, reject) => {
             const medicationStatements: MedicationStatementHistory[] =
                 context.getters.medicationStatements;
@@ -71,6 +66,8 @@ export const actions: ActionTree<MedicationStatementState, RootState> = {
         });
     },
     handleStatementError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit("medicationStatementError", error);
 

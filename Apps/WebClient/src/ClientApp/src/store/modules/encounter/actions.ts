@@ -1,24 +1,23 @@
-import { ActionTree } from "vuex";
-
 import { ResultType } from "@/constants/resulttype";
 import Encounter from "@/models/encounter";
 import RequestResult, { ResultError } from "@/models/requestResult";
-import { EncounterState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IEncounterService, ILogger } from "@/services/interfaces";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+import { EncounterActions } from "./types";
 
-const encounterService: IEncounterService = container.get<IEncounterService>(
-    SERVICE_IDENTIFIER.EncounterService
-);
-
-export const actions: ActionTree<EncounterState, RootState> = {
+export const actions: EncounterActions = {
     retrieve(
         context,
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const encounterService: IEncounterService = container.get<IEncounterService>(
+            SERVICE_IDENTIFIER.EncounterService
+        );
+
         return new Promise((resolve, reject) => {
             const patientEncounters: Encounter[] =
                 context.getters.patientEncounters;
@@ -56,6 +55,8 @@ export const actions: ActionTree<EncounterState, RootState> = {
         });
     },
     handleError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit("encounterError", error);
         context.dispatch(

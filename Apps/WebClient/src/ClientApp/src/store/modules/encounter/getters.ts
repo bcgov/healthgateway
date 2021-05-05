@@ -1,9 +1,9 @@
-import { GetterTree } from "vuex";
-
 import Encounter from "@/models/encounter";
-import { EncounterState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const getters: GetterTree<EncounterState, RootState> = {
+import { EncounterGetters, EncounterState } from "./types";
+
+export const getters: EncounterGetters = {
     patientEncounters(state: EncounterState): Encounter[] {
         return state.patientEncounters;
     },

@@ -30,7 +30,6 @@ namespace Healthgateway.JobScheduler.Tasks
     /// </summary>
     public class SendValidatedUsersToPHSA : IOneTimeTask
     {
-        private readonly IConfiguration configuration;
         private readonly ILogger<SendValidatedUsersToPHSA> logger;
         private readonly GatewayDbContext dbContext;
         private readonly INotificationSettingsService notificationSettingsService;
@@ -38,17 +37,14 @@ namespace Healthgateway.JobScheduler.Tasks
         /// <summary>
         /// Initializes a new instance of the <see cref="SendValidatedUsersToPHSA"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
         /// <param name="dbContext">The db context to use.</param>
         /// <param name="notificationSettingsService">The notification settings service.</param>
         public SendValidatedUsersToPHSA(
-                IConfiguration configuration,
                 ILogger<SendValidatedUsersToPHSA> logger,
                 GatewayDbContext dbContext,
                 INotificationSettingsService notificationSettingsService)
         {
-            this.configuration = configuration;
             this.logger = logger;
             this.dbContext = dbContext;
             this.notificationSettingsService = notificationSettingsService;

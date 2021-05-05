@@ -37,7 +37,6 @@ namespace HealthGateway.Admin.Services
     {
         private readonly ILogger logger;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IConfiguration configuration;
         private readonly string[] enabledRoles;
 
         /// <summary>
@@ -50,7 +49,6 @@ namespace HealthGateway.Admin.Services
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
-            this.configuration = configuration;
             this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>();
         }
 

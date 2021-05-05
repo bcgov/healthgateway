@@ -1,12 +1,11 @@
-import { Module } from "vuex";
-
-import { LaboratoryState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { LaboratoryModule, LaboratoryState } from "./types";
 
-export const state: LaboratoryState = {
+const state: LaboratoryState = {
     statusMessage: "",
     laboratoryOrders: [],
     error: undefined,
@@ -15,7 +14,7 @@ export const state: LaboratoryState = {
 
 const namespaced = true;
 
-export const laboratory: Module<LaboratoryState, RootState> = {
+export const laboratory: LaboratoryModule = {
     namespaced,
     state,
     getters,

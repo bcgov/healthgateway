@@ -9,23 +9,17 @@
             The Encounter controller.
             </summary>
         </member>
-        <member name="F:HealthGateway.Encounter.Controllers.EncounterController.httpContextAccessor">
-            <summary>
-            Gets or sets the http context accessor.
-            </summary>
-        </member>
         <member name="F:HealthGateway.Encounter.Controllers.EncounterController.service">
             <summary>
             Gets or sets the Encounter data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Encounter.Controllers.EncounterController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Controllers.EncounterController},HealthGateway.Encounter.Services.IEncounterService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:HealthGateway.Encounter.Controllers.EncounterController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Encounter.Controllers.EncounterController},HealthGateway.Encounter.Services.IEncounterService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Encounter.Controllers.EncounterController"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="service">The Encounter data service.</param>
-            <param name="httpContextAccessor">The Http Context accessor.</param>
         </member>
         <member name="M:HealthGateway.Encounter.Controllers.EncounterController.GetEncounters(System.String)">
             <summary>
@@ -43,7 +37,7 @@
             Interface to retrieve MSP Visit History.
             </summary>
         </member>
-        <member name="M:HealthGateway.Encounter.Delegates.IMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String)">
+        <member name="M:HealthGateway.Encounter.Delegates.IMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String)">
             <summary>
             Returns a set of MSP Visits.
             </summary>
@@ -65,7 +59,7 @@
             <param name="httpClientService">The injected http client service.</param>
             <param name="configuration">The injected configuration provider.</param>
         </member>
-        <member name="M:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String)">
+        <member name="M:HealthGateway.Encounter.Delegates.RestMSPVisitDelegate.GetMSPVisitHistoryAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Encounter.Models.Claim">
@@ -234,7 +228,7 @@
         </member>
         <member name="P:HealthGateway.Encounter.Models.ODR.MSPVisitHistory.Query">
             <summary>
-            Gets or sets the OdrHistoryQuery for the MSPVisitHistory integration.
+            Gets or sets the ODRHistoryQuery for the MSPVisitHistory integration.
             </summary>
         </member>
         <member name="P:HealthGateway.Encounter.Models.ODR.MSPVisitHistory.Response">

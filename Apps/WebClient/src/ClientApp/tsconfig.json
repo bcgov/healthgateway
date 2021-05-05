@@ -3,6 +3,7 @@
         "target": "es6",
         "module": "esnext",
         "strict": true,
+        "noImplicitThis": true,
         "importHelpers": true,
         "moduleResolution": "node",
         "experimentalDecorators": true,
@@ -15,7 +16,8 @@
         "typeRoots": ["node_modules/@types", "src/@types"],
         "emitDecoratorMetadata": true,
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/*"],
+            "@test/*": ["test/*"]
         },
         "lib": ["esnext", "dom", "dom.iterable", "scripthost", "es2018.promise"]
     },

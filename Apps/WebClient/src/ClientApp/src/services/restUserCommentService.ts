@@ -7,7 +7,7 @@ import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import type { UserComment } from "@/models/userComment";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILogger,
@@ -54,7 +54,7 @@ export class RestUserCommentService implements IUserCommentService {
                     return resolve(entryComments);
                 })
                 .catch((err) => {
-                    this.logger.error(err);
+                    this.logger.error(`getCommentsForEntry error: ${err}`);
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -87,7 +87,7 @@ export class RestUserCommentService implements IUserCommentService {
                     return resolve(userComments);
                 })
                 .catch((err) => {
-                    this.logger.error(err);
+                    this.logger.error(`getCommentsForProfile error: ${err}`);
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -123,7 +123,7 @@ export class RestUserCommentService implements IUserCommentService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(err);
+                    this.logger.error(`createComment error: ${err}`);
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -152,7 +152,7 @@ export class RestUserCommentService implements IUserCommentService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(err);
+                    this.logger.error(`updateComment error: ${err}`);
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,
@@ -170,15 +170,15 @@ export class RestUserCommentService implements IUserCommentService {
                     `${this.USER_COMMENT_BASE_URI}/UserProfile/${hdid}/Comment`,
                     comment
                 )
-                .then((requestResult) => {
-                    return RequestResultUtil.handleResult(
+                .then((requestResult) =>
+                    RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
                         reject
-                    );
-                })
+                    )
+                )
                 .catch((err) => {
-                    this.logger.error(err);
+                    this.logger.error(`deleteComment error: ${err}`);
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,

@@ -32,7 +32,6 @@ namespace HealthGateway.Encounter
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -42,7 +41,6 @@ namespace HealthGateway.Encounter
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
-            this.configuration = configuration;
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { faComment as farComment } from "@fortawesome/free-regular-svg-icons";
+import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
@@ -10,7 +11,8 @@ import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timelineEntry";
 
 import CommentSectionComponent from "./commentSection.vue";
-library.add(faComment);
+
+library.add(farComment, faPaperclip);
 
 @Component({
     components: {
@@ -96,10 +98,7 @@ export default class EntrycardTimelineComponent extends Vue {
             >
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
-                        <font-awesome-icon
-                            :icon="entryIcon"
-                            size="lg"
-                        ></font-awesome-icon>
+                        <hg-icon :icon="entryIcon" size="large" fixed-width />
                     </div>
                 </b-col>
                 <b-col class="entryTitleWrapper">
@@ -133,14 +132,16 @@ export default class EntrycardTimelineComponent extends Vue {
                                 >{{ commentCount }}</span
                             >
                             <span v-if="commentCount > 0">
-                                <font-awesome-icon
+                                <hg-icon
                                     :icon="['far', 'comment']"
+                                    size="small"
                                     data-testid="commentIcon"
                                 />
                             </span>
                             <span v-if="hasAttachment" class="ml-1">
-                                <font-awesome-icon
-                                    :icon="['fa', 'paperclip']"
+                                <hg-icon
+                                    size="small"
+                                    icon="paperclip"
                                     data-testid="attachmentIcon"
                                 />
                             </span>
@@ -229,7 +230,6 @@ div[class*=" row"] {
     height: 60px;
     width: 60px;
     padding-top: 17px;
-    font-size: 1.2em;
 }
 
 .detailsButton {

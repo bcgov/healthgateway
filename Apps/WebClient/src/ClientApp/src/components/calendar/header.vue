@@ -1,4 +1,9 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+    faChevronLeft,
+    faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { Getter } from "vuex-class";
@@ -7,6 +12,8 @@ import MonthYearPickerComponent from "@/components/monthYearPicker.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 
 import CalendarBody from "./body.vue";
+
+library.add(faChevronLeft, faChevronRight);
 
 @Component({
     components: {
@@ -94,15 +101,15 @@ export default class CalendarComponent extends Vue {
 <template>
     <b-row class="calendar-header">
         <b-col cols="col-sm-auto">
-            <b-btn
+            <hg-button
                 v-show="hasAvailableMonths"
-                variant="light"
+                variant="secondary"
                 :disabled="monthIndex == 0"
                 class="arrow-icon left-button px-2 m-0"
                 @click.stop="previousMonth"
             >
-                <font-awesome-icon icon="chevron-left" />
-            </b-btn>
+                <hg-icon icon="chevron-left" size="medium" />
+            </hg-button>
         </b-col>
         <b-col cols="col-sm-auto">
             <MonthYearPickerComponent
@@ -113,48 +120,35 @@ export default class CalendarComponent extends Vue {
             />
         </b-col>
         <b-col cols="col-sm-auto">
-            <b-btn
+            <hg-button
                 v-show="hasAvailableMonths"
-                variant="light"
+                variant="secondary"
                 :disabled="monthIndex == availableMonths.length - 1"
                 class="arrow-icon right-button px-2 m-0"
                 @click.stop="nextMonth"
             >
-                <font-awesome-icon icon="chevron-right" />
-            </b-btn>
+                <hg-icon icon="chevron-right" size="medium" />
+            </hg-button>
         </b-col>
     </b-row>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.row {
-    margin: 0px;
+
+div[class^="col"],
+div[class*=" col"] {
     padding: 0px;
+    margin: 0px;
 }
 
-.col {
-    margin: 0px;
+div[class^="row"],
+div[class*=" row"] {
     padding: 0px;
+    margin: 0px;
 }
 
 .calendar-header {
-    .btn-outline-primary {
-        font-size: 2em;
-        background-color: white;
-    }
-    .btn-outline-primary:focus {
-        color: $primary;
-        background-color: white;
-    }
-    .btn-outline-primary:hover {
-        color: white;
-        background-color: $primary;
-    }
-    .btn-outline-primary:active {
-        color: white;
-    }
-
     .arrow-icon {
         font-size: 1em;
     }
@@ -164,6 +158,7 @@ export default class CalendarComponent extends Vue {
     }
     .right-button {
         border-radius: 0px 5px 5px 0px;
+        border-left: 0px;
     }
 }
 </style>

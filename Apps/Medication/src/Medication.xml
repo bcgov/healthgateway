@@ -127,7 +127,7 @@
             Interface to retrieve Medication Statements.
             </summary>
         </member>
-        <member name="M:HealthGateway.Medication.Delegates.IMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String,System.String)">
+        <member name="M:HealthGateway.Medication.Delegates.IMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String,System.String)">
             <summary>
             Returns a set of Medication Statements.
             </summary>
@@ -183,7 +183,7 @@
             <param name="genericCacheDelegate">The delegate responsible for caching.</param>
             <param name="hashDelegate">The delegate responsible for hashing.</param>
         </member>
-        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.OdrHistoryQuery,System.String,System.String,System.String)">
+        <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.GetMedicationStatementsAsync(HealthGateway.Common.Models.ODR.ODRHistoryQuery,System.String,System.String,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.Medication.Delegates.RestMedStatementDelegate.SetProtectiveWord(System.String,System.String,System.String,System.String,System.String)">
@@ -891,11 +891,10 @@
             The Medication data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Medication.Services.MedicationRequestService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Medication.Services.MedicationRequestService},HealthGateway.Common.Services.IPatientService,HealthGateway.Medication.Delegates.IMedicationRequestDelegate)">
+        <member name="M:HealthGateway.Medication.Services.MedicationRequestService.#ctor(HealthGateway.Common.Services.IPatientService,HealthGateway.Medication.Delegates.IMedicationRequestDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Medication.Services.MedicationRequestService"/> class.
             </summary>
-            <param name="logger">Injected Logger Provider.</param>
             <param name="patientService">The injected patient registry provider.</param>
             <param name="medicationRequestDelegate">Injected medication statement delegate.</param>
         </member>

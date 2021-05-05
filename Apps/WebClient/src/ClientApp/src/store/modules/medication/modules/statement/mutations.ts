@@ -1,12 +1,15 @@
-import { MutationTree } from "vuex";
-
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import { LoadStatus, MedicationStatementState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const mutations: MutationTree<MedicationStatementState> = {
+import {
+    MedicationStatementMutations,
+    MedicationStatementState,
+} from "./types";
+
+export const mutations: MedicationStatementMutations = {
     setMedicationStatementRequested(state: MedicationStatementState) {
         state.status = LoadStatus.REQUESTED;
     },

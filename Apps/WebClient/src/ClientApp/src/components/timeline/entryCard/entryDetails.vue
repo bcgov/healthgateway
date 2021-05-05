@@ -1,14 +1,12 @@
 <script lang="ts">
-import {
-    faLongArrowAltLeft,
-    IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import EventBus, { EventMessageName } from "@/eventbus";
-import { Operation } from "@/models/storeState";
+import { Operation } from "@/models/storeOperations";
 import TimelineEntry, { EntryType } from "@/models/timelineEntry";
 import User from "@/models/user";
 
@@ -18,6 +16,8 @@ import LaboratoryTimelineComponent from "./laboratory.vue";
 import MedicationTimelineComponent from "./medication.vue";
 import MedicationRequestTimelineComponent from "./medicationRequest.vue";
 import NoteTimelineComponent from "./note.vue";
+
+library.add(faArrowLeft);
 
 @Component({
     components: {
@@ -47,27 +47,25 @@ export default class EntryDetailsComponent extends Vue {
 
     private isVisible = false;
 
-    private get backButtonIcon(): IconDefinition {
-        return faLongArrowAltLeft;
-    }
-
     private get modalTitle(): string {
         return "";
     }
 
     @Watch("isMobile")
     private onIsMobile() {
-        if (!this.isMobile) {
+        if (this.isVisible && !this.isMobile) {
             this.handleClose();
         }
     }
 
     @Watch("lastNoteOperation")
     private onLastNoteOperation() {
-        if (this.lastNoteOperation !== null && this.entry !== null) {
-            if (this.lastNoteOperation.id === this.entry.id) {
-                this.handleClose();
-            }
+        if (
+            this.lastNoteOperation !== null &&
+            this.entry !== null &&
+            this.lastNoteOperation.id === this.entry.id
+        ) {
+            this.handleClose();
         }
     }
     private created() {
@@ -152,13 +150,10 @@ export default class EntryDetailsComponent extends Vue {
                         data-testid="backBtn"
                         variant="link"
                         size="sm"
-                        class="back-button-icon"
+                        class="back-button-icon mt-2 p-2"
                         @click="handleClose"
                     >
-                        <font-awesome-icon
-                            :icon="backButtonIcon"
-                            size="lg"
-                        ></font-awesome-icon>
+                        <hg-icon icon="arrow-left" size="medium" />
                     </b-button>
                 </b-col>
                 <b-col>
@@ -193,24 +188,8 @@ export default class EntryDetailsComponent extends Vue {
     font-size: 0.8rem;
 }
 
-.icon,
-.back-button-icon {
-    text-align: center;
-    border-radius: 50%;
-    height: 60px;
-    width: 60px;
-    padding-top: 17px;
-    font-size: 1.2em;
-}
-
 .back-button-icon {
     color: grey;
-    background-color: white;
-}
-
-.icon {
-    color: white;
-    background-color: $primary;
 }
 </style>
 

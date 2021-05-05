@@ -65,6 +65,8 @@ namespace HealthGateway.CommonTests.Utils
                 JsonClaimConverter jsonClaimConverter = new JsonClaimConverter();
                 jsonClaimConverter.WriteJson(writer, claim, jsonSerializer);
             }
+
+            Assert.NotEmpty(sb.ToString());
         }
 
         /// <summary>

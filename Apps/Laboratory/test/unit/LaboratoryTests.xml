@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LaboratoryTests</name>
+    </assembly>
+    <members>
+        <member name="T:HealthGateway.LaboratoryTests.LaboratoryControllerTests">
+            <summary>
+            Unit Tests for LabController.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryControllerTests.GetLabOrders">
+            <summary>
+            Test for GetLabOrders.
+            </summary>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryControllerTests.GetLabOrderError">
+            <summary>
+            Test for GetLabOrderError.
+            </summary>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryControllerTests.GetLabReport">
+            <summary>
+            Test for GetLabReport.
+            </summary>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryControllerTests.GetLabReportError">
+            <summary>
+            Test for GetLabReportError.
+            </summary>
+            <returns>Task.</returns>
+        </member>
+        <member name="T:HealthGateway.LaboratoryTests.LaboratoryDelegateTests">
+            <summary>
+            Unit Tests for LaboratoryDelegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.LaboratoryTests.LaboratoryDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.ValidateGetLabOrders200">
+            <summary>
+            ValidateGetLabOrders200.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.ValidateGetLabOrders200JsonError">
+            <summary>
+            ValidateGetLabOrders200JsonError.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.ValidateGetLabOrders204">
+            <summary>
+            ValidateGetLabOrders204.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.ValidateGetLabOrders403">
+            <summary>
+            ValidateGetLabOrders403.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.ValidateGetLabReport200">
+            <summary>
+            ValidateGetLabReport200.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.ValidateGetLabReport204">
+            <summary>
+            ValidateGetLabReport204.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.ValidateGetLabReport403">
+            <summary>
+            ValidateGetLabReport403.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateTests.ValidateGetLabReport400">
+            <summary>
+            ValidateGetLabReport400.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.LaboratoryTests.LaboratoryDelegateFactoryTests">
+            <summary>
+            Unit Tests for LaboratoryDelegateFactory.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateFactoryTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.LaboratoryTests.LaboratoryDelegateFactoryTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryDelegateFactoryTests.CreateInstance">
+            <summary>
+            CreateInstance test.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.LaboratoryTests.LaboratoryServiceTests">
+            <summary>
+            Unit Tests for LaboratoryService.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryServiceTests.GetLabOrders">
+            <summary>
+            GetLabOrders test.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryServiceTests.GetLabOrdersWithError">
+            <summary>
+            GetLabOrdersWithError test.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.LaboratoryTests.LaboratoryServiceTests.GetLabReport">
+            <summary>
+            GetLabReport test.
+            </summary>
+        </member>
+    </members>
+</doc>

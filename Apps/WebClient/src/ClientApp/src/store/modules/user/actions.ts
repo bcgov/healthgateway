@@ -1,40 +1,39 @@
-import { ActionTree, Commit } from "vuex";
+import { Commit } from "vuex";
 
 import { ResultType } from "@/constants/resulttype";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/requestResult";
-import { RootState, UserState } from "@/models/storeState";
 import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     ILogger,
     IPatientService,
     IUserProfileService,
 } from "@/services/interfaces";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+import { UserActions } from "./types";
 
 function handleError(commit: Commit, error: Error) {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.error(`UserProfile ERROR: ${error}`);
     commit("userError");
 }
 
-const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-    SERVICE_IDENTIFIER.UserProfileService
-);
-
-const patientService: IPatientService = container.get<IPatientService>(
-    SERVICE_IDENTIFIER.PatientService
-);
-
-export const actions: ActionTree<UserState, RootState> = {
+export const actions: UserActions = {
     checkRegistration(context): Promise<boolean> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             return userProfileService
                 .getProfile(context.state.user.hdid)
                 .then((userProfile) => {
+                    const logger: ILogger = container.get(
+                        SERVICE_IDENTIFIER.Logger
+                    );
                     logger.verbose(
                         `User Profile: ${JSON.stringify(userProfile)}`
                     );
@@ -80,6 +79,10 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     },
     updateUserEmail(context, params: { emailAddress: string }): Promise<void> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .updateEmail(context.state.user.hdid, params.emailAddress)
@@ -99,6 +102,11 @@ export const actions: ActionTree<UserState, RootState> = {
         context,
         params: { userPreference: UserPreference }
     ): Promise<void> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .updateUserPreference(
@@ -106,6 +114,9 @@ export const actions: ActionTree<UserState, RootState> = {
                     params.userPreference
                 )
                 .then((result) => {
+                    logger.debug(
+                        `updateUserPreference: ${JSON.stringify(result)}`
+                    );
                     if (result) {
                         context.commit(
                             "setUserPreference",
@@ -124,6 +135,11 @@ export const actions: ActionTree<UserState, RootState> = {
         context,
         params: { userPreference: UserPreference }
     ): Promise<void> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .createUserPreference(
@@ -131,6 +147,9 @@ export const actions: ActionTree<UserState, RootState> = {
                     params.userPreference
                 )
                 .then((result) => {
+                    logger.debug(
+                        `createUserPreference: ${JSON.stringify(result)}`
+                    );
                     if (result) {
                         context.commit(
                             "setUserPreference",
@@ -146,6 +165,10 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     },
     closeUserAccount(context): Promise<void> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .closeAccount(context.state.user.hdid)
@@ -160,10 +183,17 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     },
     recoverUserAccount(context): Promise<void> {
+        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
+            SERVICE_IDENTIFIER.UserProfileService
+        );
+
         return new Promise((resolve, reject) => {
             userProfileService
                 .recoverAccount(context.state.user.hdid)
                 .then((userProfile) => {
+                    const logger: ILogger = container.get(
+                        SERVICE_IDENTIFIER.Logger
+                    );
                     logger.debug(
                         `recoverUserAccount User Profile: ${JSON.stringify(
                             userProfile
@@ -179,6 +209,9 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     },
     getPatientData(context): Promise<void> {
+        const patientService: IPatientService = container.get<IPatientService>(
+            SERVICE_IDENTIFIER.PatientService
+        );
         return new Promise((resolve, reject) => {
             if (context.getters.patientData.hdid === undefined) {
                 patientService
@@ -203,6 +236,7 @@ export const actions: ActionTree<UserState, RootState> = {
         });
     },
     handleError(context, error: ResultError) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.error(`ERROR: ${JSON.stringify(error)}`);
         context.commit("userError", error);
 

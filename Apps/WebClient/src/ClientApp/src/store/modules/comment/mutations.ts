@@ -1,12 +1,13 @@
 import Vue from "vue";
-import { MutationTree } from "vuex";
 
 import { Dictionary } from "@/models/baseTypes";
 import { DateWrapper } from "@/models/dateWrapper";
-import { CommentState, LoadStatus } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 
-export const mutations: MutationTree<CommentState> = {
+import { CommentMutations, CommentState } from "./types";
+
+export const mutations: CommentMutations = {
     setRequested(state: CommentState) {
         state.status = LoadStatus.REQUESTED;
     },
@@ -37,13 +38,11 @@ export const mutations: MutationTree<CommentState> = {
                 isUtc: true,
             });
 
-            const value = secondDate.isAfter(firstDate)
+            return secondDate.isAfter(firstDate)
                 ? -1
                 : firstDate.isAfter(secondDate)
                 ? 1
                 : 0;
-
-            return value;
         });
     },
     updateComment(state: CommentState, userComment: UserComment) {

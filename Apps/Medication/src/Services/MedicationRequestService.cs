@@ -32,22 +32,18 @@ namespace HealthGateway.Medication.Services
     /// </summary>
     public class MedicationRequestService : IMedicationRequestService
     {
-        private readonly ILogger logger;
         private readonly IPatientService patientService;
         private readonly IMedicationRequestDelegate medicationRequestDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationRequestService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="medicationRequestDelegate">Injected medication statement delegate.</param>
         public MedicationRequestService(
-            ILogger<MedicationRequestService> logger,
             IPatientService patientService,
             IMedicationRequestDelegate medicationRequestDelegate)
         {
-            this.logger = logger;
             this.patientService = patientService;
             this.medicationRequestDelegate = medicationRequestDelegate;
         }

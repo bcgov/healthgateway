@@ -32,23 +32,15 @@ namespace HealthGateway.Admin.Controllers
     public class UserFeedbackController
     {
         private readonly IUserFeedbackService feedbackService;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IAuthorizationService authorizationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackController"/> class.
         /// </summary>
         /// <param name="feedbackService">The injected user feedback service.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
-        /// <param name="authorizationService">The injected authorization service.</param>
         public UserFeedbackController(
-            IUserFeedbackService feedbackService,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IUserFeedbackService feedbackService)
         {
             this.feedbackService = feedbackService;
-            this.httpContextAccessor = httpContextAccessor;
-            this.authorizationService = authorizationService;
         }
 
         /// <summary>

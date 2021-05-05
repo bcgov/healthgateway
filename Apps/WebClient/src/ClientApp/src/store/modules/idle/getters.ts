@@ -1,8 +1,6 @@
-import { GetterTree } from "vuex";
+import { IdleGetters, IdleState } from "./types";
 
-import { IdleState, RootState } from "@/models/storeState";
-
-export const getters: GetterTree<IdleState, RootState> = {
+export const getters: IdleGetters = {
     isVisible(state: IdleState): boolean {
         return state.isVisible;
     },

@@ -1,9 +1,8 @@
-import { MutationTree } from "vuex";
-
 import BannerError from "@/models/bannerError";
-import { ErrorBannerState } from "@/models/storeState";
 
-export const mutations: MutationTree<ErrorBannerState> = {
+import { ErrorBannerMutations, ErrorBannerState } from "./types";
+
+export const mutations: ErrorBannerMutations = {
     dissmiss(state: ErrorBannerState) {
         state.errors = [];
         state.isShowing = !state.isShowing;

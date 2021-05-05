@@ -1,4 +1,6 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { BFormDatepicker } from "bootstrap-vue";
 import Vue from "vue";
 import {
@@ -12,6 +14,8 @@ import {
 import { Validation } from "vuelidate/vuelidate";
 
 import { DateWrapper } from "@/models/dateWrapper";
+
+library.add(faCalendar);
 
 @Component
 export default class DatePickerComponent extends Vue {
@@ -118,7 +122,11 @@ export default class DatePickerComponent extends Vue {
                 button-only
                 right
                 locale="en-CA"
-            ></b-form-datepicker>
+            >
+                <template #button-content>
+                    <hg-icon icon="calendar" size="small" />
+                </template>
+            </b-form-datepicker>
         </b-input-group-append>
     </b-input-group>
 </template>

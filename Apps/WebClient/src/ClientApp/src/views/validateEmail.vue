@@ -1,23 +1,22 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+    faCheckCircle,
+    faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import BaseButtonComponent from "@/components/shared/baseButton.vue";
 import { ResultType } from "@/constants/resulttype";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { IUserProfileService } from "@/services/interfaces";
-library.add(faTimesCircle);
 
-@Component({
-    components: {
-        "hg-button": BaseButtonComponent,
-    },
-})
+library.add(faCheckCircle, faTimesCircle);
+
+@Component
 export default class ValidateEmailView extends Vue {
     @Prop() inviteKey!: string;
 
@@ -68,16 +67,15 @@ export default class ValidateEmailView extends Vue {
                     We are verifying your email...
                 </h4>
                 <div v-else-if="isVerified">
-                    <font-awesome-icon
-                        class="text-success"
+                    <hg-icon
                         icon="check-circle"
+                        size="large"
                         aria-hidden="true"
-                        size="1x"
+                        class="text-success"
                     />
                     <h4 data-testid="verifiedInvite">
                         Your email address has been verified
                     </h4>
-
                     <hg-button
                         data-testid="continueButton"
                         variant="primary"
@@ -87,11 +85,11 @@ export default class ValidateEmailView extends Vue {
                     </hg-button>
                 </div>
                 <div v-else-if="isAlreadyVerified">
-                    <font-awesome-icon
-                        class="text-success"
+                    <hg-icon
                         icon="check-circle"
+                        size="large"
                         aria-hidden="true"
-                        size="1x"
+                        class="text-success"
                     />
                     <h4 data-testid="alreadyVerifiedInvite">
                         Your email address is already verified
@@ -105,11 +103,11 @@ export default class ValidateEmailView extends Vue {
                     </hg-button>
                 </div>
                 <div v-else>
-                    <font-awesome-icon
-                        class="text-danger"
+                    <hg-icon
                         icon="times-circle"
+                        size="large"
                         aria-hidden="true"
-                        size="1x"
+                        class="text-danger"
                     />
                     <h4 data-testid="expiredInvite">
                         Your link is expired or incorrect. Please resend

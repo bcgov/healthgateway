@@ -18,37 +18,33 @@ export class ExternalConfiguration {
 }
 
 // An object representing a configured Health Gateway IdentityProvider.
-export class IdentityProviderConfiguration {
+export interface IdentityProviderConfiguration {
     // Gets or sets the Id of the Identity Provider.
-    public id!: string;
-
+    id: string;
     // Gets or sets the name of the Identity Provider.
-    public name!: string;
-
+    name: string;
     // Gets or sets the Font Awesome Icon that we recommend to use.
-    public icon!: string;
-
+    icon: string;
     // Gets or sets the Identity Provider hint.
-    public hint!: string;
-
+    hint: string;
     // Gets or sets a value indicating whether this identity provider should be used.
-    public disabled!: boolean;
+    disabled: boolean;
 }
 
 // Configuration to be used by external clients for authentication.
-export class OpenIdConnectConfiguration {
+export interface OpenIdConnectConfiguration {
     // Gets or sets the OpenIDConnect Authority.
-    public authority!: string;
+    authority: string;
     // Gets or sets the Audience.
-    public audience!: string;
+    audience: string;
     // Gets or sets the OpenIdConnect Client ID.
-    public clientId!: string;
+    clientId: string;
     // Gets or sets the OpenIDConnect Response types.
-    public responseType!: string;
+    responseType: string;
     // Gets or sets the OpenIDConnect Scopes.
-    public scope!: string;
+    scope: string;
     // Gets or sets the Callback URIs.
-    public callbacks!: Dictionary<string>;
+    callbacks: Dictionary<string>;
 }
 
 // Configuration data to be used by the Health Gateway Webclient.

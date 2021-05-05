@@ -7,7 +7,7 @@ import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IHttpDelegate,
     ILogger,
@@ -82,13 +82,13 @@ export class RestUserNoteService implements IUserNoteService {
                     `${this.USER_NOTE_BASE_URI}/${hdid}`,
                     note
                 )
-                .then((requestResult) => {
-                    return RequestResultUtil.handleResult(
+                .then((requestResult) =>
+                    RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
                         reject
-                    );
-                })
+                    )
+                )
                 .catch((err) => {
                     this.logger.error(`createNote error: ${err}`);
                     return reject(
@@ -109,7 +109,8 @@ export class RestUserNoteService implements IUserNoteService {
                     note
                 )
                 .then((requestResult) => {
-                    return RequestResultUtil.handleResult(
+                    this.logger.debug(`updateNote ${requestResult}`);
+                    RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
                         reject
@@ -139,7 +140,8 @@ export class RestUserNoteService implements IUserNoteService {
                     headers
                 )
                 .then((requestResult) => {
-                    return RequestResultUtil.handleResult(
+                    this.logger.debug(`deleteNote ${requestResult}`);
+                    RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
                         reject

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { faIdCard, faSyringe } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
@@ -7,7 +7,7 @@ import { Component, Prop } from "vue-property-decorator";
 import EventBus, { EventMessageName } from "@/eventbus";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 
-library.add(faIdCard);
+library.add(faIdCard, faSyringe);
 
 import EntrycardTimelineComponent from "./entrycard.vue";
 
@@ -24,10 +24,6 @@ export default class ImmunizationTimelineComponent extends Vue {
 
     private eventBus = EventBus;
 
-    private get entryIcon(): IconDefinition {
-        return faSyringe;
-    }
-
     private get isCovidImmunization(): boolean {
         return this.entry.immunization.targetedDisease
             ?.toLowerCase()
@@ -43,7 +39,7 @@ export default class ImmunizationTimelineComponent extends Vue {
 <template>
     <EntryCard
         :card-id="index + '-' + datekey"
-        :entry-icon="entryIcon"
+        entry-icon="syringe"
         :title="entry.immunization.name"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
@@ -90,15 +86,16 @@ export default class ImmunizationTimelineComponent extends Vue {
                             class="detailsButton"
                             variant="link"
                             @click="showCard()"
-                            ><font-awesome-icon
+                        >
+                            <hg-icon
                                 icon="id-card"
-                                class="card-button"
+                                size="large"
                                 fixed-width
-                                size="1x"
-                            ></font-awesome-icon
-                            ><span>View Card</span></b-btn
-                        ></b-col
-                    >
+                                class="card-button"
+                            />
+                            <span>View Card</span>
+                        </b-btn>
+                    </b-col>
                 </b-row>
                 <b-row v-if="entry.immunization.forecast" class="mt-3">
                     <b-col>
@@ -155,9 +152,9 @@ export default class ImmunizationTimelineComponent extends Vue {
     margin: 0px;
 }
 
-.card-button {
+.hg-icon.card-button {
     display: block;
     color: $medium_background;
-    font-size: 3.5em;
+    font-size: 3.5rem;
 }
 </style>

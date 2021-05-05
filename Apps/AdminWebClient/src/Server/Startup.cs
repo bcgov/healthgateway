@@ -154,7 +154,9 @@ namespace HealthGateway.AdminWebClient
                 if (env.IsDevelopment() && !debugerAttached)
                 {
                     // change this to whatever webpack dev server says it's running on
+#pragma warning disable S1075
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
+#pragma warning restore S1075
                 }
             });
         }

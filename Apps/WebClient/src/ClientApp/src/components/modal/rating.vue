@@ -5,7 +5,7 @@ import { Getter } from "vuex-class";
 
 import type { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
 
 @Component
@@ -102,12 +102,12 @@ export default class RatingComponent extends Vue {
             <template #modal-footer>
                 <b-row>
                     <b-col>
-                        <b-button
+                        <hg-button
                             id="skipButton"
                             data-testid="ratingModalSkipBtn"
-                            variant="outline-primary"
+                            variant="secondary"
                             @click="handleRating(0, true)"
-                            >Skip</b-button
+                            >Skip</hg-button
                         >
                     </b-col>
                 </b-row>

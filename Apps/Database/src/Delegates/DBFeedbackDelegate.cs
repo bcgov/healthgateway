@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
@@ -27,6 +28,7 @@ namespace HealthGateway.Database.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public class DBFeedbackDelegate : IFeedbackDelegate
     {
         private readonly ILogger logger;

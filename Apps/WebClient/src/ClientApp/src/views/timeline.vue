@@ -1,5 +1,6 @@
 <script lang="ts">
-import { faSearch, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -32,8 +33,10 @@ import User from "@/models/user";
 import { UserComment } from "@/models/userComment";
 import UserNote from "@/models/userNote";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
+
+library.add(faSearch);
 
 @Component({
     components: {
@@ -252,10 +255,6 @@ export default class TimelineView extends Vue {
         return this.user.hasTermsOfServiceUpdated;
     }
 
-    private get searchIcon(): IconDefinition {
-        return faSearch;
-    }
-
     private get isLoading(): boolean {
         return (
             this.isMedicationRequestLoading ||
@@ -329,7 +328,8 @@ export default class TimelineView extends Vue {
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <div class="px-2">
                     <b-alert
-                        :show="hasNewTermsOfService"
+                        v-if="hasNewTermsOfService"
+                        show
                         dismissible
                         variant="info"
                         class="no-print"
@@ -348,7 +348,9 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="unverifiedEmail || unverifiedSMS"
+                        v-if="unverifiedEmail || unverifiedSMS"
+                        id="incomplete-profile-banner"
+                        show
                         dismissible
                         variant="info"
                         class="no-print"
@@ -368,7 +370,8 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="!isPacificTime"
+                        v-if="!isPacificTime"
+                        show
                         dismissible
                         variant="info"
                         class="no-print"
@@ -380,11 +383,8 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        :show="
-                            showImmunizationAlert && immunizationIsDeferred
-                                ? alertExpirySeconds
-                                : false
-                        "
+                        v-if="showImmunizationAlert && immunizationIsDeferred"
+                        :show="alertExpirySeconds"
                         dismissible
                         variant="info"
                         class="no-print"
@@ -394,11 +394,8 @@ export default class TimelineView extends Vue {
                         </h4>
                     </b-alert>
                     <b-alert
-                        :show="
-                            showImmunizationAlert && !immunizationIsDeferred
-                                ? alertExpirySeconds
-                                : false
-                        "
+                        v-if="showImmunizationAlert && !immunizationIsDeferred"
+                        :show="alertExpirySeconds"
                         dismissible
                         variant="info"
                         class="no-print"
@@ -429,11 +426,11 @@ export default class TimelineView extends Vue {
                     <b-row class="no-print justify-content-between">
                         <b-col>
                             <div class="form-group has-filter">
-                                <font-awesome-icon
-                                    :icon="searchIcon"
+                                <hg-icon
+                                    icon="search"
+                                    size="medium"
                                     class="form-control-feedback"
-                                    fixed-width
-                                ></font-awesome-icon>
+                                />
                                 <b-form-input
                                     v-model="filterText"
                                     data-testid="filterTextInput"
@@ -501,6 +498,7 @@ export default class TimelineView extends Vue {
 }
 .sticky-top {
     transition: all 0.3s;
+    z-index: 49 !important;
 }
 
 .column-wrapper {
@@ -534,21 +532,24 @@ export default class TimelineView extends Vue {
     }
 }
 
-.has-filter .form-control {
-    padding-left: 2.375rem;
-}
+.has-filter {
+    $icon-size: 1rem;
+    $icon-size-padded: 2.375rem;
+    $icon-padding: ($icon-size-padded - $icon-size) / 2;
 
-.has-filter .form-control-feedback {
-    position: absolute;
-    z-index: 2;
-    display: block;
-    width: 2.375rem;
-    height: 2.375rem;
-    line-height: 2.375rem;
-    text-align: center;
-    pointer-events: none;
-    color: #aaa;
-    padding: 12px;
+    .form-control {
+        padding-left: $icon-size-padded;
+    }
+
+    .form-control-feedback {
+        position: absolute;
+        z-index: 2;
+        display: block;
+        text-align: center;
+        pointer-events: none;
+        color: #aaa;
+        padding: $icon-padding;
+    }
 }
 
 .btn-light {
@@ -558,9 +559,5 @@ export default class TimelineView extends Vue {
 
 .z-index-large {
     z-index: 50;
-}
-
-.sticky-top {
-    z-index: 49 !important;
 }
 </style>

@@ -1,14 +1,16 @@
-import VueRouter, { Route } from "vue-router";
+import VueRouter, {
+    NavigationGuard,
+    NavigationGuardNext,
+    Route,
+} from "vue-router";
 
 import { Dictionary } from "@/models/baseTypes";
 import { SnowplowWindow } from "@/plugins/extensions";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
-import { ILogger } from "@/services/interfaces";
-import store from "@/store/store";
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-declare let window: SnowplowWindow;
+import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import { ILogger, IStoreProvider } from "@/services/interfaces";
 
+declare let window: SnowplowWindow;
 const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/profile.vue");
 const LandingView = () =>
@@ -59,7 +61,7 @@ const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
 
-enum UserState {
+export enum UserState {
     unauthenticated = "unauthenticated",
     notRegistered = "notRegistered",
     registered = "registered",
@@ -69,6 +71,10 @@ enum UserState {
 }
 
 function calculateUserState() {
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     const isOffline = store.getters["config/isOffline"];
     const isAuthenticated: boolean = store.getters["auth/oidcIsAuthenticated"];
     const isValid: boolean = store.getters["auth/isValidIdentityProvider"];
@@ -90,7 +96,7 @@ function calculateUserState() {
     }
 }
 
-enum ClientModule {
+export enum ClientModule {
     Immunization = "Immunization",
     Medication = "Medication",
     Laboratory = "Laboratory",
@@ -102,6 +108,10 @@ enum ClientModule {
 }
 
 function getAvailableModules() {
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     const availableModules: string[] = [];
     const configModules: Dictionary<boolean> =
         store.getters["config/webClient"].modules;
@@ -114,6 +124,7 @@ function getAvailableModules() {
     return availableModules;
 }
 
+const UNAUTHORIZED_PATH = "/unauthorized";
 const REGISTRATION_PATH = "/registration";
 const REGISTRATION_INFO_PATH = "/registrationInfo";
 
@@ -227,7 +238,7 @@ const routes = [
         path: "/login",
         component: LoginView,
         props: (route: Route) => ({
-            isRetry: route.query.isRetry,
+            isRetry: route.query.isRetry === "true",
         }),
         meta: { validStates: [UserState.unauthenticated] },
     },
@@ -255,7 +266,7 @@ const routes = [
         meta: { validStates: [UserState.invalidLogin] },
     },
     {
-        path: "/unauthorized",
+        path: UNAUTHORIZED_PATH,
         component: UnauthorizedView,
         meta: { stateless: true },
     },
@@ -268,61 +279,84 @@ const routes = [
     }, // Not found; Will catch all other paths not covered previously
 ];
 
-const router = new VueRouter({
-    mode: "history",
-    routes,
-});
-
-router.beforeEach(async (to, from, next) => {
+export const beforeEachGuard: NavigationGuard = (
+    to: Route,
+    from: Route,
+    next: NavigationGuardNext<Vue>
+) => {
+    const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    const storeWrapper: IStoreProvider = container.get(
+        STORE_IDENTIFIER.StoreProvider
+    );
+    const store = storeWrapper.getStore();
     logger.debug(
         `from.fullPath: ${JSON.stringify(
             from.fullPath
         )}; to.fullPath: ${JSON.stringify(to.fullPath)}`
     );
+
     if (to.meta.routeIsOidcCallback || to.meta.stateless) {
         next();
-    } else {
-        // Make sure that the route accepts the current state
-        store.dispatch("auth/oidcCheckUser").then((isValid: boolean) => {
-            logger.info("User is valid: " + isValid);
-
-            const currentUserState = calculateUserState();
-            logger.debug(`current state: ${currentUserState}`);
-            const isValidState = to.meta.validStates.includes(currentUserState);
-            const availableModules = getAvailableModules();
-            const hasRequiredModules =
-                to.meta.requiredModules === undefined
-                    ? true
-                    : to.meta.requiredModules.every((val: string) =>
-                          availableModules.includes(val)
-                      );
-            if (isValidState && hasRequiredModules) {
-                next();
-            } else {
-                // If the route does not accept the state, go to one of the default locations
-                if (currentUserState === UserState.offline) {
-                    next({ path: "/" });
-                } else if (currentUserState === UserState.pendingDeletion) {
-                    next({ path: "/profile" });
-                } else if (currentUserState === UserState.registered) {
-                    if (hasRequiredModules) {
-                        next({ path: "/timeline" });
-                    } else {
-                        next({ path: "/unauthorized" });
-                    }
-                } else if (currentUserState === UserState.notRegistered) {
-                    next({ path: REGISTRATION_PATH });
-                } else if (currentUserState === UserState.invalidLogin) {
-                    next({ path: "/idirLoggedIn" });
-                } else if (currentUserState === UserState.unauthenticated) {
-                    next({ path: "/login", query: { redirect: to.path } });
-                } else {
-                    next({ path: "/unauthorized" });
-                }
-            }
-        });
+        return;
     }
+
+    // Make sure that the route accepts the current state
+    store.dispatch("auth/oidcCheckUser").then((isValid: boolean) => {
+        logger.info("User is valid: " + isValid);
+
+        const currentUserState = calculateUserState();
+        logger.debug(`current state: ${currentUserState}`);
+        const isValidState = to.meta.validStates.includes(currentUserState);
+        const availableModules = getAvailableModules();
+        const hasRequiredModules =
+            to.meta.requiredModules === undefined ||
+            to.meta.requiredModules.every((val: string) =>
+                availableModules.includes(val)
+            );
+
+        if (isValidState && hasRequiredModules) {
+            next();
+            return;
+        }
+
+        // If the route does not accept the state, go to one of the default locations
+        switch (currentUserState) {
+            case UserState.offline:
+                next({ path: "/" });
+                break;
+            case UserState.pendingDeletion:
+                next({ path: "/profile" });
+                break;
+            case UserState.registered:
+                if (hasRequiredModules) {
+                    next({ path: "/timeline" });
+                } else {
+                    next({ path: UNAUTHORIZED_PATH });
+                }
+
+                break;
+            case UserState.notRegistered:
+                next({ path: REGISTRATION_PATH });
+                break;
+            case UserState.invalidLogin:
+                next({ path: "/idirLoggedIn" });
+                break;
+            case UserState.unauthenticated:
+                next({ path: "/login", query: { redirect: to.path } });
+                break;
+            default:
+                next({ path: UNAUTHORIZED_PATH });
+                break;
+        }
+    });
+};
+
+const router = new VueRouter({
+    mode: "history",
+    routes,
 });
+
+router.beforeEach(beforeEachGuard);
 
 router.afterEach(() => {
     window.snowplow("trackPageView");

@@ -1,14 +1,12 @@
-import { MutationTree } from "vuex";
-
-import { IdleState } from "@/models/storeState";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
-const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+import { IdleMutations, IdleState } from "./types";
 
-export const mutations: MutationTree<IdleState> = {
+export const mutations: IdleMutations = {
     setVisibleState(state: IdleState, isVisible: boolean) {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.verbose(`IdleState:setVisibleState`);
         state.isVisible = isVisible;
     },

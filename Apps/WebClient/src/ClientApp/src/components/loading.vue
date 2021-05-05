@@ -1,16 +1,18 @@
 ﻿<script lang="ts">
 import "vue-loading-overlay/dist/vue-loading.css";
 
+import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faEdit,
     faFlask,
     faPills,
     faSyringe,
-    IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import Loading from "vue-loading-overlay";
 import { Component, Prop } from "vue-property-decorator";
+
+library.add(faEdit, faFlask, faPills, faSyringe);
 
 @Component({
     components: {
@@ -23,23 +25,9 @@ export default class LoadingComponent extends Vue {
     @Prop({ default: true }) backdrop!: boolean;
     private step = 0;
     private intervalId = 0;
+
     private get ellipsis(): string {
         return ".".padEnd(this.step + 1, ".");
-    }
-    private get medIcon(): IconDefinition {
-        return faPills;
-    }
-
-    private get labIcon(): IconDefinition {
-        return faFlask;
-    }
-
-    private get immIcon(): IconDefinition {
-        return faSyringe;
-    }
-
-    private get noteIcon(): IconDefinition {
-        return faEdit;
     }
 
     private mounted() {
@@ -103,32 +91,16 @@ export default class LoadingComponent extends Vue {
             </b-row>
             <div class="spinner" data-testid="timelineLoading">
                 <div id="first" class="double-bounce">
-                    <font-awesome-icon
-                        :icon="medIcon"
-                        class="icon1"
-                        size="2x"
-                    ></font-awesome-icon>
+                    <hg-icon icon="pills" size="large" />
                 </div>
                 <div id="second" class="double-bounce">
-                    <font-awesome-icon
-                        :icon="labIcon"
-                        class="icon2"
-                        size="2x"
-                    ></font-awesome-icon>
+                    <hg-icon icon="flask" size="large" />
                 </div>
                 <div id="third" class="double-bounce">
-                    <font-awesome-icon
-                        :icon="immIcon"
-                        class="icon2"
-                        size="2x"
-                    ></font-awesome-icon>
+                    <hg-icon icon="syringe" size="large" />
                 </div>
                 <div id="fourth" class="double-bounce">
-                    <font-awesome-icon
-                        :icon="noteIcon"
-                        class="icon2"
-                        size="2x"
-                    ></font-awesome-icon>
+                    <hg-icon icon="edit" size="large" />
                 </div>
             </div>
             <div class="text">
@@ -162,15 +134,15 @@ export default class LoadingComponent extends Vue {
     display: block;
 }
 .spinner {
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
     position: absolute;
-    margin: 100px auto;
+    margin: 60px auto;
 
     top: 50%;
     left: 50%;
-    margin-top: -50px;
-    margin-left: -50px;
+    margin-top: -30px;
+    margin-left: -30px;
 }
 .text {
     color: $primary;

@@ -1,10 +1,9 @@
-import { GetterTree } from "vuex";
-
 import { DateWrapper } from "@/models/dateWrapper";
-import { RootState, TimelineState } from "@/models/storeState";
 import TimelineFilter from "@/models/timelineFilter";
 
-export const getters: GetterTree<TimelineState, RootState> = {
+import { TimelineGetters, TimelineState } from "./types";
+
+export const getters: TimelineGetters = {
     filter(state: TimelineState): TimelineFilter {
         return state.filter;
     },

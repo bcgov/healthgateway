@@ -15,8 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
@@ -24,34 +22,28 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Models.PHSA;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Immunization data service.
     /// </summary>
     public class ImmunizationService : IImmunizationService
     {
-        private readonly ILogger logger;
         private readonly IImmunizationDelegate immunizationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
         public ImmunizationService(
-            ILogger<ImmunizationService> logger,
             IImmunizationDelegate immunizationDelegate)
         {
-            this.logger = logger;
             this.immunizationDelegate = immunizationDelegate;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<ImmunizationResult>> GetImmunizations(string bearerToken, int pageIndex = 0)
         {
-            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(bearerToken, pageIndex).ConfigureAwait(true);
+            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(bearerToken, pageIndex).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
                 return new RequestResult<ImmunizationResult>()

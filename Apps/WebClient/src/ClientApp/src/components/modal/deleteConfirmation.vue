@@ -22,13 +22,11 @@ export default class DeleteModalComponent extends Vue {
     @Emit()
     private submit() {
         this.isVisible = false;
-        return;
     }
 
     @Emit()
     private cancel() {
         this.hideModal();
-        return;
     }
 
     private handleSubmit(bvModalEvt: Event) {
@@ -86,21 +84,21 @@ export default class DeleteModalComponent extends Vue {
                 <b-col>
                     <b-row>
                         <b-col>
-                            <b-button
+                            <hg-button
+                                data-testid="cancelDeleteBtn"
+                                variant="secondary"
+                                @click="handleCancel($event)"
+                            >
+                                Cancel
+                            </hg-button>
+                            <hg-button
                                 data-testid="confirmDeleteBtn"
                                 class="mr-2"
                                 variant="primary"
                                 @click="handleSubmit($event)"
                             >
                                 Yes, I'm sure
-                            </b-button>
-                            <b-button
-                                data-testid="cancelDeleteBtn"
-                                variant="secondary"
-                                @click="handleCancel($event)"
-                            >
-                                Cancel
-                            </b-button>
+                            </hg-button>
                         </b-col>
                     </b-row>
                 </b-col>

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV, faFileDownload } from "@fortawesome/free-solid-svg-icons";
 import { BTab, BTabs } from "bootstrap-vue";
 import Vue from "vue";
@@ -22,14 +22,15 @@ import { LaboratoryResult } from "@/models/laboratory";
 import { ResultError } from "@/models/requestResult";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IDependentService,
     ILaboratoryService,
     ILogger,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-library.add(faFileDownload);
+
+library.add(faEllipsisV, faFileDownload);
 
 @Component({
     components: {
@@ -81,10 +82,6 @@ export default class DependentCardComponent extends Vue {
             now.diff(birthDate, "year").years >
             this.webClientConfig.maxDependentAge
         );
-    }
-
-    private get menuIcon(): IconDefinition {
-        return faEllipsisV;
     }
 
     private created() {
@@ -241,8 +238,10 @@ export default class DependentCardComponent extends Vue {
                         </b-row>
                         <b-row>
                             <b-col class="d-flex justify-content-center">
-                                <b-button type="link" @click="deleteDependent()"
-                                    >Remove Dependent</b-button
+                                <hg-button
+                                    variant="secondary"
+                                    @click="deleteDependent()"
+                                    >Remove Dependent</hg-button
                                 >
                             </b-col>
                         </b-row>
@@ -348,7 +347,7 @@ export default class DependentCardComponent extends Vue {
                                 {{ formatResult(item.labResults[0]) }}
                             </td>
                             <td>
-                                <b-btn
+                                <hg-button
                                     v-if="
                                         item.reportAvailable &&
                                         checkResultReady(item.labResults[0])
@@ -359,12 +358,12 @@ export default class DependentCardComponent extends Vue {
                                         showSensitiveDocumentDownloadModal(item)
                                     "
                                 >
-                                    <font-awesome-icon
+                                    <hg-icon
                                         icon="file-download"
+                                        size="medium"
                                         aria-hidden="true"
-                                        size="1x"
                                     />
-                                </b-btn>
+                                </hg-button>
                             </td>
                         </tr>
                     </table>
@@ -431,12 +430,12 @@ export default class DependentCardComponent extends Vue {
                                         :no-caret="true"
                                     >
                                         <template slot="button-content">
-                                            <font-awesome-icon
+                                            <hg-icon
+                                                icon="ellipsis-v"
+                                                size="medium"
                                                 data-testid="dependentMenuBtn"
                                                 class="dependentMenu"
-                                                :icon="menuIcon"
-                                                size="1x"
-                                            ></font-awesome-icon>
+                                            />
                                         </template>
                                         <b-dropdown-item
                                             data-testid="deleteDependentMenuBtn"

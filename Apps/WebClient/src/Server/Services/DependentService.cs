@@ -166,7 +166,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page, int pageSize)
+        public RequestResult<IEnumerable<DependentModel>> GetDependents(string hdId, int page = 0, int pageSize = 500)
         {
             // Get Dependents from database
             int offset = page * pageSize;
@@ -266,7 +266,7 @@ namespace HealthGateway.WebClient.Services
             return true;
         }
 
-        private NotificationSettingsRequest UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
+        private void UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
         {
             DBResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
             UserProfile delegateUserProfile = dbResult.Payload;
@@ -284,7 +284,6 @@ namespace HealthGateway.WebClient.Services
             }
 
             this.notificationSettingsService.QueueNotificationSettings(request);
-            return request;
         }
     }
 }

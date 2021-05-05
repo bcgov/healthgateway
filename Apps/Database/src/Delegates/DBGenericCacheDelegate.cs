@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.Json;
     using HealthGateway.Database.Constants;
@@ -29,9 +30,9 @@ namespace HealthGateway.Database.Delegates
     /// <summary>
     /// Entity framework based implementation of the GenericCache delegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DBGenericCacheDelegate : IGenericCacheDelegate
     {
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
         private readonly ILogger<DBGenericCacheDelegate> logger;
         private readonly GatewayDbContext dbContext;
 
@@ -232,29 +233,26 @@ namespace HealthGateway.Database.Delegates
             where T : class
         {
             T? retVal = null;
-            if (cacheObject.Status == DBStatusCode.Read)
+            if (cacheObject.Status == DBStatusCode.Read &&
+                cacheObject.Payload != null &&
+                cacheObject.Payload.JSON != null &&
+                cacheObject.Payload.JSONType != null)
             {
-                if (cacheObject.Payload != null &&
-                    cacheObject.Payload.JSON != null &&
-                    cacheObject.Payload.JSONType != null)
+                Type? t = Type.GetType(cacheObject.Payload.JSONType);
+                if (t != null)
                 {
-                    Type? t = Type.GetType(cacheObject.Payload.JSONType);
-                    if (t != null)
+                    try
                     {
-                        try
-                        {
-                            retVal = JsonSerializer.Deserialize(cacheObject.Payload.JSON.RootElement.GetRawText(), t) as T;
-                        }
-                        catch (JsonException e)
-                        {
-                            this.logger.LogError($"Error parsing GenericCache object {cacheObject.Payload.Id} Error = {e.Message}");
-                        }
+                        retVal = JsonSerializer.Deserialize(cacheObject.Payload.JSON.RootElement.GetRawText(), t) as T;
+                    }
+                    catch (JsonException e)
+                    {
+                        this.logger.LogError($"Error parsing GenericCache object {cacheObject.Payload.Id} Error = {e.Message}");
                     }
                 }
             }
 
             return retVal;
         }
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
     }
 }

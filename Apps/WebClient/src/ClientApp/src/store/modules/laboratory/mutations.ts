@@ -1,9 +1,9 @@
-import { MutationTree } from "vuex";
-
 import { LaboratoryOrder } from "@/models/laboratory";
-import { LaboratoryState, LoadStatus } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
-export const mutations: MutationTree<LaboratoryState> = {
+import { LaboratoryMutations, LaboratoryState } from "./types";
+
+export const mutations: LaboratoryMutations = {
     setRequested(state: LaboratoryState) {
         state.status = LoadStatus.REQUESTED;
     },

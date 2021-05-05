@@ -9,7 +9,7 @@ import { LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
 import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
 
@@ -59,13 +59,11 @@ export default class COVID19ReportComponent extends Vue {
                 b.labResults[0].collectedDateTime
             );
 
-            const value = firstDate.isAfter(secondDate)
+            return firstDate.isAfter(secondDate)
                 ? 1
                 : firstDate.isBefore(secondDate)
                 ? -1
                 : 0;
-
-            return value;
         });
 
         return records;

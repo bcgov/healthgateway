@@ -1,12 +1,11 @@
-import { Module } from "vuex";
-
-import { EncounterState, LoadStatus, RootState } from "@/models/storeState";
+import { LoadStatus } from "@/models/storeOperations";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
 import { mutations } from "./mutations";
+import { EncounterModule, EncounterState } from "./types";
 
-export const state: EncounterState = {
+const state: EncounterState = {
     statusMessage: "",
     patientEncounters: [],
     error: undefined,
@@ -15,7 +14,7 @@ export const state: EncounterState = {
 
 const namespaced = true;
 
-export const encounter: Module<EncounterState, RootState> = {
+export const encounter: EncounterModule = {
     namespaced,
     state,
     getters,

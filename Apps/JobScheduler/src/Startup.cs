@@ -49,7 +49,6 @@ namespace HealthGateway.JobScheduler
     /// </summary>
     public class Startup
     {
-        private readonly IWebHostEnvironment environment;
         private readonly StartupConfiguration startupConfig;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
@@ -61,7 +60,6 @@ namespace HealthGateway.JobScheduler
         /// <param name="configuration">The injected configuration provider.</param>
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            this.environment = env;
             this.startupConfig = new StartupConfiguration(configuration, env);
             this.configuration = configuration;
             this.logger = this.startupConfig.Logger;

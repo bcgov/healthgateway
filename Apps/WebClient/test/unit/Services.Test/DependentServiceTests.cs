@@ -292,12 +292,6 @@ namespace HealthGateway.WebClient.Test.Services
             // (2) Setup PatientDelegate's mock
             var mockPatientService = new Mock<IPatientService>();
 
-            RequestResult<string> patientHdIdResult = new RequestResult<string>()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = this.mockHdId,
-            };
-
             if (patientResult == null)
             {
                 patientResult = new RequestResult<PatientModel>();

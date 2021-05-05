@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { email, helpers, requiredIf, sameAs } from "vuelidate/lib/validators";
@@ -14,7 +14,7 @@ import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { OidcUserProfile } from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import container from "@/plugins/inversify.config";
+import container from "@/plugins/inversify.container";
 import {
     IAuthenticationService,
     ILogger,
@@ -22,7 +22,7 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
-library.add(faCheck);
+library.add(faExclamationTriangle);
 
 @Component({
     components: {
@@ -208,74 +208,69 @@ export default class RegistrationView extends Vue {
         this.$v.$touch();
         if (this.$v.$invalid) {
             this.submitStatus = "ERROR";
-        } else {
-            this.submitStatus = "PENDING";
-            if (this.smsNumber) {
-                this.smsNumber = this.smsNumber.replace(/\D+/g, "");
-            }
-            this.loadingTermsOfService = true;
-            this.userProfileService
-                .createProfile({
-                    profile: {
-                        hdid: this.oidcUser.hdid,
-                        acceptedTermsOfService: this.accepted,
-                        email: this.email || "",
-                        isEmailVerified: false,
-                        smsNumber: this.smsNumber || "",
-                        isSMSNumberVerified: false,
-                        preferences: {},
-                    },
-                    inviteCode: this.inviteKey || "",
-                })
-                .then((result) => {
-                    this.logger.debug(
-                        `Create Profile result: ${JSON.stringify(result)}`
-                    );
-                    this.checkRegistration().then((isRegistered: boolean) => {
-                        if (isRegistered) {
-                            if (this.smsNumber === "" && this.email === "")
-                                this.$router.push({ path: "/timeline" });
-                            else {
-                                this.$router.push({
-                                    path: "/profile",
-                                    query: {
-                                        toVerifyPhone:
-                                            this.smsNumber === ""
-                                                ? "false"
-                                                : "true",
-                                        toVerifyEmail:
-                                            this.email === ""
-                                                ? "false"
-                                                : "true",
-                                    },
-                                });
-                            }
-                        } else {
-                            this.addError({
-                                title: "User profile creation",
-                                description: "Profile already created",
-                                detail: "",
-                                errorCode: "",
-                            });
-                        }
-                    });
-                })
-                .catch((err) => {
-                    this.addError(
-                        ErrorTranslator.toBannerError(
-                            "User profile creation",
-                            err
-                        )
-                    );
-                })
-                .finally(() => {
-                    this.loadingTermsOfService = false;
-                });
+            event.preventDefault();
+            return;
         }
+
+        this.submitStatus = "PENDING";
+        if (this.smsNumber) {
+            this.smsNumber = this.smsNumber.replace(/\D+/g, "");
+        }
+        this.loadingTermsOfService = true;
+        this.userProfileService
+            .createProfile({
+                profile: {
+                    hdid: this.oidcUser.hdid,
+                    acceptedTermsOfService: this.accepted,
+                    email: this.email || "",
+                    isEmailVerified: false,
+                    smsNumber: this.smsNumber || "",
+                    isSMSNumberVerified: false,
+                    preferences: {},
+                },
+                inviteCode: this.inviteKey || "",
+            })
+            .then((result) => {
+                this.logger.debug(
+                    `Create Profile result: ${JSON.stringify(result)}`
+                );
+                this.redirect();
+            })
+            .catch((err) => {
+                this.addError(
+                    ErrorTranslator.toBannerError("User profile creation", err)
+                );
+            })
+            .finally(() => {
+                this.loadingTermsOfService = false;
+            });
 
         event.preventDefault();
     }
 
+    private redirect(): void {
+        this.checkRegistration().then((isRegistered: boolean) => {
+            if (!isRegistered) {
+                this.addError({
+                    title: "User profile creation",
+                    description: "Profile already created",
+                    detail: "",
+                    errorCode: "",
+                });
+                return;
+            }
+            this.$router.push({
+                path:
+                    this.smsNumber === "" && this.email === ""
+                        ? "/timeline"
+                        : "/profile",
+                query: {
+                    toVerifyPhone: this.smsNumber === "" ? "false" : "true",
+                    toVerifyEmail: this.email === "" ? "false" : "true",
+                },
+            });
+        });
+    }
     private onEmailOptout(isChecked: boolean): void {
         if (!isChecked) {
             this.emailConfirmation = "";
@@ -413,13 +408,17 @@ export default class RegistrationView extends Vue {
                     </b-row>
                     <b-row v-if="!isEmailChecked && !isSMSNumberChecked">
                         <b-col class="font-weight-bold text-primary">
-                            <font-awesome-icon
+                            <hg-icon
                                 icon="exclamation-triangle"
+                                size="medium"
                                 aria-hidden="true"
-                            ></font-awesome-icon>
-                            You won't receive notifications from the Health
-                            Gateway. You can update this from your Profile Page
-                            later.
+                                class="mr-2"
+                            />
+                            <span
+                                >You won't receive notifications from the Health
+                                Gateway. You can update this from your Profile
+                                Page later.</span
+                            >
                         </b-col>
                     </b-row>
                     <b-row class="mt-4">
@@ -452,14 +451,13 @@ export default class RegistrationView extends Vue {
                     </b-row>
                     <b-row class="mb-5">
                         <b-col class="justify-content-right">
-                            <b-button
+                            <hg-button
                                 class="px-5 float-right"
                                 type="submit"
                                 data-testid="registerButton"
-                                size="lg"
                                 variant="primary"
-                                :class="{ disabled: !accepted }"
-                                >Register</b-button
+                                :disabled="!accepted"
+                                >Register</hg-button
                             >
                         </b-col>
                     </b-row>
