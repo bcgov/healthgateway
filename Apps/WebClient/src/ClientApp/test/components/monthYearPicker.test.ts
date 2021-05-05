@@ -29,6 +29,7 @@ describe("MonthYearPickerComponent", () => {
             store: store,
             stubs: {
                 "hg-icon": true,
+                "hg-button": true,
             },
         });
 

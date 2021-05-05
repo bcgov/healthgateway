@@ -36,6 +36,7 @@ describe("NavBar Header Component", () => {
         router,
         stubs: {
             "hg-icon": true,
+            "hg-button": true,
         },
     });
 
