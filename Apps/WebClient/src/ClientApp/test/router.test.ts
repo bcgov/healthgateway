@@ -1,3 +1,5 @@
+import { Route } from "vue-router";
+
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import { WebClientConfiguration } from "@/models/configData";
 import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
@@ -14,7 +16,7 @@ import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
 import ProfileComponent from "@/views/profile.vue";
 import RegistrationComponent from "@/views/registration.vue";
-import { Route } from "vue-router";
+
 import StoreOptionsStub from "./stubs/store/storeOptionsStub";
 
 function flushPromises() {

@@ -1,8 +1,15 @@
 import "@/plugins/inversify.config";
 
-import { StoreOptionsStub } from "@test/stubs/store/options";
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
+
 import { createLocalVue, shallowMount, Stubs, Wrapper } from "@vue/test-utils";
-import { BForm, BFormInput, BFormSelect, BFormTag } from "bootstrap-vue";
+import {
+    BButton,
+    BForm,
+    BFormInput,
+    BFormSelect,
+    BFormTag,
+} from "bootstrap-vue";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
@@ -63,6 +70,7 @@ function createWrapper(
 
     const defaultStubs = {
         "hg-icon": true,
+        "hg-button": true,
         "page-title": true,
     };
 
@@ -165,6 +173,7 @@ describe("Report view", () => {
         const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
             "hg-date-picker": BFormInput,
+            "hg-button": BButton,
         });
 
         expect(wrapper.find(testIdSelectedDates).exists()).toBe(false);
@@ -197,6 +206,7 @@ describe("Report view", () => {
             "b-form-select": BFormSelect,
             "hg-date-picker": BFormInput,
             "b-form-tag": BFormTag,
+            "hg-button": BButton,
         });
 
         expect(wrapper.find(testIdSelectedDates).exists()).toBe(false);

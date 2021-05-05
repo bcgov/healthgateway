@@ -1,7 +1,6 @@
 import "@/plugins/inversify.config";
 
 import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
-
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 
@@ -40,6 +39,7 @@ describe("Landing view", () => {
         store: store,
         stubs: {
             "hg-icon": true,
+            "hg-button": true,
         },
     });
 

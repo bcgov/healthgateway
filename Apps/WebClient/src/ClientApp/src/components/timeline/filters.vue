@@ -220,7 +220,8 @@ export default class FilterComponent extends Vue {
                 id="filterBtn"
                 class="w-100"
                 data-testid="filterDropdown"
-                :variant="hasFilterSelected ? 'highligthed' : 'secondary'"
+                :class="{ selected: hasFilterSelected }"
+                variant="secondary"
                 tabindex="0"
                 @click="toggleMenu"
             >

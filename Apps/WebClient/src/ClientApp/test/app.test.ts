@@ -1,7 +1,6 @@
 import "@/plugins/inversify.config";
 
 import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
-
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import VueRouter from "vue-router";
 import Vuex from "vuex";
