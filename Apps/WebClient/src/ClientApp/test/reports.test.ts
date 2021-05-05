@@ -1,7 +1,6 @@
 import "@/plugins/inversify.config";
 
 import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
-
 import { createLocalVue, shallowMount, Stubs, Wrapper } from "@vue/test-utils";
 import {
     BButton,

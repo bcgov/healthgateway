@@ -1,3 +1,4 @@
+import StoreOptionsStub from "@test/stubs/store/storeOptionsStub";
 import { Route } from "vue-router";
 
 import { RegistrationStatus } from "@/constants/registrationStatus";
@@ -16,8 +17,6 @@ import LoginComponent from "@/views/login.vue";
 import LogoutComponent from "@/views/logout.vue";
 import ProfileComponent from "@/views/profile.vue";
 import RegistrationComponent from "@/views/registration.vue";
-
-import StoreOptionsStub from "./stubs/store/storeOptionsStub";
 
 function flushPromises() {
     return new Promise((resolve) => setImmediate(resolve));
