@@ -1,4 +1,5 @@
 import "@/plugins/inversify.config";
+
 import { mount, shallowMount } from "@vue/test-utils";
 
 import ErrorComponent from "@/components/error.vue";
