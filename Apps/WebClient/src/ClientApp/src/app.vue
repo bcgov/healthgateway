@@ -83,7 +83,6 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         NavSidebar: SidebarComponent,
         ErrorCard: ErrorCard,
         IdleComponent,
-
         "immunization-modal-card": ImmunizationCardComponent,
     },
 })
