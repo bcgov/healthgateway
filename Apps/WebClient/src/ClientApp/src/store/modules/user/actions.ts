@@ -209,11 +209,15 @@ export const actions: UserActions = {
         });
     },
     getPatientData(context): Promise<void> {
+        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const patientService: IPatientService = container.get<IPatientService>(
             SERVICE_IDENTIFIER.PatientService
         );
         return new Promise((resolve, reject) => {
-            if (context.getters.patientData.hdid === undefined) {
+            if (context.getters.patientData.hdid !== undefined) {
+                logger.debug(`Patient data found stored, not quering!`);
+            } else {
+                context.commit("setRequested");
                 patientService
                     .getPatientData(context.state.user.hdid)
                     .then((result) => {

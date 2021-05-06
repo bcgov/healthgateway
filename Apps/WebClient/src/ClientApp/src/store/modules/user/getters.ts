@@ -1,5 +1,6 @@
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
+import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
 
@@ -30,5 +31,8 @@ export const getters: UserGetters = {
 
     patientData(state: UserState): PatientData {
         return state.patientData;
+    },
+    isLoading(state: UserState): boolean {
+        return state.status === LoadStatus.REQUESTED;
     },
 };
