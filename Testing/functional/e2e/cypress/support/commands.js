@@ -17,17 +17,18 @@ function storeAuthCookies() {
 }
 
 function generateCodeVerifier() {
-  var code_verifier = generateRandomString(96)
-  return code_verifier
+    var code_verifier = generateRandomString(96);
+    return code_verifier;
 }
 
 function generateRandomString(length) {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
+    var text = "";
+    var possible =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
 }
 
 Cypress.Commands.add(
@@ -39,9 +40,11 @@ Cypress.Commands.add(
                 cy.request({
                     url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
                 });
-                let stateId = generateRandomString(32) //"d0b27ba424b64b358b65d40cfdbc040b"
+                let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
                 let codeVerifier = generateRandomString(96);
-                cy.log(`State Id:  ${stateId}, Generated Code Verifier: ${codeVerifier}`)
+                cy.log(
+                    `State Id:  ${stateId}, Generated Code Verifier: ${codeVerifier}`
+                );
                 const stateStore = {
                     id: stateId,
                     created: new Date().getTime(),
@@ -155,7 +158,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
         });
 
         cy.log("Performing Keycloak Authentication");
-        let stateId = generateRandomString(32) //"d0b27ba424b64b358b65d40cfdbc040b"
+        let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
         cy.request({
             url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
             followRedirect: false,
