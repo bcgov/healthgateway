@@ -16,6 +16,20 @@ function storeAuthCookies() {
     });
 }
 
+function generateCodeVerifier() {
+  var code_verifier = generateRandomString(96)
+  return code_verifier
+}
+
+function generateRandomString(length) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (var i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
 Cypress.Commands.add(
     "login",
     (username, password, authMethod = AuthMethod.BCSC, path = "/timeline") => {
@@ -25,13 +39,14 @@ Cypress.Commands.add(
                 cy.request({
                     url: `${config.openIdConnect.authority}/protocol/openid-connect/logout`,
                 });
-
+                let stateId = generateRandomString(32) //"d0b27ba424b64b358b65d40cfdbc040b"
+                let codeVerifier = generateRandomString(96);
+                cy.log(`State Id:  ${stateId}, Generated Code Verifier: ${codeVerifier}`)
                 const stateStore = {
-                    id: "d0b27ba424b64b358b65d40cfdbc040b",
+                    id: stateId,
                     created: new Date().getTime(),
                     request_type: "si:r",
-                    code_verifier:
-                        "cd68894d45d84646b4b1bc4bbca482c9730850f72af8471b9240b128310adf505d9622e5e5ee43c1ba034f500e8ef7e2",
+                    code_verifier: codeVerifier,
                     redirect_uri: config.openIdConnect.callbacks.Logon,
                     authority: config.openIdConnect.authority,
                     client_id: config.openIdConnect.clientId,
@@ -85,7 +100,7 @@ Cypress.Commands.add(
                         let callBackQS = response.headers["location"];
                         const callbackURL = `${callBackQS}`;
                         cy.log("Visiting Callback");
-                        cy.visit(callbackURL);
+                        cy.visit(callbackURL)
                         // Wait for cookies are set before store them in cypress.
                         cy.get("[data-testid=headerDropdownBtn]").should(
                             "be.visible"
@@ -140,6 +155,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
         });
 
         cy.log("Performing Keycloak Authentication");
+        let stateId = generateRandomString(32) //"d0b27ba424b64b358b65d40cfdbc040b"
         cy.request({
             url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
             followRedirect: false,
@@ -150,7 +166,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
                 redirect_uri: config.openIdConnect.callbacks.Logon,
                 client_id: config.openIdConnect.clientId,
                 response_mode: "query",
-                state: "d0b27ba424b64b358b65d40cfdbc040b",
+                state: stateId,
             },
         })
             .then((response) => {

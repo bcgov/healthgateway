@@ -27,11 +27,9 @@ describe("Calendar View", () => {
 
         cy.get("#currentDate").click();
         cy.get("#currentDate").click();
-        cy.get(".years").children().should("be.visible");
+        cy.get(".years-wrapper").children().should("be.visible");
         cy.get("[data-testid=yearBtn2019]").click();
-        cy.get("[data-testid=monthBtnJan]").click();
-        cy.get("#currentDate").should("not.have.text", " January 2019 ");
-
+        cy.get("[data-testid=monthBtnJan]").should("not.be.enabled");
         cy.get("[data-testid=monthBtnFeb]").click();
         cy.get("#currentDate").should("have.text", " February 2019 ");
         cy.get("[data-testid=monthBtnFeb]").should("have.class", "selected");
@@ -54,7 +52,7 @@ describe("Calendar View", () => {
         cy.location("hash").should("eq", "#calendar");
         cy.get("#currentDate").click();
         cy.get("#currentDate").click();
-        cy.get(".years").children().should("be.visible");
+        cy.get(".years-wrapper").children().should("be.visible");
         cy.get("[data-testid=yearBtn2019]").click();
         cy.get("[data-testid=monthBtnApr]").click();
         cy.get("#currentDate").should("have.text", " April 2019 ");
