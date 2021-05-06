@@ -100,7 +100,7 @@ Cypress.Commands.add(
                         let callBackQS = response.headers["location"];
                         const callbackURL = `${callBackQS}`;
                         cy.log("Visiting Callback");
-                        cy.visit(callbackURL)
+                        cy.visit(callbackURL);
                         // Wait for cookies are set before store them in cypress.
                         cy.get("[data-testid=headerDropdownBtn]").should(
                             "be.visible"
