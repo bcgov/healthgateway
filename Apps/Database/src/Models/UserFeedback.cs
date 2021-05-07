@@ -20,24 +20,43 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-#pragma warning disable CS1591 // self explanatory simple model
-#pragma warning disable SA1600 // self explanatory simple model
+    /// <summary>
+    /// The user feedback database model.
+    /// </summary>
     public class UserFeedback : AuditableEntity
     {
+        /// <summary>
+        /// Gets or sets the primary key.
+        /// </summary>
         [Key]
         [Column("UserFeedbackId")]
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the feedback is satisfied or not.
+        /// </summary>
         public bool IsSatisfied { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the feedback was reviewed or not.
+        /// </summary>
         public bool IsReviewed { get; set; }
 
+        /// <summary>
+        /// Gets or sets the feedback comment.
+        /// </summary>
         [MaxLength(500)]
         public string? Comment { get; set; }
 
+        /// <summary>
+        /// Gets or sets the related user profile id.
+        /// </summary>
         [MaxLength(52)]
         public string? UserProfileId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the related list of tags.
+        /// </summary>
 #pragma warning disable CA2227
         public ICollection<UserFeedbackTag> Tags { get; set; } = null!;
 #pragma warning restore CA2227

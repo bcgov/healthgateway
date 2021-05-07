@@ -20,12 +20,12 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// The user feedback related tags.
+    /// The admin tags database model.
     /// </summary>
     public class AdminTag : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the primary key.
+        /// Gets or sets the auto generated primary key.
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
