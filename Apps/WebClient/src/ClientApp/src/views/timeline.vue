@@ -8,7 +8,6 @@ import { Action, Getter } from "vuex-class";
 import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
-import ImmunizationCardComponent from "@/components/modal/immunizationCard.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
@@ -49,7 +48,6 @@ library.add(faSearch);
         CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
-        ImmunizationCard: ImmunizationCardComponent,
     },
 })
 export default class TimelineView extends Vue {
@@ -481,7 +479,6 @@ export default class TimelineView extends Vue {
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />
         <EntryDetailsComponent :is-loading="isLoading" />
-        <ImmunizationCard />
     </div>
 </template>
 

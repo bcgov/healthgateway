@@ -70,6 +70,7 @@ import Process, { EnvironmentType } from "@/constants/process";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
+import ImmunizationCardComponent from "./components/modal/immunizationCard.vue";
 import ScreenWidth from "./constants/screenWidth";
 import container from "./plugins/inversify.container";
 
@@ -82,6 +83,7 @@ const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         NavSidebar: SidebarComponent,
         ErrorCard: ErrorCard,
         IdleComponent,
+        "immunization-modal-card": ImmunizationCardComponent,
     },
 })
 export default class App extends Vue {
@@ -169,6 +171,8 @@ export default class App extends Vue {
         <footer class="footer no-print">
             <NavFooter />
         </footer>
+
+        <immunization-modal-card />
     </div>
 </template>
 

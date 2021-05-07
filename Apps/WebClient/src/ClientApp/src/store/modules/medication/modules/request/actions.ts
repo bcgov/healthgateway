@@ -25,7 +25,7 @@ export const actions: MedicationRequestActions = {
                 context.state.status === LoadStatus.LOADED ||
                 medicationRequests.length > 0
             ) {
-                logger.debug("Medication Requests found stored, not quering!");
+                logger.debug("Medication Requests found stored, not querying!");
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,
