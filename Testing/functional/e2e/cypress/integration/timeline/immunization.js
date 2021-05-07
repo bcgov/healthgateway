@@ -52,7 +52,9 @@ describe("Immunization", () => {
 
     it("Validate Card Details", () => {
         cy.get("[data-testid=cardBtn]")
-          .closest("[data-testid=timelineCard]").first().click()
+            .closest("[data-testid=timelineCard]")
+            .first()
+            .click();
         cy.get("[data-testid=immunizationTitle]").should("be.visible");
         cy.get("[data-testid=immunizationProductTitle]").should("be.visible");
         cy.get("[data-testid=immunizationProviderTitle]").should("be.visible");
