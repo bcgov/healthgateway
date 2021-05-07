@@ -215,7 +215,7 @@ export const actions: UserActions = {
         );
         return new Promise((resolve, reject) => {
             if (context.getters.patientData.hdid !== undefined) {
-                logger.debug(`Patient data found stored, not quering!`);
+                logger.debug(`Patient data found stored, not querying!`);
             } else {
                 context.commit("setRequested");
                 patientService

@@ -16,7 +16,7 @@ export const actions: ImmunizationActions = {
 
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
-                logger.debug(`Immunizations found stored, not quering!`);
+                logger.debug(`Immunizations found stored, not querying!`);
             } else {
                 logger.debug(`Retrieving Immunizations`);
                 context.commit("setRequested");
@@ -28,7 +28,9 @@ export const actions: ImmunizationActions = {
                             if (payload.loadState.refreshInProgress) {
                                 logger.info("Immunizations load deferred");
                                 setTimeout(() => {
-                                    logger.info("Re-quering for immunizations");
+                                    logger.info(
+                                        "Re-querying for immunizations"
+                                    );
                                     context.dispatch("retrieve", {
                                         hdid: params.hdid,
                                     });
