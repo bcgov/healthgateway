@@ -1710,6 +1710,21 @@
             Gets or sets the Drug Product foreign key.
             </summary>
         </member>
+        <member name="T:HealthGateway.Database.Models.AdminTag">
+            <summary>
+            The user feedback related tags.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.AdminTag.AdminTagId">
+            <summary>
+            Gets or sets the primary key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.AdminTag.Name">
+            <summary>
+            Gets or sets the tag.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Database.Models.ApplicationSetting">
             <summary>
             A data store for application settings that are updated at runntime.
@@ -2820,6 +2835,36 @@
         <member name="P:HealthGateway.Database.Models.UserFeedbackAdmin.Email">
             <summary>
             Gets or sets the user email.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Database.Models.UserFeedbackTag">
+            <summary>
+            The user feedback related tags.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.UserFeedbackTag.UserFeedbackTagId">
+            <summary>
+            Gets or sets the primary key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.UserFeedbackTag.AdminTagId">
+            <summary>
+            Gets or sets the primary key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.UserFeedbackTag.UserFeedbackId">
+            <summary>
+            Gets or sets the related user feedback id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.UserFeedbackTag.UserFeedback">
+            <summary>
+            Gets or sets the related user feedback model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.UserFeedbackTag.AdminTag">
+            <summary>
+            Gets or sets the related admin tag model.
             </summary>
         </member>
         <member name="P:HealthGateway.Database.Models.UserPreference.HdId">

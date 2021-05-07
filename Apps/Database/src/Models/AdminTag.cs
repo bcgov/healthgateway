@@ -16,30 +16,27 @@
 namespace HealthGateway.Database.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-#pragma warning disable CS1591 // self explanatory simple model
-#pragma warning disable SA1600 // self explanatory simple model
-    public class UserFeedback : AuditableEntity
+    /// <summary>
+    /// The user feedback related tags.
+    /// </summary>
+    public class AdminTag : AuditableEntity
     {
+        /// <summary>
+        /// Gets or sets the primary key.
+        /// </summary>
         [Key]
-        [Column("UserFeedbackId")]
-        public Guid Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Required]
+        public Guid AdminTagId { get; set; }
 
-        public bool IsSatisfied { get; set; }
-
-        public bool IsReviewed { get; set; }
-
-        [MaxLength(500)]
-        public string? Comment { get; set; }
-
-        [MaxLength(52)]
-        public string? UserProfileId { get; set; }
-
-#pragma warning disable CA2227
-        public ICollection<UserFeedbackTag> Tags { get; set; } = null!;
-#pragma warning restore CA2227
+        /// <summary>
+        /// Gets or sets the tag.
+        /// </summary>
+        [MaxLength(20)]
+        [Required]
+        public string Name { get; set; } = string.Empty;
     }
 }
