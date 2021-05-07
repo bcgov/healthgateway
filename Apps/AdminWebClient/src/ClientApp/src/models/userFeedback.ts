@@ -1,3 +1,5 @@
+import { AdminTag } from "./adminTag";
+
 // Model that provides a user representation of user feedback.
 export default interface UserFeedback {
     // Gets or sets the beta request id.
@@ -20,4 +22,7 @@ export default interface UserFeedback {
 
     // Gets or sets the email if known for this feedback.
     email: string;
+
+    // Gets or sets the feedback tags
+    tags: AdminTag[];
 }
