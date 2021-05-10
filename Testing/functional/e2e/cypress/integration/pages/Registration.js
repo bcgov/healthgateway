@@ -69,4 +69,13 @@ describe("Registration Page", () => {
         cy.get('[data-testid="verifySMSModalText"]').should("be.visible");
         cy.get('[data-testid="verifyEmailTxt"]').should("be.visible");
     });
+
+    it("Validate Closed Profile Registration", () => {
+        cy.login(
+            Cypress.env("keycloak.accountclosure.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.url().should("include", "/registration");
+    });
 });
