@@ -172,6 +172,9 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("AdminTagId");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("AdminTag");
                 });
 

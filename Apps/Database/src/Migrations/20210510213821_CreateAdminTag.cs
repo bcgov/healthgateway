@@ -76,6 +76,13 @@ namespace HealthGateway.Database.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AdminTag_Name",
+                schema: "gateway",
+                table: "AdminTag",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserFeedbackTag_AdminTagId_UserFeedbackId",
                 schema: "gateway",
                 table: "UserFeedbackTag",

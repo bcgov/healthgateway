@@ -36,22 +36,24 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the primary key.
         /// </summary>
         [Required]
+        [ForeignKey("AdminTagId")]
         public Guid AdminTagId { get; set; }
 
         /// <summary>
         /// Gets or sets the related user feedback id.
         /// </summary>
         [Required]
+        [ForeignKey("UserFeedbackId")]
         public Guid UserFeedbackId { get; set; }
 
         /// <summary>
         /// Gets or sets the related user feedback model.
         /// </summary>
-        public UserFeedback UserFeedback { get; set; } = null!;
+        public virtual UserFeedback? UserFeedback { get; set; }
 
         /// <summary>
         /// Gets or sets the related admin tag model.
         /// </summary>
-        public AdminTag AdminTag { get; set; } = null!;
+        public virtual AdminTag? AdminTag { get; set; }
     }
 }

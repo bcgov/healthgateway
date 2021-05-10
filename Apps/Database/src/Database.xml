@@ -2859,7 +2859,7 @@
         </member>
         <member name="P:HealthGateway.Database.Models.UserFeedback.Tags">
             <summary>
-            Gets or sets the related list of tags.
+            Gets the related list of tags.
             </summary>
         </member>
         <member name="T:HealthGateway.Database.Models.UserFeedbackAdmin">

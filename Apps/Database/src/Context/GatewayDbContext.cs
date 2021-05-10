@@ -319,6 +319,11 @@ namespace HealthGateway.Database.Context
                 .HasIndex(p => new { p.AdminTagId, p.UserFeedbackId })
                 .IsUnique(true);
 
+            // Create unique keys for AdminTag
+            modelBuilder.Entity<AdminTag>()
+                .HasIndex(p => p.Name)
+                .IsUnique(true);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);

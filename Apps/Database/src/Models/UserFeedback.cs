@@ -55,10 +55,8 @@ namespace HealthGateway.Database.Models
         public string? UserProfileId { get; set; }
 
         /// <summary>
-        /// Gets or sets the related list of tags.
+        /// Gets the related list of tags.
         /// </summary>
-#pragma warning disable CA2227
-        public ICollection<UserFeedbackTag> Tags { get; set; } = null!;
-#pragma warning restore CA2227
+        public ICollection<UserFeedbackTag> Tags { get; } = new List<UserFeedbackTag>();
     }
 }

@@ -27,7 +27,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20210507171736_CreateAdminTag")]
+    [Migration("20210510213821_CreateAdminTag")]
     partial class CreateAdminTag
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,6 +173,9 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnName("xmin");
 
                     b.HasKey("AdminTagId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("AdminTag");
                 });
