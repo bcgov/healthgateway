@@ -10,18 +10,30 @@ import { Component, Prop } from "vue-property-decorator";
 })
 export default class HgIconComponent extends Vue {
     @Prop({ required: false, default: "medium" }) size!: string;
+    @Prop({ required: false, default: false }) square!: boolean;
 
     private get classes(): string[] {
+        let result = [];
+
         switch (this.size) {
             case "small":
-                return ["hg-icon", "hg-small"];
+                result.push("hg-icon", "hg-small");
+                break;
             case "medium":
-                return ["hg-icon", "hg-medium"];
+                result.push("hg-icon", "hg-medium");
+                break;
             case "large":
-                return ["hg-icon", "hg-large"];
+                result.push("hg-icon", "hg-large");
+                break;
             default:
                 return [];
         }
+
+        if (this.square === true) {
+            result.push("hg-square");
+        }
+
+        return result;
     }
 }
 </script>
@@ -45,6 +57,9 @@ export default class HgIconComponent extends Vue {
     }
     &.hg-large {
         font-size: 1.5rem;
+    }
+    &.hg-square {
+        width: 1em;
     }
 }
 </style>
