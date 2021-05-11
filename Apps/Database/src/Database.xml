@@ -465,6 +465,22 @@
             </summary>
             <param name="modelBuilder">The passed in model builder.</param>
         </member>
+        <member name="T:HealthGateway.Database.Delegates.DBAdminTagDelegate">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBAdminTagDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Database.Delegates.DBAdminTagDelegate},HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Database.Delegates.DBAdminTagDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="dbContext">The context to be used when accessing the database.</param>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBAdminTagDelegate.Add(HealthGateway.Database.Models.AdminTag,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBAdminTagDelegate.GetAll">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Database.Delegates.DBApplicationSettingsDelegate">
             <summary>
             Entity framework based implementation of the Application Settings delegate.
@@ -663,6 +679,19 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBFeedbackDelegate.GetAllUserFeedbackEntries">
+            <inheritdoc />
+        </member>
+        <member name="T:HealthGateway.Database.Delegates.DBFeedbackTagDelegate">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBFeedbackTagDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Database.Delegates.DBFeedbackTagDelegate},HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Database.Delegates.DBFeedbackTagDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="dbContext">The context to be used when accessing the database.</param>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBFeedbackTagDelegate.Add(HealthGateway.Database.Models.UserFeedbackTag,System.Boolean)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.Database.Delegates.DBGenericCacheDelegate">
@@ -900,6 +929,25 @@
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBWriteAuditEventDelegate.WriteAuditEvent(HealthGateway.Database.Models.AuditEvent)">
             <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Database.Delegates.IAdminTagDelegate">
+            <summary>
+            Operations to be performed for AdminTag.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IAdminTagDelegate.Add(HealthGateway.Database.Models.AdminTag,System.Boolean)">
+            <summary>
+            Add the given admin tag.
+            </summary>
+            <param name="tag">The admin tag to be added to the database.</param>
+            <param name="commit">if true the transaction is persisted immediately.</param>
+            <returns>A admin tag wrapped in a DBResult.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IAdminTagDelegate.GetAll">
+            <summary>
+            Gets a list of admin tags ordered by the name ascending.
+            </summary>
+            <returns>An IEnumerable of AdminTag wrapped in a DBResult.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.IApplicationSettingsDelegate">
             <summary>
@@ -1238,6 +1286,19 @@
             Fetches the UserFeedback from the database with email attached for administratie purposes.
             </summary>
             <returns>A DB result which encapsulates the return objects and status.</returns>
+        </member>
+        <member name="T:HealthGateway.Database.Delegates.IFeedbackTagDelegate">
+            <summary>
+            Operations to be performed for UserFeedbackTag.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IFeedbackTagDelegate.Add(HealthGateway.Database.Models.UserFeedbackTag,System.Boolean)">
+            <summary>
+            Add the given user feedback tag.
+            </summary>
+            <param name="feedbackTag">The user feedback tag to be added to the database.</param>
+            <param name="commit">if true the transaction is persisted immediately.</param>
+            <returns>A user feedback tag wrapped in a DBResult.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.IGenericCacheDelegate">
             <summary>
