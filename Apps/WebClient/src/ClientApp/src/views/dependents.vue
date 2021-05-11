@@ -8,6 +8,7 @@ import { Action, Getter } from "vuex-class";
 import DependentCardComponent from "@/components/dependentCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import NewDependentComponent from "@/components/modal/newDependent.vue";
+import ResourceCentreComponent from "@/components/resourceCentre.vue";
 import BannerError from "@/models/bannerError";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
@@ -24,6 +25,7 @@ library.add(faUserPlus);
         LoadingComponent,
         DependentCardComponent,
         NewDependentComponent,
+        "resource-centre": ResourceCentreComponent,
     },
 })
 export default class DependentsView extends Vue {
@@ -84,7 +86,7 @@ export default class DependentsView extends Vue {
 }
 </script>
 <template>
-    <div class="m-3">
+    <div class="m-3 flex-grow-1 d-flex flex-column">
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-row>
             <b-col class="col-12 col-lg-9 column-wrapper">
@@ -139,6 +141,7 @@ export default class DependentsView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
+        <resource-centre />
         <NewDependentComponent
             ref="newDependentModal"
             @show="showModal"

@@ -157,7 +157,7 @@ export default class App extends Vue {
         <NavHeader />
         <b-row>
             <NavSidebar class="no-print sticky-top vh-100" />
-            <main class="col fill-height">
+            <main class="col fill-height d-flex flex-column">
                 <ErrorCard
                     title="Whoops!"
                     description="An error occurred."

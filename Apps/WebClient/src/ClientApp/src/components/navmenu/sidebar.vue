@@ -5,7 +5,6 @@ import {
     faChartLine,
     faClipboardList,
     faEdit,
-    faQuestion,
     faStream,
     faUserFriends,
 } from "@fortawesome/free-solid-svg-icons";
@@ -28,7 +27,6 @@ library.add(
     faChartLine,
     faClipboardList,
     faEdit,
-    faQuestion,
     faStream,
     faUserFriends
 );
@@ -249,10 +247,6 @@ export default class SidebarComponent extends Vue {
     private get isDependents(): boolean {
         return this.$route.path == "/dependents";
     }
-
-    private get isFAQ(): boolean {
-        return this.$route.path == "/faq";
-    }
 }
 </script>
 
@@ -461,25 +455,6 @@ export default class SidebarComponent extends Vue {
                             </b-col>
                             <b-col v-show="isOpen" class="button-text">
                                 <span>Health Insights</span>
-                            </b-col>
-                        </b-row>
-                    </hg-button>
-
-                    <!-- FAQ button -->
-                    <hg-button
-                        id="menuBtnFAQ"
-                        data-testid="menuBtnFAQ"
-                        to="/faq"
-                        class="my-3"
-                        variant="nav"
-                        :class="{ selected: isFAQ }"
-                    >
-                        <b-row class="align-items-center name-wrappe">
-                            <b-col title="FAQ" :class="{ 'col-3': isOpen }">
-                                <hg-icon icon="question" size="large" />
-                            </b-col>
-                            <b-col v-show="isOpen" class="button-text">
-                                <span>FAQ</span>
                             </b-col>
                         </b-row>
                     </hg-button>
