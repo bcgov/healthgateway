@@ -23,6 +23,7 @@ export interface ImmunizationState {
 export interface ImmunizationGetters
     extends GetterTree<ImmunizationState, RootState> {
     immunizations(state: ImmunizationState): ImmunizationEvent[];
+    covidImmunizations(state: ImmunizationState): ImmunizationEvent[];
     recomendations(state: ImmunizationState): Recommendation[];
     immunizationCount(state: ImmunizationState): number;
     isDeferredLoad(state: ImmunizationState): boolean;
