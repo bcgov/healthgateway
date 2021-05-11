@@ -16,47 +16,27 @@
 namespace HealthGateway.Database.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// The user feedback database model.
+    /// The admin tags database model.
     /// </summary>
-    public class UserFeedback : AuditableEntity
+    public class AdminTag : AuditableEntity
     {
         /// <summary>
-        /// Gets or sets the primary key.
+        /// Gets or sets the auto generated primary key.
         /// </summary>
         [Key]
-        [Column("UserFeedbackId")]
-        public Guid Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Required]
+        public Guid AdminTagId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the feedback is satisfied or not.
+        /// Gets or sets the tag.
         /// </summary>
-        public bool IsSatisfied { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the feedback was reviewed or not.
-        /// </summary>
-        public bool IsReviewed { get; set; }
-
-        /// <summary>
-        /// Gets or sets the feedback comment.
-        /// </summary>
-        [MaxLength(500)]
-        public string? Comment { get; set; }
-
-        /// <summary>
-        /// Gets or sets the related user profile id.
-        /// </summary>
-        [MaxLength(52)]
-        public string? UserProfileId { get; set; }
-
-        /// <summary>
-        /// Gets the related list of tags.
-        /// </summary>
-        public ICollection<UserFeedbackTag> Tags { get; } = new List<UserFeedbackTag>();
+        [MaxLength(20)]
+        [Required]
+        public string Name { get; set; } = string.Empty;
     }
 }
