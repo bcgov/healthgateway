@@ -7,6 +7,8 @@
         "runMode": 1,
         "openMode": 0
     },
+    "viewportWidth": 1920,
+    "viewportHeight": 1080,
     "reporter": "mocha-junit-reporter",
     "reporterOptions": {
         "mochaFile": "reports/junit/test-results.[hash].xml",

@@ -60,10 +60,6 @@ describe("Immunization History Report", () => {
         );
         cy.get("[data-testid=immunizationItemAgent]").should("be.visible");
 
-        cy.get("[data-testid=immunizationHistoryReportSample]").scrollTo(
-            "bottom"
-        );
-
         cy.get("[data-testid=recommendationTitle]").should("be.visible");
         cy.get("[data-testid=recommendationDateTitle]").should("be.visible");
         cy.get("[data-testid=recommendationStatusTitle]").should("be.visible");
