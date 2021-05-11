@@ -694,17 +694,10 @@
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.UserFeedbackView"/> class.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.#ctor(System.Guid,System.String,System.Boolean,System.Boolean,System.DateTime,System.UInt32,System.String,System.Collections.Generic.IList{HealthGateway.Admin.Models.AdminTagView})">
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.#ctor(System.Collections.Generic.IList{HealthGateway.Admin.Models.AdminTagView})">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.UserFeedbackView"/> class.
             </summary>
-            <param name="id">Theid of the model.</param>
-            <param name="comment">The comment model.</param>
-            <param name="isSatisfied">Flag marking if the user is satisfied.</param>
-            <param name="isReviewed">Flag marking if is has been reviewed.</param>
-            <param name="createdDateTime">Model's creation date time.</param>
-            <param name="version">Model's version.</param>
-            <param name="email">The user's email.</param>
             <param name="tags">The load state model.</param>
         </member>
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Id">
