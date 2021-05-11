@@ -44,8 +44,8 @@ export default class ImmunizationCardComponent extends Vue {
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
 
-    @Getter("immunizations", { namespace: "immunization" })
-    immunizations!: ImmunizationEvent[];
+    @Getter("covidImmunizations", { namespace: "immunization" })
+    covidImmunizations!: ImmunizationEvent[];
 
     private eventBus = EventBus;
 
@@ -65,26 +65,14 @@ export default class ImmunizationCardComponent extends Vue {
     @Ref("cardModal")
     readonly cardModal!: Vue;
 
-    @Watch("immunizations", { deep: true })
+    @Watch("covidImmunizations", { deep: true })
     private onImmunizationsChange() {
         this.doses = [];
-        const covidImmunizations = this.immunizations
-            .filter((x) => x.targetedDisease?.toLowerCase().includes("covid"))
-            .sort((a, b) => {
-                const firstDate = new DateWrapper(a.dateOfImmunization);
-                const secondDate = new DateWrapper(b.dateOfImmunization);
 
-                return firstDate.isAfter(secondDate)
-                    ? 1
-                    : firstDate.isBefore(secondDate)
-                    ? -1
-                    : 0;
-            });
-
-        for (let index = 0; index < covidImmunizations.length; index++) {
-            const element = covidImmunizations[index];
-            const agent =
-                covidImmunizations[index].immunization.immunizationAgents[0];
+        for (let index = 0; index < this.covidImmunizations.length; index++) {
+            const element = this.covidImmunizations[index];
+            const agent = this.covidImmunizations[index].immunization
+                .immunizationAgents[0];
             this.doses.push({
                 product: agent.productName,
                 date: DateWrapper.format(element.dateOfImmunization),

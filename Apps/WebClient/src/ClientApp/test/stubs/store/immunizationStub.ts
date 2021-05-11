@@ -21,6 +21,9 @@ const immunizationGetters: ImmunizationGetters = {
     immunizations(): ImmunizationEvent[] {
         return [];
     },
+    covidImmunizations(): ImmunizationEvent[] {
+        return [];
+    },
     recomendations(): Recommendation[] {
         return [];
     },
