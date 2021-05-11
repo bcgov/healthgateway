@@ -6,8 +6,8 @@
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service lint --max-warnings 0 --no-fix && vue-cli-service build",
         "test": "vue-cli-service test:unit --no-cache",
-        "lint": "vue-cli-service lint **/*.ts **/*.vue --max-warnings 0",
-        "lintfix": "vue-cli-service lint **/*.ts **/*.vue --fix",
+        "lint": "vue-cli-service lint \"**/*.{ts,vue}\" --max-warnings 0",
+        "lintfix": "vue-cli-service lint \"**/*.{ts,vue}\" --fix",
         "vue-help": "vue-cli-service help"
     },
     "devDependencies": {
@@ -34,8 +34,8 @@
         "babel-preset-env": "^1.7.0",
         "bootstrap": "~4.6.0",
         "compression-webpack-plugin": "^6.1.1",
-        "eslint": "^7.25.0",
-        "eslint-config-prettier": "^8.3.0",
+        "eslint": "^6.8.0",
+        "eslint-config-prettier": "^6.15.0",
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-simple-import-sort": "^7.0.0",
         "eslint-plugin-sonarjs": "^0.7.0",
