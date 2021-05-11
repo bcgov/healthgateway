@@ -74,5 +74,35 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug($"Finished adding UserFeedbackTag to DB");
             return result;
         }
+
+        /// <inheritdoc />
+        public DBResult<UserFeedbackTag> Delete(UserFeedbackTag feedbackTag, bool commit = true)
+        {
+            this.logger.LogTrace($"Deleting UserFeedbackTag from DB...");
+            DBResult<UserFeedbackTag> result = new DBResult<UserFeedbackTag>()
+            {
+                Payload = feedbackTag,
+                Status = DBStatusCode.Deferred,
+            };
+            this.dbContext.UserFeedbackTag.Attach(feedbackTag);
+
+            this.dbContext.UserFeedbackTag.Remove(feedbackTag);
+            if (commit)
+            {
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Status = DBStatusCode.Deleted;
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    result.Status = DBStatusCode.Concurrency;
+                    result.Message = e.Message;
+                }
+            }
+
+            this.logger.LogDebug($"Finished deleting UserFeedbackTag in DB");
+            return result;
+        }
     }
 }

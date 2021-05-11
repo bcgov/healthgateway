@@ -35,13 +35,6 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
         /// </summary>
-        /// <param name="id">Theid of the model.</param>
-        /// <param name="comment">The comment model.</param>
-        /// <param name="isSatisfied">Flag marking if the user is satisfied.</param>
-        /// <param name="isReviewed">Flag marking if is has been reviewed.</param>
-        /// <param name="createdDateTime">Model's creation date time.</param>
-        /// <param name="version">Model's version.</param>
-        /// <param name="email">The user's email.</param>
         /// <param name="tags">The load state model.</param>
         [JsonConstructor]
         public UserFeedbackView(
@@ -97,7 +90,7 @@ namespace HealthGateway.Admin.Models
         /// <returns>A new UserFeedbackView.</returns>
         public static UserFeedbackView CreateFromDbModel(UserFeedbackAdmin model)
         {
-            UserFeedbackView userFeedbackView = new()
+            UserFeedbackView userFeedbackView = new ()
             {
                 Id = model.Id,
                 Comment = model.Comment,

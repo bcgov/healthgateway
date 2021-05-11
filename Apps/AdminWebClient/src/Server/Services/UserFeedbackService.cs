@@ -165,5 +165,20 @@ namespace HealthGateway.Admin.Services
                 };
             }
         }
+
+        /// <inheritdoc />
+        public bool DissociateFeedbackTag(Guid userFeedbackId, AdminTagView tag)
+        {
+            this.logger.LogTrace($"Removing admin tag from feedback... {tag}");
+
+            DBResult<UserFeedbackTag> feedbackTagResult = this.feedbackTagDelegate.Delete(
+                new UserFeedbackTag()
+                {
+                    UserFeedbackId = userFeedbackId,
+                    AdminTagId = tag.Id,
+                });
+
+            return feedbackTagResult.Status == DBStatusCode.Deleted;
+        }
     }
 }

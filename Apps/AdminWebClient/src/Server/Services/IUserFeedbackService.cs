@@ -59,5 +59,13 @@ namespace HealthGateway.Admin.Services
         /// <param name="tag">The admin tag.</param>
         /// <returns>returns the associated admin tag wrapped in a request result.</returns>
         RequestResult<AdminTagView> AssociateFeedbackTag(Guid userFeedbackId, AdminTagView tag);
+
+        /// <summary>
+        /// Dissociates an admin tag from a user feedback.
+        /// </summary>
+        /// <param name="userFeedbackId">The user feedback id to be dissociated to the tag.</param>
+        /// <param name="tag">The admin tag.</param>
+        /// <returns>returns the associated admin tag wrapped in a request result.</returns>
+        bool DissociateFeedbackTag(Guid userFeedbackId, AdminTagView tag);
     }
 }
