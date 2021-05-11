@@ -13,17 +13,17 @@ export default class HgIconComponent extends Vue {
     @Prop({ required: false, default: false }) square!: boolean;
 
     private get classes(): string[] {
-        let result = [];
+        const result = ["hg-icon"];
 
         switch (this.size) {
             case "small":
-                result.push("hg-icon", "hg-small");
+                result.push("hg-small");
                 break;
             case "medium":
-                result.push("hg-icon", "hg-medium");
+                result.push("hg-medium");
                 break;
             case "large":
-                result.push("hg-icon", "hg-large");
+                result.push("hg-large");
                 break;
             default:
                 return [];
