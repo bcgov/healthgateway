@@ -10,7 +10,7 @@
                         </div>
                     </b-col>
                 </b-row>
-                                <b-row>
+                <b-row>
                     <b-col>
                         <b-row class="mb-2">
                             <b-col>
@@ -23,38 +23,40 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We added a resource centre which allows you
-                                        to quickly launch the FAQ, Release Notes, and
-                                        COVID Immunization Card if you've been 
-                                        vaccinated. 
+                                        We added a resource centre which allows
+                                        you to quickly launch the FAQ, Release
+                                        Notes, and COVID Immunization Card if
+                                        you've been vaccinated.
                                     </li>
                                 </ul>
                             </b-col>
-                        </b-row>                
-                        <b-row>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row class="mb-2">
                     <b-col>
-                        <b-row class="mb-2">
-                            <b-col>
-                                <strong
-                                    >May 5, 2021 - v1.4.0 - Special Authorities Status, Icons and Buttons 
-                                </strong>
-                            </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col>
-                                <ul>
-                                    <li>
-                                        We launched our Special Authority feature, providing 
-                                        access to the approval status for drugs requiring approval 
-                                        under specific medical circumstances.                                       
-                                    </li>
-                                    <li>
-                                        We updated our icons and buttons to be consistent with our
-                                        design system. 
-                                    </li>
-                                    </ul>
-                            </b-col>
-                        </b-row>
+                        <strong
+                            >May 5, 2021 - v1.4.0 - Special Authorities Status,
+                            Icons and Buttons
+                        </strong>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <ul>
+                            <li>
+                                We launched our Special Authority feature,
+                                providing access to the approval status for
+                                drugs requiring approval under specific medical
+                                circumstances.
+                            </li>
+                            <li>
+                                We updated our icons and buttons to be
+                                consistent with our design system.
+                            </li>
+                        </ul>
+                    </b-col>
+                </b-row>
                 <b-row>
                     <b-col>
                         <b-row class="mb-2">
