@@ -222,6 +222,7 @@ export default class FeedbackView extends Vue {
     }
 
     private onTagFocus(feedback: UserFeedback) {
+        // Necessary to keep the feedback tags from being updated by the component.
         this.focusedTags = feedback.tags;
     }
 
@@ -229,13 +230,15 @@ export default class FeedbackView extends Vue {
         input: (string | AdminTag)[],
         feedbackItem: UserFeedback
     ) {
+        // Needs to be executed on the next render cycle to avoid racing conditions on vuetify components.
         this.$nextTick(() => {
             // Reset the feedback tags until the backend updates it
             feedbackItem.tags = this.focusedTags;
 
+            // Last entry on the input is the most recently selected item (could be text)
             const lastTag = input[input.length - 1];
 
-            var newTag: string | AdminTag = "";
+            var newTag: string | AdminTag = lastTag;
 
             // Look for the existing tags for a name match
             if (typeof lastTag === "string") {
@@ -244,54 +247,57 @@ export default class FeedbackView extends Vue {
                 );
                 if (foundIndex > 0) {
                     newTag = this.adminTags[foundIndex];
-                } else {
-                    newTag = lastTag;
                 }
-            } else {
-                newTag = lastTag;
             }
 
+            this.isLoadingTag = true;
             if (typeof newTag === "string") {
-                this.isLoadingTag = true;
-                this.userFeedbackService
-                    .createTag(feedbackItem.id, newTag)
-                    .then((newTag) => {
-                        feedbackItem.tags.push(newTag);
-                        this.adminTags.push(newTag);
-                    })
-                    .catch((err) => {
-                        this.showFeedback = true;
-                        this.bannerFeedback = {
-                            type: ResultType.Error,
-                            title: "Error",
-                            message: "Error creating tag",
-                        };
-                        console.log(err);
-                    })
-                    .finally(() => {
-                        this.isLoadingTag = false;
-                    });
+                this.createNewTag(feedbackItem, newTag);
             } else {
-                this.isLoadingTag = true;
-                this.userFeedbackService
-                    .addTag(feedbackItem.id, newTag)
-                    .then((newTag) => {
-                        feedbackItem.tags.push(newTag);
-                    })
-                    .catch((err) => {
-                        this.showFeedback = true;
-                        this.bannerFeedback = {
-                            type: ResultType.Error,
-                            title: "Error",
-                            message: "Error adding tag",
-                        };
-                        console.log(err);
-                    })
-                    .finally(() => {
-                        this.isLoadingTag = false;
-                    });
+                this.associateTag(feedbackItem, newTag);
             }
         });
+    }
+
+    private createNewTag(feedbackItem: UserFeedback, newTag: string) {
+        this.userFeedbackService
+            .createTag(feedbackItem.id, newTag)
+            .then((newTag) => {
+                feedbackItem.tags.push(newTag);
+                this.adminTags.push(newTag);
+            })
+            .catch((err) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error creating tag",
+                };
+                console.log(err);
+            })
+            .finally(() => {
+                this.isLoadingTag = false;
+            });
+    }
+
+    private associateTag(feedbackItem: UserFeedback, newTag: AdminTag) {
+        this.userFeedbackService
+            .associateTag(feedbackItem.id, newTag)
+            .then((newTag) => {
+                feedbackItem.tags.push(newTag);
+            })
+            .catch((err) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error associating tag",
+                };
+                console.log(err);
+            })
+            .finally(() => {
+                this.isLoadingTag = false;
+            });
     }
 
     private filter(item: AdminTag, queryText: string): boolean {

@@ -45,22 +45,8 @@ namespace HealthGateway.Admin.Models
         /// <param name="tags">The load state model.</param>
         [JsonConstructor]
         public UserFeedbackView(
-            Guid id,
-            string? comment,
-            bool isSatisfied,
-            bool isReviewed,
-            DateTime createdDateTime,
-            uint version,
-            string email,
             IList<AdminTagView> tags)
         {
-            this.Id = id;
-            this.Comment = comment;
-            this.IsSatisfied = isSatisfied;
-            this.IsReviewed = isReviewed;
-            this.CreatedDateTime = createdDateTime;
-            this.Version = version;
-            this.Email = email;
             this.Tags = tags;
         }
 
@@ -111,7 +97,7 @@ namespace HealthGateway.Admin.Models
         /// <returns>A new UserFeedbackView.</returns>
         public static UserFeedbackView CreateFromDbModel(UserFeedbackAdmin model)
         {
-            return new UserFeedbackView()
+            UserFeedbackView userFeedbackView = new()
             {
                 Id = model.Id,
                 Comment = model.Comment,
@@ -121,6 +107,15 @@ namespace HealthGateway.Admin.Models
                 Version = model.Version,
                 Email = model.Email,
             };
+
+            IList<AdminTagView> viewTags = AdminTagView.FromDbFeedbackModelCollection(model.Tags);
+
+            foreach (AdminTagView viewTag in viewTags)
+            {
+                userFeedbackView.Tags.Add(viewTag);
+            }
+
+            return userFeedbackView;
         }
 
         /// <summary>
@@ -133,7 +128,7 @@ namespace HealthGateway.Admin.Models
             IList<UserFeedbackView> newList = new List<UserFeedbackView>();
             foreach (UserFeedbackAdmin model in models)
             {
-                newList.Add(UserFeedbackView.CreateFromDbModel(model));
+                newList.Add(CreateFromDbModel(model));
             }
 
             return newList;

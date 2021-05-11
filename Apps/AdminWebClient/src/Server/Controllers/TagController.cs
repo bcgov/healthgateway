@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Controllers
     using System.Collections.Generic;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
+    using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -55,13 +56,8 @@ namespace HealthGateway.Admin.Controllers
         [Route("[controller]")]
         public IActionResult GetAll()
         {
-            // TODO:
-            List<AdminTagView> tags = new ()
-            {
-                new AdminTagView() { Name = "TagA", Id = Guid.Empty.ToString() },
-                new AdminTagView() { Name = "TagA", Id = Guid.Empty.ToString() },
-            };
-            return new JsonResult(tags);
+            RequestResult<IList<AdminTagView>> result = this.feedbackService.GetAllAdminTags();
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -77,12 +73,12 @@ namespace HealthGateway.Admin.Controllers
         [Route("UserFeedback/{feedbackId}/[controller]")]
         public IActionResult CreateTag(string feedbackId, [FromBody] string tagName)
         {
-            // TODO:ResultStatus = ResultType.Success,
-            return new JsonResult(new AdminTagView() { Name = tagName, Id = Guid.Empty.ToString() });
+            RequestResult<AdminTagView> result = this.feedbackService.CreateFeedbackTag(Guid.Parse(feedbackId), tagName);
+            return new JsonResult(result);
         }
 
         /// <summary>
-        /// Adds an existing admin tag to the feedback with matching id.
+        /// Associate an existing admin tag to the feedback with matching id.
         /// </summary>
         /// <returns>The added tag model wrapped in a request result.</returns>
         /// <param name="feedbackId">The feedback id.</param>
@@ -92,10 +88,10 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpPut]
         [Route("UserFeedback/{feedbackId}/[controller]")]
-        public IActionResult AddTag(string feedbackId, [FromBody] AdminTagView tag)
+        public IActionResult AssociateTag(string feedbackId, [FromBody] AdminTagView tag)
         {
-            // TODO:
-            return new JsonResult(tag);
+            RequestResult<AdminTagView> result = this.feedbackService.AssociateFeedbackTag(Guid.Parse(feedbackId), tag);
+            return new JsonResult(result);
         }
     }
 }
