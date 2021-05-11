@@ -16,47 +16,44 @@
 namespace HealthGateway.Database.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// The user feedback database model.
+    /// The user feedback related tags.
     /// </summary>
-    public class UserFeedback : AuditableEntity
+    public class UserFeedbackTag : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the primary key.
         /// </summary>
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        [Column("UserFeedbackId")]
-        public Guid Id { get; set; }
+        public Guid UserFeedbackTagId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the feedback is satisfied or not.
+        /// Gets or sets the primary key.
         /// </summary>
-        public bool IsSatisfied { get; set; }
+        [Required]
+        [ForeignKey("AdminTagId")]
+        public Guid AdminTagId { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the feedback was reviewed or not.
+        /// Gets or sets the related user feedback id.
         /// </summary>
-        public bool IsReviewed { get; set; }
+        [Required]
+        [ForeignKey("UserFeedbackId")]
+        public Guid UserFeedbackId { get; set; }
 
         /// <summary>
-        /// Gets or sets the feedback comment.
+        /// Gets or sets the related user feedback model.
         /// </summary>
-        [MaxLength(500)]
-        public string? Comment { get; set; }
+        public virtual UserFeedback? UserFeedback { get; set; }
 
         /// <summary>
-        /// Gets or sets the related user profile id.
+        /// Gets or sets the related admin tag model.
         /// </summary>
-        [MaxLength(52)]
-        public string? UserProfileId { get; set; }
-
-        /// <summary>
-        /// Gets the related list of tags.
-        /// </summary>
-        public ICollection<UserFeedbackTag> Tags { get; } = new List<UserFeedbackTag>();
+        public virtual AdminTag? AdminTag { get; set; }
     }
 }
