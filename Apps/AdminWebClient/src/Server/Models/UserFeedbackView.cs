@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -24,6 +25,45 @@ namespace HealthGateway.Admin.Models
     /// </summary>
     public class UserFeedbackView
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
+        /// </summary>
+        public UserFeedbackView()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
+        /// </summary>
+        /// <param name="id">Theid of the model.</param>
+        /// <param name="comment">The comment model.</param>
+        /// <param name="isSatisfied">Flag marking if the user is satisfied.</param>
+        /// <param name="isReviewed">Flag marking if is has been reviewed.</param>
+        /// <param name="createdDateTime">Model's creation date time.</param>
+        /// <param name="version">Model's version.</param>
+        /// <param name="email">The user's email.</param>
+        /// <param name="tags">The load state model.</param>
+        [JsonConstructor]
+        public UserFeedbackView(
+            Guid id,
+            string? comment,
+            bool isSatisfied,
+            bool isReviewed,
+            DateTime createdDateTime,
+            uint version,
+            string email,
+            IList<AdminTagView> tags)
+        {
+            this.Id = id;
+            this.Comment = comment;
+            this.IsSatisfied = isSatisfied;
+            this.IsReviewed = isReviewed;
+            this.CreatedDateTime = createdDateTime;
+            this.Version = version;
+            this.Email = email;
+            this.Tags = tags;
+        }
+
         /// <summary>
         /// Gets or sets the user feedback id.
         /// </summary>
@@ -58,6 +98,11 @@ namespace HealthGateway.Admin.Models
         /// Gets or sets the email if known for this feedback.
         /// </summary>
         public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets the feedback admin tags.
+        /// </summary>
+        public IList<AdminTagView> Tags { get; } = new List<AdminTagView>();
 
         /// <summary>
         /// Constructs a UserFeedbackView from a UserFeedback model.
