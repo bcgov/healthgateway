@@ -254,6 +254,48 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.Admin.Controllers.TagController">
+            <summary>
+            Web API to handle user admin tags.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.TagController.#ctor(HealthGateway.Admin.Services.IUserFeedbackService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Controllers.TagController"/> class.
+            </summary>
+            <param name="feedbackService">The injected user feedback service.</param>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.TagController.GetAll">
+            <summary>
+            Gets all admin tags.
+            </summary>
+            <returns>The list of dependent model wrapped in a request result.</returns>
+            <response code="200">Returns the list of admin tags.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.TagController.CreateTag(System.String,System.String)">
+            <summary>
+            Creates a new admin tag.
+            </summary>
+            <returns>The newly created tag model.</returns>
+            <param name="feedbackId">The feedback id.</param>
+            <param name="tagName">The tag name.</param>
+            <response code="200">Returns the list of dependents.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
+        <member name="M:HealthGateway.Admin.Controllers.TagController.AddTag(System.String,HealthGateway.Admin.Models.AdminTagView)">
+            <summary>
+            Adds an existing admin tag to the feedback with matching id.
+            </summary>
+            <returns>The added tag model wrapped in a request result.</returns>
+            <param name="feedbackId">The feedback id.</param>
+            <param name="tag">The tag model.</param>
+            <response code="200">Returns the list of dependents.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.UserFeedbackController">
             <summary>
             Web API to handle user feedback review.
@@ -385,6 +427,32 @@
             </summary>
             <param name="model">A database email model.</param>
             <param name="inviteStatus">The user invite status.</param>
+            <returns>A new AdminEmail.</returns>
+        </member>
+        <member name="T:HealthGateway.Admin.Models.AdminTagView">
+            <summary>
+            Model that provides a representation of an AdminTag.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminTagView.Id">
+            <summary>
+            Gets or sets the tag id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminTagView.Name">
+            <summary>
+            Gets or sets the tag name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.AdminTagView.Version">
+            <summary>
+            Gets or sets the tag version.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.AdminTagView.CreateFromDbModel">
+            <summary>
+            Constructs a AdminEmail from a Email model.
+            </summary>
             <returns>A new AdminEmail.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.Communication">
@@ -599,6 +667,24 @@
             Model that provides a user representation of a user feedback.
             </summary>
         </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.UserFeedbackView"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.#ctor(System.Guid,System.String,System.Boolean,System.Boolean,System.DateTime,System.UInt32,System.String,System.Collections.Generic.IList{HealthGateway.Admin.Models.AdminTagView})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.UserFeedbackView"/> class.
+            </summary>
+            <param name="id">Theid of the model.</param>
+            <param name="comment">The comment model.</param>
+            <param name="isSatisfied">Flag marking if the user is satisfied.</param>
+            <param name="isReviewed">Flag marking if is has been reviewed.</param>
+            <param name="createdDateTime">Model's creation date time.</param>
+            <param name="version">Model's version.</param>
+            <param name="email">The user's email.</param>
+            <param name="tags">The load state model.</param>
+        </member>
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Id">
             <summary>
             Gets or sets the user feedback id.
@@ -632,6 +718,11 @@
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Email">
             <summary>
             Gets or sets the email if known for this feedback.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Tags">
+            <summary>
+            Gets the feedback admin tags.
             </summary>
         </member>
         <member name="M:HealthGateway.Admin.Models.UserFeedbackView.CreateFromDbModel(HealthGateway.Database.Models.UserFeedbackAdmin)">

@@ -4,7 +4,7 @@ import Communication from "@/models/adminCommunication";
 import AuthenticationData from "@/models/authenticationData";
 import Email from "@/models/email";
 import ExternalConfiguration from "@/models/externalConfiguration";
-import UserFeedback from "@/models/userFeedback";
+import UserFeedback, { AdminTag } from "@/models/userFeedback";
 
 export interface IConfigService {
     initialize(http: IHttpDelegate): void;
@@ -29,6 +29,10 @@ export interface IUserFeedbackService {
     initialize(http: IHttpDelegate): void;
     getFeedbackList(): Promise<UserFeedback[]>;
     toggleReviewed(feedback: UserFeedback): Promise<boolean>;
+    getAllTags(): Promise<AdminTag[]>;
+    createTag(feedbackId: string, tagName: string): Promise<AdminTag>;
+    addTag(feedbackId: string, tag: AdminTag): Promise<AdminTag>;
+    removeTag(feedbackId: string, tag: AdminTag): Promise<boolean>;
 }
 
 export interface IDashboardService {

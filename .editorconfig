@@ -664,3 +664,6 @@ dotnet_diagnostic.CS8600.severity = error
 dotnet_diagnostic.CS8602.severity = error
 
 dotnet_diagnostic.CS8603.severity = error
+
+# S1135: Complete the task associated to this 'TODO' comment.
+dotnet_diagnostic.S1135.severity = warning
