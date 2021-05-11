@@ -10,6 +10,7 @@ import LoadingComponent from "@/components/loading.vue";
 import CovidModalComponent from "@/components/modal/covid.vue";
 import NoteEditComponent from "@/components/modal/noteEdit.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
+import ResourceCentreComponent from "@/components/resourceCentre.vue";
 import CalendarTimelineComponent from "@/components/timeline/calendarTimeline.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/entryDetails.vue";
 import FilterComponent from "@/components/timeline/filters.vue";
@@ -48,6 +49,7 @@ library.add(faSearch);
         CalendarTimeline: CalendarTimelineComponent,
         ErrorCard: ErrorCardComponent,
         Filters: FilterComponent,
+        "resource-centre": ResourceCentreComponent,
     },
 })
 export default class TimelineView extends Vue {
@@ -320,7 +322,7 @@ export default class TimelineView extends Vue {
 </script>
 
 <template>
-    <div>
+    <div class="flex-grow-1 d-flex flex-column">
         <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
         <b-row class="my-2 fluid">
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
@@ -475,6 +477,7 @@ export default class TimelineView extends Vue {
                 </b-row>
             </b-col>
         </b-row>
+        <resource-centre />
         <CovidModalComponent :is-loading="isLoading" />
         <ProtectiveWordComponent :is-loading="isLoading" />
         <NoteEditComponent :is-loading="isLoading" />

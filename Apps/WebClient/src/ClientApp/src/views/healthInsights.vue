@@ -7,6 +7,7 @@ import ErrorCardComponent from "@/components/errorCard.vue";
 import LoadingComponent from "@/components/loading.vue";
 import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import LineChartComponent from "@/components/plot/lineChart.vue";
+import ResourceCentreComponent from "@/components/resourceCentre.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
@@ -23,6 +24,7 @@ import { ILogger } from "@/services/interfaces";
         ProtectiveWordComponent,
         ErrorCard: ErrorCardComponent,
         LineChart: LineChartComponent,
+        "resource-centre": ResourceCentreComponent,
     },
 })
 export default class HealthInsightsView extends Vue {
@@ -176,7 +178,7 @@ export default class HealthInsightsView extends Vue {
 </script>
 
 <template>
-    <div class="m-3">
+    <div class="m-3 flex-grow-1 d-flex flex-column">
         <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
         <b-row>
             <b-col
@@ -230,6 +232,7 @@ export default class HealthInsightsView extends Vue {
                 </div>
             </b-col>
         </b-row>
+        <resource-centre />
         <ProtectiveWordComponent :is-loading="isLoading" />
     </div>
 </template>
