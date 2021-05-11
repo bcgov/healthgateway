@@ -47,15 +47,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<UserFeedbackTag> Add(UserFeedbackTag tag, bool commit = true)
+        public DBResult<UserFeedbackTag> Add(UserFeedbackTag feedbackTag, bool commit = true)
         {
             this.logger.LogTrace($"Adding UserFeedbackTag to DB...");
             DBResult<UserFeedbackTag> result = new DBResult<UserFeedbackTag>()
             {
-                Payload = tag,
+                Payload = feedbackTag,
                 Status = DBStatusCode.Deferred,
             };
-            this.dbContext.UserFeedbackTag.Add(tag);
+            this.dbContext.UserFeedbackTag.Add(feedbackTag);
             if (commit)
             {
                 try
