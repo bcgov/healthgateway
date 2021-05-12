@@ -22,7 +22,7 @@ export const actions: LaboratoryActions = {
             const laboratoryOrders: LaboratoryOrder[] =
                 context.getters.laboratoryOrders;
             if (context.state.status === LoadStatus.LOADED) {
-                logger.debug(`Laboratory found stored, not quering!`);
+                logger.debug(`Laboratory found stored, not querying!`);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,

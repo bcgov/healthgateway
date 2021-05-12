@@ -21,7 +21,7 @@ export const actions: NoteActions = {
         return new Promise((resolve, reject) => {
             const userNotes: UserNote[] = context.getters.notes;
             if (context.state.status === LoadStatus.LOADED) {
-                logger.debug(`Notes found stored, not quering!`);
+                logger.debug(`Notes found stored, not querying!`);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,

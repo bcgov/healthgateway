@@ -22,7 +22,7 @@ export const actions: EncounterActions = {
             const patientEncounters: Encounter[] =
                 context.getters.patientEncounters;
             if (context.state.status === LoadStatus.LOADED) {
-                logger.debug(`Encounters found stored, not quering!`);
+                logger.debug(`Encounters found stored, not querying!`);
                 resolve({
                     pageIndex: 0,
                     pageSize: 0,

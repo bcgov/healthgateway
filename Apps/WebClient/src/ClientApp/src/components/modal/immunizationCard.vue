@@ -1,8 +1,9 @@
 ﻿<script lang="ts">
 import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { Action, Getter } from "vuex-class";
 
+import LoadingComponent from "@/components/loading.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -23,15 +24,28 @@ interface Dose {
 
 @Component({
     components: {
-        MessageModalComponent,
+        "message-modal": MessageModalComponent,
+        "hg-loading": LoadingComponent,
     },
 })
 export default class ImmunizationCardComponent extends Vue {
+    @Action("getPatientData", { namespace: "user" })
+    getPatientData!: () => Promise<void>;
+
+    @Action("retrieve", { namespace: "immunization" })
+    retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
+
+    @Getter("isLoading", { namespace: "user" })
+    isPatientLoading!: boolean;
+
+    @Getter("isLoading", { namespace: "immunization" })
+    isImmunizationLoading!: boolean;
+
     @Getter("patientData", { namespace: "user" })
     patientData!: PatientData;
 
-    @Getter("immunizations", { namespace: "immunization" })
-    immunizations!: ImmunizationEvent[];
+    @Getter("covidImmunizations", { namespace: "immunization" })
+    covidImmunizations!: ImmunizationEvent[];
 
     private eventBus = EventBus;
 
@@ -41,32 +55,24 @@ export default class ImmunizationCardComponent extends Vue {
 
     private doses: Dose[] = [];
 
+    private get isLoading(): boolean {
+        return this.isPatientLoading || this.isImmunizationLoading;
+    }
+
     @Ref("messageModal")
     readonly messageModal!: MessageModalComponent;
 
     @Ref("cardModal")
     readonly cardModal!: Vue;
 
-    @Watch("immunizations", { deep: true })
+    @Watch("covidImmunizations", { deep: true })
     private onImmunizationsChange() {
         this.doses = [];
-        const covidImmunizations = this.immunizations
-            .filter((x) => x.targetedDisease?.toLowerCase().includes("covid"))
-            .sort((a, b) => {
-                const firstDate = new DateWrapper(a.dateOfImmunization);
-                const secondDate = new DateWrapper(b.dateOfImmunization);
 
-                return firstDate.isAfter(secondDate)
-                    ? 1
-                    : firstDate.isBefore(secondDate)
-                    ? -1
-                    : 0;
-            });
-
-        for (let index = 0; index < covidImmunizations.length; index++) {
-            const element = covidImmunizations[index];
-            const agent =
-                covidImmunizations[index].immunization.immunizationAgents[0];
+        for (let index = 0; index < this.covidImmunizations.length; index++) {
+            const element = this.covidImmunizations[index];
+            const agent = this.covidImmunizations[index].immunization
+                .immunizationAgents[0];
             this.doses.push({
                 product: agent.productName,
                 date: DateWrapper.format(element.dateOfImmunization),
@@ -107,6 +113,8 @@ export default class ImmunizationCardComponent extends Vue {
     }
 
     public showModal(): void {
+        this.getPatientData();
+        this.retrieveImmunizations({ hdid: this.patientData.hdid });
         this.isVisible = true;
     }
 
@@ -146,6 +154,7 @@ export default class ImmunizationCardComponent extends Vue {
         hide-footer
         centered
     >
+        <hg-loading :is-loading="isLoading" />
         <template #modal-header="{ close }">
             <b-row class="w-100 h-100">
                 <b-col>
@@ -267,7 +276,7 @@ export default class ImmunizationCardComponent extends Vue {
                 </hg-button>
             </b-col>
         </b-row>
-        <MessageModalComponent
+        <message-modal
             ref="messageModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."

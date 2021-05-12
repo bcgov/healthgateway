@@ -8,7 +8,15 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import "@/assets/scss/bcgov/bootstrap-theme.scss";
 import "@/plugins/registerComponentHooks";
 
-import { BBadge, BFormTag, BFormTags, BPopover } from "bootstrap-vue";
+import {
+    BBadge,
+    BDropdown,
+    BDropdownItem,
+    BDropdownItemButton,
+    BFormTag,
+    BFormTags,
+    BPopover,
+} from "bootstrap-vue";
 import IdleVue from "idle-vue";
 import Vue from "vue";
 import VueContentPlaceholders from "vue-content-placeholders";
@@ -54,6 +62,9 @@ import { RootState } from "./store/types";
 
 Vue.component("BPopover", BPopover);
 Vue.component("BBadge", BBadge);
+Vue.component("BDropdown", BDropdown);
+Vue.component("BDropdownItem", BDropdownItem);
+Vue.component("BDropdownItemButton", BDropdownItemButton);
 Vue.component("BFormTags", BFormTags);
 Vue.component("BFormTag", BFormTag);
 Vue.component("HgButton", HgButtonComponent);

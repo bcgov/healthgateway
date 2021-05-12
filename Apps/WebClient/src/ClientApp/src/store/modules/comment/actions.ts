@@ -17,7 +17,7 @@ export const actions: CommentActions = {
         );
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
-                logger.debug(`Comments found stored, not quering!`);
+                logger.debug(`Comments found stored, not querying!`);
                 resolve();
             } else {
                 logger.debug(`Retrieving User comments`);
