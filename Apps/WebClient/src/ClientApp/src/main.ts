@@ -11,8 +11,10 @@ import "@/plugins/registerComponentHooks";
 import {
     BBadge,
     BDropdown,
+    BDropdownDivider,
     BDropdownItem,
     BDropdownItemButton,
+    BDropdownText,
     BFormTag,
     BFormTags,
     BPopover,
@@ -63,8 +65,10 @@ import { RootState } from "./store/types";
 Vue.component("BPopover", BPopover);
 Vue.component("BBadge", BBadge);
 Vue.component("BDropdown", BDropdown);
+Vue.component("BDropdownDivider", BDropdownDivider);
 Vue.component("BDropdownItem", BDropdownItem);
 Vue.component("BDropdownItemButton", BDropdownItemButton);
+Vue.component("BDropdownText", BDropdownText);
 Vue.component("BFormTags", BFormTags);
 Vue.component("BFormTag", BFormTag);
 Vue.component("HgButton", HgButtonComponent);

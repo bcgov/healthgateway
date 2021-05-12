@@ -46,6 +46,11 @@ export default class ResourceCentreComponent extends Vue {
                     class="rounded-circle bg-white shadow p-3"
                 />
             </template>
+            <b-dropdown-text
+                text-class="hg-resource-centre-title font-weight-bold"
+                >Resource Centre</b-dropdown-text
+            >
+            <b-dropdown-divider />
             <b-dropdown-item-button
                 :disabled="covidImmunizations.length === 0"
                 data-testid="hg-resource-centre-covid-card"
@@ -59,12 +64,14 @@ export default class ResourceCentreComponent extends Vue {
 </template>
 
 <style lang="scss">
-// deliberately unscoped to affect button styling in dropdown
-
 @import "@/assets/scss/_variables.scss";
 
 .hg-resource-centre {
     bottom: 0;
+
+    .hg-resource-centre-title {
+        cursor: default;
+    }
 
     button.dropdown-toggle {
         color: $hg-button-resource-centre-text;
