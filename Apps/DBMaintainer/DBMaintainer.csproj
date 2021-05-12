@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="26.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
