@@ -31,5 +31,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A user feedback tag wrapped in a DBResult.</returns>
         DBResult<UserFeedbackTag> Add(UserFeedbackTag feedbackTag, bool commit = true);
+
+        /// <summary>
+        /// Deletes the given user feedback tag.
+        /// </summary>
+        /// <param name="feedbackTag">The user feedback tag to be deleted from database.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <returns>The result DBResult.</returns>
+        DBResult<UserFeedbackTag> Delete(UserFeedbackTag feedbackTag, bool commit = true);
     }
 }

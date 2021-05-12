@@ -296,6 +296,17 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="M:HealthGateway.Admin.Controllers.TagController.DissociateTag(System.String,HealthGateway.Admin.Models.AdminTagView)">
+            <summary>
+            Dissociates the tag from the given feedback id.
+            </summary>
+            <returns>True if the operation was successful.</returns>
+            <param name="feedbackId">The feedback id.</param>
+            <param name="tag">The tag model.</param>
+            <response code="200">Returns the list of dependents.</response>
+            <response code="401">the client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+        </member>
         <member name="T:HealthGateway.Admin.Controllers.UserFeedbackController">
             <summary>
             Web API to handle user feedback review.
@@ -1123,6 +1134,14 @@
             <param name="tag">The admin tag.</param>
             <returns>returns the associated admin tag wrapped in a request result.</returns>
         </member>
+        <member name="M:HealthGateway.Admin.Services.IUserFeedbackService.DissociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.AdminTagView)">
+            <summary>
+            Dissociates an admin tag from a user feedback.
+            </summary>
+            <param name="userFeedbackId">The user feedback id to be dissociated to the tag.</param>
+            <param name="tag">The admin tag.</param>
+            <returns>returns the associated admin tag wrapped in a request result.</returns>
+        </member>
         <member name="T:HealthGateway.Admin.Services.UserFeedbackService">
             <inheritdoc />
         </member>
@@ -1148,6 +1167,9 @@
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Admin.Services.UserFeedbackService.AssociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.AdminTagView)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.DissociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.AdminTagView)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.AdminWebClient.Pages.ErrorPage">

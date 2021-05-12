@@ -694,6 +694,9 @@
         <member name="M:HealthGateway.Database.Delegates.DBFeedbackTagDelegate.Add(HealthGateway.Database.Models.UserFeedbackTag,System.Boolean)">
             <inheritdoc />
         </member>
+        <member name="M:HealthGateway.Database.Delegates.DBFeedbackTagDelegate.Delete(HealthGateway.Database.Models.UserFeedbackTag,System.Boolean)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Database.Delegates.DBGenericCacheDelegate">
             <summary>
             Entity framework based implementation of the GenericCache delegate.
@@ -1299,6 +1302,14 @@
             <param name="feedbackTag">The user feedback tag to be added to the database.</param>
             <param name="commit">if true the transaction is persisted immediately.</param>
             <returns>A user feedback tag wrapped in a DBResult.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IFeedbackTagDelegate.Delete(HealthGateway.Database.Models.UserFeedbackTag,System.Boolean)">
+            <summary>
+            Deletes the given user feedback tag.
+            </summary>
+            <param name="feedbackTag">The user feedback tag to be deleted from database.</param>
+            <param name="commit">if true the transaction is persisted immediately.</param>
+            <returns>The result DBResult.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.IGenericCacheDelegate">
             <summary>

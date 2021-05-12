@@ -54,7 +54,10 @@
                                 @focus="onTagFocus(feedback)"
                             >
                                 <template #selection="{ item }">
-                                    <v-chip>
+                                    <v-chip
+                                        close
+                                        @click:close="removeTag(feedback, item)"
+                                    >
                                         {{ item.name }}
                                     </v-chip>
                                 </template>
@@ -292,6 +295,38 @@ export default class FeedbackView extends Vue {
                     type: ResultType.Error,
                     title: "Error",
                     message: "Error associating tag",
+                };
+                console.log(err);
+            })
+            .finally(() => {
+                this.isLoadingTag = false;
+            });
+    }
+
+    private removeTag(feedbackItem: UserFeedback, tag: AdminTag) {
+        this.userFeedbackService
+            .removeTag(feedbackItem.id, tag)
+            .then((result) => {
+                if (result) {
+                    const feedbackIndex = feedbackItem.tags.findIndex(
+                        (x) => x.id === tag.id
+                    );
+                    feedbackItem.tags.splice(feedbackIndex, 1);
+                } else {
+                    this.showFeedback = true;
+                    this.bannerFeedback = {
+                        type: ResultType.Error,
+                        title: "Error",
+                        message: "Error removing tag",
+                    };
+                }
+            })
+            .catch((err) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error removing tag",
                 };
                 console.log(err);
             })
