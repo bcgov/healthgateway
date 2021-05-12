@@ -15,6 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using HealthGateway.Database.Models;
+
     /// <summary>
     /// Model that provides a representation of an AdminTag.
     /// </summary>
@@ -23,7 +27,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets or sets the tag id.
         /// </summary>
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the tag name.
@@ -36,13 +40,65 @@ namespace HealthGateway.Admin.Models
         public uint Version { get; set; }
 
         /// <summary>
-        /// Constructs a AdminEmail from a Email model.
+        /// Converts a list of DB UserFeedbackTag into a list of AdminTagView.
         /// </summary>
-        /// <returns>A new AdminEmail.</returns>
-        public static AdminTagView CreateFromDbModel(/*Database.AdminTag model*/)
+        /// <param name="adminTags">The list of DB models.</param>
+        /// <returns>A converted list or null if inbound is null.</returns>
+        public static IList<AdminTagView> FromDbFeedbackModelCollection(ICollection<UserFeedbackTag> adminTags)
         {
-            // TODO:
-            return new AdminTagView();
+            List<AdminTagView> retList = new ();
+            foreach (UserFeedbackTag tag in adminTags)
+            {
+                retList.Add(CreateFromDbFeedbackModel(tag));
+            }
+
+            return retList;
+        }
+
+        /// <summary>
+        /// Constructs a AdminTagView from an UserFeedbackTag model.
+        /// </summary>
+        /// <param name="model">The database model.</param>
+        /// <returns>A new AdminTagView.</returns>
+        public static AdminTagView CreateFromDbFeedbackModel(UserFeedbackTag model)
+        {
+            return new AdminTagView()
+            {
+                Id = model.AdminTag.AdminTagId,
+                Name = model.AdminTag.Name,
+                Version = model.AdminTag.Version,
+            };
+        }
+
+        /// <summary>
+        /// Converts a list of DB AdminTag into a list of AdminTagView.
+        /// </summary>
+        /// <param name="adminTags">The list of DB models.</param>
+        /// <returns>A converted list or null if inbound is null.</returns>
+        public static IList<AdminTagView> FromDbAdminTagModelCollection(IEnumerable<AdminTag> adminTags)
+        {
+            List<AdminTagView> retList = new ();
+            foreach (AdminTag tag in adminTags)
+            {
+                retList.Add(CreateFromDbAdminTagModel(tag));
+            }
+
+            return retList;
+        }
+
+        /// <summary>
+        /// Constructs a AdminTagView from an AdminTag model.
+        /// </summary>
+        /// <param name="model">The database model.</param>
+        /// <returns>A new AdminTagView.</returns>
+        public static AdminTagView CreateFromDbAdminTagModel(AdminTag model)
+        {
+            return new AdminTagView()
+            {
+                Id = model.AdminTagId,
+                Name = model.Name,
+                Version = model.Version,
+            };
         }
     }
 }

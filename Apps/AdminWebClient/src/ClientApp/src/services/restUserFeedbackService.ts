@@ -1,6 +1,7 @@
 import { injectable } from "inversify";
 import { Dictionary } from "vue-router/types/router";
 
+import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
 import UserFeedback, { AdminTag } from "@/models/userFeedback";
 import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
@@ -68,10 +69,10 @@ export class RestUserFeedbackService implements IUserFeedbackService {
             const headers: Dictionary<string> = {};
             headers[this.contentTypeHeader] = this.contentType;
             this.http
-                .get<AdminTag[]>(`${this.BASE_URI}/Tag`, headers)
+                .get<RequestResult<AdminTag[]>>(`${this.BASE_URI}/Tag`, headers)
                 .then((requestResult) => {
-                    if (requestResult) {
-                        resolve(requestResult);
+                    if (requestResult.resultStatus === ResultType.Success) {
+                        resolve(requestResult.resourcePayload);
                     } else {
                         reject("Error retrieving tags");
                     }
@@ -88,14 +89,14 @@ export class RestUserFeedbackService implements IUserFeedbackService {
             const headers: Dictionary<string> = {};
             headers[this.contentTypeHeader] = this.contentType;
             this.http
-                .post<AdminTag>(
-                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}}/Tag`,
+                .post<RequestResult<AdminTag>>(
+                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}/Tag`,
                     JSON.stringify(tagName),
                     headers
                 )
                 .then((requestResult) => {
-                    if (requestResult) {
-                        resolve(requestResult);
+                    if (requestResult.resultStatus === ResultType.Success) {
+                        resolve(requestResult.resourcePayload);
                     } else {
                         reject("Error creating feedback tag");
                     }
@@ -107,19 +108,19 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         });
     }
 
-    public addTag(feedbackId: string, tag: AdminTag): Promise<AdminTag> {
+    public associateTag(feedbackId: string, tag: AdminTag): Promise<AdminTag> {
         console.log(tag);
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers[this.contentTypeHeader] = this.contentType;
             this.http
-                .put<AdminTag>(
-                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}}/Tag`,
+                .put<RequestResult<AdminTag>>(
+                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}/Tag`,
                     tag
                 )
                 .then((requestResult) => {
-                    if (requestResult) {
-                        resolve(requestResult);
+                    if (requestResult.resultStatus === ResultType.Success) {
+                        resolve(requestResult.resourcePayload);
                     } else {
                         reject("Error adding feedback tag");
                     }
@@ -137,7 +138,7 @@ export class RestUserFeedbackService implements IUserFeedbackService {
             headers[this.contentTypeHeader] = this.contentType;
             this.http
                 .delete<boolean>(
-                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}}/Tag`,
+                    `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}/Tag`,
                     JSON.stringify(tag),
                     headers
                 )

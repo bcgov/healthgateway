@@ -2893,6 +2893,17 @@
             The user feedback database model.
             </summary>
         </member>
+        <member name="M:HealthGateway.Database.Models.UserFeedback.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Database.Models.UserFeedback"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Database.Models.UserFeedback.#ctor(System.Collections.Generic.ICollection{HealthGateway.Database.Models.UserFeedbackTag})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Database.Models.UserFeedback"/> class.
+            </summary>
+            <param name="tags">The tag collection.</param>
+        </member>
         <member name="P:HealthGateway.Database.Models.UserFeedback.Id">
             <summary>
             Gets or sets the primary key.
@@ -2927,6 +2938,17 @@
             <summary>
             An administrative view of UserFeedback with Email populated from UserProfile.
             </summary>
+        </member>
+        <member name="M:HealthGateway.Database.Models.UserFeedbackAdmin.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Database.Models.UserFeedbackAdmin"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Database.Models.UserFeedbackAdmin.#ctor(System.Collections.Generic.ICollection{HealthGateway.Database.Models.UserFeedbackTag})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Database.Models.UserFeedbackAdmin"/> class.
+            </summary>
+            <param name="tags">The tag collection.</param>
         </member>
         <member name="P:HealthGateway.Database.Models.UserFeedbackAdmin.Email">
             <summary>

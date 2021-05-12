@@ -31,7 +31,7 @@ export interface IUserFeedbackService {
     toggleReviewed(feedback: UserFeedback): Promise<boolean>;
     getAllTags(): Promise<AdminTag[]>;
     createTag(feedbackId: string, tagName: string): Promise<AdminTag>;
-    addTag(feedbackId: string, tag: AdminTag): Promise<AdminTag>;
+    associateTag(feedbackId: string, tag: AdminTag): Promise<AdminTag>;
     removeTag(feedbackId: string, tag: AdminTag): Promise<boolean>;
 }
 

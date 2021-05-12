@@ -35,32 +35,11 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
         /// </summary>
-        /// <param name="id">Theid of the model.</param>
-        /// <param name="comment">The comment model.</param>
-        /// <param name="isSatisfied">Flag marking if the user is satisfied.</param>
-        /// <param name="isReviewed">Flag marking if is has been reviewed.</param>
-        /// <param name="createdDateTime">Model's creation date time.</param>
-        /// <param name="version">Model's version.</param>
-        /// <param name="email">The user's email.</param>
         /// <param name="tags">The load state model.</param>
         [JsonConstructor]
         public UserFeedbackView(
-            Guid id,
-            string? comment,
-            bool isSatisfied,
-            bool isReviewed,
-            DateTime createdDateTime,
-            uint version,
-            string email,
             IList<AdminTagView> tags)
         {
-            this.Id = id;
-            this.Comment = comment;
-            this.IsSatisfied = isSatisfied;
-            this.IsReviewed = isReviewed;
-            this.CreatedDateTime = createdDateTime;
-            this.Version = version;
-            this.Email = email;
             this.Tags = tags;
         }
 
@@ -111,7 +90,7 @@ namespace HealthGateway.Admin.Models
         /// <returns>A new UserFeedbackView.</returns>
         public static UserFeedbackView CreateFromDbModel(UserFeedbackAdmin model)
         {
-            return new UserFeedbackView()
+            UserFeedbackView userFeedbackView = new ()
             {
                 Id = model.Id,
                 Comment = model.Comment,
@@ -121,6 +100,15 @@ namespace HealthGateway.Admin.Models
                 Version = model.Version,
                 Email = model.Email,
             };
+
+            IList<AdminTagView> viewTags = AdminTagView.FromDbFeedbackModelCollection(model.Tags);
+
+            foreach (AdminTagView viewTag in viewTags)
+            {
+                userFeedbackView.Tags.Add(viewTag);
+            }
+
+            return userFeedbackView;
         }
 
         /// <summary>
@@ -133,7 +121,7 @@ namespace HealthGateway.Admin.Models
             IList<UserFeedbackView> newList = new List<UserFeedbackView>();
             foreach (UserFeedbackAdmin model in models)
             {
-                newList.Add(UserFeedbackView.CreateFromDbModel(model));
+                newList.Add(CreateFromDbModel(model));
             }
 
             return newList;
