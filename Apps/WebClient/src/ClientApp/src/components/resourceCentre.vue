@@ -48,6 +48,7 @@ export default class ResourceCentreComponent extends Vue {
             </template>
             <b-dropdown-item-button
                 :disabled="covidImmunizations.length === 0"
+                data-testid="hg-resource-centre-covid-card"
                 @click="showCovidCard()"
                 >COVID-19 Card</b-dropdown-item-button
             >
