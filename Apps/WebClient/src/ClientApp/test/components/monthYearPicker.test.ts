@@ -16,7 +16,7 @@ describe("MonthYearPickerComponent", () => {
     localVue.use(Vuex);
 
     const options = new StoreOptionsStub();
-    let store = new Vuex.Store(options);
+    const store = new Vuex.Store(options);
 
     logger.initialize("info");
     test("renders component correctly", () => {

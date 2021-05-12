@@ -28,7 +28,7 @@ describe("NavBar Header Component", () => {
     options.modules.user.getters.userIsRegistered = () => true;
     options.modules.user.getters.userIsActive = () => true;
 
-    let customStore = new Vuex.Store(options);
+    const customStore = new Vuex.Store(options);
 
     const wrapper = shallowMount(HeaderComponent, {
         localVue,

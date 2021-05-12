@@ -96,6 +96,8 @@ namespace HealthGateway.AdminWebClient
             services.AddTransient<INoteDelegate, DBNoteDelegate>();
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
             services.AddTransient<ICommentDelegate, DBCommentDelegate>();
+            services.AddTransient<IAdminTagDelegate, DBAdminTagDelegate>();
+            services.AddTransient<IFeedbackTagDelegate, DBFeedbackTagDelegate>();
 
             // Configure SPA
             services.AddControllersWithViews();

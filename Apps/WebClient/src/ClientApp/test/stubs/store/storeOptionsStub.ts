@@ -1,5 +1,3 @@
-import "reflect-metadata";
-
 import { voidMethod } from "@test/stubs/util";
 import { injectable } from "inversify";
 

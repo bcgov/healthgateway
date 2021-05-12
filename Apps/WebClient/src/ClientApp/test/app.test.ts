@@ -18,7 +18,7 @@ describe("Home view", () => {
     localVue.use(Vuex);
     localVue.use(VueRouter);
 
-    let store = new Vuex.Store(new StoreOptionsStub());
+    const store = new Vuex.Store(new StoreOptionsStub());
 
     const wrapper = shallowMount(AppComponent, {
         localVue,

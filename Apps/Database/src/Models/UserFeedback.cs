@@ -16,24 +16,63 @@
 namespace HealthGateway.Database.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-#pragma warning disable CS1591 // self explanatory simple model
-#pragma warning disable SA1600 // self explanatory simple model
+    /// <summary>
+    /// The user feedback database model.
+    /// </summary>
     public class UserFeedback : AuditableEntity
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserFeedback"/> class.
+        /// </summary>
+        public UserFeedback()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserFeedback"/> class.
+        /// </summary>
+        /// <param name="tags">The tag collection.</param>
+        public UserFeedback(ICollection<UserFeedbackTag> tags)
+        {
+            this.Tags = tags;
+        }
+
+        /// <summary>
+        /// Gets or sets the primary key.
+        /// </summary>
+        [Key]
         [Column("UserFeedbackId")]
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the feedback is satisfied or not.
+        /// </summary>
         public bool IsSatisfied { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the feedback was reviewed or not.
+        /// </summary>
         public bool IsReviewed { get; set; }
 
+        /// <summary>
+        /// Gets or sets the feedback comment.
+        /// </summary>
         [MaxLength(500)]
         public string? Comment { get; set; }
 
+        /// <summary>
+        /// Gets or sets the related user profile id.
+        /// </summary>
         [MaxLength(52)]
         public string? UserProfileId { get; set; }
+
+        /// <summary>
+        /// Gets the related list of tags.
+        /// </summary>
+        public ICollection<UserFeedbackTag> Tags { get; } = new List<UserFeedbackTag>();
     }
 }

@@ -44,6 +44,9 @@ describe("Timeline view", () => {
     const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
     logger.initialize("info");
 
+    const bannerId = "#incomplete-profile-banner";
+    const linearTimelineTag = "lineartimeline-stub";
+
     test("is a Vue instance", () => {
         const wrapper = createWrapper();
         expect(wrapper).toBeTruthy();
@@ -58,7 +61,7 @@ describe("Timeline view", () => {
 
         // Check values
         expect(wrapper.find("loadingcomponent-stub").exists()).toBe(true);
-        expect(wrapper.find("lineartimeline-stub").isVisible()).toBe(false);
+        expect(wrapper.find(linearTimelineTag).isVisible()).toBe(false);
     });
 
     test("Active", () => {
@@ -69,7 +72,7 @@ describe("Timeline view", () => {
         const wrapper = createWrapper(options);
 
         expect(wrapper.find("loadingcomponent-stub").exists()).toBe(false);
-        expect(wrapper.find("lineartimeline-stub").isVisible()).toBe(true);
+        expect(wrapper.find(linearTimelineTag).isVisible()).toBe(true);
         expect(wrapper.find("calendartimeline-stub").isVisible()).toBe(false);
     });
 
@@ -79,7 +82,7 @@ describe("Timeline view", () => {
         options.modules.timeline.getters.isLinearView = () => false;
         const wrapper = createWrapper(options);
 
-        expect(wrapper.find("lineartimeline-stub").isVisible()).toBe(false);
+        expect(wrapper.find(linearTimelineTag).isVisible()).toBe(false);
         expect(wrapper.find("calendartimeline-stub").isVisible()).toBe(true);
     });
 
@@ -93,7 +96,7 @@ describe("Timeline view", () => {
         options.modules.user.getters.user = () => user;
         const wrapper = createWrapper(options);
 
-        expect(wrapper.find("#incomplete-profile-banner").exists()).toBe(true);
+        expect(wrapper.find(bannerId).exists()).toBe(true);
     });
 
     test("Shows Email incomplete profile banner", () => {
@@ -106,7 +109,7 @@ describe("Timeline view", () => {
         options.modules.user.getters.user = () => user;
         const wrapper = createWrapper(options);
 
-        expect(wrapper.find("#incomplete-profile-banner").exists()).toBe(true);
+        expect(wrapper.find(bannerId).exists()).toBe(true);
     });
 
     test("Hides incomplete profile banner when verified", () => {
@@ -121,7 +124,7 @@ describe("Timeline view", () => {
         options.modules.user.getters.user = () => user;
         const wrapper = createWrapper(options);
 
-        expect(wrapper.find("#incomplete-profile-banner").exists()).toBe(false);
+        expect(wrapper.find(bannerId).exists()).toBe(false);
     });
 
     test("Shows Loading immunization", () => {

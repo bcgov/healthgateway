@@ -29,14 +29,12 @@ export default class HgButtonComponent extends Vue {
             case "icon-light":
                 result.push("hg-button", "hg-icon hg-icon-light");
                 break;
-
             case "nav":
                 result.push("hg-button", "hg-nav", "btn-block");
                 break;
             case "danger":
                 result.push("hg-button", "hg-danger");
                 break;
-
             default:
                 return [];
         }

@@ -1,4 +1,4 @@
-import { stubbedPromise, voidMethod } from "@test/stubs/util";
+import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import { RegistrationStatus } from "@/constants/registrationStatus";
 import {
@@ -55,7 +55,7 @@ const configGetters: ConfigGetters = {
 };
 
 const configActions: ConfigActions = {
-    initialize: stubbedPromise,
+    initialize: voidPromise,
 };
 
 const configMutations: ConfigMutations = {

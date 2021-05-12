@@ -137,6 +137,47 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("ActiveIngredient");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.AdminTag", b =>
+                {
+                    b.Property<Guid>("AdminTagId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("AdminTagId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("AdminTag");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.ApplicationSetting", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2035,7 +2076,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(2)");
 
                     b.Property<decimal?>("LCAPrice")
-                        .HasColumnType("decimal(8,4)");
+                        .HasColumnType("numeric(8,4)");
 
                     b.Property<string>("LimitedUseFlag")
                         .HasMaxLength(1)
@@ -2049,7 +2090,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal?>("MaximumPrice")
-                        .HasColumnType("decimal(8,4)");
+                        .HasColumnType("numeric(8,4)");
 
                     b.Property<string>("PayGenericIndicator")
                         .HasMaxLength(1)
@@ -2075,7 +2116,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.Property<decimal?>("RDPPrice")
-                        .HasColumnType("decimal(8,4)");
+                        .HasColumnType("numeric(8,4)");
 
                     b.Property<string>("RDPSubCategory")
                         .HasMaxLength(4)
@@ -2805,6 +2846,50 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("UserFeedback");
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.UserFeedbackTag", b =>
+                {
+                    b.Property<Guid>("UserFeedbackTagId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AdminTagId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("UserFeedbackId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("UserFeedbackTagId");
+
+                    b.HasIndex("UserFeedbackId");
+
+                    b.HasIndex("AdminTagId", "UserFeedbackId")
+                        .IsUnique();
+
+                    b.ToTable("UserFeedbackTag");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.UserPreference", b =>
                 {
                     b.Property<string>("HdId")
@@ -3287,6 +3372,25 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HealthGateway.Database.Models.UserFeedbackTag", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.AdminTag", "AdminTag")
+                        .WithMany()
+                        .HasForeignKey("AdminTagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthGateway.Database.Models.UserFeedback", "UserFeedback")
+                        .WithMany("Tags")
+                        .HasForeignKey("UserFeedbackId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AdminTag");
+
+                    b.Navigation("UserFeedback");
+                });
+
             modelBuilder.Entity("HealthGateway.Database.Models.VeterinarySpecies", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.DrugProduct", null)
@@ -3315,6 +3419,11 @@ namespace HealthGateway.Database.Migrations
                     b.Navigation("TherapeuticClass");
 
                     b.Navigation("VeterinarySpecies");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>
+                {
+                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

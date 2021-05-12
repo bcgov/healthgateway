@@ -1,4 +1,4 @@
-import { stubbedPromise, voidMethod } from "@test/stubs/util";
+import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { LoadStatus } from "@/models/storeOperations";
@@ -21,6 +21,9 @@ const immunizationGetters: ImmunizationGetters = {
     immunizations(): ImmunizationEvent[] {
         return [];
     },
+    covidImmunizations(): ImmunizationEvent[] {
+        return [];
+    },
     recomendations(): Recommendation[] {
         return [];
     },
@@ -36,7 +39,7 @@ const immunizationGetters: ImmunizationGetters = {
 };
 
 const immunizationActions: ImmunizationActions = {
-    retrieve: stubbedPromise,
+    retrieve: voidPromise,
     handleError: voidMethod,
 };
 

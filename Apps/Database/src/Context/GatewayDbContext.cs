@@ -76,6 +76,8 @@ namespace HealthGateway.Database.Context
         public DbSet<Rating> Rating { get; set; } = null!;
         public DbSet<ResourceDelegate> ResourceDelegate { get; set; } = null!;
         public DbSet<EventLog> EventLog { get; set; } = null!;
+        public DbSet<AdminTag> AdminTag { get; set; } = null!;
+        public DbSet<UserFeedbackTag> UserFeedbackTag { get; set; } = null!;
 #pragma warning restore CS1591, SA1600
 
         /// <inheritdoc />
@@ -311,6 +313,16 @@ namespace HealthGateway.Database.Context
                 .HasPrincipalKey(k => k.CommentEntryCode)
                 .HasForeignKey(k => k.EntryTypeCode)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Create unique keys for UserFeedbackTag
+            modelBuilder.Entity<UserFeedbackTag>()
+                .HasIndex(p => new { p.AdminTagId, p.UserFeedbackId })
+                .IsUnique(true);
+
+            // Create unique keys for AdminTag
+            modelBuilder.Entity<AdminTag>()
+                .HasIndex(p => p.Name)
+                .IsUnique(true);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

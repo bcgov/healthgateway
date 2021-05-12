@@ -7,48 +7,69 @@
             class="mt-5"
         ></BannerFeedbackComponent>
         <v-row justify="center">
-            <v-col md="9">
-                <v-row>
-                    <v-col no-gutters>
-                        <v-data-table
-                            :headers="tableHeaders"
-                            :items="feedbackList"
-                            :items-per-page="50"
-                            :footer-props="{
-                                'items-per-page-options': [25, 50, 100, -1],
-                            }"
-                        >
-                            <template #item.createdDateTime="{ item }">
-                                <span>{{
-                                    formatDate(item.createdDateTime)
-                                }}</span>
-                            </template>
-                            <template #item.isReviewed="{ item }">
-                                <td>
-                                    <v-btn
-                                        class="mx-2"
-                                        dark
-                                        small
-                                        @click="toggleReviewed(item)"
+            <v-col no-gutters>
+                <v-data-table
+                    :headers="tableHeaders"
+                    :items="feedbackList"
+                    :items-per-page="50"
+                    :footer-props="{
+                        'items-per-page-options': [25, 50, 100, -1],
+                    }"
+                >
+                    <template #item.createdDateTime="{ item }">
+                        <span>{{ formatDate(item.createdDateTime) }}</span>
+                    </template>
+                    <template #item.isReviewed="{ item }">
+                        <td>
+                            <v-btn
+                                class="mx-2"
+                                dark
+                                small
+                                icon
+                                @click="toggleReviewed(item)"
+                            >
+                                <v-icon
+                                    v-if="item.isReviewed"
+                                    color="green"
+                                    dark
+                                    >fa-check</v-icon
+                                >
+                                <v-icon v-if="!item.isReviewed" color="red" dark
+                                    >fa-times</v-icon
+                                >
+                            </v-btn>
+                        </td>
+                    </template>
+                    <template #item.tags="{ item: feedback }">
+                        <td>
+                            <v-combobox
+                                v-model="feedback.tags"
+                                multiple
+                                hide-selected
+                                :items="adminTags"
+                                :filter="filter"
+                                :loading="isLoadingTag"
+                                item-text="name"
+                                @input="onTagChange($event, feedback)"
+                                @focus="onTagFocus(feedback)"
+                            >
+                                <template #selection="{ item }">
+                                    <v-chip
+                                        close
+                                        @click:close="removeTag(feedback, item)"
                                     >
-                                        <v-icon
-                                            v-if="item.isReviewed"
-                                            color="green"
-                                            dark
-                                            >fa-check</v-icon
-                                        >
-                                        <v-icon
-                                            v-if="!item.isReviewed"
-                                            color="red"
-                                            dark
-                                            >fa-times</v-icon
-                                        >
-                                    </v-btn>
-                                </td>
-                            </template>
-                        </v-data-table>
-                    </v-col>
-                </v-row>
+                                        {{ item.name }}
+                                    </v-chip>
+                                </template>
+                                <template #item="{ item }">
+                                    <v-chip>
+                                        {{ item.name }}
+                                    </v-chip>
+                                </template>
+                            </v-combobox>
+                        </td>
+                    </template>
+                </v-data-table>
             </v-col>
         </v-row>
     </v-container>
@@ -61,7 +82,7 @@ import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerFeedback from "@/models/bannerFeedback";
-import UserFeedback from "@/models/userFeedback";
+import UserFeedback, { AdminTag } from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IUserFeedbackService } from "@/services/interfaces";
@@ -95,7 +116,12 @@ export default class FeedbackView extends Vue {
         {
             text: "Comments",
             value: "comment",
-            width: "55%",
+            width: "35%",
+        },
+        {
+            text: "Tags",
+            value: "tags",
+            width: "20%",
         },
         {
             text: "Reviewed?",
@@ -104,9 +130,15 @@ export default class FeedbackView extends Vue {
         },
     ];
 
+    private adminTags: AdminTag[] = [];
+
     private feedbackList: UserFeedback[] = [];
 
     private userFeedbackService!: IUserFeedbackService;
+
+    private focusedTags: AdminTag[] = [];
+
+    private isLoadingTag = false;
 
     private mounted() {
         this.userFeedbackService = container.get(
@@ -114,6 +146,7 @@ export default class FeedbackView extends Vue {
         );
 
         this.loadFeedbackList();
+        this.loadAdminTags();
     }
 
     private loadFeedbackList() {
@@ -129,6 +162,26 @@ export default class FeedbackView extends Vue {
                     type: ResultType.Error,
                     title: "Error",
                     message: "Error loading user feedbacks",
+                };
+                console.log(err);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    private loadAdminTags() {
+        this.userFeedbackService
+            .getAllTags()
+            .then((adminTags) => {
+                this.adminTags = adminTags;
+            })
+            .catch((err) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error loading admin tags",
                 };
                 console.log(err);
             })
@@ -156,6 +209,8 @@ export default class FeedbackView extends Vue {
                 this.loadFeedbackList();
             })
             .catch((err) => {
+                // revert feedback item
+                feedback.isReviewed = !feedback.isReviewed;
                 this.showFeedback = true;
                 this.bannerFeedback = {
                     type: ResultType.Error,
@@ -167,6 +222,121 @@ export default class FeedbackView extends Vue {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    private onTagFocus(feedback: UserFeedback) {
+        // Necessary to keep the feedback tags from being updated by the component.
+        this.focusedTags = feedback.tags;
+    }
+
+    private onTagChange(
+        input: (string | AdminTag)[],
+        feedbackItem: UserFeedback
+    ) {
+        // Needs to be executed on the next render cycle to avoid racing conditions on vuetify components.
+        this.$nextTick(() => {
+            // Reset the feedback tags until the backend updates it
+            feedbackItem.tags = this.focusedTags;
+
+            // Last entry on the input is the most recently selected item (could be text)
+            const lastTag = input[input.length - 1];
+
+            var newTag: string | AdminTag = lastTag;
+
+            // Look for the existing tags for a name match
+            if (typeof lastTag === "string") {
+                var foundIndex = this.adminTags.findIndex(
+                    (x) => x.name === lastTag
+                );
+                if (foundIndex > 0) {
+                    newTag = this.adminTags[foundIndex];
+                }
+            }
+
+            this.isLoadingTag = true;
+            if (typeof newTag === "string") {
+                this.createNewTag(feedbackItem, newTag);
+            } else {
+                this.associateTag(feedbackItem, newTag);
+            }
+        });
+    }
+
+    private createNewTag(feedbackItem: UserFeedback, newTag: string) {
+        this.userFeedbackService
+            .createTag(feedbackItem.id, newTag)
+            .then((newTag) => {
+                feedbackItem.tags.push(newTag);
+                this.adminTags.push(newTag);
+            })
+            .catch((err) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error creating tag",
+                };
+                console.log(err);
+            })
+            .finally(() => {
+                this.isLoadingTag = false;
+            });
+    }
+
+    private associateTag(feedbackItem: UserFeedback, newTag: AdminTag) {
+        this.userFeedbackService
+            .associateTag(feedbackItem.id, newTag)
+            .then((newTag) => {
+                feedbackItem.tags.push(newTag);
+            })
+            .catch((err) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error associating tag",
+                };
+                console.log(err);
+            })
+            .finally(() => {
+                this.isLoadingTag = false;
+            });
+    }
+
+    private removeTag(feedbackItem: UserFeedback, tag: AdminTag) {
+        this.userFeedbackService
+            .removeTag(feedbackItem.id, tag)
+            .then((result) => {
+                if (result) {
+                    const feedbackIndex = feedbackItem.tags.findIndex(
+                        (x) => x.id === tag.id
+                    );
+                    feedbackItem.tags.splice(feedbackIndex, 1);
+                } else {
+                    this.showFeedback = true;
+                    this.bannerFeedback = {
+                        type: ResultType.Error,
+                        title: "Error",
+                        message: "Error removing tag",
+                    };
+                }
+            })
+            .catch((err) => {
+                this.showFeedback = true;
+                this.bannerFeedback = {
+                    type: ResultType.Error,
+                    title: "Error",
+                    message: "Error removing tag",
+                };
+                console.log(err);
+            })
+            .finally(() => {
+                this.isLoadingTag = false;
+            });
+    }
+
+    private filter(item: AdminTag, queryText: string): boolean {
+        return item.name.toLowerCase().includes(queryText.toLowerCase());
     }
 }
 </script>

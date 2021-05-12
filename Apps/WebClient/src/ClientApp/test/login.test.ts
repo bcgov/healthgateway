@@ -29,7 +29,7 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<LoginComponent> {
         options = new StoreOptionsStub();
     }
 
-    let store = new Vuex.Store(options);
+    const store = new Vuex.Store(options);
 
     return shallowMount(LoginComponent, {
         localVue,

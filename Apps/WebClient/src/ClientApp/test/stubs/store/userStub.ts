@@ -1,4 +1,4 @@
-import { stubbedPromise, voidMethod } from "@test/stubs/util";
+import { voidMethod, voidPromise } from "@test/stubs/util";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import PatientData from "@/models/patientData";
@@ -22,14 +22,14 @@ const userState: UserState = {
 };
 
 const userActions: UserActions = {
-    checkRegistration: stubbedPromise,
-    updateUserEmail: stubbedPromise,
+    checkRegistration: voidPromise,
+    updateUserEmail: voidPromise,
     updateSMSResendDateTime: voidMethod,
-    updateUserPreference: stubbedPromise,
-    createUserPreference: stubbedPromise,
-    closeUserAccount: stubbedPromise,
-    recoverUserAccount: stubbedPromise,
-    getPatientData: stubbedPromise,
+    updateUserPreference: voidPromise,
+    createUserPreference: voidPromise,
+    closeUserAccount: voidPromise,
+    recoverUserAccount: voidPromise,
+    getPatientData: voidPromise,
     handleError: voidMethod,
 };
 
