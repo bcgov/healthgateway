@@ -15,34 +15,45 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
-    using System.Collections.Generic;
+    using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// An administrative view of UserFeedback with Email populated from UserProfile.
+    /// The user feedback related tags.
     /// </summary>
-    public class UserFeedbackAdmin : UserFeedback
+    public class UserFeedbackTag : AuditableEntity
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackAdmin"/> class.
+        /// Gets or sets the primary key.
         /// </summary>
-        public UserFeedbackAdmin()
-        {
-        }
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
+        public Guid UserFeedbackTagId { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackAdmin"/> class.
+        /// Gets or sets the primary key.
         /// </summary>
-        /// <param name="tags">The tag collection.</param>
-        public UserFeedbackAdmin(ICollection<UserFeedbackTag> tags)
-            : base(tags)
-        {
-        }
+        [Required]
+        [ForeignKey("AdminTagId")]
+        public Guid AdminTagId { get; set; }
 
         /// <summary>
-        /// Gets or sets the user email.
+        /// Gets or sets the related user feedback id.
         /// </summary>
-        [MaxLength(254)]
-        public string Email { get; set; } = string.Empty;
+        [Required]
+        [ForeignKey("UserFeedbackId")]
+        public Guid UserFeedbackId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the related user feedback model.
+        /// </summary>
+        public virtual UserFeedback UserFeedback { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the related admin tag model.
+        /// </summary>
+        public virtual AdminTag AdminTag { get; set; } = null!;
     }
 }

@@ -15,34 +15,28 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Models
 {
-    using System.Collections.Generic;
+    using System;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
-    /// An administrative view of UserFeedback with Email populated from UserProfile.
+    /// The admin tags database model.
     /// </summary>
-    public class UserFeedbackAdmin : UserFeedback
+    public class AdminTag : AuditableEntity
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackAdmin"/> class.
+        /// Gets or sets the auto generated primary key.
         /// </summary>
-        public UserFeedbackAdmin()
-        {
-        }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Required]
+        public Guid AdminTagId { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackAdmin"/> class.
+        /// Gets or sets the tag.
         /// </summary>
-        /// <param name="tags">The tag collection.</param>
-        public UserFeedbackAdmin(ICollection<UserFeedbackTag> tags)
-            : base(tags)
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the user email.
-        /// </summary>
-        [MaxLength(254)]
-        public string Email { get; set; } = string.Empty;
+        [MaxLength(20)]
+        [Required]
+        public string Name { get; set; } = string.Empty;
     }
 }
