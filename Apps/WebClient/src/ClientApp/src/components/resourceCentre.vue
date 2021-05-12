@@ -26,7 +26,10 @@ export default class ResourceCentreComponent extends Vue {
 </script>
 
 <template>
-    <div class="hg-resource-centre position-sticky p-3 mt-auto align-self-end">
+    <div
+        class="hg-resource-centre position-sticky p-3 mt-auto align-self-end"
+        data-testid="hg-resource-centre"
+    >
         <b-dropdown
             dropup
             :popper-opts="{
