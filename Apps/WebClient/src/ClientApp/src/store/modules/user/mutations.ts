@@ -14,6 +14,9 @@ import { ILogger } from "@/services/interfaces";
 import { UserMutation, UserState } from "./types";
 
 export const mutations: UserMutation = {
+    setRequested(state: UserState) {
+        state.status = LoadStatus.REQUESTED;
+    },
     setOidcUserData(state: UserState, oidcUser: OidcUser) {
         Vue.set(state.user, "hdid", oidcUser.profile.hdid);
         state.error = false;

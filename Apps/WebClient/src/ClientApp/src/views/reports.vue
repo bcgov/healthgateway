@@ -14,6 +14,7 @@ import ImmunizationHistoryReportComponent from "@/components/report/immunization
 import MedicationHistoryReportComponent from "@/components/report/medicationHistory.vue";
 import MedicationRequestReportComponent from "@/components/report/medicationRequest.vue";
 import MSPVisitsReportComponent from "@/components/report/mspVisits.vue";
+import ResourceCentreComponent from "@/components/resourceCentre.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -32,6 +33,7 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
         MedicationRequestReportComponent,
         "hg-date-picker": DatePickerComponent,
         MultiSelectComponent,
+        "resource-centre": ResourceCentreComponent,
     },
 })
 export default class ReportsView extends Vue {
@@ -204,7 +206,7 @@ export default class ReportsView extends Vue {
 </script>
 
 <template>
-    <div class="m-3">
+    <div class="m-3 flex-grow-1 d-flex flex-column">
         <div>
             <b-row>
                 <b-col class="col-12 col-md-10 col-lg-9 column-wrapper">
@@ -453,6 +455,7 @@ export default class ReportsView extends Vue {
                 </b-col>
             </b-row>
         </div>
+        <resource-centre />
         <message-modal
             ref="messageModal"
             data-testid="messageModal"

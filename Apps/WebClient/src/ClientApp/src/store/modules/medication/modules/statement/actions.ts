@@ -26,7 +26,7 @@ export const actions: MedicationStatementActions = {
                 medicationStatements.length > 0
             ) {
                 logger.debug(
-                    "Medication Statements found stored, not quering!"
+                    "Medication Statements found stored, not querying!"
                 );
                 resolve({
                     pageIndex: 0,
