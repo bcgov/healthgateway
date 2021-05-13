@@ -22,6 +22,7 @@ import {
     NavPlugin,
     PaginationNavPlugin,
     SpinnerPlugin,
+    TablePlugin,
     TooltipPlugin,
 } from "bootstrap-vue";
 
@@ -40,6 +41,7 @@ Vue.use(AlertPlugin);
 Vue.use(SpinnerPlugin);
 Vue.use(InputGroupPlugin);
 Vue.use(PaginationNavPlugin);
+Vue.use(TablePlugin);
 Vue.use(TooltipPlugin);
 Vue.use(FormGroupPlugin);
 Vue.use(FormRadioPlugin);

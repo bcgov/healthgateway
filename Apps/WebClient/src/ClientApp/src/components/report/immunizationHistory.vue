@@ -13,6 +13,22 @@ import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
 
+interface TableField {
+    key: string;
+    sortable: false;
+    thClass: string;
+    thStyle: { width: string };
+}
+
+interface TableItems {
+    date: string;
+    immunization: string;
+    agent: string;
+    product: string;
+    lot_number: string;
+    provider_or_clinic: string;
+}
+
 @Component({
     components: {
         ReportHeaderComponent,
@@ -45,6 +61,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     private logger!: ILogger;
     private isPreview = true;
 
+    private readonly headerClass = "immunization-report-table-header";
+
     @Watch("isLoading")
     @Emit()
     private onIsLoadingChanged() {
@@ -67,6 +85,29 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         let records = this.patientImmunizations.filter((record) => {
             return this.filter.allowsDate(record.dateOfImmunization);
         });
+
+        /*records = records.map<ImmunizationEvent>((x) => {
+            return {
+                id: x.id,
+                isSelfReported: x.isSelfReported,
+                location: x.location,
+                immunization:
+                status: x.status,
+                dateOfImmunization: x.dateOfImmunization,
+                providerOrClinic: x.providerOrClinic,
+                targetedDisease: x.targetedDisease,
+            };
+        });*/
+
+        /*
+        records.forEach((x, index) =>
+            x.immunization.immunizationAgents.push({
+                code: "A-code" + index,
+                name: "SomeName " + index,
+                lotNumber: "LOT-" + index,
+                productName: "Product " + index,
+            })
+        );*/
 
         records.sort((a, b) => {
             const firstDate = new DateWrapper(a.dateOfImmunization);
@@ -104,6 +145,61 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             this.isPreview = true;
         });
     }
+
+    private fields: TableField[] = [
+        {
+            key: "date",
+            sortable: false,
+            thStyle: { width: "15%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "immunization",
+            sortable: false,
+            thStyle: { width: "25%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "agent",
+            sortable: false,
+            thStyle: { width: "15%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "product",
+            sortable: false,
+            thStyle: { width: "15%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "lot_number",
+            sortable: false,
+            thStyle: { width: "15%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "provider_or_clinic",
+            sortable: false,
+            thStyle: { width: "15%" },
+            thClass: this.headerClass,
+        },
+    ];
+    private get items(): TableItems[] {
+        return this.visibleImmunizations.map<TableItems>((x) => {
+            return {
+                date: DateWrapper.format(x.dateOfImmunization),
+                immunization: x.immunization.name,
+                agent: x.immunization.immunizationAgents.map((a) => a.name),
+                product: x.immunization.immunizationAgents.map(
+                    (a) => a.productName
+                ),
+                lot_number: x.immunization.immunizationAgents.map(
+                    (a) => a.lotNumber
+                ),
+                provider_or_clinic: x.providerOrClinic,
+            };
+        });
+    }
 }
 </script>
 
@@ -124,65 +220,58 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         <h4>Immunization History</h4>
                     </b-col>
                 </b-row>
+
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 header">
-                    <b-col data-testid="immunizationDateTitle" class="col-2"
-                        >Date</b-col
-                    >
-                    <b-col data-testid="immunizationItemTitle" class="col-3"
-                        >Immunization</b-col
-                    >
-                    <b-col data-testid="immunizationAgentTitle" class="col-5">
-                        <b-row>
-                            <b-col>Agent</b-col>
-                            <b-col>Product</b-col>
-                            <b-col>Lot Number</b-col>
-                        </b-row>
-                    </b-col>
-                    <b-col data-testid="immunizationProviderTitle" class="col-2"
-                        >Provider / Clinic</b-col
-                    >
-                </b-row>
-                <b-row
-                    v-for="record in visibleImmunizations"
-                    :key="record.id"
-                    class="item py-1"
+                <b-table
+                    v-else
+                    striped
+                    :busy="isLoading"
+                    :items="items"
+                    :fields="fields"
+                    class="table-style"
                 >
-                    <b-col
-                        data-testid="immunizationItemDate"
-                        class="col-2 text-nowrap"
-                    >
-                        {{ formatDate(record.dateOfImmunization) }}
-                    </b-col>
-                    <b-col data-testid="immunizationItemName" class="col-3">
-                        {{ record.immunization.name }}
-                    </b-col>
-                    <b-col data-testid="immunizationItemAgent" class="col-5">
+                    <template #cell(agent)="data" colsplan="3">
                         <b-row
-                            v-for="agent in record.immunization
-                                .immunizationAgents"
-                            :key="agent.code"
+                            v-for="(agent, index) in data.item.agent"
+                            :key="index"
+                            class="border"
                         >
                             <b-col>
-                                {{ agent.name }}
-                            </b-col>
-                            <b-col>
-                                {{ agent.productName }}
-                            </b-col>
-                            <b-col>
-                                {{ agent.lotNumber }}
+                                {{ agent }}
                             </b-col>
                         </b-row>
-                    </b-col>
-                    <b-col
-                        data-testid="immunizationItemProviderClinic"
-                        class="col-2"
-                    >
-                        {{ record.providerOrClinic }}
-                    </b-col>
-                </b-row>
+                    </template>
+                    <template #cell(product)="data">
+                        <b-row
+                            v-for="(agent, index) in data.item.product"
+                            :key="index"
+                            class="border"
+                        >
+                            <b-col>
+                                {{ agent }}
+                            </b-col>
+                        </b-row>
+                    </template>
+                    <template #cell(lot_number)="data">
+                        <b-row
+                            v-for="(agent, index) in data.item.lot_number"
+                            :key="index"
+                        >
+                            <b-col>
+                                {{ agent }}
+                            </b-col>
+                            <hr />
+                        </b-row>
+                    </template>
+                    <template #table-busy>
+                        <div class="text-center text-danger my-2">
+                            <b-spinner class="align-middle"></b-spinner>
+                            <strong>Loading...</strong>
+                        </div>
+                    </template>
+                </b-table>
                 <b-row>
                     <b-col class="col-7">
                         <b-row class="mt-3">
@@ -264,8 +353,20 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     </div>
 </template>
 
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.immunization-report-table-header {
+    color: $primary;
+    font-size: 0.8rem;
+}
+</style>
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+
+.table-style {
+    font-size: 0.6rem;
+    text-align: center;
+}
 
 .header {
     color: $primary;
@@ -281,8 +382,8 @@ h4 {
 
 .item {
     font-size: 0.6em;
-    border-bottom: solid 1px $soft_background;
-    page-break-inside: avoid;
+    //border-bottom: solid 1px $soft_background;
+    //page-break-inside: avoid;
     text-align: center;
 }
 
