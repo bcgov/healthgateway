@@ -84,7 +84,6 @@ namespace HealthGateway.Database.Delegates
                 Payload = feedbackTag,
                 Status = DBStatusCode.Deferred,
             };
-            this.dbContext.UserFeedbackTag.Attach(feedbackTag);
 
             this.dbContext.UserFeedbackTag.Remove(feedbackTag);
             if (commit)

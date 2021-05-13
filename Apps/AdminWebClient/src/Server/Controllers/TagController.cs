@@ -73,7 +73,7 @@ namespace HealthGateway.Admin.Controllers
         [Route("UserFeedback/{feedbackId}/[controller]")]
         public IActionResult CreateTag(string feedbackId, [FromBody] string tagName)
         {
-            RequestResult<AdminTagView> result = this.feedbackService.CreateFeedbackTag(Guid.Parse(feedbackId), tagName);
+            RequestResult<UserFeedbackTagView> result = this.feedbackService.CreateFeedbackTag(Guid.Parse(feedbackId), tagName);
             return new JsonResult(result);
         }
 
@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Controllers
         [Route("UserFeedback/{feedbackId}/[controller]")]
         public IActionResult AssociateTag(string feedbackId, [FromBody] AdminTagView tag)
         {
-            RequestResult<AdminTagView> result = this.feedbackService.AssociateFeedbackTag(Guid.Parse(feedbackId), tag);
+            RequestResult<UserFeedbackTagView> result = this.feedbackService.AssociateFeedbackTag(Guid.Parse(feedbackId), tag);
             return new JsonResult(result);
         }
 
@@ -105,7 +105,7 @@ namespace HealthGateway.Admin.Controllers
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         [HttpDelete]
         [Route("UserFeedback/{feedbackId}/[controller]")]
-        public IActionResult DissociateTag(string feedbackId, [FromBody] AdminTagView tag)
+        public IActionResult DissociateTag(string feedbackId, [FromBody] UserFeedbackTagView tag)
         {
             bool result = this.feedbackService.DissociateFeedbackTag(Guid.Parse(feedbackId), tag);
             return new JsonResult(result);

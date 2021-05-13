@@ -3,7 +3,7 @@ import { Dictionary } from "vue-router/types/router";
 
 import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
-import UserFeedback, { AdminTag } from "@/models/userFeedback";
+import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
 import { IHttpDelegate, IUserFeedbackService } from "@/services/interfaces";
 import RequestResultUtil from "@/utility/requestResultUtil";
 
@@ -84,12 +84,15 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         });
     }
 
-    public createTag(feedbackId: string, tagName: string): Promise<AdminTag> {
+    public createTag(
+        feedbackId: string,
+        tagName: string
+    ): Promise<UserFeedbackTag> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers[this.contentTypeHeader] = this.contentType;
             this.http
-                .post<RequestResult<AdminTag>>(
+                .post<RequestResult<UserFeedbackTag>>(
                     `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}/Tag`,
                     JSON.stringify(tagName),
                     headers
@@ -108,13 +111,16 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         });
     }
 
-    public associateTag(feedbackId: string, tag: AdminTag): Promise<AdminTag> {
+    public associateTag(
+        feedbackId: string,
+        tag: AdminTag
+    ): Promise<UserFeedbackTag> {
         console.log(tag);
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers[this.contentTypeHeader] = this.contentType;
             this.http
-                .put<RequestResult<AdminTag>>(
+                .put<RequestResult<UserFeedbackTag>>(
                     `${this.USER_FEEDBACK_BASE_URI}/${feedbackId}/Tag`,
                     tag
                 )
@@ -132,7 +138,10 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         });
     }
 
-    public removeTag(feedbackId: string, tag: AdminTag): Promise<boolean> {
+    public removeTag(
+        feedbackId: string,
+        tag: UserFeedbackTag
+    ): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers[this.contentTypeHeader] = this.contentType;

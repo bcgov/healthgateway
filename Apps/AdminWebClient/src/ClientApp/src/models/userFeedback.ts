@@ -22,11 +22,17 @@ export default interface UserFeedback {
     email: string;
 
     // The feedback tags
-    tags: AdminTag[];
+    tags: UserFeedbackTag[];
 }
 
 export interface AdminTag {
     id: string;
     name: string;
+    version: number;
+}
+
+export interface UserFeedbackTag {
+    id: string;
+    tag: AdminTag;
     version: number;
 }

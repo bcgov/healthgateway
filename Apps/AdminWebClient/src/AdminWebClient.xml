@@ -296,7 +296,7 @@
             <response code="401">the client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
-        <member name="M:HealthGateway.Admin.Controllers.TagController.DissociateTag(System.String,HealthGateway.Admin.Models.AdminTagView)">
+        <member name="M:HealthGateway.Admin.Controllers.TagController.DissociateTag(System.String,HealthGateway.Admin.Models.UserFeedbackTagView)">
             <summary>
             Dissociates the tag from the given feedback id.
             </summary>
@@ -460,33 +460,25 @@
             Gets or sets the tag version.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Models.AdminTagView.FromDbFeedbackModelCollection(System.Collections.Generic.ICollection{HealthGateway.Database.Models.UserFeedbackTag})">
-            <summary>
-            Converts a list of DB UserFeedbackTag into a list of AdminTagView.
-            </summary>
-            <param name="adminTags">The list of DB models.</param>
-            <returns>A converted list or null if inbound is null.</returns>
-        </member>
-        <member name="M:HealthGateway.Admin.Models.AdminTagView.CreateFromDbFeedbackModel(HealthGateway.Database.Models.UserFeedbackTag)">
-            <summary>
-            Constructs a AdminTagView from an UserFeedbackTag model.
-            </summary>
-            <param name="model">The database model.</param>
-            <returns>A new AdminTagView.</returns>
-        </member>
-        <member name="M:HealthGateway.Admin.Models.AdminTagView.FromDbAdminTagModelCollection(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.AdminTag})">
+        <member name="M:HealthGateway.Admin.Models.AdminTagView.FromDbModelCollection(System.Collections.Generic.IEnumerable{HealthGateway.Database.Models.AdminTag})">
             <summary>
             Converts a list of DB AdminTag into a list of AdminTagView.
             </summary>
             <param name="adminTags">The list of DB models.</param>
             <returns>A converted list or null if inbound is null.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Models.AdminTagView.CreateFromDbAdminTagModel(HealthGateway.Database.Models.AdminTag)">
+        <member name="M:HealthGateway.Admin.Models.AdminTagView.FromDbModel(HealthGateway.Database.Models.AdminTag)">
             <summary>
             Constructs a AdminTagView from an AdminTag model.
             </summary>
             <param name="model">The database model.</param>
             <returns>A new AdminTagView.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.AdminTagView.ToDbModel">
+            <summary>
+            Constructs an AdminTag from the object.
+            </summary>
+            <returns>A new AdminTag.</returns>
         </member>
         <member name="T:HealthGateway.Admin.Models.Communication">
             <summary>
@@ -695,6 +687,46 @@
             redirected from the logout page back to the home.
             </summary>
         </member>
+        <member name="T:HealthGateway.Admin.Models.UserFeedbackTagView">
+            <summary>
+            Model that provides a representation of UserFeedbackTagView.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackTagView.Id">
+            <summary>
+            Gets or sets the user feedback tag id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackTagView.Tag">
+            <summary>
+            Gets or sets the admin tag.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Admin.Models.UserFeedbackTagView.Version">
+            <summary>
+            Gets or sets the tag version.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackTagView.FromDbModelCollection(System.Collections.Generic.ICollection{HealthGateway.Database.Models.UserFeedbackTag})">
+            <summary>
+            Converts a list of DB UserFeedbackTag into a list of UserFeedbackTagView.
+            </summary>
+            <param name="adminTags">The list of DB models.</param>
+            <returns>A converted list or null if inbound is null.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackTagView.FromDbModel(HealthGateway.Database.Models.UserFeedbackTag)">
+            <summary>
+            Constructs a UserFeedbackTagView from an UserFeedbackTag model.
+            </summary>
+            <param name="model">The database model.</param>
+            <returns>A new UserFeedbackTagView.</returns>
+        </member>
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackTagView.ToDbModel">
+            <summary>
+            Returns a new UserFeedbackTag from the object.
+            </summary>
+            <returns>A new UserFeedbackTag.</returns>
+        </member>
         <member name="T:HealthGateway.Admin.Models.UserFeedbackView">
             <summary>
             Model that provides a user representation of a user feedback.
@@ -705,11 +737,11 @@
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.UserFeedbackView"/> class.
             </summary>
         </member>
-        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.#ctor(System.Collections.Generic.IList{HealthGateway.Admin.Models.AdminTagView})">
+        <member name="M:HealthGateway.Admin.Models.UserFeedbackView.#ctor(System.Collections.Generic.IList{HealthGateway.Admin.Models.UserFeedbackTagView})">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Admin.Models.UserFeedbackView"/> class.
             </summary>
-            <param name="tags">The load state model.</param>
+            <param name="tags">The list of user feedback tags.</param>
         </member>
         <member name="P:HealthGateway.Admin.Models.UserFeedbackView.Id">
             <summary>
@@ -1134,7 +1166,7 @@
             <param name="tag">The admin tag.</param>
             <returns>returns the associated admin tag wrapped in a request result.</returns>
         </member>
-        <member name="M:HealthGateway.Admin.Services.IUserFeedbackService.DissociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.AdminTagView)">
+        <member name="M:HealthGateway.Admin.Services.IUserFeedbackService.DissociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.UserFeedbackTagView)">
             <summary>
             Dissociates an admin tag from a user feedback.
             </summary>
@@ -1169,7 +1201,7 @@
         <member name="M:HealthGateway.Admin.Services.UserFeedbackService.AssociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.AdminTagView)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.DissociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.AdminTagView)">
+        <member name="M:HealthGateway.Admin.Services.UserFeedbackService.DissociateFeedbackTag(System.Guid,HealthGateway.Admin.Models.UserFeedbackTagView)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.AdminWebClient.Pages.ErrorPage">
