@@ -46,7 +46,7 @@
                                 v-model="feedback.tags"
                                 multiple
                                 hide-selected
-                                :items="availiableTags"
+                                :items="availableTags"
                                 :filter="filter"
                                 :loading="isLoadingTag"
                                 :item-text="getItemText"
@@ -147,7 +147,7 @@ export default class FeedbackView extends Vue {
 
     private isLoadingTag = false;
 
-    private get availiableTags(): string[] {
+    private get availableTags(): string[] {
         return this.adminTags.map<string>((x) => x.name);
     }
 
