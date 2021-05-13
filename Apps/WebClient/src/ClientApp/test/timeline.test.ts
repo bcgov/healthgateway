@@ -55,8 +55,8 @@ describe("Timeline view", () => {
     test("Loading state", () => {
         // Setup vuex store
         const options = new StoreOptionsStub();
-        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
-            true;
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading =
+            () => true;
         const wrapper = createWrapper(options);
 
         // Check values
@@ -67,8 +67,8 @@ describe("Timeline view", () => {
     test("Active", () => {
         // Setup vuex store
         const options = new StoreOptionsStub();
-        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
-            false;
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading =
+            () => false;
         const wrapper = createWrapper(options);
 
         expect(wrapper.find("loadingcomponent-stub").exists()).toBe(false);

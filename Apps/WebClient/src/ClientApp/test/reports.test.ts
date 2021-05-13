@@ -143,8 +143,8 @@ describe("Report view", () => {
             ["MedicationRequest"]: true,
         };
         const storeOptions = new StoreOptionsStub();
-        storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
-            webclientConfig;
+        storeOptions.modules.config.getters.webClient =
+            (): WebClientConfiguration => webclientConfig;
         const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
         });
@@ -167,8 +167,8 @@ describe("Report view", () => {
             ["MedicationRequest"]: true,
         };
         const storeOptions = new StoreOptionsStub();
-        storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
-            webclientConfig;
+        storeOptions.modules.config.getters.webClient =
+            (): WebClientConfiguration => webclientConfig;
         const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
             "hg-date-picker": BFormInput,
@@ -199,8 +199,8 @@ describe("Report view", () => {
             ["MedicationRequest"]: true,
         };
         const storeOptions = new StoreOptionsStub();
-        storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
-            webclientConfig;
+        storeOptions.modules.config.getters.webClient =
+            (): WebClientConfiguration => webclientConfig;
         const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
             "hg-date-picker": BFormInput,
@@ -238,8 +238,8 @@ describe("Report view", () => {
             ["MedicationRequest"]: true,
         };
         const storeOptions = new StoreOptionsStub();
-        storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
-            webclientConfig;
+        storeOptions.modules.config.getters.webClient =
+            (): WebClientConfiguration => webclientConfig;
 
         const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
@@ -252,40 +252,43 @@ describe("Report view", () => {
         // Execute Medication report
         await comboOptions.at(1).setSelected();
         const mockedMedMethod = jest.fn().mockResolvedValue(undefined);
-        (wrapper.vm.$refs
-            .medicationHistoryReport as ReportComponent).generatePdf = mockedMedMethod;
+        (
+            wrapper.vm.$refs.medicationHistoryReport as ReportComponent
+        ).generatePdf = mockedMedMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Encounter report
         await comboOptions.at(2).setSelected();
         const mockedEncMethod = jest.fn().mockResolvedValue(undefined);
-        (wrapper.vm.$refs
-            .mspVisitsReport as ReportComponent).generatePdf = mockedEncMethod;
+        (wrapper.vm.$refs.mspVisitsReport as ReportComponent).generatePdf =
+            mockedEncMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Lab report
         await comboOptions.at(3).setSelected();
         const mockedLabMethod = jest.fn().mockResolvedValue(undefined);
-        (wrapper.vm.$refs
-            .covid19Report as ReportComponent).generatePdf = mockedLabMethod;
+        (wrapper.vm.$refs.covid19Report as ReportComponent).generatePdf =
+            mockedLabMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Immz report
         await comboOptions.at(4).setSelected();
         const mockedImmzMethod = jest.fn().mockResolvedValue(undefined);
-        (wrapper.vm.$refs
-            .immunizationHistoryReport as ReportComponent).generatePdf = mockedImmzMethod;
+        (
+            wrapper.vm.$refs.immunizationHistoryReport as ReportComponent
+        ).generatePdf = mockedImmzMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
 
         // Execute Med Request report
         await comboOptions.at(5).setSelected();
         const mockedMedRequestMethod = jest.fn().mockResolvedValue(undefined);
-        (wrapper.vm.$refs
-            .medicationRequestReport as ReportComponent).generatePdf = mockedMedRequestMethod;
+        (
+            wrapper.vm.$refs.medicationRequestReport as ReportComponent
+        ).generatePdf = mockedMedRequestMethod;
 
         await wrapper.find(testIdModal).trigger("submit");
 
@@ -306,8 +309,8 @@ describe("Report view", () => {
             ["Medication"]: true,
         };
         const storeOptions = new StoreOptionsStub();
-        storeOptions.modules.config.getters.webClient = (): WebClientConfiguration =>
-            webclientConfig;
+        storeOptions.modules.config.getters.webClient =
+            (): WebClientConfiguration => webclientConfig;
         const firstMed = JSON.parse(JSON.stringify(baseMedication));
         firstMed.medicationSummary.brandName = "Brand Name A";
         const seconMed = JSON.parse(JSON.stringify(baseMedication));
@@ -316,9 +319,10 @@ describe("Report view", () => {
         thirdMed.medicationSummary.brandName = "Brand Name B";
         const fourthMed = JSON.parse(JSON.stringify(baseMedication));
         fourthMed.medicationSummary.brandName = "Brand Name C";
-        storeOptions.modules.medication.modules.statement.getters.medicationStatements = (): MedicationStatementHistory[] => {
-            return [firstMed, seconMed, thirdMed, fourthMed];
-        };
+        storeOptions.modules.medication.modules.statement.getters.medicationStatements =
+            (): MedicationStatementHistory[] => {
+                return [firstMed, seconMed, thirdMed, fourthMed];
+            };
         const wrapper = createWrapper(storeOptions, {
             "b-form-select": BFormSelect,
         });

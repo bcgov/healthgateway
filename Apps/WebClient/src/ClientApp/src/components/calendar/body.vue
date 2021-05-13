@@ -130,10 +130,9 @@ export default class CalendarBodyComponent extends Vue {
                 id: date.fromEpoch() + "-type-" + typeKey,
                 cellIndex: index,
                 type: EntryType[typeKey as keyof typeof EntryType],
-                entries: groups[
-                    typeKey
-                ].sort((a: TimelineEntry, b: TimelineEntry) =>
-                    a.type > b.type ? 1 : a.type < b.type ? -1 : 0
+                entries: groups[typeKey].sort(
+                    (a: TimelineEntry, b: TimelineEntry) =>
+                        a.type > b.type ? 1 : a.type < b.type ? -1 : 0
                 ),
             };
         });

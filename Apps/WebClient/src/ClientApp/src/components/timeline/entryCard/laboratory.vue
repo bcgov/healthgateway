@@ -64,9 +64,8 @@ export default class LaboratoryTimelineComponent extends Vue {
         this.laboratoryService
             .getReportDocument(this.entry.id, this.user.hdid)
             .then((result) => {
-                let dateString = this.entry.displayDate.format(
-                    "YYYY_MM_DD-HH_mm"
-                );
+                let dateString =
+                    this.entry.displayDate.format("YYYY_MM_DD-HH_mm");
                 let report: LaboratoryReport = result.resourcePayload;
                 fetch(
                     `data:${report.mediaType};${report.encoding},${report.data}`

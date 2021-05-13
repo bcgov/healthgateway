@@ -14,9 +14,10 @@ export const actions: LaboratoryActions = {
         params: { hdid: string }
     ): Promise<RequestResult<LaboratoryOrder[]>> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const laboratoryService: ILaboratoryService = container.get<ILaboratoryService>(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
+        const laboratoryService: ILaboratoryService =
+            container.get<ILaboratoryService>(
+                SERVICE_IDENTIFIER.LaboratoryService
+            );
 
         return new Promise((resolve, reject) => {
             const laboratoryOrders: LaboratoryOrder[] =

@@ -75,9 +75,9 @@ export default class CommentSectionComponent extends Vue {
             this.updateComment({ hdid: this.user.hdid, comment: x });
         });
 
-        var commentsSection = (this.$refs[
-            "entryComments" + this.parentEntry.id
-        ] as Vue).$el;
+        var commentsSection = (
+            this.$refs["entryComments" + this.parentEntry.id] as Vue
+        ).$el;
         commentsSection?.addEventListener(
             "transitionend",
             this.onSectionExpand
@@ -96,9 +96,9 @@ export default class CommentSectionComponent extends Vue {
 
     private onSectionExpand(event: Event) {
         if (this.isMobileDetails && this.showComments) {
-            var commentsSection = (this.$refs[
-                "entryComments" + this.parentEntry.id
-            ] as Vue).$el;
+            var commentsSection = (
+                this.$refs["entryComments" + this.parentEntry.id] as Vue
+            ).$el;
             let transitionEvent = event as TransitionEvent;
             if (
                 commentsSection !== transitionEvent.target ||

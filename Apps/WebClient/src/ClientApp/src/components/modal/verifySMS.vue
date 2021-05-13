@@ -87,8 +87,8 @@ export default class VerifySMSComponent extends Vue {
         let now = new DateWrapper();
         this.allowRetry = smsTimeWhenEnabled.isBefore(now);
         if (!this.allowRetry) {
-            let millisecondsToExpire = smsTimeWhenEnabled.diff(now)
-                .milliseconds;
+            let millisecondsToExpire =
+                smsTimeWhenEnabled.diff(now).milliseconds;
             setTimeout(() => {
                 this.allowRetry = true;
             }, millisecondsToExpire);

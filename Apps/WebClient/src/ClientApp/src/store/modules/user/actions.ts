@@ -23,9 +23,10 @@ function handleError(commit: Commit, error: Error) {
 
 export const actions: UserActions = {
     checkRegistration(context): Promise<boolean> {
-        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
+        const userProfileService: IUserProfileService =
+            container.get<IUserProfileService>(
+                SERVICE_IDENTIFIER.UserProfileService
+            );
 
         return new Promise((resolve, reject) => {
             return userProfileService
@@ -79,9 +80,10 @@ export const actions: UserActions = {
         });
     },
     updateUserEmail(context, params: { emailAddress: string }): Promise<void> {
-        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
+        const userProfileService: IUserProfileService =
+            container.get<IUserProfileService>(
+                SERVICE_IDENTIFIER.UserProfileService
+            );
 
         return new Promise((resolve, reject) => {
             userProfileService
@@ -103,9 +105,10 @@ export const actions: UserActions = {
         params: { userPreference: UserPreference }
     ): Promise<void> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
+        const userProfileService: IUserProfileService =
+            container.get<IUserProfileService>(
+                SERVICE_IDENTIFIER.UserProfileService
+            );
 
         return new Promise((resolve, reject) => {
             userProfileService
@@ -136,9 +139,10 @@ export const actions: UserActions = {
         params: { userPreference: UserPreference }
     ): Promise<void> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
+        const userProfileService: IUserProfileService =
+            container.get<IUserProfileService>(
+                SERVICE_IDENTIFIER.UserProfileService
+            );
 
         return new Promise((resolve, reject) => {
             userProfileService
@@ -165,9 +169,10 @@ export const actions: UserActions = {
         });
     },
     closeUserAccount(context): Promise<void> {
-        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
+        const userProfileService: IUserProfileService =
+            container.get<IUserProfileService>(
+                SERVICE_IDENTIFIER.UserProfileService
+            );
 
         return new Promise((resolve, reject) => {
             userProfileService
@@ -183,9 +188,10 @@ export const actions: UserActions = {
         });
     },
     recoverUserAccount(context): Promise<void> {
-        const userProfileService: IUserProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
+        const userProfileService: IUserProfileService =
+            container.get<IUserProfileService>(
+                SERVICE_IDENTIFIER.UserProfileService
+            );
 
         return new Promise((resolve, reject) => {
             userProfileService

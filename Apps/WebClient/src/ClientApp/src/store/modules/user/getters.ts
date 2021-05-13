@@ -23,11 +23,11 @@ export const getters: UserGetters = {
         return state.smsResendDateTime;
     },
 
-    getPreference: (state: UserState) => (
-        preferenceName: string
-    ): UserPreference | undefined => {
-        return state.user.preferences[preferenceName];
-    },
+    getPreference:
+        (state: UserState) =>
+        (preferenceName: string): UserPreference | undefined => {
+            return state.user.preferences[preferenceName];
+        },
 
     patientData(state: UserState): PatientData {
         return state.patientData;

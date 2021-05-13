@@ -93,7 +93,8 @@ export default class App extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated?: boolean;
 
-    private readonly host: string = window.location.hostname.toLocaleUpperCase();
+    private readonly host: string =
+        window.location.hostname.toLocaleUpperCase();
     private readonly isProduction: boolean =
         Process.NODE_ENV == EnvironmentType.production &&
         (this.host.startsWith("HEALTHGATEWAY") ||

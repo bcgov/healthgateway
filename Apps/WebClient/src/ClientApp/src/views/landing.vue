@@ -165,7 +165,13 @@ export default class LandingView extends Vue {
     <div class="landing mx-2">
         <CommunicationComponent />
         <b-row
-            class="title-section justify-content-center align-items-center mx-1 mx-md-5 my-2"
+            class="
+                title-section
+                justify-content-center
+                align-items-center
+                mx-1 mx-md-5
+                my-2
+            "
         >
             <b-col class="col-12 mx-0 px-0">
                 <div class="title-text">
@@ -183,7 +189,12 @@ export default class LandingView extends Vue {
         </b-row>
         <b-row
             v-if="!isOffline"
-            class="devices-section justify-content-center justify-content-lg-around align-items-center mx-0 mx-md-5"
+            class="
+                devices-section
+                justify-content-center justify-content-lg-around
+                align-items-center
+                mx-0 mx-md-5
+            "
         >
             <b-col class="d-none d-lg-block text-center col-6 col-xl-4">
                 <img
@@ -260,7 +271,13 @@ export default class LandingView extends Vue {
                 <b-row
                     v-for="(tile, index) in tiles"
                     :key="tile.title"
-                    class="d-flex justify-content-center align-content-around tile-row my-md-5 my-0"
+                    class="
+                        d-flex
+                        justify-content-center
+                        align-content-around
+                        tile-row
+                        my-md-5 my-0
+                    "
                 >
                     <b-col
                         class="col-12 col-md-5"

@@ -14,9 +14,10 @@ export const actions: AuthActions = {
             const isAuthenticatedInStore =
                 context.state.authentication.idToken !== undefined;
 
-            const authService: IAuthenticationService = container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
+            const authService: IAuthenticationService =
+                container.get<IAuthenticationService>(
+                    SERVICE_IDENTIFIER.AuthenticationService
+                );
             const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
             return authService.getUser().then((oidcUser) => {
@@ -42,9 +43,10 @@ export const actions: AuthActions = {
         params: { idpHint: string; redirectPath: string }
     ): Promise<void> {
         return new Promise((resolve, reject) => {
-            const authService: IAuthenticationService = container.get<IAuthenticationService>(
-                SERVICE_IDENTIFIER.AuthenticationService
-            );
+            const authService: IAuthenticationService =
+                container.get<IAuthenticationService>(
+                    SERVICE_IDENTIFIER.AuthenticationService
+                );
             const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
             authService
@@ -61,9 +63,10 @@ export const actions: AuthActions = {
         });
     },
     oidcSignInCallback(context): Promise<string> {
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
         return new Promise((resolve, reject) => {
@@ -71,9 +74,8 @@ export const actions: AuthActions = {
                 .signinRedirectCallback()
                 .then((oidcUser) => {
                     // Verify that the user info retrieved by the auth service is not large enough than a cookie can store.
-                    const cookieToStoreSize = authService.checkOidcUserSize(
-                        oidcUser
-                    );
+                    const cookieToStoreSize =
+                        authService.checkOidcUserSize(oidcUser);
                     if (cookieToStoreSize > 4000) {
                         logger.warn(
                             `Warning: User info is too big: ${cookieToStoreSize}`
@@ -98,9 +100,10 @@ export const actions: AuthActions = {
         });
     },
     authenticateOidcSilent(context): Promise<void> {
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
 
         return authService
             .signinSilent()
@@ -125,9 +128,10 @@ export const actions: AuthActions = {
     getOidcUser(context): Promise<void> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
 
         return authService
             .getUser()
@@ -145,15 +149,17 @@ export const actions: AuthActions = {
             });
     },
     signOutOidc(): void {
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
         authService.logout();
     },
     signOutOidcCallback(context): Promise<string> {
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
         return new Promise((resolve, reject) => {
             authService
                 .signoutRedirectCallback()
@@ -167,9 +173,10 @@ export const actions: AuthActions = {
         });
     },
     clearStorage(context): void {
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
         const httpDelegate: IHttpDelegate = container.get<IHttpDelegate>(
             DELEGATE_IDENTIFIER.HttpDelegate
         );

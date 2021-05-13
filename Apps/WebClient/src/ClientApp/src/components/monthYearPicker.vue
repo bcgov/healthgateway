@@ -108,14 +108,12 @@ export default class MonthYearPickerComponent extends Vue {
     }
 
     private previousYear(): void {
-        this.selectedYear = this.years[
-            this.years.indexOf(this.selectedYear) + 1
-        ];
+        this.selectedYear =
+            this.years[this.years.indexOf(this.selectedYear) + 1];
     }
     private nextYear(): void {
-        this.selectedYear = this.years[
-            this.years.indexOf(this.selectedYear) - 1
-        ];
+        this.selectedYear =
+            this.years[this.years.indexOf(this.selectedYear) - 1];
     }
 
     private selectMonth(monthIndex: number): void {

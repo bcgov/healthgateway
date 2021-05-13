@@ -13,9 +13,10 @@ function handleError(commit: Commit, error: Error) {
 export const actions: ActionTree<AuthState, RootState> = {
     initialize(context): Promise<void> {
         console.log("Initializing the auth store...");
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
         return new Promise((resolve, reject) => {
             authService
                 .getAuthentication()
@@ -33,9 +34,10 @@ export const actions: ActionTree<AuthState, RootState> = {
         });
     },
     login(context, params: { redirectPath: string }): Promise<void> {
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
         context.commit("authenticationRequest");
         return new Promise((resolve, reject) => {
             authService
@@ -56,9 +58,10 @@ export const actions: ActionTree<AuthState, RootState> = {
         });
     },
     logout(context): Promise<void> {
-        const authService: IAuthenticationService = container.get<IAuthenticationService>(
-            SERVICE_IDENTIFIER.AuthenticationService
-        );
+        const authService: IAuthenticationService =
+            container.get<IAuthenticationService>(
+                SERVICE_IDENTIFIER.AuthenticationService
+            );
         return new Promise((resolve, reject) => {
             authService
                 .destroyToken()

@@ -49,8 +49,8 @@ describe("HealthInsights view", () => {
     test("Loading state", () => {
         // Setup vuex store
         const options = new StoreOptionsStub();
-        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
-            true;
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading =
+            () => true;
         const wrapper = createWrapper(options);
         // Check values
         expect(wrapper.find("loadingcomponent-stub").exists()).toBe(true);
@@ -60,21 +60,22 @@ describe("HealthInsights view", () => {
     test("Active", () => {
         // Setup vuex store
         const options = new StoreOptionsStub();
-        options.modules.medication.modules.statement.getters.isMedicationStatementLoading = () =>
-            false;
-        options.modules.medication.modules.statement.getters.medicationStatements = () => [
-            {
-                prescriptionIdentifier: "",
-                dispensedDate: "",
-                dispensingPharmacy: {},
-                medicationSummary: {
-                    din: "",
-                    brandName: "",
-                    genericName: "",
-                    isPin: false,
+        options.modules.medication.modules.statement.getters.isMedicationStatementLoading =
+            () => false;
+        options.modules.medication.modules.statement.getters.medicationStatements =
+            () => [
+                {
+                    prescriptionIdentifier: "",
+                    dispensedDate: "",
+                    dispensingPharmacy: {},
+                    medicationSummary: {
+                        din: "",
+                        brandName: "",
+                        genericName: "",
+                        isPin: false,
+                    },
                 },
-            },
-        ];
+            ];
         const wrapper = createWrapper(options);
 
         expect(wrapper.find("loadingcomponent-stub").exists()).toBe(false);
