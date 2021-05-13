@@ -62,7 +62,7 @@ namespace HealthGateway.Admin.Models
         /// <returns>A new UserFeedbackTagView.</returns>
         public static UserFeedbackTagView FromDbModel(UserFeedbackTag model)
         {
-            var newDBModel = new UserFeedbackTagView()
+            UserFeedbackTagView newDBModel = new ()
             {
                 Id = model.UserFeedbackTagId,
                 Version = model.Version,
