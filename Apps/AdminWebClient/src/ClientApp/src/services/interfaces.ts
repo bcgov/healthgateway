@@ -40,6 +40,7 @@ export interface IDashboardService {
     getRegisteredUsersCount(): Promise<{ [key: string]: number }>;
     getLoggedInUsersCount(): Promise<{ [key: string]: number }>;
     getDependentCount(): Promise<{ [key: string]: number }>;
+    getRecurrentUserCount(days: number, period: number): Promise<number>;
 }
 
 export interface ICommunicationService {

@@ -63,5 +63,11 @@ namespace HealthGateway.Admin.Services
             TimeSpan ts = new TimeSpan(0, timeOffset, 0);
             return this.dependentDelegate.GetDailyDependentCount(ts);
         }
+
+        /// <inheritdoc />
+        public int GetRecurrentUserCount(int days, int period)
+        {
+            return this.userProfileDelegate.GetRecurrentUserCount(days, period);
+        }
     }
 }

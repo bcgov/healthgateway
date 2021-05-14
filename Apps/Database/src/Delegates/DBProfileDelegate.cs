@@ -192,5 +192,16 @@ namespace HealthGateway.Database.Delegates
                 page,
                 pageSize);
         }
+
+        /// <inheritdoc />
+        public DBResult<int> GetRecurrentUserCount(int days, int period)
+        {
+            this.logger.LogTrace($"Retrieving recurring user count for days:{days} with period: {period}...");
+            return DBDelegateHelper.GetPagedDBResult(
+                this.dbContext.UserProfile
+                    .OrderBy(userProfile => userProfile.CreatedDateTime),
+                page,
+                pageSize);
+        }
     }
 }

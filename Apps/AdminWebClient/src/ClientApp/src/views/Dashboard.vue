@@ -21,8 +21,20 @@ export default class Dashboard extends Vue {
     private isLoadingRegistered = true;
     private isLoadingLoggedIn = true;
     private isLoadingDependent = true;
+    private isLoadingRecurrentCount = true;
 
     private datePickerModal = false;
+
+    private uniqueDays = 3;
+    private periodDays = 30;
+    private uniqueUsers = 0;
+
+    private debounceTimer: NodeJS.Timeout | null = null;
+
+    private recurringRules = {
+        required: (value: number) => !!value || "Required.",
+        valid: (value: number) => value >= 0 || "Invalid value",
+    };
 
     private today = DateTime.local();
 
@@ -42,6 +54,13 @@ export default class Dashboard extends Vue {
                 return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
             });
         }
+    }
+
+    @Watch("uniqueDays")
+    @Watch("periodDays")
+    private onRecurringInputChange() {
+        if (this.uniqueDays >= 0 && this.periodDays >= 0)
+            this.getRecurringUsersDebounced();
     }
 
     private get visibleTableData(): DailyData[] {
@@ -81,6 +100,7 @@ export default class Dashboard extends Vue {
         this.getRegisteredUserCount();
         this.getLoggedInUsersCount();
         this.getDependentCount();
+        this.getRecurringUsers();
     }
 
     private getRegisteredUserCount() {
@@ -164,6 +184,30 @@ export default class Dashboard extends Vue {
             });
     }
 
+    private getRecurringUsers() {
+        this.isLoadingRecurrentCount = true;
+        this.dashboardService
+            .getRecurrentUserCount(this.uniqueDays, this.periodDays)
+            .then((count) => {
+                this.uniqueUsers = count;
+            })
+            .finally(() => {
+                this.isLoadingRecurrentCount = false;
+            });
+    }
+
+    private getRecurringUsersDebounced() {
+        // cancel pending call
+        if (this.debounceTimer !== null) {
+            clearTimeout(this.debounceTimer);
+        }
+
+        // delay new call 500ms
+        this.debounceTimer = setTimeout(() => {
+            this.getRecurringUsers();
+        }, 500);
+    }
+
     private formatDate(date: DateTime): string {
         return date.toFormat("dd/MM/yyyy");
     }
@@ -189,6 +233,51 @@ export default class Dashboard extends Vue {
                         {{ totalDependentCount }}
                     </h1>
                 </v-card>
+            </v-col>
+        </v-row>
+        <v-row v-else>
+            <v-col>
+                <v-skeleton-loader
+                    max-width="200"
+                    type="card"
+                ></v-skeleton-loader></v-col
+        ></v-row>
+        <br />
+        <h2>Recurring Users</h2>
+        <v-row v-if="!isLoadingRecurrentCount" class="px-2">
+            <v-col>
+                <v-row>
+                    <v-col cols="auto">
+                        <v-text-field
+                            v-model="uniqueDays"
+                            type="number"
+                            label="Unique days"
+                            :rules="[
+                                recurringRules.required,
+                                recurringRules.valid,
+                            ]"
+                        />
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-text-field
+                            v-model="periodDays"
+                            type="number"
+                            label="Period days"
+                            :rules="[
+                                recurringRules.required,
+                                recurringRules.valid,
+                            ]"
+                        />
+                    </v-col>
+                    <v-col class="col-lg-3 col-md-6 col-sm-12">
+                        <v-card class="text-center">
+                            <h3>User Count</h3>
+                            <h1>
+                                {{ uniqueUsers }}
+                            </h1>
+                        </v-card>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
         <v-row v-else>

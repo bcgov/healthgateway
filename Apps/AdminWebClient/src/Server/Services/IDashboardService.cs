@@ -43,5 +43,13 @@ namespace HealthGateway.Admin.Services
         /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of dependents.</returns>
         IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset);
+
+        /// <summary>
+        /// Retrieves the count recurring users.
+        /// </summary>
+        /// <param name="days">The number of unique days for evaluating a user.</param>
+        /// <param name="period">The period of days over which to evaluate the user.</param>
+        /// <returns>The count of recurrent users.</returns>
+        int GetRecurrentUserCount(int days, int period);
     }
 }
