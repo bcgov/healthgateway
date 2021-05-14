@@ -6,12 +6,20 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import Encounter from "@/models/encounter";
+import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
+
+interface EncounterRow {
+    date: string;
+    specialty_description: string;
+    practitioner: string;
+    clinic_practitioner: string;
+}
 
 @Component({
     components: {
@@ -40,6 +48,8 @@ export default class MSPVisitsReportComponent extends Vue {
 
     private isPreview = true;
 
+    private readonly headerClass = "encounter-report-table-header";
+
     private get visibleRecords(): Encounter[] {
         let records = this.patientEncounters.filter((record) => {
             return this.filter.allowsDate(record.encounterDate);
@@ -62,6 +72,17 @@ export default class MSPVisitsReportComponent extends Vue {
         return this.visibleRecords.length == 0;
     }
 
+    private get items(): EncounterRow[] {
+        return this.visibleRecords.map<EncounterRow>((x) => {
+            return {
+                date: DateWrapper.format(x.encounterDate),
+                specialty_description: x.specialtyDescription,
+                practitioner: x.practitionerName,
+                clinic_practitioner: x.clinic.name,
+            };
+        });
+    }
+
     @Watch("isLoading")
     @Emit()
     private onIsLoadingChanged() {
@@ -75,20 +96,37 @@ export default class MSPVisitsReportComponent extends Vue {
         });
     }
 
-    private formatDate(date: string): string {
-        return new DateWrapper(date).format();
-    }
-
     public async generatePdf(): Promise<void> {
         this.logger.debug("generating Health Visits PDF...");
         this.isPreview = false;
 
-        PDFUtil.generatePdf("HealthGateway_HealthVisits.pdf", this.report).then(
-            () => {
-                this.isPreview = true;
-            }
-        );
+        return PDFUtil.generatePdf(
+            "HealthGateway_HealthVisits.pdf",
+            this.report
+        ).then(() => {
+            this.isPreview = true;
+        });
     }
+
+    private fields: ReportField[] = [
+        {
+            key: "date",
+            thClass: this.headerClass,
+        },
+        {
+            key: "specialty_description",
+            thClass: this.headerClass,
+        },
+        {
+            key: "practitioner",
+            thClass: this.headerClass,
+        },
+        {
+            key: "clinic_practitioner",
+            label: "Clinic/Practitioner",
+            thClass: this.headerClass,
+        },
+    ];
 }
 </script>
 
@@ -104,57 +142,39 @@ export default class MSPVisitsReportComponent extends Vue {
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 header">
-                    <b-col>Date</b-col>
-                    <b-col>Specialty Description</b-col>
-                    <b-col>Practitioner</b-col>
-                    <b-col>Clinic/Practitioner</b-col>
-                </b-row>
-                <b-row
-                    v-for="item in visibleRecords"
-                    :key="item.id"
-                    class="item py-1"
+
+                <b-table
+                    v-if="!isEmpty || isLoading"
+                    striped
+                    :busy="isLoading"
+                    :items="items"
+                    :fields="fields"
+                    class="table-style"
                 >
-                    <b-col class="my-auto text-nowrap">
-                        {{ formatDate(item.encounterDate) }}
-                    </b-col>
-                    <b-col class="my-auto">
-                        {{ item.specialtyDescription }}
-                    </b-col>
-                    <b-col class="my-auto">
-                        {{ item.practitionerName }}
-                    </b-col>
-                    <b-col class="my-auto">
-                        {{ item.clinic.name }}
-                    </b-col>
-                </b-row>
+                    <template #table-busy>
+                        <content-placeholders>
+                            <content-placeholders-text :lines="7" />
+                        </content-placeholders>
+                    </template>
+                </b-table>
             </section>
         </div>
     </div>
 </template>
 
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.encounter-report-table-header {
+    color: $primary;
+    font-size: 0.8rem;
+}
+</style>
+
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.header {
-    color: $primary;
-    background-color: $soft_background;
-    font-weight: bold;
-    font-size: 0.8em;
+.table-style {
+    font-size: 0.6rem;
     text-align: center;
-}
-
-.item {
-    font-size: 0.6em;
-    border-bottom: solid 1px $soft_background;
-    page-break-inside: avoid;
-    text-align: center;
-}
-
-.item:nth-child(odd) {
-    background-color: $medium_background;
-}
-.item:nth-child(even) {
-    background-color: $soft_background;
 }
 </style>

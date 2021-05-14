@@ -323,7 +323,10 @@ export default class TimelineView extends Vue {
 
 <template>
     <div class="flex-grow-1 d-flex flex-column">
-        <LoadingComponent v-if="isLoading" :is-custom="true"></LoadingComponent>
+        <LoadingComponent
+            :is-custom="true"
+            :is-loading="isLoading"
+        ></LoadingComponent>
         <b-row class="my-2 fluid">
             <b-col id="timeline" class="col-12 col-lg-9 column-wrapper">
                 <div class="px-2">

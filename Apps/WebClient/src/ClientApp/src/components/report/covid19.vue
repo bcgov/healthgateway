@@ -6,12 +6,20 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder, LaboratoryUtil } from "@/models/laboratory";
+import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
+
+interface LaboratoryRow {
+    date: string;
+    test_type: string;
+    test_location: string;
+    result: string;
+}
 
 @Component({
     components: {
@@ -38,6 +46,8 @@ export default class COVID19ReportComponent extends Vue {
 
     private logger!: ILogger;
     private isPreview = true;
+
+    private readonly headerClass = "laboratory-report-table-header";
 
     @Watch("isLaboratoryLoading")
     @Emit()
@@ -73,6 +83,20 @@ export default class COVID19ReportComponent extends Vue {
         return this.visibleRecords.length == 0;
     }
 
+    private get items(): LaboratoryRow[] {
+        return this.visibleRecords.map<LaboratoryRow>((x) => {
+            const labResult = x.labResults[0];
+            return {
+                date: DateWrapper.format(labResult.collectedDateTime),
+                test_type: labResult.testType || "",
+                test_location: x.location || "",
+                result: this.checkResultReady(labResult.testStatus)
+                    ? labResult.labResultOutcome || ""
+                    : "",
+            };
+        });
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveLaboratory({ hdid: this.user.hdid }).catch((err) => {
@@ -84,20 +108,36 @@ export default class COVID19ReportComponent extends Vue {
         return LaboratoryUtil.isTestResultReady(testStatus);
     }
 
-    private formatDate(date: string): string {
-        return new DateWrapper(date).format();
-    }
-
     public async generatePdf(): Promise<void> {
         this.logger.debug("generating COVID-19 PDF...");
         this.isPreview = false;
 
-        PDFUtil.generatePdf("HealthGateway_COVID19.pdf", this.report).then(
-            () => {
-                this.isPreview = true;
-            }
-        );
+        return PDFUtil.generatePdf(
+            "HealthGateway_COVID19.pdf",
+            this.report
+        ).then(() => {
+            this.isPreview = true;
+        });
     }
+
+    private fields: ReportField[] = [
+        {
+            key: "date",
+            thClass: this.headerClass,
+        },
+        {
+            key: "test_type",
+            thClass: this.headerClass,
+        },
+        {
+            key: "test_location",
+            thClass: this.headerClass,
+        },
+        {
+            key: "result",
+            thClass: this.headerClass,
+        },
+    ];
 }
 </script>
 
@@ -113,65 +153,38 @@ export default class COVID19ReportComponent extends Vue {
                 <b-row v-if="isEmpty && (!isLaboratoryLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 header">
-                    <b-col>Date</b-col>
-                    <b-col>Test Type</b-col>
-                    <b-col>Test Location</b-col>
-                    <b-col>Result</b-col>
-                </b-row>
-                <b-row
-                    v-for="item in visibleRecords"
-                    :key="item.id"
-                    class="item py-1"
+                <b-table
+                    v-if="!isEmpty || isLaboratoryLoading"
+                    striped
+                    :busy="isLaboratoryLoading"
+                    :items="items"
+                    :fields="fields"
+                    class="table-style"
                 >
-                    <b-col
-                        data-testid="covid19ItemDate"
-                        class="my-auto text-nowrap"
-                    >
-                        {{ formatDate(item.labResults[0].collectedDateTime) }}
-                    </b-col>
-                    <b-col data-testid="covid19ItemTestType" class="my-auto">
-                        {{ item.labResults[0].testType }}
-                    </b-col>
-                    <b-col data-testid="covid19ItemLocation" class="my-auto">
-                        {{ item.location }}
-                    </b-col>
-                    <b-col data-testid="covid19ItemResult" class="my-auto">
-                        <span
-                            v-if="
-                                checkResultReady(item.labResults[0].testStatus)
-                            "
-                            >{{ item.labResults[0].labResultOutcome }}</span
-                        >
-                    </b-col>
-                </b-row>
+                    <template #table-busy>
+                        <content-placeholders>
+                            <content-placeholders-text :lines="7" />
+                        </content-placeholders>
+                    </template>
+                </b-table>
             </section>
         </div>
     </div>
 </template>
 
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.laboratory-report-table-header {
+    color: $primary;
+    font-size: 0.8rem;
+}
+</style>
+
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.header {
-    color: $primary;
-    background-color: $soft_background;
-    font-weight: bold;
-    font-size: 0.8em;
+.table-style {
+    font-size: 0.6rem;
     text-align: center;
-}
-
-.item {
-    font-size: 0.6em;
-    border-bottom: solid 1px $soft_background;
-    page-break-inside: avoid;
-    text-align: center;
-}
-
-.item:nth-child(odd) {
-    background-color: $medium_background;
-}
-.item:nth-child(even) {
-    background-color: $soft_background;
 }
 </style>

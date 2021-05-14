@@ -6,12 +6,23 @@ import { Action, Getter } from "vuex-class";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationRequest from "@/models/MedicationRequest";
+import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
+
+interface MedicationRequestRow {
+    date: string;
+    requested_drug_name: string;
+    status: string;
+    prescriber_name: string;
+    effective_date: string;
+    expiry_date: string;
+    reference_number: string;
+}
 
 @Component({
     components: {
@@ -38,6 +49,8 @@ export default class MedicationRequestReportComponent extends Vue {
 
     private logger!: ILogger;
     private isPreview = true;
+
+    private readonly headerClass = "medication-request-report-table-header";
 
     @Watch("isLoading")
     @Emit()
@@ -67,19 +80,31 @@ export default class MedicationRequestReportComponent extends Vue {
         return records;
     }
 
+    private get items(): MedicationRequestRow[] {
+        return this.visibleRecords.map<MedicationRequestRow>((x) => {
+            return {
+                date: DateWrapper.format(x.requestedDate),
+                requested_drug_name: x.drugName || "",
+                status: x.requestStatus || "",
+                prescriber_name: this.prescriberName(x),
+                effective_date:
+                    x.effectiveDate === undefined
+                        ? ""
+                        : DateWrapper.format(x.effectiveDate),
+                expiry_date:
+                    x.expiryDate === undefined
+                        ? ""
+                        : DateWrapper.format(x.expiryDate),
+                reference_number: x.referenceNumber,
+            };
+        });
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieve({ hdid: this.user.hdid }).catch((err) => {
             this.logger.error(`Error loading medication requests data: ${err}`);
         });
-    }
-
-    private formatDate(date: string | undefined): string {
-        if (date === undefined) {
-            return "";
-        } else {
-            return DateWrapper.format(date);
-        }
     }
 
     private prescriberName(medication: MedicationRequest) {
@@ -90,17 +115,55 @@ export default class MedicationRequestReportComponent extends Vue {
         );
     }
 
-    public async generatePdf(): Promise<void> {
+    public generatePdf(): Promise<void> {
         this.logger.debug("generating Medication Request History PDF...");
         this.isPreview = false;
 
-        PDFUtil.generatePdf(
+        return PDFUtil.generatePdf(
             "HealthGateway_SpecialAuthorityRequestHistory.pdf",
             this.report
         ).then(() => {
             this.isPreview = true;
         });
     }
+
+    private fields: ReportField[] = [
+        {
+            key: "date",
+            thClass: this.headerClass,
+            thStyle: { width: "10%" },
+        },
+        {
+            key: "requested_drug_name",
+            thClass: this.headerClass,
+            thStyle: { width: "20%" },
+        },
+        {
+            key: "status",
+            thClass: this.headerClass,
+            thStyle: { width: "9%" },
+        },
+        {
+            key: "prescriber_name",
+            thClass: this.headerClass,
+            thStyle: { width: "15%" },
+        },
+        {
+            key: "effective_date",
+            thClass: this.headerClass,
+            thStyle: { width: "15%" },
+        },
+        {
+            key: "expiry_date",
+            thClass: this.headerClass,
+            thStyle: { width: "15%" },
+        },
+        {
+            key: "reference_number",
+            thClass: this.headerClass,
+            thStyle: { width: "16%" },
+        },
+    ];
 }
 </script>
 
@@ -116,81 +179,38 @@ export default class MedicationRequestReportComponent extends Vue {
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 header">
-                    <b-col class="col-1">Date</b-col>
-                    <b-col class="col-2">Requested Drug Name</b-col>
-                    <b-col class="col-1">Status</b-col>
-                    <b-col class="col-2">Prescriber Name</b-col>
-                    <b-col class="col-2">Effective Date</b-col>
-                    <b-col class="col-2">Expiry Date</b-col>
-                    <b-col class="col-2">Reference Number</b-col>
-                </b-row>
-                <b-row
-                    v-for="item in visibleRecords"
-                    :key="item.referenceNumber"
-                    class="item py-1"
+                <b-table
+                    v-if="!isEmpty || isLoading"
+                    striped
+                    :busy="isLoading"
+                    :items="items"
+                    :fields="fields"
+                    class="table-style"
                 >
-                    <b-col class="col-1 my-auto text-nowrap">
-                        {{ formatDate(item.requestedDate) }}
-                    </b-col>
-                    <b-col class="col-2 my-auto">
-                        {{ item.drugName || "" }}
-                    </b-col>
-                    <b-col class="col-1 my-auto">
-                        {{ item.requestStatus || "" }}
-                    </b-col>
-                    <b-col class="col-2 my-auto">
-                        {{ prescriberName(item) }}
-                    </b-col>
-                    <b-col class="col-2 my-auto">
-                        {{ formatDate(item.effectiveDate) }}
-                    </b-col>
-                    <b-col class="col-2 my-auto">
-                        {{ formatDate(item.expiryDate) }}
-                    </b-col>
-                    <b-col class="col-2 my-auto">
-                        {{ item.referenceNumber }}
-                    </b-col>
-                </b-row>
+                    <template #table-busy>
+                        <content-placeholders>
+                            <content-placeholders-text :lines="7" />
+                        </content-placeholders>
+                    </template>
+                </b-table>
             </section>
         </div>
     </div>
 </template>
 
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.medication-request-report-table-header {
+    color: $primary;
+    font-size: 0.8rem;
+}
+</style>
+
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-div[class^="col"],
-div[class*=" col"] {
-    padding: 0px;
-    margin: 0px;
-}
-
-div[class^="row"],
-div[class*=" row"] {
-    padding: 0px;
-    margin: 0px;
-}
-
-.header {
-    background-color: $soft_background;
-    color: $primary;
-    font-weight: bold;
-    font-size: 0.8em;
+.table-style {
+    font-size: 0.6rem;
     text-align: center;
-}
-
-.item {
-    font-size: 0.6em;
-    border-bottom: solid 1px $soft_background;
-    page-break-inside: avoid;
-    text-align: center;
-}
-
-.item:nth-child(odd) {
-    background-color: $medium_background;
-}
-.item:nth-child(even) {
-    background-color: $soft_background;
 }
 </style>
