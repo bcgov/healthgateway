@@ -35,4 +35,4 @@ Finally, in **step 18**, the document is returned to the HealthGateway web appli
 
 ## PHSA CDC Laboratory API documentation
 
-The preliminary documentation is available at <https://phsahealthgatewayapi.azurewebsites.net/swagger/index.html>
+The preliminary documentation is available at <https://phsahealthgatewayapi-dev.azurewebsites.net/swagger/index.html>
