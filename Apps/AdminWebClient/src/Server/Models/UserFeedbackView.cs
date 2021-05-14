@@ -35,10 +35,10 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
         /// </summary>
-        /// <param name="tags">The load state model.</param>
+        /// <param name="tags">The list of user feedback tags.</param>
         [JsonConstructor]
         public UserFeedbackView(
-            IList<AdminTagView> tags)
+            IList<UserFeedbackTagView> tags)
         {
             this.Tags = tags;
         }
@@ -81,7 +81,7 @@ namespace HealthGateway.Admin.Models
         /// <summary>
         /// Gets the feedback admin tags.
         /// </summary>
-        public IList<AdminTagView> Tags { get; } = new List<AdminTagView>();
+        public IList<UserFeedbackTagView> Tags { get; } = new List<UserFeedbackTagView>();
 
         /// <summary>
         /// Constructs a UserFeedbackView from a UserFeedback model.
@@ -101,9 +101,9 @@ namespace HealthGateway.Admin.Models
                 Email = model.Email,
             };
 
-            IList<AdminTagView> viewTags = AdminTagView.FromDbFeedbackModelCollection(model.Tags);
+            IList<UserFeedbackTagView> viewTags = UserFeedbackTagView.FromDbModelCollection(model.Tags);
 
-            foreach (AdminTagView viewTag in viewTags)
+            foreach (UserFeedbackTagView viewTag in viewTags)
             {
                 userFeedbackView.Tags.Add(viewTag);
             }

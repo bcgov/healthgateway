@@ -49,11 +49,11 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the related user feedback model.
         /// </summary>
-        public virtual UserFeedback UserFeedback { get; set; } = null!;
+        public virtual UserFeedback? UserFeedback { get; set; }
 
         /// <summary>
         /// Gets or sets the related admin tag model.
         /// </summary>
-        public virtual AdminTag AdminTag { get; set; } = null!;
+        public virtual AdminTag? AdminTag { get; set; }
     }
 }

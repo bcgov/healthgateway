@@ -84,7 +84,7 @@ namespace HealthGateway.Admin.Services
             DBResult<IEnumerable<AdminTag>> adminTags = this.adminTagDelegate.GetAll();
 
             this.logger.LogDebug($"Finished retrieving admin tags: {JsonConvert.SerializeObject(adminTags)}");
-            IList<AdminTagView> adminTagViews = AdminTagView.FromDbAdminTagModelCollection(adminTags.Payload);
+            IList<AdminTagView> adminTagViews = AdminTagView.FromDbModelCollection(adminTags.Payload);
             return new RequestResult<IList<AdminTagView>>()
             {
                 ResourcePayload = adminTagViews,
@@ -94,7 +94,7 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<AdminTagView> CreateFeedbackTag(Guid userFeedbackId, string tagName)
+        public RequestResult<UserFeedbackTagView> CreateFeedbackTag(Guid userFeedbackId, string tagName)
         {
             this.logger.LogTrace($"Creating new feedback tag... {tagName}");
 
@@ -111,15 +111,15 @@ namespace HealthGateway.Admin.Services
 
                 if (feedbackTagResult.Status == DBStatusCode.Created)
                 {
-                    return new RequestResult<AdminTagView>()
+                    return new RequestResult<UserFeedbackTagView>()
                     {
-                        ResourcePayload = AdminTagView.CreateFromDbFeedbackModel(feedbackTagResult.Payload),
+                        ResourcePayload = UserFeedbackTagView.FromDbModel(feedbackTagResult.Payload),
                         ResultStatus = ResultType.Success,
                     };
                 }
                 else
                 {
-                    return new RequestResult<AdminTagView>()
+                    return new RequestResult<UserFeedbackTagView>()
                     {
                         ResultStatus = ResultType.Error,
                         ResultError = new RequestResultError() { ResultMessage = feedbackTagResult.Message },
@@ -128,7 +128,7 @@ namespace HealthGateway.Admin.Services
             }
             else
             {
-                return new RequestResult<AdminTagView>()
+                return new RequestResult<UserFeedbackTagView>()
                 {
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError() { ResultMessage = tagResult.Message },
@@ -137,7 +137,7 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<AdminTagView> AssociateFeedbackTag(Guid userFeedbackId, AdminTagView tag)
+        public RequestResult<UserFeedbackTagView> AssociateFeedbackTag(Guid userFeedbackId, AdminTagView tag)
         {
             this.logger.LogTrace($"Adding admin tag to feedback... {tag}");
 
@@ -150,15 +150,17 @@ namespace HealthGateway.Admin.Services
 
             if (feedbackTagResult.Status == DBStatusCode.Created)
             {
-                return new RequestResult<AdminTagView>()
+                UserFeedbackTagView newFeedbackTag = UserFeedbackTagView.FromDbModel(feedbackTagResult.Payload);
+                newFeedbackTag.Tag = tag;
+                return new RequestResult<UserFeedbackTagView>()
                 {
-                    ResourcePayload = tag,
+                    ResourcePayload = newFeedbackTag,
                     ResultStatus = ResultType.Success,
                 };
             }
             else
             {
-                return new RequestResult<AdminTagView>()
+                return new RequestResult<UserFeedbackTagView>()
                 {
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError() { ResultMessage = feedbackTagResult.Message },
@@ -167,16 +169,11 @@ namespace HealthGateway.Admin.Services
         }
 
         /// <inheritdoc />
-        public bool DissociateFeedbackTag(Guid userFeedbackId, AdminTagView tag)
+        public bool DissociateFeedbackTag(Guid userFeedbackId, UserFeedbackTagView tag)
         {
             this.logger.LogTrace($"Removing admin tag from feedback... {tag}");
 
-            DBResult<UserFeedbackTag> feedbackTagResult = this.feedbackTagDelegate.Delete(
-                new UserFeedbackTag()
-                {
-                    UserFeedbackId = userFeedbackId,
-                    AdminTagId = tag.Id,
-                });
+            DBResult<UserFeedbackTag> feedbackTagResult = this.feedbackTagDelegate.Delete(tag.ToDbModel());
 
             return feedbackTagResult.Status == DBStatusCode.Deleted;
         }

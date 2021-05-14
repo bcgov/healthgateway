@@ -20,19 +20,19 @@ namespace HealthGateway.Admin.Models
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Model that provides a representation of an AdminTag.
+    /// Model that provides a representation of UserFeedbackTagView.
     /// </summary>
-    public class AdminTagView
+    public class UserFeedbackTagView
     {
         /// <summary>
-        /// Gets or sets the tag id.
+        /// Gets or sets the user feedback tag id.
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the tag name.
+        /// Gets or sets the admin tag.
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public AdminTagView Tag { get; set; } = new AdminTagView();
 
         /// <summary>
         /// Gets or sets the tag version.
@@ -40,14 +40,14 @@ namespace HealthGateway.Admin.Models
         public uint Version { get; set; }
 
         /// <summary>
-        /// Converts a list of DB AdminTag into a list of AdminTagView.
+        /// Converts a list of DB UserFeedbackTag into a list of UserFeedbackTagView.
         /// </summary>
         /// <param name="adminTags">The list of DB models.</param>
         /// <returns>A converted list or null if inbound is null.</returns>
-        public static IList<AdminTagView> FromDbModelCollection(IEnumerable<AdminTag> adminTags)
+        public static IList<UserFeedbackTagView> FromDbModelCollection(ICollection<UserFeedbackTag> adminTags)
         {
-            List<AdminTagView> retList = new ();
-            foreach (AdminTag tag in adminTags)
+            List<UserFeedbackTagView> retList = new ();
+            foreach (UserFeedbackTag tag in adminTags)
             {
                 retList.Add(FromDbModel(tag));
             }
@@ -56,30 +56,35 @@ namespace HealthGateway.Admin.Models
         }
 
         /// <summary>
-        /// Constructs a AdminTagView from an AdminTag model.
+        /// Constructs a UserFeedbackTagView from an UserFeedbackTag model.
         /// </summary>
         /// <param name="model">The database model.</param>
-        /// <returns>A new AdminTagView.</returns>
-        public static AdminTagView FromDbModel(AdminTag model)
+        /// <returns>A new UserFeedbackTagView.</returns>
+        public static UserFeedbackTagView FromDbModel(UserFeedbackTag model)
         {
-            return new AdminTagView()
+            UserFeedbackTagView newDBModel = new ()
             {
-                Id = model.AdminTagId,
-                Name = model.Name,
+                Id = model.UserFeedbackTagId,
                 Version = model.Version,
             };
+
+            if (model.AdminTag != null)
+            {
+                newDBModel.Tag = AdminTagView.FromDbModel(model.AdminTag);
+            }
+
+            return newDBModel;
         }
 
         /// <summary>
-        /// Constructs an AdminTag from the object.
+        /// Returns a new UserFeedbackTag from the object.
         /// </summary>
-        /// <returns>A new AdminTag.</returns>
-        public AdminTag ToDbModel()
+        /// <returns>A new UserFeedbackTag.</returns>
+        public UserFeedbackTag ToDbModel()
         {
-            return new AdminTag()
+            return new UserFeedbackTag()
             {
-                AdminTagId = this.Id,
-                Name = this.Name,
+                UserFeedbackTagId = this.Id,
                 Version = this.Version,
             };
         }
