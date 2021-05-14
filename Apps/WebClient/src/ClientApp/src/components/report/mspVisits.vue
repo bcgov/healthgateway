@@ -165,7 +165,7 @@ export default class MSPVisitsReportComponent extends Vue {
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
 .encounter-report-table-header {
-    color: $primary;
+    color: $heading_color;
     font-size: 0.8rem;
 }
 </style>

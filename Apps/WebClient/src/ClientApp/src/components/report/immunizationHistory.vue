@@ -295,7 +295,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
 .immunization-report-table-header {
-    color: $primary;
+    color: $heading_color;
     font-size: 0.8rem;
 }
 </style>

@@ -370,7 +370,6 @@ export default class ReportsView extends Vue {
                     :is-custom="!isGeneratingReport"
                     :full-screen="false"
                 ></LoadingComponent>
-                Generating :{{ isGeneratingReport }} Loading :{{ isLoading }}
                 <div
                     v-if="reportType == 'MED'"
                     data-testid="medicationReportSample"

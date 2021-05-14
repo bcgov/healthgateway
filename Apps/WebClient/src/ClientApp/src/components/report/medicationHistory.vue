@@ -238,7 +238,7 @@ export default class MedicationHistoryReportComponent extends Vue {
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
 .medication-report-table-header {
-    color: $primary;
+    color: $heading_color;
     font-size: 0.8rem;
 }
 </style>

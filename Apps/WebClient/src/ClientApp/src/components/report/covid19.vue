@@ -175,7 +175,7 @@ export default class COVID19ReportComponent extends Vue {
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
 .laboratory-report-table-header {
-    color: $primary;
+    color: $heading_color;
     font-size: 0.8rem;
 }
 </style>
