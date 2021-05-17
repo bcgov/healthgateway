@@ -29,5 +29,6 @@ describe("Immunization No Records", () => {
     it("Validate Immunization Loading", () => {
         cy.get("[data-testid=immunizationLoading]").should("be.visible");
         cy.get("[data-testid=immunizationLoading]").should("not.exist");
+        cy.get("[data-testid=immunizationEmpty]").should("be.visible");
     });
 });

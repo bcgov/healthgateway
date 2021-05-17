@@ -147,10 +147,9 @@ export default class TimelineView extends Vue {
     }
 
     @Watch("immunizationIsDeferred")
-    private whenImmunizationIsDeferred(isDeferred: boolean) {
-        if (isDeferred) {
-            this.showImmunizationAlert = true;
-        }
+    private whenImmunizationIsDeferred() {
+        this.dismissImmunizationBannerCountdown =
+            this.dismissImmunizationBannerSeconds;
     }
 
     @Watch("isLinearView")
@@ -233,15 +232,14 @@ export default class TimelineView extends Vue {
         return filteredEntries;
     }
 
-    private showImmunizationAlert = false;
-
     private filterText = "";
 
     private isPacificTime = false;
 
     private logger!: ILogger;
 
-    private readonly alertExpirySeconds = 5;
+    private readonly dismissImmunizationBannerSeconds = 5;
+    private dismissImmunizationBannerCountdown = 0;
 
     private get unverifiedEmail(): boolean {
         return !this.user.verifiedEmail && this.user.hasEmail;
@@ -383,35 +381,28 @@ export default class TimelineView extends Vue {
                         </span>
                     </b-alert>
                     <b-alert
-                        v-if="showImmunizationAlert && immunizationIsDeferred"
-                        :show="alertExpirySeconds"
+                        :show="dismissImmunizationBannerCountdown"
                         dismissible
                         variant="info"
                         class="no-print"
+                        @dismissed="dismissImmunizationBannerCountdown = 0"
                     >
-                        <h4 data-testid="immunizationLoading">
+                        <h4
+                            v-if="immunizationIsDeferred"
+                            data-testid="immunizationLoading"
+                        >
                             Still searching for immunization records
                         </h4>
-                    </b-alert>
-                    <b-alert
-                        v-if="showImmunizationAlert && !immunizationIsDeferred"
-                        :show="alertExpirySeconds"
-                        dismissible
-                        variant="info"
-                        class="no-print"
-                    >
-                        <span
-                            v-if="patientImmunizations.length > 0"
+                        <h4
+                            v-else-if="patientImmunizations.length > 0"
                             data-testid="immunizationReady"
                         >
-                            <h4>
-                                Additional immunization records found. Loading
-                                into timeline
-                            </h4>
-                        </span>
-                        <span v-else data-testid="immunizationEmpty">
-                            <h4>No additional records found</h4>
-                        </span>
+                            Additional immunization records found. Loading into
+                            timeline
+                        </h4>
+                        <h4 v-else data-testid="immunizationEmpty">
+                            No additional records found
+                        </h4>
                     </b-alert>
                 </div>
 
