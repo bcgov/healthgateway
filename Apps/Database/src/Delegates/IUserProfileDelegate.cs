@@ -93,9 +93,10 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Retrieves the count recurring users.
         /// </summary>
-        /// <param name="days">The number of unique days for evaluating a user.</param>
-        /// <param name="period">The period of days over which to evaluate the user.</param>
+        /// <param name="dayCount">The number of unique days for evaluating a user.</param>
+        /// <param name="startDate">The start date to evaluate the user.</param>
+        /// <param name="endDate">The end date to evaluate the user.</param>
         /// <returns>The count of recurrent users.</returns>
-        DBResult<int> GetRecurrentUserCount(int days, int period);
+        int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate);
     }
 }

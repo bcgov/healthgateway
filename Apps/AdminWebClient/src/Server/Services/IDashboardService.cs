@@ -47,9 +47,11 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Retrieves the count recurring users.
         /// </summary>
-        /// <param name="days">The number of unique days for evaluating a user.</param>
-        /// <param name="period">The period of days over which to evaluate the user.</param>
+        /// <param name="dayCount">The number of unique days for evaluating a user.</param>
+        /// <param name="startPeriod">The period start over which to evaluate the user.</param>
+        /// <param name="endPeriod">The period end over which to evaluate the user.</param>
+        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>The count of recurrent users.</returns>
-        int GetRecurrentUserCount(int days, int period);
+        int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset);
     }
 }

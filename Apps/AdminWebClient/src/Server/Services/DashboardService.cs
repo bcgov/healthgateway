@@ -17,9 +17,8 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
-    using HealthGateway.Admin.Models;
+    using System.Globalization;
     using HealthGateway.Database.Delegates;
-    using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc />
     public class DashboardService : IDashboardService
@@ -44,7 +43,7 @@ namespace HealthGateway.Admin.Services
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
+            TimeSpan ts = new (0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
         }
 
@@ -52,7 +51,7 @@ namespace HealthGateway.Admin.Services
         public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
+            TimeSpan ts = new (0, timeOffset, 0);
             return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
         }
 
@@ -60,14 +59,18 @@ namespace HealthGateway.Admin.Services
         public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
         {
             // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
-            TimeSpan ts = new TimeSpan(0, timeOffset, 0);
+            TimeSpan ts = new (0, timeOffset, 0);
             return this.dependentDelegate.GetDailyDependentCount(ts);
         }
 
         /// <inheritdoc />
-        public int GetRecurrentUserCount(int days, int period)
+        public int GetRecurrentUserCount(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
-            return this.userProfileDelegate.GetRecurrentUserCount(days, period);
+            // Javascript offset is positive # of minutes if the local timezone is behind UTC, and negative if it is ahead.
+            TimeSpan ts = new (0, timeOffset, 0);
+            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).AddMinutes(ts.TotalMinutes).Date;
+            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).AddMinutes(ts.TotalMinutes).Date;
+            return this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
         }
     }
 }
