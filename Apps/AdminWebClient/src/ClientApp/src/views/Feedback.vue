@@ -7,10 +7,40 @@
             class="mt-5"
         ></BannerFeedbackComponent>
         <v-row justify="center">
+            <v-col>
+                <v-card>
+                    <v-card-title>Filter</v-card-title>
+                    <v-card-text>
+                        <v-row align="center">
+                            <v-col class="flex-grow-1 flex-shrink-0">
+                                <v-select
+                                    v-model="selectedAdminTagIds"
+                                    :items="adminTags"
+                                    item-text="name"
+                                    item-value="id"
+                                    label="Tags"
+                                    multiple
+                                />
+                            </v-col>
+                            <v-col class="flex-grow-0 flex-shrink-1">
+                                <v-btn
+                                    color="accent"
+                                    :disabled="!filterIsActive"
+                                    @click="clearFilter"
+                                >
+                                    Clear
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row justify="center">
             <v-col no-gutters>
                 <v-data-table
                     :headers="tableHeaders"
-                    :items="feedbackList"
+                    :items="filteredFeedbackList"
                     :items-per-page="50"
                     :footer-props="{
                         'items-per-page-options': [25, 50, 100, -1],
@@ -139,6 +169,8 @@ export default class FeedbackView extends Vue {
 
     private adminTags: AdminTag[] = [];
 
+    private selectedAdminTagIds: string[] = [];
+
     private feedbackList: UserFeedback[] = [];
 
     private userFeedbackService!: IUserFeedbackService;
@@ -149,6 +181,25 @@ export default class FeedbackView extends Vue {
 
     private get availableTags(): string[] {
         return this.adminTags.map<string>((x) => x.name);
+    }
+
+    private get filterIsActive(): boolean {
+        return this.selectedAdminTagIds.length > 0;
+    }
+
+    private get filteredFeedbackList(): UserFeedback[] {
+        const includedInSelectedTags = (tag: AdminTag) =>
+            this.selectedAdminTagIds.includes(tag.id);
+
+        const anyTagsMatchFilter = (feedbackTags: UserFeedbackTag[]) =>
+            this.selectedAdminTagIds.length === 0 ||
+            feedbackTags.filter((feedbackTag) =>
+                includedInSelectedTags(feedbackTag.tag)
+            ).length > 0;
+
+        return this.feedbackList.filter((userFeedback) =>
+            anyTagsMatchFilter(userFeedback.tags)
+        );
     }
 
     private mounted() {
@@ -199,6 +250,10 @@ export default class FeedbackView extends Vue {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    private clearFilter(): void {
+        this.selectedAdminTagIds = [];
     }
 
     private formatDate(date: Date): string {
