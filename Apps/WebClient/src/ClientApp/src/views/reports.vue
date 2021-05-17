@@ -98,7 +98,7 @@ export default class ReportsView extends Vue {
     }
 
     private formatDate(date: string): string {
-        return new DateWrapper(date).format();
+        return DateWrapper.format(date);
     }
 
     private created() {
@@ -259,14 +259,14 @@ export default class ReportsView extends Vue {
                                 <span data-testid="selectedDatesFilter"
                                     >{{
                                         reportFilter.startDate
-                                            ? `From ${DateWrapper.format(
+                                            ? `From ${formatDate(
                                                   reportFilter.startDate
                                               )}`
                                             : ""
                                     }}
                                     {{
                                         reportFilter.endDate
-                                            ? ` To ${DateWrapper.format(
+                                            ? ` To ${formatDate(
                                                   reportFilter.endDate
                                               )}`
                                             : ""
