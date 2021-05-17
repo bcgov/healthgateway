@@ -197,11 +197,17 @@ namespace HealthGateway.Database.Delegates
         public DBResult<int> GetRecurrentUserCount(int days, int period)
         {
             this.logger.LogTrace($"Retrieving recurring user count for days:{days} with period: {period}...");
-            return DBDelegateHelper.GetPagedDBResult(
-                this.dbContext.UserProfile
-                    .OrderBy(userProfile => userProfile.CreatedDateTime),
-                page,
-                pageSize);
+            Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime })
+                .Union(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
+                .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime })
+                .Distinct()
+                .GroupBy(x => x.lastLoginDate).Select(x => new { lastLoginDate = x.Key, count = x.Count() })
+                .OrderBy(x => x.lastLoginDate)
+                .ToDictionary(x => x.lastLoginDate, x => x.count);
+
+            return dateCount;
         }
     }
 }
