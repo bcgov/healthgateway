@@ -168,10 +168,6 @@ export default class ReportsView extends Vue {
             .build();
     }
 
-    private formatDateLong(date: string): string {
-        return DateWrapper.format(date);
-    }
-
     private showConfirmationModal() {
         this.messageModal.showModal();
     }
@@ -263,14 +259,14 @@ export default class ReportsView extends Vue {
                                 <span data-testid="selectedDatesFilter"
                                     >{{
                                         reportFilter.startDate
-                                            ? `From ${formatDateLong(
+                                            ? `From ${DateWrapper.format(
                                                   reportFilter.startDate
                                               )}`
                                             : ""
                                     }}
                                     {{
                                         reportFilter.endDate
-                                            ? ` To ${formatDateLong(
+                                            ? ` To ${DateWrapper.format(
                                                   reportFilter.endDate
                                               )}`
                                             : ""

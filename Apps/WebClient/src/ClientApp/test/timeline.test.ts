@@ -6,7 +6,6 @@ import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
 import Vuex, { Store } from "vuex";
 
-import LoadingComponent from "@/components/loading.vue";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";

@@ -115,7 +115,7 @@ export default class MedicationRequestReportComponent extends Vue {
         );
     }
 
-    public generatePdf(): Promise<void> {
+    public async generatePdf(): Promise<void> {
         this.logger.debug("generating Medication Request History PDF...");
         this.isPreview = false;
 
