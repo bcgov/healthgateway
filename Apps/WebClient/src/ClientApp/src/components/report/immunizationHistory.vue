@@ -150,22 +150,30 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             key: "date",
             thStyle: { width: "15%" },
             thClass: this.headerClass,
+            thAttr: { "data-testid": "immunizationDateTitle" },
+            tdAttr: { "data-testid": "immunizationDateItem" },
         },
         {
             key: "immunization",
             thStyle: { width: "25%" },
             thClass: this.headerClass,
+            thAttr: { "data-testid": "immunizationNameTitle" },
+            tdAttr: { "data-testid": "immunizationNameItem" },
         },
         {
             key: "agents",
             thStyle: { width: "45%" },
             thClass: this.headerClass,
+            thAttr: { "data-testid": "immunizationAgentTitle" },
+            tdAttr: { "data-testid": "immunizationAgentItem" },
         },
         {
             key: "provider_clinic",
             label: "Provider / Clinic",
             thStyle: { width: "15%" },
             thClass: this.headerClass,
+            thAttr: { "data-testid": "immunizationProviderClinicTitle" },
+            tdAttr: { "data-testid": "immunizationProviderClinicItem" },
         },
     ];
 
@@ -174,16 +182,22 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             key: "immunization",
             thStyle: { width: "50%" },
             thClass: this.headerClass,
+            thAttr: { "data-testid": "recommendationTitle" },
+            tdAttr: { "data-testid": "recommendationItem" },
         },
         {
             key: "date",
             thStyle: { width: "25%" },
             thClass: this.headerClass,
+            thAttr: { "data-testid": "recommendationDateTitle" },
+            tdAttr: { "data-testid": "recommendationDateItem" },
         },
         {
             key: "status",
             thStyle: { width: "25%" },
             thClass: this.headerClass,
+            thAttr: { "data-testid": "recommendationStatusTitle" },
+            tdAttr: { "data-testid": "recommendationStatusItem" },
         },
     ];
 }

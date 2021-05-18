@@ -168,6 +168,7 @@ export default class MedicationHistoryReportComponent extends Vue {
         {
             key: "brand",
             thClass: this.headerClass,
+            tdAttr: { "data-testid": "medicationReportBrandNameItem" },
         },
         {
             key: "generic",
