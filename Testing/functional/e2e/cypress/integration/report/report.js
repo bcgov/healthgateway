@@ -113,7 +113,7 @@ describe("Reports", () => {
             .select("COVID-19");
 
         cy.get("[data-testid=covid19ReportSample]").should("be.visible");
-        cy.get("[data-testid=covid19ItemDate]")
+        cy.get("[data-testid=covid19DateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
@@ -145,7 +145,7 @@ describe("Reports", () => {
         cy.get("[data-testid=immunizationHistoryReportSample]").should(
             "be.visible"
         );
-        cy.get("[data-testid=immunizationItemDate]")
+        cy.get("[data-testid=immunizationDateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
