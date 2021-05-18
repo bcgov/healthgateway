@@ -23,9 +23,9 @@
                             <b-col>
                                 <ul>
                                     <li>
-                                        We updated the tables within record 
-                                        exports so that they are easier to 
-                                        read and columns do not overlap.
+                                        We updated the tables within record
+                                        exports so that they are easier to read
+                                        and columns do not overlap.
                                     </li>
                                 </ul>
                             </b-col>
