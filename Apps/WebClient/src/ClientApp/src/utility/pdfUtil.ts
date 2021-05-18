@@ -49,8 +49,8 @@ export default abstract class PDFUtil {
             .save()
             .output("bloburl")
             .then((pdfBlobUrl: RequestInfo) => {
-                fetch(pdfBlobUrl).then((res) => {
-                    res.blob().then(() => {
+                return fetch(pdfBlobUrl).then((res) => {
+                    return res.blob().then(() => {
                         window.scrollTo(scrollX, scrollY);
                     });
                 });

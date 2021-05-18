@@ -7,12 +7,25 @@ import ProtectiveWordComponent from "@/components/modal/protectiveWord.vue";
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
+
+interface MedicationRow {
+    date: string;
+    din_pin: string;
+    brand: string;
+    generic: string;
+    practitioner: string;
+    quantity: string;
+    strength: string;
+    form: string;
+    manufacturer: string;
+}
 
 @Component({
     components: {
@@ -44,6 +57,8 @@ export default class MedicationHistoryReportComponent extends Vue {
     private fileIndex = 0;
     private totalFiles = 1;
     private isPreview = true;
+
+    private readonly headerClass = "medication-report-table-header";
 
     @Watch("isLoading")
     @Emit()
@@ -84,15 +99,34 @@ export default class MedicationHistoryReportComponent extends Vue {
         }
     }
 
+    private get items(): MedicationRow[] {
+        return this.visibleRecords.map<MedicationRow>((x) => {
+            return {
+                date: DateWrapper.format(x.dispensedDate),
+                din_pin: x.medicationSummary.din,
+                brand: x.medicationSummary.brandName,
+                generic: x.medicationSummary.genericName || this.notFoundText,
+                practitioner: x.practitionerSurname || "",
+                quantity:
+                    x.medicationSummary.quantity === undefined
+                        ? ""
+                        : x.medicationSummary.quantity.toString(),
+                strength:
+                    (x.medicationSummary.strength || "") +
+                        (x.medicationSummary.strengthUnit || "") ||
+                    this.notFoundText,
+                form: x.medicationSummary.form || this.notFoundText,
+                manufacturer:
+                    x.medicationSummary.manufacturer || this.notFoundText,
+            };
+        });
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveMedications({ hdid: this.user.hdid }).catch((err) => {
             this.logger.error(`Error loading medication data: ${err}`);
         });
-    }
-
-    private formatDate(date: string): string {
-        return DateWrapper.format(date);
     }
 
     public async generatePdf(): Promise<void> {
@@ -102,10 +136,10 @@ export default class MedicationHistoryReportComponent extends Vue {
         );
         this.isPreview = false;
 
-        this.generatePdfFile().then(() => {
+        return this.generatePdfFile().then(() => {
             if (this.fileIndex + 1 < this.totalFiles) {
                 this.fileIndex++;
-                this.generatePdfFile();
+                return this.generatePdfFile();
             } else {
                 this.isPreview = true;
                 this.fileIndex = 0;
@@ -120,6 +154,46 @@ export default class MedicationHistoryReportComponent extends Vue {
             `File ${this.fileIndex + 1} of ${this.totalFiles}`
         );
     }
+
+    private fields: ReportField[] = [
+        {
+            key: "date",
+            thClass: this.headerClass,
+        },
+        {
+            key: "din_pin",
+            label: "DIN/PIN",
+            thClass: this.headerClass,
+        },
+        {
+            key: "brand",
+            thClass: this.headerClass,
+        },
+        {
+            key: "generic",
+            thClass: this.headerClass,
+        },
+        {
+            key: "practitioner",
+            thClass: this.headerClass,
+        },
+        {
+            key: "quantity",
+            thClass: this.headerClass,
+        },
+        {
+            key: "strength",
+            thClass: this.headerClass,
+        },
+        {
+            key: "form",
+            thClass: this.headerClass,
+        },
+        {
+            key: "manufacturer",
+            thClass: this.headerClass,
+        },
+    ];
 }
 </script>
 
@@ -138,60 +212,20 @@ export default class MedicationHistoryReportComponent extends Vue {
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 header">
-                    <b-col class="col-1">Date</b-col>
-                    <b-col class="col-1">DIN/PIN</b-col>
-                    <b-col class="col-2">Brand</b-col>
-                    <b-col class="col-2">Generic</b-col>
-                    <b-col class="col-1">Practitioner</b-col>
-                    <b-col class="col-1">Quantity</b-col>
-                    <b-col class="col-1">Strength</b-col>
-                    <b-col class="col-1">Form</b-col>
-                    <b-col class="col-1">Manufacturer</b-col>
-                </b-row>
-                <b-row
-                    v-for="item in visibleRecords"
-                    :key="item.prescriptionIdentifier + item.dispensedDate"
-                    class="item py-1"
-                    data-testid="medicationReportEntry"
+                <b-table
+                    v-if="!isEmpty || isLoading"
+                    striped
+                    :busy="isLoading"
+                    :items="items"
+                    :fields="fields"
+                    class="table-style"
                 >
-                    <b-col class="col-1 my-auto text-nowrap">
-                        {{ formatDate(item.dispensedDate) }}
-                    </b-col>
-                    <b-col class="col-1 my-auto">
-                        {{ item.medicationSummary.din }}
-                    </b-col>
-                    <b-col
-                        class="col-2 my-auto"
-                        data-testid="medicationReportEntryBrandName"
-                    >
-                        {{ item.medicationSummary.brandName }}
-                    </b-col>
-                    <b-col class="col-2 my-auto">
-                        {{ item.medicationSummary.genericName || notFoundText }}
-                    </b-col>
-                    <b-col class="col-1 my-auto">{{
-                        item.practitionerSurname
-                    }}</b-col>
-                    <b-col class="col-1 my-auto">
-                        {{ item.medicationSummary.quantity }}
-                    </b-col>
-                    <b-col class="col-1 my-auto">
-                        {{
-                            item.medicationSummary.strength +
-                                item.medicationSummary.strengthUnit ||
-                            notFoundText
-                        }}
-                    </b-col>
-                    <b-col class="col-1 my-auto">
-                        {{ item.medicationSummary.form || notFoundText }}
-                    </b-col>
-                    <b-col class="col-1 my-auto">
-                        {{
-                            item.medicationSummary.manufacturer || notFoundText
-                        }}
-                    </b-col>
-                </b-row>
+                    <template #table-busy>
+                        <content-placeholders>
+                            <content-placeholders-text :lines="7" />
+                        </content-placeholders>
+                    </template>
+                </b-table>
             </section>
         </div>
         <ProtectiveWordComponent
@@ -201,28 +235,19 @@ export default class MedicationHistoryReportComponent extends Vue {
     </div>
 </template>
 
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.medication-report-table-header {
+    color: $heading_color;
+    font-size: 0.8rem;
+}
+</style>
+
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.header {
-    background-color: $soft_background;
-    color: $primary;
-    font-weight: bold;
-    font-size: 0.8em;
+.table-style {
+    font-size: 0.6rem;
     text-align: center;
-}
-
-.item {
-    font-size: 0.6em;
-    border-bottom: solid 1px $soft_background;
-    page-break-inside: avoid;
-    text-align: center;
-}
-
-.item:nth-child(odd) {
-    background-color: $medium_background;
-}
-.item:nth-child(even) {
-    background-color: $soft_background;
 }
 </style>

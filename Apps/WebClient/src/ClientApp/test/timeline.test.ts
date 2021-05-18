@@ -30,10 +30,17 @@ function createWrapper(options?: GatewayStoreOptions): Wrapper<TimelineView> {
 
     store = new Vuex.Store(options);
 
+    const ChildComponentStub = {
+        name: "LoadingComponent",
+        template: "<div v-show='isLoading' id='loadingStub'/>",
+        props: ["isLoading"],
+    };
+
     return shallowMount(TimelineView, {
         localVue,
         store: store,
         stubs: {
+            LoadingComponent: ChildComponentStub,
             "hg-icon": true,
             "hg-button": true,
         },
@@ -60,7 +67,7 @@ describe("Timeline view", () => {
         const wrapper = createWrapper(options);
 
         // Check values
-        expect(wrapper.find("loadingcomponent-stub").exists()).toBe(true);
+        expect(wrapper.find("#loadingStub").isVisible()).toBe(true);
         expect(wrapper.find(linearTimelineTag).isVisible()).toBe(false);
     });
 
@@ -70,8 +77,7 @@ describe("Timeline view", () => {
         options.modules.medication.modules.statement.getters.isMedicationStatementLoading =
             () => false;
         const wrapper = createWrapper(options);
-
-        expect(wrapper.find("loadingcomponent-stub").exists()).toBe(false);
+        expect(wrapper.find("#loadingStub").isVisible()).toBe(false);
         expect(wrapper.find(linearTimelineTag).isVisible()).toBe(true);
         expect(wrapper.find("calendartimeline-stub").isVisible()).toBe(false);
     });

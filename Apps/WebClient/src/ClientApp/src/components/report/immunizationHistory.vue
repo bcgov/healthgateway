@@ -5,13 +5,31 @@ import { Action, Getter } from "vuex-class";
 
 import ReportHeaderComponent from "@/components/report/header.vue";
 import { DateWrapper } from "@/models/dateWrapper";
-import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
+import {
+    ImmunizationAgent,
+    ImmunizationEvent,
+    Recommendation,
+} from "@/models/immunizationModel";
+import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
 import User from "@/models/user";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 import PDFUtil from "@/utility/pdfUtil";
+
+interface ImmunizationRow {
+    date: string;
+    immunization: string;
+    agents: ImmunizationAgent[];
+    provider_clinic: string;
+}
+
+interface RecomendationRow {
+    immunization: string;
+    date: string;
+    status: string;
+}
 
 @Component({
     components: {
@@ -44,6 +62,8 @@ export default class ImmunizationHistoryReportComponent extends Vue {
 
     private logger!: ILogger;
     private isPreview = true;
+
+    private readonly headerClass = "immunization-report-table-header";
 
     @Watch("isLoading")
     @Emit()
@@ -82,6 +102,30 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         return records;
     }
 
+    private get immunizationItems(): ImmunizationRow[] {
+        return this.visibleImmunizations.map<ImmunizationRow>((x) => {
+            return {
+                date: DateWrapper.format(x.dateOfImmunization),
+                immunization: x.immunization.name,
+                agents: x.immunization.immunizationAgents,
+                provider_clinic: x.providerOrClinic,
+            };
+        });
+    }
+
+    private get recomendationItems(): RecomendationRow[] {
+        return this.patientRecommendations.map<RecomendationRow>((x) => {
+            return {
+                immunization: x.immunization.name,
+                date:
+                    x.agentDueDate === undefined
+                        ? ""
+                        : DateWrapper.format(x.agentDueDate),
+                status: x.status || "",
+            };
+        });
+    }
+
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) => {
@@ -89,27 +133,65 @@ export default class ImmunizationHistoryReportComponent extends Vue {
         });
     }
 
-    private formatDate(date: string): string {
-        return new DateWrapper(date).format();
-    }
-
     public async generatePdf(): Promise<void> {
         this.logger.debug("generating Immunization History PDF...");
         this.isPreview = false;
 
-        PDFUtil.generatePdf(
+        return PDFUtil.generatePdf(
             "HealthGateway_ImmunizationHistory.pdf",
             this.report
         ).then(() => {
             this.isPreview = true;
         });
     }
+
+    private immunizationFields: ReportField[] = [
+        {
+            key: "date",
+            thStyle: { width: "15%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "immunization",
+            thStyle: { width: "25%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "agents",
+            thStyle: { width: "45%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "provider_clinic",
+            label: "Provider / Clinic",
+            thStyle: { width: "15%" },
+            thClass: this.headerClass,
+        },
+    ];
+
+    private recomendationFields: ReportField[] = [
+        {
+            key: "immunization",
+            thStyle: { width: "50%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "date",
+            thStyle: { width: "25%" },
+            thClass: this.headerClass,
+        },
+        {
+            key: "status",
+            thStyle: { width: "25%" },
+            thClass: this.headerClass,
+        },
+    ];
 }
 </script>
 
 <template>
     <div>
-        <div v-show="!isLoading" ref="report">
+        <div ref="report">
             <section class="pdf-item">
                 <div>
                     <ReportHeaderComponent
@@ -127,65 +209,41 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                 <b-row v-if="isEmpty && (!isLoading || !isPreview)">
                     <b-col>No records found.</b-col>
                 </b-row>
-                <b-row v-else-if="!isEmpty" class="py-3 header">
-                    <b-col data-testid="immunizationDateTitle" class="col-2"
-                        >Date</b-col
-                    >
-                    <b-col data-testid="immunizationItemTitle" class="col-3"
-                        >Immunization</b-col
-                    >
-                    <b-col data-testid="immunizationAgentTitle" class="col-5">
+                <b-table
+                    v-if="!isEmpty || isLoading"
+                    striped
+                    :busy="isLoading"
+                    :items="immunizationItems"
+                    :fields="immunizationFields"
+                    class="table-style"
+                >
+                    <!-- A custom formatted header cell for field 'name' -->
+                    <template #head(agents)>
                         <b-row>
                             <b-col>Agent</b-col>
                             <b-col>Product</b-col>
                             <b-col>Lot Number</b-col>
                         </b-row>
-                    </b-col>
-                    <b-col data-testid="immunizationProviderTitle" class="col-2"
-                        >Provider / Clinic</b-col
-                    >
-                </b-row>
-                <b-row
-                    v-for="record in visibleImmunizations"
-                    :key="record.id"
-                    class="item py-1"
-                >
-                    <b-col
-                        data-testid="immunizationItemDate"
-                        class="col-2 text-nowrap"
-                    >
-                        {{ formatDate(record.dateOfImmunization) }}
-                    </b-col>
-                    <b-col data-testid="immunizationItemName" class="col-3">
-                        {{ record.immunization.name }}
-                    </b-col>
-                    <b-col data-testid="immunizationItemAgent" class="col-5">
+                    </template>
+                    <template #cell(agents)="data">
                         <b-row
-                            v-for="agent in record.immunization
-                                .immunizationAgents"
-                            :key="agent.code"
+                            v-for="(agent, index) in data.item.agents"
+                            :key="index"
                         >
-                            <b-col>
-                                {{ agent.name }}
-                            </b-col>
-                            <b-col>
-                                {{ agent.productName }}
-                            </b-col>
-                            <b-col>
-                                {{ agent.lotNumber }}
-                            </b-col>
+                            <b-col> {{ agent.name }} </b-col>
+                            <b-col> {{ agent.productName }} </b-col>
+                            <b-col> {{ agent.lotNumber }} </b-col>
                         </b-row>
-                    </b-col>
-                    <b-col
-                        data-testid="immunizationItemProviderClinic"
-                        class="col-2"
-                    >
-                        {{ record.providerOrClinic }}
-                    </b-col>
-                </b-row>
-                <b-row>
+                    </template>
+                    <template #table-busy>
+                        <content-placeholders>
+                            <content-placeholders-text :lines="7" />
+                        </content-placeholders>
+                    </template>
+                </b-table>
+                <b-row class="mt-3">
                     <b-col class="col-7">
-                        <b-row class="mt-3">
+                        <b-row>
                             <b-col>
                                 <h4>Recommended Immunizations</h4>
                             </b-col>
@@ -213,50 +271,20 @@ export default class ImmunizationHistoryReportComponent extends Vue {
                         >
                             <b-col>No recommendations found.</b-col>
                         </b-row>
-                        <b-row
-                            v-else-if="!isRecommendationEmpty"
-                            class="py-3 mt-4 header"
+                        <b-table
+                            v-if="!isRecommendationEmpty || isLoading"
+                            :busy="isLoading"
+                            striped
+                            :items="recomendationItems"
+                            :fields="recomendationFields"
+                            class="mt-2 table-style"
                         >
-                            <b-col
-                                data-testid="recommendationTitle"
-                                class="col-6"
-                                >Immunization</b-col
-                            >
-                            <b-col
-                                data-testid="recommendationDateTitle"
-                                class="col-3"
-                                >Date</b-col
-                            >
-                            <b-col
-                                data-testid="recommendationStatusTitle"
-                                class="col-3"
-                                >Status</b-col
-                            >
-                        </b-row>
-                        <b-row
-                            v-for="recommendation in patientRecommendations"
-                            :key="recommendation.recommendationId"
-                            class="item py-1"
-                        >
-                            <b-col
-                                data-testid="recommendation"
-                                class="col-6 text-nowrap"
-                            >
-                                {{ recommendation.immunization.name }}
-                            </b-col>
-                            <b-col
-                                data-testid="recommendationDate"
-                                class="col-3"
-                            >
-                                {{ formatDate(recommendation.agentDueDate) }}
-                            </b-col>
-                            <b-col
-                                data-testid="recommendationStatus"
-                                class="col-3"
-                            >
-                                {{ recommendation.status }}
-                            </b-col>
-                        </b-row>
+                            <template #table-busy>
+                                <content-placeholders>
+                                    <content-placeholders-text :lines="5" />
+                                </content-placeholders>
+                            </template>
+                        </b-table>
                     </b-col>
                 </b-row>
             </section>
@@ -264,33 +292,24 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     </div>
 </template>
 
+<style lang="scss">
+@import "@/assets/scss/_variables.scss";
+.immunization-report-table-header {
+    color: $heading_color;
+    font-size: 0.8rem;
+}
+</style>
+
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
 
-.header {
-    color: $primary;
-    background-color: $soft_background;
-    font-weight: bold;
-    font-size: 0.8em;
+.table-style {
+    font-size: 0.6rem;
     text-align: center;
 }
 
 h4 {
     color: $primary;
-}
-
-.item {
-    font-size: 0.6em;
-    border-bottom: solid 1px $soft_background;
-    page-break-inside: avoid;
-    text-align: center;
-}
-
-.item:nth-child(odd) {
-    background-color: $soft_background;
-}
-.item:nth-child(even) {
-    background-color: $medium_background;
 }
 
 #disclaimer {
