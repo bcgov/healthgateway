@@ -51,6 +51,9 @@ export default class ValidateEmailView extends Vue {
             .then((result) => {
                 this.validatedValue = result.resourcePayload;
                 this.resultStatus = result.resultStatus;
+                if (this.resultStatus == ResultType.Success) {
+                    this.checkRegistration();
+                }
             })
             .finally(() => {
                 this.isLoading = false;
