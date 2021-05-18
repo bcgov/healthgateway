@@ -25,7 +25,6 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -191,6 +190,24 @@ namespace HealthGateway.Database.Delegates
                     .OrderBy(userProfile => userProfile.CreatedDateTime),
                 page,
                 pageSize);
+        }
+
+        /// <inheritdoc />
+        public int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate)
+        {
+            this.logger.LogTrace($"Retrieving recurring user count for {dayCount} days between {startDate} and {endDate}...");
+
+            int recurrentCount = this.dbContext.UserProfile
+                .Select(x => new { x.HdId, x.LastLoginDateTime })
+                .Union(
+                    this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
+                .Select(x => new { x.HdId, x.LastLoginDateTime })
+                .Where(x => x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Distinct()
+                .GroupBy(x => x.HdId).Select(x => new { HdId = x.Key, count = x.Count() })
+                .Where(x => x.count >= dayCount).Count();
+
+            return recurrentCount;
         }
     }
 }

@@ -89,5 +89,14 @@ namespace HealthGateway.Database.Delegates
         /// <param name="pageSize">The amount of records to retrieve in 1 request.</param>
         /// <returns>A list of UserProfiles wrapped in a DBResult.</returns>
         DBResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize);
+
+        /// <summary>
+        /// Retrieves the count recurring users.
+        /// </summary>
+        /// <param name="dayCount">The number of unique days for evaluating a user.</param>
+        /// <param name="startDate">The start date to evaluate the user.</param>
+        /// <param name="endDate">The end date to evaluate the user.</param>
+        /// <returns>The count of recurrent users.</returns>
+        int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate);
     }
 }
