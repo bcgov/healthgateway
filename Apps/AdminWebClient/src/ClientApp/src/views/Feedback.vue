@@ -188,17 +188,15 @@ export default class FeedbackView extends Vue {
     }
 
     private get filteredFeedbackList(): UserFeedback[] {
-        const includedInSelectedTags = (tag: AdminTag) =>
-            this.selectedAdminTagIds.includes(tag.id);
+        if (this.selectedAdminTagIds.length === 0) {
+            return this.feedbackList;
+        }
 
-        const anyTagsMatchFilter = (feedbackTags: UserFeedbackTag[]) =>
-            this.selectedAdminTagIds.length === 0 ||
-            feedbackTags.filter((feedbackTag) =>
-                includedInSelectedTags(feedbackTag.tag)
-            ).length > 0;
-
-        return this.feedbackList.filter((userFeedback) =>
-            anyTagsMatchFilter(userFeedback.tags)
+        return this.feedbackList.filter(
+            (userFeedback) =>
+                userFeedback.tags.filter((feedbackTag) =>
+                    this.selectedAdminTagIds.includes(feedbackTag.tag.id)
+                ).length > 0
         );
     }
 
