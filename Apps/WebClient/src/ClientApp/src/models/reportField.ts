@@ -3,4 +3,6 @@ export default interface ReportField {
     label?: string;
     thClass: string;
     thStyle?: { width: string };
+    thAttr?: { "data-testid": string };
+    tdAttr?: { "data-testid": string };
 }

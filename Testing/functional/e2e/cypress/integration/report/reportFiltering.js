@@ -89,10 +89,9 @@ describe("Report Filtering", () => {
 
         cy.get("[data-testid=medicationExclusionFilter]").should("be.visible");
 
-        cy.get("[data-testid=medicationReportEntry]")
+        cy.get("[data-testid=medicationReportEntryBrandName]")
             .should("be.visible")
             .first()
-            .find("[data-testid=medicationReportEntryBrandName]")
             .then(($brandName) => {
                 const brandText = $brandName.text().trim();
 
@@ -107,10 +106,9 @@ describe("Report Filtering", () => {
                     "[data-testid=medicationFilter] .b-form-tag-content span"
                 ).should("contain", brandText);
 
-                cy.get("[data-testid=medicationReportEntry]")
+                cy.get("[data-testid=medicationReportEntryBrandName]")
                     .should("be.visible")
                     .first()
-                    .find("[data-testid=medicationReportEntryBrandName]")
                     .then(($filteredBrandName) => {
                         const filteredBrandText = $filteredBrandName
                             .text()
@@ -132,10 +130,9 @@ describe("Report Filtering", () => {
                     "[data-testid=medicationFilter] .b-form-tag-content"
                 ).should("not.exist");
 
-                cy.get("[data-testid=medicationReportEntry]")
+                cy.get("[data-testid=medicationReportEntryBrandName]")
                     .should("be.visible")
                     .first()
-                    .find("[data-testid=medicationReportEntryBrandName]")
                     .then(($unfilteredBrandName) => {
                         const unfilteredBrandText = $unfilteredBrandName
                             .text()

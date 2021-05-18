@@ -124,18 +124,22 @@ export default class COVID19ReportComponent extends Vue {
         {
             key: "date",
             thClass: this.headerClass,
+            tdAttr: { "data-testid": "covid19ItemDate" },
         },
         {
             key: "test_type",
             thClass: this.headerClass,
+            tdAttr: { "data-testid": "covid19ItemTestType" },
         },
         {
             key: "test_location",
             thClass: this.headerClass,
+            tdAttr: { "data-testid": "covid19ItemLocation" },
         },
         {
             key: "result",
             thClass: this.headerClass,
+            tdAttr: { "data-testid": "covid19ItemResult" },
         },
     ];
 }

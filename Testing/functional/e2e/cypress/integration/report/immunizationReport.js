@@ -34,13 +34,15 @@ describe("Immunization History Report", () => {
             .should("be.enabled", "be.visible")
             .select("Immunization");
         cy.get("[data-testid=timelineLoading]").should("be.visible");
-        cy.get("[data-testid=timelineLoading]").should("not.exist");
+        cy.get("[data-testid=timelineLoading]").should("not.be.visible");
     });
 
     it("Validate Immunization History Report", () => {
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
             .select("Immunization");
+
+        cy.get("[data-testid=immunizationHistoryReportSample]").scrollTo("bottom");
 
         cy.get("[data-testid=immunizationHistoryReportSample]").should(
             "be.visible"
