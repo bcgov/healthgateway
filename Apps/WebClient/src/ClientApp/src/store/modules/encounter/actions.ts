@@ -14,9 +14,10 @@ export const actions: EncounterActions = {
         params: { hdid: string }
     ): Promise<RequestResult<Encounter[]>> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const encounterService: IEncounterService = container.get<IEncounterService>(
-            SERVICE_IDENTIFIER.EncounterService
-        );
+        const encounterService: IEncounterService =
+            container.get<IEncounterService>(
+                SERVICE_IDENTIFIER.EncounterService
+            );
 
         return new Promise((resolve, reject) => {
             const patientEncounters: Encounter[] =

@@ -841,6 +841,9 @@
         <member name="M:HealthGateway.Database.Delegates.DBProfileDelegate.GetAll(System.Int32,System.Int32)">
             <inheritdoc />
         </member>
+        <member name="M:HealthGateway.Database.Delegates.DBProfileDelegate.GetRecurrentUserCount(System.Int32,System.DateTime,System.DateTime)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Database.Delegates.DBRatingDelegate">
             <inheritdoc />
         </member>
@@ -1684,6 +1687,15 @@
             <param name="page">The page to request.</param>
             <param name="pageSize">The amount of records to retrieve in 1 request.</param>
             <returns>A list of UserProfiles wrapped in a DBResult.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IUserProfileDelegate.GetRecurrentUserCount(System.Int32,System.DateTime,System.DateTime)">
+            <summary>
+            Retrieves the count recurring users.
+            </summary>
+            <param name="dayCount">The number of unique days for evaluating a user.</param>
+            <param name="startDate">The start date to evaluate the user.</param>
+            <param name="endDate">The end date to evaluate the user.</param>
+            <returns>The count of recurrent users.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.IWriteAuditEventDelegate">
             <summary>

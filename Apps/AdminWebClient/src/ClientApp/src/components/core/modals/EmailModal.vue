@@ -176,9 +176,11 @@ export default class EmailModal extends Vue {
 
     private close() {
         this.$nextTick(() => {
-            (this.$refs.form as Vue & {
-                resetValidation: () => void;
-            }).resetValidation();
+            (
+                this.$refs.form as Vue & {
+                    resetValidation: () => void;
+                }
+            ).resetValidation();
             this.dialogState = false;
             this.emitClose();
         });
@@ -201,9 +203,11 @@ export default class EmailModal extends Vue {
                 this.emitUpdate();
             }
             this.close();
-            (this.$refs.form as Vue & {
-                resetValidation: () => void;
-            }).resetValidation();
+            (
+                this.$refs.form as Vue & {
+                    resetValidation: () => void;
+                }
+            ).resetValidation();
         }
     }
 

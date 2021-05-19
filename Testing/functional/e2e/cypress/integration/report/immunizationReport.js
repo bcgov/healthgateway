@@ -34,7 +34,7 @@ describe("Immunization History Report", () => {
             .should("be.enabled", "be.visible")
             .select("Immunization");
         cy.get("[data-testid=timelineLoading]").should("be.visible");
-        cy.get("[data-testid=timelineLoading]").should("not.exist");
+        cy.get("[data-testid=timelineLoading]").should("not.be.visible");
     });
 
     it("Validate Immunization History Report", () => {
@@ -42,33 +42,39 @@ describe("Immunization History Report", () => {
             .should("be.enabled", "be.visible")
             .select("Immunization");
 
+        cy.get("[data-testid=immunizationHistoryReportSample]").scrollTo(
+            "bottom"
+        );
+
         cy.get("[data-testid=immunizationHistoryReportSample]").should(
             "be.visible"
         );
 
         cy.get("[data-testid=immunizationDateTitle]").should("be.visible");
-        cy.get("[data-testid=immunizationProviderTitle]").should("be.visible");
-        cy.get("[data-testid=immunizationItemTitle]").should("be.visible");
-        cy.get("[data-testid=immunizationAgentTitle]").should("be.visible");
-
-        cy.get("[data-testid=immunizationItemDate]")
-            .last()
-            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-        cy.get("[data-testid=immunizationItemName]").should("be.visible");
-        cy.get("[data-testid=immunizationItemProviderClinic]").should(
+        cy.get("[data-testid=immunizationProviderClinicTitle]").should(
             "be.visible"
         );
-        cy.get("[data-testid=immunizationItemAgent]").should("be.visible");
+        cy.get("[data-testid=immunizationNameTitle]").should("be.visible");
+        cy.get("[data-testid=immunizationAgentTitle]").should("be.visible");
+
+        cy.get("[data-testid=immunizationDateItem]")
+            .last()
+            .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
+        cy.get("[data-testid=immunizationNameItem]").should("be.visible");
+        cy.get("[data-testid=immunizationProviderClinicItem]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=immunizationAgentItem]").should("be.visible");
 
         cy.get("[data-testid=recommendationTitle]").should("be.visible");
         cy.get("[data-testid=recommendationDateTitle]").should("be.visible");
         cy.get("[data-testid=recommendationStatusTitle]").should("be.visible");
 
-        cy.get("[data-testid=recommendation]").should("be.visible");
-        cy.get("[data-testid=recommendationDate]")
+        cy.get("[data-testid=recommendationItem]").should("be.visible");
+        cy.get("[data-testid=recommendationDateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
-        cy.get("[data-testid=recommendationStatus]").should("be.visible");
+        cy.get("[data-testid=recommendationStatusItem]").should("be.visible");
 
         cy.get("[data-testid=exportRecordBtn]")
             .should("be.enabled", "be.visible")

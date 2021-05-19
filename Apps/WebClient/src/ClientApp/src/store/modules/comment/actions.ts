@@ -12,9 +12,10 @@ export const actions: CommentActions = {
     retrieve(context, params: { hdid: string }): Promise<void> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
 
-        const commentService: IUserCommentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
+        const commentService: IUserCommentService =
+            container.get<IUserCommentService>(
+                SERVICE_IDENTIFIER.UserCommentService
+            );
         return new Promise((resolve, reject) => {
             if (context.state.status === LoadStatus.LOADED) {
                 logger.debug(`Comments found stored, not querying!`);
@@ -47,9 +48,10 @@ export const actions: CommentActions = {
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<UserComment | undefined> {
-        const commentService: IUserCommentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
+        const commentService: IUserCommentService =
+            container.get<IUserCommentService>(
+                SERVICE_IDENTIFIER.UserCommentService
+            );
         return new Promise((resolve, reject) => {
             commentService
                 .createComment(params.hdid, params.comment)
@@ -67,9 +69,10 @@ export const actions: CommentActions = {
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<UserComment> {
-        const commentService: IUserCommentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
+        const commentService: IUserCommentService =
+            container.get<IUserCommentService>(
+                SERVICE_IDENTIFIER.UserCommentService
+            );
         return new Promise((resolve, reject) => {
             commentService
                 .updateComment(params.hdid, params.comment)
@@ -87,9 +90,10 @@ export const actions: CommentActions = {
         context,
         params: { hdid: string; comment: UserComment }
     ): Promise<void> {
-        const commentService: IUserCommentService = container.get<IUserCommentService>(
-            SERVICE_IDENTIFIER.UserCommentService
-        );
+        const commentService: IUserCommentService =
+            container.get<IUserCommentService>(
+                SERVICE_IDENTIFIER.UserCommentService
+            );
         return new Promise((resolve, reject) => {
             commentService
                 .deleteComment(params.hdid, params.comment)

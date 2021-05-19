@@ -238,9 +238,11 @@ export default class BannerModal extends Vue {
 
     private close() {
         this.$nextTick(() => {
-            (this.$refs.form as Vue & {
-                resetValidation: () => void;
-            }).resetValidation();
+            (
+                this.$refs.form as Vue & {
+                    resetValidation: () => void;
+                }
+            ).resetValidation();
             this.dialog = false;
             this.emitClose();
         });

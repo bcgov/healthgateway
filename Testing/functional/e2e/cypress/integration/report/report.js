@@ -35,7 +35,7 @@ describe("Reports", () => {
         cy.get("[data-testid=infoImage]").should("be.visible");
         cy.viewport("iphone-6");
         cy.get("[data-testid=infoImage]").should("be.visible");
-        cy.viewport(1000, 600);
+        cy.viewport(1440, 600);
 
         cy.get("[data-testid=reportType]")
             .should("be.enabled", "be.visible")
@@ -64,7 +64,7 @@ describe("Reports", () => {
 
         cy.viewport("iphone-6");
         cy.get("[data-testid=medicationReportSample]").should("not.be.visible");
-        cy.viewport(1000, 600);
+        cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn]").click();
 
@@ -89,7 +89,7 @@ describe("Reports", () => {
 
         cy.viewport("iphone-6");
         cy.get("[data-testid=mspVisitsReportSample]").should("not.be.visible");
-        cy.viewport(1000, 600);
+        cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn]")
             .should("be.enabled", "be.visible")
@@ -113,13 +113,13 @@ describe("Reports", () => {
             .select("COVID-19");
 
         cy.get("[data-testid=covid19ReportSample]").should("be.visible");
-        cy.get("[data-testid=covid19ItemDate]")
+        cy.get("[data-testid=covid19DateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
         cy.viewport("iphone-6");
         cy.get("[data-testid=covid19ReportSample]").should("not.be.visible");
-        cy.viewport(1000, 600);
+        cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn]")
             .should("be.enabled", "be.visible")
@@ -145,7 +145,7 @@ describe("Reports", () => {
         cy.get("[data-testid=immunizationHistoryReportSample]").should(
             "be.visible"
         );
-        cy.get("[data-testid=immunizationItemDate]")
+        cy.get("[data-testid=immunizationDateItem]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
@@ -153,7 +153,7 @@ describe("Reports", () => {
         cy.get("[data-testid=immunizationHistoryReportSample]").should(
             "not.be.visible"
         );
-        cy.viewport(1000, 600);
+        cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn]")
             .should("be.enabled", "be.visible")
@@ -184,7 +184,7 @@ describe("Reports", () => {
         cy.get("[data-testid=medicationRequestReportSample]").should(
             "not.be.visible"
         );
-        cy.viewport(1000, 600);
+        cy.viewport(1440, 600);
 
         cy.get("[data-testid=exportRecordBtn]")
             .should("be.enabled", "be.visible")

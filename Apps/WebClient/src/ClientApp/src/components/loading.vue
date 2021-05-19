@@ -22,7 +22,7 @@ library.add(faEdit, faFlask, faPills, faSyringe);
 export default class LoadingComponent extends Vue {
     @Prop() isLoading!: boolean;
     @Prop() isCustom!: boolean;
-    @Prop({ default: true }) backdrop!: boolean;
+    @Prop({ default: true }) fullScreen!: boolean;
     private step = 0;
     private intervalId = 0;
 
@@ -67,28 +67,18 @@ export default class LoadingComponent extends Vue {
 </script>
 
 <template>
-    <div class="vld-parent">
+    <div
+        v-show="isLoading"
+        class="vld-parent"
+        :class="isCustom && fullScreen ? 'fullScreen' : 'block'"
+    >
         <loading
             v-if="!isCustom"
             :active.sync="isLoading"
             data-testid="loadingSpinner"
             :is-full-page="true"
         ></loading>
-        <div v-else :class="backdrop ? 'backdrop' : 'block'">
-            <b-row v-if="!backdrop">
-                <b-col>
-                    <div class="px-2">
-                        <content-placeholders>
-                            <content-placeholders-heading :img="true" />
-                            <content-placeholders-text :lines="3" />
-                        </content-placeholders>
-                        <br />
-                        <content-placeholders>
-                            <content-placeholders-heading :img="true" />
-                        </content-placeholders>
-                    </div>
-                </b-col>
-            </b-row>
+        <div v-else>
             <div class="spinner" data-testid="timelineLoading">
                 <div id="first" class="double-bounce">
                     <hg-icon icon="pills" size="large" />
@@ -115,7 +105,7 @@ export default class LoadingComponent extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
-.backdrop {
+.fullScreen {
     position: fixed;
     z-index: 9998;
     top: 0;
@@ -127,11 +117,15 @@ export default class LoadingComponent extends Vue {
     transition: opacity 0.3s ease;
 }
 .block {
+    position: absolute;
+    z-index: 9998;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    min-height: 200px;
     background-color: rgba(254, 254, 254, 0.5);
-    display: block;
+    display: table;
+    transition: opacity 0.3s ease;
 }
 .spinner {
     width: 60px;

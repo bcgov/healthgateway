@@ -15,6 +15,28 @@
                         <b-row class="mb-2">
                             <b-col>
                                 <strong
+                                    >May 19, 2021 - v1.4.2 - Export Records
+                                </strong>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <ul>
+                                    <li>
+                                        We updated the tables within record
+                                        exports so that they are easier to read
+                                        and columns do not overlap.
+                                    </li>
+                                </ul>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-2">
+                            <b-col>
+                                <strong
                                     >May 12, 2021 - v1.4.1 - Resource Centre
                                 </strong>
                             </b-col>

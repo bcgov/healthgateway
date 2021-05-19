@@ -589,7 +589,10 @@ export default class ProfileView extends Vue {
                                     data-testid="emailOptOutMessage"
                                 >
                                     <b-col
-                                        class="font-weight-bold text-primary text-center"
+                                        class="
+                                            font-weight-bold
+                                            text-primary text-center
+                                        "
                                     >
                                         <hg-icon
                                             icon="exclamation-triangle"
@@ -747,7 +750,10 @@ export default class ProfileView extends Vue {
                                     class="mb-3"
                                 >
                                     <b-col
-                                        class="font-weight-bold text-primary text-center"
+                                        class="
+                                            font-weight-bold
+                                            text-primary text-center
+                                        "
                                     >
                                         <hg-icon
                                             icon="exclamation-triangle"
@@ -844,7 +850,10 @@ export default class ProfileView extends Vue {
                                 </hg-button>
                                 <b-row v-if="showCloseWarning" class="mb-3">
                                     <b-col
-                                        class="font-weight-bold text-danger text-center"
+                                        class="
+                                            font-weight-bold
+                                            text-danger text-center
+                                        "
                                     >
                                         <hr />
                                         <hg-icon

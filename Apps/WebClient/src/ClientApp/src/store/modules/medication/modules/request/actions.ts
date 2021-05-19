@@ -14,9 +14,10 @@ export const actions: MedicationRequestActions = {
         params: { hdid: string }
     ): Promise<RequestResult<MedicationRequest[]>> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const medicationService: IMedicationService = container.get<IMedicationService>(
-            SERVICE_IDENTIFIER.MedicationService
-        );
+        const medicationService: IMedicationService =
+            container.get<IMedicationService>(
+                SERVICE_IDENTIFIER.MedicationService
+            );
 
         return new Promise((resolve, reject) => {
             const medicationRequests: MedicationRequest[] =

@@ -71,8 +71,9 @@ export default class ImmunizationCardComponent extends Vue {
 
         for (let index = 0; index < this.covidImmunizations.length; index++) {
             const element = this.covidImmunizations[index];
-            const agent = this.covidImmunizations[index].immunization
-                .immunizationAgents[0];
+            const agent =
+                this.covidImmunizations[index].immunization
+                    .immunizationAgents[0];
             this.doses.push({
                 product: agent.productName,
                 date: DateWrapper.format(element.dateOfImmunization),
@@ -209,7 +210,12 @@ export default class ImmunizationCardComponent extends Vue {
                     :class="{ 'mb-4': index === 0 }"
                 >
                     <b-col
-                        class="left-pane text-center justify-content-center align-self-center"
+                        class="
+                            left-pane
+                            text-center
+                            justify-content-center
+                            align-self-center
+                        "
                         ><span class="dose-label"
                             >Dose {{ index + 1 }}</span
                         ></b-col

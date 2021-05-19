@@ -22,6 +22,7 @@ import {
     NavPlugin,
     PaginationNavPlugin,
     SpinnerPlugin,
+    TablePlugin,
     TooltipPlugin,
 } from "bootstrap-vue";
 
@@ -40,6 +41,7 @@ Vue.use(AlertPlugin);
 Vue.use(SpinnerPlugin);
 Vue.use(InputGroupPlugin);
 Vue.use(PaginationNavPlugin);
+Vue.use(TablePlugin);
 Vue.use(TooltipPlugin);
 Vue.use(FormGroupPlugin);
 Vue.use(FormRadioPlugin);
@@ -93,7 +95,8 @@ export default class App extends Vue {
     @Getter("oidcIsAuthenticated", { namespace: "auth" })
     oidcIsAuthenticated?: boolean;
 
-    private readonly host: string = window.location.hostname.toLocaleUpperCase();
+    private readonly host: string =
+        window.location.hostname.toLocaleUpperCase();
     private readonly isProduction: boolean =
         Process.NODE_ENV == EnvironmentType.production &&
         (this.host.startsWith("HEALTHGATEWAY") ||

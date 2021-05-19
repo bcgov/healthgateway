@@ -28,6 +28,7 @@ describe("Immunization", () => {
     it("Validate Immunization Loading", () => {
         cy.get("[data-testid=immunizationLoading]").should("be.visible");
         cy.get("[data-testid=immunizationLoading]").should("not.exist");
+        cy.get("[data-testid=immunizationReady]").should("be.visible");
     });
 
     it("Validate COVID-19 Immunization Attachment Icons", () => {
@@ -63,10 +64,8 @@ describe("Immunization", () => {
         // Verify Forecast
         cy.get("[data-testid=forecastDisplayName]")
             .first()
-            .should("be.visible");
-        cy.get("[data-testid=forecastDisplayName]")
-            .first()
-            .contains("COVID-19");
+            .should("be.visible")
+            .contains("Covid-19");
         cy.get("[data-testid=forecastDueDate]").first().should("be.visible");
         cy.get("[data-testid=forecastStatus]").first().should("be.visible");
         cy.get("[data-testid=forecastFollowDirections]")
@@ -83,8 +82,18 @@ describe("Immunization", () => {
             "be.visible",
             "not.be.empty"
         );
-        cy.get("[data-testid=doseDate]").first().contains("2021-Jan-06");
-        cy.get("[data-testid=doseDate]").last().contains("2021-Feb-11");
+        cy.get("[data-testid=doseDate]")
+            .first()
+            .should(
+                "be.visible",
+                "not.be.empty"
+            );
+        cy.get("[data-testid=doseDate]")
+            .last()
+            .should(
+                "be.visible",
+                "not.be.empty"
+            );
 
         cy.get("[data-testid=exportCardBtn]")
             .should("be.enabled", "be.visible")

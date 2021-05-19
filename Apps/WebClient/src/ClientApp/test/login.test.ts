@@ -124,10 +124,11 @@ describe("Login view", () => {
             disabled: false,
         };
         const options = new StoreOptionsStub();
-        options.modules.config.getters.identityProviders = (): IdentityProviderConfiguration[] => [
-            bceidProvider,
-            keycloakProvider,
-        ];
+        options.modules.config.getters.identityProviders =
+            (): IdentityProviderConfiguration[] => [
+                bceidProvider,
+                keycloakProvider,
+            ];
         const wrapper = createWrapper(options);
         expect(
             wrapper

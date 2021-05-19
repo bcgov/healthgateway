@@ -30,26 +30,22 @@ describe("Resource Centre", () => {
     });
 
     it("Validate Disabled Covid Card", () => {
-        cy.get("[data-testid=hg-resource-centre]")
-            .should("be.visible")
-            .click();
+        cy.get("[data-testid=hg-resource-centre]").should("be.visible").click();
 
         cy.get("[data-testid=hg-resource-centre-covid-card]")
             .should("be.visible")
-            .should("not.be.enabled")
+            .should("not.be.enabled");
     });
 
     it("Validate on Timeline", () => {
-        cy.visit("/timeline")
-        cy.get("[data-testid=hg-resource-centre]")
-            .should("be.visible")
-            .click();
+        cy.visit("/timeline");
+        cy.get("[data-testid=hg-resource-centre]").should("be.visible").click();
 
         cy.get("[data-testid=hg-resource-centre-covid-card]")
             .should("be.visible")
             .should("be.enabled")
             .click();
-            
+
         cy.get("[data-testid=covidImmunizationCard] .modal-dialog").should(
             "be.visible"
         );
@@ -57,28 +53,26 @@ describe("Resource Centre", () => {
             "be.visible",
             "not.be.empty"
         );
-        cy.get("[data-testid=doseDate]").first().should(
-            "be.visible",
-            "not.be.empty"
-        );
-        cy.get("[data-testid=doseDate]").last().should(
-            "be.visible",
-            "not.be.empty"
-        );
+        cy.get("[data-testid=doseDate]")
+            .first()
+            .should("be.visible", "not.be.empty");
+        cy.get("[data-testid=doseDate]")
+            .last()
+            .should("be.visible", "not.be.empty");
     });
 
     it("Validate Visible on HealthInsights", () => {
-        cy.visit("/healthInsights")
+        cy.visit("/healthInsights");
         cy.get("[data-testid=hg-resource-centre]").should("be.visible");
     });
 
     it("Validate Visible on Dependents", () => {
-        cy.visit("/dependents")
+        cy.visit("/dependents");
         cy.get("[data-testid=hg-resource-centre]").should("be.visible");
     });
 
     it("Validate Visible on Reports", () => {
-        cy.visit("/reports")
+        cy.visit("/reports");
         cy.get("[data-testid=hg-resource-centre]").should("be.visible");
     });
 });

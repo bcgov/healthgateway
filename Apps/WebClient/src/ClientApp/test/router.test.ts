@@ -94,9 +94,8 @@ describe("Router", () => {
     });
 
     test("has registration route", () => {
-        const actualComponent = router.getMatchedComponents(
-            registrationPath
-        )[0];
+        const actualComponent =
+            router.getMatchedComponents(registrationPath)[0];
         expect(actualComponent.name).toBe(RegistrationComponent.name);
     });
 

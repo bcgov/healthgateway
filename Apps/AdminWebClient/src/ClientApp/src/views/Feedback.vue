@@ -7,10 +7,40 @@
             class="mt-5"
         ></BannerFeedbackComponent>
         <v-row justify="center">
+            <v-col>
+                <v-card>
+                    <v-card-title>Filter</v-card-title>
+                    <v-card-text>
+                        <v-row align="center">
+                            <v-col class="flex-grow-1 flex-shrink-0">
+                                <v-select
+                                    v-model="selectedAdminTagIds"
+                                    :items="adminTags"
+                                    item-text="name"
+                                    item-value="id"
+                                    label="Tags"
+                                    multiple
+                                />
+                            </v-col>
+                            <v-col class="flex-grow-0 flex-shrink-1">
+                                <v-btn
+                                    color="accent"
+                                    :disabled="!filterIsActive"
+                                    @click="clearFilter"
+                                >
+                                    Clear
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row justify="center">
             <v-col no-gutters>
                 <v-data-table
                     :headers="tableHeaders"
-                    :items="feedbackList"
+                    :items="filteredFeedbackList"
                     :items-per-page="50"
                     :footer-props="{
                         'items-per-page-options': [25, 50, 100, -1],
@@ -46,24 +76,31 @@
                                 v-model="feedback.tags"
                                 multiple
                                 hide-selected
-                                :items="adminTags"
+                                :items="availableTags"
                                 :filter="filter"
                                 :loading="isLoadingTag"
-                                item-text="name"
+                                :item-text="getItemText"
                                 @input="onTagChange($event, feedback)"
                                 @focus="onTagFocus(feedback)"
                             >
                                 <template #selection="{ item }">
-                                    <v-chip
-                                        close
-                                        @click:close="removeTag(feedback, item)"
-                                    >
-                                        {{ item.name }}
-                                    </v-chip>
+                                    <template v-if="isString(item)">
+                                        Loading...
+                                    </template>
+                                    <template v-else>
+                                        <v-chip
+                                            close
+                                            @click:close="
+                                                removeTag(feedback, item)
+                                            "
+                                        >
+                                            {{ item.tag.name }}
+                                        </v-chip>
+                                    </template>
                                 </template>
                                 <template #item="{ item }">
                                     <v-chip>
-                                        {{ item.name }}
+                                        {{ item }}
                                     </v-chip>
                                 </template>
                             </v-combobox>
@@ -82,7 +119,7 @@ import BannerFeedbackComponent from "@/components/core/BannerFeedback.vue";
 import LoadingComponent from "@/components/core/Loading.vue";
 import { ResultType } from "@/constants/resulttype";
 import BannerFeedback from "@/models/bannerFeedback";
-import UserFeedback, { AdminTag } from "@/models/userFeedback";
+import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
 import { IUserFeedbackService } from "@/services/interfaces";
@@ -132,13 +169,36 @@ export default class FeedbackView extends Vue {
 
     private adminTags: AdminTag[] = [];
 
+    private selectedAdminTagIds: string[] = [];
+
     private feedbackList: UserFeedback[] = [];
 
     private userFeedbackService!: IUserFeedbackService;
 
-    private focusedTags: AdminTag[] = [];
+    private focusedTags: UserFeedbackTag[] = [];
 
     private isLoadingTag = false;
+
+    private get availableTags(): string[] {
+        return this.adminTags.map<string>((x) => x.name);
+    }
+
+    private get filterIsActive(): boolean {
+        return this.selectedAdminTagIds.length > 0;
+    }
+
+    private get filteredFeedbackList(): UserFeedback[] {
+        if (this.selectedAdminTagIds.length === 0) {
+            return this.feedbackList;
+        }
+
+        return this.feedbackList.filter(
+            (userFeedback) =>
+                userFeedback.tags.filter((feedbackTag) =>
+                    this.selectedAdminTagIds.includes(feedbackTag.tag.id)
+                ).length > 0
+        );
+    }
 
     private mounted() {
         this.userFeedbackService = container.get(
@@ -190,6 +250,10 @@ export default class FeedbackView extends Vue {
             });
     }
 
+    private clearFilter(): void {
+        this.selectedAdminTagIds = [];
+    }
+
     private formatDate(date: Date): string {
         return new Date(Date.parse(date + "Z")).toLocaleString();
     }
@@ -224,50 +288,12 @@ export default class FeedbackView extends Vue {
             });
     }
 
-    private onTagFocus(feedback: UserFeedback) {
-        // Necessary to keep the feedback tags from being updated by the component.
-        this.focusedTags = feedback.tags;
-    }
-
-    private onTagChange(
-        input: (string | AdminTag)[],
-        feedbackItem: UserFeedback
-    ) {
-        // Needs to be executed on the next render cycle to avoid racing conditions on vuetify components.
-        this.$nextTick(() => {
-            // Reset the feedback tags until the backend updates it
-            feedbackItem.tags = this.focusedTags;
-
-            // Last entry on the input is the most recently selected item (could be text)
-            const lastTag = input[input.length - 1];
-
-            var newTag: string | AdminTag = lastTag;
-
-            // Look for the existing tags for a name match
-            if (typeof lastTag === "string") {
-                var foundIndex = this.adminTags.findIndex(
-                    (x) => x.name === lastTag
-                );
-                if (foundIndex > 0) {
-                    newTag = this.adminTags[foundIndex];
-                }
-            }
-
-            this.isLoadingTag = true;
-            if (typeof newTag === "string") {
-                this.createNewTag(feedbackItem, newTag);
-            } else {
-                this.associateTag(feedbackItem, newTag);
-            }
-        });
-    }
-
     private createNewTag(feedbackItem: UserFeedback, newTag: string) {
         this.userFeedbackService
             .createTag(feedbackItem.id, newTag)
             .then((newTag) => {
                 feedbackItem.tags.push(newTag);
-                this.adminTags.push(newTag);
+                this.adminTags.push(newTag.tag);
             })
             .catch((err) => {
                 this.showFeedback = true;
@@ -303,7 +329,7 @@ export default class FeedbackView extends Vue {
             });
     }
 
-    private removeTag(feedbackItem: UserFeedback, tag: AdminTag) {
+    private removeTag(feedbackItem: UserFeedback, tag: UserFeedbackTag) {
         this.userFeedbackService
             .removeTag(feedbackItem.id, tag)
             .then((result) => {
@@ -335,8 +361,59 @@ export default class FeedbackView extends Vue {
             });
     }
 
-    private filter(item: AdminTag, queryText: string): boolean {
-        return item.name.toLowerCase().includes(queryText.toLowerCase());
+    private isString(item: unknown): item is string {
+        return typeof item === "string" || item instanceof String;
+    }
+
+    private onTagFocus(feedback: UserFeedback) {
+        // Necessary to keep the feedback tags from being updated by the component.
+        this.focusedTags = feedback.tags;
+    }
+
+    private onTagChange(
+        input: (string | AdminTag)[],
+        feedbackItem: UserFeedback
+    ) {
+        // Needs to be executed on the next render cycle to clear the selected tags
+        // to avoid racing conditions on vuetify components.
+        this.$nextTick(() => {
+            // Reset the feedback tags until the backend updates it
+            feedbackItem.tags = this.focusedTags;
+
+            // Last entry on the input is the most recently selected item (guaranteed to be a string)
+            const lastInputTag = input[input.length - 1] as string;
+
+            // Look in the existing tags for a name match
+            var foundIndex = this.adminTags.findIndex(
+                (x) => x.name === lastInputTag
+            );
+            if (foundIndex >= 0) {
+                const adminTag = this.adminTags[foundIndex];
+                this.associateTag(feedbackItem, adminTag);
+            } else {
+                const newTag = lastInputTag;
+                this.createNewTag(feedbackItem, newTag);
+            }
+        });
+    }
+
+    private getItemText(
+        selected: UserFeedbackTag | string,
+        item: UserFeedbackTag | string
+    ) {
+        if (selected === undefined || item === undefined) {
+            return undefined;
+        }
+
+        if (this.isString(item)) {
+            return item;
+        }
+
+        return item.tag.name;
+    }
+
+    private filter(item: string, queryText: string): boolean {
+        return item.toLowerCase().includes(queryText.toLowerCase());
     }
 }
 </script>

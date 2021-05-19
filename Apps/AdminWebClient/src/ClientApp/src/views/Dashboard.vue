@@ -21,13 +21,29 @@ export default class Dashboard extends Vue {
     private isLoadingRegistered = true;
     private isLoadingLoggedIn = true;
     private isLoadingDependent = true;
+    private isLoadingRecurrentCount = true;
 
-    private datePickerModal = false;
+    private periodPickerModal = false;
+
+    private uniqueDays = 3;
+    private uniquePeriodDates: string[] = [
+        DateTime.local().minus({ days: 30 }).toISO().substr(0, 10),
+        DateTime.local().toISO().substr(0, 10),
+    ];
+    private uniqueUsers = 0;
+
+    private debounceTimer: NodeJS.Timeout | null = null;
+
+    private recurringRules = {
+        required: (value: number) => !!value || "Required.",
+        valid: (value: number) => value >= 0 || "Invalid value",
+    };
 
     private today = DateTime.local();
 
     private dashboardService!: IDashboardService;
 
+    private dailyDataDatesModal = false;
     private selectedDates: string[] = [
         DateTime.local().minus({ days: 10 }).toISO().substr(0, 10),
         DateTime.local().toISO().substr(0, 10),
@@ -42,6 +58,13 @@ export default class Dashboard extends Vue {
                 return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
             });
         }
+    }
+
+    @Watch("uniqueDays")
+    @Watch("periodPickerModal")
+    private onRecurringInputChange() {
+        if (this.uniqueDays >= 0 && !this.periodPickerModal)
+            this.getRecurringUsersDebounced();
     }
 
     private get visibleTableData(): DailyData[] {
@@ -81,6 +104,7 @@ export default class Dashboard extends Vue {
         this.getRegisteredUserCount();
         this.getLoggedInUsersCount();
         this.getDependentCount();
+        this.getRecurringUsers();
     }
 
     private getRegisteredUserCount() {
@@ -164,6 +188,34 @@ export default class Dashboard extends Vue {
             });
     }
 
+    private getRecurringUsers() {
+        this.isLoadingRecurrentCount = true;
+        this.dashboardService
+            .getRecurrentUserCount(
+                this.uniqueDays,
+                this.uniquePeriodDates[0],
+                this.uniquePeriodDates[1]
+            )
+            .then((count) => {
+                this.uniqueUsers = count;
+            })
+            .finally(() => {
+                this.isLoadingRecurrentCount = false;
+            });
+    }
+
+    private getRecurringUsersDebounced() {
+        // cancel pending call
+        if (this.debounceTimer !== null) {
+            clearTimeout(this.debounceTimer);
+        }
+
+        // delay new call 500ms
+        this.debounceTimer = setTimeout(() => {
+            this.getRecurringUsers();
+        }, 250);
+    }
+
     private formatDate(date: DateTime): string {
         return date.toFormat("dd/MM/yyyy");
     }
@@ -199,12 +251,112 @@ export default class Dashboard extends Vue {
                 ></v-skeleton-loader></v-col
         ></v-row>
         <br />
+        <h2>Recurring Users</h2>
+        <v-row class="px-2">
+            <v-col>
+                <v-row>
+                    <v-col cols="auto">
+                        <v-text-field
+                            v-model="uniqueDays"
+                            type="number"
+                            label="Unique days"
+                            :rules="[
+                                recurringRules.required,
+                                recurringRules.valid,
+                            ]"
+                        />
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-dialog
+                            ref="periodDialog"
+                            v-model="periodPickerModal"
+                            :return-value.sync="uniquePeriodDates"
+                            persistent
+                            :disabled="isLoading"
+                            width="290px"
+                        >
+                            <template #activator="{ on, attrs }">
+                                <v-row>
+                                    <v-col>
+                                        <v-text-field
+                                            v-model="uniquePeriodDates[0]"
+                                            label="Start Date"
+                                            prepend-icon="mdi-calendar"
+                                            readonly
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col>
+                                        <v-text-field
+                                            v-model="uniquePeriodDates[1]"
+                                            label="End Date"
+                                            readonly
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </template>
+                            <v-date-picker
+                                v-model="uniquePeriodDates"
+                                :max="today.toISO()"
+                                min="2019-06-01"
+                                range
+                                scrollable
+                                no-title
+                            >
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                    text
+                                    color="primary"
+                                    @click="periodPickerModal = false"
+                                >
+                                    Cancel
+                                </v-btn>
+                                <v-btn
+                                    text
+                                    :disabled="uniquePeriodDates.length !== 2"
+                                    color="primary"
+                                    @click="
+                                        uniquePeriodDates;
+                                        $refs.periodDialog.save(
+                                            uniquePeriodDates
+                                        );
+                                    "
+                                >
+                                    OK
+                                </v-btn>
+                            </v-date-picker>
+                        </v-dialog>
+                    </v-col>
+                    <v-col class="col-lg-3 col-md-6 col-sm-12">
+                        <v-card
+                            v-if="!isLoadingRecurrentCount"
+                            class="text-center"
+                        >
+                            <h3>User Count</h3>
+                            <h1>
+                                {{ uniqueUsers }}
+                            </h1>
+                        </v-card>
+                        <v-skeleton-loader
+                            v-else
+                            max-height="50"
+                            type="card"
+                        ></v-skeleton-loader>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
+
+        <br />
         <h2>Daily Data</h2>
         <v-row>
             <v-col cols="12" sm="6" md="4">
                 <v-dialog
-                    ref="dialog"
-                    v-model="datePickerModal"
+                    ref="dailyDialog"
+                    v-model="dailyDataDatesModal"
                     :return-value.sync="selectedDates"
                     persistent
                     :disabled="isLoading"
@@ -242,13 +394,18 @@ export default class Dashboard extends Vue {
                         no-title
                     >
                         <v-spacer></v-spacer>
-                        <v-btn text color="primary" @click="modal = false">
+                        <v-btn
+                            text
+                            color="primary"
+                            @click="dailyDataDatesModal = false"
+                        >
                             Cancel
                         </v-btn>
                         <v-btn
                             text
                             color="primary"
-                            @click="$refs.dialog.save(selectedDates)"
+                            :disabled="selectedDates.length !== 2"
+                            @click="$refs.dailyDialog.save(selectedDates)"
                         >
                             OK
                         </v-btn>

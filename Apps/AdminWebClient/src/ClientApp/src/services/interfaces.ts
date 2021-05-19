@@ -4,7 +4,7 @@ import Communication from "@/models/adminCommunication";
 import AuthenticationData from "@/models/authenticationData";
 import Email from "@/models/email";
 import ExternalConfiguration from "@/models/externalConfiguration";
-import UserFeedback, { AdminTag } from "@/models/userFeedback";
+import UserFeedback, { AdminTag, UserFeedbackTag } from "@/models/userFeedback";
 
 export interface IConfigService {
     initialize(http: IHttpDelegate): void;
@@ -30,9 +30,9 @@ export interface IUserFeedbackService {
     getFeedbackList(): Promise<UserFeedback[]>;
     toggleReviewed(feedback: UserFeedback): Promise<boolean>;
     getAllTags(): Promise<AdminTag[]>;
-    createTag(feedbackId: string, tagName: string): Promise<AdminTag>;
-    associateTag(feedbackId: string, tag: AdminTag): Promise<AdminTag>;
-    removeTag(feedbackId: string, tag: AdminTag): Promise<boolean>;
+    createTag(feedbackId: string, tagName: string): Promise<UserFeedbackTag>;
+    associateTag(feedbackId: string, tag: AdminTag): Promise<UserFeedbackTag>;
+    removeTag(feedbackId: string, tag: UserFeedbackTag): Promise<boolean>;
 }
 
 export interface IDashboardService {
@@ -40,6 +40,11 @@ export interface IDashboardService {
     getRegisteredUsersCount(): Promise<{ [key: string]: number }>;
     getLoggedInUsersCount(): Promise<{ [key: string]: number }>;
     getDependentCount(): Promise<{ [key: string]: number }>;
+    getRecurrentUserCount(
+        days: number,
+        startPeriodDate: string,
+        endPeriodDate: string
+    ): Promise<number>;
 }
 
 export interface ICommunicationService {
