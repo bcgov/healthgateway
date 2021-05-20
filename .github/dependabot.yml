@@ -11,9 +11,6 @@ updates:
       interval: "daily"
     reviewers:
       - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "mikelyttle"
 
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/Apps/AdminWebClient/src/ClientApp" # Location of package manifests
@@ -21,9 +18,6 @@ updates:
       interval: "daily"
     reviewers:
       - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "mikelyttle"
 
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/Apps/WebClient/src/ClientApp" # Location of package manifests
@@ -31,6 +25,3 @@ updates:
       interval: "daily"
     reviewers:
       - "sslaws"
-      - "FuriousLlama"
-      - "tiagograf-AOT"
-      - "mikelyttle"
