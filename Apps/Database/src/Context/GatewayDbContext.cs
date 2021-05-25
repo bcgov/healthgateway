@@ -342,17 +342,27 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.Status)
                 .HasConversion(walletConnectionStatusConverter);
 
+            modelBuilder.Entity<WalletConnectionStatusCode>()
+                .Property(e => e.StatusCode)
+                .HasConversion(walletConnectionStatusConverter);
+
             modelBuilder.Entity<WalletCredential>()
                 .HasOne<WalletCredentialStatusCode>()
                 .WithMany()
                 .HasPrincipalKey(k => k.StatusCode)
                 .HasForeignKey(k => k.Status);
 
+            var walletCredentialStatusConverter = new ValueConverter<WalletCredentialStatus, string>(
+                v => EnumUtility.ToEnumString<WalletCredentialStatus>(v, false),
+                v => EnumUtility.ToEnum<WalletCredentialStatus>(v, false));
+
             modelBuilder.Entity<WalletCredential>()
                 .Property(e => e.Status)
-                .HasConversion(new ValueConverter<WalletCredentialStatus, string>(
-                    v => EnumUtility.ToEnumString<WalletCredentialStatus>(v, false),
-                    v => EnumUtility.ToEnum<WalletCredentialStatus>(v, false)));
+                .HasConversion(walletCredentialStatusConverter);
+
+            modelBuilder.Entity<WalletCredentialStatusCode>()
+                .Property(e => e.StatusCode)
+                .HasConversion(walletCredentialStatusConverter);
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
