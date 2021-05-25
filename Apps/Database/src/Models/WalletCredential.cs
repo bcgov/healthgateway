@@ -46,6 +46,11 @@ namespace HealthGateway.Database.Models
         public virtual WalletConnection WalletConnection { get; set; } = null!;
 
         /// <summary>
+        /// Gets or sets the identifier of the resource that this credential is attached to.
+        /// </summary>
+        public string ResourceId { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the status of the connection.
         /// </summary>
         [Required]
@@ -63,8 +68,8 @@ namespace HealthGateway.Database.Models
         public DateTime? RevokedDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the ID from the Issuer.
+        /// Gets or sets the echange id for this credential.
         /// </summary>
-        public string? IssuerIdentifier { get; set; }
+        public string? ExchangeId { get; set; }
     }
 }

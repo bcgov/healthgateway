@@ -969,6 +969,37 @@
         <member name="M:HealthGateway.Database.Delegates.DBUserPreferenceDelegate.GetUserPreferences(System.String)">
             <inheritdoc />
         </member>
+        <member name="T:HealthGateway.Database.Delegates.DBWalletDelegate">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Database.Delegates.DBFeedbackDelegate},HealthGateway.Database.Context.GatewayDbContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Database.Delegates.DBWalletDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="dbContext">The context to be used when accessing the database.</param>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetConnection(System.Guid)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetConnection(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCredential(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.InsertConnection(HealthGateway.Database.Models.WalletConnection,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.UpdateConnection(HealthGateway.Database.Models.WalletConnection,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.InsertCredential(HealthGateway.Database.Models.WalletCredential,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.UpdateCredential(HealthGateway.Database.Models.WalletCredential,System.Boolean)">
+            <inheritdoc />
+        </member>
         <member name="T:HealthGateway.Database.Delegates.DBWriteAuditEventDelegate">
             <inheritdoc/>
         </member>
@@ -1742,6 +1773,64 @@
             <param name="startDate">The start date to evaluate the user.</param>
             <param name="endDate">The end date to evaluate the user.</param>
             <returns>The count of recurrent users.</returns>
+        </member>
+        <member name="T:HealthGateway.Database.Delegates.IWalletDelegate">
+            <summary>
+            Delegate that performs operations on the Wallet.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetConnection(System.Guid)">
+            <summary>
+            Gets the wallet associated by the primary key.
+            </summary>
+            <param name="id">The Wallet Connection Id to retrieve.</param>
+            <returns>A DB result which encapsulates the return object and status.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetConnection(System.String)">
+            <summary>
+            Gets the wallet associated to the user profile Id passed in.
+            </summary>
+            <param name="userProfileId">The profile id/hdid of the wallet to retrieve.</param>
+            <returns>A DB result which encapsulates the return object and status.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetCredential(System.String)">
+            <summary>
+            Gets the Wallet credentials associated to a given exchange id.
+            </summary>
+            <param name="exchangeId">The agent exchange id to query.</param>
+            <returns>A DB result which encapsulates the return object and status.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.InsertConnection(HealthGateway.Database.Models.WalletConnection,System.Boolean)">
+            <summary>
+            Creates a WalletConnection object in the database.
+            </summary>
+            <param name="connection">The connection to create.</param>
+            <param name="commit">if true the transaction is persisted immediately.</param>
+            <returns>A DB result which encapsulates the return object and status.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.UpdateConnection(HealthGateway.Database.Models.WalletConnection,System.Boolean)">
+            <summary>
+            Updates a WalletConnection object in the database.
+            </summary>
+            <param name="connection">The connection to update.</param>
+            <param name="commit">if true the transaction is persisted immediately.</param>
+            <returns>A DB result which encapsulates the return object and status.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.InsertCredential(HealthGateway.Database.Models.WalletCredential,System.Boolean)">
+            <summary>
+            Inserts a WalletCredential object into the database.
+            </summary>
+            <param name="credential">The wallet credential to insert.</param>
+            <param name="commit">if true the transaction is persisted immediately.</param>
+            <returns>A DB result which encapsulates the return object and status.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.UpdateCredential(HealthGateway.Database.Models.WalletCredential,System.Boolean)">
+            <summary>
+            Updates a WalletCredential object in the database.
+            </summary>
+            <param name="credential">The wallet credential to update.</param>
+            <param name="commit">if true the transaction is persisted immediately.</param>
+            <returns>A DB result which encapsulates the return object and status.</returns>
         </member>
         <member name="T:HealthGateway.Database.Delegates.IWriteAuditEventDelegate">
             <summary>
@@ -3210,9 +3299,14 @@
             Gets or sets the status of the connection.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.WalletConnection.IssuerIdentifer">
+        <member name="P:HealthGateway.Database.Models.WalletConnection.AgentId">
             <summary>
-            Gets or sets the ID from the Issuer.
+            Gets or sets the Agent Connection Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.InvitationEndpoint">
+            <summary>
+            Gets or sets the invitiation url from the issuer.
             </summary>
         </member>
         <member name="P:HealthGateway.Database.Models.WalletConnection.ConnectedDateTime">
@@ -3265,6 +3359,11 @@
             Gets or sets the Wallet Connection object associated to the credential.
             </summary>
         </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.ResourceId">
+            <summary>
+            Gets or sets the identifier of the resource that this credential is attached to.
+            </summary>
+        </member>
         <member name="P:HealthGateway.Database.Models.WalletCredential.Status">
             <summary>
             Gets or sets the status of the connection.
@@ -3280,9 +3379,9 @@
             Gets or sets the datetime the connection was removed.
             </summary>
         </member>
-        <member name="P:HealthGateway.Database.Models.WalletCredential.IssuerIdentifier">
+        <member name="P:HealthGateway.Database.Models.WalletCredential.ExchangeId">
             <summary>
-            Gets or sets the ID from the Issuer.
+            Gets or sets the echange id for this credential.
             </summary>
         </member>
         <member name="T:HealthGateway.Database.Models.WalletCredentialStatusCode">

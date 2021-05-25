@@ -54,9 +54,14 @@ namespace HealthGateway.Database.Models
         public WalletConnectionStatus Status { get; set; }
 
         /// <summary>
-        /// Gets or sets the ID from the Issuer.
+        /// Gets or sets the Agent Connection Id.
         /// </summary>
-        public string? IssuerIdentifer { get; set; }
+        public string? AgentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the invitiation url from the issuer.
+        /// </summary>
+        public string? InvitationEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets the datetime the connection was established.
