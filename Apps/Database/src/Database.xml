@@ -369,6 +369,46 @@
             The default HDID to use when unknown.
             </summary>
         </member>
+        <member name="T:HealthGateway.Database.Constants.WalletConnectionStatus">
+            <summary>
+            Represents the status of a Wallet Connection.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.WalletConnectionStatus.Pending">
+            <summary>
+            Constant value to a Wallet connection has been initiated.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.WalletConnectionStatus.Connected">
+            <summary>
+            Constant value to represent a Connected state.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.WalletConnectionStatus.Disconnected">
+            <summary>
+            Constant value to represent that the wallet connection has been terminated.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Database.Constants.WalletCredentialStatus">
+            <summary>
+            Represents the status of a Wallet credential.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.WalletCredentialStatus.Created">
+            <summary>
+            Constant value to a wallet credential has been created.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.WalletCredentialStatus.Added">
+            <summary>
+            Constant value to represent credential has been added.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Database.Constants.WalletCredentialStatus.Revoked">
+            <summary>
+            Constant value to represent a wallet credential has been revoked.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Database.Context.BaseDbContext">
             <summary>
             The common database context to be used by all other HealthGateway contexts.
@@ -462,6 +502,12 @@
         <member name="M:HealthGateway.Database.Context.GatewayDbContext.SeedCommentEntryTypeCode(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <summary>
             Seeds the CommentEntryType codes.
+            </summary>
+            <param name="modelBuilder">The passed in model builder.</param>
+        </member>
+        <member name="M:HealthGateway.Database.Context.GatewayDbContext.SeedWalletCodes(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Seeds the Wallet Connection and Credential codes.
             </summary>
             <param name="modelBuilder">The passed in model builder.</param>
         </member>
@@ -3137,6 +3183,121 @@
         <member name="P:HealthGateway.Database.Models.VeterinarySpecies.DrugProductId">
             <summary>
             Gets or sets the Drug Product foreign key.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Database.Models.WalletConnection">
+            <summary>
+            Represents a Wallet Connection.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.Id">
+            <summary>
+            Gets or sets the Wallet connection unique id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.UserProfileId">
+            <summary>
+            Gets or sets the Users HdId.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.UserProfile">
+            <summary>
+            Gets or sets the UserProfile associated to this Wallet Connection.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.Status">
+            <summary>
+            Gets or sets the status of the connection.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.IssuerIdentifer">
+            <summary>
+            Gets or sets the ID from the Issuer.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.ConnectedDateTime">
+            <summary>
+            Gets or sets the datetime the connection was established.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.DisconnectedDateTime">
+            <summary>
+            Gets or sets the datetime the connection was removed.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnection.Credentials">
+            <summary>
+            Gets or sets the collection of credentials for this connection.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Database.Models.WalletConnectionStatusCode">
+            <summary>
+            Represents a Wallet Connection Status code table entity.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnectionStatusCode.StatusCode">
+            <summary>
+            Gets or sets the Wallet Connection Status Code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletConnectionStatusCode.Description">
+            <summary>
+            Gets or sets the Wallet Connection Code description.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Database.Models.WalletCredential">
+            <summary>
+            Represents a Wallet Credential.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.Id">
+            <summary>
+            Gets or sets the Wallet credential unique id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.WalletConnectionId">
+            <summary>
+            Gets or sets the Wallet Connection Id (foreign key).
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.WalletConnection">
+            <summary>
+            Gets or sets the Wallet Connection object associated to the credential.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.Status">
+            <summary>
+            Gets or sets the status of the connection.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.AddedDateTime">
+            <summary>
+            Gets or sets the datetime the connection was established.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.RevokedDateTime">
+            <summary>
+            Gets or sets the datetime the connection was removed.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.IssuerIdentifier">
+            <summary>
+            Gets or sets the ID from the Issuer.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Database.Models.WalletCredentialStatusCode">
+            <summary>
+            Represents a Wallnet Credential Status code table entity.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredentialStatusCode.StatusCode">
+            <summary>
+            Gets or sets the Wallet Connection Status Code.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredentialStatusCode.Description">
+            <summary>
+            Gets or sets the Wallet Connection Code description.
             </summary>
         </member>
         <member name="T:HealthGateway.Database.Utils.EnumUtility">
