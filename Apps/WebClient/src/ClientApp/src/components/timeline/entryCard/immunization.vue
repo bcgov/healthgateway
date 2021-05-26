@@ -122,15 +122,24 @@ export default class ImmunizationTimelineComponent extends Vue {
                         <div v-if="isCovidImmunization">
                             <br />
                             <p data-testid="forecastFollowDirections">
-                                For your COVID-19 second dose you will be
-                                notified by email, text or phone call when you
-                                are eligible to book an appointment. For
-                                information on recommended immunizations, please
-                                visit
+                                <strong>Dose 2 Update</strong> - Note: The
+                                interval between Dose 1 and Dose 2 has been
+                                shortened. Invitations to book will be sent out
+                                for those eligible in the next week. Please do
+                                not call the contact centre and do not be
+                                concerned if your Dose 2 forecast date has
+                                already passed. You will receive an invitation
+                                as soon as it is your turn. For more information
+                                go to
+                                <a
+                                    href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/register"
+                                    target="blank_"
+                                    >gov.bc.ca/getvaccinated</a
+                                >. For information on recommended immunizations,
+                                please visit
                                 <a href="https://immunizebc.ca/" target="blank_"
                                     >https://immunizebc.ca/</a
-                                >
-                                or contact your local Public Health Unit.
+                                >.
                             </p>
                         </div>
                     </b-col>
