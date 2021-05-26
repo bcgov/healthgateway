@@ -21,9 +21,9 @@ namespace HealthGateway.WebClient.Models
     public class WalletIssuerConfiguration
     {
         /// <summary>
-        /// Gets or sets Agent Api Url
+        /// Gets or sets Agent Api Url .
         /// </summary>
-        public string AgentApiUrl { get; set; } = string.Empty;
+        public System.Uri? AgentApiUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the Agent Api Key.

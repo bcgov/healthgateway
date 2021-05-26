@@ -16,23 +16,37 @@
 namespace HealthGateway.WebClient.Server.Models.AcaPy
 {
     using System;
-    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Connection to the Ares Agent.
+    /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
     /// </summary>
-    public class CreateConnectionResponse
+    public class AcaPyApiException : Exception
     {
         /// <summary>
-        /// Gets or sets the connection id.
+        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
         /// </summary>
-        [JsonPropertyName("connection_id")]
-        public string? AgentId { get; set; }
+        public AcaPyApiException()
+        : base()
+        {
+        }
 
         /// <summary>
-        /// Gets or sets the invitation url.
+        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
         /// </summary>
-        [JsonPropertyName("invitation_url")]
-        public System.Uri? InvitationUrl { get; set; }
+        /// <param name="message">Message of exception.</param>
+        public AcaPyApiException(string message)
+        : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
+        /// </summary>
+        /// <param name="message">Message of exception.</param>
+        /// <param name="inner">Inner message of exception.</param>
+        public AcaPyApiException(string message, Exception inner)
+        : base(message, inner)
+        {
+        }
     }
 }

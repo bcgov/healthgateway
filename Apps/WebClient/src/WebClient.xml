@@ -422,6 +422,34 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate">
+            <summary>
+            Interface that defines a delegate to create/revoke wallet connections and credentials.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.CreateConnectionAsync(System.String)">
+            <summary>
+            Creates a connection invitation request.
+            </summary>
+            <param name="walletConnectionId">The id of the wallet connection.</param>
+            <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Delegates.WalletIssuerDelegate">
+            <summary>
+            Implementation that uses HTTP to create/revoke Connections and Credentials.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.WalletIssuerDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Delegates.WalletIssuerDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Delegates.WalletIssuerDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.String)">
+            <inheritdoc/>
+        </member>
         <member name="T:HealthGateway.WebClient.Listeners.BannerListener">
             <summary>
             Implements the abstract DB Listener and listens on the BannerChange channel.
@@ -441,9 +469,47 @@
             <param name="stoppingToken">The cancellation token to use.</param>
             <returns>The task.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException"/> class.
+            </summary>
+            <param name="message">Message of exception.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException"/> class.
+            </summary>
+            <param name="message">Message of exception.</param>
+            <param name="inner">Inner message of exception.</param>
+        </member>
         <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.Connection">
             <summary>
             Represents a Connection to the Ares Agent.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.CreateConnectionResponse">
+            <summary>
+            Represents a Connection to the Ares Agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.CreateConnectionResponse.AgentId">
+            <summary>
+            Gets or sets the connection id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.CreateConnectionResponse.InvitationUrl">
+            <summary>
+            Gets or sets the invitation url.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential">
@@ -451,17 +517,17 @@
             A verifiable credential for an Immunization.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.LegalName">
+        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.RecipientName">
             <summary>
             Gets or sets the full legal name of the recipient.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.BirthDate">
+        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.RecipientBirthDate">
             <summary>
             Gets or sets the birthdate of the recipient.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.PHN">
+        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.RecipientPHN">
             <summary>
             Gets or sets the Personal Health Number of the recipient.
             </summary>
@@ -471,12 +537,12 @@
             Gets or sets the name of the type of immunization.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.Product">
+        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.ImmunizationProduct">
             <summary>
             Gets or sets the brand name of Immunization product.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.Agent">
+        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.ImmunizationAgent">
             <summary>
             Gets or sets the immunization agent.
             </summary>
@@ -486,14 +552,24 @@
             Gets or sets the lot number.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.Country">
-            <summary>
-            Gets or sets the country where the immunization was received.
-            </summary>
-        </member>
         <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.Provider">
             <summary>
             Gets or sets the provider or facility where the immunization was reeived.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.WalletIssuerConfiguration">
+            <summary>
+            Configuration to be used by external clients for authentication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletIssuerConfiguration.AgentApiUrl">
+            <summary>
+            Gets or sets Agent Api Url .
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletIssuerConfiguration.AgentApiKey">
+            <summary>
+            Gets or sets the Agent Api Key.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.AddDependentRequest">

@@ -1,29 +1,39 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using HealthGateway.Common.Services;
-using System.Net.Http;
-using System.Text.Json;
-using System.Text;
-using HealthGateway.WebClient.Server.Models.AcaPy;
-using System.Net.Http.Headers;
-using System.Net.Mime;
-using Microsoft.Extensions.Configuration;
-using HealthGateway.WebClient.Models;
-
+//-------------------------------------------------------------------------
+// Copyright © 2019 Province of British Columbia
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Delegates
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Net.Mime;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Services;
+    using HealthGateway.WebClient.Models;
+    using HealthGateway.WebClient.Server.Models.AcaPy;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Implementation that uses HTTP to create/revoke Connections and Credentials
+    /// Implementation that uses HTTP to create/revoke Connections and Credentials.
     /// </summary>
     public class WalletIssuerDelegate : IWalletIssuerDelegate
     {
         private const string AcapyConfigSectionKey = "AcaPy";
-        private static readonly string SchemaName = "vaccine";
-        private static readonly string SchemaVersion = "1.0";
-
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
         private readonly HttpClient client;
@@ -45,46 +55,55 @@ namespace HealthGateway.WebClient.Delegates
             this.walletIssuerConfig = new WalletIssuerConfiguration();
             configuration.Bind(AcapyConfigSectionKey, this.walletIssuerConfig);
 
-            string bearerToken = this.walletIssuerConfig.AgentApiKey;
-
-            this.client = this.httpClientService.CreateDefaultHttpClient();
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
-                client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                client.BaseAddress = new Uri(this.walletIssuerConfig.AgentApiUrl);
+            this.client = this.InitializeClient();
         }
 
         /// <inheritdoc/>
         public async Task<CreateConnectionResponse> CreateConnectionAsync(string walletConnectionId)
         {
-            logger.LogInformation("Create connection invitation");
+            this.logger.LogInformation("Create connection invitation");
 
-            List<KeyValuePair<string?, string?>> values = new();
-            var httpContent = new FormUrlEncodedContent(values);
+            List<KeyValuePair<string?, string?>> values = new ();
+            FormUrlEncodedContent httpContent = new (values);
 
             HttpResponseMessage? response = null;
             try
             {
-                response = await client.PostAsync($"connections/create-invitation?alias={walletConnectionId}", httpContent);
+                response = await this.client.PostAsync(new Uri($"connections/create-invitation?alias={walletConnectionId}"), httpContent).ConfigureAwait(true);
             }
             catch (Exception ex)
             {
-                await LogError(httpContent, response, ex);
+                await this.LogError(httpContent, response, ex).ConfigureAwait(true);
                 throw new AcaPyApiException("Error occurred when calling AcaPy API. Try again later.", ex);
             }
 
             if (!response.IsSuccessStatusCode)
             {
-                await LogError(httpContent, response);
+                await this.LogError(httpContent, response).ConfigureAwait(true);
                 throw new AcaPyApiException($"Error code {response.StatusCode} was provided when calling WalletIssuerDelegate::CreateInvitationAsync");
             }
 
-            CreateConnectionResponse createConnectionResponse = await response.Content.ReadAsAsync<CreateConnectionResponse>();
+            httpContent.Dispose();
 
-            logger.LogInformation("Create connection invitation response {@JObject}", JsonSerializer.Serialize(createConnectionResponse));
+            CreateConnectionResponse createConnectionResponse = await response.Content.ReadAsAsync<CreateConnectionResponse>().ConfigureAwait(true);
+
+            this.logger.LogInformation("Create connection invitation response {@JObject}", JsonSerializer.Serialize(createConnectionResponse));
 
             return createConnectionResponse;
+        }
+
+        private HttpClient InitializeClient()
+        {
+            string bearerToken = this.walletIssuerConfig.AgentApiKey;
+
+            HttpClient httpClient = this.httpClientService.CreateDefaultHttpClient();
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            httpClient.BaseAddress = this.walletIssuerConfig.AgentApiUrl;
+
+            return httpClient;
         }
 
         private async Task LogError(HttpContent content, HttpResponseMessage response, Exception? exception = null)
@@ -93,43 +112,19 @@ namespace HealthGateway.WebClient.Delegates
             if (exception != null)
             {
                 secondaryMessage = $"Exception: {exception.Message}";
+                this.logger.LogError(exception, secondaryMessage, new object[] { content, response });
             }
             else if (response != null)
             {
-                string responseMessage = await response.Content.ReadAsStringAsync();
+                string responseMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
                 secondaryMessage = $"Response code: {(int)response.StatusCode}, response body:{responseMessage}";
-                logger.LogError(exception, secondaryMessage, new Object[] { content, response });
+                this.logger.LogError(exception, secondaryMessage, new object[] { content, response });
             }
             else
             {
                 secondaryMessage = "No additional message. Http response and exception were null.";
-                logger.LogError(exception, secondaryMessage, new Object[] { content });
+                this.logger.LogError(exception, secondaryMessage, new object[] { content });
             }
         }
     }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
-    /// </summary>
-    public class AcaPyApiException : Exception
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
-        /// </summary>
-        public AcaPyApiException() : base() { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
-        /// </summary>
-        /// <param name="message"></param>
-        public AcaPyApiException(string message) : base(message) { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="inner"></param>
-        public AcaPyApiException(string message, Exception inner) : base(message, inner) { }
-    }
-
 }
