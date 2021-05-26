@@ -3,7 +3,7 @@ import { StringISODateTime } from "./dateWrapper";
 export interface CredentialConnection {
     walletConnectionId: string;
     hdid: string;
-    issuerConnectionid: string;
+    issuerConnectionId: string;
     connectedDate: StringISODateTime;
     disconnectedDate: StringISODateTime;
     qrCode: string;
@@ -21,7 +21,7 @@ export interface WalletCredential {
     credentialId: string;
     walletConnectionId: string;
     issuerCredentialId: string;
-    sourcetype: string;
+    sourceType: string;
     sourceId: string;
     addedDate: StringISODateTime;
     revokedDate?: StringISODateTime;
