@@ -22,14 +22,15 @@ namespace HealthGateway.WebClient.Server.Models.AcaPy
     /// </summary>
     public class CreateConnectionResponse
     {
+        //TODO change to Guid?
         /// <summary>
         /// Gets or sets the connection id
         /// </summary>
-        public string? AgentId { get; set; }
+        public string? connection_id { get; set; }
 
         /// <summary>
         /// Gets or sets the invitation url
         /// </summary>
-        public string? InvitationEndpoint { get; set; }
+        public string? invitation_url { get; set; }
     }
 }

@@ -4,8 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using HealthGateway.Common.Services;
 using System.Net.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using System.Text;
 using HealthGateway.WebClient.Server.Models.AcaPy;
 using System.Net.Http.Headers;
@@ -21,7 +20,6 @@ namespace HealthGateway.WebClient.Delegates
     {
         private readonly ILogger logger;
         private readonly IHttpClientService httpClientService;
-
         private readonly HttpClient client;
 
         private static readonly string SchemaName = "vaccine";
@@ -53,16 +51,13 @@ namespace HealthGateway.WebClient.Delegates
         /// <inheritdoc/>
         public async Task<CreateConnectionResponse> CreateConnectionAsync(string walletConnectionId)
         {
-            var invitation = await CreateInvitationAsync(walletConnectionId);
-            var connectionId = invitation.Value<string>("connection_id");
-            var invitationUrl = invitation.Value<string>("invitation_url");
-
-            return new CreateConnectionResponse{AgentId = connectionId, InvitationEndpoint = invitationUrl };
+            return await CreateInvitationAsync(walletConnectionId);
         }
 
-        public async Task<bool> RevokeConnectionAsync(string agentId)
+        /// <inheritdoc/>
+        public bool RevokeConnectionAsync(string agentId)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         /// <inheritdoc/>
@@ -192,11 +187,11 @@ namespace HealthGateway.WebClient.Delegates
             return attributes;
         }
 
-        private async Task<JObject> CreateInvitationAsync(string alias)
+        private async Task<CreateConnectionResponse> CreateInvitationAsync(string alias)
         {
             logger.LogInformation("Create connection invitation");
 
-            var values = new List<KeyValuePair<string, string>>();
+            List<KeyValuePair<string?, string?>> values = new();
             var httpContent = new FormUrlEncodedContent(values);
 
             HttpResponseMessage? response = null;
@@ -216,9 +211,11 @@ namespace HealthGateway.WebClient.Delegates
                 throw new AcaPyApiException($"Error code {response.StatusCode} was provided when calling WalletIssuerDelegate::CreateInvitationAsync");
             }
 
-            logger.LogInformation("Create connection invitation response {@JObject}", JsonConvert.SerializeObject(response));
+            CreateConnectionResponse createConnectionResponse = await response.Content.ReadAsAsync<CreateConnectionResponse>();
 
-            return JObject.Parse(await response.Content.ReadAsStringAsync());
+            logger.LogInformation("Create connection invitation response {@JObject}", JsonSerializer.Serialize(createConnectionResponse));
+
+            return createConnectionResponse;
         }
 
         private async Task<JObject> IssueCredentialSendAsync(JObject credentialOffer)
@@ -601,4 +598,5 @@ namespace HealthGateway.WebClient.Delegates
         /// <param name="inner"></param>
         public AcaPyApiException(string message, Exception inner) : base(message, inner) { }
     }
+
 }

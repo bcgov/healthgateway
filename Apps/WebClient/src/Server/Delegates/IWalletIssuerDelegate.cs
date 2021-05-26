@@ -21,7 +21,7 @@ namespace HealthGateway.WebClient.Delegates
         /// </summary>
         /// <param name="agentId">The connection_id of the wallet connection</param>
         /// <returns>boolean indicating success.</returns>
-        Task<bool> RevokeConnectionAsync(string agentId);
+        bool RevokeConnectionAsync(string agentId);
 
         /// <summary>
         /// Issue a credential to a connection
