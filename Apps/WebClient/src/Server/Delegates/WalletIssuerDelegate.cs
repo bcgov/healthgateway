@@ -39,7 +39,6 @@ namespace HealthGateway.WebClient.Delegates
             ILogger<WalletIssuerDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration)
-
         {
             this.logger = logger;
             this.httpClientService = httpClientService;
@@ -59,7 +58,7 @@ namespace HealthGateway.WebClient.Delegates
         /// <inheritdoc/>
         public async Task<CreateConnectionResponse> CreateConnectionAsync(string walletConnectionId)
         {
-             logger.LogInformation("Create connection invitation");
+            logger.LogInformation("Create connection invitation");
 
             List<KeyValuePair<string?, string?>> values = new();
             var httpContent = new FormUrlEncodedContent(values);
