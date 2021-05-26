@@ -1,91 +1,117 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using AutoMapper;
+using HealthGateway.Common.Services;
+using System.Net.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text;
+using HealthGateway.WebClient.Server.Models.AcaPy;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 
 namespace HealthGateway.WebClient.Delegates
 {
-    public class WalletIssuerDelegate : BaseService, IWalletIssuerDelegate
+
+    /// <summary>
+    /// Implementation that uses HTTP to create/revoke Connections and Credentials
+    /// </summary>
+    public class WalletIssuerDelegate : IWalletIssuerDelegate
     {
-        private readonly IMapper _mapper;
-        private readonly HttpClient _client;
-        private readonly ILogger _logger;
+        private readonly ILogger logger;
+        private readonly IHttpClientService httpClientService;
+
+        private readonly HttpClient client;
 
         private static readonly string SchemaName = "vaccine";
         private static readonly string SchemaVersion = "1.0";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WalletIssuerDelegate"/> class.
+        /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
+        /// <param name="httpClientService">The injected http client service.</param>
         public WalletIssuerDelegate(
-            ApiDbContext context,
-            IHttpContextAccessor httpContext,
-            IMapper mapper,
-            ILogger<WalletIssuerDelegate> logger)
-            : base(context, httpContext)
+            ILogger<WalletIssuerDelegate> logger,
+            IHttpClientService httpClientService)
+
         {
-            _mapper = mapper;
-            _logger = logger;
+            this.logger = logger;
+            this.httpClientService = httpClientService;
+
+            //TODO NEED TO STORE IN OPENSHIFT + Constants file?
+            string bearerToken = "acapy agent api key";
+
+            this.client = this.httpClientService.CreateDefaultHttpClient();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+                client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         }
 
-        public async Task<WalletConnectionResponse> CreateConnectionAsync(string walletConnectionId)
+        /// <inheritdoc/>
+        public async Task<CreateConnectionResponse> CreateConnectionAsync(string walletConnectionId)
         {
             var invitation = await CreateInvitationAsync(walletConnectionId);
+            var connectionId = invitation.Value<string>("connection_id");
             var invitationUrl = invitation.Value<string>("invitation_url");
 
-            return invitationUrl;
+            return new CreateConnectionResponse{AgentId = connectionId, InvitationEndpoint = invitationUrl };
         }
 
-        public async Task<string> IssueCredentialAsync(string agentId, string attributes)
+        public async Task<bool> RevokeConnectionAsync(string agentId)
         {
-            var issuerDid = await _verifiableCredentialClient.GetIssuerDidAsync();
-            var schemaId = await _verifiableCredentialClient.GetSchemaId(issuerDid);
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public async Task<string> IssueCredentialAsync(string agentId, ImmunizationCredential immunizationCredential)
+        {
+            var issuerDid = await GetIssuerDidAsync();
+            var schemaId = await GetSchemaId(issuerDid);
             if(schemaId == null)
             {
-                schemaId =  await _verifiableCredentialClient.CreateSchemaAsync();
+                schemaId =  await CreateSchemaAsync();
             }
 
-            var credentialDefinitionId = await _verifiableCredentialClient.GetCredentialDefinitionIdAsync(schemaId);
+            var credentialDefinitionId = await GetCredentialDefinitionIdAsync(schemaId);
             if(credentialDefinitionId == null)
             {
-                credentialDefinitionId = await _verifiableCredentialClient.CreateCredentialDefinitionAsync(schemaId);
+                credentialDefinitionId = await CreateCredentialDefinitionAsync(schemaId);
             }
 
-            var credentialAttributes = await CreateCredentialAttributesAsync(attributes);
+            var credentialAttributes = CreateCredentialAttributesAsync(immunizationCredential);
             var credentialOffer = await CreateCredentialOfferAsync(agentId, credentialAttributes);
-            var issueCredentialResponse = await _verifiableCredentialClient.IssueCredentialAsync(credentialOffer);
+            var issueCredentialResponse = await IssueCredentialSendAsync(credentialOffer);
 
             return (string)issueCredentialResponse.SelectToken("credential_exchange_id");
         }
 
-
+        /// <inheritdoc/>
         public async Task<bool> RevokeCredentialAsync(string credentialExchangeId, string agentId, DateTime? addedDateTime)
         {
             // If addedDateTime is set, revoke credential
             // If addedDateTime is null then credential was never accepted, delete credential
             var success = addedDateTime == null
-                ? await _verifiableCredentialClient.DeleteCredentialAsync(credential)
-                : await _verifiableCredentialClient.RevokeCredentialAsync(credential);
+                ? await DeleteCredentialAsync(credentialExchangeId)
+                : await RevokeIssuedCredentialAsync(credentialExchangeId);
 
             if (success)
             {
-                await _verifiableCredentialClient.SendMessageAsync(connectionId, "This credential has been revoked.");
+                await SendMessageAsync(agentId, "This credential has been revoked.");
             }
 
             return success;
         }
 
-
         // Create the credential offer.
         private async Task<JObject> CreateCredentialOfferAsync(string connectionId, JArray attributes)
         {
-            var issuerDid = await _verifiableCredentialClient.GetIssuerDidAsync();
-            var schemaId = await _verifiableCredentialClient.GetSchemaId(issuerDid);
-            var schema = (await _verifiableCredentialClient.GetSchema(schemaId)).Value<JObject>("schema");
-            var credentialDefinitionId = await _verifiableCredentialClient.GetCredentialDefinitionIdAsync(schemaId);
+            var issuerDid = await GetIssuerDidAsync();
+            var schemaId = await GetSchemaId(issuerDid);
+            var schema = (await GetSchema(schemaId)).Value<JObject>("schema");
+            var credentialDefinitionId = await GetCredentialDefinitionIdAsync(schemaId);
 
             JObject credentialOffer = new JObject
             {
@@ -109,103 +135,74 @@ namespace HealthGateway.WebClient.Delegates
                 }
             };
 
-            _logger.LogInformation("Credential offer for connection ID \"{connectionId}\" for {@JObject}", connectionId, JsonConvert.SerializeObject(credentialOffer));
+            logger.LogInformation("Credential offer for connection ID \"{connectionId}\" for {@JObject}", connectionId, JsonConvert.SerializeObject(credentialOffer));
 
             return credentialOffer;
         }
 
         // Create the credential proposal attributes.
-        private async Task<JArray> CreateCredentialAttributesAsync(int patientId, Guid guid)
+        private JArray CreateCredentialAttributesAsync(ImmunizationCredential immunizationCredential)
         {
-            var record = await _immunizationClient.GetImmunizationRecordAsync(guid);
-
-            var immunizationRecord = _mapper.Map<ImmunizationResponse, Schema>(record);
-
             var attributes = new JArray
             {
                 new JObject
                 {
-                    { "name", "name"},
-                    { "value", immunizationRecord.name }
+                    { "name", "RecipientName" },
+                    { "value", immunizationCredential.RecipientName }
                 },
                 new JObject
                 {
-                    { "name", "description"},
-                    { "value", immunizationRecord.description }
+                    { "name", "RecipientBirthDate" },
+                    { "value", immunizationCredential.RecipientBirthDate }
                 },
                 new JObject
                 {
-                    { "name", "expirationDate"},
-                    { "value", DateTime.Now.AddYears(1) }
+                    { "name", "RecipientPHN" },
+                    { "value", immunizationCredential.RecipientPHN }
                 },
                 new JObject
                 {
-                    { "name", "credential_type" },
-                    { "value", immunizationRecord.credential_type }
+                    { "name", "ImmunizationType" },
+                    { "value", immunizationCredential.ImmunizationType }
                 },
                 new JObject
                 {
-                    { "name", "countryOfVaccination" },
-                    { "value", immunizationRecord.countryOfVaccination }
+                    { "name", "ImmunizationProduct" },
+                    { "value", immunizationCredential.ImmunizationProduct }
                 },
                 new JObject
                 {
-                    { "name", "recipient_type" },
-                    { "value", immunizationRecord.recipient_type }
+                    { "name", "ImmunizationAgent" },
+                    { "value", immunizationCredential.ImmunizationAgent }
                 },
                 new JObject
                 {
-                    { "name", "recipient_fullName" },
-                    { "value", immunizationRecord.recipient_fullName }
+                    { "name", "LotNumber" },
+                    { "value", immunizationCredential.LotNumber }
                 },
                 new JObject
                 {
-                    { "name", "recipient_birthDate" },
-                    { "value", immunizationRecord.recipient_birthDate }
-                },
-                new JObject
-                {
-                    { "name", "vaccine_type" },
-                    { "value", immunizationRecord.vaccine_type }
-                },
-                new JObject
-                {
-                    { "name", "vaccine_disease" },
-                    { "value", immunizationRecord.vaccine_disease }
-                },
-                new JObject
-                {
-                    { "name", "vaccine_medicinalProductName" },
-                    { "value", immunizationRecord.vaccine_medicinalProductName }
-                },
-                new JObject
-                {
-                    { "name", "vaccine_marketingAuthorizationHolder" },
-                    { "value", immunizationRecord.vaccine_marketingAuthorizationHolder }
-                },
-                new JObject
-                {
-                    { "name", "vaccine_dateOfVaccination"},
-                    { "value", immunizationRecord.vaccine_dateOfVaccination }
+                    { "name", "Provider" },
+                    { "value", immunizationCredential.Provider }
                 }
             };
 
-            _logger.LogInformation("Credential offer attributes for {@JObject}", JsonConvert.SerializeObject(attributes));
+            logger.LogInformation("Credential offer attributes for {@JObject}", JsonConvert.SerializeObject(attributes));
 
             return attributes;
         }
 
         private async Task<JObject> CreateInvitationAsync(string alias)
         {
-            _logger.LogInformation("Create connection invitation");
+            logger.LogInformation("Create connection invitation");
 
             var values = new List<KeyValuePair<string, string>>();
             var httpContent = new FormUrlEncodedContent(values);
 
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.PostAsync($"connections/create-invitation?alias={alias}", httpContent);
+                response = await client.PostAsync($"connections/create-invitation?alias={alias}", httpContent);
             }
             catch (Exception ex)
             {
@@ -219,19 +216,19 @@ namespace HealthGateway.WebClient.Delegates
                 throw new AcaPyApiException($"Error code {response.StatusCode} was provided when calling WalletIssuerDelegate::CreateInvitationAsync");
             }
 
-            _logger.LogInformation("Create connection invitation response {@JObject}", JsonConvert.SerializeObject(response));
+            logger.LogInformation("Create connection invitation response {@JObject}", JsonConvert.SerializeObject(response));
 
             return JObject.Parse(await response.Content.ReadAsStringAsync());
         }
 
-        private async Task<JObject> IssueCredentialAsync(JObject credentialOffer)
+        private async Task<JObject> IssueCredentialSendAsync(JObject credentialOffer)
         {
             var httpContent = new StringContent(credentialOffer.ToString(), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.PostAsync("issue-credential/send", httpContent);
+                response = await client.PostAsync("issue-credential/send", httpContent);
             }
             catch (Exception ex)
             {
@@ -248,22 +245,22 @@ namespace HealthGateway.WebClient.Delegates
             return JObject.Parse(await response.Content.ReadAsStringAsync());
         }
 
-        private async Task<bool> RevokeCredentialAsync(Credential credential)
+        private async Task<bool> RevokeIssuedCredentialAsync(string credentialExchangeId)
         {
-            _logger.LogInformation("Revoking credential cred_ex-Id={id}", credential.CredentialExchangeId);
+            logger.LogInformation("Revoking credential cred_ex-Id={id}", credentialExchangeId);
 
             var revocationObject = new
             {
-                cred_ex_id = credential.CredentialExchangeId,
+                cred_ex_id = credentialExchangeId,
                 publish = true
             };
 
             var httpContent = new StringContent(revocationObject.ToString(), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.PostAsync($"revocation/revoke", httpContent);
+                response = await client.PostAsync($"revocation/revoke", httpContent);
             }
             catch (Exception ex)
             {
@@ -277,17 +274,17 @@ namespace HealthGateway.WebClient.Delegates
                 throw new AcaPyApiException($"Error code {response.StatusCode} was provided when calling VerifiableCredentialClient::RevokeCredentialAsync");
             }
 
-            _logger.LogInformation("Revoke credential cred_ex_id={id} success", credential.CredentialExchangeId);
+            logger.LogInformation("Revoke credential cred_ex_id={id} success", credentialExchangeId);
 
             return true;
         }
 
-        private async Task<string> GetSchemaId(string did)
+        private async Task<string?> GetSchemaId(string did)
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.GetAsync($"schemas/created?schema_version={SchemaVersion}&schema_issuer_did={did}&schema_name={SchemaName}");
+                response = await client.GetAsync($"schemas/created?schema_version={SchemaVersion}&schema_issuer_did={did}&schema_name={SchemaName}");
             }
             catch (Exception ex)
             {
@@ -306,7 +303,7 @@ namespace HealthGateway.WebClient.Delegates
 
             if(schemas != null && schemas.Count > 0)
             {
-                _logger.LogInformation("SCHEMA_ID: {schemaid}", (string)body.SelectToken("schema_ids[0]"));
+                logger.LogInformation("SCHEMA_ID: {schemaid}", (string)body.SelectToken("schema_ids[0]"));
                 return (string)body.SelectToken("schema_ids[0]");
             }
             else {
@@ -316,10 +313,10 @@ namespace HealthGateway.WebClient.Delegates
 
         private async Task<JObject> GetSchema(string schemaId)
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.GetAsync($"schemas/{schemaId}");
+                response = await client.GetAsync($"schemas/{schemaId}");
             }
             catch (Exception ex)
             {
@@ -335,14 +332,14 @@ namespace HealthGateway.WebClient.Delegates
 
             JObject body = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            _logger.LogInformation("GET Schema response {@JObject}", JsonConvert.SerializeObject(body));
+            logger.LogInformation("GET Schema response {@JObject}", JsonConvert.SerializeObject(body));
 
             return body;
         }
 
         private async Task<string> CreateSchemaAsync()
         {
-            JObject propertiesObject = JObject.FromObject(new Schema{});
+            JObject propertiesObject = JObject.FromObject(new ImmunizationCredential{});
 
             var attributes = new JArray{};
             foreach(var property in propertiesObject.Properties())
@@ -359,10 +356,10 @@ namespace HealthGateway.WebClient.Delegates
 
             var httpContent = new StringContent(schema.ToString(), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.PostAsync($"schemas", httpContent);
+                response = await client.PostAsync($"schemas", httpContent);
             }
             catch (Exception ex)
             {
@@ -378,17 +375,17 @@ namespace HealthGateway.WebClient.Delegates
 
             JObject body = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            _logger.LogInformation("Schema Created successfully {@JObject}", JsonConvert.SerializeObject(body));
+            logger.LogInformation("Schema Created successfully {@JObject}", JsonConvert.SerializeObject(body));
 
             return (string)body.SelectToken("schema_id");
         }
 
         private async Task<string> GetIssuerDidAsync()
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.GetAsync("wallet/did/public");
+                response = await client.GetAsync("wallet/did/public");
             }
             catch (Exception ex)
             {
@@ -404,17 +401,17 @@ namespace HealthGateway.WebClient.Delegates
 
             JObject body = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            _logger.LogInformation("GET Issuer DID response {did}", (string)body.SelectToken("result.did"));
+            logger.LogInformation("GET Issuer DID response {did}", (string)body.SelectToken("result.did"));
 
             return (string)body.SelectToken("result.did");
         }
 
-        private async Task<string> GetCredentialDefinitionIdAsync(string schemaId)
+        private async Task<string?> GetCredentialDefinitionIdAsync(string schemaId)
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.GetAsync($"credential-definitions/created?schema_id={schemaId}");
+                response = await client.GetAsync($"credential-definitions/created?schema_id={schemaId}");
             }
             catch (Exception ex)
             {
@@ -431,7 +428,7 @@ namespace HealthGateway.WebClient.Delegates
             JObject body = JObject.Parse(await response.Content.ReadAsStringAsync());
             JArray credentialDefinitionIds = (JArray)body.SelectToken("credential_definition_ids");
 
-            _logger.LogInformation("GET Credential Definition IDs {@JObject}", JsonConvert.SerializeObject(body));
+            logger.LogInformation("GET Credential Definition IDs {@JObject}", JsonConvert.SerializeObject(body));
             if(credentialDefinitionIds != null && credentialDefinitionIds.Count > 0)
             {
                 return (string)body.SelectToken($"credential_definition_ids[{credentialDefinitionIds.Count - 1}]");
@@ -451,10 +448,10 @@ namespace HealthGateway.WebClient.Delegates
 
             var httpContent = new StringContent(credentialDefinition.ToString(), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.PostAsync($"credential-definitions", httpContent);
+                response = await client.PostAsync($"credential-definitions", httpContent);
             }
             catch (Exception ex)
             {
@@ -470,17 +467,17 @@ namespace HealthGateway.WebClient.Delegates
 
             JObject body = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            _logger.LogInformation("Credential Definition Created successfully {@JObject}", JsonConvert.SerializeObject(body));
+            logger.LogInformation("Credential Definition Created successfully {@JObject}", JsonConvert.SerializeObject(body));
 
             return (string)body.SelectToken("credential_definition_id");
         }
 
         private async Task<JObject> GetPresentationProof(string presentationExchangeId)
         {
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.GetAsync($"presentation-proof/records/{presentationExchangeId}");
+                response = await client.GetAsync($"presentation-proof/records/{presentationExchangeId}");
             }
             catch (Exception ex)
             {
@@ -496,19 +493,19 @@ namespace HealthGateway.WebClient.Delegates
 
             JObject body = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            _logger.LogInformation("GET Presentation proof @JObject", JsonConvert.SerializeObject(body));
+            logger.LogInformation("GET Presentation proof @JObject", JsonConvert.SerializeObject(body));
 
             return body;
         }
 
         private async Task<bool> DeleteCredentialAsync(string credentialExchangeId)
         {
-            _logger.LogInformation("Deleting credential cred_ex-Id={id}", credentialExchangeId);
+            logger.LogInformation("Deleting credential cred_ex-Id={id}", credentialExchangeId);
 
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.DeleteAsync($"issue-credential/records/{credential.CredentialExchangeId}");
+                response = await client.DeleteAsync($"issue-credential/records/{credentialExchangeId}");
             }
             catch (Exception ex)
             {
@@ -522,23 +519,23 @@ namespace HealthGateway.WebClient.Delegates
                 return false;
             }
 
-            _logger.LogInformation("Deleting credential cred_ex_id={id} success", credential.CredentialExchangeId);
+            logger.LogInformation("Deleting credential cred_ex_id={id} success", credentialExchangeId);
 
             return true;
         }
 
         private async Task<bool> SendMessageAsync(string connectionId, string content)
         {
-            _logger.LogInformation("Sending a message to connection_id={id}", connectionId);
+            logger.LogInformation("Sending a message to connection_id={id}", connectionId);
 
             var messageObject = new { content };
 
             var httpContent = new StringContent(messageObject.ToString(), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = null;
+            HttpResponseMessage? response = null;
             try
             {
-                response = await _client.PostAsync($"connections/{connectionId}/send-message", httpContent);
+                response = await client.PostAsync($"connections/{connectionId}/send-message", httpContent);
             }
             catch (Exception ex)
             {
@@ -555,12 +552,12 @@ namespace HealthGateway.WebClient.Delegates
             return true;
         }
 
-        private async Task LogError(HttpResponseMessage response, Exception exception = null)
+        private async Task LogError(HttpResponseMessage response, Exception? exception = null)
         {
             await LogError(null, response, exception);
         }
 
-        private async Task LogError(HttpContent content, HttpResponseMessage response, Exception exception = null)
+        private async Task LogError(HttpContent content, HttpResponseMessage response, Exception? exception = null)
         {
             string secondaryMessage;
             if (exception != null)
@@ -577,14 +574,31 @@ namespace HealthGateway.WebClient.Delegates
                 secondaryMessage = "No additional message. Http response and exception were null.";
             }
 
-            _logger.LogError(exception, secondaryMessage, new Object[] { content, response });
+            logger.LogError(exception, secondaryMessage, new Object[] { content, response });
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
+    /// </summary>
     public class AcaPyApiException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
+        /// </summary>
         public AcaPyApiException() : base() { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
+        /// </summary>
+        /// <param name="message"></param>
         public AcaPyApiException(string message) : base(message) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AcaPyApiException"/> class.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="inner"></param>
         public AcaPyApiException(string message, Exception inner) : base(message, inner) { }
     }
 }
