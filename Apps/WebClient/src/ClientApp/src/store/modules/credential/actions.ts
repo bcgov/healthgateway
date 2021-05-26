@@ -13,7 +13,7 @@ export const actions: CredentialActions = {
                 SERVICE_IDENTIFIER.CredentialService
             );
         return new Promise((resolve, reject) => {
-            if (context.getters.patientData.hdid !== undefined) {
+            if (context.state.connection !== undefined) {
                 logger.debug(
                     `Credential Connection found stored, not querying!`
                 );
@@ -39,7 +39,7 @@ export const actions: CredentialActions = {
                 SERVICE_IDENTIFIER.CredentialService
             );
         return new Promise((resolve, reject) => {
-            if (context.getters.patientData.hdid !== undefined) {
+            if (context.state.credentials.length > 0) {
                 logger.debug(`Credentials found stored, not querying!`);
             } else {
                 context.commit("setRequested");

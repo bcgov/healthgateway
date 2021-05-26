@@ -4,7 +4,7 @@ export interface CredentialConnection {
     walletConnectionId: string;
     hdid: string;
     issuerConnectionid: string;
-    ConnectedDate: StringISODateTime;
+    connectedDate: StringISODateTime;
     disconnectedDate: StringISODateTime;
     qrCode: string;
     state: ConnectionState;
@@ -19,12 +19,12 @@ enum ConnectionState {
 
 export interface WalletCredential {
     credentialId: string;
-    WalletConnectionId: string;
-    IssuerCredentialId: string;
+    walletConnectionId: string;
+    issuerCredentialId: string;
     sourcetype: string;
     sourceId: string;
-    AddedDate: StringISODateTime;
-    RevokedDate?: StringISODateTime;
+    addedDate: StringISODateTime;
+    revokedDate?: StringISODateTime;
     status: CredentialState;
     version: string;
 }
