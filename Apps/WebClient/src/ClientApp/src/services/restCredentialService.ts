@@ -1,0 +1,133 @@
+import { injectable } from "inversify";
+
+import { ExternalConfiguration } from "@/models/configData";
+import {
+    CredentialConnection,
+    WalletCredential,
+} from "@/models/credentialConnection";
+import { ServiceName } from "@/models/errorInterfaces";
+import RequestResult from "@/models/requestResult";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import container from "@/plugins/inversify.container";
+import {
+    ICredentialService,
+    IHttpDelegate,
+    ILogger,
+} from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
+import RequestResultUtil from "@/utility/requestResultUtil";
+
+@injectable()
+export class RestCredentialService implements ICredentialService {
+    private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
+    private readonly CREDENTIAL_BASE_URI: string = "/v1/api/Credential";
+    private http!: IHttpDelegate;
+    private isEnabled = false;
+
+    public initialize(
+        config: ExternalConfiguration,
+        http: IHttpDelegate
+    ): void {
+        this.http = http;
+        this.isEnabled = config.webClient.modules["Credential"];
+    }
+
+    public createConnection(
+        hdid: string,
+        targetIds: string[]
+    ): Promise<CredentialConnection> {
+        this.logger.debug("createConnection");
+
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            this.http
+                .post<RequestResult<CredentialConnection>>(
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection`,
+                    targetIds
+                )
+                .then((requestResult) => {
+                    this.logger.debug(`createConnection ${requestResult}`);
+                    RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(`createConnection error: ${err}`);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
+
+    public getConnection(hdid: string): Promise<CredentialConnection> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            this.http
+                .getWithCors<RequestResult<CredentialConnection>>(
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection`
+                )
+                .then((requestResult) => {
+                    this.logger.debug(`getConnection ${requestResult}`);
+                    RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(`getConnection error: ${err}`);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
+
+    public getCredentials(hdid: string): Promise<WalletCredential> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            this.http
+                .getWithCors<RequestResult<WalletCredential>>(
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Credentials`
+                )
+                .then((requestResult) => {
+                    this.logger.debug(`getCredentials ${requestResult}`);
+                    RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(`getCredentials error: ${err}`);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
+}
