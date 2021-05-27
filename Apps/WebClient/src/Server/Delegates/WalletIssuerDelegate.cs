@@ -75,7 +75,7 @@ namespace HealthGateway.WebClient.Delegates
             HttpResponseMessage? response = null;
             try
             {
-                Uri endpoint = new Uri($"connections/create-invitation?alias={walletConnectionId}");
+                Uri endpoint = new Uri($"{this.walletIssuerConfig.AgentApiUrl}connections/create-invitation?alias={walletConnectionId}");
                 response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
@@ -121,8 +121,6 @@ namespace HealthGateway.WebClient.Delegates
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
             httpClient.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-            httpClient.BaseAddress = this.walletIssuerConfig.AgentApiUrl;
-
             return httpClient;
         }
 
