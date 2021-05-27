@@ -1574,6 +1574,11 @@
             Gets the Salesforce service code.
             </summary>
         </member>
+        <member name="P:HealthGateway.Common.ErrorHandling.ServiceType.WalletIssuer">
+            <summary>
+            Gets the Salesforce service code.
+            </summary>
+        </member>
         <member name="P:HealthGateway.Common.ErrorHandling.ServiceType.Value">
             <summary>
             Gets or sets the Value that holds the internal representation of the ServiceType.
