@@ -20,7 +20,7 @@ namespace HealthGateway.WebClient.Server.Models.AcaPy
     /// <summary>
     /// A verifiable credential for an Immunization.
     /// </summary>
-    public record ImmunizationCredential
+    public class ImmunizationCredential
     {
         /// <summary>
         /// Gets or sets the full legal name of the recipient.
