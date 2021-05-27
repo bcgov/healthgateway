@@ -27,7 +27,7 @@ namespace HealthGateway.WebClient.Models.AcaPy
         /// Gets or sets the connection id.
         /// </summary>
         [JsonPropertyName("connection_id")]
-        public string? AgentId { get; set; }
+        public Guid AgentId { get; set; }
 
         /// <summary>
         /// Gets or sets the invitation url.

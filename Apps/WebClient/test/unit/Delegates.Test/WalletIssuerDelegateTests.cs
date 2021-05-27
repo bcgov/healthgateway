@@ -67,7 +67,7 @@ namespace HealthGateway.WebClient.Test.Delegates
                 ResultStatus = Common.Constants.ResultType.Success,
                 ResourcePayload = new CreateConnectionResponse()
                 {
-                    AgentId = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    AgentId = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
                     InvitationUrl = new Uri("https://invite.url/mock"),
                 },
                 TotalResultCount = 1,
