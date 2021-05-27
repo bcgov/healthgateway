@@ -88,20 +88,22 @@ namespace HealthGateway.WebClient.Delegates
                         retVal.ResourcePayload = createConnectionResponse;
                         retVal.TotalResultCount = 1;
                     }
-
-                    this.logger.LogInformation("Create connection invitation response {@JObject}", JsonSerializer.Serialize(createConnectionResponse));
+                    else
+                    {
+                        this.logger.LogWarning($"Create connection invitation response parse error {payload}");
+                        retVal.ResultError = new RequestResultError() { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    }
                 }
                 else
                 {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA) };
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                     this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
                 }
             }
-
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Notification Settings: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception Creating Connection: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in CreateConnectionAsync {e}");
             }
             finally

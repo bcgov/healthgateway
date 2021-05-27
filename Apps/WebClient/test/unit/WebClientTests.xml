@@ -253,22 +253,22 @@
             ValidateSms - Sms not found error.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests">
+        <member name="T:HealthGateway.WebClient.Test.Delegates.WalletIssuerDelegateTests">
             <summary>
             Unit Tests for the Wallet Issuer Delegate.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests.#ctor">
+        <member name="M:HealthGateway.WebClient.Test.Delegates.WalletIssuerDelegateTests.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Test.Delegates.WalletIssuerDelegateTests"/> class.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests.ValidateCreateCredential">
+        <member name="M:HealthGateway.WebClient.Test.Delegates.WalletIssuerDelegateTests.ValidateCreateCredential">
             <summary>
             Create Credential - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse},System.Boolean)">
+        <member name="M:HealthGateway.WebClient.Test.Delegates.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse},System.Boolean)">
             <summary>
             Create Wallet Connection.
             </summary>
