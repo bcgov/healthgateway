@@ -43,10 +43,12 @@ namespace HealthGateway.WebClient.Delegates
         /// <summary>
         /// Requests that the agent create a credential and pass the payload information to the users wallet.
         /// </summary>
+        /// <typeparam name="T">The credential payload to use.</typeparam>
         /// <param name="connection">The wallet connection of the user.</param>
-        /// <param name="credentialPayload">The credential payload to send to the agent.</param>
+        /// <param name="payload">The credential payload to send to the agent.</param>
         /// <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
-        Task<RequestResult<CredentialResponse>> CreateCredentialAsync(WalletConnection connection, ImmunizationCredential credentialPayload);
+        Task<RequestResult<CredentialResponse>> CreateCredentialAsync<T>(WalletConnection connection, T payload)
+            where T : CredentialPayload;
 
         /// <summary>
         /// Creates a connection invitation request.
