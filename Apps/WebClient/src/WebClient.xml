@@ -424,7 +424,7 @@
         </member>
         <member name="T:HealthGateway.WebClient.Controllers.WalletStatusController">
             <summary>
-            Provides a web hook for Aca-Py to receive status updates on Wallnet Connections and Credentials.
+            Provides a web hook for Aca-Py to receive status updates on Wallet Connections and Credentials.
             </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletStatusController.#ctor(HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.WebClient.Services.IWalletStatusService)">
@@ -433,6 +433,15 @@
             </summary>
             <param name="configService">The injected configuration service provider.</param>
             <param name="walletStatusService">The injected wallet status service provider.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletStatusController.Webhook(System.String,HealthGateway.WebClient.Models.AcaPy.WebhookData)">
+            <summary>
+            Handle webhook events sent from the issuing agent.
+            </summary>
+            <param name="topic">The type of webhook response (connection or issue credential).</param>
+            <param name="data">Webhook response data.</param>
+            <returns>An empty response.</returns>
+            <response code="204">Webhook request received.</response>
         </member>
         <member name="T:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate">
             <summary>
@@ -532,6 +541,51 @@
             Gets or sets the invitation url.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.ConnectionState">
+            <summary>
+            Represents the State of the Connection.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.ConnectionState.Invitation">
+            <summary>
+            Connection state of invitation.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.ConnectionState.Request">
+            <summary>
+            Connection state of request.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.ConnectionState.Response">
+            <summary>
+            Connection state of response.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.ConnectionState.Active">
+            <summary>
+            Connection state of active.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.CredentialExchangeState">
+            <summary>
+            Represents the State of the Credential.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.CredentialExchangeState.OfferSent">
+            <summary>
+            Credential state of offer sent.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.CredentialExchangeState.RequestReceived">
+            <summary>
+            Credential state of request received.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.CredentialExchangeState.CredentialIssued">
+            <summary>
+            Credential state of credential issued.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.AcaPy.CredentialResponse">
             <summary>
             Represents a Connection to the Ares Agent.
@@ -600,6 +654,56 @@
         <member name="P:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration.AgentApiKey">
             <summary>
             Gets or sets the Agent Api Key.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.WebhookData">
+            <summary>
+            Represents the Data returned from the AcaPy webhook.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.WebhookData.CredentialExchangeId">
+            <summary>
+            Gets or sets the CredentialExchangeId.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.WebhookData.State">
+            <summary>
+            Gets or sets the State.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.WebhookData.Alias">
+            <summary>
+            Gets or sets the alias.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.WebhookData.ConnectionId">
+            <summary>
+            Gets or sets the alias.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.WebhookTopic">
+            <summary>
+            Represents the Topic from the webhook.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.WebhookTopic.Connections">
+            <summary>
+            Connections.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.WebhookTopic.IssueCredential">
+            <summary>
+            Issue Credemtial.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.WebhookTopic.RevocationRegistry">
+            <summary>
+            Revocation Registry.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.WebClient.Models.AcaPy.WebhookTopic.BasicMessage">
+            <summary>
+            Basic Message.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.AddDependentRequest">
@@ -1730,13 +1834,21 @@
             Service to interact with the Comment Delegate.
             </summary>
         </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.WebhookAsync(System.String,HealthGateway.WebClient.Models.AcaPy.WebhookData)">
+            <summary>
+            Updates the state of the Wallet Connection using the connection id.
+            </summary>
+            <param name="topic">The type of webhook response (connection or issue credential).</param>
+            <param name="data">Webhook response data.</param>
+            <returns>returns true webhook response handled.</returns>
+        </member>
         <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletConnection(System.Guid)">
             <summary>
             Updates the state of the Wallet Connection using the connection id.
             </summary>
             <param name="connectionId">The id of the wallet connection to be updated.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletCredential(System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletCredential(System.Guid)">
             <summary>
             Updates the state of the Wallet Credential using the exchange id.
             </summary>
@@ -1897,10 +2009,13 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="walletDelegate">Injected Wallet delegate.</param>
         </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.WebhookAsync(System.String,HealthGateway.WebClient.Models.AcaPy.WebhookData)">
+            <inheritdoc />
+        </member>
         <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletConnection(System.Guid)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletCredential(System.String)">
+        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletCredential(System.Guid)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Startup">

@@ -68,8 +68,8 @@ namespace HealthGateway.Database.Models
         public DateTime? RevokedDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the echange id for this credential.
+        /// Gets or sets the exchange id for this credential.
         /// </summary>
-        public string? ExchangeId { get; set; }
+        public Guid ExchangeId { get; set; }
     }
 }

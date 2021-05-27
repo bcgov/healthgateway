@@ -985,7 +985,7 @@
         <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetConnection(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCredential(System.String)">
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCredential(System.Guid)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.InsertConnection(HealthGateway.Database.Models.WalletConnection,System.Boolean)">
@@ -1793,7 +1793,7 @@
             <param name="userProfileId">The profile id/hdid of the wallet to retrieve.</param>
             <returns>A DB result which encapsulates the return object and status.</returns>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetCredential(System.String)">
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetCredential(System.Guid)">
             <summary>
             Gets the Wallet credentials associated to a given exchange id.
             </summary>
@@ -3381,7 +3381,7 @@
         </member>
         <member name="P:HealthGateway.Database.Models.WalletCredential.ExchangeId">
             <summary>
-            Gets or sets the echange id for this credential.
+            Gets or sets the exchange id for this credential.
             </summary>
         </member>
         <member name="T:HealthGateway.Database.Models.WalletCredentialStatusCode">

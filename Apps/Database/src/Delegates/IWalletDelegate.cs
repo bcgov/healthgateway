@@ -44,7 +44,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="exchangeId">The agent exchange id to query.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<WalletCredential> GetCredential(string exchangeId);
+        DBResult<WalletCredential> GetCredential(Guid exchangeId);
 
         /// <summary>
         /// Creates a WalletConnection object in the database.

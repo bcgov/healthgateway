@@ -16,12 +16,22 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Threading.Tasks;
+    using HealthGateway.WebClient.Models.AcaPy;
 
     /// <summary>
     /// Service to interact with the Comment Delegate.
     /// </summary>
     public interface IWalletStatusService
     {
+        /// <summary>
+        /// Updates the state of the Wallet Connection using the connection id.
+        /// </summary>
+        /// <param name="topic">The type of webhook response (connection or issue credential).</param>
+        /// <param name="data">Webhook response data.</param>
+        /// <returns>returns true webhook response handled.</returns>
+        bool WebhookAsync(string topic, WebhookData data);
+
         /// <summary>
         /// Updates the state of the Wallet Connection using the connection id.
         /// </summary>
@@ -32,6 +42,6 @@ namespace HealthGateway.WebClient.Services
         /// Updates the state of the Wallet Credential using the exchange id.
         /// </summary>
         /// <param name="exchangeId">The exchange id to query the wallet credential.</param>
-        void UpdateWalletCredential(string exchangeId);
+        void UpdateWalletCredential(Guid exchangeId);
     }
 }

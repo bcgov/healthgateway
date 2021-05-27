@@ -16,7 +16,13 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
+    using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -37,15 +43,91 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public void UpdateWalletConnection(Guid connectionId)
+        public bool WebhookAsync(string topic, WebhookData data)
         {
-            throw new NotImplementedException();
+            this.logger.LogInformation("Webhook topic \"{topic}\"", topic);
+
+            switch (topic)
+            {
+                case WebhookTopic.Connections:
+                    return this.HandleConnectionAsync(data);
+                case WebhookTopic.IssueCredential:
+                    return this.HandleIssueCredentialAsync(data);
+                case WebhookTopic.RevocationRegistry:
+                    return true;
+                case WebhookTopic.BasicMessage:
+                    this.logger.LogInformation("Basic Message data: for {@JObject}", JsonSerializer.Serialize(data));
+                    return false;
+                default:
+                    this.logger.LogError("Webhook {topic} is not supported", topic);
+                    return false;
+            }
         }
 
         /// <inheritdoc />
-        public void UpdateWalletCredential(string exchangeId)
+        public void UpdateWalletConnection(Guid connectionId)
         {
-            throw new NotImplementedException();
+            DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(connectionId);
+            WalletConnection connection = dbResult.Payload;
+            connection.ConnectedDateTime = DateTime.Now;
+            connection.Status = WalletConnectionStatus.Connected;
+            this.walletDelegate.UpdateConnection(connection, true);
+        }
+
+        /// <inheritdoc />
+        public void UpdateWalletCredential(Guid exchangeId)
+        {
+            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredential(exchangeId);
+            WalletCredential credential = dbResult.Payload;
+            credential.AddedDateTime = DateTime.Now;
+            credential.Status = WalletCredentialStatus.Added;
+            this.walletDelegate.UpdateCredential(credential, true);
+        }
+
+        // Handle webhook events for connection states.
+        private bool HandleConnectionAsync(WebhookData data)
+        {
+            this.logger.LogInformation("Connection state \"{state}\" for {@JObject}", data.State, JsonSerializer.Serialize(data));
+
+            switch (data.State)
+            {
+                case ConnectionState.Invitation:
+                    return true;
+
+                case ConnectionState.Request:
+                    return true;
+
+                case ConnectionState.Response:
+                    this.UpdateWalletConnection(new Guid(data.Alias));
+                    return true;
+
+                case ConnectionState.Active:
+                    return true;
+
+                default:
+                    this.logger.LogError("Connection state {state} is not supported", data.State);
+                    return false;
+            }
+        }
+
+        // Handle webhook events for issue credential topics.
+        private bool HandleIssueCredentialAsync(WebhookData data)
+        {
+            this.logger.LogInformation("Issue credential state \"{state}\" for {@JObject}", data.State, JsonSerializer.Serialize(data));
+
+            switch (data.State)
+            {
+                case CredentialExchangeState.OfferSent:
+                    return true;
+                case CredentialExchangeState.RequestReceived:
+                    return true;
+                case CredentialExchangeState.CredentialIssued:
+                    this.UpdateWalletCredential(data.CredentialExchangeId);
+                    return true;
+                default:
+                    this.logger.LogError("Credential exchange state {state} is not supported", data.State);
+                    return false;
+            }
         }
     }
 }

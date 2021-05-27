@@ -15,13 +15,17 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System.Threading.Tasks;
     using HealthGateway.Common.Filters;
+    using HealthGateway.WebClient.Models.AcaPy;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Provides a web hook for Aca-Py to receive status updates on Wallnet Connections and Credentials.
+    /// Provides a web hook for Aca-Py to receive status updates on Wallet Connections and Credentials.
     /// </summary>
+    [Route("v{version:apiVersion}/api/[controller]")]
+    [ApiController]
     [IgnoreAudit]
     [TypeFilter(typeof(AvailabilityFilter))]
     public class WalletStatusController : Controller
@@ -38,6 +42,21 @@ namespace HealthGateway.WebClient.Controllers
         {
             this.configservice = configService;
             this.walletStatusService = walletStatusService;
+        }
+
+        /// <summary>
+        /// Handle webhook events sent from the issuing agent.
+        /// </summary>
+        /// <param name="topic">The type of webhook response (connection or issue credential).</param>
+        /// <param name="data">Webhook response data.</param>
+        /// <returns>An empty response.</returns>
+        /// <response code="204">Webhook request received.</response>
+        [HttpPost]
+        [Route("topic/{topic}")]
+        public IActionResult Webhook(string topic, [FromBody] WebhookData data)
+        {
+            this.walletStatusService.WebhookAsync(topic, data);
+            return this.NoContent();
         }
     }
 }
