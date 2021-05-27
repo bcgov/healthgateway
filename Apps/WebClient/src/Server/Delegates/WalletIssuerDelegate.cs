@@ -60,7 +60,7 @@ namespace HealthGateway.WebClient.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<CreateConnectionResponse>> CreateConnectionAsync(string walletConnectionId)
+        public async Task<RequestResult<CreateConnectionResponse>> CreateConnectionAsync(Guid walletConnectionId)
         {
             RequestResult<CreateConnectionResponse> retVal = new RequestResult<CreateConnectionResponse>()
             {

@@ -62,13 +62,21 @@ namespace HealthGateway.WebClient.Test.Delegates
         [Fact]
         public void ValidateCreateCredential()
         {
-            RequestResult<CreateConnectionResponse> expectedRequestResult = new ();
+            RequestResult<CreateConnectionResponse> expectedRequestResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = new CreateConnectionResponse()
+                {
+                    AgentId = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    InvitationUrl = new Uri("https://invite.url/mock"),
+                },
+                TotalResultCount = 1,
+            };
 
             Tuple<RequestResult<CreateConnectionResponse>, RequestResult<CreateConnectionResponse>> response = this.CreateConnection(HttpStatusCode.OK, expectedRequestResult);
             var actualResult = response.Item1;
             var expectedResult = response.Item2;
             Assert.True(actualResult.IsDeepEqual(expectedResult));
-            Assert.True(true);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -117,22 +125,19 @@ namespace HealthGateway.WebClient.Test.Delegates
             RequestResult<CreateConnectionResponse> expectedRequestResult,
             bool throwException = false)
         {
-            string json = @"{}";
+            string json = @"{""connection_id"": ""3fa85f64-5717-4562-b3fc-2c963f66afa6"",""invitation_url"": ""https://invite.url/mock""}";
             Guid guid = Guid.Parse("6b0ed0250bf946a1bca33744e9f3acf1");
-
-            List<KeyValuePair<string?, string?>> values = new ();
-            FormUrlEncodedContent httpContent = new (values);
 
             expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<CreateConnectionResponse>(json, this.jsonOptions);
             using HttpResponseMessage httpResponseMessage = new ()
             {
                 StatusCode = expectedResponseStatusCode,
-                Content = throwException ? null : httpContent,
+                Content = throwException ? null : new StringContent(json),
             };
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             IWalletIssuerDelegate issuerDelegate = new WalletIssuerDelegate(loggerFactory.CreateLogger<WalletIssuerDelegate>(), mockHttpClientService.Object, this.configuration);
-            RequestResult<CreateConnectionResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateConnectionAsync(guid.ToString()).ConfigureAwait(true)).Result;
+            RequestResult<CreateConnectionResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateConnectionAsync(guid).ConfigureAwait(true)).Result;
             return new Tuple<RequestResult<CreateConnectionResponse>, RequestResult<CreateConnectionResponse>>(actualResult, expectedRequestResult);
         }
     }

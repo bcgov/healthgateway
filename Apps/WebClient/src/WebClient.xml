@@ -427,7 +427,7 @@
             Interface that defines a delegate to create/revoke wallet connections and credentials.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.CreateConnectionAsync(System.String)">
+        <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <summary>
             Creates a connection invitation request.
             </summary>
@@ -447,7 +447,7 @@
             <param name="httpClientService">The injected http client service.</param>
             <param name="configuration">The injected configuration provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.String)">
+        <member name="M:HealthGateway.WebClient.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.WebClient.Listeners.BannerListener">
