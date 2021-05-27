@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Delegates
 {
     using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Server.Models.AcaPy;
 
     /// <summary>
@@ -28,6 +29,6 @@ namespace HealthGateway.WebClient.Delegates
         /// </summary>
         /// <param name="walletConnectionId">The id of the wallet connection.</param>
         /// <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
-        Task<CreateConnectionResponse> CreateConnectionAsync(string walletConnectionId);
+        Task<RequestResult<CreateConnectionResponse>> CreateConnectionAsync(string walletConnectionId);
     }
 }

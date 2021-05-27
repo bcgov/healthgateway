@@ -22,6 +22,8 @@ namespace HealthGateway.WebClient.Delegates
     using System.Net.Mime;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Server.Models.AcaPy;
@@ -59,8 +61,13 @@ namespace HealthGateway.WebClient.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<CreateConnectionResponse> CreateConnectionAsync(string walletConnectionId)
+        public async Task<RequestResult<CreateConnectionResponse>> CreateConnectionAsync(string walletConnectionId)
         {
+            RequestResult<CreateConnectionResponse> retVal = new RequestResult<CreateConnectionResponse>()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+
             this.logger.LogInformation("Create connection invitation");
 
             List<KeyValuePair<string?, string?>> values = new ();
@@ -69,27 +76,38 @@ namespace HealthGateway.WebClient.Delegates
             HttpResponseMessage? response = null;
             try
             {
-                response = await this.client.PostAsync(new Uri($"connections/create-invitation?alias={walletConnectionId}"), httpContent).ConfigureAwait(true);
-            }
-            catch (Exception ex)
-            {
-                await this.LogError(httpContent, response, ex).ConfigureAwait(true);
-                throw new HttpRequestException("Error occurred when calling AcaPy API. Try again later.", ex);
-            }
+                Uri endpoint = new Uri($"connections/create-invitation?alias={walletConnectionId}");
+                response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
-            if (!response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA) };
+                    this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                }
+                else
+                {
+                    CreateConnectionResponse? createConnectionResponse = JsonSerializer.Deserialize<CreateConnectionResponse>(payload);
+                    if (createConnectionResponse != null)
+                    {
+                        retVal.ResultStatus = Common.Constants.ResultType.Success;
+                        retVal.ResourcePayload = createConnectionResponse;
+                        retVal.TotalResultCount = 1;
+                    }
+
+                    this.logger.LogInformation("Create connection invitation response {@JObject}", JsonSerializer.Serialize(createConnectionResponse));
+                }
+            }
+            #pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
             {
-                await this.LogError(httpContent, response).ConfigureAwait(true);
-                throw new HttpRequestException($"Error code {response.StatusCode} was provided when calling WalletIssuerDelegate::CreateInvitationAsync");
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Notification Settings: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                this.logger.LogError($"Unexpected exception in CreateConnectionAsync {e}");
             }
 
             httpContent.Dispose();
 
-            CreateConnectionResponse createConnectionResponse = await response.Content.ReadAsAsync<CreateConnectionResponse>().ConfigureAwait(true);
-
-            this.logger.LogInformation("Create connection invitation response {@JObject}", JsonSerializer.Serialize(createConnectionResponse));
-
-            return createConnectionResponse;
+            return retVal;
         }
 
         private HttpClient InitializeClient()
