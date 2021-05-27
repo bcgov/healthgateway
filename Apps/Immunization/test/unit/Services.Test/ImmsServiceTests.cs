@@ -86,10 +86,10 @@ namespace HealthGateway.Immunization.Test.Services
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            var actualResult = service.GetImmunizations(string.Empty, 0);
+            var actualResult = service.GetImmunizations(0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
         }
 
@@ -114,10 +114,10 @@ namespace HealthGateway.Immunization.Test.Services
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            var actualResult = service.GetImmunizations(string.Empty, 0);
+            var actualResult = service.GetImmunizations(0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
             Assert.Equal(1, expectedResult.ResourcePayload.Recommendations.Count);
             var recomendationResult = expectedResult.ResourcePayload.Recommendations[0];
@@ -159,10 +159,10 @@ namespace HealthGateway.Immunization.Test.Services
                 ResultError = delegateResult.ResultError,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizations(It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
             IImmunizationService service = new ImmunizationService(mockDelegate.Object);
 
-            var actualResult = service.GetImmunizations(string.Empty, 0);
+            var actualResult = service.GetImmunizations(0);
             Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
         }
 
