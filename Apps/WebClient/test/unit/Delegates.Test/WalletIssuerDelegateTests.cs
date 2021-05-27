@@ -75,7 +75,7 @@ namespace HealthGateway.WebClient.Test.Delegates
         {
             var myConfiguration = new Dictionary<string, string>
             {
-                { "NotificationSettings:Endpoint", "https://phsahealthgatewayapi.azurewebsites.net/api/v1/Settings/Notification" },
+                { "AcaPy:agentApiUrl", "https://health-gateway-agent-admin-dev.apps.silver.devops.gov.bc.ca/" },
             };
 
             return new ConfigurationBuilder()
