@@ -422,6 +422,18 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.WalletStatusController">
+            <summary>
+            Provides a web hook for Aca-Py to receive status updates on Wallnet Connections and Credentials.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletStatusController.#ctor(HealthGateway.WebClient.Services.IConfigurationService,HealthGateway.WebClient.Services.IWalletStatusService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.WalletStatusController"/> class.
+            </summary>
+            <param name="configService">The injected configuration service provider.</param>
+            <param name="walletStatusService">The injected wallet status service provider.</param>
+        </member>
         <member name="T:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate">
             <summary>
             Interface that defines a delegate to create/revoke wallet connections and credentials.
@@ -1672,6 +1684,23 @@
             <param name="sms">SMS number to be set for the user.</param>
             <returns>returns true if the sms number was sucessfully updated.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.IWalletStatusService">
+            <summary>
+            Service to interact with the Comment Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletConnection(System.Guid)">
+            <summary>
+            Updates the state of the Wallet Connection using the connection id.
+            </summary>
+            <param name="connectionId">The id of the wallet connection to be updated.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletCredential(System.String)">
+            <summary>
+            Updates the state of the Wallet Credential using the exchange id.
+            </summary>
+            <param name="exchangeId">The exchange id to query the wallet credential.</param>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.NoteService">
             <inheritdoc />
         </member>
@@ -1816,6 +1845,22 @@
             Creates a new 6 digit verification code.
             </summary>
             <returns>The verification code.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.WalletStatusService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.WalletStatusService},HealthGateway.Database.Delegates.IWalletDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.WalletStatusService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="walletDelegate">Injected Wallet delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletConnection(System.Guid)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletCredential(System.String)">
+            <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Startup">
             <summary>
