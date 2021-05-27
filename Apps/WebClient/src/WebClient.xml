@@ -469,29 +469,6 @@
             <param name="stoppingToken">The cancellation token to use.</param>
             <returns>The task.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException"/> class.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException"/> class.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException"/> class.
-            </summary>
-            <param name="message">Message of exception.</param>
-        </member>
-        <member name="M:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException.#ctor(System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Server.Models.AcaPy.AcaPyApiException"/> class.
-            </summary>
-            <param name="message">Message of exception.</param>
-            <param name="inner">Inner message of exception.</param>
-        </member>
         <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.Connection">
             <summary>
             Represents a Connection to the Ares Agent.

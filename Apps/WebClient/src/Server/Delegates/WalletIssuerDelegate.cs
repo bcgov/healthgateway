@@ -74,13 +74,13 @@ namespace HealthGateway.WebClient.Delegates
             catch (Exception ex)
             {
                 await this.LogError(httpContent, response, ex).ConfigureAwait(true);
-                throw new AcaPyApiException("Error occurred when calling AcaPy API. Try again later.", ex);
+                throw new HttpRequestException("Error occurred when calling AcaPy API. Try again later.", ex);
             }
 
             if (!response.IsSuccessStatusCode)
             {
                 await this.LogError(httpContent, response).ConfigureAwait(true);
-                throw new AcaPyApiException($"Error code {response.StatusCode} was provided when calling WalletIssuerDelegate::CreateInvitationAsync");
+                throw new HttpRequestException($"Error code {response.StatusCode} was provided when calling WalletIssuerDelegate::CreateInvitationAsync");
             }
 
             httpContent.Dispose();
