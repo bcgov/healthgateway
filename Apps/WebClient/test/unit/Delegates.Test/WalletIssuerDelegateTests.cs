@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Test.Services
+namespace HealthGateway.WebClient.Test.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -62,6 +62,12 @@ namespace HealthGateway.WebClient.Test.Services
         [Fact]
         public void ValidateCreateCredential()
         {
+            RequestResult<CreateConnectionResponse> expectedRequestResult = new ();
+
+            Tuple<RequestResult<CreateConnectionResponse>, RequestResult<CreateConnectionResponse>> response = this.CreateConnection(HttpStatusCode.OK, expectedRequestResult);
+            var actualResult = response.Item1;
+            var expectedResult = response.Item2;
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
             Assert.True(true);
         }
 
@@ -112,17 +118,21 @@ namespace HealthGateway.WebClient.Test.Services
             bool throwException = false)
         {
             string json = @"{}";
+            Guid guid = Guid.Parse("6b0ed0250bf946a1bca33744e9f3acf1");
+
+            List<KeyValuePair<string?, string?>> values = new ();
+            FormUrlEncodedContent httpContent = new (values);
 
             expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<CreateConnectionResponse>(json, this.jsonOptions);
             using HttpResponseMessage httpResponseMessage = new ()
             {
                 StatusCode = expectedResponseStatusCode,
-                Content = throwException ? null : new StringContent(json),
+                Content = throwException ? null : httpContent,
             };
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
             IWalletIssuerDelegate issuerDelegate = new WalletIssuerDelegate(loggerFactory.CreateLogger<WalletIssuerDelegate>(), mockHttpClientService.Object, this.configuration);
-            RequestResult<CreateConnectionResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateConnectionAsync(string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<CreateConnectionResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateConnectionAsync(guid.ToString()).ConfigureAwait(true)).Result;
             return new Tuple<RequestResult<CreateConnectionResponse>, RequestResult<CreateConnectionResponse>>(actualResult, expectedRequestResult);
         }
     }
