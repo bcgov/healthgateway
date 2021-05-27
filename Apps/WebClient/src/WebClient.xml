@@ -441,10 +441,32 @@
         </member>
         <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <summary>
-            Creates a connection invitation request.
+            Requests that the agent create a controller.
             </summary>
             <param name="walletConnectionId">The id of the wallet connection.</param>
             <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
+            <summary>
+            Requests that the agent revoke the connection.
+            </summary>
+            <param name="connection">The wallet connection to revoke.</param>
+            <returns>The WalletConnection that was revoked.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.CreateCredentialAsync(HealthGateway.Database.Models.WalletConnection,HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential)">
+            <summary>
+            Requests that the agent create a credential and pass the payload information to the users wallet.
+            </summary>
+            <param name="connection">The wallet connection of the user.</param>
+            <param name="credentialPayload">The credential payload to send to the agent.</param>
+            <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential)">
+            <summary>
+            Creates a connection invitation request.
+            </summary>
+            <param name="credential">The wallet credential to revoke.</param>
+            <returns>The WalletCredential that was revoked.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Delegates.WalletIssuerDelegate">
             <summary>
@@ -460,6 +482,15 @@
             <param name="configuration">The injected configuration provider.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.WalletIssuerDelegate.CreateCredentialAsync(HealthGateway.Database.Models.WalletConnection,HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.WalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Delegates.WalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.WebClient.Listeners.BannerListener">
@@ -486,19 +517,29 @@
             Represents a Connection to the Ares Agent.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse">
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.ConnectionResponse">
             <summary>
             Represents a Connection to the Ares Agent.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse.AgentId">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ConnectionResponse.AgentId">
             <summary>
             Gets or sets the connection id.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse.InvitationUrl">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ConnectionResponse.InvitationUrl">
             <summary>
             Gets or sets the invitation url.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.CredentialResponse">
+            <summary>
+            Represents a Connection to the Ares Agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.CredentialResponse.ExchangeId">
+            <summary>
+            Gets or sets the credential exchange id.
             </summary>
         </member>
         <member name="T:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential">

@@ -25,6 +25,7 @@ namespace HealthGateway.WebClient.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -60,9 +61,9 @@ namespace HealthGateway.WebClient.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<CreateConnectionResponse>> CreateConnectionAsync(Guid walletConnectionId)
+        public async Task<RequestResult<ConnectionResponse>> CreateConnectionAsync(Guid walletConnectionId)
         {
-            RequestResult<CreateConnectionResponse> retVal = new RequestResult<CreateConnectionResponse>()
+            RequestResult<ConnectionResponse> retVal = new RequestResult<ConnectionResponse>()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
@@ -81,7 +82,7 @@ namespace HealthGateway.WebClient.Delegates
 
                 if (response.IsSuccessStatusCode)
                 {
-                    CreateConnectionResponse? createConnectionResponse = JsonSerializer.Deserialize<CreateConnectionResponse>(payload);
+                    ConnectionResponse? createConnectionResponse = JsonSerializer.Deserialize<ConnectionResponse>(payload);
                     if (createConnectionResponse != null)
                     {
                         retVal.ResultStatus = Common.Constants.ResultType.Success;
@@ -112,6 +113,24 @@ namespace HealthGateway.WebClient.Delegates
             }
 
             return retVal;
+        }
+
+        /// <inheritdoc/>
+        public Task<RequestResult<CredentialResponse>> CreateCredentialAsync(WalletConnection connection, ImmunizationCredential credentialPayload)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public Task<RequestResult<WalletConnection>> DisconnectConnectionAsync(WalletConnection connection)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential)
+        {
+            throw new NotImplementedException();
         }
 
         private HttpClient InitializeClient()

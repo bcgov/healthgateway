@@ -21,7 +21,7 @@ namespace HealthGateway.WebClient.Models.AcaPy
     /// <summary>
     /// Represents a Connection to the Ares Agent.
     /// </summary>
-    public class CreateConnectionResponse
+    public class ConnectionResponse
     {
         /// <summary>
         /// Gets or sets the connection id.

@@ -268,7 +268,7 @@
             Create Credential - Happy Path.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Delegates.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse},System.Boolean)">
+        <member name="M:HealthGateway.WebClient.Test.Delegates.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.WebClient.Models.AcaPy.ConnectionResponse},System.Boolean)">
             <summary>
             Create Wallet Connection.
             </summary>
