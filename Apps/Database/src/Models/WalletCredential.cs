@@ -51,19 +51,19 @@ namespace HealthGateway.Database.Models
         public string ResourceId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the status of the connection.
+        /// Gets or sets the status of the credential.
         /// </summary>
         [Required]
         [MaxLength(10)]
         public WalletCredentialStatus Status { get; set; }
 
         /// <summary>
-        /// Gets or sets the datetime the connection was established.
+        /// Gets or sets the datetime the credential was established.
         /// </summary>
         public DateTime? AddedDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the datetime the connection was removed.
+        /// Gets or sets the datetime the credential was removed.
         /// </summary>
         public DateTime? RevokedDateTime { get; set; }
 

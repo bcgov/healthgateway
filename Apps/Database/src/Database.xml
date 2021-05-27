@@ -3306,7 +3306,7 @@
         </member>
         <member name="P:HealthGateway.Database.Models.WalletConnection.InvitationEndpoint">
             <summary>
-            Gets or sets the invitiation url from the issuer.
+            Gets or sets the invitation url from the issuer.
             </summary>
         </member>
         <member name="P:HealthGateway.Database.Models.WalletConnection.ConnectedDateTime">
@@ -3366,17 +3366,17 @@
         </member>
         <member name="P:HealthGateway.Database.Models.WalletCredential.Status">
             <summary>
-            Gets or sets the status of the connection.
+            Gets or sets the status of the credential.
             </summary>
         </member>
         <member name="P:HealthGateway.Database.Models.WalletCredential.AddedDateTime">
             <summary>
-            Gets or sets the datetime the connection was established.
+            Gets or sets the datetime the credential was established.
             </summary>
         </member>
         <member name="P:HealthGateway.Database.Models.WalletCredential.RevokedDateTime">
             <summary>
-            Gets or sets the datetime the connection was removed.
+            Gets or sets the datetime the credential was removed.
             </summary>
         </member>
         <member name="P:HealthGateway.Database.Models.WalletCredential.ExchangeId">

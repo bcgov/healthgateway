@@ -107,7 +107,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<WalletConnection> InsertConnection(WalletConnection connection, bool commit = true)
         {
-            this.logger.LogTrace($"Inserting rating to DB... {JsonSerializer.Serialize(connection)}");
+            this.logger.LogTrace($"Inserting Wallet Connection to DB... {JsonSerializer.Serialize(connection)}");
             DBResult<WalletConnection> result = new DBResult<WalletConnection>();
             this.dbContext.Add<WalletConnection>(connection);
             if (commit)
@@ -160,7 +160,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc />
         public DBResult<WalletCredential> InsertCredential(WalletCredential credential, bool commit = true)
         {
-            this.logger.LogTrace($"Inserting rating to DB... {JsonSerializer.Serialize(credential)}");
+            this.logger.LogTrace($"Inserting Wallet Credential to DB... {JsonSerializer.Serialize(credential)}");
             DBResult<WalletCredential> result = new DBResult<WalletCredential>();
             this.dbContext.Add<WalletCredential>(credential);
             if (commit)

@@ -59,7 +59,7 @@ namespace HealthGateway.Database.Models
         public string? AgentId { get; set; }
 
         /// <summary>
-        /// Gets or sets the invitiation url from the issuer.
+        /// Gets or sets the invitation url from the issuer.
         /// </summary>
         public string? InvitationEndpoint { get; set; }
 
