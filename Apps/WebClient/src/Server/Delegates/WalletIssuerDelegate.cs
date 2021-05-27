@@ -25,8 +25,7 @@ namespace HealthGateway.WebClient.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Server.Models.AcaPy;
+    using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -80,12 +79,7 @@ namespace HealthGateway.WebClient.Delegates
                 response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
                 string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA) };
-                    this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
-                }
-                else
+                if (response.IsSuccessStatusCode)
                 {
                     CreateConnectionResponse? createConnectionResponse = JsonSerializer.Deserialize<CreateConnectionResponse>(payload);
                     if (createConnectionResponse != null)
@@ -97,15 +91,23 @@ namespace HealthGateway.WebClient.Delegates
 
                     this.logger.LogInformation("Create connection invitation response {@JObject}", JsonSerializer.Serialize(createConnectionResponse));
                 }
+                else
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.SMSInvalid, ServiceType.PHSA) };
+                    this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                }
             }
-            #pragma warning disable CA1031 // Do not catch general exception types
+
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
                 retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception getting Notification Settings: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in CreateConnectionAsync {e}");
             }
-
-            httpContent.Dispose();
+            finally
+            {
+                httpContent.Dispose();
+            }
 
             return retVal;
         }

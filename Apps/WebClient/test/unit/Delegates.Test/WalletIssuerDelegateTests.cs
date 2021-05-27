@@ -27,8 +27,7 @@ namespace HealthGateway.WebClient.Test.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.WebClient.Delegates;
-    using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Server.Models.AcaPy;
+    using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -40,7 +39,7 @@ namespace HealthGateway.WebClient.Test.Services
     /// </summary>
     public class WalletIssuerDelegateTests
     {
-        private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+        private readonly JsonSerializerOptions jsonOptions = new ()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             IgnoreNullValues = true,
@@ -115,7 +114,7 @@ namespace HealthGateway.WebClient.Test.Services
             string json = @"{}";
 
             expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<CreateConnectionResponse>(json, this.jsonOptions);
-            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            using HttpResponseMessage httpResponseMessage = new ()
             {
                 StatusCode = expectedResponseStatusCode,
                 Content = throwException ? null : new StringContent(json),

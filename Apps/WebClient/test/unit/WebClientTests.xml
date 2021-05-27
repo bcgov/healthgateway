@@ -253,6 +253,30 @@
             ValidateSms - Sms not found error.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests">
+            <summary>
+            Unit Tests for the Wallet Issuer Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests.ValidateCreateCredential">
+            <summary>
+            Create Credential - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse},System.Boolean)">
+            <summary>
+            Create Wallet Connection.
+            </summary>
+            <param name="expectedResponseStatusCode">expectedResponseStatusCode.</param>
+            <param name="expectedRequestResult">expectedRequestResult.</param>
+            <param name="throwException">Throw exception indicator.</param>
+            <returns>The notification settings.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Test.Services.CommentServiceTests">
             <summary>
             CommentService's Unit Tests.

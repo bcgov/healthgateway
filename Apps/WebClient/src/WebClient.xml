@@ -469,82 +469,82 @@
             <param name="stoppingToken">The cancellation token to use.</param>
             <returns>The task.</returns>
         </member>
-        <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.Connection">
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.Connection">
             <summary>
             Represents a Connection to the Ares Agent.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.CreateConnectionResponse">
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse">
             <summary>
             Represents a Connection to the Ares Agent.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.CreateConnectionResponse.AgentId">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse.AgentId">
             <summary>
             Gets or sets the connection id.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.CreateConnectionResponse.InvitationUrl">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateConnectionResponse.InvitationUrl">
             <summary>
             Gets or sets the invitation url.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential">
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential">
             <summary>
             A verifiable credential for an Immunization.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.RecipientName">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.RecipientName">
             <summary>
             Gets or sets the full legal name of the recipient.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.RecipientBirthDate">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.RecipientBirthDate">
             <summary>
             Gets or sets the birthdate of the recipient.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.RecipientPHN">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.RecipientPHN">
             <summary>
             Gets or sets the Personal Health Number of the recipient.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.ImmunizationType">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.ImmunizationType">
             <summary>
             Gets or sets the name of the type of immunization.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.ImmunizationProduct">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.ImmunizationProduct">
             <summary>
             Gets or sets the brand name of Immunization product.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.ImmunizationAgent">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.ImmunizationAgent">
             <summary>
             Gets or sets the immunization agent.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.LotNumber">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.LotNumber">
             <summary>
             Gets or sets the lot number.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Server.Models.AcaPy.ImmunizationCredential.Provider">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.Provider">
             <summary>
             Gets or sets the provider or facility where the immunization was reeived.
             </summary>
         </member>
-        <member name="T:HealthGateway.WebClient.Models.WalletIssuerConfiguration">
+        <member name="T:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration">
             <summary>
             Configuration to be used by external clients for authentication.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.WalletIssuerConfiguration.AgentApiUrl">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration.AgentApiUrl">
             <summary>
             Gets or sets Agent Api Url .
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.WalletIssuerConfiguration.AgentApiKey">
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration.AgentApiKey">
             <summary>
             Gets or sets the Agent Api Key.
             </summary>

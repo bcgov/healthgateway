@@ -17,7 +17,7 @@ namespace HealthGateway.WebClient.Delegates
 {
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
-    using HealthGateway.WebClient.Server.Models.AcaPy;
+    using HealthGateway.WebClient.Models.AcaPy;
 
     /// <summary>
     /// Interface that defines a delegate to create/revoke wallet connections and credentials.
