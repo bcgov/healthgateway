@@ -13,29 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Services
+namespace HealthGateway.WebClient.Models.AcaPy
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Immunization.Models;
-
     /// <summary>
-    /// The Immunization data service.
+    /// Represents the State of the Connection.
     /// </summary>
-    public interface IImmunizationService
+    public static class ConnectionState
     {
         /// <summary>
-        /// Gets the ImmunizationEvent for the given id.
+        /// Connection state of invitation.
         /// </summary>
-        /// <param name="immunizationId">The security token representing the authenticated user.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationEvent>> GetImmunization(string immunizationId);
+        public const string Invitation = "invitation";
 
         /// <summary>
-        /// Gets the ImmunizationResult inluding load state and a list of immunization records.
+        /// Connection state of request.
         /// </summary>
-        /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0);
+        public const string Request = "request";
+
+        /// <summary>
+        /// Connection state of response.
+        /// </summary>
+        public const string Response = "response";
+
+        /// <summary>
+        /// Connection state of active.
+        /// </summary>
+        public const string Active = "active";
     }
 }

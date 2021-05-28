@@ -57,15 +57,15 @@ namespace HealthGateway.WebClient.Test.Delegates
         }
 
         /// <summary>
-        /// Create Credential - Happy Path.
+        /// Create Connection - Happy Path.
         /// </summary>
         [Fact]
-        public void ValidateCreateCredential()
+        public void CreateConnection200()
         {
-            RequestResult<CreateConnectionResponse> expectedRequestResult = new ()
+            RequestResult<ConnectionResponse> expectedRequestResult = new ()
             {
                 ResultStatus = Common.Constants.ResultType.Success,
-                ResourcePayload = new CreateConnectionResponse()
+                ResourcePayload = new ConnectionResponse()
                 {
                     AgentId = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
                     InvitationUrl = new Uri("https://invite.url/mock"),
@@ -73,10 +73,49 @@ namespace HealthGateway.WebClient.Test.Delegates
                 TotalResultCount = 1,
             };
 
-            Tuple<RequestResult<CreateConnectionResponse>, RequestResult<CreateConnectionResponse>> response = this.CreateConnection(HttpStatusCode.OK, expectedRequestResult);
+            Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>> response = this.CreateConnection(HttpStatusCode.OK, expectedRequestResult);
             var actualResult = response.Item1;
             var expectedResult = response.Item2;
             Assert.True(actualResult.IsDeepEqual(expectedResult));
+        }
+
+        /// <summary>
+        /// Create Connection - Agent down.
+        /// </summary>
+        [Fact]
+        public void CreateConnection500()
+        {
+            RequestResult<ConnectionResponse> expectedRequestResult = new ();
+
+            Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>> response = this.CreateConnection(HttpStatusCode.ServiceUnavailable, expectedRequestResult);
+            var actualResult = response.Item1;
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+        }
+
+        /// <summary>
+        /// Create Connection - Bad Payload from Agent.
+        /// </summary>
+        [Fact]
+        public void CreateConnectionBadPayload()
+        {
+            RequestResult<ConnectionResponse> expectedRequestResult = new ();
+
+            Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>> response = this.CreateConnection(HttpStatusCode.OK, expectedRequestResult, true);
+            var actualResult = response.Item1;
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
+        }
+
+        /// <summary>
+        /// Create Connection - Exception during HTTP Call.
+        /// </summary>
+        [Fact]
+        public void CreateConnectionException()
+        {
+            RequestResult<ConnectionResponse> expectedRequestResult = new ();
+
+            Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>> response = this.CreateConnection(HttpStatusCode.OK, expectedRequestResult, false, true);
+            var actualResult = response.Item1;
+            Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
@@ -96,20 +135,34 @@ namespace HealthGateway.WebClient.Test.Delegates
                 .Build();
         }
 
-        private static Mock<IHttpClientService> GetHttpClientServiceMock(HttpResponseMessage httpResponseMessage)
+        private static Mock<IHttpClientService> GetHttpClientServiceMock(HttpResponseMessage httpResponseMessage, bool throwException)
         {
-            var handlerMock = new Mock<HttpMessageHandler>();
-            handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(httpResponseMessage)
-               .Verifiable();
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
-            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+            var handlerMock = new Mock<HttpMessageHandler>();
+            if (!throwException)
+            {
+                handlerMock
+                   .Protected()
+                   .Setup<Task<HttpResponseMessage>>(
+                      "SendAsync",
+                      ItExpr.IsAny<HttpRequestMessage>(),
+                      ItExpr.IsAny<CancellationToken>())
+                   .ReturnsAsync(httpResponseMessage)
+                   .Verifiable();
+            }
+            else
+            {
+                handlerMock
+                   .Protected()
+                   .Setup<Task<HttpResponseMessage>>(
+                      "SendAsync",
+                      ItExpr.IsAny<HttpRequestMessage>(),
+                      ItExpr.IsAny<CancellationToken>())
+                   .Throws<HttpRequestException>()
+                   .Verifiable();
+            }
 
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             return mockHttpClientService;
         }
 
@@ -118,27 +171,29 @@ namespace HealthGateway.WebClient.Test.Delegates
         /// </summary>
         /// <param name="expectedResponseStatusCode">expectedResponseStatusCode.</param>
         /// <param name="expectedRequestResult">expectedRequestResult.</param>
+        /// <param name="badContent">Pass no json data as as response.</param>
         /// <param name="throwException">Throw exception indicator.</param>
         /// <returns>The notification settings.</returns>
-        private Tuple<RequestResult<CreateConnectionResponse>, RequestResult<CreateConnectionResponse>> CreateConnection(
+        private Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>> CreateConnection(
             HttpStatusCode expectedResponseStatusCode,
-            RequestResult<CreateConnectionResponse> expectedRequestResult,
+            RequestResult<ConnectionResponse> expectedRequestResult,
+            bool badContent = false,
             bool throwException = false)
         {
             string json = @"{""connection_id"": ""3fa85f64-5717-4562-b3fc-2c963f66afa6"",""invitation_url"": ""https://invite.url/mock""}";
             Guid guid = Guid.Parse("6b0ed0250bf946a1bca33744e9f3acf1");
 
-            expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<CreateConnectionResponse>(json, this.jsonOptions);
+            expectedRequestResult.ResourcePayload = JsonSerializer.Deserialize<ConnectionResponse>(json, this.jsonOptions);
             using HttpResponseMessage httpResponseMessage = new ()
             {
                 StatusCode = expectedResponseStatusCode,
-                Content = throwException ? null : new StringContent(json),
+                Content = badContent ? null : new StringContent(json),
             };
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage);
+            Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage, throwException);
             IWalletIssuerDelegate issuerDelegate = new WalletIssuerDelegate(loggerFactory.CreateLogger<WalletIssuerDelegate>(), mockHttpClientService.Object, this.configuration);
-            RequestResult<CreateConnectionResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateConnectionAsync(guid).ConfigureAwait(true)).Result;
-            return new Tuple<RequestResult<CreateConnectionResponse>, RequestResult<CreateConnectionResponse>>(actualResult, expectedRequestResult);
+            RequestResult<ConnectionResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateConnectionAsync(guid).ConfigureAwait(true)).Result;
+            return new Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>>(actualResult, expectedRequestResult);
         }
     }
 }

@@ -13,29 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Services
+namespace HealthGateway.WebClient.Models.AcaPy
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
-    using HealthGateway.Immunization.Models;
-
     /// <summary>
-    /// The Immunization data service.
+    /// Represents the Topic from the webhook.
     /// </summary>
-    public interface IImmunizationService
+    public static class WebhookTopic
     {
         /// <summary>
-        /// Gets the ImmunizationEvent for the given id.
+        /// Connections.
         /// </summary>
-        /// <param name="immunizationId">The security token representing the authenticated user.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationEvent>> GetImmunization(string immunizationId);
+        public const string Connections = "connections";
 
         /// <summary>
-        /// Gets the ImmunizationResult inluding load state and a list of immunization records.
+        /// Issue Credemtial.
         /// </summary>
-        /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0);
+        public const string IssueCredential = "issue_credential";
+
+        /// <summary>
+        /// Revocation Registry.
+        /// </summary>
+        public const string RevocationRegistry = "revocation_registry";
+
+        /// <summary>
+        /// Basic Message.
+        /// </summary>
+        public const string BasicMessage = "basicmessages";
     }
 }

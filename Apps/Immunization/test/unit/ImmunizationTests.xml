@@ -15,6 +15,12 @@
             </summary>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
+        <member name="M:HealthGateway.Immunization.Test.Controllers.ImmunizationControllerTests.ShouldGetSingleImmunization">
+            <summary>
+            GetImmunization - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
         <member name="T:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests">
             <summary>
             RestImmunizationDelegate's Unit Tests.
@@ -25,7 +31,12 @@
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests"/> class.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.Ok">
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.GetImmunization">
+            <summary>
+            GetImmunizations - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Delegates.ImmsDelegateTests.GetImmunizations">
             <summary>
             GetImmunizations - Happy Path.
             </summary>
@@ -63,6 +74,11 @@
         <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetImmunizations">
             <summary>
             GetImmunizations - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetImmunization">
+            <summary>
+            GetImmunization - Happy Path.
             </summary>
         </member>
         <member name="M:HealthGateway.Immunization.Test.Services.ImmsServiceTests.ShouldGetRecomendation">

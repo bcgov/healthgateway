@@ -86,7 +86,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<WalletCredential> GetCredential(string exchangeId)
+        public DBResult<WalletCredential> GetCredential(Guid exchangeId)
         {
             DBResult<WalletCredential> result = new ()
             {
