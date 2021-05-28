@@ -27,7 +27,7 @@ namespace HealthGateway.WebClient.Delegates
     public interface IWalletIssuerDelegate
     {
         /// <summary>
-        /// Requests that the agent create a controller.
+        /// Requests that the agent create a connection.
         /// </summary>
         /// <param name="walletConnectionId">The id of the wallet connection.</param>
         /// <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
