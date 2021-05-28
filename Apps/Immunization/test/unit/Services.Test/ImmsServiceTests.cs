@@ -94,6 +94,47 @@ namespace HealthGateway.Immunization.Test.Services
         }
 
         /// <summary>
+        /// GetImmunization - Happy Path.
+        /// </summary>
+        [Fact]
+        public void ShouldGetImmunization()
+        {
+            var mockDelegate = new Mock<IImmunizationDelegate>();
+            RequestResult<PHSAResult<ImmunizationViewResponse>> delegateResult = new RequestResult<PHSAResult<ImmunizationViewResponse>>()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                ResourcePayload = new PHSAResult<ImmunizationViewResponse>()
+                {
+                    LoadState = new PHSALoadState() { RefreshInProgress = false, },
+                    Result = new ImmunizationViewResponse()
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "MockImmunization",
+                        OccurrenceDateTime = DateTime.Now,
+                        SourceSystemId = "MockSourceID",
+                    },
+                },
+                PageIndex = 0,
+                PageSize = 5,
+                TotalResultCount = 1,
+            };
+            RequestResult<ImmunizationEvent> expectedResult = new RequestResult<ImmunizationEvent>()
+            {
+                ResultStatus = delegateResult.ResultStatus,
+                ResourcePayload = ImmunizationEvent.FromPHSAModel(delegateResult.ResourcePayload.Result),
+                PageIndex = delegateResult.PageIndex,
+                PageSize = delegateResult.PageSize,
+                TotalResultCount = delegateResult.TotalResultCount,
+            };
+
+            mockDelegate.Setup(s => s.GetImmunization(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object);
+
+            var actualResult = service.GetImmunization("immz_id");
+            Assert.True(expectedResult.IsDeepEqual(actualResult.Result));
+        }
+
+        /// <summary>
         /// GetImmunizations - Happy Path (With Recommendations).
         /// </summary>
         [Fact]

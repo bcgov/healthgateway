@@ -34,11 +34,18 @@ namespace HealthGateway.Immunization.Test.Controllers
     {
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
 
-        private readonly RequestResult<ImmunizationResult> expectedRequestResult = new ()
+        /// <summary>
+        /// GetImmunizations - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetImmunizations()
         {
-            ResultStatus = Common.Constants.ResultType.Success,
-            TotalResultCount = 2,
-            ResourcePayload = new (
+            RequestResult<ImmunizationResult> expectedRequestResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 2,
+                ResourcePayload = new (
                 new LoadStateModel() { RefreshInProgress = false },
                 new List<ImmunizationEvent>()
                 {
@@ -74,17 +81,10 @@ namespace HealthGateway.Immunization.Test.Controllers
                     },
                 },
                 new List<ImmunizationRecommendation>()),
-        };
+            };
 
-        /// <summary>
-        /// GetImmunizations - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetImmunizations()
-        {
             Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
-            svcMock.Setup(s => s.GetImmunizations(0)).ReturnsAsync(this.expectedRequestResult);
+            svcMock.Setup(s => s.GetImmunizations(0)).ReturnsAsync(expectedRequestResult);
 
             ImmunizationController controller = new ImmunizationController(
                 new Mock<ILogger<ImmunizationController>>().Object,
@@ -108,6 +108,59 @@ namespace HealthGateway.Immunization.Test.Controllers
             }
 
             Assert.Equal(2, count);
+        }
+
+        /// <summary>
+        /// GetImmunization - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetSingleImmunization()
+        {
+            RequestResult<ImmunizationEvent> expectedRequestResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 2,
+                ResourcePayload = new ()
+                {
+                    DateOfImmunization = DateTime.Today,
+                    ProviderOrClinic = "Mocked Clinic",
+                    Immunization = new ImmunizationDefinition()
+                    {
+                        Name = "Mocked Name",
+                        ImmunizationAgents = new List<ImmunizationAgent>()
+                                {
+                                    new ()
+                                    {
+                                        Name = "mocked agent",
+                                        Code = "mocked code",
+                                        LotNumber = "mocekd lot number",
+                                        ProductName = "mocked product",
+                                    },
+                                },
+                    },
+                },
+            };
+
+            string immunizationId = "test_immunization_id";
+            Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
+            svcMock.Setup(s => s.GetImmunization(immunizationId)).ReturnsAsync(expectedRequestResult);
+
+            ImmunizationController controller = new ImmunizationController(
+                new Mock<ILogger<ImmunizationController>>().Object,
+                svcMock.Object);
+
+            // Act
+            IActionResult actual = await controller.GetImmunization(this.hdid, immunizationId).ConfigureAwait(true);
+
+            // Verify
+            Assert.IsType<JsonResult>(actual);
+
+            JsonResult jsonResult = (JsonResult)actual;
+            Assert.IsType<RequestResult<ImmunizationEvent>>(jsonResult.Value);
+
+            RequestResult<ImmunizationEvent> result = (RequestResult<ImmunizationEvent>)jsonResult.Value;
+            Assert.Equal(Common.Constants.ResultType.Success, result.ResultStatus);
         }
     }
 }

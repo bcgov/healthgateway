@@ -65,7 +65,47 @@ namespace HealthGateway.Immunization.Test.Delegates
         /// GetImmunizations - Happy Path.
         /// </summary>
         [Fact]
-        public void Ok()
+        public void GetImmunization()
+        {
+            ImmunizationViewResponse expectedViewResponse = new ImmunizationViewResponse()
+            {
+                Id = Guid.NewGuid(),
+                SourceSystemId = "mockSourceSystemId",
+                Name = "mockName",
+                OccurrenceDateTime = DateTime.ParseExact("2020/09/10 17:16:10.809", "yyyy/MM/dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
+            };
+
+            PHSAResult<ImmunizationViewResponse> phsaResponse = new PHSAResult<ImmunizationViewResponse>()
+            {
+                Result = expectedViewResponse,
+            };
+
+            string json = JsonSerializer.Serialize(phsaResponse, null);
+
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            using HttpResponseMessage httpResponseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(json),
+            };
+            IHttpClientService httpClientService = GetHttpClientService(httpResponseMessage);
+
+            IImmunizationDelegate immsDelegate = new RestImmunizationDelegate(
+                loggerFactory.CreateLogger<RestImmunizationDelegate>(),
+                httpClientService,
+                this.configuration,
+                this.GetHttpContextAccessor().Object);
+            var actualResult = immsDelegate.GetImmunizations(0).Result;
+
+            Assert.Equal(Common.Constants.ResultType.Success, actualResult.ResultStatus);
+            Assert.NotNull(actualResult.ResourcePayload);
+        }
+
+        /// <summary>
+        /// GetImmunizations - Happy Path.
+        /// </summary>
+        [Fact]
+        public void GetImmunizations()
         {
             ImmunizationViewResponse expectedViewResponse = new ImmunizationViewResponse()
             {
@@ -333,13 +373,13 @@ namespace HealthGateway.Immunization.Test.Delegates
 
         private ClaimsPrincipal GetClaimsPrincipal()
         {
-            List<Claim> claims = new List<Claim>()
+            List<Claim> claims = new ()
             {
                 new Claim(ClaimTypes.Name, "username"),
                 new Claim(ClaimTypes.NameIdentifier, this.userId),
                 new Claim("hdid", this.hdid),
             };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
+            ClaimsIdentity identity = new (claims, "TestAuth");
             return new ClaimsPrincipal(identity);
         }
     }
