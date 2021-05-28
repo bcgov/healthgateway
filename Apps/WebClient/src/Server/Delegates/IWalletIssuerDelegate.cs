@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Delegates
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models.AcaPy;
 
     /// <summary>
@@ -26,10 +27,34 @@ namespace HealthGateway.WebClient.Delegates
     public interface IWalletIssuerDelegate
     {
         /// <summary>
-        /// Creates a connection invitation request.
+        /// Requests that the agent create a connection.
         /// </summary>
         /// <param name="walletConnectionId">The id of the wallet connection.</param>
+        /// <returns>A Connection response including the invitation URL and the agent connection id.</returns>
+        Task<RequestResult<ConnectionResponse>> CreateConnectionAsync(Guid walletConnectionId);
+
+        /// <summary>
+        /// Requests that the agent revoke the connection.
+        /// </summary>
+        /// <param name="connection">The wallet connection to revoke.</param>
+        /// <returns>The WalletConnection that was revoked.</returns>
+        Task<RequestResult<WalletConnection>> DisconnectConnectionAsync(WalletConnection connection);
+
+        /// <summary>
+        /// Requests that the agent create a credential and pass the payload information to the users wallet.
+        /// </summary>
+        /// <typeparam name="T">The credential payload to use.</typeparam>
+        /// <param name="connection">The wallet connection of the user.</param>
+        /// <param name="payload">The credential payload to send to the agent.</param>
         /// <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
-        Task<RequestResult<CreateConnectionResponse>> CreateConnectionAsync(Guid walletConnectionId);
+        Task<RequestResult<CredentialResponse>> CreateCredentialAsync<T>(WalletConnection connection, T payload)
+            where T : CredentialPayload;
+
+        /// <summary>
+        /// Creates a connection invitation request.
+        /// </summary>
+        /// <param name="credential">The wallet credential to revoke.</param>
+        /// <returns>The WalletCredential that was revoked.</returns>
+        Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential);
     }
 }

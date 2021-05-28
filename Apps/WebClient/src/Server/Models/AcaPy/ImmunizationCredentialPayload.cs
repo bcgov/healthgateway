@@ -18,25 +18,10 @@ namespace HealthGateway.WebClient.Models.AcaPy
     using System;
 
     /// <summary>
-    /// A verifiable credential for an Immunization.
+    /// A verifiable credential Payload for an Immunization record.
     /// </summary>
-    public class ImmunizationCredential
+    public class ImmunizationCredentialPayload : CredentialPayload
     {
-        /// <summary>
-        /// Gets or sets the full legal name of the recipient.
-        /// </summary>
-        public string? RecipientName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the birthdate of the recipient.
-        /// </summary>
-        public DateTime? RecipientBirthDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Personal Health Number of the recipient.
-        /// </summary>
-        public string? RecipientPHN { get; set; }
-
         /// <summary>
         /// Gets or sets the name of the type of immunization.
         /// </summary>

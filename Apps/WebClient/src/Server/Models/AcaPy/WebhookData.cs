@@ -19,20 +19,32 @@ namespace HealthGateway.WebClient.Models.AcaPy
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Connection to the Ares Agent.
+    /// Represents the Data returned from the AcaPy webhook.
     /// </summary>
-    public class CreateConnectionResponse
+    public class WebhookData
     {
         /// <summary>
-        /// Gets or sets the connection id.
+        /// Gets or sets the CredentialExchangeId.
         /// </summary>
-        [JsonPropertyName("connection_id")]
-        public Guid AgentId { get; set; }
+        [JsonPropertyName("cred_ex_id")]
+        public Guid CredentialExchangeId { get; set; }
 
         /// <summary>
-        /// Gets or sets the invitation url.
+        /// Gets or sets the State.
         /// </summary>
-        [JsonPropertyName("invitation_url")]
-        public System.Uri? InvitationUrl { get; set; }
+        [JsonPropertyName("state")]
+        public string? State { get; set; }
+
+        /// <summary>
+        /// Gets or sets the alias.
+        /// </summary>
+        [JsonPropertyName("alias")]
+        public string? Alias { get; set; }
+
+        /// <summary>
+        /// Gets or sets the alias.
+        /// </summary>
+        [JsonPropertyName("connection_id")]
+        public Guid ConnectionId { get; set; }
     }
 }
