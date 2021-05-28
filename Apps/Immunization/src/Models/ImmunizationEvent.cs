@@ -76,7 +76,7 @@ namespace HealthGateway.Immunization.Models
         {
             return new ImmunizationEvent()
             {
-                Id = model.SourceSystemId,
+                Id = model.Id.ToString(),
                 DateOfImmunization = model.OccurrenceDateTime,
                 TargetedDisease = model.TargetedDisease,
                 ProviderOrClinic = model.ProviderOrClinic,

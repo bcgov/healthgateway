@@ -41,9 +41,34 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ImmunizationResult>> GetImmunizations(string bearerToken, int pageIndex = 0)
+        public async Task<RequestResult<ImmunizationEvent>> GetImmunization(string immunizationId)
         {
-            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(bearerToken, pageIndex).ConfigureAwait(true);
+            RequestResult<PHSAResult<ImmunizationViewResponse>> delegateResult = await this.immunizationDelegate.GetImmunization(immunizationId).ConfigureAwait(true);
+            if (delegateResult.ResultStatus == ResultType.Success)
+            {
+                return new RequestResult<ImmunizationEvent>()
+                {
+                    ResultStatus = delegateResult.ResultStatus,
+                    ResourcePayload = ImmunizationEvent.FromPHSAModel(delegateResult.ResourcePayload!.Result),
+                    PageIndex = delegateResult.PageIndex,
+                    PageSize = delegateResult.PageSize,
+                    TotalResultCount = delegateResult.TotalResultCount,
+                };
+            }
+            else
+            {
+                return new RequestResult<ImmunizationEvent>()
+                {
+                    ResultStatus = delegateResult.ResultStatus,
+                    ResultError = delegateResult.ResultError,
+                };
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0)
+        {
+            RequestResult<PHSAResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizations(pageIndex).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
                 return new RequestResult<ImmunizationResult>()

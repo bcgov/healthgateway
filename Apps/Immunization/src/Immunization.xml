@@ -14,18 +14,24 @@
             Gets or sets the immunization data service.
             </summary>
         </member>
-        <member name="F:HealthGateway.Immunization.Controllers.ImmunizationController.httpContextAccessor">
-            <summary>
-            Gets or sets the http context accessor.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Controllers.ImmunizationController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Controllers.ImmunizationController},HealthGateway.Immunization.Services.IImmunizationService,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+        <member name="M:HealthGateway.Immunization.Controllers.ImmunizationController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Controllers.ImmunizationController},HealthGateway.Immunization.Services.IImmunizationService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Controllers.ImmunizationController"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="svc">The immunization data service.</param>
-            <param name="httpContextAccessor">The Http Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Immunization.Controllers.ImmunizationController.GetImmunization(System.String,System.String)">
+            <summary>
+            Gets an immunization record for the given id.
+            </summary>
+            <param name="hdid">The hdid patient id.</param>
+            <param name="immunizationId">The immunization id.</param>
+            <returns>a list of immunization records.</returns>
+            <response code="200">Returns the List of Immunization records.</response>
+            <response code="401">The client must authenticate itself to get the requested response.</response>
+            <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
+            <response code="503">The service is unavailable for use.</response>
         </member>
         <member name="M:HealthGateway.Immunization.Controllers.ImmunizationController.GetImmunizations(System.String)">
             <summary>
@@ -43,12 +49,18 @@
             Interface that defines a delegate to retrieve immunization information.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Delegates.IImmunizationDelegate.GetImmunizations(System.String,System.Int32)">
+        <member name="M:HealthGateway.Immunization.Delegates.IImmunizationDelegate.GetImmunization(System.String)">
+            <summary>
+            Returns the matching immunization for the given id.
+            </summary>
+            <param name="immunizationId">The id of the immunization to retrieve.</param>
+            <returns>The immunization that matches the given id.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.IImmunizationDelegate.GetImmunizations(System.Int32)">
             <summary>
             Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
             It has a collection of one or more Immunizations.
             </summary>
-            <param name="bearerToken">The security token representing the authenticated user.</param>
             <param name="pageIndex">The page index to return.</param>
             <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
         </member>
@@ -57,15 +69,24 @@
             Implementation that uses HTTP to retrieve immunization information.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Delegates.RestImmunizationDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="F:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.httpContextAccessor">
+            <summary>
+            Gets or sets the http context accessor.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Immunization.Delegates.RestImmunizationDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Delegates.RestImmunizationDelegate"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="httpClientService">The injected http client service.</param>
             <param name="configuration">The injected configuration provider.</param>
+            <param name="httpContextAccessor">The Http Context accessor.</param>
         </member>
-        <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.GetImmunizations(System.String,System.Int32)">
+        <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.GetImmunization(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.GetImmunizations(System.Int32)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Immunization.Models.ImmunizationAgent">
@@ -391,6 +412,11 @@
         <member name="T:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse">
             <summary>
             Represents Immunization Response.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse"/> class.
             </summary>
         </member>
         <member name="M:HealthGateway.Immunization.Models.PHSA.ImmunizationResponse.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse},System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.Recommendation.ImmunizationRecommendationResponse})">
@@ -741,11 +767,17 @@
             The Immunization data service.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.IImmunizationService.GetImmunizations(System.String,System.Int32)">
+        <member name="M:HealthGateway.Immunization.Services.IImmunizationService.GetImmunization(System.String)">
+            <summary>
+            Gets the ImmunizationEvent for the given id.
+            </summary>
+            <param name="immunizationId">The security token representing the authenticated user.</param>
+            <returns>Returns a list of immunizations.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.IImmunizationService.GetImmunizations(System.Int32)">
             <summary>
             Gets the ImmunizationResult inluding load state and a list of immunization records.
             </summary>
-            <param name="bearerToken">The security token representing the authenticated user.</param>
             <param name="pageIndex">The page index to return.</param>
             <returns>Returns a list of immunizations.</returns>
         </member>
@@ -760,7 +792,10 @@
             </summary>
             <param name="immunizationDelegate">The factory to create immunization delegates.</param>
         </member>
-        <member name="M:HealthGateway.Immunization.Services.ImmunizationService.GetImmunizations(System.String,System.Int32)">
+        <member name="M:HealthGateway.Immunization.Services.ImmunizationService.GetImmunization(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Immunization.Services.ImmunizationService.GetImmunizations(System.Int32)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Immunization.Startup">

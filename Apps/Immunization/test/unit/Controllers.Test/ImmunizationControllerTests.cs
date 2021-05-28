@@ -17,15 +17,11 @@ namespace HealthGateway.Immunization.Test.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Immunization.Controllers;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -37,14 +33,19 @@ namespace HealthGateway.Immunization.Test.Controllers
     public class ImmunizationControllerTests
     {
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-        private readonly string token = "Fake Access Token";
-        private readonly string userId = "1001";
 
-        private readonly RequestResult<ImmunizationResult> expectedRequestResult = new ()
+        /// <summary>
+        /// GetImmunizations - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetImmunizations()
         {
-            ResultStatus = Common.Constants.ResultType.Success,
-            TotalResultCount = 2,
-            ResourcePayload = new (
+            RequestResult<ImmunizationResult> expectedRequestResult = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 2,
+                ResourcePayload = new (
                 new LoadStateModel() { RefreshInProgress = false },
                 new List<ImmunizationEvent>()
                 {
@@ -80,37 +81,14 @@ namespace HealthGateway.Immunization.Test.Controllers
                     },
                 },
                 new List<ImmunizationRecommendation>()),
-        };
-
-        /// <summary>
-        /// GetImmunizations - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetImmunizations()
-        {
-            ClaimsPrincipal claimsPrincipal = this.GetClaimsPrincipal();
-            var httpContextAccessorMock = this.GetHttpAccessorMock(claimsPrincipal);
-            Mock<IAuthenticationService> authenticationMock = new Mock<IAuthenticationService>();
-            httpContextAccessorMock
-                .Setup(x => x.HttpContext!.RequestServices.GetService(typeof(IAuthenticationService)))
-                .Returns(authenticationMock.Object);
-            var authResult = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
-            authResult.Properties.StoreTokens(new[]
-            {
-                new AuthenticationToken { Name = "access_token", Value = this.token },
-            });
-            authenticationMock
-                .Setup(x => x.AuthenticateAsync(httpContextAccessorMock.Object.HttpContext, It.IsAny<string>()))
-                .ReturnsAsync(authResult);
+            };
 
             Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
-            svcMock.Setup(s => s.GetImmunizations(this.token, 0)).ReturnsAsync(this.expectedRequestResult);
+            svcMock.Setup(s => s.GetImmunizations(0)).ReturnsAsync(expectedRequestResult);
 
             ImmunizationController controller = new ImmunizationController(
                 new Mock<ILogger<ImmunizationController>>().Object,
-                svcMock.Object,
-                httpContextAccessorMock.Object);
+                svcMock.Object);
 
             // Act
             IActionResult actual = await controller.GetImmunizations(this.hdid).ConfigureAwait(true);
@@ -132,31 +110,57 @@ namespace HealthGateway.Immunization.Test.Controllers
             Assert.Equal(2, count);
         }
 
-        private ClaimsPrincipal GetClaimsPrincipal()
+        /// <summary>
+        /// GetImmunization - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetSingleImmunization()
         {
-            List<Claim> claims = new List<Claim>()
+            RequestResult<ImmunizationEvent> expectedRequestResult = new ()
             {
-                new Claim(ClaimTypes.Name, "username"),
-                new Claim(ClaimTypes.NameIdentifier, this.userId),
-                new Claim("hdid", this.hdid),
+                ResultStatus = Common.Constants.ResultType.Success,
+                TotalResultCount = 2,
+                ResourcePayload = new ()
+                {
+                    DateOfImmunization = DateTime.Today,
+                    ProviderOrClinic = "Mocked Clinic",
+                    Immunization = new ImmunizationDefinition()
+                    {
+                        Name = "Mocked Name",
+                        ImmunizationAgents = new List<ImmunizationAgent>()
+                                {
+                                    new ()
+                                    {
+                                        Name = "mocked agent",
+                                        Code = "mocked code",
+                                        LotNumber = "mocekd lot number",
+                                        ProductName = "mocked product",
+                                    },
+                                },
+                    },
+                },
             };
-            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
-            return new ClaimsPrincipal(identity);
-        }
 
-        private Mock<IHttpContextAccessor> GetHttpAccessorMock(ClaimsPrincipal claimsPrincipal)
-        {
-            IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("Authorization", this.token);
-            Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
-            httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
-            Mock<HttpContext> httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(s => s.User).Returns(claimsPrincipal);
-            httpContextMock.Setup(s => s.Request).Returns(httpRequestMock.Object);
+            string immunizationId = "test_immunization_id";
+            Mock<IImmunizationService> svcMock = new Mock<IImmunizationService>();
+            svcMock.Setup(s => s.GetImmunization(immunizationId)).ReturnsAsync(expectedRequestResult);
 
-            Mock<IHttpContextAccessor> httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
-            return httpContextAccessorMock;
+            ImmunizationController controller = new ImmunizationController(
+                new Mock<ILogger<ImmunizationController>>().Object,
+                svcMock.Object);
+
+            // Act
+            IActionResult actual = await controller.GetImmunization(this.hdid, immunizationId).ConfigureAwait(true);
+
+            // Verify
+            Assert.IsType<JsonResult>(actual);
+
+            JsonResult jsonResult = (JsonResult)actual;
+            Assert.IsType<RequestResult<ImmunizationEvent>>(jsonResult.Value);
+
+            RequestResult<ImmunizationEvent> result = (RequestResult<ImmunizationEvent>)jsonResult.Value;
+            Assert.Equal(Common.Constants.ResultType.Success, result.ResultStatus);
         }
     }
 }

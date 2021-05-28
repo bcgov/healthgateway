@@ -26,12 +26,18 @@ namespace HealthGateway.Immunization.Delegates
     public interface IImmunizationDelegate
     {
         /// <summary>
+        /// Returns the matching immunization for the given id.
+        /// </summary>
+        /// <param name="immunizationId">The id of the immunization to retrieve.</param>
+        /// <returns>The immunization that matches the given id.</returns>
+        Task<RequestResult<PHSAResult<ImmunizationViewResponse>>> GetImmunization(string immunizationId);
+
+        /// <summary>
         /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
         /// It has a collection of one or more Immunizations.
         /// </summary>
-        /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>The PHSAResult including the load state and the list of Immunizations available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(string bearerToken, int pageIndex = 0);
+        Task<RequestResult<PHSAResult<ImmunizationResponse>>> GetImmunizations(int pageIndex = 0);
     }
 }

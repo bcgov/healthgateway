@@ -206,7 +206,11 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Read));
+                    policy.Requirements.Add(new FhirRequirement(
+                        FhirResource.Immunization,
+                        FhirAccessType.Read,
+                        FhirResourceLookup.Parameter,
+                        supportsUserDelegation: false));
                 });
                 options.AddPolicy(ImmunizationPolicy.Write, policy =>
                 {
