@@ -43,90 +43,36 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public bool WebhookAsync(string topic, WebhookData data)
-        {
-            this.logger.LogInformation("Webhook topic \"{topic}\"", topic);
-
-            switch (topic)
-            {
-                case WebhookTopic.Connections:
-                    return this.HandleConnectionAsync(data);
-                case WebhookTopic.IssueCredential:
-                    return this.HandleIssueCredentialAsync(data);
-                case WebhookTopic.RevocationRegistry:
-                    return true;
-                case WebhookTopic.BasicMessage:
-                    this.logger.LogInformation("Basic Message data: for {@JObject}", JsonSerializer.Serialize(data));
-                    return false;
-                default:
-                    this.logger.LogError("Webhook {topic} is not supported", topic);
-                    return false;
-            }
-        }
-
-        /// <inheritdoc />
         public void UpdateWalletConnection(Guid connectionId)
         {
             DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(connectionId);
-            WalletConnection connection = dbResult.Payload;
-            connection.ConnectedDateTime = DateTime.Now;
-            connection.Status = WalletConnectionStatus.Connected;
-            this.walletDelegate.UpdateConnection(connection, true);
+            if (dbResult.Status == DBStatusCode.Read)
+            {
+                WalletConnection connection = dbResult.Payload;
+                connection.ConnectedDateTime = DateTime.UtcNow;
+                connection.Status = WalletConnectionStatus.Connected;
+                this.walletDelegate.UpdateConnection(connection, true);
+            }
+            else
+            {
+                this.logger.LogWarning($"Unable to find wallet connection with id: {connectionId}");
+            }
         }
 
         /// <inheritdoc />
         public void UpdateWalletCredential(Guid exchangeId)
         {
             DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredential(exchangeId);
-            WalletCredential credential = dbResult.Payload;
-            credential.AddedDateTime = DateTime.Now;
-            credential.Status = WalletCredentialStatus.Added;
-            this.walletDelegate.UpdateCredential(credential, true);
-        }
-
-        // Handle webhook events for connection states.
-        private bool HandleConnectionAsync(WebhookData data)
-        {
-            this.logger.LogInformation("Connection state \"{state}\" for {@JObject}", data.State, JsonSerializer.Serialize(data));
-
-            switch (data.State)
+            if (dbResult.Status == DBStatusCode.Read)
             {
-                case ConnectionState.Invitation:
-                    return true;
-
-                case ConnectionState.Request:
-                    return true;
-
-                case ConnectionState.Response:
-                    this.UpdateWalletConnection(new Guid(data.Alias));
-                    return true;
-
-                case ConnectionState.Active:
-                    return true;
-
-                default:
-                    this.logger.LogError("Connection state {state} is not supported", data.State);
-                    return false;
+                WalletCredential credential = dbResult.Payload;
+                credential.AddedDateTime = DateTime.UtcNow;
+                credential.Status = WalletCredentialStatus.Added;
+                this.walletDelegate.UpdateCredential(credential, true);
             }
-        }
-
-        // Handle webhook events for issue credential topics.
-        private bool HandleIssueCredentialAsync(WebhookData data)
-        {
-            this.logger.LogInformation("Issue credential state \"{state}\" for {@JObject}", data.State, JsonSerializer.Serialize(data));
-
-            switch (data.State)
+            else
             {
-                case CredentialExchangeState.OfferSent:
-                    return true;
-                case CredentialExchangeState.RequestReceived:
-                    return true;
-                case CredentialExchangeState.CredentialIssued:
-                    this.UpdateWalletCredential(data.CredentialExchangeId);
-                    return true;
-                default:
-                    this.logger.LogError("Credential exchange state {state} is not supported", data.State);
-                    return false;
+                this.logger.LogWarning($"Unable to find wallet credential using exchange id: {exchangeId}");
             }
         }
     }

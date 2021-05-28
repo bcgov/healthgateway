@@ -27,14 +27,6 @@ namespace HealthGateway.WebClient.Services
         /// <summary>
         /// Updates the state of the Wallet Connection using the connection id.
         /// </summary>
-        /// <param name="topic">The type of webhook response (connection or issue credential).</param>
-        /// <param name="data">Webhook response data.</param>
-        /// <returns>returns true webhook response handled.</returns>
-        bool WebhookAsync(string topic, WebhookData data);
-
-        /// <summary>
-        /// Updates the state of the Wallet Connection using the connection id.
-        /// </summary>
         /// <param name="connectionId">The id of the wallet connection to be updated.</param>
         void UpdateWalletConnection(Guid connectionId);
 

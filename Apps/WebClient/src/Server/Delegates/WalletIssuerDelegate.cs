@@ -116,7 +116,8 @@ namespace HealthGateway.WebClient.Delegates
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<CredentialResponse>> CreateCredentialAsync(WalletConnection connection, ImmunizationCredential credentialPayload)
+        public Task<RequestResult<CredentialResponse>> CreateCredentialAsync<T>(WalletConnection connection, T payload)
+            where T : CredentialPayload
         {
             throw new NotImplementedException();
         }
