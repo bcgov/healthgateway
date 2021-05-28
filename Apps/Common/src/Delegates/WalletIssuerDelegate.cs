@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Delegates
+namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -24,9 +24,9 @@ namespace HealthGateway.WebClient.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.AcaPy;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
-    using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 

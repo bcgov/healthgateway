@@ -8,6 +8,7 @@
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Authorization\**" />
     <None Remove="ServiceReference\dotnet-svcutil.params.json" />
+    <None Remove="Models\AcaPy\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.22" />
@@ -69,6 +70,7 @@
     <Folder Include="Services\" />
     <Folder Include="resources\" />
     <Folder Include="ServiceReference\" />
+    <Folder Include="Models\AcaPy\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ServiceReference\dotnet-svcutil.params.json" Condition="'$(ExcludeConfigFilesFromBuildOutput)'=='true'">

@@ -13,20 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// Represents a Connection to the Ares Agent.
+    /// Configuration to be used by external clients for authentication.
     /// </summary>
-    public class CredentialResponse
+    public class WalletIssuerConfiguration
     {
         /// <summary>
-        /// Gets or sets the credential exchange id.
+        /// Gets or sets Agent Api Url .
         /// </summary>
-        [JsonPropertyName("credential_exchange_id")]
-        public Guid ExchangeId { get; set; }
+        public System.Uri? AgentApiUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Agent Api Key.
+        /// </summary>
+        public string AgentApiKey { get; set; } = string.Empty;
     }
 }

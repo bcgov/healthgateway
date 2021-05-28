@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Delegates
+namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.AcaPy;
     using HealthGateway.Database.Models;
-    using HealthGateway.WebClient.Models.AcaPy;
 
     /// <summary>
     /// Interface that defines a delegate to create/revoke wallet connections and credentials.

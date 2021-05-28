@@ -13,38 +13,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
     using System;
 
     /// <summary>
-    /// A verifiable credential Payload for an Immunization record.
+    /// A verifiable credential for an Immunization.
     /// </summary>
-    public class ImmunizationCredentialPayload : CredentialPayload
+    public abstract class CredentialPayload
     {
         /// <summary>
-        /// Gets or sets the name of the type of immunization.
+        /// Gets or sets the schema name to be used for the Credential paylaod.
         /// </summary>
-        public string? ImmunizationType { get; set; }
+        public string? SchemaName { get; set; }
 
         /// <summary>
-        /// Gets or sets the brand name of Immunization product.
+        /// Gets or sets the schema version to be used for the Credential paylaod.
         /// </summary>
-        public string? ImmunizationProduct { get; set; }
+        public string? SchemaVersion { get; set; }
 
         /// <summary>
-        /// Gets or sets the immunization agent.
+        /// Gets or sets the full legal name of the recipient.
         /// </summary>
-        public string? ImmunizationAgent { get; set; }
+        public string? RecipientName { get; set; }
 
         /// <summary>
-        /// Gets or sets the lot number.
+        /// Gets or sets the birthdate of the recipient.
         /// </summary>
-        public string? LotNumber { get; set; }
+        public DateTime? RecipientBirthDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the provider or facility where the immunization was reeived.
+        /// Gets or sets the Personal Health Number of the recipient.
         /// </summary>
-        public string? Provider { get; set; }
+        public string? RecipientPHN { get; set; }
     }
 }
