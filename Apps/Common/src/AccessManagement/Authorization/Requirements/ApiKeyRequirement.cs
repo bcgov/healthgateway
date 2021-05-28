@@ -36,7 +36,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
         }
 
         /// <summary>
-        /// Gets a value indicating whether the ownership of the resource should be confirmed.
+        /// Gets a value representing the Api Key.
         /// </summary>
         public string ApiKey { get; }
     }
