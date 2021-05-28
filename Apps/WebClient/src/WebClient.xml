@@ -427,19 +427,17 @@
             Provides a web hook for Aca-Py to receive status updates on Wallet Connections and Credentials.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.WalletStatusController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Controllers.WalletStatusController},Microsoft.Extensions.Configuration.IConfiguration,HealthGateway.WebClient.Services.IWalletStatusService)">
+        <member name="M:HealthGateway.WebClient.Controllers.WalletStatusController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Controllers.WalletStatusController},HealthGateway.WebClient.Services.IWalletStatusService)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.WalletStatusController"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
-            <param name="configuration">The injected configuration provider.</param>
             <param name="walletStatusService">The injected wallet status service provider.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.WalletStatusController.Webhook(System.String,System.String,HealthGateway.WebClient.Models.AcaPy.WebhookData)">
+        <member name="M:HealthGateway.WebClient.Controllers.WalletStatusController.Webhook(System.String,HealthGateway.WebClient.Models.AcaPy.WebhookData)">
             <summary>
             Handle webhook events sent from the issuing agent.
             </summary>
-            <param name="apiKey">The API key to authorize the access.</param>
             <param name="topic">The type of webhook response (connection or issue credential).</param>
             <param name="data">Webhook response data.</param>
             <returns>An empty response.</returns>
@@ -452,7 +450,7 @@
         </member>
         <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <summary>
-            Requests that the agent create a controller.
+            Requests that the agent create a connection.
             </summary>
             <param name="walletConnectionId">The id of the wallet connection.</param>
             <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
@@ -1857,12 +1855,14 @@
             Updates the state of the Wallet Connection using the connection id.
             </summary>
             <param name="connectionId">The id of the wallet connection to be updated.</param>
+            <returns>The updated WalletConnection wrapped in a RequestResult.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletCredential(System.Guid)">
             <summary>
             Updates the state of the Wallet Credential using the exchange id.
             </summary>
             <param name="exchangeId">The exchange id to query the wallet credential.</param>
+            <returns>The updated WalletCredential wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.NoteService">
             <inheritdoc />

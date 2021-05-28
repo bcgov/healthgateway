@@ -294,6 +294,25 @@
             Policy claims requiring an HDID.
             </summary>
         </member>
+        <member name="T:HealthGateway.Common.AccessManagement.Authorization.Handlers.ApiKeyAuthorizationHandler">
+            <summary>
+            PatientAuthorizationHandler validates that Patient requirements have been met.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.AccessManagement.Authorization.Handlers.ApiKeyAuthorizationHandler.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.AccessManagement.Authorization.Handlers.UserAuthorizationHandler},Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.AccessManagement.Authorization.Handlers.ApiKeyAuthorizationHandler"/> class.
+            </summary>
+            <param name="logger">the injected logger.</param>
+            <param name="httpContextAccessor">The HTTP Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Common.AccessManagement.Authorization.Handlers.ApiKeyAuthorizationHandler.HandleAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext)">
+            <summary>
+            Asserts that the header contains the X-API-Key with the corret value.
+            </summary>
+            <param name="context">the AuthorizationHandlerContext context.</param>
+            <returns>The Authorization Result.</returns>
+        </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authorization.Handlers.BaseFhirAuthorizationHandler">
             <summary>
             Base class for IAuthorizationHandler interface.
@@ -430,6 +449,16 @@
             <param name="resourceHDID">The health data resource subject identifier.</param>
             <param name="requirement">The requirement to validate.</param>
         </member>
+        <member name="T:HealthGateway.Common.AccessManagement.Authorization.Policy.ApiKeyPolicy">
+            <summary>
+            Policy for API Key Access.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Common.AccessManagement.Authorization.Policy.ApiKeyPolicy.Write">
+            <summary>
+            Policy which allows writing using API Key access.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authorization.Policy.EncounterPolicy">
             <summary>
             The set of claims to access Encounter data.
@@ -548,6 +577,22 @@
         <member name="F:HealthGateway.Common.AccessManagement.Authorization.Policy.UserProfilePolicy.Write">
             <summary>
             Policy which allows writing of the identified patient.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement">
+            <summary>
+            UserRequirement asserts authorization that the user is a Patient (has an HDID).
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement"/> class.
+            </summary>
+            <param name="configuration">The configuration provider.</param>
+        </member>
+        <member name="P:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.ApiKey">
+            <summary>
+            Gets a value indicating whether the ownership of the resource should be confirmed.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authorization.Requirements.FhirRequirement">

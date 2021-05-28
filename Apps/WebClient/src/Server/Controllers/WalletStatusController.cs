@@ -17,63 +17,51 @@ namespace HealthGateway.WebClient.Controllers
 {
     using System;
     using System.Text.Json;
-    using System.Threading.Tasks;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.WebClient.Models.AcaPy;
     using HealthGateway.WebClient.Services;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Provides a web hook for Aca-Py to receive status updates on Wallet Connections and Credentials.
     /// </summary>
+    [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [ApiController]
     [IgnoreAudit]
     [TypeFilter(typeof(AvailabilityFilter))]
     public class WalletStatusController : Controller
     {
-        private const string WebHookApiSectionKey = "AcaPy";
-        private const string WebHookApiKey = "ApiKey";
-
         private readonly ILogger logger;
         private readonly IWalletStatusService walletStatusService;
-        private readonly string apiKey;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WalletStatusController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="walletStatusService">The injected wallet status service provider.</param>
-        public WalletStatusController(ILogger<WalletStatusController> logger, IConfiguration configuration, IWalletStatusService walletStatusService)
+        public WalletStatusController(ILogger<WalletStatusController> logger, IWalletStatusService walletStatusService)
         {
             this.logger = logger;
             this.walletStatusService = walletStatusService;
-            this.apiKey = configuration.GetValue<string>($"{WebHookApiSectionKey}:{WebHookApiKey}");
         }
 
         /// <summary>
         /// Handle webhook events sent from the issuing agent.
         /// </summary>
-        /// <param name="apiKey">The API key to authorize the access.</param>
         /// <param name="topic">The type of webhook response (connection or issue credential).</param>
         /// <param name="data">Webhook response data.</param>
         /// <returns>An empty response.</returns>
         /// <response code="204">Webhook request received.</response>
         [HttpPost]
-        [Route("{apiKey}/topic/{topic}")]
-        public IActionResult Webhook(string apiKey, string topic, [FromBody] WebhookData data)
+        [Route("topic/{topic}")]
+        [Authorize(Policy = ApiKeyPolicy.Write)]
+        public IActionResult Webhook(string topic, [FromBody] WebhookData data)
         {
-            if (apiKey != this.apiKey)
-            {
-                this.logger.LogWarning("Attempted access with incorect API Key");
-                return this.Forbid();
-            }
-
             this.logger.LogInformation("Webhook topic \"{topic}\"", topic);
-
             switch (topic)
             {
                 case WebhookTopic.Connections:
