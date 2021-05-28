@@ -557,6 +557,17 @@
             The PHSA Immunization Recommendation data model.
             </summary>
         </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.#ctor(System.Collections.Generic.IList{HealthGateway.Immunization.Models.PHSA.Recommendation.DateCriterion})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse"/> class.
+            </summary>
+            <param name="dateCriterions">The initialized list of dateCriterions.</param>
+        </member>
         <member name="P:HealthGateway.Immunization.Models.PHSA.Recommendation.RecommendationResponse.DateCriterions">
             <summary>
             Gets the Date Criterion.
