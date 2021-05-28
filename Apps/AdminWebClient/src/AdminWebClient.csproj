@@ -10,7 +10,7 @@
     <DocumentationFile>.\AdminWebClient.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="26.1.0" />
+    <PackageReference Include="CsvHelper" Version="27.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
     <PackageReference Include="UAParser" Version="3.1.47" />
