@@ -16,13 +16,12 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
-    using System.Text.Json;
-    using System.Threading.Tasks;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -43,37 +42,75 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public void UpdateWalletConnection(Guid connectionId)
+        public RequestResult<WalletConnection> UpdateWalletConnection(Guid connectionId)
         {
+            RequestResult<WalletConnection> result = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+
             DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(connectionId);
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletConnection connection = dbResult.Payload;
+                result.ResourcePayload = connection;
                 connection.ConnectedDateTime = DateTime.UtcNow;
                 connection.Status = WalletConnectionStatus.Connected;
-                this.walletDelegate.UpdateConnection(connection, true);
+                DBResult<WalletConnection> updateResult = this.walletDelegate.UpdateConnection(connection, true);
+                if (updateResult.Status == DBStatusCode.Updated)
+                {
+                    result.ResultStatus = Common.Constants.ResultType.Success;
+                    result.TotalResultCount = 1;
+                }
+                else
+                {
+                    this.logger.LogWarning($"Unable to update wallet connection with id: {connectionId}");
+                    result.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Connection", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                }
             }
             else
             {
                 this.logger.LogWarning($"Unable to find wallet connection with id: {connectionId}");
+                result.ResultError = new RequestResultError() { ResultMessage = "Unable to find Wallet Connection", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
             }
+
+            return result;
         }
 
         /// <inheritdoc />
-        public void UpdateWalletCredential(Guid exchangeId)
+        public RequestResult<WalletCredential> UpdateWalletCredential(Guid exchangeId)
         {
+            RequestResult<WalletCredential> result = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+
             DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredential(exchangeId);
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletCredential credential = dbResult.Payload;
+                result.ResourcePayload = credential;
                 credential.AddedDateTime = DateTime.UtcNow;
                 credential.Status = WalletCredentialStatus.Added;
-                this.walletDelegate.UpdateCredential(credential, true);
+                DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential, true);
+                if (updateResult.Status == DBStatusCode.Updated)
+                {
+                    result.ResultStatus = Common.Constants.ResultType.Success;
+                    result.TotalResultCount = 1;
+                }
+                else
+                {
+                    this.logger.LogWarning($"Unable to update wallet credential using exchange id: {exchangeId}");
+                    result.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                }
             }
             else
             {
                 this.logger.LogWarning($"Unable to find wallet credential using exchange id: {exchangeId}");
+                result.ResultError = new RequestResultError() { ResultMessage = "Unable to find Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
             }
+
+            return result;
         }
     }
 }

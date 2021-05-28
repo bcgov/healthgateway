@@ -16,8 +16,8 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
-    using System.Threading.Tasks;
-    using HealthGateway.WebClient.Models.AcaPy;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Service to interact with the Comment Delegate.
@@ -28,12 +28,14 @@ namespace HealthGateway.WebClient.Services
         /// Updates the state of the Wallet Connection using the connection id.
         /// </summary>
         /// <param name="connectionId">The id of the wallet connection to be updated.</param>
-        void UpdateWalletConnection(Guid connectionId);
+        /// <returns>The updated WalletConnection wrapped in a RequestResult.</returns>
+        RequestResult<WalletConnection> UpdateWalletConnection(Guid connectionId);
 
         /// <summary>
         /// Updates the state of the Wallet Credential using the exchange id.
         /// </summary>
         /// <param name="exchangeId">The exchange id to query the wallet credential.</param>
-        void UpdateWalletCredential(Guid exchangeId);
+        /// <returns>The updated WalletCredential wrapped in a RequestResult.</returns>
+        RequestResult<WalletCredential> UpdateWalletCredential(Guid exchangeId);
     }
 }
