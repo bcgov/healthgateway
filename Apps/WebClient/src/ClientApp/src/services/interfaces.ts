@@ -12,10 +12,7 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import {
-    CredentialConnection,
-    WalletCredential,
-} from "@/models/credentialConnection";
+import { WalletConnection, WalletCredential } from "@/models/credential";
 import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
@@ -193,12 +190,12 @@ export interface IHttpDelegate {
 
 export interface ICredentialService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getConnection(hdid: string): Promise<CredentialConnection>;
+    getConnection(hdid: string): Promise<WalletConnection>;
     getCredentials(hdid: string): Promise<WalletCredential>;
     createConnection(
         hdid: string,
         targetIds: string[]
-    ): Promise<CredentialConnection>;
+    ): Promise<WalletConnection>;
 }
 
 export interface ILogger {

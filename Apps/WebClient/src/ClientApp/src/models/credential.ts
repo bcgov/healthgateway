@@ -1,6 +1,6 @@
 import { StringISODateTime } from "./dateWrapper";
 
-export interface CredentialConnection {
+export interface WalletConnection {
     walletConnectionId: string;
     hdid: string;
     issuerConnectionId: string;

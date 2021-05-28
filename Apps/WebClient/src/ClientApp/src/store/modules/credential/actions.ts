@@ -56,7 +56,7 @@ export const actions: CredentialActions = {
             }
         });
     },
-    createCredentialConnection(
+    createConnection(
         context,
         params: { hdid: string; targetIds: string[] }
     ): Promise<boolean> {

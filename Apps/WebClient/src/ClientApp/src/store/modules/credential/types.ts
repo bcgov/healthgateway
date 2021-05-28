@@ -6,16 +6,13 @@ import {
     MutationTree,
 } from "vuex";
 
-import {
-    CredentialConnection,
-    WalletCredential,
-} from "@/models/credentialConnection";
+import { WalletConnection, WalletCredential } from "@/models/credential";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface CredentialState {
-    connection?: CredentialConnection;
+    connection?: WalletConnection;
     credentials: WalletCredential[];
     statusMessage: string;
     error: boolean;
@@ -24,7 +21,7 @@ export interface CredentialState {
 
 export interface CredentialGetters
     extends GetterTree<CredentialState, RootState> {
-    connection(state: CredentialState): CredentialConnection | undefined;
+    connection(state: CredentialState): WalletConnection | undefined;
     credentials(state: CredentialState): WalletCredential[];
 }
 
@@ -39,7 +36,7 @@ export interface CredentialActions
         context: CredentialContext,
         params: { hdid: string }
     ): Promise<boolean>;
-    createCredentialConnection(
+    createConnection(
         context: CredentialContext,
         params: { hdid: string; targetIds: string[] }
     ): Promise<boolean>;
@@ -48,10 +45,7 @@ export interface CredentialActions
 
 export interface CredentialMutation extends MutationTree<CredentialState> {
     setRequested(state: CredentialState): void;
-    setConnection(
-        state: CredentialState,
-        connection: CredentialConnection
-    ): void;
+    setConnection(state: CredentialState, connection: WalletConnection): void;
     setCredentials(
         state: CredentialState,
         credentials: WalletCredential[]

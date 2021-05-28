@@ -1,12 +1,9 @@
-import {
-    CredentialConnection,
-    WalletCredential,
-} from "@/models/credentialConnection";
+import { WalletConnection, WalletCredential } from "@/models/credential";
 
 import { CredentialGetters, CredentialState } from "./types";
 
 export const getters: CredentialGetters = {
-    connection(state: CredentialState): CredentialConnection | undefined {
+    connection(state: CredentialState): WalletConnection | undefined {
         const { connection } = state;
         return connection;
     },
