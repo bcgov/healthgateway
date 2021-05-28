@@ -296,7 +296,7 @@
         </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authorization.Handlers.ApiKeyAuthorizationHandler">
             <summary>
-            PatientAuthorizationHandler validates that Patient requirements have been met.
+            APIKeyAuthorizationHandler validates that the API Key is in the header.
             </summary>
         </member>
         <member name="M:HealthGateway.Common.AccessManagement.Authorization.Handlers.ApiKeyAuthorizationHandler.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.AccessManagement.Authorization.Handlers.UserAuthorizationHandler},Microsoft.AspNetCore.Http.IHttpContextAccessor)">
@@ -581,7 +581,7 @@
         </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement">
             <summary>
-            UserRequirement asserts authorization that the user is a Patient (has an HDID).
+            ApiKeyRequirement looks up the Configuration API Key.
             </summary>
         </member>
         <member name="M:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
@@ -592,7 +592,7 @@
         </member>
         <member name="P:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.ApiKey">
             <summary>
-            Gets a value indicating whether the ownership of the resource should be confirmed.
+            Gets a value representing the Api Key.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authorization.Requirements.FhirRequirement">

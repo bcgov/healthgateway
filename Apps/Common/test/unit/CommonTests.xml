@@ -44,6 +44,26 @@
             AuthenticateAsSystem - Happy Path.
             </summary>
         </member>
+        <member name="T:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests">
+            <summary>
+            ApiKeyAuthorizationHandler's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests.AuthSuccess">
+            <summary>
+            Handle Auth - Auth Key is correct.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests.AuthFailHeaderKeyWrong">
+            <summary>
+            Handle Auth - Auth Key is invalid.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests.AuthFailRequirementKeyBad">
+            <summary>
+            Handle Auth - Requirement Key is invalid.
+            </summary>
+        </member>
         <member name="T:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests">
             <summary>
             FhirResourceAuthorizationHandler's Unit Tests.

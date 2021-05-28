@@ -55,7 +55,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 var apiKey = this.httpContextAccessor.HttpContext?.Request.Headers[ApiKeyHeaderName].FirstOrDefault();
                 if (!string.IsNullOrEmpty(requirement.ApiKey))
                 {
-                    if (apiKey != null && apiKey == requirement.ApiKey)
+                    if (!string.IsNullOrEmpty(apiKey) && apiKey == requirement.ApiKey)
                     {
                         this.logger.LogDebug("Api Key authorization successful");
                         context.Succeed(requirement);
