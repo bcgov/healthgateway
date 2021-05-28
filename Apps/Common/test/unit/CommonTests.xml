@@ -64,6 +64,11 @@
             Handle Auth - Requirement Key is invalid.
             </summary>
         </member>
+        <member name="M:HealthGateway.CommonTests.AccessManagement.Authorization.ApiKeyAuthorizationHandlerTests.AuthFailHeaderNotFound">
+            <summary>
+            Handle Auth - Auth Key not found.
+            </summary>
+        </member>
         <member name="T:HealthGateway.CommonTests.AccessManagement.Authorization.FhirResourceAuthorizationHandlerTests">
             <summary>
             FhirResourceAuthorizationHandler's Unit Tests.

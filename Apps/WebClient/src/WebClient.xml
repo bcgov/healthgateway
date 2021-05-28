@@ -453,7 +453,7 @@
             Requests that the agent create a connection.
             </summary>
             <param name="walletConnectionId">The id of the wallet connection.</param>
-            <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
+            <returns>A Connection response including the invitation URL and the agent connection id.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Delegates.IWalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
             <summary>
@@ -1850,18 +1850,20 @@
             Service to interact with the Comment Delegate.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletConnection(System.Guid)">
+        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletConnectionStatus(System.Guid,HealthGateway.Database.Constants.WalletConnectionStatus)">
             <summary>
             Updates the state of the Wallet Connection using the connection id.
             </summary>
             <param name="connectionId">The id of the wallet connection to be updated.</param>
+            <param name="state">The wallet connection state to update.</param>
             <returns>The updated WalletConnection wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletCredential(System.Guid)">
+        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletCredentialStatus(System.Guid,HealthGateway.Database.Constants.WalletCredentialStatus)">
             <summary>
             Updates the state of the Wallet Credential using the exchange id.
             </summary>
             <param name="exchangeId">The exchange id to query the wallet credential.</param>
+            <param name="state">The wallet credential state to update.</param>
             <returns>The updated WalletCredential wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.NoteService">
@@ -2019,10 +2021,10 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="walletDelegate">Injected Wallet delegate.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletConnection(System.Guid)">
+        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletConnectionStatus(System.Guid,HealthGateway.Database.Constants.WalletConnectionStatus)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletCredential(System.Guid)">
+        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletCredentialStatus(System.Guid,HealthGateway.Database.Constants.WalletCredentialStatus)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Startup">

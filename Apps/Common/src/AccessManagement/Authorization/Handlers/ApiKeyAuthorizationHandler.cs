@@ -27,8 +27,6 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     /// </summary>
     public class ApiKeyAuthorizationHandler : IAuthorizationHandler
     {
-        private const string ApiKeyHeaderName = "X-API-KEY";
-
         private readonly ILogger<UserAuthorizationHandler> logger;
         private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -52,7 +50,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         {
             foreach (ApiKeyRequirement requirement in context.PendingRequirements.OfType<ApiKeyRequirement>().ToList())
             {
-                var apiKey = this.httpContextAccessor.HttpContext?.Request.Headers[ApiKeyHeaderName].FirstOrDefault();
+                var apiKey = this.httpContextAccessor.HttpContext?.Request.Headers[requirement.ApiKeyHeaderName].FirstOrDefault();
                 if (!string.IsNullOrEmpty(requirement.ApiKey))
                 {
                     if (!string.IsNullOrEmpty(apiKey) && apiKey == requirement.ApiKey)

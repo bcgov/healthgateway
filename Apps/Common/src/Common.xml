@@ -584,6 +584,26 @@
             ApiKeyRequirement looks up the Configuration API Key.
             </summary>
         </member>
+        <member name="F:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.WebHookApiSectionKey">
+            <summary>
+            The name of the section containing the ACA-Py configuration.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.ApiKeyHeaderNameKey">
+            <summary>
+            The name of the configuration key which defines the API Key Header.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.WebHookApiKey">
+            <summary>
+            The name of the configuration key which defines the API key used to authorize access.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.ApiKeyHeaderNameDefault">
+            <summary>
+            The default header name to query from the HTTP Request.
+            </summary>
+        </member>
         <member name="M:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement"/> class.
@@ -593,6 +613,11 @@
         <member name="P:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.ApiKey">
             <summary>
             Gets a value representing the Api Key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.AccessManagement.Authorization.Requirements.ApiKeyRequirement.ApiKeyHeaderName">
+            <summary>
+            Gets the name of the header to query.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.AccessManagement.Authorization.Requirements.FhirRequirement">

@@ -30,7 +30,7 @@ namespace HealthGateway.WebClient.Delegates
         /// Requests that the agent create a connection.
         /// </summary>
         /// <param name="walletConnectionId">The id of the wallet connection.</param>
-        /// <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
+        /// <returns>A Connection response including the invitation URL and the agent connection id.</returns>
         Task<RequestResult<ConnectionResponse>> CreateConnectionAsync(Guid walletConnectionId);
 
         /// <summary>

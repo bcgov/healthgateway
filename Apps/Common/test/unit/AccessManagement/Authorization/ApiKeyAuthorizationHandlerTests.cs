@@ -17,12 +17,10 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 {
     using System.Collections.Generic;
     using System.Security.Claims;
-    using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Routing;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -80,10 +78,25 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             Assert.False(context.HasSucceeded);
         }
 
+        /// <summary>
+        /// Handle Auth - Auth Key not found.
+        /// </summary>
+        [Fact]
+        public void AuthFailHeaderNotFound()
+        {
+            var requirements = new[] { new ApiKeyRequirement(GetIConfigurationRoot(ApiKey, "fakekey")) };
+            Mock<ClaimsPrincipal> mockClaimsPrincipal = new ();
+            AuthorizationHandlerContext context = new AuthorizationHandlerContext(requirements, mockClaimsPrincipal.Object, null);
+            ApiKeyAuthorizationHandler authHandler = GetAuthorizationHandler(InvalidApiKey);
+            authHandler.HandleAsync(context);
+
+            Assert.False(context.HasSucceeded);
+        }
+
         private static ApiKeyAuthorizationHandler GetAuthorizationHandler(string apiKey)
         {
             IHeaderDictionary headerDictionary = new HeaderDictionary();
-            headerDictionary.Add("X-API-KEY", apiKey);
+            headerDictionary.Add(ApiKeyRequirement.ApiKeyHeaderNameDefault, apiKey);
             Mock<HttpRequest> httpRequestMock = new Mock<HttpRequest>();
             httpRequestMock.Setup(s => s.Headers).Returns(headerDictionary);
 
@@ -99,11 +112,12 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             return new ApiKeyAuthorizationHandler(logger, httpContextAccessorMock.Object);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot(string requirementKey)
+        private static IConfigurationRoot GetIConfigurationRoot(string requirementKey, string headerKeyName = ApiKeyRequirement.ApiKeyHeaderNameDefault)
         {
             var myConfiguration = new Dictionary<string, string>
             {
-                { "AcaPy:webhookApiKey", requirementKey },
+                { $"{ApiKeyRequirement.WebHookApiSectionKey}:{ApiKeyRequirement.WebHookApiKey}", requirementKey },
+                { $"{ApiKeyRequirement.WebHookApiSectionKey}:{ApiKeyRequirement.ApiKeyHeaderNameKey}", headerKeyName },
             };
 
             return new ConfigurationBuilder()

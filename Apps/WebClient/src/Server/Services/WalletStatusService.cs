@@ -42,7 +42,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<WalletConnection> UpdateWalletConnection(Guid connectionId)
+        public RequestResult<WalletConnection> UpdateWalletConnectionStatus(Guid connectionId, WalletConnectionStatus state)
         {
             RequestResult<WalletConnection> result = new ()
             {
@@ -55,8 +55,8 @@ namespace HealthGateway.WebClient.Services
                 WalletConnection connection = dbResult.Payload;
                 result.ResourcePayload = connection;
                 connection.ConnectedDateTime = DateTime.UtcNow;
-                connection.Status = WalletConnectionStatus.Connected;
-                DBResult<WalletConnection> updateResult = this.walletDelegate.UpdateConnection(connection, true);
+                connection.Status = state;
+                DBResult<WalletConnection> updateResult = this.walletDelegate.UpdateConnection(connection);
                 if (updateResult.Status == DBStatusCode.Updated)
                 {
                     result.ResultStatus = Common.Constants.ResultType.Success;
@@ -78,7 +78,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<WalletCredential> UpdateWalletCredential(Guid exchangeId)
+        public RequestResult<WalletCredential> UpdateWalletCredentialStatus(Guid exchangeId, WalletCredentialStatus state)
         {
             RequestResult<WalletCredential> result = new ()
             {
@@ -91,8 +91,8 @@ namespace HealthGateway.WebClient.Services
                 WalletCredential credential = dbResult.Payload;
                 result.ResourcePayload = credential;
                 credential.AddedDateTime = DateTime.UtcNow;
-                credential.Status = WalletCredentialStatus.Added;
-                DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential, true);
+                credential.Status = state;
+                DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential);
                 if (updateResult.Status == DBStatusCode.Updated)
                 {
                     result.ResultStatus = Common.Constants.ResultType.Success;

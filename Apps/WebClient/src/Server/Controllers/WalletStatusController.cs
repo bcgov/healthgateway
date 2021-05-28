@@ -61,7 +61,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = ApiKeyPolicy.Write)]
         public IActionResult Webhook(string topic, [FromBody] WebhookData data)
         {
-            this.logger.LogInformation("Webhook topic \"{topic}\"", topic);
+            this.logger.LogDebug("Webhook topic \"{topic}\"", topic);
             switch (topic)
             {
                 case WebhookTopic.Connections:
@@ -73,10 +73,10 @@ namespace HealthGateway.WebClient.Controllers
                 case WebhookTopic.RevocationRegistry:
                     break;
                 case WebhookTopic.BasicMessage:
-                    this.logger.LogInformation("Basic Message data: for {@JObject}", JsonSerializer.Serialize(data));
+                    this.logger.LogTrace("Basic Message data: for {@JObject}", JsonSerializer.Serialize(data));
                     break;
                 default:
-                    this.logger.LogInformation("Webhook {topic} is not supported", topic);
+                    this.logger.LogWarning("Webhook {topic} is not supported", topic);
                     break;
             }
 
@@ -86,7 +86,7 @@ namespace HealthGateway.WebClient.Controllers
         // Handle webhook events for connection states.
         private void HandleConnectionUpdateAsync(WebhookData data)
         {
-            this.logger.LogInformation("Connection state \"{state}\" for {@JObject}", data.State, JsonSerializer.Serialize(data));
+            this.logger.LogTrace("Connection state \"{state}\" for {@JObject}", data.State, JsonSerializer.Serialize(data));
 
             switch (data.State)
             {
@@ -95,7 +95,7 @@ namespace HealthGateway.WebClient.Controllers
                 case ConnectionState.Request:
                     break;
                 case ConnectionState.Response:
-                    this.walletStatusService.UpdateWalletConnection(new Guid(data.Alias));
+                    this.walletStatusService.UpdateWalletConnectionStatus(new Guid(data.Alias), Database.Constants.WalletConnectionStatus.Connected);
                     break;
                 case ConnectionState.Active:
                     break;
@@ -108,7 +108,7 @@ namespace HealthGateway.WebClient.Controllers
         // Handle webhook events for issue credential topics.
         private void HandleIssueCredentialUpdateAsync(WebhookData data)
         {
-            this.logger.LogInformation("Issue credential state \"{state}\" for {@JObject}", data.State, JsonSerializer.Serialize(data));
+            this.logger.LogTrace("Issue credential state \"{state}\" for {@JObject}", data.State, JsonSerializer.Serialize(data));
 
             switch (data.State)
             {
@@ -117,7 +117,7 @@ namespace HealthGateway.WebClient.Controllers
                 case CredentialExchangeState.RequestReceived:
                     break;
                 case CredentialExchangeState.CredentialIssued:
-                    this.walletStatusService.UpdateWalletCredential(data.CredentialExchangeId);
+                    this.walletStatusService.UpdateWalletCredentialStatus(data.CredentialExchangeId, Database.Constants.WalletCredentialStatus.Added);
                     break;
                 default:
                     this.logger.LogError("Credential exchange state {state} is not supported", data.State);

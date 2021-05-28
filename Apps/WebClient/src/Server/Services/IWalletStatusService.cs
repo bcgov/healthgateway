@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Services
 {
     using System;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -28,14 +29,16 @@ namespace HealthGateway.WebClient.Services
         /// Updates the state of the Wallet Connection using the connection id.
         /// </summary>
         /// <param name="connectionId">The id of the wallet connection to be updated.</param>
+        /// <param name="state">The wallet connection state to update.</param>
         /// <returns>The updated WalletConnection wrapped in a RequestResult.</returns>
-        RequestResult<WalletConnection> UpdateWalletConnection(Guid connectionId);
+        RequestResult<WalletConnection> UpdateWalletConnectionStatus(Guid connectionId, WalletConnectionStatus state);
 
         /// <summary>
         /// Updates the state of the Wallet Credential using the exchange id.
         /// </summary>
         /// <param name="exchangeId">The exchange id to query the wallet credential.</param>
+        /// <param name="state">The wallet credential state to update.</param>
         /// <returns>The updated WalletCredential wrapped in a RequestResult.</returns>
-        RequestResult<WalletCredential> UpdateWalletCredential(Guid exchangeId);
+        RequestResult<WalletCredential> UpdateWalletCredentialStatus(Guid exchangeId, WalletCredentialStatus state);
     }
 }

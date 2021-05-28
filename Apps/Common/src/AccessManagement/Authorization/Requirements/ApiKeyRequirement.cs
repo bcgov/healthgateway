@@ -23,8 +23,25 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
     /// </summary>
     public class ApiKeyRequirement : IAuthorizationRequirement
     {
-        private const string WebHookApiSectionKey = "AcaPy";
-        private const string WebHookApiKey = "webhookApiKey";
+        /// <summary>
+        /// The name of the section containing the ACA-Py configuration.
+        /// </summary>
+        public const string WebHookApiSectionKey = "AcaPy";
+
+        /// <summary>
+        /// The name of the configuration key which defines the API Key Header.
+        /// </summary>
+        public const string ApiKeyHeaderNameKey = "webhookApiKeyHeaderName";
+
+        /// <summary>
+        /// The name of the configuration key which defines the API key used to authorize access.
+        /// </summary>
+        public const string WebHookApiKey = "webhookApiKey";
+
+        /// <summary>
+        /// The default header name to query from the HTTP Request.
+        /// </summary>
+        public const string ApiKeyHeaderNameDefault = "X-API-KEY";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiKeyRequirement"/> class.
@@ -33,11 +50,17 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
         public ApiKeyRequirement(IConfiguration configuration)
         {
             this.ApiKey = configuration.GetValue<string>($"{WebHookApiSectionKey}:{WebHookApiKey}");
+            this.ApiKeyHeaderName = configuration.GetValue<string>($"{WebHookApiSectionKey}:{ApiKeyHeaderNameKey}", ApiKeyHeaderNameDefault);
         }
 
         /// <summary>
         /// Gets a value representing the Api Key.
         /// </summary>
         public string ApiKey { get; }
+
+        /// <summary>
+        /// Gets the name of the header to query.
+        /// </summary>
+        public string ApiKeyHeaderName { get; }
     }
 }
