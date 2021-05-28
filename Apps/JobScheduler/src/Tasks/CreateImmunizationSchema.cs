@@ -63,15 +63,13 @@ namespace Healthgateway.JobScheduler.Tasks
         /// <summary>
         /// Runs the task that needs to be done for the IOneTimeTask.
         /// </summary>
-        public async void Run()
+        public void Run()
         {
             this.logger.LogInformation($"Performing Task {this.GetType().Name}");
-
-            RequestResult<CreateSchemaResponse> schemaResponse = await this.CreateSchemaAsync().ConfigureAwait(true);
-
+            RequestResult<CreateSchemaResponse> schemaResponse = Task.Run(async () => await this.CreateSchemaAsync().ConfigureAwait(true)).Result;
             if (schemaResponse.ResourcePayload != null)
             {
-                await this.CreateCredentialDefinitionAsync(schemaResponse.ResourcePayload.SchemaId).ConfigureAwait(true);
+                Task.Run(async () => await this.CreateCredentialDefinitionAsync(schemaResponse.ResourcePayload.SchemaId).ConfigureAwait(true));
             }
 
             this.logger.LogInformation($"Task {this.GetType().Name} has completed");
