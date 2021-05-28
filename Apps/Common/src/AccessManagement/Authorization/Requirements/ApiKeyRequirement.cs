@@ -19,7 +19,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// UserRequirement asserts authorization that the user is a Patient (has an HDID).
+    /// ApiKeyRequirement looks up the Configuration API Key.
     /// </summary>
     public class ApiKeyRequirement : IAuthorizationRequirement
     {

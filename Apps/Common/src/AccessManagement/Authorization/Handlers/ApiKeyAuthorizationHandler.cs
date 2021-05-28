@@ -23,7 +23,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// PatientAuthorizationHandler validates that Patient requirements have been met.
+    /// APIKeyAuthorizationHandler validates that the API Key is in the header.
     /// </summary>
     public class ApiKeyAuthorizationHandler : IAuthorizationHandler
     {
