@@ -407,13 +407,12 @@
             Queues NotificationSettings job for each.
             </summary>
         </member>
-        <member name="M:Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema.#ctor(Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema.#ctor(Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema},HealthGateway.Common.Delegates.IWalletIssuerDelegate)">
             <summary>
             Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema"/> class.
             </summary>
             <param name="logger">The logger to use.</param>
-            <param name="httpClientService">The injected http client service.</param>
-            <param name="configuration">The injected configuration provider.</param>
+            <param name="walletIssuerDelegate">The injected wallet issuer service.</param>
         </member>
         <member name="M:Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema.Run">
             <summary>
@@ -491,126 +490,6 @@
             The default page for the home controller.
             </summary>
             <returns>The default view.</returns>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.AcaPy.CreateCredentialDefinitionRequest">
-            <summary>
-            Represents a Credential Definition Request to the aries agent.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateCredentialDefinitionRequest.SchemaId">
-            <summary>
-            Gets or sets the schema id.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateCredentialDefinitionRequest.SupportRevocation">
-            <summary>
-            Gets or sets a value indicating whether to support revocation.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateCredentialDefinitionRequest.Tag">
-            <summary>
-            Gets or sets the tag.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.AcaPy.CreateCredentialDefinitionResponse">
-            <summary>
-            Represents a Credential Definition Response from the aries agent.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateCredentialDefinitionResponse.CredentialDefinitionId">
-            <summary>
-            Gets or sets the schema id.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.AcaPy.CreateSchemaRequest">
-            <summary>
-            Represents a Schema Request to the aries agent.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.WebClient.Models.AcaPy.CreateSchemaRequest.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Models.AcaPy.CreateSchemaRequest"/> class.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateSchemaRequest.Attributes">
-            <summary>
-            Gets the attributes.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateSchemaRequest.SchemaName">
-            <summary>
-            Gets or sets the schema name.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateSchemaRequest.SchemaVersion">
-            <summary>
-            Gets or sets the schema version.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.AcaPy.CreateSchemaResponse">
-            <summary>
-            Represents a Schema Response from the aries agent.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.CreateSchemaResponse.SchemaId">
-            <summary>
-            Gets or sets the schema id.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential">
-            <summary>
-            Immunization credential attributes.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.ImmunizationType">
-            <summary>
-            Gets or sets the name of the type of immunization.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.ImmunizationProduct">
-            <summary>
-            Gets or sets the brand name of Immunization product.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.ImmunizationAgent">
-            <summary>
-            Gets or sets the immunization agent.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.LotNumber">
-            <summary>
-            Gets or sets the lot number.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.ImmunizationCredential.Provider">
-            <summary>
-            Gets or sets the provider or facility where the immunization was reeived.
-            </summary>
-        </member>
-        <member name="T:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration">
-            <summary>
-            Configuration to be used by external clients for authentication.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration.AgentApiUrl">
-            <summary>
-            Gets or sets Agent Api Url .
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration.AgentApiKey">
-            <summary>
-            Gets or sets the Agent Api Key.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration.SchemaName">
-            <summary>
-            Gets or sets the Agent Api Key.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.WebClient.Models.AcaPy.WalletIssuerConfiguration.SchemaVersion">
-            <summary>
-            Gets or sets the Agent Api Key.
-            </summary>
         </member>
         <member name="T:HealthGateway.JobScheduler.Controllers.JobSchedulerController">
             <summary>

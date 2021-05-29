@@ -13,32 +13,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Credential Definition Request to the aries agent.
+    /// Represents a Credential Definition Response from the aries agent.
     /// </summary>
-    public class CreateCredentialDefinitionRequest
+    public class CredentialDefinitionResponse
     {
         /// <summary>
         /// Gets or sets the schema id.
         /// </summary>
-        [JsonPropertyName("schema_id")]
-        public string? SchemaId { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to support revocation.
-        /// </summary>
-        [JsonPropertyName("support_revocation")]
-        public bool SupportRevocation { get; set; }
-
-        /// <summary>
-        /// Gets or sets the tag.
-        /// </summary>
-        [JsonPropertyName("tag")]
-        public string? Tag { get; set; }
+        [JsonPropertyName("credential_definition_id")]
+        public string? CredentialDefinitionId { get; set; }
     }
 }

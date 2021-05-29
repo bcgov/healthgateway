@@ -1476,6 +1476,11 @@
             Interface that defines a delegate to create/revoke wallet connections and credentials.
             </summary>
         </member>
+        <member name="P:HealthGateway.Common.Delegates.IWalletIssuerDelegate.WalletIssuerConfig">
+            <summary>
+            Gets the Wallet Issuer Configuration.
+            </summary>
+        </member>
         <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <summary>
             Requests that the agent create a connection.
@@ -1505,6 +1510,20 @@
             </summary>
             <param name="credential">The wallet credential to revoke.</param>
             <returns>The WalletCredential that was revoked.</returns>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateSchemaAsync(HealthGateway.Common.Models.AcaPy.SchemaRequest)">
+            <summary>
+            Creates a schema with the agent.
+            </summary>
+            <param name="schema">The schema to create.</param>
+            <returns>The schema response wrapped.</returns>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateCredentialDefinitionAsync(System.String)">
+            <summary>
+            Creates a credential definition for a given scehmaId.
+            </summary>
+            <param name="schemaId">The schema id to create the credential definition for.</param>
+            <returns>The schema response wrapped.</returns>
         </member>
         <member name="T:HealthGateway.Common.Delegates.RestNotificationSettingsDelegate">
             <summary>
@@ -1538,6 +1557,9 @@
             <param name="httpClientService">The injected http client service.</param>
             <param name="configuration">The injected configuration provider.</param>
         </member>
+        <member name="P:HealthGateway.Common.Delegates.WalletIssuerDelegate.WalletIssuerConfig">
+            <inheritdoc/>
+        </member>
         <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <inheritdoc/>
         </member>
@@ -1548,6 +1570,12 @@
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateSchemaAsync(HealthGateway.Common.Models.AcaPy.SchemaRequest)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialDefinitionAsync(System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Common.ErrorHandling.ActionType">
@@ -1850,19 +1878,39 @@
             Gets or sets the invitation url.
             </summary>
         </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest">
+            <summary>
+            Represents a Credential Definition Request to the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest.SchemaId">
+            <summary>
+            Gets or sets the schema id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest.SupportRevocation">
+            <summary>
+            Gets or sets a value indicating whether to support revocation.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest.Tag">
+            <summary>
+            Gets or sets the tag.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionResponse">
+            <summary>
+            Represents a Credential Definition Response from the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionResponse.CredentialDefinitionId">
+            <summary>
+            Gets or sets the schema id.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.CredentialPayload">
             <summary>
             A verifiable credential for an Immunization.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialPayload.SchemaName">
-            <summary>
-            Gets or sets the schema name to be used for the Credential paylaod.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialPayload.SchemaVersion">
-            <summary>
-            Gets or sets the schema version to be used for the Credential paylaod.
             </summary>
         </member>
         <member name="P:HealthGateway.Common.Models.AcaPy.CredentialPayload.RecipientName">
@@ -1920,6 +1968,41 @@
             Gets or sets the provider or facility where the immunization was reeived.
             </summary>
         </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.SchemaRequest">
+            <summary>
+            Represents a Schema Request to the aries agent.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Models.AcaPy.SchemaRequest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Models.AcaPy.SchemaRequest"/> class.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaRequest.Attributes">
+            <summary>
+            Gets the attributes.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaRequest.SchemaName">
+            <summary>
+            Gets or sets the schema name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaRequest.SchemaVersion">
+            <summary>
+            Gets or sets the schema version.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.SchemaResponse">
+            <summary>
+            Represents a Schema Response from the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaResponse.SchemaId">
+            <summary>
+            Gets or sets the schema id.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration">
             <summary>
             Configuration to be used by external clients for authentication.
@@ -1931,6 +2014,16 @@
             </summary>
         </member>
         <member name="P:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration.AgentApiKey">
+            <summary>
+            Gets or sets the Agent Api Key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration.SchemaName">
+            <summary>
+            Gets or sets the Agent Api Key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration.SchemaVersion">
             <summary>
             Gets or sets the Agent Api Key.
             </summary>

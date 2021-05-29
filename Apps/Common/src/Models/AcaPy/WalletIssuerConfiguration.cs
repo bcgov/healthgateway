@@ -29,5 +29,15 @@ namespace HealthGateway.Common.Models.AcaPy
         /// Gets or sets the Agent Api Key.
         /// </summary>
         public string AgentApiKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Agent Api Key.
+        /// </summary>
+        public string SchemaName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Agent Api Key.
+        /// </summary>
+        public string SchemaVersion { get; set; } = string.Empty;
     }
 }

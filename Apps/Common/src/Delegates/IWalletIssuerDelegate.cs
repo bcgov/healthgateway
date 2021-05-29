@@ -27,6 +27,11 @@ namespace HealthGateway.Common.Delegates
     public interface IWalletIssuerDelegate
     {
         /// <summary>
+        /// Gets the Wallet Issuer Configuration.
+        /// </summary>
+        WalletIssuerConfiguration WalletIssuerConfig { get; }
+
+        /// <summary>
         /// Requests that the agent create a connection.
         /// </summary>
         /// <param name="walletConnectionId">The id of the wallet connection.</param>
@@ -56,5 +61,19 @@ namespace HealthGateway.Common.Delegates
         /// <param name="credential">The wallet credential to revoke.</param>
         /// <returns>The WalletCredential that was revoked.</returns>
         Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential);
+
+        /// <summary>
+        /// Creates a schema with the agent.
+        /// </summary>
+        /// <param name="schema">The schema to create.</param>
+        /// <returns>The schema response wrapped.</returns>
+        Task<RequestResult<SchemaResponse>> CreateSchemaAsync(SchemaRequest schema);
+
+        /// <summary>
+        /// Creates a credential definition for a given scehmaId.
+        /// </summary>
+        /// <param name="schemaId">The schema id to create the credential definition for.</param>
+        /// <returns>The schema response wrapped.</returns>
+        Task<RequestResult<CredentialDefinitionResponse>> CreateCredentialDefinitionAsync(string schemaId);
     }
 }

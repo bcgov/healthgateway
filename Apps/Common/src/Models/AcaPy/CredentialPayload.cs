@@ -23,16 +23,6 @@ namespace HealthGateway.Common.Models.AcaPy
     public abstract class CredentialPayload
     {
         /// <summary>
-        /// Gets or sets the schema name to be used for the Credential paylaod.
-        /// </summary>
-        public string? SchemaName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the schema version to be used for the Credential paylaod.
-        /// </summary>
-        public string? SchemaVersion { get; set; }
-
-        /// <summary>
         /// Gets or sets the full legal name of the recipient.
         /// </summary>
         public string? RecipientName { get; set; }

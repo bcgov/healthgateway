@@ -13,40 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System.Collections.ObjectModel;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Schema Request to the aries agent.
+    /// Represents a Credential Definition Request to the aries agent.
     /// </summary>
-    public class CreateSchemaRequest
+    public class CredentialDefinitionRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CreateSchemaRequest"/> class.
+        /// Gets or sets the schema id.
         /// </summary>
-        public CreateSchemaRequest()
-        {
-            this.Attributes = new Collection<string>();
-        }
+        [JsonPropertyName("schema_id")]
+        public string? SchemaId { get; set; }
 
         /// <summary>
-        /// Gets the attributes.
+        /// Gets or sets a value indicating whether to support revocation.
         /// </summary>
-        [JsonPropertyName("attributes")]
-        public Collection<string>? Attributes { get; }
+        [JsonPropertyName("support_revocation")]
+        public bool SupportRevocation { get; set; }
 
         /// <summary>
-        /// Gets or sets the schema name.
+        /// Gets or sets the tag.
         /// </summary>
-        [JsonPropertyName("schema_name")]
-        public string? SchemaName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the schema version.
-        /// </summary>
-        [JsonPropertyName("schema_version")]
-        public string? SchemaVersion { get; set; }
+        [JsonPropertyName("tag")]
+        public string? Tag { get; set; }
     }
 }
