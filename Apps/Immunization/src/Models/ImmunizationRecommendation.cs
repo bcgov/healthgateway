@@ -117,7 +117,7 @@ namespace HealthGateway.Immunization.Models
             DateCriterion? disseaseEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Eligible Date");
             DateCriterion? diseaseDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Disease Due Date");
             DateCriterion? agentEligible = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Agent Eligible Date");
-            DateCriterion? agentDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Agent Eligible Date");
+            DateCriterion? agentDue = model.DateCriterions.FirstOrDefault(x => x.DateCriterionCode.Text == "Forecast by Agent Due Date");
 
             return new ImmunizationRecommendation(TargetDisease.FromPHSAModelList(model.TargetDisease))
             {
