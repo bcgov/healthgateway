@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Common.Models.Immunization
 {
     using System;
     using System.Text.Json.Serialization;
@@ -58,23 +58,5 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("dueDate")]
         public DateTime DueDate { get; set; }
-
-        /// <summary>
-        /// Creates a ImmunizationForecast object from a PHSA model.
-        /// </summary>
-        /// <param name="model">The immunization forecast object to convert.</param>
-        /// <returns>The newly created ImmunizationForecast object.</returns>
-        public static ImmunizationForecast FromPHSAModel(ImmunizationForecastResponse model)
-        {
-            return new ImmunizationForecast()
-            {
-                RecommendationId = model.ImmsId,
-                CreateDate = model.ForecastCreateDate,
-                Status = model.ForecastStatus,
-                DisplayName = model.DisplayName,
-                EligibleDate = model.EligibleDate,
-                DueDate = model.DueDate,
-            };
-        }
     }
 }

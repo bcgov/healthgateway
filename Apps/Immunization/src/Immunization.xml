@@ -27,7 +27,7 @@
             </summary>
             <param name="hdid">The hdid patient id.</param>
             <param name="immunizationId">The immunization id.</param>
-            <returns>a list of immunization records.</returns>
+            <returns>The immunization record with the given id.</returns>
             <response code="200">Returns the List of Immunization records.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
@@ -38,7 +38,7 @@
             Gets a json list of immunization records.
             </summary>
             <param name="hdid">The hdid patient id.</param>
-            <returns>a list of immunization records.</returns>
+            <returns>A list of immunization records for the given patient identifier.</returns>
             <response code="200">Returns the List of Immunization records.</response>
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
@@ -89,52 +89,6 @@
         <member name="M:HealthGateway.Immunization.Delegates.RestImmunizationDelegate.GetImmunizations(System.Int32)">
             <inheritdoc/>
         </member>
-        <member name="T:HealthGateway.Immunization.Models.ImmunizationAgent">
-            <summary>
-            The Immunization Agents model.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationAgent.Code">
-            <summary>
-            Gets or sets the Immunization id.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationAgent.Name">
-            <summary>
-            Gets or sets the Immunization Name.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationAgent.LotNumber">
-            <summary>
-            Gets or sets the Immunization Lot Number.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationAgent.ProductName">
-            <summary>
-            Gets or sets the Immunization Product Name.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Models.ImmunizationAgent.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse)">
-            <summary>
-            Creates a Immunization Model object from a PHSA model.
-            </summary>
-            <param name="model">The immunization object to convert.</param>
-            <returns>The newly created ImmunizationModel object.</returns>
-        </member>
-        <member name="M:HealthGateway.Immunization.Models.ImmunizationAgent.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse})">
-            <summary>
-            Creates a List of ImmunizationAgents object from a PHSA model.
-            </summary>
-            <param name="immunizationAgentResponse">The list of PHSA models to convert.</param>
-            <returns>A list of ImmunizationAgent objects.</returns>
-        </member>
-        <member name="M:HealthGateway.Immunization.Models.ImmunizationAgent.FromPHSACodesModel(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode})">
-            <summary>
-            Creates a List of ImmunizationAgents object from a PHSA model.
-            </summary>
-            <param name="vaccineCodes">The list of PHSA models to convert.</param>
-            <returns>A list of ImmunizationAgent objects.</returns>
-        </member>
         <member name="T:HealthGateway.Immunization.Models.ImmunizationConfig">
             <summary>
             Provides configuration data for the Immunization Delegate.
@@ -149,124 +103,6 @@
             <summary>
             Gets or sets the total number of records to retrieve in one call.
             </summary>
-        </member>
-        <member name="T:HealthGateway.Immunization.Models.ImmunizationDefinition">
-            <summary>
-            Defines an Immunization definition.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationDefinition.Name">
-            <summary>
-            Gets or sets the Immunization name.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationDefinition.ImmunizationAgents">
-            <summary>
-            Gets or sets the Immunization Agents.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Models.ImmunizationDefinition.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode)">
-            <summary>
-            Creates an ImmunizationDefinition object from a PHSA model.
-            </summary>
-            <param name="model">The vaccine code object to convert.</param>
-            <returns>The newly created ImmunizationDefinition object.</returns>
-        </member>
-        <member name="T:HealthGateway.Immunization.Models.ImmunizationEvent">
-            <summary>
-            Represents a row in the Immunization Model.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationEvent.Id">
-            <summary>
-            Gets or sets the Immunization id.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationEvent.DateOfImmunization">
-            <summary>
-            Gets or sets the Date of Immunization.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationEvent.Status">
-            <summary>
-            Gets or sets the Immunization Status.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationEvent.ProviderOrClinic">
-            <summary>
-            Gets or sets the Provider or Clinic providing the Immunization.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationEvent.TargetedDisease">
-            <summary>
-            Gets or sets the Targeted Disease of the Immunization.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationEvent.Immunization">
-            <summary>
-            Gets or sets the Immunization definition.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationEvent.Forecast">
-            <summary>
-            Gets or sets the Immunization forecast.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Models.ImmunizationEvent.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse)">
-            <summary>
-            Creates a ImmunizationEvent object from a PHSA model.
-            </summary>
-            <param name="model">The immunization view object to convert.</param>
-            <returns>The newly created ImmunizationEvent object.</returns>
-        </member>
-        <member name="M:HealthGateway.Immunization.Models.ImmunizationEvent.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse})">
-            <summary>
-            Creates a ImmunizationEvent object from a PHSA model.
-            </summary>
-            <param name="immunizationViewResponse">The list of PHSA models to convert.</param>
-            <returns>A list of ImmunizationEvent objects.</returns>
-        </member>
-        <member name="T:HealthGateway.Immunization.Models.ImmunizationForecast">
-            <summary>
-            Represents Immunization Forecast.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecast.RecommendationId">
-            <summary>
-            Gets or sets the Recommendation Id.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecast.CreateDate">
-            <summary>
-            Gets or sets the Create Date.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecast.Status">
-            <summary>
-            Gets or sets the Status.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecast.DisplayName">
-            <summary>
-            Gets or sets the Display Name.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecast.EligibleDate">
-            <summary>
-            Gets or sets the Eligible Date.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Immunization.Models.ImmunizationForecast.DueDate">
-            <summary>
-            Gets or sets the Due Date.
-            </summary>
-        </member>
-        <member name="M:HealthGateway.Immunization.Models.ImmunizationForecast.FromPHSAModel(HealthGateway.Immunization.Models.ImmunizationForecastResponse)">
-            <summary>
-            Creates a ImmunizationForecast object from a PHSA model.
-            </summary>
-            <param name="model">The immunization forecast object to convert.</param>
-            <returns>The newly created ImmunizationForecast object.</returns>
         </member>
         <member name="T:HealthGateway.Immunization.Models.ImmunizationRecommendation">
             <summary>
@@ -344,7 +180,7 @@
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.ImmunizationResult"/> class.
             </summary>
         </member>
-        <member name="M:HealthGateway.Immunization.Models.ImmunizationResult.#ctor(HealthGateway.Immunization.Models.LoadStateModel,System.Collections.Generic.IList{HealthGateway.Immunization.Models.ImmunizationEvent},System.Collections.Generic.IList{HealthGateway.Immunization.Models.ImmunizationRecommendation})">
+        <member name="M:HealthGateway.Immunization.Models.ImmunizationResult.#ctor(HealthGateway.Immunization.Models.LoadStateModel,System.Collections.Generic.IList{HealthGateway.Common.Models.Immunization.ImmunizationEvent},System.Collections.Generic.IList{HealthGateway.Immunization.Models.ImmunizationRecommendation})">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.Immunization.Models.ImmunizationResult"/> class.
             </summary>
@@ -743,6 +579,75 @@
             </summary>
             <param name="model">The immunization view object to convert.</param>
             <returns>The newly created ImmunizationEvent object.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Parser.AgentParser">
+            <summary>
+            Provides parser methods for ImmunizationAgents.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.AgentParser.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse)">
+            <summary>
+            Creates a Immunization Model object from a PHSA model.
+            </summary>
+            <param name="model">The immunization object to convert.</param>
+            <returns>The newly created ImmunizationModel object.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.AgentParser.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.ImmunizationAgentResponse})">
+            <summary>
+            Creates a List of ImmunizationAgents object from a PHSA model.
+            </summary>
+            <param name="immunizationAgentResponse">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationAgent objects.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.AgentParser.FromPHSACodesModel(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.Recommendation.SystemCode})">
+            <summary>
+            Creates a List of ImmunizationAgents object from a PHSA model.
+            </summary>
+            <param name="vaccineCodes">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationAgent objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Parser.DefinitionParser">
+            <summary>
+            Provides parsing methods for Immunization definitions.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.DefinitionParser.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.Recommendation.VaccineCode)">
+            <summary>
+            Creates an ImmunizationDefinition object from a PHSA model.
+            </summary>
+            <param name="model">The vaccine code object to convert.</param>
+            <returns>The newly created ImmunizationDefinition object.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Parser.EventParser">
+            <summary>
+            Provides parsing methods for Immunization Events.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.EventParser.FromPHSAModel(HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse)">
+            <summary>
+            Creates a ImmunizationEvent object from a PHSA model.
+            </summary>
+            <param name="model">The immunization view object to convert.</param>
+            <returns>The newly created ImmunizationEvent object.</returns>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.EventParser.FromPHSAModelList(System.Collections.Generic.IEnumerable{HealthGateway.Immunization.Models.PHSA.ImmunizationViewResponse})">
+            <summary>
+            Creates a ImmunizationEvent object from a PHSA model.
+            </summary>
+            <param name="immunizationViewResponse">The list of PHSA models to convert.</param>
+            <returns>A list of ImmunizationEvent objects.</returns>
+        </member>
+        <member name="T:HealthGateway.Immunization.Parser.ForecastParser">
+            <summary>
+            Provides methods for parsing Immunization Forecast.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Immunization.Parser.ForecastParser.FromPHSAModel(HealthGateway.Immunization.Models.ImmunizationForecastResponse)">
+            <summary>
+            Creates a ImmunizationForecast object from a PHSA model.
+            </summary>
+            <param name="model">The immunization forecast object to convert.</param>
+            <returns>The newly created ImmunizationForecast object.</returns>
         </member>
         <member name="T:HealthGateway.Immunization.Program">
             <summary>

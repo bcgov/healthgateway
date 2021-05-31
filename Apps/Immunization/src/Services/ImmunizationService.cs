@@ -18,10 +18,12 @@ namespace HealthGateway.Immunization.Services
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Immunization.Delegates;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Models.PHSA;
+    using HealthGateway.Immunization.Parser;
 
     /// <summary>
     /// The Immunization data service.
@@ -49,7 +51,7 @@ namespace HealthGateway.Immunization.Services
                 return new RequestResult<ImmunizationEvent>()
                 {
                     ResultStatus = delegateResult.ResultStatus,
-                    ResourcePayload = ImmunizationEvent.FromPHSAModel(delegateResult.ResourcePayload!.Result),
+                    ResourcePayload = EventParser.FromPHSAModel(delegateResult.ResourcePayload!.Result),
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,
                     TotalResultCount = delegateResult.TotalResultCount,
@@ -76,7 +78,7 @@ namespace HealthGateway.Immunization.Services
                     ResultStatus = delegateResult.ResultStatus,
                     ResourcePayload = new ImmunizationResult(
                         LoadStateModel.FromPHSAModel(delegateResult.ResourcePayload!.LoadState),
-                        ImmunizationEvent.FromPHSAModelList(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
+                        EventParser.FromPHSAModelList(delegateResult.ResourcePayload!.Result!.ImmunizationViews),
                         ImmunizationRecommendation.FromPHSAModelList(delegateResult.ResourcePayload.Result.Recommendations)),
                     PageIndex = delegateResult.PageIndex,
                     PageSize = delegateResult.PageSize,

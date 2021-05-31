@@ -333,6 +333,21 @@
             Hash - Happy Path (Null Key).
             </summary>
         </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest">
+            <summary>
+            NotificationSettingsDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ValidateGetNotificationSettings200">
+            <summary>
+            GetNotificationSettings - Happy Path.
+            </summary>
+        </member>
         <member name="T:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests">
             <summary>
             NotificationSettingsDelegate's Unit Tests.

@@ -20,7 +20,9 @@ namespace HealthGateway.Immunization.Models
     using System.Globalization;
     using System.Linq;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models.PHSA.Recommendation;
+    using HealthGateway.Immunization.Parser;
 
     /// <summary>
     /// Represents an Immunization Recommendation.
@@ -127,7 +129,7 @@ namespace HealthGateway.Immunization.Models
                 AgentEligibleDate = agentEligible != null ? DateTime.Parse(agentEligible.Value, CultureInfo.CurrentCulture) : null,
                 AgentDueDate = agentDue != null ? DateTime.Parse(agentDue.Value, CultureInfo.CurrentCulture) : null,
                 Status = model.ForecastStatus.ForecastStatusText,
-                Immunization = ImmunizationDefinition.FromPHSAModel(model.VaccineCode),
+                Immunization = DefinitionParser.FromPHSAModel(model.VaccineCode),
             };
         }
     }

@@ -1451,6 +1451,19 @@
             <param name="compareHash">The hash object to compare.</param>
             <returns>true if the key generates the same hash or the hash value is null and the key is null.</returns>
         </member>
+        <member name="T:HealthGateway.Common.Delegates.IImmunizationDelegate">
+            <summary>
+            Defines a delegate to retrieve immunization records.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IImmunizationDelegate.GetImmunization(System.String,System.String)">
+            <summary>
+            Gets an immunization record for the given id.
+            </summary>
+            <param name="hdid">The hdid patient id.</param>
+            <param name="immunizationId">The immunization id.</param>
+            <returns>The immunization record with the given id.</returns>
+        </member>
         <member name="T:HealthGateway.Common.Delegates.INotificationSettingsDelegate">
             <summary>
             Interface that defines a delegate to get and set Notification Settings at PHSA.
@@ -1470,6 +1483,28 @@
             <param name="notificationSettings">The notification settings request to send to PHSA.</param>
             <param name="bearerToken">The access token of the authenticated user.</param>
             <returns>The notification settings response returned from PHSA wrapped in a RequestResult.</returns>
+        </member>
+        <member name="T:HealthGateway.Common.Delegates.RestImmunizationDelegate">
+            <summary>
+            Implementation that uses HTTP to sends notification settings to PHSA.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Common.Delegates.RestImmunizationDelegate.httpContextAccessor">
+            <summary>
+            Gets or sets the http context accessor.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.RestImmunizationDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.Delegates.RestNotificationSettingsDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.RestImmunizationDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="httpContextAccessor">The Http Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.RestImmunizationDelegate.GetImmunization(System.String,System.String)">
+            <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Common.Delegates.RestNotificationSettingsDelegate">
             <summary>
@@ -1823,6 +1858,121 @@
         <member name="P:HealthGateway.Common.Models.HMACHashDelegateConfig.SaltLength">
             <summary>
             Gets or sets the salt length in bytes.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.Immunization.ImmunizationAgent">
+            <summary>
+            The Immunization Agents model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationAgent.Code">
+            <summary>
+            Gets or sets the Immunization id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationAgent.Name">
+            <summary>
+            Gets or sets the Immunization Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationAgent.LotNumber">
+            <summary>
+            Gets or sets the Immunization Lot Number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationAgent.ProductName">
+            <summary>
+            Gets or sets the Immunization Product Name.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.Immunization.ImmunizationDefinition">
+            <summary>
+            Defines an Immunization definition.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationDefinition.Name">
+            <summary>
+            Gets or sets the Immunization name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationDefinition.ImmunizationAgents">
+            <summary>
+            Gets or sets the Immunization Agents.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.Immunization.ImmunizationEvent">
+            <summary>
+            Represents a single immunization event.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.Id">
+            <summary>
+            Gets or sets the Immunization id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.DateOfImmunization">
+            <summary>
+            Gets or sets the Date of Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.Status">
+            <summary>
+            Gets or sets the Immunization Status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.ProviderOrClinic">
+            <summary>
+            Gets or sets the Provider or Clinic providing the Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.TargetedDisease">
+            <summary>
+            Gets or sets the Targeted Disease of the Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.Immunization">
+            <summary>
+            Gets or sets the Immunization definition.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.Forecast">
+            <summary>
+            Gets or sets the Immunization forecast.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.Immunization.ImmunizationForecast">
+            <summary>
+            Represents Immunization Forecast.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.RecommendationId">
+            <summary>
+            Gets or sets the Recommendation Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.CreateDate">
+            <summary>
+            Gets or sets the Create Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.Status">
+            <summary>
+            Gets or sets the Status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.DisplayName">
+            <summary>
+            Gets or sets the Display Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.EligibleDate">
+            <summary>
+            Gets or sets the Eligible Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.DueDate">
+            <summary>
+            Gets or sets the Due Date.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.NotificationSettingsBase">
