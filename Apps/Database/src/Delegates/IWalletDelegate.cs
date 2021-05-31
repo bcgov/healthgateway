@@ -16,7 +16,6 @@
 namespace HealthGateway.Database.Delegates
 {
     using System;
-    using System.Collections.Generic;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -33,11 +32,11 @@ namespace HealthGateway.Database.Delegates
         DBResult<WalletConnection> GetConnection(Guid id);
 
         /// <summary>
-        /// Gets the wallet associated to the user profile Id passed in.
+        /// Gets the first wallet associated to the user profile Id that isn't in a disconnected state.
         /// </summary>
         /// <param name="userProfileId">The profile id/hdid of the wallet to retrieve.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<WalletConnection> GetConnection(string userProfileId);
+        DBResult<WalletConnection> GetCurrentConnection(string userProfileId);
 
         /// <summary>
         /// Gets the Wallet credentials associated to a given exchange id.
