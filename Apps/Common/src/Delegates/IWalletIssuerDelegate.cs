@@ -13,19 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Delegates
+namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.AcaPy;
     using HealthGateway.Database.Models;
-    using HealthGateway.WebClient.Models.AcaPy;
 
     /// <summary>
     /// Interface that defines a delegate to create/revoke wallet connections and credentials.
     /// </summary>
     public interface IWalletIssuerDelegate
     {
+        /// <summary>
+        /// Gets the Wallet Issuer Configuration.
+        /// </summary>
+        WalletIssuerConfiguration WalletIssuerConfig { get; }
+
         /// <summary>
         /// Requests that the agent create a connection.
         /// </summary>
@@ -56,5 +61,19 @@ namespace HealthGateway.WebClient.Delegates
         /// <param name="credential">The wallet credential to revoke.</param>
         /// <returns>The WalletCredential that was revoked.</returns>
         Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential);
+
+        /// <summary>
+        /// Creates a schema with the agent.
+        /// </summary>
+        /// <param name="schema">The schema to create.</param>
+        /// <returns>The schema response wrapped.</returns>
+        Task<RequestResult<SchemaResponse>> CreateSchemaAsync(SchemaRequest schema);
+
+        /// <summary>
+        /// Creates a credential definition for a given scehmaId.
+        /// </summary>
+        /// <param name="schemaId">The schema id to create the credential definition for.</param>
+        /// <returns>The schema response wrapped.</returns>
+        Task<RequestResult<CredentialDefinitionResponse>> CreateCredentialDefinitionAsync(string schemaId);
     }
 }

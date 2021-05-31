@@ -13,14 +13,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Connection to the Ares Agent.
+    /// Represents a Credential Definition Response from the aries agent.
     /// </summary>
-    public class Connection
+    public class CredentialDefinitionResponse
     {
+        /// <summary>
+        /// Gets or sets the schema id.
+        /// </summary>
+        [JsonPropertyName("credential_definition_id")]
+        public string? CredentialDefinitionId { get; set; }
     }
 }
