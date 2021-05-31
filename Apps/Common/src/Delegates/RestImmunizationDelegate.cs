@@ -36,7 +36,7 @@ namespace HealthGateway.Common.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Implementation that uses HTTP to sends notification settings to PHSA.
+    /// Implementation that uses HTTP to retrieve immunization data.
     /// </summary>
     public class RestImmunizationDelegate : IImmunizationDelegate
     {
@@ -60,7 +60,7 @@ namespace HealthGateway.Common.Delegates
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="httpContextAccessor">The Http Context accessor.</param>
         public RestImmunizationDelegate(
-            ILogger<RestNotificationSettingsDelegate> logger,
+            ILogger<RestImmunizationDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor)

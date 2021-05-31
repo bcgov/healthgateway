@@ -13,38 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// A verifiable credential Payload for an Immunization record.
+    /// Represents a Credential Definition Request to the aries agent.
     /// </summary>
-    public class ImmunizationCredentialPayload : CredentialPayload
+    public class CredentialDefinitionRequest
     {
         /// <summary>
-        /// Gets or sets the name of the type of immunization.
+        /// Gets or sets the schema id.
         /// </summary>
-        public string? ImmunizationType { get; set; }
+        [JsonPropertyName("schema_id")]
+        public string? SchemaId { get; set; }
 
         /// <summary>
-        /// Gets or sets the brand name of Immunization product.
+        /// Gets or sets a value indicating whether to support revocation.
         /// </summary>
-        public string? ImmunizationProduct { get; set; }
+        [JsonPropertyName("support_revocation")]
+        public bool SupportRevocation { get; set; }
 
         /// <summary>
-        /// Gets or sets the immunization agent.
+        /// Gets or sets the tag.
         /// </summary>
-        public string? ImmunizationAgent { get; set; }
-
-        /// <summary>
-        /// Gets or sets the lot number.
-        /// </summary>
-        public string? LotNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets the provider or facility where the immunization was reeived.
-        /// </summary>
-        public string? Provider { get; set; }
+        [JsonPropertyName("tag")]
+        public string? Tag { get; set; }
     }
 }
