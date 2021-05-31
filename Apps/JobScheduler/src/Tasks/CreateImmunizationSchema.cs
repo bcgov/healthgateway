@@ -56,7 +56,7 @@ namespace Healthgateway.JobScheduler.Tasks
 
             foreach (var property in typeof(ImmunizationCredentialPayload).GetProperties())
             {
-                schema.Attributes?.Add(property.Name);
+                schema.Attributes.Add(property.Name);
             }
 
             this.logger.LogInformation($"Performing Task {this.GetType().Name}");

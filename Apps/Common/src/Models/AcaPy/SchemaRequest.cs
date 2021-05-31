@@ -35,18 +35,18 @@ namespace HealthGateway.Common.Models.AcaPy
         /// Gets the attributes.
         /// </summary>
         [JsonPropertyName("attributes")]
-        public Collection<string>? Attributes { get; }
+        public Collection<string> Attributes { get; }
 
         /// <summary>
         /// Gets or sets the schema name.
         /// </summary>
         [JsonPropertyName("schema_name")]
-        public string? SchemaName { get; set; }
+        public string SchemaName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the schema version.
         /// </summary>
         [JsonPropertyName("schema_version")]
-        public string? SchemaVersion { get; set; }
+        public string SchemaVersion { get; set; } = string.Empty;
     }
 }
