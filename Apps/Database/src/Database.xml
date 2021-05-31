@@ -982,7 +982,7 @@
         <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetConnection(System.Guid)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetConnection(System.String)">
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCurrentConnection(System.String)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCredential(System.Guid)">
@@ -1786,9 +1786,9 @@
             <param name="id">The Wallet Connection Id to retrieve.</param>
             <returns>A DB result which encapsulates the return object and status.</returns>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetConnection(System.String)">
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetCurrentConnection(System.String)">
             <summary>
-            Gets the wallet associated to the user profile Id passed in.
+            Gets the first wallet associated to the user profile Id that isn't in a disconnected state.
             </summary>
             <param name="userProfileId">The profile id/hdid of the wallet to retrieve.</param>
             <returns>A DB result which encapsulates the return object and status.</returns>
@@ -3382,6 +3382,16 @@
         <member name="P:HealthGateway.Database.Models.WalletCredential.ExchangeId">
             <summary>
             Gets or sets the exchange id for this credential.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.RevocationId">
+            <summary>
+            Gets or sets the revocation id from the agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.RevocationRegistryId">
+            <summary>
+            Gets or sets the revocation registry id from the agent.
             </summary>
         </member>
         <member name="T:HealthGateway.Database.Models.WalletCredentialStatusCode">
