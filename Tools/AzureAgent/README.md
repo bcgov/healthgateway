@@ -4,6 +4,16 @@ Creates and deploys the Azure Agent in the OpenShift environment.
 
 Microsoft Azure Agent [documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops) was very helpful.
 
+## Prerequise Image
+
+As Docker Hub has recently put in place pull limits, a pull secret needs to be defined in the namespace that you're deploying to. We would typically do this in tools
+
+```console
+oc project 0bd5ad-tools
+oc create secret docker-registry docker-secret --docker-server=docker.io --docker-username=healthopenshift --docker-password=[ASK TEAM] --docker-email=stephen.s.laws@gov.bc.ca
+oc secrets link builder docker-secret --for=pull
+```
+
 ## Creating a Personal Access Token
 
 A Personal Access Token (PAT) is an authentication method similar to using a password. Our Azure Agents use the PAT for authentication into Azure DevOps.
