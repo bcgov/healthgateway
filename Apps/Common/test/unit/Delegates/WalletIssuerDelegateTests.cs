@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Test.Delegates
+namespace HealthGateway.CommonTests.Delegates
 {
     using System;
     using System.Collections.Generic;
@@ -24,10 +24,10 @@ namespace HealthGateway.WebClient.Test.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.AcaPy;
     using HealthGateway.Common.Services;
-    using HealthGateway.WebClient.Delegates;
-    using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;

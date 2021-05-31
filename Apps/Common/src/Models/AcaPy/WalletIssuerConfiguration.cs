@@ -13,38 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
-
     /// <summary>
-    /// A verifiable credential for an Immunization.
+    /// Configuration to be used by external clients for authentication.
     /// </summary>
-    public abstract class CredentialPayload
+    public class WalletIssuerConfiguration
     {
         /// <summary>
-        /// Gets or sets the schema name to be used for the Credential paylaod.
+        /// Gets or sets Agent Api Url .
         /// </summary>
-        public string? SchemaName { get; set; }
+        public System.Uri? AgentApiUrl { get; set; }
 
         /// <summary>
-        /// Gets or sets the schema version to be used for the Credential paylaod.
+        /// Gets or sets the Agent Api Key.
         /// </summary>
-        public string? SchemaVersion { get; set; }
+        public string AgentApiKey { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the full legal name of the recipient.
+        /// Gets or sets the Agent Api Key.
         /// </summary>
-        public string? RecipientName { get; set; }
+        public string SchemaName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the birthdate of the recipient.
+        /// Gets or sets the Agent Api Key.
         /// </summary>
-        public DateTime? RecipientBirthDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Personal Health Number of the recipient.
-        /// </summary>
-        public string? RecipientPHN { get; set; }
+        public string SchemaVersion { get; set; } = string.Empty;
     }
 }
