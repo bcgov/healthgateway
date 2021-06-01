@@ -17,11 +17,15 @@ namespace HealthGateway.WebClient.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Models;
+    using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Web API to handle Verifiable Credentials.
@@ -32,14 +36,19 @@ namespace HealthGateway.WebClient.Controllers
     [ApiController]
     public class WalletController
     {
+        private readonly ILogger logger;
         private readonly IWalletService verifiableCredentialService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WalletController"/> class.
         /// </summary>
+        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="verifiableCredentialService">The injected verifiable credential service.</param>
-        public WalletController(IWalletService verifiableCredentialService)
+        public WalletController(
+            ILogger<WalletController> logger,
+            IWalletService verifiableCredentialService)
         {
+            this.logger = logger;
             this.verifiableCredentialService = verifiableCredentialService;
         }
 
@@ -54,7 +63,11 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<JsonResult> CreateConnection(string hdid, [FromBody] IEnumerable<string> targetIds)
         {
-            return new JsonResult(await this.verifiableCredentialService.CreateConnectionAsync(hdid, targetIds).ConfigureAwait(true));
+            this.logger.LogDebug($"Creating wallet connection {JsonSerializer.Serialize(targetIds)} for user {hdid}");
+            RequestResult<WalletConnectionModel> result = await this.verifiableCredentialService.CreateConnectionAsync(hdid, targetIds).ConfigureAwait(true);
+
+            this.logger.LogDebug($"Finished creating wallet connection {JsonSerializer.Serialize(targetIds)} for user {hdid}: {JsonSerializer.Serialize(result)}");
+            return new JsonResult(result);
         }
 
         /// <summary>
@@ -67,20 +80,30 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserProfilePolicy.Read)]
         public ActionResult GetConnection(string hdid)
         {
-            return new JsonResult(this.verifiableCredentialService.GetConnection(hdid));
+            this.logger.LogDebug($"Getting current wallet connection for user {hdid}");
+            RequestResult<WalletConnectionModel> result = this.verifiableCredentialService.GetConnection(hdid);
+
+            this.logger.LogDebug($"Finished getting current wallet connection for user {hdid}: {JsonSerializer.Serialize(result)}");
+            return new JsonResult(result);
         }
 
         /// <summary>
         /// Gets a verifiable credential.
         /// </summary>
+        /// <param name="hdid">The user hdid.</param>
         /// <param name="exchangeId">The credential exchange id.</param>
         /// <returns>The verifiable credential model.</returns>
         [HttpGet]
         [Route("{hdid}/Credential")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public ActionResult GetCredential(Guid exchangeId)
+        public ActionResult GetCredential(string hdid, Guid exchangeId)
         {
-            return new JsonResult(this.verifiableCredentialService.GetCredential(exchangeId));
+            this.logger.LogDebug($"Getting wallet credential {exchangeId} for user {hdid}");
+            RequestResult<WalletCredentialModel> result =
+                this.verifiableCredentialService.GetCredential(exchangeId);
+
+            this.logger.LogDebug($"Finished getting current wallet credential {exchangeId} for user {hdid}: {JsonSerializer.Serialize(result)}");
+            return new JsonResult(result);
         }
     }
 }

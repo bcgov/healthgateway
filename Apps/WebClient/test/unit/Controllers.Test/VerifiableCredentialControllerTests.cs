@@ -24,6 +24,7 @@ namespace HealthGateway.WebClient.Test.Controllers
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -55,7 +56,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IWalletService> verifiableCredentialServiceMock = new Mock<IWalletService>();
             verifiableCredentialServiceMock.Setup(s => s.CreateConnectionAsync(Hdid, targetIds)).ReturnsAsync(expectedResult);
 
-            WalletController controller = new WalletController(verifiableCredentialServiceMock.Object);
+            WalletController controller = new WalletController(
+                new Mock<ILogger<WalletController>>().Object,
+                verifiableCredentialServiceMock.Object);
             var actualResult = await controller.CreateConnection(Hdid, targetIds).ConfigureAwait(true);
             RequestResult<WalletConnectionModel> actualRequestResult =
                 (RequestResult<WalletConnectionModel>)actualResult.Value;
@@ -82,7 +85,9 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IWalletService> verifiableCredentialServiceMock = new Mock<IWalletService>();
             verifiableCredentialServiceMock.Setup(s => s.GetConnection(Hdid)).Returns(expectedResult);
 
-            WalletController controller = new WalletController(verifiableCredentialServiceMock.Object);
+            WalletController controller = new WalletController(
+                new Mock<ILogger<WalletController>>().Object,
+                verifiableCredentialServiceMock.Object);
             var actualResult = controller.GetConnection(Hdid);
             RequestResult<WalletConnectionModel> actualRequestResult =
                 (RequestResult<WalletConnectionModel>)((JsonResult)actualResult).Value;
@@ -109,8 +114,10 @@ namespace HealthGateway.WebClient.Test.Controllers
             Mock<IWalletService> verifiableCredentialServiceMock = new Mock<IWalletService>();
             verifiableCredentialServiceMock.Setup(s => s.GetCredential(exchangeId)).Returns(expectedResult);
 
-            WalletController controller = new WalletController(verifiableCredentialServiceMock.Object);
-            var actualResult = controller.GetCredential(exchangeId);
+            WalletController controller = new WalletController(
+                new Mock<ILogger<WalletController>>().Object,
+                verifiableCredentialServiceMock.Object);
+            var actualResult = controller.GetCredential(Hdid, exchangeId);
             RequestResult<WalletCredentialModel> actualRequestResult =
                 (RequestResult<WalletCredentialModel>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
