@@ -56,7 +56,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the Agent Connection Id.
         /// </summary>
-        public string? AgentId { get; set; }
+        public Guid? AgentId { get; set; }
 
         /// <summary>
         /// Gets or sets the invitation url from the issuer.

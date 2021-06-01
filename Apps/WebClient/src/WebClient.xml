@@ -422,6 +422,41 @@
             <response code="401">The client must authenticate itself to get the requested response.</response>
             <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
         </member>
+        <member name="T:HealthGateway.WebClient.Controllers.WalletController">
+            <summary>
+            Web API to handle Verifiable Credentials.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Controllers.WalletController},HealthGateway.WebClient.Services.IWalletService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.WalletController"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="verifiableCredentialService">The injected verifiable credential service.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateConnection(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a verifiable credential connection.
+            </summary>
+            <param name="hdId">The user hdid.</param>
+            <param name="targetIds">The list of target ids of the verifiable credential.</param>
+            <returns>The created verifiable credential connection model.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.GetConnection(System.String)">
+            <summary>
+            Gets a verifiable credential connection.
+            </summary>
+            <param name="hdId">The user hdid.</param>
+            <returns>The verifiable credential connection model.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.GetCredential(System.String,System.Guid)">
+            <summary>
+            Gets a verifiable credential.
+            </summary>
+            <param name="hdId">The user hdid.</param>
+            <param name="exchangeId">The credential exchange id.</param>
+            <returns>The verifiable credential model.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Controllers.WalletStatusController">
             <summary>
             Provides a web hook for Aca-Py to receive status updates on Wallet Connections and Credentials.
@@ -1234,6 +1269,131 @@
             <param name="model">The user profile database model.</param>
             <returns>The user profile model.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Models.WalletConnectionModel">
+            <summary>
+            Model that provides a user representation of an verifiable credential connection model.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.WalletConnectionModel.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Models.WalletConnectionModel"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.WalletConnectionModel.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.WebClient.Models.WalletCredentialModel})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Models.WalletConnectionModel"/> class.
+            </summary>
+            <param name="credentials">The list of credentials.</param>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.WalletConnectionId">
+            <summary>
+            Gets or sets the wallet connection id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.Hdid">
+            <summary>
+            Gets or sets the user hdid.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.IssuerConnectionId">
+            <summary>
+            Gets or sets the issuer connection id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.ConnectedDate">
+            <summary>
+            Gets or sets the connection date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.DisconnectedDate">
+            <summary>
+            Gets or sets the disconnection date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.InvitationEndpoint">
+            <summary>
+            Gets or sets the QR code data.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.State">
+            <summary>
+            Gets or sets the connection state.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.Version">
+            <summary>
+            Gets or sets the db record version.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.Credentials">
+            <summary>
+            Gets the collection of credentials for this connection.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.WalletConnectionModel.CreateFromDbModel(HealthGateway.Database.Models.WalletConnection)">
+            <summary>
+            Constructs a WalletConnectionModel from a database model.
+            </summary>
+            <param name="dbWalletConnection">The wallet connection database model.</param>
+            <returns>The verifiable credential connection model.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Models.WalletCredentialModel">
+            <summary>
+            Model that provides a user representation of an WalletCredentialModel.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.CredentialId">
+            <summary>
+            Gets or sets the verifiable credential id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.WalletConnectionId">
+            <summary>
+            Gets or sets the wallet connection id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.SourceType">
+            <summary>
+            Gets or sets the source type.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.SourceId">
+            <summary>
+            Gets or sets the source id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.IssuerConnectionId">
+            <summary>
+            Gets or sets the issuer connection id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.AddedDate">
+            <summary>
+            Gets or sets the connection date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.RevokedDate">
+            <summary>
+            Gets or sets the disconnection date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.State">
+            <summary>
+            Gets or sets the connection state.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.Version">
+            <summary>
+            Gets or sets the db record version.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.WalletCredentialModel.CreateFromDbModel(HealthGateway.Database.Models.WalletCredential)">
+            <summary>
+            Constructs a WalletCredentialModel from a database model.
+            </summary>
+            <param name="walletCredential">The wallet credential database model.</param>
+            <returns>The verifiable credential model.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.WebClientConfiguration">
             <summary>
             Configuration data to be used by the Health Gateway Webclient.
@@ -1680,6 +1840,48 @@
             <param name="sms">SMS number to be set for the user.</param>
             <returns>returns true if the sms number was sucessfully updated.</returns>
         </member>
+        <member name="T:HealthGateway.WebClient.Services.IWalletService">
+            <summary>
+            Service to interact with the Wallet connections and credentials.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.CreateConnectionAsync(System.String)">
+            <summary>
+            Creates a wallet connection in the backend.
+            </summary>
+            <param name="hdId">The user hdid.</param>
+            <returns>The created wallet connection model wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.CreateConnectionAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a wallet connection and related credentials in the backend.
+            </summary>
+            <param name="hdId">The user hdid.</param>
+            <param name="targetIds">The list of target ids to be added.</param>
+            <returns>The created wallet connection model wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.CreateCredentialsAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a wallet credential in the backend.
+            </summary>
+            <param name="hdId">The user hdid.</param>
+            <param name="targetIds">The target id to be added to the wallet credential.</param>
+            <returns>The created wallet credential model wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.GetConnection(System.String)">
+            <summary>
+            Gets the wallet connection for the given hdId.
+            </summary>
+            <param name="hdId">The users HDID.</param>
+            <returns>A wallet connection model wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.GetCredential(System.Guid)">
+            <summary>
+            Gets the wallet credentials.
+            </summary>
+            <param name="exchangeId">The wallet credential exchange id.</param>
+            <returns>A wallet credential model wrapped in a RequestResult.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Services.IWalletStatusService">
             <summary>
             Service to interact with the Comment Delegate.
@@ -1845,6 +2047,34 @@
             Creates a new 6 digit verification code.
             </summary>
             <returns>The verification code.</returns>
+        </member>
+        <member name="T:HealthGateway.WebClient.Services.WalletService">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.WalletService},HealthGateway.Database.Delegates.IWalletDelegate,HealthGateway.Common.Delegates.IWalletIssuerDelegate,HealthGateway.Common.Delegates.IClientRegistriesDelegate,HealthGateway.Common.Delegates.IImmunizationDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.WalletService"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="walletDelegate">Injected Wallet delegate.</param>
+            <param name="walletIssuerDelegate">Injected Wallet issuer delegate.</param>
+            <param name="clientRegistriesDelegate">Injected client registries delegate.</param>
+            <param name="immunizationDelegate">Injected immunization delegate.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.CreateConnectionAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.CreateConnectionAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.CreateCredentialsAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.GetConnection(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.GetCredential(System.Guid)">
+            <inheritdoc/>
         </member>
         <member name="T:HealthGateway.WebClient.Services.WalletStatusService">
             <inheritdoc />

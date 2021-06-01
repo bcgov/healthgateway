@@ -2116,7 +2116,7 @@
         </member>
         <member name="P:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload.Provider">
             <summary>
-            Gets or sets the provider or facility where the immunization was reeived.
+            Gets or sets the provider or facility where the immunization was received.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.IssuerDidResponse">
@@ -2856,6 +2856,11 @@
             <summary>
             Gets or sets the action code.
             Will always be set when ResultType is ActionRequired.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.RequestResultError.InnerError">
+            <summary>
+            Gets or sets the inner request error object.
             </summary>
         </member>
         <member name="P:HealthGateway.Common.Models.RequestResultError.ActionCodeValue">

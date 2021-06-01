@@ -126,7 +126,6 @@ namespace HealthGateway.Common.Delegates
         public async Task<RequestResult<CredentialResponse>> CreateCredentialAsync<T>(WalletConnection connection, T payload, string comment)
             where T : CredentialPayload
         {
-            _ = connection.AgentId ?? throw new ArgumentException("AgendId of Connection cannot be null");
             RequestResult<CredentialResponse> retVal = new ()
             {
                 ResultStatus = ResultType.Error,
@@ -161,7 +160,7 @@ namespace HealthGateway.Common.Delegates
 
                         CredentialOfferRequest credentialOffer = new CredentialOfferRequest
                         {
-                            ConnectionId = connection.AgentId,
+                            ConnectionId = connection.AgentId!.Value.ToString(),
                             IssuerDid = did,
                             SchemaId = schemaId,
                             SchemaIssuerDid = did,
