@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Controllers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -50,9 +52,9 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}/Connection")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult CreateConnection(string hdid, [FromBody] IEnumerable<string> targetIds)
+        public async Task<JsonResult> CreateConnection(string hdid, [FromBody] IEnumerable<string> targetIds)
         {
-            return new JsonResult(this.verifiableCredentialService.CreateConnection(hdid, targetIds));
+            return new JsonResult(await this.verifiableCredentialService.CreateConnectionAsync(hdid, targetIds).ConfigureAwait(true));
         }
 
         /// <summary>
@@ -71,12 +73,12 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Gets a verifiable credential.
         /// </summary>
-        /// <param name="hdid">The user hdid.</param>
+        /// <param name="exchangeId">The credential exchange id.</param>
         /// <returns>The verifiable credential model.</returns>
         [HttpGet]
         [Route("{hdid}/Credential")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public ActionResult GetCredential(string hdid, Guid exchangeId)
+        public ActionResult GetCredential(Guid exchangeId)
         {
             return new JsonResult(this.verifiableCredentialService.GetCredential(exchangeId));
         }

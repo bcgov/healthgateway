@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Models;
     using HealthGateway.WebClient.Controllers;
@@ -36,8 +37,9 @@ namespace HealthGateway.WebClient.Test.Controllers
         /// <summary>
         /// Successfully Create Connection - Happy Path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateConnection()
+        public async Task ShouldCreateConnection()
         {
             string[] targetIds = new string[] { "12345" };
             RequestResult<WalletConnectionModel> expectedResult = new RequestResult<WalletConnectionModel>()
@@ -51,12 +53,14 @@ namespace HealthGateway.WebClient.Test.Controllers
             };
 
             Mock<IWalletService> verifiableCredentialServiceMock = new Mock<IWalletService>();
-            verifiableCredentialServiceMock.Setup(s => s.CreateConnection(Hdid, targetIds)).Returns(expectedResult);
+            verifiableCredentialServiceMock.Setup(s => s.CreateConnectionAsync(Hdid, targetIds)).ReturnsAsync(expectedResult);
 
             WalletController controller = new WalletController(verifiableCredentialServiceMock.Object);
-            var actualResult = controller.CreateConnection(Hdid, targetIds);
+            var actualResult = await controller.CreateConnection(Hdid, targetIds).ConfigureAwait(true);
+            RequestResult<WalletConnectionModel> actualRequestResult =
+                (RequestResult<WalletConnectionModel>)actualResult.Value;
 
-            Assert.True(((JsonResult)actualResult).Value.IsDeepEqual(expectedResult));
+            Assert.True(actualRequestResult.IsDeepEqual(expectedResult));
         }
 
         /// <summary>
@@ -92,25 +96,24 @@ namespace HealthGateway.WebClient.Test.Controllers
         [Fact]
         public void ShouldGetCredential()
         {
+            Guid exchangeId = Guid.NewGuid();
             RequestResult<WalletCredentialModel> expectedResult = new RequestResult<WalletCredentialModel>()
             {
                 ResourcePayload = new WalletCredentialModel()
                 {
                     CredentialId = Guid.NewGuid(),
-                    Hdid = Hdid,
                 },
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
             Mock<IWalletService> verifiableCredentialServiceMock = new Mock<IWalletService>();
-            verifiableCredentialServiceMock.Setup(s => s.GetCredential(Hdid)).Returns(expectedResult);
+            verifiableCredentialServiceMock.Setup(s => s.GetCredential(exchangeId)).Returns(expectedResult);
 
             WalletController controller = new WalletController(verifiableCredentialServiceMock.Object);
-            var actualResult = controller.GetCredential(Hdid);
+            var actualResult = controller.GetCredential(exchangeId);
             RequestResult<WalletCredentialModel> actualRequestResult =
                 (RequestResult<WalletCredentialModel>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
-            Assert.Equal(Hdid, actualRequestResult.ResourcePayload!.Hdid);
         }
     }
 }

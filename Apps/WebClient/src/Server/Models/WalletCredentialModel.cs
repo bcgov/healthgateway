@@ -16,8 +16,6 @@
 namespace HealthGateway.WebClient.Models
 {
     using System;
-    using System.Collections.Generic;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
 
@@ -74,6 +72,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Constructs a WalletCredentialModel from a database model.
         /// </summary>
+        /// <param name="walletCredential">The wallet credential database model.</param>
         /// <returns>The verifiable credential model.</returns>
         public static WalletCredentialModel CreateFromDbModel(WalletCredential walletCredential)
         {
@@ -81,16 +80,18 @@ namespace HealthGateway.WebClient.Models
             {
                 CredentialId = walletCredential.Id,
                 WalletConnectionId = walletCredential.WalletConnectionId,
-                // TODO: should we get rid of IssuerConnectionId ?
+
+                // TODO: IssuerConnectionId is duplicated between connection/credential, should we remove it?
                 IssuerConnectionId = walletCredential.WalletConnection.AgentId,
+
                 State = walletCredential.Status,
                 SourceId = walletCredential.ResourceId,
                 AddedDate = walletCredential.AddedDateTime,
                 RevokedDate = walletCredential.RevokedDateTime,
                 Version = walletCredential.Version,
 
-                // TODO: SourceType is it needed?
-            }
+                // TODO: SourceType must be added to db model
+            };
         }
     }
 }

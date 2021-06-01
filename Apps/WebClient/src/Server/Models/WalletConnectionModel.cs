@@ -17,10 +17,10 @@ namespace HealthGateway.WebClient.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
-    using QRCoder;
 
     /// <summary>
     /// Model that provides a user representation of an verifiable credential connection model.
@@ -55,7 +55,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the QR code data.
         /// </summary>
-        public string QrCode { get; set; } = string.Empty;
+        public string? QrCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the connection state.
@@ -70,15 +70,15 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the collection of credentials for this connection.
         /// </summary>
-        public IEnumerable<WalletCredentialModel> Credentials { get; set; }
+        public IEnumerable<WalletCredentialModel> Credentials { get; set; } = null!;
 
         /// <summary>
         /// Constructs a WalletConnectionModel from a database model.
         /// </summary>
+        /// <param name="dbWalletConnection">The wallet connection database model.</param>
         /// <returns>The verifiable credential connection model.</returns>
         public static WalletConnectionModel CreateFromDbModel(WalletConnection dbWalletConnection)
         {
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
             return new WalletConnectionModel()
             {
                 WalletConnectionId = dbWalletConnection.Id,
@@ -88,10 +88,10 @@ namespace HealthGateway.WebClient.Models
                 DisconnectedDate = dbWalletConnection.DisconnectedDateTime,
                 State = dbWalletConnection.Status,
                 Version = dbWalletConnection.Version,
-                QrCode = qrGenerator.CreateQrCode(dbWalletConnection.InvitationEndpoint, QRCodeGenerator.ECCLevel.Q),
+                QrCode = dbWalletConnection.InvitationEndpoint,
                 Credentials = dbWalletConnection.Credentials
-                    .Select(walletCredential => WalletConnectionModel.CreateFromDbModel(walletCredential))
-            }
+                    .Select(walletCredential => WalletCredentialModel.CreateFromDbModel(walletCredential)),
+            };
         }
     }
 }

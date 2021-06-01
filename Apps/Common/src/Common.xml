@@ -2000,7 +2000,7 @@
         </member>
         <member name="P:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload.Provider">
             <summary>
-            Gets or sets the provider or facility where the immunization was reeived.
+            Gets or sets the provider or facility where the immunization was received.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.SchemaRequest">

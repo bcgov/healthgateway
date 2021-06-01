@@ -23,13 +23,13 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.AcaPy;
+    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.WebClient.Delegates;
     using HealthGateway.WebClient.Models;
-    using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -39,6 +39,7 @@ namespace HealthGateway.WebClient.Services
         private readonly IWalletDelegate walletDelegate;
         private readonly IWalletIssuerDelegate walletIssuerDelegate;
         private readonly IClientRegistriesDelegate clientRegistriesDelegate;
+        private readonly IImmunizationDelegate immunizationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WalletService"/> class.
@@ -47,43 +48,61 @@ namespace HealthGateway.WebClient.Services
         /// <param name="walletDelegate">Injected Wallet delegate.</param>
         /// <param name="walletIssuerDelegate">Injected Wallet issuer delegate.</param>
         /// <param name="clientRegistriesDelegate">Injected client registries delegate.</param>
+        /// <param name="immunizationDelegate">Injected immunization delegate.</param>
         public WalletService(
             ILogger<WalletService> logger,
             IWalletDelegate walletDelegate,
             IWalletIssuerDelegate walletIssuerDelegate,
-            IClientRegistriesDelegate clientRegistriesDelegate)
+            IClientRegistriesDelegate clientRegistriesDelegate,
+            IImmunizationDelegate immunizationDelegate)
         {
             this.logger = logger;
             this.walletDelegate = walletDelegate;
             this.walletIssuerDelegate = walletIssuerDelegate;
             this.clientRegistriesDelegate = clientRegistriesDelegate;
+            this.immunizationDelegate = immunizationDelegate;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId)
+        public async Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId, IEnumerable<string> targetIds)
         {
-            WalletConnection walletConnection = new WalletConnection();
-            walletConnection.Id = Guid.NewGuid();
-            walletConnection.UserProfileId = hdId;
-
-            RequestResult<ConnectionResponse> walletIssuerConnection =
-                await this.walletIssuerDelegate.CreateConnectionAsync(walletConnection.Id).ConfigureAwait(true);
-
-            if (walletIssuerConnection.ResultStatus != ResultType.Success)
+            RequestResult<WalletConnectionModel> walletConnectionResult = await this.CreateConnectionAsync(hdId).ConfigureAwait(true);
+            if (walletConnectionResult.ResultStatus != ResultType.Success)
             {
                 return new RequestResult<WalletConnectionModel>()
                 {
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError()
                     {
-                        ResultMessage = "Error creating wallet connection with wallet issuer",
-                        InnerError = walletIssuerConnection.ResultError,
+                        ResultMessage = "Error creating wallet connection",
+                        InnerError = walletConnectionResult.ResultError,
                     },
                 };
             }
 
-            walletConnection.InvitationEndpoint = walletIssuerConnection.ResourcePayload!.InvitationUrl.AbsoluteUri;
-            walletConnection.AgentId = walletIssuerConnection.ResourcePayload!.AgentId;
+            RequestResult<IEnumerable<WalletCredentialModel>> walletCredentialsResult = await this.CreateCredentialsAsync(hdId, targetIds).ConfigureAwait(true);
+            if (walletCredentialsResult.ResultStatus != ResultType.Success)
+            {
+                return new RequestResult<WalletConnectionModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error creating wallet credentials",
+                        InnerError = walletConnectionResult.ResultError,
+                    },
+                };
+            }
+
+            walletConnectionResult.ResourcePayload!.Credentials = walletCredentialsResult.ResourcePayload!;
+            return walletConnectionResult;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId)
+        {
+            WalletConnection walletConnection = new WalletConnection();
+            walletConnection.UserProfileId = hdId;
             walletConnection.Status = WalletConnectionStatus.Pending;
             DBResult<WalletConnection> dbResult = this.walletDelegate.InsertConnection(walletConnection);
             if (dbResult.Status != DBStatusCode.Created)
@@ -98,6 +117,25 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
+            RequestResult<ConnectionResponse> walletIssuerConnectionResult =
+                await this.walletIssuerDelegate.CreateConnectionAsync(walletConnection.Id).ConfigureAwait(true);
+
+            if (walletIssuerConnectionResult.ResultStatus != ResultType.Success)
+            {
+                return new RequestResult<WalletConnectionModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error creating wallet connection with wallet issuer",
+                        InnerError = walletIssuerConnectionResult.ResultError,
+                    },
+                };
+            }
+
+            ConnectionResponse walletIssuerConnection = walletIssuerConnectionResult.ResourcePayload!;
+            walletConnection.InvitationEndpoint = walletIssuerConnection.InvitationUrl?.AbsoluteUri;
+            walletConnection.AgentId = walletIssuerConnection.AgentId;
             return new RequestResult<WalletConnectionModel>()
             {
                 ResourcePayload = WalletConnectionModel.CreateFromDbModel(dbResult.Payload),
@@ -106,14 +144,27 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<WalletCredentialModel>> CreateCredentialAsync(string hdId, string targetId)
+        public async Task<RequestResult<IEnumerable<WalletCredentialModel>>> CreateCredentialsAsync(string hdId, IEnumerable<string> targetIds)
         {
-            // TODO: Call to Immz to get payload data.
+            List<WalletCredentialModel> resultList = new List<WalletCredentialModel>();
+            DBResult<WalletConnection> walletConnectionResult = this.walletDelegate.GetCurrentConnection(hdId);
+            if (walletConnectionResult.Status != DBStatusCode.Read)
+            {
+                return new RequestResult<IEnumerable<WalletCredentialModel>>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error retrieving wallet connection from database",
+                    },
+                };
+            }
+
             RequestResult<PatientModel> patientRequestResult =
                 await this.clientRegistriesDelegate.GetDemographicsByHDIDAsync(hdId).ConfigureAwait(true);
             if (patientRequestResult.ResultStatus != ResultType.Success)
             {
-                return new RequestResult<WalletCredentialModel>()
+                return new RequestResult<IEnumerable<WalletCredentialModel>>()
                 {
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError()
@@ -124,73 +175,80 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
-            ImmunizationCredentialPayload credentialPayload = new ImmunizationCredentialPayload()
+            foreach (string targetId in targetIds)
             {
-                // TODO: Fill up immz data
-                Provider = string.Empty,
-                LotNumber = string.Empty,
-                ImmunizationType = string.Empty,
-                ImmunizationProduct = string.Empty,
-                ImmunizationAgent = string.Empty,
-                RecipientBirthDate = patientRequestResult.ResourcePayload!.Birthdate,
-                RecipientName = $"{patientRequestResult.ResourcePayload.FirstName} {patientRequestResult.ResourcePayload.LastName}",
-                RecipientPHN = patientRequestResult.ResourcePayload.PersonalHealthNumber,
-            };
-
-            DBResult<WalletConnection> walletConnection = this.walletDelegate.GetConnection(hdId);
-            if (walletConnection.Status != DBStatusCode.Read)
-            {
-                return new RequestResult<WalletCredentialModel>()
+                RequestResult<ImmunizationEvent> immunizationResult =
+                    await this.immunizationDelegate.GetImmunization(hdId, targetId).ConfigureAwait(true);
+                if (immunizationResult.ResultStatus != ResultType.Success)
                 {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
+                    return new RequestResult<IEnumerable<WalletCredentialModel>>()
                     {
-                        ResultMessage = "Error getting wallet connection from database",
-                    },
+                        ResultStatus = ResultType.Error,
+                        ResultError = new RequestResultError()
+                        {
+                            ResultMessage = "Error getting immunization info when creating wallet credential",
+                            InnerError = patientRequestResult.ResultError,
+                        },
+                    };
+                }
+
+                ImmunizationEvent immunization = immunizationResult.ResourcePayload!;
+                ImmunizationCredentialPayload credentialPayload = new ImmunizationCredentialPayload()
+                {
+                    Provider = immunization.ProviderOrClinic,
+                    LotNumber = string.Join(",", immunization.Immunization.ImmunizationAgents.Select(immz => immz.LotNumber)),
+                    ImmunizationType = immunization.Immunization.Name,
+                    ImmunizationProduct = string.Join(",", immunization.Immunization.ImmunizationAgents.Select(immz => immz.ProductName)),
+                    ImmunizationAgent = string.Join(",", immunization.Immunization.ImmunizationAgents.Select(immz => immz.Name)),
+                    RecipientBirthDate = patientRequestResult.ResourcePayload!.Birthdate,
+                    RecipientName = $"{patientRequestResult.ResourcePayload.FirstName} {patientRequestResult.ResourcePayload.LastName}",
+                    RecipientPHN = patientRequestResult.ResourcePayload.PersonalHealthNumber,
                 };
+
+                RequestResult<CredentialResponse> walletIssuerCredentialResult =
+                    await this.walletIssuerDelegate.CreateCredentialAsync(walletConnectionResult.Payload, credentialPayload).ConfigureAwait(true);
+
+                if (walletIssuerCredentialResult.ResultStatus != ResultType.Success)
+                {
+                    return new RequestResult<IEnumerable<WalletCredentialModel>>()
+                    {
+                        ResultStatus = ResultType.Error,
+                        ResultError = new RequestResultError()
+                        {
+                            ResultMessage = "Error creating wallet credential with wallet issuer",
+                            InnerError = walletIssuerCredentialResult.ResultError,
+                        },
+                    };
+                }
+
+                WalletCredential walletCredential = new WalletCredential()
+                {
+                    Id = Guid.NewGuid(),
+                    ExchangeId = walletIssuerCredentialResult.ResourcePayload!.ExchangeId,
+                    ResourceId = targetId,
+                    WalletConnectionId = walletConnectionResult.Payload.Id,
+                    Status = WalletCredentialStatus.Created,
+                };
+
+                DBResult<WalletCredential> walletCredentialResult = this.walletDelegate.InsertCredential(walletCredential);
+                if (walletCredentialResult.Status != DBStatusCode.Created)
+                {
+                    return new RequestResult<IEnumerable<WalletCredentialModel>>()
+                    {
+                        ResultStatus = ResultType.Error,
+                        ResultError = new RequestResultError()
+                        {
+                            ResultMessage = "Error inserting wallet connection to database",
+                        },
+                    };
+                }
+
+                resultList.Add(WalletCredentialModel.CreateFromDbModel(walletCredentialResult.Payload));
             }
 
-            RequestResult<CredentialResponse> walletIssuerCredential =
-                await this.walletIssuerDelegate.CreateCredentialAsync(walletConnection.Payload, credentialPayload).ConfigureAwait(true);
-
-            if (walletIssuerCredential.ResultStatus != ResultType.Success)
+            return new RequestResult<IEnumerable<WalletCredentialModel>>()
             {
-                return new RequestResult<WalletCredentialModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error creating wallet credential with wallet issuer",
-                        InnerError = walletIssuerCredential.ResultError,
-                    },
-                };
-            }
-
-            WalletCredential walletCredential = new WalletCredential()
-            {
-                Id = Guid.NewGuid(),
-                ExchangeId = walletIssuerCredential.ResourcePayload.ExchangeId,
-                ResourceId = targetId,
-                WalletConnectionId = walletConnection.Payload.Id,
-                Status = WalletCredentialStatus.Created,
-            };
-
-            DBResult<WalletCredential> dbResult = this.walletDelegate.InsertCredential(walletCredential);
-            if (dbResult.Status != DBStatusCode.Created)
-            {
-                return new RequestResult<WalletCredentialModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error inserting wallet connection to database",
-                    },
-                };
-            }
-
-            return new RequestResult<WalletCredentialModel>()
-            {
-                ResourcePayload = WalletCredentialModel.CreateFromDbModel(dbResult.Payload),
+                ResourcePayload = resultList,
                 ResultStatus = ResultType.Success,
             };
         }
@@ -198,7 +256,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc/>
         public RequestResult<WalletConnectionModel> GetConnection(string hdId)
         {
-            DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(hdId);
+            DBResult<WalletConnection> dbResult = this.walletDelegate.GetCurrentConnection(hdId);
             if (dbResult.Status != DBStatusCode.Read)
             {
                 return new RequestResult<WalletConnectionModel>()

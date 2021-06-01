@@ -21,7 +21,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-    <PackageReference Include="QRCoder" Version="1.4.1" />
     <PackageReference Include="VueCliMiddleware" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>

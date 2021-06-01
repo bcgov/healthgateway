@@ -253,6 +253,27 @@
             ValidateSms - Sms not found error.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.VerifiableCredentialControllerTests">
+            <summary>
+            VerifiableCredentialController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.VerifiableCredentialControllerTests.ShouldCreateConnection">
+            <summary>
+            Successfully Create Connection - Happy Path scenario.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.VerifiableCredentialControllerTests.ShouldGetConnection">
+            <summary>
+            Successfully Get Connection - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.VerifiableCredentialControllerTests.ShouldGetCredential">
+            <summary>
+            Successfully Get Credential - Happy path scenario.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Test.Services.CommentServiceTests">
             <summary>
             CommentService's Unit Tests.
@@ -615,6 +636,16 @@
         <member name="M:HealthGateway.WebClient.Test.Services.UserSMSServiceTests.ShouldSanitizeSMS">
             <summary>
             ValidateSMS - Happy path scenario.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.VerifiableCredentialServiceTests">
+            <summary>
+            CommentService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.VerifiableCredentialServiceTests.ShouldCreateConnection">
+            <summary>
+            CreateConnection - Happy Path.
             </summary>
         </member>
     </members>

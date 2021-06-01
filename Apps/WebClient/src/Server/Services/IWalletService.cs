@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
@@ -33,12 +34,20 @@ namespace HealthGateway.WebClient.Services
         Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId);
 
         /// <summary>
+        /// Creates a wallet connection and related credentials in the backend.
+        /// </summary>
+        /// <param name="hdId">The user hdid.</param>
+        /// <param name="targetIds">The list of target ids to be added.</param>
+        /// <returns>The created wallet connection model wrapped in a RequestResult.</returns>
+        Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId, IEnumerable<string> targetIds);
+
+        /// <summary>
         /// Creates a wallet credential in the backend.
         /// </summary>
         /// <param name="hdId">The user hdid.</param>
-        /// <param name="targetId">The target id to be added to the wallet credential.</param>
+        /// <param name="targetIds">The target id to be added to the wallet credential.</param>
         /// <returns>The created wallet credential model wrapped in a RequestResult.</returns>
-        Task<RequestResult<WalletCredentialModel>> CreateCredentialAsync(string hdId, string targetId);
+        Task<RequestResult<IEnumerable<WalletCredentialModel>>> CreateCredentialsAsync(string hdId, IEnumerable<string> targetIds);
 
         /// <summary>
         /// Gets the wallet connection for the given hdId.
@@ -52,6 +61,6 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="exchangeId">The wallet credential exchange id.</param>
         /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
-        RequestResult<WalletCredentialModel> GetCredential(string exchangeId);
+        RequestResult<WalletCredentialModel> GetCredential(Guid exchangeId);
     }
 }
