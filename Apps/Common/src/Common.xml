@@ -1495,13 +1495,14 @@
             <param name="connection">The wallet connection to revoke.</param>
             <returns>The WalletConnection that was revoked.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,``0)">
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,HealthGateway.Common.Models.AcaPy.CredentialPayload,System.String)">
             <summary>
             Requests that the agent create a credential and pass the payload information to the users wallet.
             </summary>
             <typeparam name="T">The credential payload to use.</typeparam>
             <param name="connection">The wallet connection of the user.</param>
             <param name="payload">The credential payload to send to the agent.</param>
+            <param name="comment">The comment to pass for the credential.</param>
             <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
         </member>
         <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential)">
@@ -1563,7 +1564,7 @@
         <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,``0)">
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,HealthGateway.Common.Models.AcaPy.CredentialPayload,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
@@ -1890,7 +1891,7 @@
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionIdResponse">
             <summary>
-            Represents a Schema Response from the aries agent.
+            Represents a Credential Definition Id from the aries agent.
             </summary>
         </member>
         <member name="M:HealthGateway.Common.Models.AcaPy.CredentialDefinitionIdResponse.#ctor">
