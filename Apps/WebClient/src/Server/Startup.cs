@@ -109,6 +109,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
             services.AddTransient<IWalletIssuerDelegate, WalletIssuerDelegate>();
             services.AddTransient<IWalletDelegate, DBWalletDelegate>();
+            services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
 
             // Add Background Services
             services.AddHostedService<BannerListener>();
