@@ -451,6 +451,11 @@
             Create Credential - Happy Path.
             </summary>
         </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.TestConnect">
+            <summary>
+            Create Connection - Exception during HTTP Call.
+            </summary>
+        </member>
         <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.Common.Models.AcaPy.ConnectionResponse},System.Boolean,System.Boolean)">
             <summary>
             Create Wallet Connection.
