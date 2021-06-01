@@ -1274,6 +1274,17 @@
             Model that provides a user representation of an verifiable credential connection model.
             </summary>
         </member>
+        <member name="M:HealthGateway.WebClient.Models.WalletConnectionModel.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Models.WalletConnectionModel"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Models.WalletConnectionModel.#ctor(System.Collections.Generic.IEnumerable{HealthGateway.WebClient.Models.WalletCredentialModel})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Models.WalletConnectionModel"/> class.
+            </summary>
+            <param name="credentials">The list of credentials.</param>
+        </member>
         <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.WalletConnectionId">
             <summary>
             Gets or sets the wallet connection id.
@@ -1316,7 +1327,7 @@
         </member>
         <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.Credentials">
             <summary>
-            Gets or sets the collection of credentials for this connection.
+            Gets the collection of credentials for this connection.
             </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Models.WalletConnectionModel.CreateFromDbModel(HealthGateway.Database.Models.WalletConnection)">

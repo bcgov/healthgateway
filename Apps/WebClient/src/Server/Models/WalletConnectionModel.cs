@@ -18,6 +18,7 @@ namespace HealthGateway.WebClient.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json.Serialization;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
@@ -27,6 +28,24 @@ namespace HealthGateway.WebClient.Models
     /// </summary>
     public class WalletConnectionModel
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WalletConnectionModel"/> class.
+        /// </summary>
+        public WalletConnectionModel()
+        {
+            this.Credentials = new List<WalletCredentialModel>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WalletConnectionModel"/> class.
+        /// </summary>
+        /// <param name="credentials">The list of credentials.</param>
+        [JsonConstructor]
+        public WalletConnectionModel(IEnumerable<WalletCredentialModel> credentials)
+        {
+            this.Credentials = credentials;
+        }
+
         /// <summary>
         /// Gets or sets the wallet connection id.
         /// </summary>
@@ -68,9 +87,9 @@ namespace HealthGateway.WebClient.Models
         public uint Version { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of credentials for this connection.
+        /// Gets the collection of credentials for this connection.
         /// </summary>
-        public IEnumerable<WalletCredentialModel> Credentials { get; set; } = null!;
+        public IEnumerable<WalletCredentialModel> Credentials { get; }
 
         /// <summary>
         /// Constructs a WalletConnectionModel from a database model.
@@ -79,7 +98,9 @@ namespace HealthGateway.WebClient.Models
         /// <returns>The verifiable credential connection model.</returns>
         public static WalletConnectionModel CreateFromDbModel(WalletConnection dbWalletConnection)
         {
-            return new WalletConnectionModel()
+            return new WalletConnectionModel(
+                dbWalletConnection.Credentials
+                    .Select(walletCredential => WalletCredentialModel.CreateFromDbModel(walletCredential)))
             {
                 WalletConnectionId = dbWalletConnection.Id,
                 IssuerConnectionId = dbWalletConnection.AgentId,
@@ -89,8 +110,6 @@ namespace HealthGateway.WebClient.Models
                 State = dbWalletConnection.Status,
                 Version = dbWalletConnection.Version,
                 QrCode = dbWalletConnection.InvitationEndpoint,
-                Credentials = dbWalletConnection.Credentials
-                    .Select(walletCredential => WalletCredentialModel.CreateFromDbModel(walletCredential)),
             };
         }
     }

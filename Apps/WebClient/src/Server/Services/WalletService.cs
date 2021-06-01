@@ -99,10 +99,10 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
-            walletConnectionResult.ResourcePayload!.Credentials = walletCredentialsResult.ResourcePayload!;
+            walletConnectionResult = this.GetConnection(hdId);
 
             this.logger.LogDebug($"Finished creating wallet connection and credentials {JsonSerializer.Serialize(targetIds)} for user {hdId}: {JsonSerializer.Serialize(walletConnectionResult)}");
-            return walletConnectionResult;
+            return walletConnectionResult;!
         }
 
         /// <inheritdoc/>
