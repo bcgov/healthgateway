@@ -342,11 +342,11 @@ namespace HealthGateway.Common.Delegates
 
         private HttpClient InitializeClient()
         {
-            string bearerToken = this.WalletIssuerConfig.AgentApiKey;
+            string apiKey = this.WalletIssuerConfig.AgentApiKey;
 
             HttpClient httpClient = this.httpClientService.CreateDefaultHttpClient();
             httpClient.DefaultRequestHeaders.Accept.Clear();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
+            httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
             httpClient.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             return httpClient;

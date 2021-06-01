@@ -35,7 +35,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the Wallet Connection Code description.
         /// </summary>
         [Required]
-        [MaxLength(30)]
+        [MaxLength(50)]
         public string? Description { get; set; }
     }
 }

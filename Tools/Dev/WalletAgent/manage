@@ -168,7 +168,7 @@ configureEnvironment() {
   export AGENT_ADMIN_PORT=${AGENT_ADMIN_PORT:-8024}
   export AGENT_HTTP_IN_PORT=${AGENT_HTTP_IN_PORT:-8021}
   export AGENT_WS_IN_PORT=${AGENT_WS_IN_PORT:-8026}
-  export AGENT_WEBHOOK_URL=${AGENT_WEBHOOK_URL:-http://issuer-api-dev:5000/api/webhooks}
+  export AGENT_WEBHOOK_URL=${AGENT_WEBHOOK_URL:-http://localhost:5000/v1/api/WalletStatus}
   export AGENT_NAME="HG-Agent"
   export AGENT_ENDPOINT=${NGROK_AGENT_ENDPOINT:-http://$DOCKERHOST:$AGENT_HTTP_IN_PORT}
   export AGENT_ADMIN_API_KEY=${AGENT_ADMIN_API_KEY:-"agent-api-key-dev"}
