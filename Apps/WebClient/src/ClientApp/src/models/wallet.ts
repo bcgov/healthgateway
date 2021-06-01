@@ -6,7 +6,7 @@ export interface WalletConnection {
     issuerConnectionId: string;
     connectedDate: StringISODateTime;
     disconnectedDate: StringISODateTime;
-    qrCode: string;
+    invitationEndpoint: string;
     state: ConnectionState;
     version: string;
 }

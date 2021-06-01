@@ -74,7 +74,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the QR code data.
         /// </summary>
-        public string? QrCode { get; set; } = string.Empty;
+        public string? InvitationEndpoint { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the connection state.
@@ -109,7 +109,7 @@ namespace HealthGateway.WebClient.Models
                 DisconnectedDate = dbWalletConnection.DisconnectedDateTime,
                 State = dbWalletConnection.Status,
                 Version = dbWalletConnection.Version,
-                QrCode = dbWalletConnection.InvitationEndpoint,
+                InvitationEndpoint = dbWalletConnection.InvitationEndpoint,
             };
         }
     }

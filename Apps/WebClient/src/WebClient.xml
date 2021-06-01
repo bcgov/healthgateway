@@ -1310,7 +1310,7 @@
             Gets or sets the disconnection date.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.QrCode">
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.InvitationEndpoint">
             <summary>
             Gets or sets the QR code data.
             </summary>

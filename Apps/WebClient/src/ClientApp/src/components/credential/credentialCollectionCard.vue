@@ -44,7 +44,7 @@ export default class CredentialCollectionCard extends Vue {
 
     @Watch("connection")
     private updateQrCode(): void {
-        const data = this.connection?.qrCode || "";
+        const data = this.connection?.invitationEndpoint || "";
         if (data.length === 0) {
             this.qrCodeDataUrl = undefined;
         }
