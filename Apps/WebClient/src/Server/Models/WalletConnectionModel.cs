@@ -59,7 +59,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the issuer connection id.
         /// </summary>
-        public Guid IssuerConnectionId { get; set; }
+        public Guid? IssuerConnectionId { get; set; }
 
         /// <summary>
         /// Gets or sets the connection date.

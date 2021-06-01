@@ -170,7 +170,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             WalletConnection connection = new ()
             {
-                AgentId = "agentId",
+                AgentId = Guid.NewGuid(),
             };
 
             ImmunizationCredentialPayload payload = new ImmunizationCredentialPayload()

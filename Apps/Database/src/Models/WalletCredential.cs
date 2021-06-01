@@ -51,6 +51,11 @@ namespace HealthGateway.Database.Models
         public string ResourceId { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets the type the resource that this credential is attached to.
+        /// </summary>
+        public string ResourceType { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the status of the credential.
         /// </summary>
         [Required]

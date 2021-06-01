@@ -36,6 +36,8 @@ namespace HealthGateway.WebClient.Services
     /// <inheritdoc />
     public class WalletService : IWalletService
     {
+        private const string ImmunizationResourceType = "Immunization";
+        private const string CredentialComment = "Immunization Credential";
         private readonly ILogger logger;
         private readonly IWalletDelegate walletDelegate;
         private readonly IWalletIssuerDelegate walletIssuerDelegate;
@@ -102,7 +104,7 @@ namespace HealthGateway.WebClient.Services
             walletConnectionResult = this.GetConnection(hdId);
 
             this.logger.LogDebug($"Finished creating wallet connection and credentials {JsonSerializer.Serialize(targetIds)} for user {hdId}: {JsonSerializer.Serialize(walletConnectionResult)}");
-            return walletConnectionResult;!
+            return walletConnectionResult;
         }
 
         /// <inheritdoc/>
@@ -245,7 +247,7 @@ namespace HealthGateway.WebClient.Services
 
                 this.logger.LogDebug($"Creating wallet credential with issuer {JsonSerializer.Serialize(credentialPayload)}");
                 RequestResult<CredentialResponse> walletIssuerCredentialResult =
-                    await this.walletIssuerDelegate.CreateCredentialAsync(walletConnectionResult.Payload, credentialPayload).ConfigureAwait(true);
+                    await this.walletIssuerDelegate.CreateCredentialAsync(walletConnectionResult.Payload, credentialPayload, CredentialComment).ConfigureAwait(true);
 
                 if (walletIssuerCredentialResult.ResultStatus != ResultType.Success)
                 {
@@ -266,6 +268,7 @@ namespace HealthGateway.WebClient.Services
                 {
                     ExchangeId = walletIssuerCredentialResult.ResourcePayload!.ExchangeId,
                     ResourceId = targetId,
+                    ResourceType = ImmunizationResourceType,
                     WalletConnectionId = walletConnectionResult.Payload.Id,
                     Status = WalletCredentialStatus.Created,
                 };

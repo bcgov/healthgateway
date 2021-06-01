@@ -3364,6 +3364,11 @@
             Gets or sets the identifier of the resource that this credential is attached to.
             </summary>
         </member>
+        <member name="P:HealthGateway.Database.Models.WalletCredential.ResourceType">
+            <summary>
+            Gets or sets the type the resource that this credential is attached to.
+            </summary>
+        </member>
         <member name="P:HealthGateway.Database.Models.WalletCredential.Status">
             <summary>
             Gets or sets the status of the credential.

@@ -47,7 +47,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets or sets the issuer connection id.
         /// </summary>
-        public Guid IssuerConnectionId { get; set; }
+        public Guid? IssuerConnectionId { get; set; }
 
         /// <summary>
         /// Gets or sets the connection date.
@@ -80,17 +80,13 @@ namespace HealthGateway.WebClient.Models
             {
                 CredentialId = walletCredential.Id,
                 WalletConnectionId = walletCredential.WalletConnectionId,
-
-                // TODO: IssuerConnectionId is duplicated between connection/credential, should we remove it?
                 IssuerConnectionId = walletCredential.WalletConnection.AgentId,
-
                 State = walletCredential.Status,
                 SourceId = walletCredential.ResourceId,
+                SourceType = walletCredential.ResourceType,
                 AddedDate = walletCredential.AddedDateTime,
                 RevokedDate = walletCredential.RevokedDateTime,
                 Version = walletCredential.Version,
-
-                // TODO: SourceType must be added to db model
             };
         }
     }
