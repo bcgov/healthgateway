@@ -133,6 +133,7 @@ namespace HealthGateway.CommonTests.Delegates
         public void CreateCredential()
         {
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<HttpMessageHandler> handlerMock = new ();
 
             // Setup IssuerDID
             string issuerDID = "fakeDID";
@@ -143,61 +144,18 @@ namespace HealthGateway.CommonTests.Delegates
                     Did = issuerDID,
                 },
             };
-            using HttpResponseMessage issuerDidResponse = new ()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(didResponseData, this.jsonOptions)),
-            };
-
-            Uri issuerDIDUri = new ($"{this.walletIssuerConfig.AgentApiUrl}wallet/did/public");
-            Mock<HttpMessageHandler> handlerMock = new ();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == issuerDIDUri),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(issuerDidResponse)
-                .Verifiable();
+            this.MessageHandlerMockSetup(handlerMock, didResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}wallet/did/public"));
 
             // Setup Schema ID
             string schemaId = "schemaId";
             SchemaIdResponse schemaResponseData = new ();
             schemaResponseData.SchemaIds.Add(schemaId);
-            using HttpResponseMessage schemaIdResponse = new ()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(schemaResponseData, this.jsonOptions)),
-            };
-
-            Uri schemaUri = new ($"{this.walletIssuerConfig.AgentApiUrl}schemas/created?schema_version={this.walletIssuerConfig.SchemaVersion}&schema_issuer_did={issuerDID}&schema_name={this.walletIssuerConfig.SchemaName}");
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == schemaUri),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(schemaIdResponse)
-                .Verifiable();
+            this.MessageHandlerMockSetup(handlerMock, schemaResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}schemas/created?schema_version={this.walletIssuerConfig.SchemaVersion}&schema_issuer_did={issuerDID}&schema_name={this.walletIssuerConfig.SchemaName}"));
 
             // Setup credentialDefinitionIdResponse
             CredentialDefinitionIdResponse credentialDefinitionIdData = new ();
             credentialDefinitionIdData.CredentialDefinitionIds.Add("credentialDefinitionId");
-            using HttpResponseMessage credentialDefinitionIdResponse = new ()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(credentialDefinitionIdData, this.jsonOptions)),
-            };
-
-            Uri credentialDefinitionUri = new ($"{this.walletIssuerConfig.AgentApiUrl}credential-definitions/created?schema_id={schemaId}");
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == credentialDefinitionUri),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(credentialDefinitionIdResponse)
-                .Verifiable();
+            this.MessageHandlerMockSetup(handlerMock, credentialDefinitionIdData, new ($"{this.walletIssuerConfig.AgentApiUrl}credential-definitions/created?schema_id={schemaId}"));
 
             // Setup CredentialResponse
             Guid exchangeId = System.Guid.NewGuid();
@@ -205,21 +163,7 @@ namespace HealthGateway.CommonTests.Delegates
             {
                 ExchangeId = exchangeId,
             };
-            using HttpResponseMessage credentialResponse = new ()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(credentialResponseData, this.jsonOptions)),
-            };
-
-            Uri credentialResponseUri = new ($"{this.walletIssuerConfig.AgentApiUrl}issue-credential/send");
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == credentialResponseUri),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(credentialResponse)
-                .Verifiable();
+            this.MessageHandlerMockSetup(handlerMock, credentialResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}issue-credential/send"));
 
             Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
@@ -296,6 +240,25 @@ namespace HealthGateway.CommonTests.Delegates
 
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             return mockHttpClientService;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Unit Test")]
+        private void MessageHandlerMockSetup(Mock<HttpMessageHandler> handlerMock, object responseObject, Uri endpoint, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
+        {
+            HttpResponseMessage response = new ()
+            {
+                StatusCode = httpStatusCode,
+                Content = new StringContent(JsonSerializer.Serialize(responseObject, this.jsonOptions)),
+            };
+
+            handlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == endpoint),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(response)
+                .Verifiable();
         }
 
         /// <summary>
