@@ -66,7 +66,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<WalletConnection> GetConnection(string userProfileId)
+        public DBResult<WalletConnection> GetCurrentConnection(string userProfileId)
         {
             DBResult<WalletConnection> result = new ()
             {
@@ -75,6 +75,7 @@ namespace HealthGateway.Database.Delegates
             WalletConnection? connection = this.dbContext.WalletConnection
                                     .Where(p => p.UserProfileId == userProfileId &&
                                                 p.Status != WalletConnectionStatus.Disconnected)
+                                    .OrderByDescending(p => p.CreatedDateTime)
                                     .FirstOrDefault();
             if (connection != null)
             {

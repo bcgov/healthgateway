@@ -71,5 +71,15 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the exchange id for this credential.
         /// </summary>
         public Guid ExchangeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the revocation id from the agent.
+        /// </summary>
+        public string? RevocationId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the revocation registry id from the agent.
+        /// </summary>
+        public string? RevocationRegistryId { get; set; }
     }
 }

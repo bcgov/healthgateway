@@ -13,29 +13,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System.ComponentModel.DataAnnotations;
-    using HealthGateway.Database.Constants;
+    using System;
 
     /// <summary>
-    /// Represents a Wallnet Credential Status code table entity.
+    /// A verifiable credential Payload for an Immunization record.
     /// </summary>
-    public class WalletCredentialStatusCode : AuditableEntity
+    public class ImmunizationCredentialPayload : CredentialPayload
     {
         /// <summary>
-        /// Gets or sets the Wallet Connection Status Code.
+        /// Gets or sets the name of the type of immunization.
         /// </summary>
-        [Key]
-        [Required]
-        [MaxLength(10)]
-        public WalletCredentialStatus StatusCode { get; set; }
+        public string? ImmunizationType { get; set; }
 
         /// <summary>
-        /// Gets or sets the Wallet Connection Code description.
+        /// Gets or sets the brand name of Immunization product.
         /// </summary>
-        [Required]
-        [MaxLength(50)]
-        public string? Description { get; set; }
+        public string? ImmunizationProduct { get; set; }
+
+        /// <summary>
+        /// Gets or sets the immunization agent.
+        /// </summary>
+        public string? ImmunizationAgent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lot number.
+        /// </summary>
+        public string? LotNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the provider or facility where the immunization was received.
+        /// </summary>
+        public string? Provider { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------
 // Copyright © 2019 Province of British Columbia
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Models
+namespace HealthGateway.Common.Delegates
 {
-    using System.ComponentModel.DataAnnotations;
-    using HealthGateway.Database.Constants;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Immunization;
 
     /// <summary>
-    /// Represents a Wallnet Credential Status code table entity.
+    /// Defines a delegate to retrieve immunization records.
     /// </summary>
-    public class WalletCredentialStatusCode : AuditableEntity
+    public interface IImmunizationDelegate
     {
         /// <summary>
-        /// Gets or sets the Wallet Connection Status Code.
+        /// Gets an immunization record for the given id.
         /// </summary>
-        [Key]
-        [Required]
-        [MaxLength(10)]
-        public WalletCredentialStatus StatusCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Wallet Connection Code description.
-        /// </summary>
-        [Required]
-        [MaxLength(50)]
-        public string? Description { get; set; }
+        /// <param name="hdid">The hdid patient id.</param>
+        /// <param name="immunizationId">The immunization id.</param>
+        /// <returns>The immunization record with the given id.</returns>
+        Task<RequestResult<ImmunizationEvent>> GetImmunization(string hdid, string immunizationId);
     }
 }

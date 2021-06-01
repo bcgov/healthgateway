@@ -13,38 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// A verifiable credential for an Immunization.
+    /// Represents a Credential Definition Request to the aries agent.
     /// </summary>
-    public abstract class CredentialPayload
+    public class CredentialDefinitionRequest
     {
         /// <summary>
-        /// Gets or sets the schema name to be used for the Credential payload.
+        /// Gets or sets the schema id.
         /// </summary>
-        public string? SchemaName { get; set; }
+        [JsonPropertyName("schema_id")]
+        public string? SchemaId { get; set; }
 
         /// <summary>
-        /// Gets or sets the schema version to be used for the Credential payload.
+        /// Gets or sets a value indicating whether to support revocation.
         /// </summary>
-        public string? SchemaVersion { get; set; }
+        [JsonPropertyName("support_revocation")]
+        public bool SupportRevocation { get; set; }
 
         /// <summary>
-        /// Gets or sets the full legal name of the recipient.
+        /// Gets or sets the tag.
         /// </summary>
-        public string? RecipientName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the birthdate of the recipient.
-        /// </summary>
-        public DateTime? RecipientBirthDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Personal Health Number of the recipient.
-        /// </summary>
-        public string? RecipientPHN { get; set; }
+        [JsonPropertyName("tag")]
+        public string? Tag { get; set; }
     }
 }

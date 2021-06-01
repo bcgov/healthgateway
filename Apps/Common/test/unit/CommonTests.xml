@@ -333,6 +333,21 @@
             Hash - Happy Path (Null Key).
             </summary>
         </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest">
+            <summary>
+            ImmunizationDelegate's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.ImmunizationDelegateTest.ValidateGetImmunization200">
+            <summary>
+            GetImmunization - Happy Path.
+            </summary>
+        </member>
         <member name="T:HealthGateway.CommonTests.Delegates.NotificationSettingsDelegateTests">
             <summary>
             NotificationSettingsDelegate's Unit Tests.
@@ -415,6 +430,46 @@
             <param name="expectedRequestResult">expectedRequestResult.</param>
             <param name="throwException">Throw exception indicator.</param>
             <returns>Mocked notification settings.</returns>
+        </member>
+        <member name="T:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests">
+            <summary>
+            Unit Tests for the Wallet Issuer Delegate.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests"/> class.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnection200">
+            <summary>
+            Create Connection - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnection500">
+            <summary>
+            Create Connection - Agent down.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnectionBadPayload">
+            <summary>
+            Create Connection - Bad Payload from Agent.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnectionException">
+            <summary>
+            Create Connection - Exception during HTTP Call.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.Common.Models.AcaPy.ConnectionResponse},System.Boolean,System.Boolean)">
+            <summary>
+            Create Wallet Connection.
+            </summary>
+            <param name="expectedResponseStatusCode">expectedResponseStatusCode.</param>
+            <param name="expectedRequestResult">expectedRequestResult.</param>
+            <param name="badContent">Pass no json data as as response.</param>
+            <param name="throwException">Throw exception indicator.</param>
+            <returns>The notification settings.</returns>
         </member>
         <member name="T:HealthGateway.CommonTests.FileDownload.FileDownloadServiceTests">
             <summary>

@@ -13,38 +13,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Models.AcaPy
+namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
+    using System.Collections.ObjectModel;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// A verifiable credential Payload for an Immunization record.
+    /// Represents a Schema Request to the aries agent.
     /// </summary>
-    public class ImmunizationCredentialPayload : CredentialPayload
+    public class SchemaRequest
     {
         /// <summary>
-        /// Gets or sets the name of the type of immunization.
+        /// Initializes a new instance of the <see cref="SchemaRequest"/> class.
         /// </summary>
-        public string? ImmunizationType { get; set; }
+        public SchemaRequest()
+        {
+            this.Attributes = new Collection<string>();
+        }
 
         /// <summary>
-        /// Gets or sets the brand name of Immunization product.
+        /// Gets the attributes.
         /// </summary>
-        public string? ImmunizationProduct { get; set; }
+        [JsonPropertyName("attributes")]
+        public Collection<string> Attributes { get; }
 
         /// <summary>
-        /// Gets or sets the immunization agent.
+        /// Gets or sets the schema name.
         /// </summary>
-        public string? ImmunizationAgent { get; set; }
+        [JsonPropertyName("schema_name")]
+        public string SchemaName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the lot number.
+        /// Gets or sets the schema version.
         /// </summary>
-        public string? LotNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets the provider or facility where the immunization was received.
-        /// </summary>
-        public string? Provider { get; set; }
+        [JsonPropertyName("schema_version")]
+        public string SchemaVersion { get; set; } = string.Empty;
     }
 }

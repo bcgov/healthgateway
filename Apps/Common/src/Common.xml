@@ -1451,6 +1451,19 @@
             <param name="compareHash">The hash object to compare.</param>
             <returns>true if the key generates the same hash or the hash value is null and the key is null.</returns>
         </member>
+        <member name="T:HealthGateway.Common.Delegates.IImmunizationDelegate">
+            <summary>
+            Defines a delegate to retrieve immunization records.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IImmunizationDelegate.GetImmunization(System.String,System.String)">
+            <summary>
+            Gets an immunization record for the given id.
+            </summary>
+            <param name="hdid">The hdid patient id.</param>
+            <param name="immunizationId">The immunization id.</param>
+            <returns>The immunization record with the given id.</returns>
+        </member>
         <member name="T:HealthGateway.Common.Delegates.INotificationSettingsDelegate">
             <summary>
             Interface that defines a delegate to get and set Notification Settings at PHSA.
@@ -1471,6 +1484,82 @@
             <param name="bearerToken">The access token of the authenticated user.</param>
             <returns>The notification settings response returned from PHSA wrapped in a RequestResult.</returns>
         </member>
+        <member name="T:HealthGateway.Common.Delegates.IWalletIssuerDelegate">
+            <summary>
+            Interface that defines a delegate to create/revoke wallet connections and credentials.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Delegates.IWalletIssuerDelegate.WalletIssuerConfig">
+            <summary>
+            Gets the Wallet Issuer Configuration.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
+            <summary>
+            Requests that the agent create a connection.
+            </summary>
+            <param name="walletConnectionId">The id of the wallet connection.</param>
+            <returns>A Connection response including the invitation URL and the agent connection id.</returns>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
+            <summary>
+            Requests that the agent revoke the connection.
+            </summary>
+            <param name="connection">The wallet connection to revoke.</param>
+            <returns>The WalletConnection that was revoked.</returns>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,``0)">
+            <summary>
+            Requests that the agent create a credential and pass the payload information to the users wallet.
+            </summary>
+            <typeparam name="T">The credential payload to use.</typeparam>
+            <param name="connection">The wallet connection of the user.</param>
+            <param name="payload">The credential payload to send to the agent.</param>
+            <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential)">
+            <summary>
+            Creates a connection invitation request.
+            </summary>
+            <param name="credential">The wallet credential to revoke.</param>
+            <returns>The WalletCredential that was revoked.</returns>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateSchemaAsync(HealthGateway.Common.Models.AcaPy.SchemaRequest)">
+            <summary>
+            Creates a schema with the agent.
+            </summary>
+            <param name="schema">The schema to create.</param>
+            <returns>The schema response wrapped.</returns>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateCredentialDefinitionAsync(System.String)">
+            <summary>
+            Creates a credential definition for a given scehmaId.
+            </summary>
+            <param name="schemaId">The schema id to create the credential definition for.</param>
+            <returns>The schema response wrapped.</returns>
+        </member>
+        <member name="T:HealthGateway.Common.Delegates.RestImmunizationDelegate">
+            <summary>
+            Implementation that uses HTTP to retrieve immunization data.
+            </summary>
+        </member>
+        <member name="F:HealthGateway.Common.Delegates.RestImmunizationDelegate.httpContextAccessor">
+            <summary>
+            Gets or sets the http context accessor.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.RestImmunizationDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.Delegates.RestImmunizationDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.RestImmunizationDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+            <param name="httpContextAccessor">The Http Context accessor.</param>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.RestImmunizationDelegate.GetImmunization(System.String,System.String)">
+            <inheritdoc/>
+        </member>
         <member name="T:HealthGateway.Common.Delegates.RestNotificationSettingsDelegate">
             <summary>
             Implementation that uses HTTP to sends notification settings to PHSA.
@@ -1488,6 +1577,40 @@
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.Common.Delegates.RestNotificationSettingsDelegate.SetNotificationSettings(HealthGateway.Common.Models.NotificationSettingsRequest,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:HealthGateway.Common.Delegates.WalletIssuerDelegate">
+            <summary>
+            Implementation that uses HTTP to create/revoke Connections and Credentials.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.Delegates.WalletIssuerDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.WalletIssuerDelegate"/> class.
+            </summary>
+            <param name="logger">Injected Logger Provider.</param>
+            <param name="httpClientService">The injected http client service.</param>
+            <param name="configuration">The injected configuration provider.</param>
+        </member>
+        <member name="P:HealthGateway.Common.Delegates.WalletIssuerDelegate.WalletIssuerConfig">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateSchemaAsync(HealthGateway.Common.Models.AcaPy.SchemaRequest)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialDefinitionAsync(System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Common.ErrorHandling.ActionType">
@@ -1770,6 +1893,176 @@
             </summary>
             <param name="notificationSettingsJSON">The Notification settings serialized to send to PHSA.</param>
         </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.Connection">
+            <summary>
+            Represents a Connection to the Ares Agent.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.ConnectionResponse">
+            <summary>
+            Represents a Connection to the Ares Agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.ConnectionResponse.AgentId">
+            <summary>
+            Gets or sets the connection id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.ConnectionResponse.InvitationUrl">
+            <summary>
+            Gets or sets the invitation url.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest">
+            <summary>
+            Represents a Credential Definition Request to the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest.SchemaId">
+            <summary>
+            Gets or sets the schema id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest.SupportRevocation">
+            <summary>
+            Gets or sets a value indicating whether to support revocation.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest.Tag">
+            <summary>
+            Gets or sets the tag.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionResponse">
+            <summary>
+            Represents a Credential Definition Response from the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionResponse.CredentialDefinitionId">
+            <summary>
+            Gets or sets the schema id.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialPayload">
+            <summary>
+            A verifiable credential for an Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialPayload.RecipientName">
+            <summary>
+            Gets or sets the full legal name of the recipient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialPayload.RecipientBirthDate">
+            <summary>
+            Gets or sets the birthdate of the recipient.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialPayload.RecipientPHN">
+            <summary>
+            Gets or sets the Personal Health Number of the recipient.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialResponse">
+            <summary>
+            Represents a Connection to the Ares Agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialResponse.ExchangeId">
+            <summary>
+            Gets or sets the credential exchange id.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload">
+            <summary>
+            A verifiable credential Payload for an Immunization record.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload.ImmunizationType">
+            <summary>
+            Gets or sets the name of the type of immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload.ImmunizationProduct">
+            <summary>
+            Gets or sets the brand name of Immunization product.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload.ImmunizationAgent">
+            <summary>
+            Gets or sets the immunization agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload.LotNumber">
+            <summary>
+            Gets or sets the lot number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload.Provider">
+            <summary>
+            Gets or sets the provider or facility where the immunization was reeived.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.SchemaRequest">
+            <summary>
+            Represents a Schema Request to the aries agent.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Models.AcaPy.SchemaRequest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Models.AcaPy.SchemaRequest"/> class.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaRequest.Attributes">
+            <summary>
+            Gets the attributes.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaRequest.SchemaName">
+            <summary>
+            Gets or sets the schema name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaRequest.SchemaVersion">
+            <summary>
+            Gets or sets the schema version.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.SchemaResponse">
+            <summary>
+            Represents a Schema Response from the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaResponse.SchemaId">
+            <summary>
+            Gets or sets the schema id.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration">
+            <summary>
+            Configuration to be used by external clients for authentication.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration.AgentApiUrl">
+            <summary>
+            Gets or sets Agent Api Url .
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration.AgentApiKey">
+            <summary>
+            Gets or sets the Agent Api Key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration.SchemaName">
+            <summary>
+            Gets or sets the Agent Api Key.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.WalletIssuerConfiguration.SchemaVersion">
+            <summary>
+            Gets or sets the Agent Api Key.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Common.Models.AESCryptoDelegateConfig">
             <summary>
             The configuration for the AESCrypto delegate.
@@ -1823,6 +2116,121 @@
         <member name="P:HealthGateway.Common.Models.HMACHashDelegateConfig.SaltLength">
             <summary>
             Gets or sets the salt length in bytes.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.Immunization.ImmunizationAgent">
+            <summary>
+            The Immunization Agents model.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationAgent.Code">
+            <summary>
+            Gets or sets the Immunization id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationAgent.Name">
+            <summary>
+            Gets or sets the Immunization Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationAgent.LotNumber">
+            <summary>
+            Gets or sets the Immunization Lot Number.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationAgent.ProductName">
+            <summary>
+            Gets or sets the Immunization Product Name.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.Immunization.ImmunizationDefinition">
+            <summary>
+            Defines an Immunization definition.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationDefinition.Name">
+            <summary>
+            Gets or sets the Immunization name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationDefinition.ImmunizationAgents">
+            <summary>
+            Gets or sets the Immunization Agents.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.Immunization.ImmunizationEvent">
+            <summary>
+            Represents a single immunization event.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.Id">
+            <summary>
+            Gets or sets the Immunization id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.DateOfImmunization">
+            <summary>
+            Gets or sets the Date of Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.Status">
+            <summary>
+            Gets or sets the Immunization Status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.ProviderOrClinic">
+            <summary>
+            Gets or sets the Provider or Clinic providing the Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.TargetedDisease">
+            <summary>
+            Gets or sets the Targeted Disease of the Immunization.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.Immunization">
+            <summary>
+            Gets or sets the Immunization definition.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationEvent.Forecast">
+            <summary>
+            Gets or sets the Immunization forecast.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.Immunization.ImmunizationForecast">
+            <summary>
+            Represents Immunization Forecast.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.RecommendationId">
+            <summary>
+            Gets or sets the Recommendation Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.CreateDate">
+            <summary>
+            Gets or sets the Create Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.Status">
+            <summary>
+            Gets or sets the Status.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.DisplayName">
+            <summary>
+            Gets or sets the Display Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.EligibleDate">
+            <summary>
+            Gets or sets the Eligible Date.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.Immunization.ImmunizationForecast.DueDate">
+            <summary>
+            Gets or sets the Due Date.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.NotificationSettingsBase">

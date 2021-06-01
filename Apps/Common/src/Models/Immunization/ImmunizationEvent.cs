@@ -13,15 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Common.Models.Immunization
 {
     using System;
-    using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Immunization.Models.PHSA;
 
     /// <summary>
-    /// Represents a row in the Immunization Model.
+    /// Represents a single immunization event.
     /// </summary>
     public class ImmunizationEvent
     {
@@ -66,43 +64,5 @@ namespace HealthGateway.Immunization.Models
         /// </summary>
         [JsonPropertyName("forecast")]
         public ImmunizationForecast? Forecast { get; set; } = null;
-
-        /// <summary>
-        /// Creates a ImmunizationEvent object from a PHSA model.
-        /// </summary>
-        /// <param name="model">The immunization view object to convert.</param>
-        /// <returns>The newly created ImmunizationEvent object.</returns>
-        public static ImmunizationEvent FromPHSAModel(ImmunizationViewResponse model)
-        {
-            return new ImmunizationEvent()
-            {
-                Id = model.SourceSystemId,
-                DateOfImmunization = model.OccurrenceDateTime,
-                TargetedDisease = model.TargetedDisease,
-                ProviderOrClinic = model.ProviderOrClinic,
-                Status = model.Status,
-                Immunization = new ImmunizationDefinition() { Name = model.Name, ImmunizationAgents = ImmunizationAgent.FromPHSAModelList(model.ImmunizationAgents) },
-                Forecast = model.ImmunizationForecast == null ? null : ImmunizationForecast.FromPHSAModel(model.ImmunizationForecast),
-            };
-        }
-
-        /// <summary>
-        /// Creates a ImmunizationEvent object from a PHSA model.
-        /// </summary>
-        /// <param name="immunizationViewResponse">The list of PHSA models to convert.</param>
-        /// <returns>A list of ImmunizationEvent objects.</returns>
-        public static IList<ImmunizationEvent> FromPHSAModelList(IEnumerable<ImmunizationViewResponse>? immunizationViewResponse)
-        {
-            List<ImmunizationEvent> immunizations = new List<ImmunizationEvent>();
-            if (immunizationViewResponse != null)
-            {
-                foreach (ImmunizationViewResponse immunizationViewModel in immunizationViewResponse)
-                {
-                    immunizations.Add(ImmunizationEvent.FromPHSAModel(immunizationViewModel));
-                }
-            }
-
-            return immunizations;
-        }
     }
 }
