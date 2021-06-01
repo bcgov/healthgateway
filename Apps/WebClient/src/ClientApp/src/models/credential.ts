@@ -11,7 +11,7 @@ export interface WalletConnection {
     version: string;
 }
 
-enum ConnectionState {
+export enum ConnectionState {
     Pending,
     Connected,
     Disconnected,
@@ -29,7 +29,7 @@ export interface WalletCredential {
     version: string;
 }
 
-enum CredentialState {
+export enum CredentialState {
     Created,
     Added,
     Revoked,
