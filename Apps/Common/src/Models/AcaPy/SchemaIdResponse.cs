@@ -25,9 +25,9 @@ namespace HealthGateway.Common.Models.AcaPy
     public class SchemaIdResponse
     {
         /// <summary>
-        /// Gets or sets the schema ids.
+        /// Gets the schema ids.
         /// </summary>
         [JsonPropertyName("schema_ids")]
-        public ICollection<string> SchemaIds { get; set; } = new List<string>();
+        public ICollection<string> SchemaIds { get; } = new List<string>();
     }
 }

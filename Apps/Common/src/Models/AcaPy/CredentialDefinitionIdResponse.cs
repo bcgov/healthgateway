@@ -15,19 +15,27 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Schema Response from the aries agent.
+    /// Represents a Credential Definition Id from the aries agent.
     /// </summary>
     public class CredentialDefinitionIdResponse
     {
         /// <summary>
-        /// Gets or sets the schema ids.
+        /// Initializes a new instance of the <see cref="CredentialDefinitionIdResponse"/> class.
+        /// </summary>
+        public CredentialDefinitionIdResponse()
+        {
+            this.CredentialDefinitionIds = new Collection<string>();
+        }
+
+        /// <summary>
+        /// Gets the credential definition ids.
         /// </summary>
         [JsonPropertyName("credential_definition_ids")]
-        public ICollection<string> CredentialDefinitionIds { get; set; } = new List<string>();
+        public ICollection<string> CredentialDefinitionIds { get; }
     }
 }

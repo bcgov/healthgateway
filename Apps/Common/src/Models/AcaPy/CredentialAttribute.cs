@@ -20,7 +20,7 @@ namespace HealthGateway.Common.Models.AcaPy
     /// <summary>
     /// A credential attribute.
     /// </summary>
-    public abstract class CredentialAttribute
+    public class CredentialAttribute
     {
         /// <summary>
         /// Gets or sets the name.
@@ -32,7 +32,6 @@ namespace HealthGateway.Common.Models.AcaPy
         /// Gets or sets the value.
         /// </summary>
         [JsonPropertyName("value")]
-        public string Value { get; set; } = string.Empty;
-
+        public string? Value { get; set; }
     }
 }

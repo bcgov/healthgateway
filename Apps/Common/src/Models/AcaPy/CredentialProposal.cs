@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Models.AcaPy
 {
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -24,16 +25,23 @@ namespace HealthGateway.Common.Models.AcaPy
     public class CredentialProposal
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="CredentialProposal"/> class.
+        /// </summary>
+        public CredentialProposal()
+        {
+            this.Attributes = new Collection<CredentialAttribute>();
+        }
+
+        /// <summary>
         /// Gets the type.
         /// </summary>
         [JsonPropertyName("@type")]
         public string Type { get; } = "issue-credential/1.0/credential-preview";
 
         /// <summary>
-        /// Gets or sets the attributes.
+        /// Gets the attributes.
         /// </summary>
         [JsonPropertyName("attributes")]
-        public ICollection<CredentialAttribute> Attributes { get; set; } = new List<CredentialAttribute>();
-
+        public ICollection<CredentialAttribute> Attributes { get; }
     }
 }

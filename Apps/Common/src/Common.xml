@@ -1858,11 +1858,6 @@
             </summary>
             <param name="notificationSettingsJSON">The Notification settings serialized to send to PHSA.</param>
         </member>
-        <member name="T:HealthGateway.Common.Models.AcaPy.Connection">
-            <summary>
-            Represents a Connection to the Ares Agent.
-            </summary>
-        </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.ConnectionResponse">
             <summary>
             Represents a Connection to the Ares Agent.
@@ -1876,6 +1871,36 @@
         <member name="P:HealthGateway.Common.Models.AcaPy.ConnectionResponse.InvitationUrl">
             <summary>
             Gets or sets the invitation url.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialAttribute">
+            <summary>
+            A credential attribute.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialAttribute.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialAttribute.Value">
+            <summary>
+            Gets or sets the value.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionIdResponse">
+            <summary>
+            Represents a Schema Response from the aries agent.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Models.AcaPy.CredentialDefinitionIdResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionIdResponse"/> class.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionIdResponse.CredentialDefinitionIds">
+            <summary>
+            Gets the credential definition ids.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest">
@@ -1908,6 +1933,66 @@
             Gets or sets the schema id.
             </summary>
         </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest">
+            <summary>
+            A credential offer to send to aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.ConnectionId">
+            <summary>
+            Gets or sets the connectionId.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.IssuerDid">
+            <summary>
+            Gets or sets the IssuerDid.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.SchemaId">
+            <summary>
+            Gets or sets the SchemaId.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.SchemaIssuerDid">
+            <summary>
+            Gets or sets the Schema Issuer Did.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.SchemaName">
+            <summary>
+            Gets or sets the Schema Name.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.SchemaVersion">
+            <summary>
+            Gets or sets the Schema Version.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.CredentialDefinitionId">
+            <summary>
+            Gets or sets the Credential Definition Id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.Comment">
+            <summary>
+            Gets or sets the comment.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.AutoRemove">
+            <summary>
+            Gets a value indicating whether auto remove is set.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.Trace">
+            <summary>
+            Gets a value indicating whether trace is set.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialOfferRequest.CredentialProposal">
+            <summary>
+            Gets or sets the credential proposal.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.CredentialPayload">
             <summary>
             A verifiable credential for an Immunization.
@@ -1928,14 +2013,44 @@
             Gets or sets the Personal Health Number of the recipient.
             </summary>
         </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.CredentialProposal">
+            <summary>
+            A credential proposal.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Models.AcaPy.CredentialProposal.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Models.AcaPy.CredentialProposal"/> class.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialProposal.Type">
+            <summary>
+            Gets the type.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialProposal.Attributes">
+            <summary>
+            Gets the attributes.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.CredentialResponse">
             <summary>
-            Represents a Connection to the Ares Agent.
+            Represents a Credential Response from creating a credential.
             </summary>
         </member>
         <member name="P:HealthGateway.Common.Models.AcaPy.CredentialResponse.ExchangeId">
             <summary>
             Gets or sets the credential exchange id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialResponse.RevocationRegistryId">
+            <summary>
+            Gets or sets the revocation registry id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialResponse.RevocationId">
+            <summary>
+            Gets or sets the revocation id.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload">
@@ -1966,6 +2081,36 @@
         <member name="P:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload.Provider">
             <summary>
             Gets or sets the provider or facility where the immunization was reeived.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.IssuerDidResponse">
+            <summary>
+            Represents a Schema Response from the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.IssuerDidResponse.Result">
+            <summary>
+            Gets or sets the result.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.IssuerDidResult">
+            <summary>
+            Represents a Schema Response from the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.IssuerDidResult.Did">
+            <summary>
+            Gets or sets the result.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.SchemaIdResponse">
+            <summary>
+            Represents a Schema Response from the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.SchemaIdResponse.SchemaIds">
+            <summary>
+            Gets the schema ids.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.SchemaRequest">

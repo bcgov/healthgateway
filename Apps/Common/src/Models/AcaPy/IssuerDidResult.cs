@@ -27,6 +27,6 @@ namespace HealthGateway.Common.Models.AcaPy
         /// Gets or sets the result.
         /// </summary>
         [JsonPropertyName("did")]
-        public string Did { get; set; }  = string.Empty;
+        public string Did { get; set; } = string.Empty;
     }
 }

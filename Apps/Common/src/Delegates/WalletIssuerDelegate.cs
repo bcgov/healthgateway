@@ -21,6 +21,7 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Net.Mime;
+    using System.Reflection;
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -123,14 +124,25 @@ namespace HealthGateway.Common.Delegates
         public async Task<RequestResult<CredentialResponse>> CreateCredentialAsync<T>(WalletConnection connection, T payload)
             where T : CredentialPayload
         {
-            string did = "";
-            string schemaId = "";
-            string credentialDefinitionId = "";
+            string agentId = string.Empty;
+            string did = string.Empty;
+            string schemaId = string.Empty;
+            string credentialDefinitionId = string.Empty;
 
-            RequestResult<CredentialResponse> retVal = new RequestResult<CredentialResponse>()
+            RequestResult<CredentialResponse> retVal = new ()
             {
                 ResultStatus = HealthGateway.Common.Constants.ResultType.Error,
             };
+
+            if (connection.AgentId != null)
+            {
+                agentId = connection.AgentId;
+            }
+            else
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Connection's agent Id is null." };
+                return retVal;
+            }
 
             RequestResult<IssuerDidResponse> issuerDidResponse = await this.GetIssuerDidAsync().ConfigureAwait(true);
             if (issuerDidResponse.ResourcePayload != null)
@@ -139,7 +151,8 @@ namespace HealthGateway.Common.Delegates
             }
             else
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Issuer Did payload null" };
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Issuer Did payload is null." };
+                return retVal;
             }
 
             RequestResult<string> schemaIdResponse = await this.GetSchemaIdAsync(did).ConfigureAwait(true);
@@ -149,19 +162,55 @@ namespace HealthGateway.Common.Delegates
             }
             else
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Schema Id payload null" };
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Schema Id payload is null." };
+                return retVal;
             }
 
-            RequestResult<string> credentialDefinitionIdResponse = await this.GetCredentialDefinitionIdAsync(schemaId).ConfigureAwait(true);
+            RequestResult<CredentialDefinitionIdResponse> credentialDefinitionIdResponse = await this.GetCredentialDefinitionIdsAsync(schemaId).ConfigureAwait(true);
             if (credentialDefinitionIdResponse.ResourcePayload != null)
             {
-                credentialDefinitionId = credentialDefinitionIdResponse.ResourcePayload;
+                credentialDefinitionId = credentialDefinitionIdResponse.ResourcePayload.CredentialDefinitionIds.First();
             }
             else
             {
-                retVal.ResultError = new RequestResultError() { ResultMessage = $"Credential definition Id payload null" };
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Credential definition Id payload is null." };
+                return retVal;
             }
 
+            CredentialProposal credentialProposal = new ();
+
+            foreach (PropertyInfo property in typeof(CredentialPayload).GetProperties())
+            {
+                if (property != null)
+                {
+                    credentialProposal.Attributes.Add(new CredentialAttribute
+                    {
+                        Name = property.Name,
+                        Value = property.GetValue(payload)?.ToString(),
+                    });
+                }
+            }
+
+            CredentialOfferRequest credentialOffer = new CredentialOfferRequest
+            {
+                ConnectionId = agentId,
+                IssuerDid = did,
+                SchemaId = schemaId,
+                SchemaIssuerDid = did,
+                SchemaName = this.WalletIssuerConfig.SchemaName,
+                SchemaVersion = this.WalletIssuerConfig.SchemaVersion,
+                CredentialDefinitionId = credentialDefinitionId,
+                Comment = "Immunization",
+                CredentialProposal = credentialProposal,
+            };
+
+            RequestResult<CredentialResponse> credentialResponse = await this.IssueCredentialAsync(credentialOffer).ConfigureAwait(true);
+            if (credentialResponse.ResourcePayload != null)
+            {
+                retVal.ResourcePayload = credentialResponse.ResourcePayload;
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
@@ -179,7 +228,7 @@ namespace HealthGateway.Common.Delegates
         /// <inheritdoc/>
         public async Task<RequestResult<SchemaResponse>> CreateSchemaAsync(SchemaRequest schema)
         {
-            RequestResult<SchemaResponse> retVal = new RequestResult<SchemaResponse>()
+            RequestResult<SchemaResponse> retVal = new ()
             {
                 ResultStatus = HealthGateway.Common.Constants.ResultType.Error,
             };
@@ -305,7 +354,7 @@ namespace HealthGateway.Common.Delegates
 
         private async Task<RequestResult<IssuerDidResponse>> GetIssuerDidAsync()
         {
-            RequestResult<IssuerDidResponse> retVal = new RequestResult<IssuerDidResponse>()
+            RequestResult<IssuerDidResponse> retVal = new ()
             {
                 ResultStatus = HealthGateway.Common.Constants.ResultType.Error,
             };
@@ -397,9 +446,9 @@ namespace HealthGateway.Common.Delegates
             return retVal;
         }
 
-        private async Task<RequestResult<string>> GetCredentialDefinitionIdAsync(string schemaId)
+        private async Task<RequestResult<CredentialDefinitionIdResponse>> GetCredentialDefinitionIdsAsync(string schemaId)
         {
-            RequestResult<string> retVal = new RequestResult<string>()
+            RequestResult<CredentialDefinitionIdResponse> retVal = new ()
             {
                 ResultStatus = HealthGateway.Common.Constants.ResultType.Error,
             };
@@ -415,11 +464,11 @@ namespace HealthGateway.Common.Delegates
 
                 if (response.IsSuccessStatusCode)
                 {
-                    CredentialDefinitionIdResponse? scehmaIdResponse = JsonSerializer.Deserialize<CredentialDefinitionIdResponse>(payload);
-                    if (scehmaIdResponse != null)
+                    CredentialDefinitionIdResponse? definitionIdResponse = JsonSerializer.Deserialize<CredentialDefinitionIdResponse>(payload);
+                    if (definitionIdResponse != null)
                     {
                         retVal.ResultStatus = HealthGateway.Common.Constants.ResultType.Success;
-                        retVal.ResourcePayload = scehmaIdResponse.CredentialDefinitionIds.First();
+                        retVal.ResourcePayload = definitionIdResponse;
                         retVal.TotalResultCount = 1;
                     }
                     else
@@ -439,6 +488,59 @@ namespace HealthGateway.Common.Delegates
             {
                 retVal.ResultError = new () { ResultMessage = $"Exception getting credential definition id: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in GetCredentialDefinitionIdAsync {e}");
+            }
+
+            return retVal;
+        }
+
+        private async Task<RequestResult<CredentialResponse>> IssueCredentialAsync(CredentialOfferRequest credentialOffer)
+        {
+            RequestResult<CredentialResponse> retVal = new ()
+            {
+                ResultStatus = HealthGateway.Common.Constants.ResultType.Error,
+            };
+
+            this.logger.LogDebug("Issuing Credential");
+
+            StringContent httpContent = new (JsonSerializer.Serialize(credentialOffer), Encoding.UTF8, "application/json");
+
+            HttpResponseMessage? response = null;
+            try
+            {
+                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}issue-credential/send");
+                response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    CredentialResponse? credentialResponse = JsonSerializer.Deserialize<CredentialResponse>(payload);
+                    if (credentialResponse != null)
+                    {
+                        retVal.ResultStatus = HealthGateway.Common.Constants.ResultType.Success;
+                        retVal.ResourcePayload = credentialResponse;
+                        retVal.TotalResultCount = 1;
+                    }
+                    else
+                    {
+                        this.logger.LogWarning($"Create credential response parse error {payload}");
+                        retVal.ResultError = new () { ResultMessage = "Error with JSON data", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    }
+                }
+                else
+                {
+                    retVal.ResultError = new () { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                }
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
+            {
+                retVal.ResultError = new () { ResultMessage = $"Exception issuing credential: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                this.logger.LogError($"Unexpected exception in IssueCredentialAsync {e}");
+            }
+            finally
+            {
+                httpContent.Dispose();
             }
 
             return retVal;

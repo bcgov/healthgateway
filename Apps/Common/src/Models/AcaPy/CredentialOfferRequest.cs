@@ -72,13 +72,13 @@ namespace HealthGateway.Common.Models.AcaPy
         public string Comment { get; set; } = string.Empty;
 
         /// <summary>
-        /// sets the auto remove flag to false.
+        /// Gets a value indicating whether auto remove is set.
         /// </summary>
         [JsonPropertyName("auto_remove")]
         public bool AutoRemove { get; } = false;
 
         /// <summary>
-        /// sets the trace flag to false.
+        /// Gets a value indicating whether trace is set.
         /// </summary>
         [JsonPropertyName("trace")]
         public bool Trace { get; } = false;
