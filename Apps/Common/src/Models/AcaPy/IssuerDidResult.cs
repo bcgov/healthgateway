@@ -16,11 +16,17 @@
 namespace HealthGateway.Common.Models.AcaPy
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Connection to the Ares Agent.
+    /// Represents a Schema Response from the aries agent.
     /// </summary>
-    public class Connection
+    public class IssuerDidResult
     {
+        /// <summary>
+        /// Gets or sets the result.
+        /// </summary>
+        [JsonPropertyName("did")]
+        public string Did { get; set; } = string.Empty;
     }
 }

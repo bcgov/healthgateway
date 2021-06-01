@@ -24,10 +24,12 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.AcaPy;
     using HealthGateway.Common.Services;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -39,6 +41,8 @@ namespace HealthGateway.CommonTests.Delegates
     /// </summary>
     public class WalletIssuerDelegateTests
     {
+        private const string AcapyConfigSectionKey = "AcaPy";
+
         private readonly JsonSerializerOptions jsonOptions = new ()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -47,6 +51,7 @@ namespace HealthGateway.CommonTests.Delegates
         };
 
         private readonly IConfiguration configuration;
+        private readonly WalletIssuerConfiguration walletIssuerConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WalletIssuerDelegateTests"/> class.
@@ -54,6 +59,8 @@ namespace HealthGateway.CommonTests.Delegates
         public WalletIssuerDelegateTests()
         {
             this.configuration = GetIConfigurationRoot();
+            this.walletIssuerConfig = new WalletIssuerConfiguration();
+            this.configuration.Bind(AcapyConfigSectionKey, this.walletIssuerConfig);
         }
 
         /// <summary>
@@ -118,11 +125,80 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.True(actualResult.ResultStatus == Common.Constants.ResultType.Error);
         }
 
+        /// <summary>
+        /// Create Credential - Happy Path.
+        /// </summary>
+        [Fact]
+#pragma warning disable CA1506 // Do not catch general exception types
+        public void CreateCredential()
+        {
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<HttpMessageHandler> handlerMock = new ();
+
+            // Setup IssuerDID
+            string issuerDID = "fakeDID";
+            IssuerDidResponse didResponseData = new ()
+            {
+                Result = new IssuerDidResult()
+                {
+                    Did = issuerDID,
+                },
+            };
+            this.MessageHandlerMockSetup(handlerMock, didResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}wallet/did/public"));
+
+            // Setup Schema ID
+            string schemaId = "schemaId";
+            SchemaIdResponse schemaResponseData = new ();
+            schemaResponseData.SchemaIds.Add(schemaId);
+            this.MessageHandlerMockSetup(handlerMock, schemaResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}schemas/created?schema_version={this.walletIssuerConfig.SchemaVersion}&schema_issuer_did={issuerDID}&schema_name={this.walletIssuerConfig.SchemaName}"));
+
+            // Setup credentialDefinitionIdResponse
+            CredentialDefinitionIdResponse credentialDefinitionIdData = new ();
+            credentialDefinitionIdData.CredentialDefinitionIds.Add("credentialDefinitionId");
+            this.MessageHandlerMockSetup(handlerMock, credentialDefinitionIdData, new ($"{this.walletIssuerConfig.AgentApiUrl}credential-definitions/created?schema_id={schemaId}"));
+
+            // Setup CredentialResponse
+            Guid exchangeId = System.Guid.NewGuid();
+            CredentialResponse credentialResponseData = new ()
+            {
+                ExchangeId = exchangeId,
+            };
+            this.MessageHandlerMockSetup(handlerMock, credentialResponseData, new ($"{this.walletIssuerConfig.AgentApiUrl}issue-credential/send"));
+
+            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+
+            WalletConnection connection = new ()
+            {
+                AgentId = "agentId",
+            };
+
+            ImmunizationCredentialPayload payload = new ImmunizationCredentialPayload()
+            {
+                RecipientName = "recipientName",
+                ImmunizationAgent = "immunizationAgent",
+            };
+            string comment = "Immunization Credential";
+
+            RequestResult<CredentialResponse> expectedResult = new ()
+            {
+                ResourcePayload = credentialResponseData,
+                ResultStatus = ResultType.Success,
+                TotalResultCount = 1,
+            };
+            IWalletIssuerDelegate issuerDelegate = new WalletIssuerDelegate(loggerFactory.CreateLogger<WalletIssuerDelegate>(), mockHttpClientService.Object, this.configuration);
+            RequestResult<CredentialResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateCredentialAsync<ImmunizationCredentialPayload>(connection, payload, comment).ConfigureAwait(true)).Result;
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
+        }
+
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             var myConfiguration = new Dictionary<string, string>
             {
-                { "AcaPy:agentApiUrl", "https://health-gateway-agent-admin-dev.apps.silver.devops.gov.bc.ca/" },
+                { $"{AcapyConfigSectionKey}:agentApiUrl", "http://localhost:8024/" },
+                { $"{AcapyConfigSectionKey}:agentApiKey", "agent-api-key-dev" },
+                { $"{AcapyConfigSectionKey}:schemaName", "schemaName" },
+                { $"{AcapyConfigSectionKey}:schemaVersion", "schemaVersion" },
             };
 
             return new ConfigurationBuilder()
@@ -164,6 +240,25 @@ namespace HealthGateway.CommonTests.Delegates
 
             mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
             return mockHttpClientService;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Unit Test")]
+        private void MessageHandlerMockSetup(Mock<HttpMessageHandler> handlerMock, object responseObject, Uri endpoint, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
+        {
+            HttpResponseMessage response = new ()
+            {
+                StatusCode = httpStatusCode,
+                Content = new StringContent(JsonSerializer.Serialize(responseObject, this.jsonOptions)),
+            };
+
+            handlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(c => c.RequestUri == endpoint),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(response)
+                .Verifiable();
         }
 
         /// <summary>
