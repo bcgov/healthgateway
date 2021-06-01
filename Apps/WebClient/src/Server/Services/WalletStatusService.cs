@@ -54,18 +54,26 @@ namespace HealthGateway.WebClient.Services
             {
                 WalletConnection connection = dbResult.Payload;
                 result.ResourcePayload = connection;
-                connection.ConnectedDateTime = DateTime.UtcNow;
-                connection.Status = state;
-                DBResult<WalletConnection> updateResult = this.walletDelegate.UpdateConnection(connection);
-                if (updateResult.Status == DBStatusCode.Updated)
+                if (connection.Status != WalletConnectionStatus.Disconnected)
                 {
-                    result.ResultStatus = Common.Constants.ResultType.Success;
-                    result.TotalResultCount = 1;
+                    connection.ConnectedDateTime = DateTime.UtcNow;
+                    connection.Status = state;
+                    DBResult<WalletConnection> updateResult = this.walletDelegate.UpdateConnection(connection);
+                    if (updateResult.Status == DBStatusCode.Updated)
+                    {
+                        result.ResultStatus = Common.Constants.ResultType.Success;
+                        result.TotalResultCount = 1;
+                    }
+                    else
+                    {
+                        this.logger.LogWarning($"Unable to update wallet connection with id: {connectionId}");
+                        result.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Connection", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    }
                 }
                 else
                 {
-                    this.logger.LogWarning($"Unable to update wallet connection with id: {connectionId}");
-                    result.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Connection", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    this.logger.LogWarning($"Wallet connection in disconnected state, ignoring update for update wallet connection with id: {connectionId}");
+                    result.ResultError = new RequestResultError() { ResultMessage = "Error Unable to update disconnected Wallet Connection", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 }
             }
             else

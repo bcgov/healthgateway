@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient.Controllers
     using HealthGateway.WebClient.Models.AcaPy;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
@@ -57,8 +58,10 @@ namespace HealthGateway.WebClient.Controllers
         /// <returns>An empty response.</returns>
         /// <response code="204">Webhook request received.</response>
         [HttpPost]
-        [Route("topic/{topic}")]
         [Authorize(Policy = ApiKeyPolicy.Write)]
+        [Route("topic/{topic}", Name = nameof(Webhook))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public IActionResult Webhook(string topic, [FromBody] WebhookData data)
         {
             this.logger.LogDebug("Webhook topic \"{topic}\"", topic);

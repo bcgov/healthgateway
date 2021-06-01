@@ -15,30 +15,33 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Credential Response from creating a credential.
+    /// A credential proposal.
     /// </summary>
-    public class CredentialResponse
+    public class CredentialProposal
     {
         /// <summary>
-        /// Gets or sets the credential exchange id.
+        /// Initializes a new instance of the <see cref="CredentialProposal"/> class.
         /// </summary>
-        [JsonPropertyName("credential_exchange_id")]
-        public Guid ExchangeId { get; set; }
+        public CredentialProposal()
+        {
+            this.Attributes = new Collection<CredentialAttribute>();
+        }
 
         /// <summary>
-        /// Gets or sets the revocation registry id.
+        /// Gets the type.
         /// </summary>
-        [JsonPropertyName("revoc_reg_id")]
-        public string RevocationRegistryId { get; set; } = string.Empty;
+        [JsonPropertyName("@type")]
+        public string Type { get; } = "issue-credential/1.0/credential-preview";
 
         /// <summary>
-        /// Gets or sets the revocation id.
+        /// Gets the attributes.
         /// </summary>
-        [JsonPropertyName("revocation_id")]
-        public string RevocationId { get; set; } = string.Empty;
+        [JsonPropertyName("attributes")]
+        public ICollection<CredentialAttribute> Attributes { get; }
     }
 }

@@ -41,7 +41,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Requirements
         /// <summary>
         /// The default header name to query from the HTTP Request.
         /// </summary>
-        public const string ApiKeyHeaderNameDefault = "X-API-KEY";
+        public const string ApiKeyHeaderNameDefault = "x-api-key";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiKeyRequirement"/> class.

@@ -15,30 +15,28 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.AcaPy
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Represents a Credential Response from creating a credential.
+    /// Represents a Credential Definition Id from the aries agent.
     /// </summary>
-    public class CredentialResponse
+    public class CredentialDefinitionIdResponse
     {
         /// <summary>
-        /// Gets or sets the credential exchange id.
+        /// Initializes a new instance of the <see cref="CredentialDefinitionIdResponse"/> class.
         /// </summary>
-        [JsonPropertyName("credential_exchange_id")]
-        public Guid ExchangeId { get; set; }
+        public CredentialDefinitionIdResponse()
+        {
+            this.CredentialDefinitionIds = new Collection<string>();
+        }
 
         /// <summary>
-        /// Gets or sets the revocation registry id.
+        /// Gets or sets the credential definition ids.
         /// </summary>
-        [JsonPropertyName("revoc_reg_id")]
-        public string RevocationRegistryId { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the revocation id.
-        /// </summary>
-        [JsonPropertyName("revocation_id")]
-        public string RevocationId { get; set; } = string.Empty;
+        [JsonPropertyName("credential_definition_ids")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team Decision>")]
+        public ICollection<string> CredentialDefinitionIds { get; set; }
     }
 }
