@@ -1,7 +1,7 @@
 import { voidMethod, voidPromise } from "@test/stubs/util";
 
-import { WalletConnection, WalletCredential } from "@/models/credential";
 import { LoadStatus } from "@/models/storeOperations";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 import {
     CredentialActions,
     CredentialGetters,

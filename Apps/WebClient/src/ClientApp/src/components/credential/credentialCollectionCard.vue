@@ -5,13 +5,13 @@ import { Component, Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import User from "@/models/user";
 import {
     ConnectionState,
     CredentialState,
     WalletConnection,
     WalletCredential,
-} from "@/models/credential";
-import User from "@/models/user";
+} from "@/models/wallet";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
@@ -93,19 +93,19 @@ export default class CredentialCollectionCard extends Vue {
         return undefined;
     }
 
-    private get connectionUndefined(): boolean {
+    private get isConnectionUndefined(): boolean {
         return this.connection === undefined;
     }
 
-    private get connectionPending(): boolean {
+    private get isConnectionPending(): boolean {
         return this.connection?.state === ConnectionState.Pending;
     }
 
-    private get connectionConnected(): boolean {
+    private get isConnectionConnected(): boolean {
         return this.connection?.state === ConnectionState.Connected;
     }
 
-    private get connectionDisconnected(): boolean {
+    private get isConnectionDisconnected(): boolean {
         return this.connection?.state === ConnectionState.Disconnected;
     }
 
@@ -163,8 +163,8 @@ export default class CredentialCollectionCard extends Vue {
                                 <b-card-text>
                                     <div
                                         v-if="
-                                            connectionUndefined ||
-                                            connectionDisconnected
+                                            isConnectionUndefined ||
+                                            isConnectionDisconnected
                                         "
                                     >
                                         <b-row class="align-items-center">
@@ -198,7 +198,7 @@ export default class CredentialCollectionCard extends Vue {
                                             </b-col>
                                         </b-row>
                                     </div>
-                                    <div v-else-if="connectionPending">
+                                    <div v-else-if="isConnectionPending">
                                         <hg-button
                                             variant="primary"
                                             data-testid="mobileConnectCredentialsButton"
@@ -219,7 +219,7 @@ export default class CredentialCollectionCard extends Vue {
                                             "
                                         />
                                     </div>
-                                    <div v-else-if="connectionConnected">
+                                    <div v-else-if="isConnectionConnected">
                                         <b-row class="align-items-center">
                                             <b-col
                                                 cols="6"

@@ -7,9 +7,9 @@ import CredentialInstructionsView from "@/components/credential/credentialInstru
 import CredentialManagementView from "@/components/credential/credentialManagement.vue";
 import LoadingComponent from "@/components/loading.vue";
 import ResourceCentreComponent from "@/components/resourceCentre.vue";
-import { WalletConnection } from "@/models/credential";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import User from "@/models/user";
+import { WalletConnection } from "@/models/wallet";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";

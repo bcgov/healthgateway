@@ -1,4 +1,4 @@
-import { WalletConnection, WalletCredential } from "@/models/credential";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 
 import { CredentialGetters, CredentialState } from "./types";
 

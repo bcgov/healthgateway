@@ -6,16 +6,16 @@ import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
-import { CredentialState, WalletCredential } from "@/models/credential";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ImmunizationEvent } from "@/models/immunizationModel";
+import { CredentialState, WalletCredential } from "@/models/wallet";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
 library.add(faSyringe);
 
-interface Entry {
+interface CredentialEntry {
     id: string;
     event: ImmunizationEvent;
     credential: WalletCredential | undefined;
@@ -33,7 +33,7 @@ export default class CredentialList extends Vue {
     @Getter("credentials", { namespace: "credential" })
     credentials!: WalletCredential[];
 
-    private get entries(): Entry[] {
+    private get entries(): CredentialEntry[] {
         return this.covidImmunizations.map((i) => ({
             id: i.id,
             event: i,

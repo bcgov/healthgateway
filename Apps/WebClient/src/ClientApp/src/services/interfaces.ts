@@ -12,7 +12,6 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import { WalletConnection, WalletCredential } from "@/models/credential";
 import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
@@ -29,6 +28,7 @@ import UserNote from "@/models/userNote";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 import { RootState } from "@/store/types";
 
 export interface IAuthenticationService {

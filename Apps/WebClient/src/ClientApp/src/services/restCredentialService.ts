@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 
 import { ExternalConfiguration } from "@/models/configData";
-import { WalletConnection, WalletCredential } from "@/models/credential";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import {

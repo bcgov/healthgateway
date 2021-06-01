@@ -1,5 +1,5 @@
-import { WalletConnection, WalletCredential } from "@/models/credential";
 import { LoadStatus } from "@/models/storeOperations";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 
 import { CredentialMutation, CredentialState } from "./types";
 

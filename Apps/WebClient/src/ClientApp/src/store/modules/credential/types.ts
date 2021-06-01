@@ -6,9 +6,9 @@ import {
     MutationTree,
 } from "vuex";
 
-import { WalletConnection, WalletCredential } from "@/models/credential";
 import { ResultError } from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 import { RootState } from "@/store/types";
 
 export interface CredentialState {
