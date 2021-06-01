@@ -55,54 +55,54 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Creates a verifiable credential connection.
         /// </summary>
-        /// <param name="hdid">The user hdid.</param>
+        /// <param name="hdId">The user hdid.</param>
         /// <param name="targetIds">The list of target ids of the verifiable credential.</param>
         /// <returns>The created verifiable credential connection model.</returns>
         [HttpPost]
         [Route("{hdid}/Connection")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<JsonResult> CreateConnection(string hdid, [FromBody] IEnumerable<string> targetIds)
+        public async Task<JsonResult> CreateConnection(string hdId, [FromBody] IEnumerable<string> targetIds)
         {
-            this.logger.LogDebug($"Creating wallet connection {JsonSerializer.Serialize(targetIds)} for user {hdid}");
-            RequestResult<WalletConnectionModel> result = await this.verifiableCredentialService.CreateConnectionAsync(hdid, targetIds).ConfigureAwait(true);
+            this.logger.LogDebug($"Creating wallet connection {JsonSerializer.Serialize(targetIds)} for user {hdId}");
+            RequestResult<WalletConnectionModel> result = await this.verifiableCredentialService.CreateConnectionAsync(hdId, targetIds).ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished creating wallet connection {JsonSerializer.Serialize(targetIds)} for user {hdid}: {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug($"Finished creating wallet connection {JsonSerializer.Serialize(targetIds)} for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
         }
 
         /// <summary>
         /// Gets a verifiable credential connection.
         /// </summary>
-        /// <param name="hdid">The user hdid.</param>
+        /// <param name="hdId">The user hdid.</param>
         /// <returns>The verifiable credential connection model.</returns>
         [HttpGet]
         [Route("{hdid}/Connection")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public ActionResult GetConnection(string hdid)
+        public ActionResult GetConnection(string hdId)
         {
-            this.logger.LogDebug($"Getting current wallet connection for user {hdid}");
-            RequestResult<WalletConnectionModel> result = this.verifiableCredentialService.GetConnection(hdid);
+            this.logger.LogDebug($"Getting current wallet connection for user {hdId}");
+            RequestResult<WalletConnectionModel> result = this.verifiableCredentialService.GetConnection(hdId);
 
-            this.logger.LogDebug($"Finished getting current wallet connection for user {hdid}: {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug($"Finished getting current wallet connection for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
         }
 
         /// <summary>
         /// Gets a verifiable credential.
         /// </summary>
-        /// <param name="hdid">The user hdid.</param>
+        /// <param name="hdId">The user hdid.</param>
         /// <param name="exchangeId">The credential exchange id.</param>
         /// <returns>The verifiable credential model.</returns>
         [HttpGet]
         [Route("{hdid}/Credential")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public ActionResult GetCredential(string hdid, Guid exchangeId)
+        public ActionResult GetCredential(string hdId, Guid exchangeId)
         {
-            this.logger.LogDebug($"Getting wallet credential {exchangeId} for user {hdid}");
+            this.logger.LogDebug($"Getting wallet credential {exchangeId} for user {hdId}");
             RequestResult<WalletCredentialModel> result =
                 this.verifiableCredentialService.GetCredential(exchangeId);
 
-            this.logger.LogDebug($"Finished getting current wallet credential {exchangeId} for user {hdid}: {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug($"Finished getting current wallet credential {exchangeId} for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
         }
     }

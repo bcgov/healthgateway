@@ -438,7 +438,7 @@
             <summary>
             Creates a verifiable credential connection.
             </summary>
-            <param name="hdid">The user hdid.</param>
+            <param name="hdId">The user hdid.</param>
             <param name="targetIds">The list of target ids of the verifiable credential.</param>
             <returns>The created verifiable credential connection model.</returns>
         </member>
@@ -446,14 +446,14 @@
             <summary>
             Gets a verifiable credential connection.
             </summary>
-            <param name="hdid">The user hdid.</param>
+            <param name="hdId">The user hdid.</param>
             <returns>The verifiable credential connection model.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.GetCredential(System.String,System.Guid)">
             <summary>
             Gets a verifiable credential.
             </summary>
-            <param name="hdid">The user hdid.</param>
+            <param name="hdId">The user hdid.</param>
             <param name="exchangeId">The credential exchange id.</param>
             <returns>The verifiable credential model.</returns>
         </member>
