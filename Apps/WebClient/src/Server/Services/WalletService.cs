@@ -136,6 +136,19 @@ namespace HealthGateway.WebClient.Services
             ConnectionResponse walletIssuerConnection = walletIssuerConnectionResult.ResourcePayload!;
             walletConnection.InvitationEndpoint = walletIssuerConnection.InvitationUrl?.AbsoluteUri;
             walletConnection.AgentId = walletIssuerConnection.AgentId;
+            dbResult = this.walletDelegate.UpdateConnection(walletConnection);
+            if (dbResult.Status != DBStatusCode.Updated)
+            {
+                return new RequestResult<WalletConnectionModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error updating wallet connection to database",
+                    },
+                };
+            }
+
             return new RequestResult<WalletConnectionModel>()
             {
                 ResourcePayload = WalletConnectionModel.CreateFromDbModel(dbResult.Payload),
