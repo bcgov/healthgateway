@@ -1,6 +1,6 @@
 import { StringISODateTime } from "./dateWrapper";
 
-export interface CredentialConnection {
+export interface WalletConnection {
     walletConnectionId: string;
     hdid: string;
     issuerConnectionId: string;
@@ -11,7 +11,7 @@ export interface CredentialConnection {
     version: string;
 }
 
-enum ConnectionState {
+export enum ConnectionState {
     Pending,
     Connected,
     Disconnected,
@@ -29,7 +29,7 @@ export interface WalletCredential {
     version: string;
 }
 
-enum CredentialState {
+export enum CredentialState {
     Created,
     Added,
     Revoked,

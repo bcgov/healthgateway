@@ -1,10 +1,7 @@
 import { voidMethod, voidPromise } from "@test/stubs/util";
 
-import {
-    CredentialConnection,
-    WalletCredential,
-} from "@/models/credentialConnection";
 import { LoadStatus } from "@/models/storeOperations";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 import {
     CredentialActions,
     CredentialGetters,
@@ -23,12 +20,12 @@ const credentialState: CredentialState = {
 const credentialActions: CredentialActions = {
     retrieveConnection: voidPromise,
     retrieveCredentials: voidPromise,
-    createCredentialConnection: voidPromise,
+    createConnection: voidPromise,
     handleError: voidPromise,
 };
 
 const credentialGetters: CredentialGetters = {
-    connection(): CredentialConnection | undefined {
+    connection(): WalletConnection | undefined {
         return undefined;
     },
     credentials(): WalletCredential[] {

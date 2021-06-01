@@ -56,7 +56,7 @@ export const actions: CredentialActions = {
             }
         });
     },
-    createCredentialConnection(
+    createConnection(
         context,
         params: { hdid: string; targetIds: string[] }
     ): Promise<boolean> {
@@ -81,7 +81,7 @@ export const actions: CredentialActions = {
     handleError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.error(`ERROR: ${JSON.stringify(error)}`);
-        context.commit("userError", error);
+        context.commit("credentialError", error);
 
         context.dispatch(
             "errorBanner/addResultError",

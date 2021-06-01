@@ -1,12 +1,9 @@
 import { injectable } from "inversify";
 
 import { ExternalConfiguration } from "@/models/configData";
-import {
-    CredentialConnection,
-    WalletCredential,
-} from "@/models/credentialConnection";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import {
@@ -35,7 +32,7 @@ export class RestCredentialService implements ICredentialService {
     public createConnection(
         hdid: string,
         targetIds: string[]
-    ): Promise<CredentialConnection> {
+    ): Promise<WalletConnection> {
         this.logger.debug("createConnection");
 
         return new Promise((resolve, reject) => {
@@ -45,7 +42,7 @@ export class RestCredentialService implements ICredentialService {
             }
 
             this.http
-                .post<RequestResult<CredentialConnection>>(
+                .post<RequestResult<WalletConnection>>(
                     `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection`,
                     targetIds
                 )
@@ -69,7 +66,7 @@ export class RestCredentialService implements ICredentialService {
         });
     }
 
-    public getConnection(hdid: string): Promise<CredentialConnection> {
+    public getConnection(hdid: string): Promise<WalletConnection> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 reject();
@@ -77,7 +74,7 @@ export class RestCredentialService implements ICredentialService {
             }
 
             this.http
-                .getWithCors<RequestResult<CredentialConnection>>(
+                .getWithCors<RequestResult<WalletConnection>>(
                     `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection`
                 )
                 .then((requestResult) => {
