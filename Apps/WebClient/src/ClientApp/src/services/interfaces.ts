@@ -12,10 +12,6 @@ import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
 } from "@/models/configData";
-import {
-    CredentialConnection,
-    WalletCredential,
-} from "@/models/credentialConnection";
 import type { Dependent } from "@/models/dependent";
 import Encounter from "@/models/encounter";
 import type ImmunizationResult from "@/models/immunizationResult";
@@ -32,6 +28,7 @@ import UserNote from "@/models/userNote";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
+import { WalletConnection, WalletCredential } from "@/models/wallet";
 import { RootState } from "@/store/types";
 
 export interface IAuthenticationService {
@@ -193,12 +190,12 @@ export interface IHttpDelegate {
 
 export interface ICredentialService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getConnection(hdid: string): Promise<CredentialConnection>;
+    getConnection(hdid: string): Promise<WalletConnection>;
     getCredentials(hdid: string): Promise<WalletCredential>;
     createConnection(
         hdid: string,
         targetIds: string[]
-    ): Promise<CredentialConnection>;
+    ): Promise<WalletConnection>;
 }
 
 export interface ILogger {

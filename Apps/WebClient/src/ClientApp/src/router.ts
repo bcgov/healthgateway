@@ -60,6 +60,8 @@ const ContactUsView = () =>
 const DependentsView = () =>
     import(/* webpackChunkName: "dependents" */ "@/views/dependents.vue");
 const FAQView = () => import(/* webpackChunkName: "faq" */ "@/views/faq.vue");
+const CredentialsView = () =>
+    import(/* webpackChunkName: "credentials" */ "@/views/credentials.vue");
 
 export enum UserState {
     unauthenticated = "unauthenticated",
@@ -105,6 +107,7 @@ export enum ClientModule {
     CovidLabResults = "CovidLabResults",
     Dependent = "Dependent",
     Note = "Note",
+    Credential = "Credential",
 }
 
 function getAvailableModules() {
@@ -177,6 +180,14 @@ const routes = [
         path: "/timeline",
         component: TimelineView,
         meta: { validStates: [UserState.registered] },
+    },
+    {
+        path: "/credentials",
+        component: CredentialsView,
+        meta: {
+            validStates: [UserState.registered],
+            requiredModules: [ClientModule.Credential],
+        },
     },
     {
         path: "/healthInsights",
