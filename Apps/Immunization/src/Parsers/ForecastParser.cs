@@ -13,30 +13,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Services
+namespace HealthGateway.Immunization.Parser
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models;
 
     /// <summary>
-    /// The Immunization data service.
+    /// Provides methods for parsing Immunization Forecast.
     /// </summary>
-    public interface IImmunizationService
+    public static class ForecastParser
     {
         /// <summary>
-        /// Gets the ImmunizationEvent for the given id.
+        /// Creates a ImmunizationForecast object from a PHSA model.
         /// </summary>
-        /// <param name="immunizationId">The security token representing the authenticated user.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationEvent>> GetImmunization(string immunizationId);
-
-        /// <summary>
-        /// Gets the ImmunizationResult inluding load state and a list of immunization records.
-        /// </summary>
-        /// <param name="pageIndex">The page index to return.</param>
-        /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0);
+        /// <param name="model">The immunization forecast object to convert.</param>
+        /// <returns>The newly created ImmunizationForecast object.</returns>
+        public static ImmunizationForecast FromPHSAModel(ImmunizationForecastResponse model)
+        {
+            return new ImmunizationForecast()
+            {
+                RecommendationId = model.ImmsId,
+                CreateDate = model.ForecastCreateDate,
+                Status = model.ForecastStatus,
+                DisplayName = model.DisplayName,
+                EligibleDate = model.EligibleDate,
+                DueDate = model.DueDate,
+            };
+        }
     }
 }

@@ -19,11 +19,10 @@ namespace HealthGateway.Immunization.Controllers
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models;
     using HealthGateway.Immunization.Services;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
@@ -62,7 +61,7 @@ namespace HealthGateway.Immunization.Controllers
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
         /// <param name="immunizationId">The immunization id.</param>
-        /// <returns>a list of immunization records.</returns>
+        /// <returns>The immunization record with the given id.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>
@@ -84,7 +83,7 @@ namespace HealthGateway.Immunization.Controllers
         /// Gets a json list of immunization records.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
-        /// <returns>a list of immunization records.</returns>
+        /// <returns>A list of immunization records for the given patient identifier.</returns>
         /// <response code="200">Returns the List of Immunization records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.</response>

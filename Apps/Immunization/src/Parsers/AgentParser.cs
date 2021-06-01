@@ -13,42 +13,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Immunization.Parser
 {
     using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models.PHSA;
     using HealthGateway.Immunization.Models.PHSA.Recommendation;
 
     /// <summary>
-    /// The Immunization Agents model.
+    /// Provides parser methods for ImmunizationAgents.
     /// </summary>
-    public class ImmunizationAgent
+    public static class AgentParser
     {
-        /// <summary>
-        /// Gets or sets the Immunization id.
-        /// </summary>
-        [JsonPropertyName("code")]
-        public string Code { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization Name.
-        /// </summary>
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization Lot Number.
-        /// </summary>
-        [JsonPropertyName("lotNumber")]
-        public string LotNumber { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the Immunization Product Name.
-        /// </summary>
-        [JsonPropertyName("productName")]
-        public string ProductName { get; set; } = string.Empty;
-
         /// <summary>
         /// Creates a Immunization Model object from a PHSA model.
         /// </summary>
@@ -72,12 +48,12 @@ namespace HealthGateway.Immunization.Models
         /// <returns>A list of ImmunizationAgent objects.</returns>
         public static IEnumerable<ImmunizationAgent> FromPHSAModelList(IEnumerable<ImmunizationAgentResponse>? immunizationAgentResponse)
         {
-            List<ImmunizationAgent> immunizationAgents = new List<ImmunizationAgent>();
+            List<ImmunizationAgent> immunizationAgents = new ();
             if (immunizationAgentResponse != null)
             {
                 foreach (ImmunizationAgentResponse immunizationAgentModel in immunizationAgentResponse)
                 {
-                    immunizationAgents.Add(ImmunizationAgent.FromPHSAModel(immunizationAgentModel));
+                    immunizationAgents.Add(AgentParser.FromPHSAModel(immunizationAgentModel));
                 }
             }
 
@@ -91,7 +67,7 @@ namespace HealthGateway.Immunization.Models
         /// <returns>A list of ImmunizationAgent objects.</returns>
         public static IEnumerable<ImmunizationAgent> FromPHSACodesModel(IEnumerable<SystemCode>? vaccineCodes)
         {
-            List<ImmunizationAgent> immunizationAgents = new List<ImmunizationAgent>();
+            List<ImmunizationAgent> immunizationAgents = new ();
             foreach (SystemCode systemCode in vaccineCodes!)
             {
                 immunizationAgents.Add(
