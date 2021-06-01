@@ -33,9 +33,10 @@ namespace HealthGateway.Common.Models.AcaPy
         }
 
         /// <summary>
-        /// Gets the credential definition ids.
+        /// Gets or sets the credential definition ids.
         /// </summary>
         [JsonPropertyName("credential_definition_ids")]
-        public ICollection<string> CredentialDefinitionIds { get; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team Decision>")]
+        public ICollection<string> CredentialDefinitionIds { get; set; }
     }
 }

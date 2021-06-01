@@ -25,9 +25,10 @@ namespace HealthGateway.Common.Models.AcaPy
     public class SchemaIdResponse
     {
         /// <summary>
-        /// Gets the schema ids.
+        /// Gets or sets the schema ids.
         /// </summary>
         [JsonPropertyName("schema_ids")]
-        public ICollection<string> SchemaIds { get; } = new List<string>();
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team Decision")]
+        public ICollection<string> SchemaIds { get; set; } = new List<string>();
     }
 }

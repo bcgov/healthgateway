@@ -1495,11 +1495,11 @@
             <param name="connection">The wallet connection to revoke.</param>
             <returns>The WalletConnection that was revoked.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,HealthGateway.Common.Models.AcaPy.CredentialPayload,System.String)">
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,``0,System.String)">
             <summary>
             Requests that the agent create a credential and pass the payload information to the users wallet.
             </summary>
-            <typeparam name="T">The credential payload to use.</typeparam>
+            <typeparam name="T">The type of Payload to send.</typeparam>
             <param name="connection">The wallet connection of the user.</param>
             <param name="payload">The credential payload to send to the agent.</param>
             <param name="comment">The comment to pass for the credential.</param>
@@ -1564,7 +1564,7 @@
         <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,HealthGateway.Common.Models.AcaPy.CredentialPayload,System.String)">
+        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,``0,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
@@ -1901,7 +1901,7 @@
         </member>
         <member name="P:HealthGateway.Common.Models.AcaPy.CredentialDefinitionIdResponse.CredentialDefinitionIds">
             <summary>
-            Gets the credential definition ids.
+            Gets or sets the credential definition ids.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.CredentialDefinitionRequest">
@@ -2111,7 +2111,7 @@
         </member>
         <member name="P:HealthGateway.Common.Models.AcaPy.SchemaIdResponse.SchemaIds">
             <summary>
-            Gets the schema ids.
+            Gets or sets the schema ids.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.SchemaRequest">

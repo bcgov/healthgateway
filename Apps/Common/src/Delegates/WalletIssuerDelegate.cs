@@ -123,7 +123,8 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<CredentialResponse>> CreateCredentialAsync<T>(WalletConnection connection, CredentialPayload payload, string comment)
+        public async Task<RequestResult<CredentialResponse>> CreateCredentialAsync<T>(WalletConnection connection, T payload, string comment)
+            where T : CredentialPayload
         {
             _ = connection.AgentId ?? throw new ArgumentException("AgendId of Connection cannot be null");
             RequestResult<CredentialResponse> retVal = new ()
@@ -146,7 +147,7 @@ namespace HealthGateway.Common.Delegates
                     {
                         string credentialDefinitionId = credentialDefinitionIdResponse.ResourcePayload!.CredentialDefinitionIds.First();
                         CredentialProposal credentialProposal = new ();
-                        foreach (PropertyInfo property in typeof(CredentialPayload).GetProperties())
+                        foreach (PropertyInfo property in payload.GetType().GetProperties())
                         {
                             if (property != null)
                             {
@@ -175,6 +176,7 @@ namespace HealthGateway.Common.Delegates
                         if (credentialResponse.ResultStatus == ResultType.Success)
                         {
                             retVal.ResourcePayload = credentialResponse.ResourcePayload;
+                            retVal.TotalResultCount = 1;
                             retVal.ResultStatus = ResultType.Success;
                         }
                         else
@@ -391,7 +393,7 @@ namespace HealthGateway.Common.Delegates
 
         private async Task<RequestResult<string>> GetSchemaIdAsync(string did)
         {
-            RequestResult<string> retVal = new RequestResult<string>()
+            RequestResult<string> retVal = new ()
             {
                 ResultStatus = ResultType.Error,
             };
