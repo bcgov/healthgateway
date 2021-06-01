@@ -43,7 +43,7 @@ namespace HealthGateway.WebClient.Models.AcaPy
         public string? LotNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the provider or facility where the immunization was reeived.
+        /// Gets or sets the provider or facility where the immunization was received.
         /// </summary>
         public string? Provider { get; set; }
     }
