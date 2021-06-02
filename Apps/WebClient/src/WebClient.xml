@@ -1327,7 +1327,7 @@
         </member>
         <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.Credentials">
             <summary>
-            Gets the collection of credentials for this connection.
+            Gets or sets the collection of credentials for this connection.
             </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Models.WalletConnectionModel.CreateFromDbModel(HealthGateway.Database.Models.WalletConnection)">
