@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,8 +27,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20210601231647_AlterCredentialAddSource")]
-    partial class AlterCredentialAddSource
+    [Migration("20210601235231_SetupWallet")]
+    partial class SetupWallet
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -90,6 +90,7 @@ namespace HealthGateway.WebClient
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
             services.AddTransient<IDependentService, DependentService>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
+            services.AddTransient<IWalletService, WalletService>();
             services.AddTransient<IWalletStatusService, WalletStatusService>();
 
             // Add delegates
