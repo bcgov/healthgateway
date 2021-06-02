@@ -101,7 +101,10 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
-            walletConnectionResult.ResourcePayload!.Credentials = walletCredentialsResult.ResourcePayload!;
+            foreach (WalletCredentialModel walletCredential in walletCredentialsResult.ResourcePayload!)
+            {
+                walletConnectionResult.ResourcePayload!.Credentials.Add(walletCredential);
+            }
 
             this.logger.LogDebug($"Finished creating wallet connection and credentials {JsonSerializer.Serialize(targetIds)} for user {hdId}: {JsonSerializer.Serialize(walletConnectionResult)}");
             return walletConnectionResult;
