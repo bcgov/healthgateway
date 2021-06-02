@@ -144,7 +144,7 @@ namespace HealthGateway.Common.Delegates
                     RequestResult<CredentialDefinitionIdResponse> credentialDefinitionIdResponse = await this.GetCredentialDefinitionIdsAsync(schemaId).ConfigureAwait(true);
                     if (credentialDefinitionIdResponse.ResultStatus == ResultType.Success)
                     {
-                        string credentialDefinitionId = credentialDefinitionIdResponse.ResourcePayload!.CredentialDefinitionIds.First();
+                        string credentialDefinitionId = credentialDefinitionIdResponse.ResourcePayload!.CredentialDefinitionIds.Last();
                         CredentialProposal credentialProposal = new ();
                         foreach (PropertyInfo property in payload.GetType().GetProperties())
                         {
@@ -494,7 +494,7 @@ namespace HealthGateway.Common.Delegates
                     if (schemaIdResponse != null)
                     {
                         retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = schemaIdResponse.SchemaIds.First();
+                        retVal.ResourcePayload = schemaIdResponse.SchemaIds.Last();
                         retVal.TotalResultCount = 1;
                     }
                     else
