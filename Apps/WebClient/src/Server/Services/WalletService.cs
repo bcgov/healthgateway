@@ -101,7 +101,10 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
-            walletConnectionResult = this.GetConnection(hdId);
+            foreach (WalletCredentialModel walletCredential in walletCredentialsResult.ResourcePayload!)
+            {
+                walletConnectionResult.ResourcePayload!.Credentials.Add(walletCredential);
+            }
 
             this.logger.LogDebug($"Finished creating wallet connection and credentials {JsonSerializer.Serialize(targetIds)} for user {hdId}: {JsonSerializer.Serialize(walletConnectionResult)}");
             return walletConnectionResult;
@@ -128,6 +131,7 @@ namespace HealthGateway.WebClient.Services
                 };
             }
 
+            walletConnection = dbResult.Payload;
             this.logger.LogDebug($"Finished Inserting wallet connection to database. user {hdId}: {JsonSerializer.Serialize(dbResult)}");
             this.logger.LogDebug($"Creating connection with wallet issuer. user {hdId}");
             RequestResult<ConnectionResponse> walletIssuerConnectionResult =
