@@ -17,7 +17,7 @@ import RequestResultUtil from "@/utility/requestResultUtil";
 @injectable()
 export class RestCredentialService implements ICredentialService {
     private logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-    private readonly CREDENTIAL_BASE_URI: string = "/v1/api/Credential";
+    private readonly CREDENTIAL_BASE_URI: string = "/v1/api/Wallet";
     private http!: IHttpDelegate;
     private isEnabled = false;
 
