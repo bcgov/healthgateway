@@ -2139,6 +2139,26 @@
             Gets or sets the result.
             </summary>
         </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.RevokeCredentialRequest">
+            <summary>
+            Represents a Revoke Credential Request to the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.RevokeCredentialRequest.CredentialRevocationId">
+            <summary>
+            Gets or sets credential revocation id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.RevokeCredentialRequest.RevocationRegistryId">
+            <summary>
+            Gets or sets revocation registry id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.RevokeCredentialRequest.Publish">
+            <summary>
+            Gets a value indicating whether the publish flag is set.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.SchemaIdResponse">
             <summary>
             Represents a Schema Response from the aries agent.

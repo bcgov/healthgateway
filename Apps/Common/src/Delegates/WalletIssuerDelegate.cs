@@ -202,15 +202,97 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<WalletConnection>> DisconnectConnectionAsync(WalletConnection connection)
+        public async Task<RequestResult<WalletConnection>> DisconnectConnectionAsync(WalletConnection connection)
         {
-            throw new NotImplementedException();
+            RequestResult<WalletConnection> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            this.logger.LogInformation("Delete Connection");
+
+            HttpResponseMessage? response;
+            try
+            {
+                Uri endpoint = new Uri($"{this.WalletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}");
+                response = await this.client.DeleteAsync(endpoint).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    retVal.ResultStatus = ResultType.Success;
+                }
+                else
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                }
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception Deleting Connection: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                this.logger.LogError($"Unexpected exception in DisconnectConnectionAsync {e}");
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential)
+        public async Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential, string revocationMessage)
         {
-            throw new NotImplementedException();
+            RequestResult<WalletCredential> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            if (credential.RevocationId != null && credential.RevocationRegistryId != null)
+            {
+                RevokeCredentialRequest revokeCredentialRequest = new RevokeCredentialRequest
+                {
+                    CredentialRevocationId = credential.RevocationId,
+                    RevocationRegistryId = credential.RevocationRegistryId,
+                };
+
+                StringContent httpContent = new (JsonSerializer.Serialize(revokeCredentialRequest), Encoding.UTF8, "application/json");
+
+                this.logger.LogInformation("Revoking Credential");
+
+                HttpResponseMessage? response;
+                try
+                {
+                    Uri endpoint = new Uri($"{this.WalletIssuerConfig.AgentApiUrl}revocation/revoke");
+                    response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
+                    string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        retVal.ResultStatus = ResultType.Success;
+                        await this.SendMessageAsync(credential.WalletConnection, revocationMessage).ConfigureAwait(true);
+                    }
+                    else
+                    {
+                        retVal.ResultError = new RequestResultError() { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                        this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                    }
+                }
+    #pragma warning disable CA1031 // Do not catch general exception types
+                catch (Exception e)
+                {
+                    retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception Revoking credential: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    this.logger.LogError($"Unexpected exception in RevokeCredentialAsync {e}");
+                }
+                finally
+                {
+                    httpContent.Dispose();
+                }
+            }
+            else
+            {
+                retVal.ResultError = new RequestResultError() { ResultMessage = $"Revocation Id and Revocation registry id cannot be null" };
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
@@ -529,6 +611,51 @@ namespace HealthGateway.Common.Delegates
             {
                 retVal.ResultError = new () { ResultMessage = $"Exception issuing credential: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in IssueCredentialAsync {e}");
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
+            finally
+            {
+                httpContent.Dispose();
+            }
+
+            return retVal;
+        }
+
+        private async Task<RequestResult<WalletConnection>> SendMessageAsync(WalletConnection connection, string content)
+        {
+            RequestResult<WalletConnection> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            this.logger.LogDebug("Sending a message to connection");
+
+            object messageObject = new { content };
+
+            StringContent httpContent = new (JsonSerializer.Serialize(messageObject), Encoding.UTF8, "application/json");
+
+            HttpResponseMessage? response = null;
+            try
+            {
+                Uri endpoint = new ($"{this.WalletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}/send-message");
+                response = await this.client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
+                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    retVal.ResultStatus = ResultType.Success;
+                }
+                else
+                {
+                    retVal.ResultError = new () { ResultMessage = $"Unable to connect to AcaPy Agent, HTTP Error {response.StatusCode}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    this.logger.LogError($"Unable to connect to endpoint {endpoint}, HTTP Error {response.StatusCode}\n{payload}");
+                }
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception e)
+            {
+                retVal.ResultError = new () { ResultMessage = $"Exception sending message: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                this.logger.LogError($"Unexpected exception in SendMessageAsync {e}");
             }
 #pragma warning restore CA1031 // Do not catch general exception types
             finally

@@ -60,8 +60,9 @@ namespace HealthGateway.Common.Delegates
         /// Creates a connection invitation request.
         /// </summary>
         /// <param name="credential">The wallet credential to revoke.</param>
+        /// <param name="revocationMessage">The message to send to the connection after the credential is revoked.</param>
         /// <returns>The WalletCredential that was revoked.</returns>
-        Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential);
+        Task<RequestResult<WalletCredential>> RevokeCredentialAsync(WalletCredential credential, string revocationMessage);
 
         /// <summary>
         /// Creates a schema with the agent.
