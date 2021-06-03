@@ -67,9 +67,11 @@ Or color live examples
 
 ### Buttons
 
-Describe the buttons
+Buttons are categorized in used as follow:
+Primary 
 
-<img src="images/buttons.png" alt="Buttons" width="100%" />
+<img src="images/buttons/primary.png" alt="Primary Button" />
+<img src="images/buttons/secondary.png" alt="Secondary Button" />
 
 ### Icons
 
