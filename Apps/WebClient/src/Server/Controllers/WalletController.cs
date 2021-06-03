@@ -143,9 +143,12 @@ namespace HealthGateway.WebClient.Controllers
         [HttpDelete]
         [Route("{hdid}/Credential/{credentialId}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult RevokeCredential(string hdId, Guid credentialId)
+        public async Task<ActionResult> RevokeCredential(string hdId, Guid credentialId)
         {
-            throw new NotSupportedException();
+            this.logger.LogDebug($"Revoking credenial for user {hdId}");
+            RequestResult<WalletCredentialModel> result = await this.verifiableCredentialService.RevokeCredential(credentialId, hdId).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished revoking credential for user {hdId}: {JsonSerializer.Serialize(result)}");
+            return new JsonResult(result);
         }
     }
 }

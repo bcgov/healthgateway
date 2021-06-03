@@ -341,7 +341,7 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc/>
         public async Task<RequestResult<WalletCredentialModel>> RevokeCredential(Guid credentialId, string hdId)
         {
-            RequestResult<WalletCredentialModel> requetResult = new ()
+            RequestResult<WalletCredentialModel> retVal = new ()
             {
                 ResultStatus = ResultType.Error,
             };
@@ -350,18 +350,37 @@ namespace HealthGateway.WebClient.Services
             DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialById(credentialId, hdId);
             if (dbResult.Status == DBStatusCode.Read)
             {
-                await this.walletIssuerDelegate.RevokeCredentialAsync(dbResult.Payload, RevokeReason).ConfigureAwait(true);
+                WalletCredential credential = dbResult.Payload;
+                RequestResult<WalletCredential> revokeRequest = await this.walletIssuerDelegate.RevokeCredentialAsync(credential, RevokeReason).ConfigureAwait(true);
+                if (revokeRequest.ResultStatus == ResultType.Success)
+                {
+                    credential.Status = WalletCredentialStatus.Revoked;
+                    credential.RevokedDateTime = DateTime.UtcNow;
+                    DBResult<WalletCredential> dbUpdate = this.walletDelegate.UpdateCredential(credential);
+                    if (dbUpdate.Status == DBStatusCode.Updated)
+                    {
+                        retVal.ResultStatus = ResultType.Success;
+                        retVal.ResourcePayload = WalletCredentialModel.CreateFromDbModel(dbUpdate.Payload);
+                    }
+                    else
+                    {
+                        retVal.ResultError = new ()
+                        {
+                            ResultMessage = dbUpdate.Message,
+                        };
+                    }
+                }
             }
             else
             {
                 this.logger.LogDebug($"Error getting wallet credential from database. {JsonSerializer.Serialize(dbResult)}");
-                requetResult.ResultError = new ()
+                retVal.ResultError = new ()
                 {
                     ResultMessage = "Error retrieving wallet credential from database",
                 };
             }
 
-            return requetResult;
+            return retVal;
         }
     }
 }
