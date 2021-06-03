@@ -202,8 +202,12 @@ export default class CredentialCollectionCard extends Vue {
                                         <hg-button
                                             variant="primary"
                                             data-testid="mobileConnectCredentialsButton"
+                                            href="connection.invitationEndpoint"
                                             block
-                                            disabled
+                                            :disabled="
+                                                connection.invitationEndpoint ===
+                                                null
+                                            "
                                         >
                                             Connect
                                         </hg-button>
