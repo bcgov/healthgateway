@@ -647,6 +647,7 @@
             <summary>
             CreateConnection - Happy Path.
             </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
     </members>
 </doc>

@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Delegates;
@@ -41,9 +42,9 @@ namespace HealthGateway.WebClient.Models
         /// </summary>
         /// <param name="credentials">The list of credentials.</param>
         [JsonConstructor]
-        public WalletConnectionModel(IEnumerable<WalletCredentialModel> credentials)
+        public WalletConnectionModel(IList<WalletCredentialModel> credentials)
         {
-            this.Credentials = credentials;
+            this.Credentials = credentials ?? new List<WalletCredentialModel>();
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace HealthGateway.WebClient.Models
         /// <summary>
         /// Gets the collection of credentials for this connection.
         /// </summary>
-        public IEnumerable<WalletCredentialModel> Credentials { get; }
+        public IList<WalletCredentialModel> Credentials { get; }
 
         /// <summary>
         /// Constructs a WalletConnectionModel from a database model.
@@ -99,8 +100,9 @@ namespace HealthGateway.WebClient.Models
         public static WalletConnectionModel CreateFromDbModel(WalletConnection dbWalletConnection)
         {
             return new WalletConnectionModel(
-                dbWalletConnection.Credentials
-                    .Select(walletCredential => WalletCredentialModel.CreateFromDbModel(walletCredential)))
+                dbWalletConnection.Credentials?
+                    .Select(walletCredential => WalletCredentialModel.CreateFromDbModel(walletCredential))
+                    .ToList())
             {
                 WalletConnectionId = dbWalletConnection.Id,
                 IssuerConnectionId = dbWalletConnection.AgentId,
