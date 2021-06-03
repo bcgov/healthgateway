@@ -46,12 +46,12 @@ export default class CredentialCollectionCard extends Vue {
     private updateQrCode(): void {
         const data = this.connection?.invitationEndpoint || "";
         if (data.length === 0) {
-            this.qrCodeDataUrl = undefined;
+            this.qrCodeDataUrl = null;
         }
         QRCode.toDataURL(data, {}, (err: unknown, url: string) => {
             if (err) {
                 this.logger.error(`Error generating QR Code: ${err}`);
-                this.qrCodeDataUrl = undefined;
+                this.qrCodeDataUrl = null;
             } else {
                 this.qrCodeDataUrl = url;
             }
@@ -111,7 +111,7 @@ export default class CredentialCollectionCard extends Vue {
 
     private logger!: ILogger;
 
-    private qrCodeDataUrl: string | undefined = undefined;
+    private qrCodeDataUrl: string | null = null;
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -208,7 +208,7 @@ export default class CredentialCollectionCard extends Vue {
                                             Connect
                                         </hg-button>
                                         <img
-                                            v-if="qrCodeDataUrl !== undefined"
+                                            v-if="qrCodeDataUrl !== null"
                                             :src="qrCodeDataUrl"
                                             data-testid="qrCodeImage"
                                             class="
