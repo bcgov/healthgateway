@@ -27,7 +27,7 @@ interface ImmunizationRow {
 
 interface RecomendationRow {
     immunization: string;
-    date: string;
+    due_date: string;
     status: string;
 }
 
@@ -114,16 +114,22 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get recomendationItems(): RecomendationRow[] {
-        return this.patientRecommendations.map<RecomendationRow>((x) => {
-            return {
-                immunization: x.immunization.name,
-                date:
-                    x.agentDueDate === undefined
-                        ? ""
-                        : DateWrapper.format(x.agentDueDate),
-                status: x.status || "",
-            };
-        });
+        return this.patientRecommendations
+            .filter(
+                (x) =>
+                    x.immunization.name !== null && x.immunization.name !== ""
+            )
+            .map<RecomendationRow>((x) => {
+                return {
+                    immunization: x.immunization.name,
+                    due_date:
+                        x.diseaseDueDate === undefined ||
+                        x.diseaseDueDate === null
+                            ? ""
+                            : DateWrapper.format(x.diseaseDueDate),
+                    status: x.status || "",
+                };
+            });
     }
 
     private created() {
@@ -186,7 +192,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             tdAttr: { "data-testid": "recommendationItem" },
         },
         {
-            key: "date",
+            key: "due_date",
             thStyle: { width: "25%" },
             thClass: this.headerClass,
             thAttr: { "data-testid": "recommendationDateTitle" },
