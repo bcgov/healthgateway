@@ -80,7 +80,7 @@ Primary
 <img src="images/buttons/icon light.png" alt="Secondary Button" />
 <img src="images/buttons/icon dark.png" alt="Secondary Button" />
 <img src="images/buttons/submenu with icon.png" alt="Secondary Button" />
-<img src="images/buttons/submenu.png" alt="Secondary Button" />
+<img src="images/buttons/submenu.png" alt="Submenu Button" />
 
 ### Icons
 
