@@ -93,7 +93,7 @@ namespace HealthGateway.WebClient.Services
                 ResultStatus = Common.Constants.ResultType.Error,
             };
 
-            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredential(exchangeId);
+            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialByExchangeId(exchangeId);
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletCredential credential = dbResult.Payload;

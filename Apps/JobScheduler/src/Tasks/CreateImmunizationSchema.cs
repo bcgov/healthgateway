@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace Healthgateway.JobScheduler.Tasks
 {
+    using System;
     using System.Threading.Tasks;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
@@ -61,9 +62,18 @@ namespace Healthgateway.JobScheduler.Tasks
 
             this.logger.LogInformation($"Performing Task {this.GetType().Name}");
             RequestResult<SchemaResponse> schemaResponse = Task.Run(async () => await this.walletIssuerDelegate.CreateSchemaAsync(schema).ConfigureAwait(true)).Result;
+            if (schemaResponse == null || schemaResponse.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+            {
+                throw new FormatException($"Error with CreateSchema {schemaResponse?.ResultError}");
+            }
+
             if (schemaResponse.ResourcePayload != null)
             {
-                Task.Run(async () => await this.walletIssuerDelegate.CreateCredentialDefinitionAsync(schemaResponse.ResourcePayload.SchemaId).ConfigureAwait(true));
+                RequestResult<CredentialDefinitionResponse> credentialDefinitionResponse = Task.Run(async () => await this.walletIssuerDelegate.CreateCredentialDefinitionAsync(schemaResponse.ResourcePayload.SchemaId).ConfigureAwait(true)).Result;
+                if (credentialDefinitionResponse == null || credentialDefinitionResponse.ResultStatus != HealthGateway.Common.Constants.ResultType.Success)
+                {
+                    throw new FormatException($"Error with CreateCredentialDefinition {credentialDefinitionResponse?.ResultError}");
+                }
             }
 
             this.logger.LogInformation($"Task {this.GetType().Name} has completed");

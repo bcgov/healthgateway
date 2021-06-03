@@ -37,7 +37,7 @@ namespace HealthGateway.Common.Delegates
     /// <summary>
     /// Implementation that uses HTTP to create/revoke Connections and Credentials.
     /// </summary>
-    public class WalletIssuerDelegate : IWalletIssuerDelegate
+    public class RestWalletIssuerDelegate : IWalletIssuerDelegate
     {
         private const string AcapyConfigSectionKey = "AcaPy";
         private readonly ILogger logger;
@@ -45,13 +45,13 @@ namespace HealthGateway.Common.Delegates
         private readonly HttpClient client;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WalletIssuerDelegate"/> class.
+        /// Initializes a new instance of the <see cref="RestWalletIssuerDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="httpClientService">The injected http client service.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        public WalletIssuerDelegate(
-            ILogger<WalletIssuerDelegate> logger,
+        public RestWalletIssuerDelegate(
+            ILogger<RestWalletIssuerDelegate> logger,
             IHttpClientService httpClientService,
             IConfiguration configuration)
         {

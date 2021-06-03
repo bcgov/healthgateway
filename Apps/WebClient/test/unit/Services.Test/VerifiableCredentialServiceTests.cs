@@ -187,7 +187,7 @@ namespace HealthGateway.WebClient.Test.Services
             var actualResult = await service.CreateConnectionAsync(hdid, targetIds).ConfigureAwait(true);
 
             Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload!.Credentials.Count() == 2);
+            Assert.True(actualResult.ResourcePayload!.Credentials.Count == 2);
         }
     }
 }

@@ -47,14 +47,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<WalletConnection> GetConnection(Guid id)
+        public DBResult<WalletConnection> GetConnection(Guid id, string userProfileId)
         {
             DBResult<WalletConnection> result = new ()
             {
                 Status = DBStatusCode.NotFound,
             };
             WalletConnection? connection = this.dbContext.WalletConnection
-                                    .Where(p => p.Id == id)
+                                    .Where(p => p.Id == id &&
+                                                p.UserProfileId == userProfileId)
                                     .FirstOrDefault();
             if (connection != null)
             {
@@ -75,6 +76,9 @@ namespace HealthGateway.Database.Delegates
             WalletConnection? connection = this.dbContext.WalletConnection
                                     .Where(p => p.UserProfileId == userProfileId &&
                                                 p.Status != WalletConnectionStatus.Disconnected)
+                                    .Include(c => c.Credentials
+                                                  .Where(q => q.Status != WalletCredentialStatus.Revoked)
+                                                  .OrderByDescending(q => q.CreatedDateTime))
                                     .OrderByDescending(p => p.CreatedDateTime)
                                     .FirstOrDefault();
             if (connection != null)
@@ -87,7 +91,27 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<WalletCredential> GetCredential(Guid exchangeId)
+        public DBResult<WalletCredential> GetCredentialById(Guid credentialId, string userProfileId)
+        {
+            DBResult<WalletCredential> result = new ()
+            {
+                Status = DBStatusCode.NotFound,
+            };
+            WalletCredential? credential = this.dbContext.WalletCredential
+                                    .Where(p => p.Id == credentialId &&
+                                                p.WalletConnection.UserProfileId == userProfileId)
+                                    .FirstOrDefault();
+            if (credential != null)
+            {
+                result.Status = DBStatusCode.Read;
+                result.Payload = credential;
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<WalletCredential> GetCredentialByExchangeId(Guid exchangeId)
         {
             DBResult<WalletCredential> result = new ()
             {

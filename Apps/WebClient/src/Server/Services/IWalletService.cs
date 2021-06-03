@@ -61,6 +61,31 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="exchangeId">The wallet credential exchange id.</param>
         /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
-        RequestResult<WalletCredentialModel> GetCredential(Guid exchangeId);
+        RequestResult<WalletCredentialModel> GetCredentialByExchangeId(Guid exchangeId);
+
+        /// <summary>
+        /// Gets the wallet credentials.
+        /// </summary>
+        /// <param name="credentialId">The wallet credential id.</param>
+        /// <param name="hdId">The user hdid.</param>
+        /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
+        RequestResult<WalletCredentialModel> GetCredentialById(Guid credentialId, string hdId);
+
+        /// <summary>
+        /// Disconnects the identified wallet.
+        /// </summary>
+        /// <param name="connectionId">The wallet connection id.</param>
+        /// <param name="hdId">The user hdid.</param>
+        /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
+        RequestResult<WalletConnectionModel> DisconnectConnection(Guid connectionId, string hdId);
+
+        /// <summary>
+        /// Revokes the wallet identified wallet credentials.
+        /// </summary>
+        /// <param name="credentialId">The wallet credential id.</param>
+        /// <param name="hdId">The user hdid.</param>
+        /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
+        RequestResult<WalletCredentialModel> RevokeCredential(Guid credentialId, string hdId);
+
     }
 }

@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Models
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Text.Json.Serialization;
     using HealthGateway.Database.Constants;
 
     /// <summary>
@@ -43,6 +44,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the Wallet Connection object associated to the credential.
         /// </summary>
+        [JsonIgnore]
         public virtual WalletConnection WalletConnection { get; set; } = null!;
 
         /// <summary>

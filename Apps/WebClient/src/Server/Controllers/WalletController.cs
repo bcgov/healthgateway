@@ -88,22 +88,31 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Gets a verifiable credential.
+        /// Updates the Health Gateway Wallet Connection and revokes the connection with the Agent.
         /// </summary>
-        /// <param name="hdId">The user hdid.</param>
-        /// <param name="exchangeId">The credential exchange id.</param>
-        /// <returns>The verifiable credential model.</returns>
-        [HttpGet]
-        [Route("{hdid}/Credential")]
-        [Authorize(Policy = UserProfilePolicy.Read)]
-        public ActionResult GetCredential(string hdId, Guid exchangeId)
+        /// <param name="hdId">The users hdid.</param>
+        /// <param name="connectionId">The connection Id belonging to the user to disconnect.</param>
+        /// <returns>Something.</returns>
+        [HttpDelete]
+        [Route("{hdid}/Connection/{connectionId}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public ActionResult DisconnectConnection(string hdId, Guid connectionId)
         {
-            this.logger.LogDebug($"Getting wallet credential {exchangeId} for user {hdId}");
-            RequestResult<WalletCredentialModel> result =
-                this.verifiableCredentialService.GetCredential(exchangeId);
+            throw new NotSupportedException();
+        }
 
-            this.logger.LogDebug($"Finished getting current wallet credential {exchangeId} for user {hdId}: {JsonSerializer.Serialize(result)}");
-            return new JsonResult(result);
+        /// <summary>
+        /// Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+        /// </summary>
+        /// <param name="hdId">The users hdid.</param>
+        /// <param name="credentialId">The credential id belonging to the user to disconnect.</param>
+        /// <returns>Something.</returns>
+        [HttpDelete]
+        [Route("{hdid}/Credential/{credentialId}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public ActionResult RevokeCredential(string hdId, Guid credentialId)
+        {
+            throw new NotSupportedException();
         }
     }
 }

@@ -186,7 +186,7 @@ namespace HealthGateway.CommonTests.Delegates
                 ResultStatus = ResultType.Success,
                 TotalResultCount = 1,
             };
-            IWalletIssuerDelegate issuerDelegate = new WalletIssuerDelegate(loggerFactory.CreateLogger<WalletIssuerDelegate>(), mockHttpClientService.Object, this.configuration);
+            IWalletIssuerDelegate issuerDelegate = new RestWalletIssuerDelegate(loggerFactory.CreateLogger<RestWalletIssuerDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<CredentialResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateCredentialAsync<ImmunizationCredentialPayload>(connection, payload, comment).ConfigureAwait(true)).Result;
             Assert.True(actualResult.IsDeepEqual(expectedResult));
         }
@@ -286,7 +286,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
             using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             Mock<IHttpClientService> mockHttpClientService = GetHttpClientServiceMock(httpResponseMessage, throwException);
-            IWalletIssuerDelegate issuerDelegate = new WalletIssuerDelegate(loggerFactory.CreateLogger<WalletIssuerDelegate>(), mockHttpClientService.Object, this.configuration);
+            IWalletIssuerDelegate issuerDelegate = new RestWalletIssuerDelegate(loggerFactory.CreateLogger<RestWalletIssuerDelegate>(), mockHttpClientService.Object, this.configuration);
             RequestResult<ConnectionResponse> actualResult = Task.Run(async () => await issuerDelegate.CreateConnectionAsync(guid).ConfigureAwait(true)).Result;
             return new Tuple<RequestResult<ConnectionResponse>, RequestResult<ConnectionResponse>>(actualResult, expectedRequestResult);
         }

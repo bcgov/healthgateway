@@ -454,8 +454,24 @@
             Gets a verifiable credential.
             </summary>
             <param name="hdId">The user hdid.</param>
-            <param name="exchangeId">The credential exchange id.</param>
+            <param name="credentialId">The credential id.</param>
             <returns>The verifiable credential model.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.DisconnectConnection(System.String,System.Guid)">
+            <summary>
+            Updates the Health Gateway Wallet Connection and revokes the connection with the Agent.
+            </summary>
+            <param name="hdId">The users hdid.</param>
+            <param name="connectionId">The connection Id belonging to the user to disconnect.</param>
+            <returns>Something.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.RevokeCredential(System.String,System.Guid)">
+            <summary>
+            Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+            </summary>
+            <param name="hdId">The users hdid.</param>
+            <param name="credentialId">The credential id belonging to the user to disconnect.</param>
+            <returns>Something.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Controllers.WalletStatusController">
             <summary>
@@ -1875,11 +1891,19 @@
             <param name="hdId">The users HDID.</param>
             <returns>A wallet connection model wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IWalletService.GetCredential(System.Guid)">
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.GetCredentialByExchangeId(System.Guid)">
             <summary>
             Gets the wallet credentials.
             </summary>
             <param name="exchangeId">The wallet credential exchange id.</param>
+            <returns>A wallet credential model wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.GetCredentialById(System.Guid,System.String)">
+            <summary>
+            Gets the wallet credentials.
+            </summary>
+            <param name="credentialId">The wallet credential id.</param>
+            <param name="hdId">The user hdid.</param>
             <returns>A wallet credential model wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IWalletStatusService">
@@ -2073,7 +2097,10 @@
         <member name="M:HealthGateway.WebClient.Services.WalletService.GetConnection(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.WalletService.GetCredential(System.Guid)">
+        <member name="M:HealthGateway.WebClient.Services.WalletService.GetCredentialByExchangeId(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.GetCredentialById(System.Guid,System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.WebClient.Services.WalletStatusService">
