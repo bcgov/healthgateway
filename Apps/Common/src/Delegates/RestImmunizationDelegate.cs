@@ -42,6 +42,8 @@ namespace HealthGateway.Common.Delegates
     {
         private const string ServiceEndpointsSectionKey = "ServiceEndpoints";
         private const string EndpointKey = "Immunization";
+        private const string ImmunizationServiceSectionKey = "ImmunizationService";
+        private const string EndpointPathKey = "EndpointPath";
         private readonly string immunizationEndpoint;
 
         /// <summary>
@@ -69,7 +71,9 @@ namespace HealthGateway.Common.Delegates
             this.httpClientService = httpClientService;
             this.httpContextAccessor = httpContextAccessor;
 
-            this.immunizationEndpoint = configuration.GetSection(ServiceEndpointsSectionKey).GetValue<string>(EndpointKey);
+            string endpoint = configuration.GetSection(ServiceEndpointsSectionKey).GetValue<string>(EndpointKey);
+            string path = configuration.GetSection(ImmunizationServiceSectionKey).GetValue<string>(EndpointPathKey);
+            this.immunizationEndpoint = $"{endpoint}{path}";
         }
 
         /// <inheritdoc/>
@@ -92,7 +96,7 @@ namespace HealthGateway.Common.Delegates
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", bearerToken);
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-                    string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}/{1}", this.immunizationEndpoint, immunizationId);
+                    string endpointString = string.Format(CultureInfo.InvariantCulture, "{0}{1}", this.immunizationEndpoint, immunizationId);
                     Dictionary<string, string?> query = new ()
                     {
                         ["hdid"] = hdid,

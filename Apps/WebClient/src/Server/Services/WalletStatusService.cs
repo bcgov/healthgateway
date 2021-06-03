@@ -49,7 +49,7 @@ namespace HealthGateway.WebClient.Services
                 ResultStatus = Common.Constants.ResultType.Error,
             };
 
-            DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(connectionId);
+            DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(connectionId, null, true);
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletConnection connection = dbResult.Payload;

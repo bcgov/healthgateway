@@ -34,12 +34,12 @@ namespace HealthGateway.WebClient.Services
         Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId);
 
         /// <summary>
-        /// Creates a wallet connection and related credentials in the backend.
+        /// Creates a wallet credential in the backend.
         /// </summary>
         /// <param name="hdId">The user hdid.</param>
-        /// <param name="targetIds">The list of target ids to be added.</param>
-        /// <returns>The created wallet connection model wrapped in a RequestResult.</returns>
-        Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId, IEnumerable<string> targetIds);
+        /// <param name="targetId">The target id to be added.</param>
+        /// <returns>The created wallet credential model wrapped in a RequestResult.</returns>
+        Task<RequestResult<WalletCredentialModel>> CreateCredentialAsync(string hdId, string targetId);
 
         /// <summary>
         /// Creates a wallet credential in the backend.
@@ -64,20 +64,12 @@ namespace HealthGateway.WebClient.Services
         RequestResult<WalletCredentialModel> GetCredentialByExchangeId(Guid exchangeId);
 
         /// <summary>
-        /// Gets the wallet credentials.
-        /// </summary>
-        /// <param name="credentialId">The wallet credential id.</param>
-        /// <param name="hdId">The user hdid.</param>
-        /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
-        RequestResult<WalletCredentialModel> GetCredentialById(Guid credentialId, string hdId);
-
-        /// <summary>
         /// Disconnects the identified wallet.
         /// </summary>
         /// <param name="connectionId">The wallet connection id.</param>
         /// <param name="hdId">The user hdid.</param>
         /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
-        RequestResult<WalletConnectionModel> DisconnectConnection(Guid connectionId, string hdId);
+        Task<RequestResult<WalletConnectionModel>> DisconnectConnection(Guid connectionId, string hdId);
 
         /// <summary>
         /// Revokes the wallet identified wallet credentials.
@@ -85,7 +77,6 @@ namespace HealthGateway.WebClient.Services
         /// <param name="credentialId">The wallet credential id.</param>
         /// <param name="hdId">The user hdid.</param>
         /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
-        RequestResult<WalletCredentialModel> RevokeCredential(Guid credentialId, string hdId);
-
+        Task<RequestResult<WalletCredentialModel>> RevokeCredential(Guid credentialId, string hdId);
     }
 }

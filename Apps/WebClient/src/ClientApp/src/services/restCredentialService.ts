@@ -29,10 +29,7 @@ export class RestCredentialService implements ICredentialService {
         this.isEnabled = config.webClient.modules["Credential"];
     }
 
-    public createConnection(
-        hdid: string,
-        targetIds: string[]
-    ): Promise<WalletConnection> {
+    public createConnection(hdid: string): Promise<WalletConnection> {
         this.logger.debug("createConnection");
 
         return new Promise((resolve, reject) => {
@@ -43,8 +40,7 @@ export class RestCredentialService implements ICredentialService {
 
             this.http
                 .post<RequestResult<WalletConnection>>(
-                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection`,
-                    targetIds
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection`
                 )
                 .then((requestResult) => {
                     this.logger.debug(`createConnection ${requestResult}`);

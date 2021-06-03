@@ -184,10 +184,10 @@ namespace HealthGateway.WebClient.Test.Services
                 walletIssuerDelegateMock.Object,
                 clientRegistriesDelegateMock.Object,
                 immunizationDelegateMock.Object);
-            var actualResult = await service.CreateConnectionAsync(hdid, targetIds).ConfigureAwait(true);
+            var actualResult = await service.CreateConnectionAsync(hdid).ConfigureAwait(true);
 
             Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
-            Assert.True(actualResult.ResourcePayload!.Credentials.Count == 2);
+            Assert.True(actualResult.ResourcePayload!.Credentials.Count == 0);
         }
     }
 }

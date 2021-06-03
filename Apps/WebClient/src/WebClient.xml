@@ -434,12 +434,11 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="verifiableCredentialService">The injected verifiable credential service.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateConnection(System.String,System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateConnection(System.String)">
             <summary>
             Creates a verifiable credential connection.
             </summary>
             <param name="hdId">The user hdid.</param>
-            <param name="targetIds">The list of target ids of the verifiable credential.</param>
             <returns>The created verifiable credential connection model.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.GetConnection(System.String)">
@@ -449,20 +448,28 @@
             <param name="hdId">The user hdid.</param>
             <returns>The verifiable credential connection model.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.WalletController.GetCredential(System.String,System.Guid)">
-            <summary>
-            Gets a verifiable credential.
-            </summary>
-            <param name="hdId">The user hdid.</param>
-            <param name="credentialId">The credential id.</param>
-            <returns>The verifiable credential model.</returns>
-        </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.DisconnectConnection(System.String,System.Guid)">
             <summary>
             Updates the Health Gateway Wallet Connection and revokes the connection with the Agent.
             </summary>
             <param name="hdId">The users hdid.</param>
             <param name="connectionId">The connection Id belonging to the user to disconnect.</param>
+            <returns>Something.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateCredential(System.String,System.String)">
+            <summary>
+            Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+            </summary>
+            <param name="hdId">The users hdid.</param>
+            <param name="targetId">The target id of the immunization to create a credential for.</param>
+            <returns>Something.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateCredentials(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+            </summary>
+            <param name="hdId">The users hdid.</param>
+            <param name="targetIds">The target ids of the immunization to create a credential for.</param>
             <returns>Something.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.RevokeCredential(System.String,System.Guid)">
@@ -1868,13 +1875,13 @@
             <param name="hdId">The user hdid.</param>
             <returns>The created wallet connection model wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IWalletService.CreateConnectionAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.CreateCredentialAsync(System.String,System.String)">
             <summary>
-            Creates a wallet connection and related credentials in the backend.
+            Creates a wallet credential in the backend.
             </summary>
             <param name="hdId">The user hdid.</param>
-            <param name="targetIds">The list of target ids to be added.</param>
-            <returns>The created wallet connection model wrapped in a RequestResult.</returns>
+            <param name="targetId">The target id to be added.</param>
+            <returns>The created wallet credential model wrapped in a RequestResult.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Services.IWalletService.CreateCredentialsAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
@@ -1898,9 +1905,17 @@
             <param name="exchangeId">The wallet credential exchange id.</param>
             <returns>A wallet credential model wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IWalletService.GetCredentialById(System.Guid,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.DisconnectConnection(System.Guid,System.String)">
             <summary>
-            Gets the wallet credentials.
+            Disconnects the identified wallet.
+            </summary>
+            <param name="connectionId">The wallet connection id.</param>
+            <param name="hdId">The user hdid.</param>
+            <returns>A wallet credential model wrapped in a RequestResult.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.RevokeCredential(System.Guid,System.String)">
+            <summary>
+            Revokes the wallet identified wallet credentials.
             </summary>
             <param name="credentialId">The wallet credential id.</param>
             <param name="hdId">The user hdid.</param>
@@ -2085,13 +2100,16 @@
             <param name="clientRegistriesDelegate">Injected client registries delegate.</param>
             <param name="immunizationDelegate">Injected immunization delegate.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.WalletService.CreateConnectionAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
-            <inheritdoc/>
-        </member>
         <member name="M:HealthGateway.WebClient.Services.WalletService.CreateConnectionAsync(System.String)">
             <inheritdoc/>
         </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.CreateCredentialAsync(System.String,System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:HealthGateway.WebClient.Services.WalletService.CreateCredentialsAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.WalletService.DisconnectConnection(System.Guid,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.WebClient.Services.WalletService.GetConnection(System.String)">
@@ -2100,7 +2118,7 @@
         <member name="M:HealthGateway.WebClient.Services.WalletService.GetCredentialByExchangeId(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.WalletService.GetCredentialById(System.Guid,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.WalletService.RevokeCredential(System.Guid,System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.WebClient.Services.WalletStatusService">

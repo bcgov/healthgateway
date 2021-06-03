@@ -29,8 +29,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="id">The Wallet Connection Id to retrieve.</param>
         /// <param name="userProfileId">The Connections owner id.</param>
+        /// <param name="bypassUser">If true the query will return a connection without checking the user id.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<WalletConnection> GetConnection(Guid id, string userProfileId);
+        DBResult<WalletConnection> GetConnection(Guid id, string? userProfileId, bool bypassUser = false);
 
         /// <summary>
         /// Gets the first wallet associated to the user profile Id that isn't in a disconnected state.

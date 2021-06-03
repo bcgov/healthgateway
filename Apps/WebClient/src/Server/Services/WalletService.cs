@@ -67,50 +67,6 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId, IEnumerable<string> targetIds)
-        {
-            this.logger.LogDebug($"Creating wallet connection and credentials {JsonSerializer.Serialize(targetIds)} for user {hdId}");
-            RequestResult<WalletConnectionModel> walletConnectionResult = await this.CreateConnectionAsync(hdId).ConfigureAwait(true);
-            if (walletConnectionResult.ResultStatus != ResultType.Success)
-            {
-                this.logger.LogDebug($"Error creating wallet connection {JsonSerializer.Serialize(walletConnectionResult)} for user {hdId}");
-                return new RequestResult<WalletConnectionModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error creating wallet connection",
-                        InnerError = walletConnectionResult.ResultError,
-                    },
-                };
-            }
-
-            this.logger.LogDebug($"Creating wallet credentials {JsonSerializer.Serialize(targetIds)} for user {hdId}");
-            RequestResult<IEnumerable<WalletCredentialModel>> walletCredentialsResult = await this.CreateCredentialsAsync(hdId, targetIds).ConfigureAwait(true);
-            if (walletCredentialsResult.ResultStatus != ResultType.Success)
-            {
-                this.logger.LogDebug($"Error creating wallet credentials {JsonSerializer.Serialize(walletCredentialsResult)} for user {hdId}");
-                return new RequestResult<WalletConnectionModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error creating wallet credentials",
-                        InnerError = walletConnectionResult.ResultError,
-                    },
-                };
-            }
-
-            foreach (WalletCredentialModel walletCredential in walletCredentialsResult.ResourcePayload!)
-            {
-                walletConnectionResult.ResourcePayload!.Credentials.Add(walletCredential);
-            }
-
-            this.logger.LogDebug($"Finished creating wallet connection and credentials {JsonSerializer.Serialize(targetIds)} for user {hdId}: {JsonSerializer.Serialize(walletConnectionResult)}");
-            return walletConnectionResult;
-        }
-
-        /// <inheritdoc/>
         public async Task<RequestResult<WalletConnectionModel>> CreateConnectionAsync(string hdId)
         {
             this.logger.LogDebug($"Inserting wallet connection to database. user {hdId}");
@@ -175,6 +131,26 @@ namespace HealthGateway.WebClient.Services
                 ResourcePayload = WalletConnectionModel.CreateFromDbModel(dbResult.Payload),
                 ResultStatus = ResultType.Success,
             };
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<WalletCredentialModel>> CreateCredentialAsync(string hdId, string targetId)
+        {
+            List<string> targetIds = new ()
+            {
+                targetId,
+            };
+
+            RequestResult<IEnumerable<WalletCredentialModel>> requestResult = await this.CreateCredentialsAsync(hdId, targetIds).ConfigureAwait(true);
+            RequestResult<WalletCredentialModel> retVal = new RequestResult<WalletCredentialModel>()
+            {
+                ResultStatus = requestResult.ResultStatus,
+                ResultError = requestResult.ResultError,
+                ResourcePayload = requestResult.ResourcePayload.FirstOrDefault(),
+                PageSize = requestResult.PageSize,
+            };
+
+            return retVal;
         }
 
         /// <inheritdoc/>
@@ -305,7 +281,7 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<WalletConnectionModel> DisconnectConnection(Guid connectionId, string hdId)
+        public Task<RequestResult<WalletConnectionModel>> DisconnectConnection(Guid connectionId, string hdId)
         {
             throw new NotImplementedException();
         }
@@ -341,32 +317,6 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogDebug($"Getting wallet credential from database. credential exchange id: {exchangeId}");
             DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialByExchangeId(exchangeId);
-            if (dbResult.Status != DBStatusCode.Read)
-            {
-                this.logger.LogDebug($"Error getting wallet credential from database. {JsonSerializer.Serialize(dbResult)}");
-                return new RequestResult<WalletCredentialModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error retrieving wallet credential from database",
-                    },
-                };
-            }
-
-            this.logger.LogDebug($"Finished getting wallet credential from database. {JsonSerializer.Serialize(dbResult)}");
-            return new RequestResult<WalletCredentialModel>()
-            {
-                ResultStatus = ResultType.Success,
-                ResourcePayload = WalletCredentialModel.CreateFromDbModel(dbResult.Payload),
-            };
-        }
-
-        /// <inheritdoc/>
-        public RequestResult<WalletCredentialModel> GetCredentialById(Guid credentialId, string hdId)
-        {
-            this.logger.LogDebug($"Getting wallet credential from database. credentialid: {credentialId}");
-            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialById(credentialId, hdId);
             if (dbResult.Status != DBStatusCode.Read)
             {
                 this.logger.LogDebug($"Error getting wallet credential from database. {JsonSerializer.Serialize(dbResult)}");

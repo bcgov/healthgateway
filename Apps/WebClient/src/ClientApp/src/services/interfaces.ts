@@ -192,10 +192,7 @@ export interface ICredentialService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getConnection(hdid: string): Promise<WalletConnection>;
     getCredentials(hdid: string): Promise<WalletCredential>;
-    createConnection(
-        hdid: string,
-        targetIds: string[]
-    ): Promise<WalletConnection>;
+    createConnection(hdid: string): Promise<WalletConnection>;
 }
 
 export interface ILogger {
