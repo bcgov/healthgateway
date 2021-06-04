@@ -9,6 +9,7 @@ export interface WalletConnection {
     invitationEndpoint: string;
     state: ConnectionState;
     version: string;
+    credentials: WalletCredential[];
 }
 
 export enum ConnectionState {

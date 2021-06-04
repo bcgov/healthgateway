@@ -11,16 +11,15 @@ import {
 } from "@/store/modules/credential/types";
 
 const credentialState: CredentialState = {
-    credentials: [],
     statusMessage: "",
     error: false,
     status: LoadStatus.NONE,
 };
 
 const credentialActions: CredentialActions = {
-    retrieveConnection: voidPromise,
-    retrieveCredentials: voidPromise,
     createConnection: voidPromise,
+    retrieveConnection: voidPromise,
+    createCredential: voidPromise,
     handleError: voidPromise,
 };
 

@@ -6,6 +6,25 @@ import { ICredentialService, ILogger } from "@/services/interfaces";
 import { CredentialActions } from "./types";
 
 export const actions: CredentialActions = {
+    createConnection(context, params: { hdid: string }): Promise<boolean> {
+        const credentialService: ICredentialService =
+            container.get<ICredentialService>(
+                SERVICE_IDENTIFIER.CredentialService
+            );
+        return new Promise((resolve, reject) => {
+            context.commit("setRequested");
+            credentialService
+                .createConnection(params.hdid)
+                .then((result) => {
+                    context.commit("setConnection", result);
+                    resolve(true);
+                })
+                .catch((error) => {
+                    context.dispatch("handleError", error);
+                    reject(error);
+                });
+        });
+    },
     retrieveConnection(context, params: { hdid: string }): Promise<boolean> {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const credentialService: ICredentialService =
@@ -32,33 +51,9 @@ export const actions: CredentialActions = {
             }
         });
     },
-    retrieveCredentials(context, params: { hdid: string }): Promise<boolean> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
-        const credentialService: ICredentialService =
-            container.get<ICredentialService>(
-                SERVICE_IDENTIFIER.CredentialService
-            );
-        return new Promise((resolve, reject) => {
-            if (context.state.credentials.length > 0) {
-                logger.debug(`Credentials found stored, not querying!`);
-            } else {
-                context.commit("setRequested");
-                credentialService
-                    .getCredentials(params.hdid)
-                    .then((result) => {
-                        context.commit("setCredentials", result);
-                        resolve(true);
-                    })
-                    .catch((error) => {
-                        context.dispatch("handleError", error);
-                        reject(error);
-                    });
-            }
-        });
-    },
-    createConnection(
+    createCredential(
         context,
-        params: { hdid: string; targetIds: string[] }
+        params: { hdid: string; targetId: string }
     ): Promise<boolean> {
         const credentialService: ICredentialService =
             container.get<ICredentialService>(
@@ -67,9 +62,9 @@ export const actions: CredentialActions = {
         return new Promise((resolve, reject) => {
             context.commit("setRequested");
             credentialService
-                .createConnection(params.hdid, params.targetIds)
+                .createCredential(params.hdid, params.targetId)
                 .then((result) => {
-                    context.commit("setConnection", result);
+                    context.commit("addCredential", result);
                     resolve(true);
                 })
                 .catch((error) => {

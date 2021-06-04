@@ -458,7 +458,7 @@
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateCredential(System.String,System.String)">
             <summary>
-            Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+            Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
             </summary>
             <param name="hdId">The users hdid.</param>
             <param name="targetId">The target id of the immunization to create a credential for.</param>
@@ -466,7 +466,7 @@
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateCredentials(System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
-            Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+            Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
             </summary>
             <param name="hdId">The users hdid.</param>
             <param name="targetIds">The target ids of the immunization to create a credential for.</param>
@@ -474,7 +474,7 @@
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.RevokeCredential(System.String,System.Guid)">
             <summary>
-            Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+            Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
             </summary>
             <param name="hdId">The users hdid.</param>
             <param name="credentialId">The credential id belonging to the user to disconnect.</param>

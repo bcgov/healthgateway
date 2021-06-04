@@ -149,7 +149,7 @@ configureEnvironment() {
   done
 
   # Global
-  export DEVELOPER_WORKSTATION_IP="10.255.255.175"
+  export DEVELOPER_WORKSTATION_IP="192.168.1.76"
   export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-"gateway"}"
   export DEBUG=${DEBUG}
   export LOG_LEVEL=${LOG_LEVEL:-"DEBUG"}
