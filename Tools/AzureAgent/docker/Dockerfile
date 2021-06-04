@@ -1,18 +1,17 @@
 FROM ubuntu:20.04
-ARG NODE_VERSION=v14.15.0
+ARG NODE_VERSION=v14.17.0
 ARG DOTNET_VERSION=5.0
-ARG OPENSHIFT_VERSION=v3.11.0-0cbc58b
-ARG SONARSCANNER_VERSION=5.0.4
+ARG SONARSCANNER_VERSION=5.2.1
 
 ENV SUMMARY="Azure DevOps agent with .NET"  \
-    DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI ${OPENSHIFT_VERSION}"
+    DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI"
 
 LABEL summary="$SUMMARY" \
     description="$DESCRIPTION" \
     io.k8s.description="$DESCRIPTION" \
     io.k8s.display-name="azure-devlops-.net${DOTNET_VERSION}" \
     io.openshift.expose-services="8080:http" \
-    io.openshift.tags="builder,azure,devops,agent,.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift-${OPENSHIFT_VERSION}" \
+    io.openshift.tags="builder,azure,devops,agent,.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift" \
     release="1"
 
 RUN  export DEBIAN_FRONTEND=noninteractive && \

@@ -979,13 +979,16 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="dbContext">The context to be used when accessing the database.</param>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetConnection(System.Guid)">
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetConnection(System.Guid,System.String,System.Boolean)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCurrentConnection(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCredential(System.Guid)">
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCredentialById(System.Guid,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.GetCredentialByExchangeId(System.Guid)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBWalletDelegate.InsertConnection(HealthGateway.Database.Models.WalletConnection,System.Boolean)">
@@ -1779,11 +1782,13 @@
             Delegate that performs operations on the Wallet.
             </summary>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetConnection(System.Guid)">
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetConnection(System.Guid,System.String,System.Boolean)">
             <summary>
             Gets the wallet associated by the primary key.
             </summary>
             <param name="id">The Wallet Connection Id to retrieve.</param>
+            <param name="userProfileId">The Connections owner id.</param>
+            <param name="bypassUser">If true the query will return a connection without checking the user id.</param>
             <returns>A DB result which encapsulates the return object and status.</returns>
         </member>
         <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetCurrentConnection(System.String)">
@@ -1793,7 +1798,15 @@
             <param name="userProfileId">The profile id/hdid of the wallet to retrieve.</param>
             <returns>A DB result which encapsulates the return object and status.</returns>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetCredential(System.Guid)">
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetCredentialById(System.Guid,System.String)">
+            <summary>
+            Gets the Wallet credentials associated to a given credential id.
+            </summary>
+            <param name="credentialId">The credential id to query.</param>
+            <param name="userProfileId">The owning id of the credential.</param>
+            <returns>A DB result which encapsulates the return object and status.</returns>
+        </member>
+        <member name="M:HealthGateway.Database.Delegates.IWalletDelegate.GetCredentialByExchangeId(System.Guid)">
             <summary>
             Gets the Wallet credentials associated to a given exchange id.
             </summary>

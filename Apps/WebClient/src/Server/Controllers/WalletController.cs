@@ -56,17 +56,16 @@ namespace HealthGateway.WebClient.Controllers
         /// Creates a verifiable credential connection.
         /// </summary>
         /// <param name="hdId">The user hdid.</param>
-        /// <param name="targetIds">The list of target ids of the verifiable credential.</param>
         /// <returns>The created verifiable credential connection model.</returns>
         [HttpPost]
         [Route("{hdid}/Connection")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<JsonResult> CreateConnection(string hdId, [FromBody] IEnumerable<string> targetIds)
+        public async Task<JsonResult> CreateConnection(string hdId)
         {
-            this.logger.LogDebug($"Creating wallet connection {JsonSerializer.Serialize(targetIds)} for user {hdId}");
-            RequestResult<WalletConnectionModel> result = await this.verifiableCredentialService.CreateConnectionAsync(hdId, targetIds).ConfigureAwait(true);
+            this.logger.LogDebug($"Creating wallet connection for user {hdId}");
+            RequestResult<WalletConnectionModel> result = await this.verifiableCredentialService.CreateConnectionAsync(hdId).ConfigureAwait(true);
 
-            this.logger.LogDebug($"Finished creating wallet connection {JsonSerializer.Serialize(targetIds)} for user {hdId}: {JsonSerializer.Serialize(result)}");
+            this.logger.LogDebug($"Finished creating wallet connection for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
         }
 
@@ -88,21 +87,67 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Gets a verifiable credential.
+        /// Updates the Health Gateway Wallet Connection and revokes the connection with the Agent.
         /// </summary>
-        /// <param name="hdId">The user hdid.</param>
-        /// <param name="exchangeId">The credential exchange id.</param>
-        /// <returns>The verifiable credential model.</returns>
-        [HttpGet]
-        [Route("{hdid}/Credential")]
-        [Authorize(Policy = UserProfilePolicy.Read)]
-        public ActionResult GetCredential(string hdId, Guid exchangeId)
+        /// <param name="hdId">The users hdid.</param>
+        /// <param name="connectionId">The connection Id belonging to the user to disconnect.</param>
+        /// <returns>Something.</returns>
+        [HttpDelete]
+        [Route("{hdid}/Connection/{connectionId}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public ActionResult DisconnectConnection(string hdId, Guid connectionId)
         {
-            this.logger.LogDebug($"Getting wallet credential {exchangeId} for user {hdId}");
-            RequestResult<WalletCredentialModel> result =
-                this.verifiableCredentialService.GetCredential(exchangeId);
+            throw new NotSupportedException();
+        }
 
-            this.logger.LogDebug($"Finished getting current wallet credential {exchangeId} for user {hdId}: {JsonSerializer.Serialize(result)}");
+        /// <summary>
+        /// Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
+        /// </summary>
+        /// <param name="hdId">The users hdid.</param>
+        /// <param name="targetId">The target id of the immunization to create a credential for.</param>
+        /// <returns>Something.</returns>
+        [HttpPost]
+        [Route("{hdid}/Credential")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public async Task<ActionResult> CreateCredential(string hdId, [FromBody] string targetId)
+        {
+            this.logger.LogDebug($"Creating credential for user {hdId}");
+            RequestResult<WalletCredentialModel> result = await this.verifiableCredentialService.CreateCredentialAsync(hdId, targetId).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished creating credential for user {hdId}: {JsonSerializer.Serialize(result)}");
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
+        /// </summary>
+        /// <param name="hdId">The users hdid.</param>
+        /// <param name="targetIds">The target ids of the immunization to create a credential for.</param>
+        /// <returns>Something.</returns>
+        [HttpPost]
+        [Route("{hdid}/Credential")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public async Task<ActionResult> CreateCredentials(string hdId, [FromBody] IEnumerable<string> targetIds)
+        {
+            this.logger.LogDebug($"Creating credential for user {hdId}");
+            RequestResult<IEnumerable<WalletCredentialModel>> result = await this.verifiableCredentialService.CreateCredentialsAsync(hdId, targetIds).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished creating credential for user {hdId}: {JsonSerializer.Serialize(result)}");
+            return new JsonResult(result);
+        }
+
+        /// <summary>
+        /// Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
+        /// </summary>
+        /// <param name="hdId">The users hdid.</param>
+        /// <param name="credentialId">The credential id belonging to the user to disconnect.</param>
+        /// <returns>Something.</returns>
+        [HttpDelete]
+        [Route("{hdid}/Credential/{credentialId}")]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        public async Task<ActionResult> RevokeCredential(string hdId, Guid credentialId)
+        {
+            this.logger.LogDebug($"Revoking credential for user {hdId}");
+            RequestResult<WalletCredentialModel> result = await this.verifiableCredentialService.RevokeCredential(credentialId, hdId).ConfigureAwait(true);
+            this.logger.LogDebug($"Finished revoking credential for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
         }
     }

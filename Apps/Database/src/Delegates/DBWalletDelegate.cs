@@ -47,15 +47,30 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<WalletConnection> GetConnection(Guid id)
+        public DBResult<WalletConnection> GetConnection(Guid id, string? userProfileId, bool bypassUser = false)
         {
+            if (!bypassUser && userProfileId == null)
+            {
+                throw new ArgumentNullException(nameof(userProfileId), "userProfileId cannot be null unless bypassed");
+            }
+
             DBResult<WalletConnection> result = new ()
             {
                 Status = DBStatusCode.NotFound,
             };
-            WalletConnection? connection = this.dbContext.WalletConnection
-                                    .Where(p => p.Id == id)
-                                    .FirstOrDefault();
+            WalletConnection? connection;
+            if (!bypassUser)
+            {
+                connection = this.dbContext.WalletConnection
+                                           .Where(p => p.Id == id &&
+                                                       p.UserProfileId == userProfileId)
+                                           .FirstOrDefault();
+            }
+            else
+            {
+                connection = this.dbContext.WalletConnection.Where(p => p.Id == id).FirstOrDefault();
+            }
+
             if (connection != null)
             {
                 result.Status = DBStatusCode.Read;
@@ -75,6 +90,9 @@ namespace HealthGateway.Database.Delegates
             WalletConnection? connection = this.dbContext.WalletConnection
                                     .Where(p => p.UserProfileId == userProfileId &&
                                                 p.Status != WalletConnectionStatus.Disconnected)
+                                    .Include(c => c.Credentials
+                                                  .Where(q => q.Status != WalletCredentialStatus.Revoked)
+                                                  .OrderByDescending(q => q.CreatedDateTime))
                                     .OrderByDescending(p => p.CreatedDateTime)
                                     .FirstOrDefault();
             if (connection != null)
@@ -87,7 +105,27 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<WalletCredential> GetCredential(Guid exchangeId)
+        public DBResult<WalletCredential> GetCredentialById(Guid credentialId, string userProfileId)
+        {
+            DBResult<WalletCredential> result = new ()
+            {
+                Status = DBStatusCode.NotFound,
+            };
+            WalletCredential? credential = this.dbContext.WalletCredential
+                                    .Where(p => p.Id == credentialId &&
+                                                p.WalletConnection.UserProfileId == userProfileId)
+                                    .FirstOrDefault();
+            if (credential != null)
+            {
+                result.Status = DBStatusCode.Read;
+                result.Payload = credential;
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public DBResult<WalletCredential> GetCredentialByExchangeId(Guid exchangeId)
         {
             DBResult<WalletCredential> result = new ()
             {
@@ -109,7 +147,11 @@ namespace HealthGateway.Database.Delegates
         public DBResult<WalletConnection> InsertConnection(WalletConnection connection, bool commit = true)
         {
             this.logger.LogTrace($"Inserting Wallet Connection to DB... {JsonSerializer.Serialize(connection)}");
-            DBResult<WalletConnection> result = new DBResult<WalletConnection>();
+            DBResult<WalletConnection> result = new ()
+            {
+                Payload = connection,
+                Status = DBStatusCode.Error,
+            };
             this.dbContext.Add<WalletConnection>(connection);
             if (commit)
             {
@@ -120,7 +162,6 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
             }
@@ -162,7 +203,12 @@ namespace HealthGateway.Database.Delegates
         public DBResult<WalletCredential> InsertCredential(WalletCredential credential, bool commit = true)
         {
             this.logger.LogTrace($"Inserting Wallet Credential to DB... {JsonSerializer.Serialize(credential)}");
-            DBResult<WalletCredential> result = new DBResult<WalletCredential>();
+            DBResult<WalletCredential> result = new ()
+            {
+                Payload = credential,
+                Status = DBStatusCode.Error,
+            };
+
             this.dbContext.Add<WalletCredential>(credential);
             if (commit)
             {
@@ -173,7 +219,6 @@ namespace HealthGateway.Database.Delegates
                 }
                 catch (DbUpdateException e)
                 {
-                    result.Status = DBStatusCode.Error;
                     result.Message = e.Message;
                 }
             }

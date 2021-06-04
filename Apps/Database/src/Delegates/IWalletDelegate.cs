@@ -28,8 +28,10 @@ namespace HealthGateway.Database.Delegates
         /// Gets the wallet associated by the primary key.
         /// </summary>
         /// <param name="id">The Wallet Connection Id to retrieve.</param>
+        /// <param name="userProfileId">The Connections owner id.</param>
+        /// <param name="bypassUser">If true the query will return a connection without checking the user id.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<WalletConnection> GetConnection(Guid id);
+        DBResult<WalletConnection> GetConnection(Guid id, string? userProfileId, bool bypassUser = false);
 
         /// <summary>
         /// Gets the first wallet associated to the user profile Id that isn't in a disconnected state.
@@ -39,11 +41,19 @@ namespace HealthGateway.Database.Delegates
         DBResult<WalletConnection> GetCurrentConnection(string userProfileId);
 
         /// <summary>
+        /// Gets the Wallet credentials associated to a given credential id.
+        /// </summary>
+        /// <param name="credentialId">The credential id to query.</param>
+        /// <param name="userProfileId">The owning id of the credential.</param>
+        /// <returns>A DB result which encapsulates the return object and status.</returns>
+        public DBResult<WalletCredential> GetCredentialById(Guid credentialId, string userProfileId);
+
+        /// <summary>
         /// Gets the Wallet credentials associated to a given exchange id.
         /// </summary>
         /// <param name="exchangeId">The agent exchange id to query.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DBResult<WalletCredential> GetCredential(Guid exchangeId);
+        DBResult<WalletCredential> GetCredentialByExchangeId(Guid exchangeId);
 
         /// <summary>
         /// Creates a WalletConnection object in the database.

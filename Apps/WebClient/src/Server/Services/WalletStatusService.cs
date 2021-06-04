@@ -49,7 +49,7 @@ namespace HealthGateway.WebClient.Services
                 ResultStatus = Common.Constants.ResultType.Error,
             };
 
-            DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(connectionId);
+            DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(connectionId, null, true);
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletConnection connection = dbResult.Payload;
@@ -93,7 +93,7 @@ namespace HealthGateway.WebClient.Services
                 ResultStatus = Common.Constants.ResultType.Error,
             };
 
-            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredential(exchangeId);
+            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialByExchangeId(exchangeId);
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletCredential credential = dbResult.Payload;

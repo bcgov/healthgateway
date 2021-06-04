@@ -269,11 +269,6 @@
             Successfully Get Connection - Happy path scenario.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Test.Controllers.VerifiableCredentialControllerTests.ShouldGetCredential">
-            <summary>
-            Successfully Get Credential - Happy path scenario.
-            </summary>
-        </member>
         <member name="T:HealthGateway.WebClient.Test.Services.CommentServiceTests">
             <summary>
             CommentService's Unit Tests.

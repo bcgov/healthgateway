@@ -34,10 +34,7 @@ export default class CredentialCollectionCard extends Vue {
     credentials!: WalletCredential[];
 
     @Action("createConnection", { namespace: "credential" })
-    createConnection!: (params: {
-        hdid: string;
-        targetIds: string[];
-    }) => Promise<boolean>;
+    createConnection!: (params: { hdid: string }) => Promise<boolean>;
 
     @Action("retrieveCredentials", { namespace: "credential" })
     retrieveCredentials!: (params: { hdid: string }) => Promise<boolean>;
@@ -120,7 +117,6 @@ export default class CredentialCollectionCard extends Vue {
     private createCredentials(): void {
         this.createConnection({
             hdid: this.user.hdid,
-            targetIds: this.pendingCredentials,
         })
             .then(() => this.retrieveCredentials({ hdid: this.user.hdid }))
             .catch((err) => {

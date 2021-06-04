@@ -1518,11 +1518,12 @@
             <param name="comment">The comment to pass for the credential.</param>
             <returns>Create ConnectionResponse including the invitation URL and the agent connection id.</returns>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential)">
+        <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential,System.String)">
             <summary>
             Creates a connection invitation request.
             </summary>
             <param name="credential">The wallet credential to revoke.</param>
+            <param name="revocationMessage">The message to send to the connection after the credential is revoked.</param>
             <returns>The WalletCredential that was revoked.</returns>
         </member>
         <member name="M:HealthGateway.Common.Delegates.IWalletIssuerDelegate.CreateSchemaAsync(HealthGateway.Common.Models.AcaPy.SchemaRequest)">
@@ -1580,38 +1581,38 @@
         <member name="M:HealthGateway.Common.Delegates.RestNotificationSettingsDelegate.SetNotificationSettings(HealthGateway.Common.Models.NotificationSettingsRequest,System.String)">
             <inheritdoc/>
         </member>
-        <member name="T:HealthGateway.Common.Delegates.WalletIssuerDelegate">
+        <member name="T:HealthGateway.Common.Delegates.RestWalletIssuerDelegate">
             <summary>
             Implementation that uses HTTP to create/revoke Connections and Credentials.
             </summary>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.Delegates.WalletIssuerDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:HealthGateway.Common.Delegates.RestWalletIssuerDelegate.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.Common.Delegates.RestWalletIssuerDelegate},HealthGateway.Common.Services.IHttpClientService,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
-            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.WalletIssuerDelegate"/> class.
+            Initializes a new instance of the <see cref="T:HealthGateway.Common.Delegates.RestWalletIssuerDelegate"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="httpClientService">The injected http client service.</param>
             <param name="configuration">The injected configuration provider.</param>
         </member>
-        <member name="P:HealthGateway.Common.Delegates.WalletIssuerDelegate.WalletIssuerConfig">
+        <member name="P:HealthGateway.Common.Delegates.RestWalletIssuerDelegate.WalletIssuerConfig">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
+        <member name="M:HealthGateway.Common.Delegates.RestWalletIssuerDelegate.CreateConnectionAsync(System.Guid)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,``0,System.String)">
+        <member name="M:HealthGateway.Common.Delegates.RestWalletIssuerDelegate.CreateCredentialAsync``1(HealthGateway.Database.Models.WalletConnection,``0,System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
+        <member name="M:HealthGateway.Common.Delegates.RestWalletIssuerDelegate.DisconnectConnectionAsync(HealthGateway.Database.Models.WalletConnection)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential)">
+        <member name="M:HealthGateway.Common.Delegates.RestWalletIssuerDelegate.RevokeCredentialAsync(HealthGateway.Database.Models.WalletCredential,System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateSchemaAsync(HealthGateway.Common.Models.AcaPy.SchemaRequest)">
+        <member name="M:HealthGateway.Common.Delegates.RestWalletIssuerDelegate.CreateSchemaAsync(HealthGateway.Common.Models.AcaPy.SchemaRequest)">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.Common.Delegates.WalletIssuerDelegate.CreateCredentialDefinitionAsync(System.String)">
+        <member name="M:HealthGateway.Common.Delegates.RestWalletIssuerDelegate.CreateCredentialDefinitionAsync(System.String)">
             <inheritdoc/>
         </member>
         <member name="T:HealthGateway.Common.ErrorHandling.ActionType">
@@ -2137,6 +2138,26 @@
         <member name="P:HealthGateway.Common.Models.AcaPy.IssuerDidResult.Did">
             <summary>
             Gets or sets the result.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.AcaPy.RevokeCredentialRequest">
+            <summary>
+            Represents a Revoke Credential Request to the aries agent.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.RevokeCredentialRequest.CredentialRevocationId">
+            <summary>
+            Gets or sets credential revocation id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.RevokeCredentialRequest.RevocationRegistryId">
+            <summary>
+            Gets or sets revocation registry id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.AcaPy.RevokeCredentialRequest.Publish">
+            <summary>
+            Gets a value indicating whether the publish flag is set.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.SchemaIdResponse">
