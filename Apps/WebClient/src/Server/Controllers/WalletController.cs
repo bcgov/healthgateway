@@ -111,7 +111,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<ActionResult> CreateCredential(string hdId, [FromBody] string targetId)
         {
-            this.logger.LogDebug($"Creating credenial for user {hdId}");
+            this.logger.LogDebug($"Creating credential for user {hdId}");
             RequestResult<WalletCredentialModel> result = await this.verifiableCredentialService.CreateCredentialAsync(hdId, targetId).ConfigureAwait(true);
             this.logger.LogDebug($"Finished creating credential for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
@@ -128,7 +128,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<ActionResult> CreateCredentials(string hdId, [FromBody] IEnumerable<string> targetIds)
         {
-            this.logger.LogDebug($"Creating credenial for user {hdId}");
+            this.logger.LogDebug($"Creating credential for user {hdId}");
             RequestResult<IEnumerable<WalletCredentialModel>> result = await this.verifiableCredentialService.CreateCredentialsAsync(hdId, targetIds).ConfigureAwait(true);
             this.logger.LogDebug($"Finished creating credential for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
@@ -145,7 +145,7 @@ namespace HealthGateway.WebClient.Controllers
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<ActionResult> RevokeCredential(string hdId, Guid credentialId)
         {
-            this.logger.LogDebug($"Revoking credenial for user {hdId}");
+            this.logger.LogDebug($"Revoking credential for user {hdId}");
             RequestResult<WalletCredentialModel> result = await this.verifiableCredentialService.RevokeCredential(credentialId, hdId).ConfigureAwait(true);
             this.logger.LogDebug($"Finished revoking credential for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
