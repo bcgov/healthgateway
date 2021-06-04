@@ -29,7 +29,7 @@ export interface CredentialActions
     extends ActionTree<CredentialState, RootState> {
     createConnection(
         context: CredentialContext,
-        params: { hdid: string; targetIds: string[] }
+        params: { hdid: string }
     ): Promise<boolean>;
     retrieveConnection(
         context: CredentialContext,
