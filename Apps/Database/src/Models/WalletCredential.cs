@@ -50,11 +50,13 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the identifier of the resource that this credential is attached to.
         /// </summary>
+        [Required]
         public string ResourceId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the type the resource that this credential is attached to.
         /// </summary>
+        [Required]
         public string ResourceType { get; set; } = string.Empty;
 
         /// <summary>
@@ -77,16 +79,19 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the exchange id for this credential.
         /// </summary>
+        [Required]
         public Guid ExchangeId { get; set; }
 
         /// <summary>
         /// Gets or sets the revocation id from the agent.
         /// </summary>
-        public string? RevocationId { get; set; }
+        [Required]
+        public string RevocationId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the revocation registry id from the agent.
         /// </summary>
-        public string? RevocationRegistryId { get; set; }
+        [Required]
+        public string RevocationRegistryId { get; set; } = string.Empty;
     }
 }
