@@ -40,7 +40,8 @@ export class RestCredentialService implements ICredentialService {
 
             this.http
                 .post<RequestResult<WalletConnection>>(
-                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection`
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection`,
+                    null
                 )
                 .then((requestResult) => {
                     this.logger.debug(`createConnection ${requestResult}`);
@@ -93,7 +94,10 @@ export class RestCredentialService implements ICredentialService {
         });
     }
 
-    public getCredentials(hdid: string): Promise<WalletCredential> {
+    public createCredential(
+        hdid: string,
+        targetId: string
+    ): Promise<WalletCredential> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
                 reject();
@@ -101,11 +105,12 @@ export class RestCredentialService implements ICredentialService {
             }
 
             this.http
-                .getWithCors<RequestResult<WalletCredential>>(
-                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Credentials`
+                .post<RequestResult<WalletCredential>>(
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Credential`,
+                    targetId
                 )
                 .then((requestResult) => {
-                    this.logger.debug(`getCredentials ${requestResult}`);
+                    this.logger.debug(`createCredential ${requestResult}`);
                     RequestResultUtil.handleResult(
                         requestResult,
                         resolve,
@@ -113,7 +118,7 @@ export class RestCredentialService implements ICredentialService {
                     );
                 })
                 .catch((err) => {
-                    this.logger.error(`getCredentials error: ${err}`);
+                    this.logger.error(`createCredential error: ${err}`);
                     return reject(
                         ErrorTranslator.internalNetworkError(
                             err,

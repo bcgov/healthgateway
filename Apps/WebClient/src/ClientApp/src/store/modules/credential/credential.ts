@@ -7,7 +7,6 @@ import { CredentialModule, CredentialState } from "./types";
 
 const state: CredentialState = {
     connection: undefined,
-    credentials: [],
     statusMessage: "",
     error: false,
     status: LoadStatus.NONE,
