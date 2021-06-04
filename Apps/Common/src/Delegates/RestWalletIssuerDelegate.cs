@@ -234,7 +234,7 @@ namespace HealthGateway.Common.Delegates
                 retVal.ResultError = new RequestResultError() { ResultMessage = $"Exception Deleting Connection: {e}", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 this.logger.LogError($"Unexpected exception in DisconnectConnectionAsync {e}");
             }
-
+#pragma warning restore CA1031 // Do not catch general exception types
             return retVal;
         }
 
@@ -286,6 +286,7 @@ namespace HealthGateway.Common.Delegates
                 {
                     httpContent.Dispose();
                 }
+    #pragma warning restore CA1031 // Do not catch general exception types
             }
             else
             {

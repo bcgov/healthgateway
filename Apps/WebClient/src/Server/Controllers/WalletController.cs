@@ -101,7 +101,7 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+        /// Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
         /// </summary>
         /// <param name="hdId">The users hdid.</param>
         /// <param name="targetId">The target id of the immunization to create a credential for.</param>
@@ -118,7 +118,7 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+        /// Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
         /// </summary>
         /// <param name="hdId">The users hdid.</param>
         /// <param name="targetIds">The target ids of the immunization to create a credential for.</param>
@@ -135,7 +135,7 @@ namespace HealthGateway.WebClient.Controllers
         }
 
         /// <summary>
-        /// Updates the Health Gateway Wallet Credentail and revokes the credential with the Agent.
+        /// Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
         /// </summary>
         /// <param name="hdId">The users hdid.</param>
         /// <param name="credentialId">The credential id belonging to the user to disconnect.</param>
