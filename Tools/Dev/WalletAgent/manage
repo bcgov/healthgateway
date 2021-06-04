@@ -30,6 +30,28 @@ function isInstalled () {
   fi
 }
 
+function isDeveloperConfigured () {
+devEnv=".developer.env"
+if [ -f $devEnv ]; then
+   export $(grep -v '^#' $devEnv | xargs)
+   if [ -n "$DEVELOPER_WORKSTATION_IP" ]; then
+      echo "Developer IP Configured as ${DEVELOPER_WORKSTATION_IP}"
+   else
+      echo "Please ensure you have"
+      echo "DEVELOPER_WORKSTATION_IP=YOUR HOST IP ADDR" 
+      echo "in your ${devEnv} file, Health Gateway must be available on this IP"
+      echo "and it cannot be localhost or 127.0.0.1"  
+   fi
+else
+   echo "Developer Configuration missing"
+   echo "Please create a ${devEnv} and add a line with"
+   echo "DEVELOPER_WORKSTATION_IP=YOUR HOST IP ADDR"
+   echo "Health Gateway must be available on this IP"
+   echo "and it cannot be localhost or 127.0.0.1"  
+   exit 1
+fi
+}
+
 function isCurlInstalled () {
   CURL_EXE=curl
   if ! isInstalled ${CURL_EXE}; then
@@ -149,7 +171,6 @@ configureEnvironment() {
   done
 
   # Global
-  export DEVELOPER_WORKSTATION_IP="10.255.255.175"
   export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-"gateway"}"
   export DEBUG=${DEBUG}
   export LOG_LEVEL=${LOG_LEVEL:-"DEBUG"}
@@ -281,6 +302,7 @@ case "${COMMAND}" in
     build ${_startupParams}
     ;;
   start|start|up)
+    isDeveloperConfigured
     isJQInstalled
     isCurlInstalled
 
