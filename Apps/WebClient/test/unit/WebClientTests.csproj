@@ -14,7 +14,6 @@
     <EmbeddedResource Remove="Mock\**" />
     <None Remove="Mock\**" />
     <None Remove="UnitTest.json" />
-    <None Remove="Delegates.Test\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="3.0.3">
@@ -40,8 +39,5 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Delegates.Test\" />
   </ItemGroup>
 </Project>
