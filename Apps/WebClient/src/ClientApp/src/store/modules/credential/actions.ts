@@ -26,29 +26,22 @@ export const actions: CredentialActions = {
         });
     },
     retrieveConnection(context, params: { hdid: string }): Promise<boolean> {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         const credentialService: ICredentialService =
             container.get<ICredentialService>(
                 SERVICE_IDENTIFIER.CredentialService
             );
         return new Promise((resolve, reject) => {
-            if (context.state.connection !== undefined) {
-                logger.debug(
-                    `Credential Connection found stored, not querying!`
-                );
-            } else {
-                context.commit("setRequested");
-                credentialService
-                    .getConnection(params.hdid)
-                    .then((result) => {
-                        context.commit("setConnection", result);
-                        resolve(true);
-                    })
-                    .catch((error) => {
-                        context.dispatch("handleError", error);
-                        reject(error);
-                    });
-            }
+            context.commit("setRequested");
+            credentialService
+                .getConnection(params.hdid)
+                .then((result) => {
+                    context.commit("setConnection", result);
+                    resolve(true);
+                })
+                .catch((error) => {
+                    context.dispatch("handleError", error);
+                    reject(error);
+                });
         });
     },
     createCredential(
@@ -62,9 +55,9 @@ export const actions: CredentialActions = {
         return new Promise((resolve, reject) => {
             context.commit("setRequested");
             credentialService
-                .createCredential(params.hdid, params.targetId)
+                .createCredentials(params.hdid, [params.targetId])
                 .then((result) => {
-                    context.commit("addCredential", result);
+                    context.commit("addCredentials", result);
                     resolve(true);
                 })
                 .catch((error) => {

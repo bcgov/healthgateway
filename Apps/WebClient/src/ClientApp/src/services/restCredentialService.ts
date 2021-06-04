@@ -94,9 +94,9 @@ export class RestCredentialService implements ICredentialService {
         });
     }
 
-    public createCredential(
+    public createCredentials(
         hdid: string,
-        targetId: string
+        targetIds: string[]
     ): Promise<WalletCredential> {
         return new Promise((resolve, reject) => {
             if (!this.isEnabled) {
@@ -106,8 +106,8 @@ export class RestCredentialService implements ICredentialService {
 
             this.http
                 .post<RequestResult<WalletCredential>>(
-                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Credential`,
-                    targetId
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Credentials`,
+                    targetIds
                 )
                 .then((requestResult) => {
                     this.logger.debug(`createCredential ${requestResult}`);

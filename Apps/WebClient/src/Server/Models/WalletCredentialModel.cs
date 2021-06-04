@@ -60,9 +60,9 @@ namespace HealthGateway.WebClient.Models
         public DateTime? RevokedDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the connection state.
+        /// Gets or sets the connection status.
         /// </summary>
-        public WalletCredentialStatus State { get; set; }
+        public WalletCredentialStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the db record version.
@@ -81,7 +81,7 @@ namespace HealthGateway.WebClient.Models
                 CredentialId = walletCredential.Id,
                 WalletConnectionId = walletCredential.WalletConnectionId,
                 IssuerConnectionId = walletCredential.WalletConnection.AgentId,
-                State = walletCredential.Status,
+                Status = walletCredential.Status,
                 SourceId = walletCredential.ResourceId,
                 SourceType = walletCredential.ResourceType,
                 AddedDate = walletCredential.AddedDateTime,

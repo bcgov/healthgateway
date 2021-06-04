@@ -146,7 +146,7 @@ namespace HealthGateway.WebClient.Services
             {
                 ResultStatus = requestResult.ResultStatus,
                 ResultError = requestResult.ResultError,
-                ResourcePayload = requestResult.ResourcePayload.FirstOrDefault(),
+                ResourcePayload = requestResult.ResourcePayload?.FirstOrDefault(),
                 PageSize = requestResult.PageSize,
             };
 
@@ -293,24 +293,11 @@ namespace HealthGateway.WebClient.Services
         {
             this.logger.LogDebug($"Getting wallet connection from database for user {hdId}");
             DBResult<WalletConnection> dbResult = this.walletDelegate.GetCurrentConnection(hdId);
-            if (dbResult.Status != DBStatusCode.Read)
-            {
-                this.logger.LogDebug($"Error getting wallet connection from database. {JsonSerializer.Serialize(dbResult)}");
-                return new RequestResult<WalletConnectionModel>()
-                {
-                    ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error retrieving wallet connection from database",
-                    },
-                };
-            }
-
             this.logger.LogDebug($"Finished getting wallet connection from database. {JsonSerializer.Serialize(dbResult)}");
             return new RequestResult<WalletConnectionModel>()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = WalletConnectionModel.CreateFromDbModel(dbResult.Payload),
+                ResourcePayload = dbResult.Status == DBStatusCode.Read ? WalletConnectionModel.CreateFromDbModel(dbResult.Payload) : null,
             };
         }
 

@@ -7,12 +7,12 @@ export interface WalletConnection {
     connectedDate: StringISODateTime;
     disconnectedDate: StringISODateTime;
     invitationEndpoint: string;
-    state: ConnectionState;
+    status: ConnectionStatus;
     version: string;
     credentials: WalletCredential[];
 }
 
-export enum ConnectionState {
+export enum ConnectionStatus {
     Pending,
     Connected,
     Disconnected,
@@ -26,11 +26,11 @@ export interface WalletCredential {
     sourceId: string;
     addedDate: StringISODateTime;
     revokedDate?: StringISODateTime;
-    status: CredentialState;
+    status: CredentialStatus;
     version: string;
 }
 
-export enum CredentialState {
+export enum CredentialStatus {
     Created,
     Added,
     Revoked,
