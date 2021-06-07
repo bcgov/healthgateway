@@ -120,5 +120,41 @@ namespace HealthGateway.WebClient.Services
 
             return result;
         }
+
+        /// <inheritdoc />
+        public RequestResult<WalletCredential> UpdateWalletCredential(Guid exchangeId, string revocationId, string revocationRegistryId)
+        {
+            RequestResult<WalletCredential> result = new ()
+            {
+                ResultStatus = Common.Constants.ResultType.Error,
+            };
+
+            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialByExchangeId(exchangeId);
+            if (dbResult.Status == DBStatusCode.Read)
+            {
+                WalletCredential credential = dbResult.Payload;
+                result.ResourcePayload = credential;
+                credential.RevocationId = revocationId;
+                credential.RevocationRegistryId = revocationRegistryId;
+                DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential);
+                if (updateResult.Status == DBStatusCode.Updated)
+                {
+                    result.ResultStatus = Common.Constants.ResultType.Success;
+                    result.TotalResultCount = 1;
+                }
+                else
+                {
+                    this.logger.LogWarning($"Unable to update wallet credential using exchange id: {exchangeId}");
+                    result.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                }
+            }
+            else
+            {
+                this.logger.LogWarning($"Unable to find wallet credential using exchange id: {exchangeId}");
+                result.ResultError = new RequestResultError() { ResultMessage = "Unable to find Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+            }
+
+            return result;
+        }
     }
 }

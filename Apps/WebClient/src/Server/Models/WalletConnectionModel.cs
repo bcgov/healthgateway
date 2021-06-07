@@ -78,9 +78,9 @@ namespace HealthGateway.WebClient.Models
         public string? InvitationEndpoint { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the connection state.
+        /// Gets or sets the connection status.
         /// </summary>
-        public WalletConnectionStatus State { get; set; }
+        public WalletConnectionStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the db record version.
@@ -109,7 +109,7 @@ namespace HealthGateway.WebClient.Models
                 Hdid = dbWalletConnection.UserProfileId,
                 ConnectedDate = dbWalletConnection.ConnectedDateTime,
                 DisconnectedDate = dbWalletConnection.DisconnectedDateTime,
-                State = dbWalletConnection.Status,
+                Status = dbWalletConnection.Status,
                 Version = dbWalletConnection.Version,
                 InvitationEndpoint = dbWalletConnection.InvitationEndpoint,
             };

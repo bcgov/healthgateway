@@ -104,27 +104,10 @@ namespace HealthGateway.WebClient.Controllers
         /// Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
         /// </summary>
         /// <param name="hdId">The users hdid.</param>
-        /// <param name="targetId">The target id of the immunization to create a credential for.</param>
-        /// <returns>Something.</returns>
-        [HttpPost]
-        [Route("{hdid}/Credential")]
-        [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult> CreateCredential(string hdId, [FromBody] string targetId)
-        {
-            this.logger.LogDebug($"Creating credential for user {hdId}");
-            RequestResult<WalletCredentialModel> result = await this.verifiableCredentialService.CreateCredentialAsync(hdId, targetId).ConfigureAwait(true);
-            this.logger.LogDebug($"Finished creating credential for user {hdId}: {JsonSerializer.Serialize(result)}");
-            return new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
-        /// </summary>
-        /// <param name="hdId">The users hdid.</param>
         /// <param name="targetIds">The target ids of the immunization to create a credential for.</param>
         /// <returns>Something.</returns>
         [HttpPost]
-        [Route("{hdid}/Credential")]
+        [Route("{hdid}/Credentials")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<ActionResult> CreateCredentials(string hdId, [FromBody] IEnumerable<string> targetIds)
         {

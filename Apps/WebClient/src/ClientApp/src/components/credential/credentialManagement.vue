@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
-import { ImmunizationEvent } from "@/models/immunizationModel";
+import { ConnectionStatus, WalletConnection } from "@/models/wallet";
 
 import CredentialCollectionCard from "./credentialCollectionCard.vue";
 import CredentialList from "./credentialList.vue";
@@ -15,11 +15,11 @@ import CredentialList from "./credentialList.vue";
     },
 })
 export default class CredentialManagementView extends Vue {
-    @Getter("covidImmunizations", { namespace: "immunization" })
-    covidImmunizations!: ImmunizationEvent[];
+    @Getter("connection", { namespace: "credential" })
+    connection!: WalletConnection | undefined;
 
-    private get pendingCredentials(): string[] {
-        return this.covidImmunizations.map((i) => i.id);
+    private get isConnectionConnected(): boolean {
+        return this.connection?.status === ConnectionStatus.Connected;
     }
 }
 </script>
@@ -27,30 +27,8 @@ export default class CredentialManagementView extends Vue {
 <template>
     <div>
         <page-title title="Credentials" />
-        <b-row>
-            <b-col lg="4">
-                <p>
-                    In efforts to provide British Columbians with required
-                    credentials by sd0ejlkfs, you can access your
-                    <strong>covid immunization and tests</strong> here and store
-                    them in a digital wallet to use as proof if required.
-                </p>
-                <p>
-                    A <strong>smart phone or tablet</strong> is required to
-                    securely complete this process and store your credentials.
-                </p>
-                <p>
-                    If you have any questions please
-                    <strong>contact us</strong> at email@email.com
-                </p>
-            </b-col>
-            <b-col lg="8">
-                <credential-collection-card
-                    :pending-credentials="pendingCredentials"
-                />
-            </b-col>
-        </b-row>
-        <credential-list />
+        <credential-collection-card />
+        <credential-list v-if="isConnectionConnected" class="mt-3" />
     </div>
 </template>
 

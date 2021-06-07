@@ -26,7 +26,7 @@ namespace HealthGateway.WebClient.Models.AcaPy
         /// <summary>
         /// Gets or sets the CredentialExchangeId.
         /// </summary>
-        [JsonPropertyName("cred_ex_id")]
+        [JsonPropertyName("credential_exchange_id")]
         public Guid CredentialExchangeId { get; set; }
 
         /// <summary>
@@ -46,5 +46,17 @@ namespace HealthGateway.WebClient.Models.AcaPy
         /// </summary>
         [JsonPropertyName("connection_id")]
         public Guid ConnectionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the revocation registry id.
+        /// </summary>
+        [JsonPropertyName("revoc_reg_id")]
+        public string RevocationRegistryId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the revocation id.
+        /// </summary>
+        [JsonPropertyName("revocation_id")]
+        public string RevocationId { get; set; } = string.Empty;
     }
 }

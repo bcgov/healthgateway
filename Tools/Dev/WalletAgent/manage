@@ -175,6 +175,7 @@ configureEnvironment() {
   export DEBUG=${DEBUG}
   export LOG_LEVEL=${LOG_LEVEL:-"DEBUG"}
   export LEDGER_URL=${LEDGER_URL:-"http://test.bcovrin.vonx.io"}
+  export TAILS_SERVER_URL=${TAILS_SERVER_URL:-"https://tails-dev.vonx.io"}
 
   # wallet
   export WALLET_HOST="wallet"

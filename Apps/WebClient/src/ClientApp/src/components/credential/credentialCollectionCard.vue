@@ -1,14 +1,14 @@
 <script lang="ts">
 import QRCode from "qrcode";
 import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import User from "@/models/user";
 import {
-    ConnectionState,
-    CredentialState,
+    ConnectionStatus,
+    CredentialStatus,
     WalletConnection,
     WalletCredential,
 } from "@/models/wallet";
@@ -22,8 +22,6 @@ import { ILogger } from "@/services/interfaces";
     },
 })
 export default class CredentialCollectionCard extends Vue {
-    @Prop({ required: true }) pendingCredentials!: string[];
-
     @Getter("user", { namespace: "user" })
     private user!: User;
 
@@ -36,8 +34,8 @@ export default class CredentialCollectionCard extends Vue {
     @Action("createConnection", { namespace: "credential" })
     createConnection!: (params: { hdid: string }) => Promise<boolean>;
 
-    @Action("retrieveCredentials", { namespace: "credential" })
-    retrieveCredentials!: (params: { hdid: string }) => Promise<boolean>;
+    @Action("retrieveConnection", { namespace: "credential" })
+    retrieveConnection!: (params: { hdid: string }) => Promise<boolean>;
 
     @Watch("connection")
     private updateQrCode(): void {
@@ -55,55 +53,60 @@ export default class CredentialCollectionCard extends Vue {
         });
     }
 
-    private get createdCredentials(): WalletCredential[] {
-        return this.credentials.filter(
-            (c) => c.status === CredentialState.Created
-        );
-    }
-
     private get addedCredentials(): WalletCredential[] {
         return this.credentials.filter(
-            (c) => c.status === CredentialState.Added
+            (c) => c.status === CredentialStatus.Added
         );
     }
 
     private get connectionStatusLabel(): string {
-        if (this.connection === undefined) {
+        if (this.connection === undefined || this.connection === null) {
             return "Not Connected";
         }
-        switch (this.connection.state) {
-            case ConnectionState.Pending:
+        switch (this.connection.status) {
+            case ConnectionStatus.Pending:
                 return "Pending";
-            case ConnectionState.Connected:
+            case ConnectionStatus.Connected:
                 return "Connected";
-            case ConnectionState.Disconnected:
-                return "Not Connected";
+            case ConnectionStatus.Disconnected:
+                return "Disconnected";
             default:
                 return "Unknown";
         }
     }
 
     private get connectionStatusVariant(): string | undefined {
-        if (this.connection?.state === ConnectionState.Connected) {
+        if (this.connection?.status === ConnectionStatus.Connected) {
             return "success";
         }
         return undefined;
     }
 
     private get isConnectionUndefined(): boolean {
-        return this.connection === undefined;
+        return this.connection === undefined || this.connection === null;
     }
 
     private get isConnectionPending(): boolean {
-        return this.connection?.state === ConnectionState.Pending;
+        return this.connection?.status === ConnectionStatus.Pending;
     }
 
     private get isConnectionConnected(): boolean {
-        return this.connection?.state === ConnectionState.Connected;
+        return this.connection?.status === ConnectionStatus.Connected;
     }
 
     private get isConnectionDisconnected(): boolean {
-        return this.connection?.state === ConnectionState.Disconnected;
+        return this.connection?.status === ConnectionStatus.Disconnected;
+    }
+
+    private get mobileConnectUrl(): string | undefined {
+        if (this.isConnectionUndefined) {
+            return undefined;
+        } else {
+            return this.connection?.invitationEndpoint.replace(
+                "https:",
+                "didcomm:"
+            );
+        }
     }
 
     private logger!: ILogger;
@@ -112,16 +115,23 @@ export default class CredentialCollectionCard extends Vue {
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        this.updateQrCode();
     }
 
-    private createCredentials(): void {
+    private handleCreateConnection(): void {
         this.createConnection({
             hdid: this.user.hdid,
-        })
-            .then(() => this.retrieveCredentials({ hdid: this.user.hdid }))
-            .catch((err) => {
-                this.logger.error(`Error loading patient data: ${err}`);
-            });
+        }).catch((err) => {
+            this.logger.error(`Error creating connection: ${err}`);
+        });
+    }
+
+    private refreshConnection(): void {
+        this.retrieveConnection({
+            hdid: this.user.hdid,
+        }).catch((err) => {
+            this.logger.error(`Error retrieving connection: ${err}`);
+        });
     }
 }
 </script>
@@ -129,134 +139,75 @@ export default class CredentialCollectionCard extends Vue {
 <template>
     <div>
         <b-card>
-            <b-card-body>
-                <b-card-title>Credential Collection</b-card-title>
-                <b-card-sub-title class="mb-4">
-                    <status-label
-                        heading="Connection Status"
-                        :variant="connectionStatusVariant"
-                        :status="connectionStatusLabel"
-                        data-testid="connectionStatusLabel"
-                    />
-                </b-card-sub-title>
-                <b-card-text>
-                    <b-row>
-                        <b-col md="6">
-                            <h5>How can I use this?</h5>
-                            <p>
-                                1-Porttitor facilisi quis in pulvinar.
-                                Suspendisse donec lorem sed tortor gravida
-                                imperdiet
-                            </p>
-                            <p>
-                                2-auctor facilisis nunc. Vel lectus sit viverra
-                                turpis tristique. Quis eu, a sit mattis ipsum,
-                                lectus facilisis habitasse lorem.
-                            </p>
-                        </b-col>
-                        <b-col md="6">
-                            <b-card class="bg-light">
-                                <b-card-text>
-                                    <div
-                                        v-if="
-                                            isConnectionUndefined ||
-                                            isConnectionDisconnected
-                                        "
-                                    >
-                                        <b-row class="align-items-center">
-                                            <b-col
-                                                cols="6"
-                                                md="12"
-                                                class="text-center pb-md-3"
-                                            >
-                                                <h5
-                                                    data-testid="pendingCredentialsCount"
-                                                >
-                                                    {{
-                                                        pendingCredentials.length
-                                                    }}
-                                                </h5>
-                                                <div>Records Queued</div>
-                                            </b-col>
-                                            <b-col cols="6" md="12">
-                                                <hg-button
-                                                    variant="primary"
-                                                    data-testid="createCredentialsButton"
-                                                    block
-                                                    :disabled="
-                                                        pendingCredentials.length ===
-                                                        0
-                                                    "
-                                                    @click="createCredentials"
-                                                >
-                                                    Create Credentials
-                                                </hg-button>
-                                            </b-col>
-                                        </b-row>
-                                    </div>
-                                    <div v-else-if="isConnectionPending">
-                                        <hg-button
-                                            variant="primary"
-                                            data-testid="mobileConnectCredentialsButton"
-                                            href="connection.invitationEndpoint"
-                                            block
-                                            :disabled="
-                                                connection.invitationEndpoint ===
-                                                null
-                                            "
-                                        >
-                                            Connect
-                                        </hg-button>
-                                        <img
-                                            v-if="qrCodeDataUrl !== null"
-                                            :src="qrCodeDataUrl"
-                                            data-testid="qrCodeImage"
-                                            class="
-                                                d-none d-md-block
-                                                mt-3
-                                                mx-auto
-                                                img-fluid
-                                            "
-                                        />
-                                    </div>
-                                    <div v-else-if="isConnectionConnected">
-                                        <b-row class="align-items-center">
-                                            <b-col
-                                                cols="6"
-                                                md="12"
-                                                class="text-center pb-md-3"
-                                            >
-                                                <h5
-                                                    data-testid="createdCredentialsCount"
-                                                >
-                                                    {{
-                                                        createdCredentials.length
-                                                    }}
-                                                </h5>
-                                                <div>Created</div>
-                                            </b-col>
-                                            <b-col
-                                                cols="6"
-                                                md="12"
-                                                class="text-center text-success"
-                                            >
-                                                <h5
-                                                    data-testid="addedCredentialsCount"
-                                                >
-                                                    {{
-                                                        addedCredentials.length
-                                                    }}
-                                                </h5>
-                                                <div>In Wallet</div>
-                                            </b-col>
-                                        </b-row>
-                                    </div>
-                                </b-card-text>
-                            </b-card>
-                        </b-col>
-                    </b-row>
-                </b-card-text>
-            </b-card-body>
+            <b-card-title>Wallet Connection</b-card-title>
+            <b-card-text>
+                <status-label
+                    heading="Connection Status"
+                    :variant="connectionStatusVariant"
+                    :status="connectionStatusLabel"
+                    data-testid="connectionStatusLabel"
+                />
+                <div v-if="isConnectionConnected" class="mt-2 text-muted">
+                    Credentials in Wallet: {{ addedCredentials.length }}
+                </div>
+                <div
+                    v-else-if="isConnectionPending"
+                    class="mx-auto mt-3 text-center"
+                >
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            If you're on a mobile device, click this link to
+                            initiate the connection in your wallet app:
+                        </div>
+                        <hg-button
+                            variant="link"
+                            data-testid="mobileConnectButton"
+                            :href="mobileConnectUrl"
+                            :disabled="mobileConnectUrl === undefined"
+                            class="mb-3"
+                        >
+                            Connect
+                        </hg-button>
+                    </div>
+                    <div class="d-none d-md-block mb-3">
+                        <div class="mb-3">
+                            Otherwise, open the wallet app on your mobile device
+                            and scan this QR code:
+                        </div>
+                        <img
+                            v-if="qrCodeDataUrl !== null"
+                            :src="qrCodeDataUrl"
+                            data-testid="qrCodeImage"
+                            class="mb-3"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        In the wallet app, you should see a connection request
+                        from Health Gateway. Accept the request to establish the
+                        connection, then click the button below.
+                    </div>
+                </div>
+            </b-card-text>
+            <template v-if="!isConnectionConnected" #footer>
+                <div class="text-center">
+                    <hg-button
+                        v-if="isConnectionUndefined || isConnectionDisconnected"
+                        variant="primary"
+                        data-testid="createConnectionButton"
+                        @click="handleCreateConnection"
+                    >
+                        Create Connection
+                    </hg-button>
+                    <hg-button
+                        v-if="isConnectionPending"
+                        variant="primary"
+                        data-testid="confirmConnectionEstablishedButton"
+                        @click="refreshConnection"
+                    >
+                        Continue
+                    </hg-button>
+                </div>
+            </template>
         </b-card>
     </div>
 </template>

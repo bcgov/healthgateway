@@ -47,11 +47,8 @@ export default class CredentialsView extends Vue {
     @Action("retrieveConnection", { namespace: "credential" })
     retrieveConnection!: (params: { hdid: string }) => Promise<boolean>;
 
-    @Action("retrieveCredentials", { namespace: "credential" })
-    retrieveCredentials!: (params: { hdid: string }) => Promise<boolean>;
-
     private get hasCredentialConnection(): boolean {
-        return this.connection !== undefined;
+        return this.connection !== undefined && this.connection !== null;
     }
 
     private get hasCovidImmunizations(): boolean {
@@ -76,7 +73,6 @@ export default class CredentialsView extends Vue {
         Promise.all([
             this.retrieveImmunizations({ hdid: this.user.hdid }),
             this.retrieveConnection({ hdid: this.user.hdid }),
-            this.retrieveCredentials({ hdid: this.user.hdid }),
         ]).catch((err) => {
             this.logger.error(`Error loading credential data: ${err}`);
         });

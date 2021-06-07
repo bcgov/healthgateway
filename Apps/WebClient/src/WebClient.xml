@@ -456,14 +456,6 @@
             <param name="connectionId">The connection Id belonging to the user to disconnect.</param>
             <returns>Something.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateCredential(System.String,System.String)">
-            <summary>
-            Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
-            </summary>
-            <param name="hdId">The users hdid.</param>
-            <param name="targetId">The target id of the immunization to create a credential for.</param>
-            <returns>Something.</returns>
-        </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateCredentials(System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Updates the Health Gateway Wallet Credential and revokes the credential with the Agent.
@@ -1338,9 +1330,9 @@
             Gets or sets the QR code data.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.State">
+        <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.Status">
             <summary>
-            Gets or sets the connection state.
+            Gets or sets the connection status.
             </summary>
         </member>
         <member name="P:HealthGateway.WebClient.Models.WalletConnectionModel.Version">
@@ -1400,9 +1392,9 @@
             Gets or sets the disconnection date.
             </summary>
         </member>
-        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.State">
+        <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.Status">
             <summary>
-            Gets or sets the connection state.
+            Gets or sets the connection status.
             </summary>
         </member>
         <member name="P:HealthGateway.WebClient.Models.WalletCredentialModel.Version">

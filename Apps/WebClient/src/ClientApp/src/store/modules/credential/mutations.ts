@@ -10,8 +10,11 @@ export const mutations: CredentialMutation = {
     setConnection(state: CredentialState, connection: WalletConnection): void {
         state.connection = connection;
     },
-    addCredential(state: CredentialState, credential: WalletCredential): void {
-        state.connection?.credentials.push(credential);
+    addCredentials(
+        state: CredentialState,
+        credentials: WalletCredential[]
+    ): void {
+        credentials.forEach((c) => state.connection?.credentials.push(c));
     },
     removeCredential(
         state: CredentialState,
