@@ -20,6 +20,7 @@ const credentialActions: CredentialActions = {
     createConnection: voidPromise,
     retrieveConnection: voidPromise,
     createCredential: voidPromise,
+    revokeCredential: voidPromise,
     handleError: voidPromise,
 };
 

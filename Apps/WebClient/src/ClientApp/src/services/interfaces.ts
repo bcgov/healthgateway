@@ -196,6 +196,10 @@ export interface ICredentialService {
         hdid: string,
         targetIds: string[]
     ): Promise<WalletCredential>;
+    revokeCredential(
+        hdid: string,
+        credentialId: string
+    ): Promise<WalletCredential>;
 }
 
 export interface ILogger {

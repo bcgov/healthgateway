@@ -66,6 +66,28 @@ export const actions: CredentialActions = {
                 });
         });
     },
+    revokeCredential(
+        context,
+        params: { hdid: string; credentialId: string }
+    ): Promise<boolean> {
+        const credentialService: ICredentialService =
+            container.get<ICredentialService>(
+                SERVICE_IDENTIFIER.CredentialService
+            );
+        return new Promise((resolve, reject) => {
+            context.commit("setRequested");
+            credentialService
+                .revokeCredential(params.hdid, params.credentialId)
+                .then((result) => {
+                    context.commit("removeCredential", result);
+                    resolve(true);
+                })
+                .catch((error) => {
+                    context.dispatch("handleError", error);
+                    reject(error);
+                });
+        });
+    },
     handleError(context, error: ResultError) {
         const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         logger.error(`ERROR: ${JSON.stringify(error)}`);
