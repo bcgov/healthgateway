@@ -98,6 +98,17 @@ export default class CredentialCollectionCard extends Vue {
         return this.connection?.status === ConnectionStatus.Disconnected;
     }
 
+    private get mobileConnectUrl(): string | undefined {
+        if (this.isConnectionUndefined) {
+            return undefined;
+        } else {
+            return this.connection?.invitationEndpoint.replace(
+                "https:",
+                "didcomm:"
+            );
+        }
+    }
+
     private logger!: ILogger;
 
     private qrCodeDataUrl: string | null = null;
@@ -150,9 +161,9 @@ export default class CredentialCollectionCard extends Vue {
                         </div>
                         <hg-button
                             variant="link"
-                            data-testid="mobileConnectCredentialsButton"
-                            :href="connection.invitationEndpoint"
-                            :disabled="connection.invitationEndpoint === null"
+                            data-testid="mobileConnectButton"
+                            :href="mobileConnectUrl"
+                            :disabled="mobileConnectUrl === undefined"
                             class="mb-3"
                         >
                             Connect
