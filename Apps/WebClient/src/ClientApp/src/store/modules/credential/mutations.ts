@@ -13,6 +13,20 @@ export const mutations: CredentialMutation = {
     addCredential(state: CredentialState, credential: WalletCredential): void {
         state.connection?.credentials.push(credential);
     },
+    removeCredential(
+        state: CredentialState,
+        credential: WalletCredential
+    ): void {
+        if (state.connection !== undefined) {
+            const credentialIndex = state.connection.credentials.findIndex(
+                (x) => x.credentialId === credential.credentialId
+            );
+            if (credentialIndex > -1) {
+                delete state.connection.credentials[credentialIndex];
+                state.connection.credentials.splice(credentialIndex, 1);
+            }
+        }
+    },
     credentialError(state: CredentialState, errorMessage: string): void {
         state.error = true;
         state.statusMessage = errorMessage;

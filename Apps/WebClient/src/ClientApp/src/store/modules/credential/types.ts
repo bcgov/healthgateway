@@ -39,6 +39,10 @@ export interface CredentialActions
         context: CredentialContext,
         params: { hdid: string; targetId: string }
     ): Promise<boolean>;
+    revokeCredential(
+        context: CredentialContext,
+        params: { hdid: string; credentialId: string }
+    ): Promise<boolean>;
     handleError(context: CredentialContext, error: ResultError): void;
 }
 

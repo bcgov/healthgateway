@@ -128,4 +128,38 @@ export class RestCredentialService implements ICredentialService {
                 });
         });
     }
+
+    public revokeCredential(
+        hdid: string,
+        credentialId: string
+    ): Promise<WalletCredential> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            this.http
+                .delete<RequestResult<WalletCredential>>(
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Credential/${credentialId}`
+                )
+                .then((requestResult) => {
+                    this.logger.debug(`revokeCredential ${requestResult}`);
+                    RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(`revokeCredential error: ${err}`);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
 }
