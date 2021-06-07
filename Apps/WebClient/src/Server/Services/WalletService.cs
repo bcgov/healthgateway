@@ -247,8 +247,6 @@ namespace HealthGateway.WebClient.Services
                 WalletCredential walletCredential = new WalletCredential()
                 {
                     ExchangeId = walletIssuerCredentialResult.ResourcePayload!.ExchangeId,
-                    RevocationId = walletIssuerCredentialResult.ResourcePayload!.RevocationId,
-                    RevocationRegistryId = walletIssuerCredentialResult.ResourcePayload!.RevocationRegistryId,
                     ResourceId = targetId,
                     ResourceType = ImmunizationResourceType,
                     WalletConnectionId = walletConnectionResult.Payload.Id,

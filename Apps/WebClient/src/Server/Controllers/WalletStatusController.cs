@@ -118,6 +118,7 @@ namespace HealthGateway.WebClient.Controllers
                 case CredentialExchangeState.OfferSent:
                     break;
                 case CredentialExchangeState.RequestReceived:
+                    this.walletStatusService.UpdateWalletCredential(data.CredentialExchangeId, data.RevocationId, data.RevocationRegistryId);
                     break;
                 case CredentialExchangeState.CredentialIssued:
                     this.walletStatusService.UpdateWalletCredentialStatus(data.CredentialExchangeId, Database.Constants.WalletCredentialStatus.Added);
