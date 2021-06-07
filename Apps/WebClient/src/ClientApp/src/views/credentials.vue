@@ -48,7 +48,7 @@ export default class CredentialsView extends Vue {
     retrieveConnection!: (params: { hdid: string }) => Promise<boolean>;
 
     private get hasCredentialConnection(): boolean {
-        return this.connection !== undefined;
+        return this.connection !== undefined && this.connection !== null;
     }
 
     private get hasCovidImmunizations(): boolean {
