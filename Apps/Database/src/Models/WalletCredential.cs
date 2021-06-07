@@ -85,13 +85,11 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the revocation id from the agent.
         /// </summary>
-        [Required]
-        public string RevocationId { get; set; } = string.Empty;
+        public string? RevocationId { get; set; }
 
         /// <summary>
         /// Gets or sets the revocation registry id from the agent.
         /// </summary>
-        [Required]
-        public string RevocationRegistryId { get; set; } = string.Empty;
+        public string? RevocationRegistryId { get; set; }
     }
 }

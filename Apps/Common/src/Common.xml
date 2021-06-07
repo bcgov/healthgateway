@@ -2080,16 +2080,6 @@
             Gets or sets the credential exchange id.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialResponse.RevocationRegistryId">
-            <summary>
-            Gets or sets the revocation registry id.
-            </summary>
-        </member>
-        <member name="P:HealthGateway.Common.Models.AcaPy.CredentialResponse.RevocationId">
-            <summary>
-            Gets or sets the revocation id.
-            </summary>
-        </member>
         <member name="T:HealthGateway.Common.Models.AcaPy.ImmunizationCredentialPayload">
             <summary>
             A verifiable credential Payload for an Immunization record.
