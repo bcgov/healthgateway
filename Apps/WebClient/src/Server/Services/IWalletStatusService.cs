@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
+    using HealthGateway.WebClient.Models.AcaPy;
 
     /// <summary>
     /// Service to interact with the Comment Delegate.
@@ -36,18 +37,8 @@ namespace HealthGateway.WebClient.Services
         /// <summary>
         /// Updates the state of the Wallet Credential using the exchange id.
         /// </summary>
-        /// <param name="exchangeId">The exchange id to query the wallet credential.</param>
-        /// <param name="state">The wallet credential state to update.</param>
+        /// <param name="agentData">The data received from the agent to update.</param>
         /// <returns>The updated WalletCredential wrapped in a RequestResult.</returns>
-        RequestResult<WalletCredential> UpdateWalletCredentialStatus(Guid exchangeId, WalletCredentialStatus state);
-
-        /// <summary>
-        /// Updates the Wallet Credential using the exchange id.
-        /// </summary>
-        /// <param name="exchangeId">The exchange id to query the wallet credential.</param>
-        /// <param name="revocationId">The wallet revocation id to update.</param>
-        /// <param name="revocationRegistryId">The revocation registry id to update.</param>
-        /// <returns>The updated WalletCredential wrapped in a RequestResult.</returns>
-        RequestResult<WalletCredential> UpdateWalletCredential(Guid exchangeId, string revocationId, string revocationRegistryId);
+        RequestResult<WalletCredential> UpdateIssuedCredential(WebhookData agentData);
     }
 }

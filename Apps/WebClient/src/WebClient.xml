@@ -582,6 +582,16 @@
             Gets or sets the alias.
             </summary>
         </member>
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.WebhookData.RevocationRegistryId">
+            <summary>
+            Gets or sets the revocation registry id.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.WebClient.Models.AcaPy.WebhookData.RevocationId">
+            <summary>
+            Gets or sets the revocation id.
+            </summary>
+        </member>
         <member name="T:HealthGateway.WebClient.Models.AcaPy.WebhookTopic">
             <summary>
             Represents the Topic from the webhook.
@@ -1926,12 +1936,11 @@
             <param name="state">The wallet connection state to update.</param>
             <returns>The updated WalletConnection wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateWalletCredentialStatus(System.Guid,HealthGateway.Database.Constants.WalletCredentialStatus)">
+        <member name="M:HealthGateway.WebClient.Services.IWalletStatusService.UpdateIssuedCredential(HealthGateway.WebClient.Models.AcaPy.WebhookData)">
             <summary>
             Updates the state of the Wallet Credential using the exchange id.
             </summary>
-            <param name="exchangeId">The exchange id to query the wallet credential.</param>
-            <param name="state">The wallet credential state to update.</param>
+            <param name="agentData">The data received from the agent to update.</param>
             <returns>The updated WalletCredential wrapped in a RequestResult.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.NoteService">
@@ -2126,7 +2135,7 @@
         <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletConnectionStatus(System.Guid,HealthGateway.Database.Constants.WalletConnectionStatus)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateWalletCredentialStatus(System.Guid,HealthGateway.Database.Constants.WalletCredentialStatus)">
+        <member name="M:HealthGateway.WebClient.Services.WalletStatusService.UpdateIssuedCredential(HealthGateway.WebClient.Models.AcaPy.WebhookData)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Startup">

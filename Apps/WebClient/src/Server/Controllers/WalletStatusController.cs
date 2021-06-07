@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Controllers
     using System.Text.Json;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Filters;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models.AcaPy;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Authorization;
@@ -118,10 +119,9 @@ namespace HealthGateway.WebClient.Controllers
                 case CredentialExchangeState.OfferSent:
                     break;
                 case CredentialExchangeState.RequestReceived:
-                    this.walletStatusService.UpdateWalletCredential(data.CredentialExchangeId, data.RevocationId, data.RevocationRegistryId);
                     break;
                 case CredentialExchangeState.CredentialIssued:
-                    this.walletStatusService.UpdateWalletCredentialStatus(data.CredentialExchangeId, Database.Constants.WalletCredentialStatus.Added);
+                    this.walletStatusService.UpdateIssuedCredential(data);
                     break;
                 default:
                     this.logger.LogError("Credential exchange state {state} is not supported", data.State);

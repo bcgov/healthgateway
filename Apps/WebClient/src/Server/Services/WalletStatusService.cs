@@ -22,6 +22,7 @@ namespace HealthGateway.WebClient.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.WebClient.Models.AcaPy;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc />
@@ -86,20 +87,22 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<WalletCredential> UpdateWalletCredentialStatus(Guid exchangeId, WalletCredentialStatus state)
+        public RequestResult<WalletCredential> UpdateIssuedCredential(WebhookData agentData)
         {
             RequestResult<WalletCredential> result = new ()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
 
-            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialByExchangeId(exchangeId);
+            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialByExchangeId(agentData.CredentialExchangeId);
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletCredential credential = dbResult.Payload;
                 result.ResourcePayload = credential;
                 credential.AddedDateTime = DateTime.UtcNow;
-                credential.Status = state;
+                credential.Status = WalletCredentialStatus.Added;
+                credential.RevocationId = agentData.RevocationId;
+                credential.RevocationRegistryId = agentData.RevocationRegistryId;
                 DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential);
                 if (updateResult.Status == DBStatusCode.Updated)
                 {
@@ -108,49 +111,13 @@ namespace HealthGateway.WebClient.Services
                 }
                 else
                 {
-                    this.logger.LogWarning($"Unable to update wallet credential using exchange id: {exchangeId}");
+                    this.logger.LogWarning($"Unable to update wallet credential using exchange id: {agentData.CredentialExchangeId}");
                     result.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
                 }
             }
             else
             {
-                this.logger.LogWarning($"Unable to find wallet credential using exchange id: {exchangeId}");
-                result.ResultError = new RequestResultError() { ResultMessage = "Unable to find Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
-            }
-
-            return result;
-        }
-
-        /// <inheritdoc />
-        public RequestResult<WalletCredential> UpdateWalletCredential(Guid exchangeId, string revocationId, string revocationRegistryId)
-        {
-            RequestResult<WalletCredential> result = new ()
-            {
-                ResultStatus = Common.Constants.ResultType.Error,
-            };
-
-            DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialByExchangeId(exchangeId);
-            if (dbResult.Status == DBStatusCode.Read)
-            {
-                WalletCredential credential = dbResult.Payload;
-                result.ResourcePayload = credential;
-                credential.RevocationId = revocationId;
-                credential.RevocationRegistryId = revocationRegistryId;
-                DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential);
-                if (updateResult.Status == DBStatusCode.Updated)
-                {
-                    result.ResultStatus = Common.Constants.ResultType.Success;
-                    result.TotalResultCount = 1;
-                }
-                else
-                {
-                    this.logger.LogWarning($"Unable to update wallet credential using exchange id: {exchangeId}");
-                    result.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
-                }
-            }
-            else
-            {
-                this.logger.LogWarning($"Unable to find wallet credential using exchange id: {exchangeId}");
+                this.logger.LogWarning($"Unable to find wallet credential using exchange id: {agentData.CredentialExchangeId}");
                 result.ResultError = new RequestResultError() { ResultMessage = "Unable to find Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
             }
 
