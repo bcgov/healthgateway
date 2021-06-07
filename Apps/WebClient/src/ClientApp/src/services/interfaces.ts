@@ -193,6 +193,10 @@ export interface ICredentialService {
     getConnection(hdid: string): Promise<WalletConnection>;
     createConnection(hdid: string): Promise<WalletConnection>;
     createCredential(hdid: string, targetId: string): Promise<WalletCredential>;
+    revokeCredential(
+        hdid: string,
+        credentialId: string
+    ): Promise<WalletCredential>;
 }
 
 export interface ILogger {
