@@ -106,7 +106,11 @@ export default class CredentialList extends Vue {
     }
 
     private isMenuDisabled(credential: WalletCredential): boolean {
-        return credential.status !== CredentialStatus.Created || this.isLoading;
+        return (
+            (credential.status !== CredentialStatus.Created &&
+                credential.status !== CredentialStatus.Added) ||
+            this.isLoading
+        );
     }
 
     private handleCreateCredential(targetId: string): void {
