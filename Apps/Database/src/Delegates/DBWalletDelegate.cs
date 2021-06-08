@@ -114,6 +114,7 @@ namespace HealthGateway.Database.Delegates
             WalletCredential? credential = this.dbContext.WalletCredential
                                     .Where(p => p.Id == credentialId &&
                                                 p.WalletConnection.UserProfileId == userProfileId)
+                                    .Include(p => p.WalletConnection)
                                     .FirstOrDefault();
             if (credential != null)
             {
