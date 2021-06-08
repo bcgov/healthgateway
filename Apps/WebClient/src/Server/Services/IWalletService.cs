@@ -19,6 +19,7 @@ namespace HealthGateway.WebClient.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
 
     /// <summary>
@@ -72,11 +73,18 @@ namespace HealthGateway.WebClient.Services
         Task<RequestResult<WalletConnectionModel>> DisconnectConnection(Guid connectionId, string hdId);
 
         /// <summary>
-        /// Revokes the wallet identified wallet credentials.
+        /// Revokes the identified wallet credential if in created or added state.
         /// </summary>
         /// <param name="credentialId">The wallet credential id.</param>
         /// <param name="hdId">The user hdid.</param>
         /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
         Task<RequestResult<WalletCredentialModel>> RevokeCredential(Guid credentialId, string hdId);
+
+        /// <summary>
+        /// Revokes the identified wallet credential if in created or added state.
+        /// </summary>
+        /// <param name="credential">The wallet credential id.</param>
+        /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
+        Task<RequestResult<WalletCredentialModel>> RevokeCredential(WalletCredential credential);
     }
 }

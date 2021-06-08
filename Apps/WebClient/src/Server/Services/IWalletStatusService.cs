@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
@@ -39,6 +40,6 @@ namespace HealthGateway.WebClient.Services
         /// </summary>
         /// <param name="agentData">The data received from the agent to update.</param>
         /// <returns>The updated WalletCredential wrapped in a RequestResult.</returns>
-        RequestResult<WalletCredential> UpdateIssuedCredential(WebhookData agentData);
+        Task<RequestResult<WalletCredential>> UpdateIssuedCredential(WebhookData agentData);
     }
 }
