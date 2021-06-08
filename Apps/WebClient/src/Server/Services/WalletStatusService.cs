@@ -108,9 +108,10 @@ namespace HealthGateway.WebClient.Services
                 credential.RevocationRegistryId = agentData.RevocationRegistryId;
                 if (credential.Status == WalletCredentialStatus.Revoked)
                 {
-                   var result = await this.walletAgentService.RevokeCredential(credential).ConfigureAwait(true);
-                   retVal.ResultStatus = result.ResultStatus;
-                   retVal.ResultError = result.ResultError;
+                    var result = await this.walletAgentService.RevokeCredential(credential).ConfigureAwait(true);
+                    retVal.ResourcePayload = credential;
+                    retVal.ResultStatus = result.ResultStatus;
+                    retVal.ResultError = result.ResultError;
                 }
                 else
                 {
