@@ -328,46 +328,72 @@ namespace HealthGateway.WebClient.Services
         /// <inheritdoc/>
         public async Task<RequestResult<WalletCredentialModel>> RevokeCredential(Guid credentialId, string hdId)
         {
-            RequestResult<WalletCredentialModel> retVal = new ()
-            {
-                ResultStatus = ResultType.Error,
-            };
+            RequestResult<WalletCredentialModel> retVal;
 
             this.logger.LogDebug($"Getting wallet credential from database. credentialid: {credentialId}");
             DBResult<WalletCredential> dbResult = this.walletDelegate.GetCredentialById(credentialId, hdId);
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletCredential credential = dbResult.Payload;
-                RequestResult<WalletCredential> revokeRequest = await this.walletIssuerDelegate.RevokeCredentialAsync(credential, RevokeReason).ConfigureAwait(true);
-                if (revokeRequest.ResultStatus == ResultType.Success)
-                {
-                    credential.Status = WalletCredentialStatus.Revoked;
-                    credential.RevokedDateTime = DateTime.UtcNow;
-                    DBResult<WalletCredential> dbUpdate = this.walletDelegate.UpdateCredential(credential);
-                    if (dbUpdate.Status == DBStatusCode.Updated)
-                    {
-                        retVal.ResultStatus = ResultType.Success;
-                        retVal.ResourcePayload = WalletCredentialModel.CreateFromDbModel(dbUpdate.Payload);
-                    }
-                    else
-                    {
-                        retVal.ResultError = new ()
-                        {
-                            ResultMessage = dbUpdate.Message,
-                        };
-                    }
-                }
+                retVal = await this.RevokeCredential(credential).ConfigureAwait(true);
             }
             else
             {
                 this.logger.LogDebug($"Error getting wallet credential from database. {JsonSerializer.Serialize(dbResult)}");
-                retVal.ResultError = new ()
+                retVal = new ()
                 {
-                    ResultMessage = "Error retrieving wallet credential from database",
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error retrieving wallet credential from database",
+                    },
                 };
             }
 
             return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResult<WalletCredentialModel>> RevokeCredential(WalletCredential credential)
+        {
+            RequestResult<WalletCredentialModel> retVal = new ()
+            {
+                ResultStatus = ResultType.Error,
+            };
+
+            if (credential.Status == WalletCredentialStatus.Added)
+            {
+                RequestResult<WalletCredential> revokeRequest = await this.walletIssuerDelegate.RevokeCredentialAsync(credential, RevokeReason).ConfigureAwait(true);
+                if (revokeRequest.ResultStatus == ResultType.Success)
+                {
+                    this.RevokeDbCredential(credential, retVal);
+                }
+            }
+            else
+            {
+                this.RevokeDbCredential(credential, retVal);
+            }
+
+            return retVal;
+        }
+
+        private void RevokeDbCredential(WalletCredential credential, RequestResult<WalletCredentialModel> result)
+        {
+            credential.Status = WalletCredentialStatus.Revoked;
+            credential.RevokedDateTime = DateTime.UtcNow;
+            DBResult<WalletCredential> dbUpdate = this.walletDelegate.UpdateCredential(credential);
+            if (dbUpdate.Status == DBStatusCode.Updated)
+            {
+                result.ResultStatus = ResultType.Success;
+                result.ResourcePayload = WalletCredentialModel.CreateFromDbModel(dbUpdate.Payload);
+            }
+            else
+            {
+                result.ResultError = new ()
+                {
+                    ResultMessage = dbUpdate.Message,
+                };
+            }
         }
     }
 }

@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Services
 {
     using System;
+    using System.Threading.Tasks;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
@@ -30,16 +31,19 @@ namespace HealthGateway.WebClient.Services
     {
         private readonly ILogger logger;
         private readonly IWalletDelegate walletDelegate;
+        private readonly IWalletService walletAgentService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WalletStatusService"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="walletDelegate">Injected Wallet delegate.</param>
-        public WalletStatusService(ILogger<WalletStatusService> logger, IWalletDelegate walletDelegate)
+        /// <param name="walletAgentService">The Wallet Agent Service for revocation purposes.</param>
+        public WalletStatusService(ILogger<WalletStatusService> logger, IWalletDelegate walletDelegate, IWalletService walletAgentService)
         {
             this.logger = logger;
             this.walletDelegate = walletDelegate;
+            this.walletAgentService = walletAgentService;
         }
 
         /// <inheritdoc />
@@ -87,9 +91,9 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc />
-        public RequestResult<WalletCredential> UpdateIssuedCredential(WebhookData agentData)
+        public async Task<RequestResult<WalletCredential>> UpdateIssuedCredential(WebhookData agentData)
         {
-            RequestResult<WalletCredential> result = new ()
+            RequestResult<WalletCredential> retVal = new ()
             {
                 ResultStatus = Common.Constants.ResultType.Error,
             };
@@ -98,30 +102,39 @@ namespace HealthGateway.WebClient.Services
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletCredential credential = dbResult.Payload;
-                result.ResourcePayload = credential;
+                retVal.ResourcePayload = credential;
                 credential.AddedDateTime = DateTime.UtcNow;
-                credential.Status = WalletCredentialStatus.Added;
                 credential.RevocationId = agentData.RevocationId;
                 credential.RevocationRegistryId = agentData.RevocationRegistryId;
-                DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential);
-                if (updateResult.Status == DBStatusCode.Updated)
+                if (credential.Status == WalletCredentialStatus.Revoked)
                 {
-                    result.ResultStatus = Common.Constants.ResultType.Success;
-                    result.TotalResultCount = 1;
+                   var result = await this.walletAgentService.RevokeCredential(credential).ConfigureAwait(true);
+                   retVal.ResultStatus = result.ResultStatus;
+                   retVal.ResultError = result.ResultError;
                 }
                 else
                 {
-                    this.logger.LogWarning($"Unable to update wallet credential using exchange id: {agentData.CredentialExchangeId}");
-                    result.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    credential.Status = WalletCredentialStatus.Added;
+                    DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential);
+                    if (updateResult.Status == DBStatusCode.Updated)
+                    {
+                        retVal.ResultStatus = Common.Constants.ResultType.Success;
+                        retVal.TotalResultCount = 1;
+                    }
+                    else
+                    {
+                        this.logger.LogWarning($"Unable to update wallet credential using exchange id: {agentData.CredentialExchangeId}");
+                        retVal.ResultError = new RequestResultError() { ResultMessage = "Error Updating Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                    }
                 }
             }
             else
             {
                 this.logger.LogWarning($"Unable to find wallet credential using exchange id: {agentData.CredentialExchangeId}");
-                result.ResultError = new RequestResultError() { ResultMessage = "Unable to find Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
+                retVal.ResultError = new RequestResultError() { ResultMessage = "Unable to find Wallet Credential", ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.WalletIssuer) };
             }
 
-            return result;
+            return retVal;
         }
     }
 }
