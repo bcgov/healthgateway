@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSyringe } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faSyringe } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -14,7 +14,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
 
-library.add(faSyringe);
+library.add(faSyringe, faEllipsisV);
 
 interface CredentialEntry {
     id: string;
@@ -37,11 +37,22 @@ export default class CredentialList extends Vue {
     @Getter("credentials", { namespace: "credential" })
     credentials!: WalletCredential[];
 
+    @Getter("isLoading", { namespace: "credential" })
+    isLoading!: boolean;
+
     @Action("createCredential", { namespace: "credential" })
     createCredential!: (params: {
         hdid: string;
         targetId: string;
     }) => Promise<boolean>;
+
+    @Action("revokeCredential", { namespace: "credential" })
+    revokeCredential!: (params: {
+        hdid: string;
+        credentialId: string;
+    }) => Promise<boolean>;
+
+    private logger!: ILogger;
 
     private get entries(): CredentialEntry[] {
         return this.covidImmunizations.map((i) => ({
@@ -53,8 +64,6 @@ export default class CredentialList extends Vue {
             ),
         }));
     }
-
-    private logger!: ILogger;
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -96,12 +105,25 @@ export default class CredentialList extends Vue {
         return credential?.status === CredentialStatus.Added;
     }
 
+    private isMenuDisabled(credential: WalletCredential): boolean {
+        return credential.status !== CredentialStatus.Created || this.isLoading;
+    }
+
     private handleCreateCredential(targetId: string): void {
         this.createCredential({
             hdid: this.user.hdid,
             targetId: targetId,
         }).catch((err) => {
             this.logger.error(`Error creating credential: ${err}`);
+        });
+    }
+
+    private handleRevokeCredential(credentialId: string): void {
+        this.revokeCredential({
+            hdid: this.user.hdid,
+            credentialId: credentialId,
+        }).catch((err) => {
+            this.logger.error(`Error revoking credential: ${err}`);
         });
     }
 }
@@ -189,6 +211,37 @@ export default class CredentialList extends Vue {
                             {{ statusLabel(entry.credential.status) }}
                         </strong>
                     </b-col>
+                    <b-col cols="auto" class="pl-3">
+                        <b-navbar-nav v-if="entry.credential !== undefined">
+                            <b-nav-item-dropdown
+                                right
+                                text=""
+                                :no-caret="true"
+                                :disabled="isMenuDisabled(entry.credential)"
+                            >
+                                <!-- Using 'button-content' slot -->
+                                <template slot="button-content">
+                                    <hg-icon
+                                        icon="ellipsis-v"
+                                        size="small"
+                                        data-testid="credentialMenuBtn"
+                                        class="credentialMenu"
+                                    />
+                                </template>
+                                <b-dropdown-item
+                                    data-testid="revokeCredentialMenuBtn"
+                                    class="menuItem"
+                                    @click.stop="
+                                        handleRevokeCredential(
+                                            entry.credential.credentialId
+                                        )
+                                    "
+                                >
+                                    Revoke
+                                </b-dropdown-item>
+                            </b-nav-item-dropdown>
+                        </b-navbar-nav>
+                    </b-col>
                 </b-row>
             </b-col>
         </b-row>
@@ -226,5 +279,9 @@ div[class*=" row"] {
     height: 60px;
     width: 60px;
     padding-top: 17px;
+}
+
+.credentialMenu {
+    color: $soft_text;
 }
 </style>

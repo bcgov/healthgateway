@@ -1,3 +1,4 @@
+import { LoadStatus } from "@/models/storeOperations";
 import { WalletConnection, WalletCredential } from "@/models/wallet";
 
 import { CredentialGetters, CredentialState } from "./types";
@@ -14,5 +15,8 @@ export const getters: CredentialGetters = {
         } else {
             return connection.credentials;
         }
+    },
+    isLoading(state: CredentialState): boolean {
+        return state.status === LoadStatus.REQUESTED;
     },
 };

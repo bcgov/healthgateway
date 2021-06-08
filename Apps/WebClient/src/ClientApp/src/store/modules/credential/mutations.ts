@@ -9,17 +9,20 @@ export const mutations: CredentialMutation = {
     },
     setConnection(state: CredentialState, connection: WalletConnection): void {
         state.connection = connection;
+        state.status = LoadStatus.LOADED;
     },
     addCredentials(
         state: CredentialState,
         credentials: WalletCredential[]
     ): void {
+        state.status = LoadStatus.LOADED;
         credentials.forEach((c) => state.connection?.credentials.push(c));
     },
     removeCredential(
         state: CredentialState,
         credential: WalletCredential
     ): void {
+        state.status = LoadStatus.LOADED;
         if (state.connection !== undefined) {
             const credentialIndex = state.connection.credentials.findIndex(
                 (x) => x.credentialId === credential.credentialId
