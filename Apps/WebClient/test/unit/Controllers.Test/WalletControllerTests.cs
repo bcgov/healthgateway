@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Test.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Models;
@@ -31,7 +32,7 @@ namespace HealthGateway.WebClient.Test.Controllers
     /// <summary>
     /// VerifiableCredentialController's Unit Tests.
     /// </summary>
-    public class VerifiableCredentialControllerTests
+    public class WalletControllerTests
     {
         private const string Hdid = "mockedHdId";
 
@@ -52,15 +53,52 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IWalletService> verifiableCredentialServiceMock = new Mock<IWalletService>();
-            verifiableCredentialServiceMock.Setup(s => s.CreateConnectionAsync(Hdid)).ReturnsAsync(expectedResult);
+            Mock<IWalletService> walletServiceMock = new Mock<IWalletService>();
+            walletServiceMock.Setup(s => s.CreateConnectionAsync(Hdid)).ReturnsAsync(expectedResult);
 
             WalletController controller = new WalletController(
                 new Mock<ILogger<WalletController>>().Object,
-                verifiableCredentialServiceMock.Object);
+                walletServiceMock.Object);
             var actualResult = await controller.CreateConnection(Hdid).ConfigureAwait(true);
             RequestResult<WalletConnectionModel> actualRequestResult =
                 (RequestResult<WalletConnectionModel>)actualResult.Value;
+
+            Assert.True(actualRequestResult.IsDeepEqual(expectedResult));
+        }
+
+        /// <summary>
+        /// Successfully Create Credential - Happy Path scenario.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldCreateCredential()
+        {
+            IEnumerable<string> targetIds = new List<string>() { "1234" };
+
+            IEnumerable<WalletCredentialModel> walletCredentialModel = new WalletCredentialModel[]
+            {
+                new WalletCredentialModel()
+                {
+                    WalletConnectionId = Guid.NewGuid(),
+                    SourceId = targetIds.First(),
+                },
+            };
+
+            RequestResult<IEnumerable<WalletCredentialModel>> expectedResult = new RequestResult<IEnumerable<WalletCredentialModel>>()
+            {
+                ResourcePayload = walletCredentialModel,
+                ResultStatus = Common.Constants.ResultType.Success,
+            };
+
+            Mock<IWalletService> walletServiceMock = new Mock<IWalletService>();
+            walletServiceMock.Setup(s => s.CreateCredentialsAsync(Hdid, targetIds)).ReturnsAsync(expectedResult);
+
+            WalletController controller = new WalletController(
+                new Mock<ILogger<WalletController>>().Object,
+                walletServiceMock.Object);
+            var actualResult = await controller.CreateCredentials(Hdid, targetIds).ConfigureAwait(true);
+            RequestResult<IEnumerable<WalletCredentialModel>> actualRequestResult =
+                (RequestResult<IEnumerable<WalletCredentialModel>>)actualResult.Value;
 
             Assert.True(actualRequestResult.IsDeepEqual(expectedResult));
         }
@@ -92,6 +130,35 @@ namespace HealthGateway.WebClient.Test.Controllers
                 (RequestResult<WalletConnectionModel>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
             Assert.Equal(Hdid, actualRequestResult.ResourcePayload!.Hdid);
+        }
+
+        /// <summary>
+        /// Successfully Revoke Credential - Happy path scenario.
+        /// </summary>
+        /// <returns>>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldRevokeCredential()
+        {
+            Guid credentialId = Guid.NewGuid();
+            RequestResult<WalletCredentialModel> expectedResult = new RequestResult<WalletCredentialModel>()
+            {
+                ResourcePayload = new WalletCredentialModel()
+                {
+                    CredentialId = credentialId,
+                },
+                ResultStatus = Common.Constants.ResultType.Success,
+            };
+
+            Mock<IWalletService> walletServiceMock = new Mock<IWalletService>();
+            walletServiceMock.Setup(s => s.RevokeCredential(credentialId, Hdid)).ReturnsAsync(expectedResult);
+
+            WalletController controller = new WalletController(
+                new Mock<ILogger<WalletController>>().Object,
+                walletServiceMock.Object);
+            var actualResult = await controller.RevokeCredential(Hdid, credentialId).ConfigureAwait(true);
+            RequestResult<WalletCredentialModel> actualRequestResult =
+                (RequestResult<WalletCredentialModel>)actualResult.Value;
+            Assert.True(actualRequestResult.IsDeepEqual(expectedResult));
         }
     }
 }

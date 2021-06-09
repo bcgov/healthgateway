@@ -466,6 +466,30 @@
             Create Credential - Happy Path.
             </summary>
         </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.RevokeCredential">
+            <summary>
+            Revoke Credential - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.DisconnectConnection">
+            <summary>
+            Disconnect Connection - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateSchema">
+            <summary>
+            Create Schema - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateCredentialDefinition">
+            <summary>
+            Create Credential Definition - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
         <member name="M:HealthGateway.CommonTests.Delegates.WalletIssuerDelegateTests.CreateConnection(System.Net.HttpStatusCode,HealthGateway.Common.Models.RequestResult{HealthGateway.Common.Models.AcaPy.ConnectionResponse},System.Boolean,System.Boolean)">
             <summary>
             Create Wallet Connection.

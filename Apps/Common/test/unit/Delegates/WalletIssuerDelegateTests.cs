@@ -191,6 +191,143 @@ namespace HealthGateway.CommonTests.Delegates
             Assert.True(actualResult.IsDeepEqual(expectedResult));
         }
 
+        /// <summary>
+        /// Revoke Credential - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task RevokeCredential()
+        {
+            WalletConnection connection = new ()
+            {
+                AgentId = Guid.NewGuid(),
+            };
+            WalletCredential credential = new ()
+            {
+                WalletConnection = connection,
+                RevocationId = "1234",
+                RevocationRegistryId = "4321",
+            };
+
+            RequestResult<CredentialResponse> expectedResult = new ()
+            {
+                ResourcePayload = null,
+                ResultStatus = ResultType.Success,
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<HttpMessageHandler> handlerMock = new ();
+            this.MessageHandlerMockSetup(handlerMock, string.Empty, new ($"{this.walletIssuerConfig.AgentApiUrl}revocation/revoke"));
+            this.MessageHandlerMockSetup(handlerMock, string.Empty, new ($"{this.walletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}/send-message"));
+
+            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+
+            IWalletIssuerDelegate issuerDelegate = new RestWalletIssuerDelegate(
+                loggerFactory.CreateLogger<RestWalletIssuerDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
+            RequestResult<WalletCredential> actualResult = await issuerDelegate.RevokeCredentialAsync(credential, "Test revoke").ConfigureAwait(true);
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
+        }
+
+        /// <summary>
+        /// Disconnect Connection - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task DisconnectConnection()
+        {
+            WalletConnection connection = new ()
+            {
+                AgentId = Guid.NewGuid(),
+            };
+
+            RequestResult<CredentialResponse> expectedResult = new ()
+            {
+                ResourcePayload = null,
+                ResultStatus = ResultType.Success,
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<HttpMessageHandler> handlerMock = new ();
+            this.MessageHandlerMockSetup(handlerMock, string.Empty, new ($"{this.walletIssuerConfig.AgentApiUrl}connections/{connection.AgentId}"));
+
+            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+
+            IWalletIssuerDelegate issuerDelegate = new RestWalletIssuerDelegate(
+                loggerFactory.CreateLogger<RestWalletIssuerDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
+            RequestResult<WalletConnection> actualResult = await issuerDelegate.DisconnectConnectionAsync(connection).ConfigureAwait(true);
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
+        }
+
+        /// <summary>
+        /// Create Schema - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task CreateSchema()
+        {
+            SchemaRequest schemaRequest = new ()
+            {
+                SchemaName = "Test",
+            };
+
+            RequestResult<SchemaResponse> expectedResult = new ()
+            {
+                ResourcePayload = new SchemaResponse() { SchemaId = "123" },
+                ResultStatus = ResultType.Success,
+                TotalResultCount = 1,
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<HttpMessageHandler> handlerMock = new ();
+            this.MessageHandlerMockSetup(handlerMock, expectedResult.ResourcePayload, new ($"{this.walletIssuerConfig.AgentApiUrl}schemas"));
+
+            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+
+            IWalletIssuerDelegate issuerDelegate = new RestWalletIssuerDelegate(
+                loggerFactory.CreateLogger<RestWalletIssuerDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
+            RequestResult<SchemaResponse> actualResult = await issuerDelegate.CreateSchemaAsync(schemaRequest).ConfigureAwait(true);
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
+        }
+
+        /// <summary>
+        /// Create Credential Definition - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task CreateCredentialDefinition()
+        {
+            string schemaId = "123";
+            RequestResult<CredentialDefinitionResponse> expectedResult = new ()
+            {
+                ResourcePayload = new CredentialDefinitionResponse() { CredentialDefinitionId = "321" },
+                ResultStatus = ResultType.Success,
+                TotalResultCount = 1,
+            };
+
+            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            Mock<HttpMessageHandler> handlerMock = new ();
+            this.MessageHandlerMockSetup(handlerMock, expectedResult.ResourcePayload, new ($"{this.walletIssuerConfig.AgentApiUrl}credential-definitions"));
+
+            Mock<IHttpClientService> mockHttpClientService = new Mock<IHttpClientService>();
+            mockHttpClientService.Setup(s => s.CreateDefaultHttpClient()).Returns(() => new HttpClient(handlerMock.Object));
+
+            IWalletIssuerDelegate issuerDelegate = new RestWalletIssuerDelegate(
+                loggerFactory.CreateLogger<RestWalletIssuerDelegate>(),
+                mockHttpClientService.Object,
+                this.configuration);
+            RequestResult<CredentialDefinitionResponse> actualResult = await issuerDelegate.CreateCredentialDefinitionAsync(schemaId).ConfigureAwait(true);
+            Assert.True(actualResult.IsDeepEqual(expectedResult));
+        }
+
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             var myConfiguration = new Dictionary<string, string>

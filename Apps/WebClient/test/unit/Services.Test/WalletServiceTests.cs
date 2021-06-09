@@ -38,8 +38,10 @@ namespace HealthGateway.WebClient.Test.Services
     /// <summary>
     /// CommentService's Unit Tests.
     /// </summary>
-    public class VerifiableCredentialServiceTests
+    public class WalletServiceTests
     {
+        private const string HdId = "fakeHDID";
+
         /// <summary>
         /// CreateConnection - Happy Path.
         /// </summary>
@@ -49,7 +51,6 @@ namespace HealthGateway.WebClient.Test.Services
         {
             // ****** Data Setup
             string phn = "fakePHN";
-            string hdid = "fakeHDID";
             string[] targetIds = new string[] { "12345", "54321" };
             Guid walletConnectionId = Guid.NewGuid();
             Guid exchangeId = Guid.NewGuid();
@@ -58,7 +59,7 @@ namespace HealthGateway.WebClient.Test.Services
                 ResourcePayload = new WalletConnectionModel()
                 {
                     WalletConnectionId = walletConnectionId,
-                    Hdid = hdid,
+                    Hdid = HdId,
                 },
                 ResultStatus = ResultType.Success,
             };
@@ -135,11 +136,11 @@ namespace HealthGateway.WebClient.Test.Services
             // ****** Mock Setup
             Mock<IImmunizationDelegate> immunizationDelegateMock = new Mock<IImmunizationDelegate>();
             immunizationDelegateMock
-                .Setup(s => s.GetImmunization(hdid, It.IsIn(targetIds)))
+                .Setup(s => s.GetImmunization(HdId, It.IsIn(targetIds)))
                 .ReturnsAsync(requestResultImmunization);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegateMock = new Mock<IClientRegistriesDelegate>();
-            clientRegistriesDelegateMock.Setup(s => s.GetDemographicsByHDIDAsync(hdid)).ReturnsAsync(requestResultPatient);
+            clientRegistriesDelegateMock.Setup(s => s.GetDemographicsByHDIDAsync(HdId)).ReturnsAsync(requestResultPatient);
 
             Mock<IWalletIssuerDelegate> walletIssuerDelegateMock = new Mock<IWalletIssuerDelegate>();
             walletIssuerDelegateMock
@@ -159,7 +160,7 @@ namespace HealthGateway.WebClient.Test.Services
                 .InsertConnection(
                     It.Is<WalletConnection>(c =>
                         c.Status == WalletConnectionStatus.Pending &&
-                        c.UserProfileId == hdid), true))
+                        c.UserProfileId == HdId), true))
                 .Returns(insertDbResultWalletConnection);
             walletDelegateMock.Setup(s =>
                 s.UpdateConnection(
@@ -168,7 +169,7 @@ namespace HealthGateway.WebClient.Test.Services
                         c.Id == walletConnectionId), true))
                 .Returns(updateDbResultWalletConnection);
             walletDelegateMock
-                .Setup(s => s.GetCurrentConnection(hdid))
+                .Setup(s => s.GetCurrentConnection(HdId))
                 .Returns(getDbResultWalletConnection);
             walletDelegateMock
                 .Setup(s =>
@@ -184,10 +185,146 @@ namespace HealthGateway.WebClient.Test.Services
                 walletIssuerDelegateMock.Object,
                 clientRegistriesDelegateMock.Object,
                 immunizationDelegateMock.Object);
-            var actualResult = await service.CreateConnectionAsync(hdid).ConfigureAwait(true);
+            var actualResult = await service.CreateConnectionAsync(HdId).ConfigureAwait(true);
 
             Assert.Equal(expectedResult.ResultStatus, actualResult.ResultStatus);
             Assert.True(actualResult.ResourcePayload!.Credentials.Count == 0);
+        }
+
+        /// <summary>
+        /// GetConnection - Happy Path.
+        /// </summary>
+        [Fact]
+        public void GetConnection()
+        {
+            DBResult<WalletConnection> getDbResultWalletConnection = new DBResult<WalletConnection>()
+            {
+                Status = DBStatusCode.Read,
+                Payload = new WalletConnection()
+                {
+                    UserProfileId = HdId,
+                },
+            };
+
+            // ****** Mock Setup
+            Mock<IWalletDelegate> walletDelegateMock = new Mock<IWalletDelegate>();
+            walletDelegateMock.Setup(s => s
+                .GetCurrentConnection(HdId))
+                .Returns(getDbResultWalletConnection);
+
+            // ******* Assertion
+            WalletService service = new WalletService(
+                new Mock<ILogger<WalletService>>().Object,
+                walletDelegateMock.Object,
+                new Mock<IWalletIssuerDelegate>().Object,
+                new Mock<IClientRegistriesDelegate>().Object,
+                new Mock<IImmunizationDelegate>().Object);
+            var actualResult = service.GetConnection(HdId);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(HdId, actualResult.ResourcePayload!.Hdid);
+        }
+
+        /// <summary>
+        /// GetCredentialByExchangeId - Happy Path.
+        /// </summary>
+        [Fact]
+        public void GetCredentialByExchangeId()
+        {
+            Guid exchangeId = Guid.NewGuid();
+            Guid credentialId = Guid.NewGuid();
+            DBResult<WalletCredential> getDbResultWalletCredential = new DBResult<WalletCredential>()
+            {
+                Status = DBStatusCode.Read,
+                Payload = new WalletCredential()
+                {
+                    ExchangeId = exchangeId,
+                    Id = credentialId,
+                    WalletConnection = new WalletConnection(),
+                },
+            };
+
+            // ****** Mock Setup
+            Mock<IWalletDelegate> walletDelegateMock = new Mock<IWalletDelegate>();
+            walletDelegateMock.Setup(s => s
+                .GetCredentialByExchangeId(exchangeId))
+                .Returns(getDbResultWalletCredential);
+
+            // ******* Assertion
+            WalletService service = new WalletService(
+                new Mock<ILogger<WalletService>>().Object,
+                walletDelegateMock.Object,
+                new Mock<IWalletIssuerDelegate>().Object,
+                new Mock<IClientRegistriesDelegate>().Object,
+                new Mock<IImmunizationDelegate>().Object);
+            var actualResult = service.GetCredentialByExchangeId(exchangeId);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(credentialId, actualResult.ResourcePayload!.CredentialId);
+        }
+
+        /// <summary>
+        /// RevokeCredential - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task RevokeCredential()
+        {
+            Guid credentialId = Guid.NewGuid();
+            DBResult<WalletCredential> getDbResultWalletCredential = new DBResult<WalletCredential>()
+            {
+                Status = DBStatusCode.Read,
+                Payload = new WalletCredential()
+                {
+                    Id = credentialId,
+                    Status = WalletCredentialStatus.Added,
+                },
+            };
+
+            DBResult<WalletCredential> updateDbResultWalletCredential = new DBResult<WalletCredential>()
+            {
+                Status = DBStatusCode.Updated,
+                Payload = new WalletCredential()
+                {
+                    Id = credentialId,
+                    Status = WalletCredentialStatus.Revoked,
+                    RevokedDateTime = DateTime.UtcNow,
+                    WalletConnection = new WalletConnection(),
+                },
+            };
+
+            RequestResult<WalletCredential> revokeCredentialResult = new RequestResult<WalletCredential>()
+            {
+                ResultStatus = ResultType.Success,
+            };
+
+            // ****** Mock Setup
+            Mock<IWalletDelegate> walletDelegateMock = new Mock<IWalletDelegate>();
+            walletDelegateMock.Setup(s => s
+                .GetCredentialById(credentialId, HdId))
+                .Returns(getDbResultWalletCredential);
+
+            walletDelegateMock.Setup(s => s
+                .UpdateCredential(It.Is<WalletCredential>(c => c.Id == credentialId && c.Status == WalletCredentialStatus.Revoked), true))
+                .Returns(updateDbResultWalletCredential);
+
+            Mock<IWalletIssuerDelegate> walletIssuerDelegateMock = new Mock<IWalletIssuerDelegate>();
+            walletIssuerDelegateMock.Setup(s => s
+                .RevokeCredentialAsync(getDbResultWalletCredential.Payload, It.IsAny<string>()))
+                .ReturnsAsync(revokeCredentialResult);
+
+            // ******* Assertion
+            WalletService service = new WalletService(
+                new Mock<ILogger<WalletService>>().Object,
+                walletDelegateMock.Object,
+                walletIssuerDelegateMock.Object,
+                new Mock<IClientRegistriesDelegate>().Object,
+                new Mock<IImmunizationDelegate>().Object);
+            var actualResult = await service.RevokeCredential(credentialId, HdId).ConfigureAwait(true);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(WalletCredentialStatus.Revoked, actualResult.ResourcePayload!.Status);
+            Assert.NotNull(actualResult.ResourcePayload!.RevokedDate);
         }
     }
 }
