@@ -1907,7 +1907,7 @@
             <param name="exchangeId">The wallet credential exchange id.</param>
             <returns>A wallet credential model wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.IWalletService.DisconnectConnection(System.Guid,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.IWalletService.DisconnectConnectionAsync(System.Guid,System.String)">
             <summary>
             Disconnects the identified wallet.
             </summary>
@@ -2117,7 +2117,7 @@
         <member name="M:HealthGateway.WebClient.Services.WalletService.CreateCredentialsAsync(System.String,System.Collections.Generic.IEnumerable{System.String})">
             <inheritdoc/>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.WalletService.DisconnectConnection(System.Guid,System.String)">
+        <member name="M:HealthGateway.WebClient.Services.WalletService.DisconnectConnectionAsync(System.Guid,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:HealthGateway.WebClient.Services.WalletService.GetConnection(System.String)">

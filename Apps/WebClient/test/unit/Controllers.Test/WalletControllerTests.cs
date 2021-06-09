@@ -119,13 +119,44 @@ namespace HealthGateway.WebClient.Test.Controllers
                 ResultStatus = Common.Constants.ResultType.Success,
             };
 
-            Mock<IWalletService> verifiableCredentialServiceMock = new Mock<IWalletService>();
-            verifiableCredentialServiceMock.Setup(s => s.GetConnection(Hdid)).Returns(expectedResult);
+            Mock<IWalletService> walletServiceMock = new Mock<IWalletService>();
+            walletServiceMock.Setup(s => s.GetConnection(Hdid)).Returns(expectedResult);
 
             WalletController controller = new WalletController(
                 new Mock<ILogger<WalletController>>().Object,
-                verifiableCredentialServiceMock.Object);
+                walletServiceMock.Object);
             var actualResult = controller.GetConnection(Hdid);
+            RequestResult<WalletConnectionModel> actualRequestResult =
+                (RequestResult<WalletConnectionModel>)((JsonResult)actualResult).Value;
+            Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
+            Assert.Equal(Hdid, actualRequestResult.ResourcePayload!.Hdid);
+        }
+
+        /// <summary>
+        /// Successfully Disconnect Connection - Happy path scenario.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldDisconnectConnection()
+        {
+            Guid connectionId = Guid.NewGuid();
+            RequestResult<WalletConnectionModel> expectedResult = new RequestResult<WalletConnectionModel>()
+            {
+                ResourcePayload = new WalletConnectionModel()
+                {
+                    WalletConnectionId = connectionId,
+                    Hdid = Hdid,
+                },
+                ResultStatus = Common.Constants.ResultType.Success,
+            };
+
+            Mock<IWalletService> walletServiceMock = new Mock<IWalletService>();
+            walletServiceMock.Setup(s => s.DisconnectConnectionAsync(connectionId, Hdid)).ReturnsAsync(expectedResult);
+
+            WalletController controller = new WalletController(
+                new Mock<ILogger<WalletController>>().Object,
+                walletServiceMock.Object);
+            var actualResult = await controller.DisconnectConnection(Hdid, connectionId).ConfigureAwait(true);
             RequestResult<WalletConnectionModel> actualRequestResult =
                 (RequestResult<WalletConnectionModel>)((JsonResult)actualResult).Value;
             Assert.Equal(Common.Constants.ResultType.Success, actualRequestResult.ResultStatus);
