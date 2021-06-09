@@ -102,11 +102,13 @@ namespace HealthGateway.WebClient.Services
             if (dbResult.Status == DBStatusCode.Read)
             {
                 WalletCredential credential = dbResult.Payload;
+                WalletCredentialStatus readStatus = credential.Status;
                 retVal.ResourcePayload = credential;
+                credential.Status = WalletCredentialStatus.Added;
                 credential.AddedDateTime = DateTime.UtcNow;
                 credential.RevocationId = agentData.RevocationId;
                 credential.RevocationRegistryId = agentData.RevocationRegistryId;
-                if (credential.Status == WalletCredentialStatus.Revoked)
+                if (readStatus == WalletCredentialStatus.Revoked)
                 {
                     var result = await this.walletAgentService.RevokeCredential(credential).ConfigureAwait(true);
                     retVal.ResourcePayload = credential;
