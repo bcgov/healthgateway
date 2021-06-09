@@ -117,7 +117,6 @@ namespace HealthGateway.WebClient.Services
                 }
                 else
                 {
-                    credential.Status = WalletCredentialStatus.Added;
                     DBResult<WalletCredential> updateResult = this.walletDelegate.UpdateCredential(credential);
                     if (updateResult.Status == DBStatusCode.Updated)
                     {
