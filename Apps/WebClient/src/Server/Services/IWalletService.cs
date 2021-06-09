@@ -70,7 +70,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="connectionId">The wallet connection id.</param>
         /// <param name="hdId">The user hdid.</param>
         /// <returns>A wallet credential model wrapped in a RequestResult.</returns>
-        Task<RequestResult<WalletConnectionModel>> DisconnectConnection(Guid connectionId, string hdId);
+        Task<RequestResult<WalletConnectionModel>> DisconnectConnectionAsync(Guid connectionId, string hdId);
 
         /// <summary>
         /// Revokes the identified wallet credential if in created or added state.

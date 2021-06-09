@@ -326,5 +326,102 @@ namespace HealthGateway.WebClient.Test.Services
             Assert.Equal(WalletCredentialStatus.Revoked, actualResult.ResourcePayload!.Status);
             Assert.NotNull(actualResult.ResourcePayload!.RevokedDate);
         }
+
+        /// <summary>
+        /// Disconnect Connection - Happy Path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task DisconnectConnection()
+        {
+            Guid connectionId = Guid.NewGuid();
+
+            WalletCredential credential = new WalletCredential()
+            {
+                WalletConnectionId = connectionId,
+                Status = WalletCredentialStatus.Added,
+            };
+
+            WalletConnection connection = new WalletConnection()
+            {
+                Id = connectionId,
+                Status = WalletConnectionStatus.Connected,
+                Credentials = new WalletCredential[] { credential },
+            };
+
+            DBResult<WalletConnection> getConnectionDbResult = new DBResult<WalletConnection>()
+            {
+                Status = DBStatusCode.Read,
+                Payload = connection,
+            };
+
+            DBResult<WalletCredential> updateDbResultWalletCredential = new DBResult<WalletCredential>()
+            {
+                Status = DBStatusCode.Updated,
+                Payload = new WalletCredential()
+                {
+                    Status = WalletCredentialStatus.Revoked,
+                    RevokedDateTime = DateTime.UtcNow,
+                    WalletConnection = new WalletConnection(),
+                },
+            };
+
+            DBResult<WalletConnection> updateDbResultWalletConnection = new DBResult<WalletConnection>()
+            {
+                Status = DBStatusCode.Updated,
+                Payload = new WalletConnection()
+                {
+                    Id = connectionId,
+                    Status = WalletConnectionStatus.Disconnected,
+                    DisconnectedDateTime = DateTime.UtcNow,
+                },
+            };
+
+            RequestResult<WalletCredential> revokeCredentialResult = new RequestResult<WalletCredential>()
+            {
+                ResultStatus = ResultType.Success,
+            };
+
+            RequestResult<WalletConnection> disconnectResult = new RequestResult<WalletConnection>()
+            {
+                ResultStatus = ResultType.Success,
+            };
+
+            // ****** Mock Setup
+            Mock<IWalletDelegate> walletDelegateMock = new Mock<IWalletDelegate>();
+            walletDelegateMock.Setup(s => s
+                .GetConnection(connectionId, HdId, false))
+                .Returns(getConnectionDbResult);
+
+            walletDelegateMock.Setup(s => s
+                .UpdateCredential(credential, true))
+                .Returns(updateDbResultWalletCredential);
+
+            walletDelegateMock.Setup(s => s
+                .UpdateConnection(It.Is<WalletConnection>(c => c.Id == connectionId && c.Status == WalletConnectionStatus.Disconnected), true))
+                .Returns(updateDbResultWalletConnection);
+
+            Mock<IWalletIssuerDelegate> walletIssuerDelegateMock = new Mock<IWalletIssuerDelegate>();
+            walletIssuerDelegateMock.Setup(s => s
+                .RevokeCredentialAsync(credential, It.IsAny<string>()))
+                .ReturnsAsync(revokeCredentialResult);
+
+            walletIssuerDelegateMock.Setup(s => s
+                .DisconnectConnectionAsync(connection))
+                .ReturnsAsync(disconnectResult);
+
+            // ******* Assertion
+            WalletService service = new WalletService(
+                new Mock<ILogger<WalletService>>().Object,
+                walletDelegateMock.Object,
+                walletIssuerDelegateMock.Object,
+                new Mock<IClientRegistriesDelegate>().Object,
+                new Mock<IImmunizationDelegate>().Object);
+            var actualResult = await service.DisconnectConnectionAsync(connectionId, HdId).ConfigureAwait(true);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(WalletConnectionStatus.Disconnected, actualResult.ResourcePayload!.Status);
+            Assert.NotNull(actualResult.ResourcePayload!.DisconnectedDate);
+        }
     }
 }

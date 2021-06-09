@@ -281,9 +281,101 @@ namespace HealthGateway.WebClient.Services
         }
 
         /// <inheritdoc/>
-        public Task<RequestResult<WalletConnectionModel>> DisconnectConnection(Guid connectionId, string hdId)
+        public async Task<RequestResult<WalletConnectionModel>> DisconnectConnectionAsync(Guid connectionId, string hdId)
         {
-            throw new NotImplementedException();
+            this.logger.LogDebug($"Disconnecting wallet connection. getting connection from database. connectionId: {connectionId} user: {hdId}");
+            DBResult<WalletConnection> dbResult = this.walletDelegate.GetConnection(connectionId, hdId);
+            if (dbResult.Status != DBStatusCode.Read)
+            {
+                this.logger.LogDebug($"Error disconnecting wallet connection. connection not found. connectionId: {connectionId} user: {hdId}. {JsonSerializer.Serialize(dbResult)}");
+                return new RequestResult<WalletConnectionModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error disconnecting wallet connection. connection not found",
+                    },
+                };
+            }
+
+            if (dbResult.Payload.Status != WalletConnectionStatus.Connected)
+            {
+                this.logger.LogDebug($"Error disconnecting wallet connection. connection not connected. connectionId: {connectionId} user: {hdId}. {JsonSerializer.Serialize(dbResult)}");
+                return new RequestResult<WalletConnectionModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error disconnecting wallet connection. connection not connected",
+                    },
+                };
+            }
+
+            WalletConnection walletConnection = dbResult.Payload;
+
+            this.logger.LogDebug($"Revoking all connection credentials. user: {hdId}. {JsonSerializer.Serialize(walletConnection)}");
+            foreach (var credential in walletConnection.Credentials)
+            {
+                if (credential.Status != WalletCredentialStatus.Revoked)
+                {
+                    RequestResult<WalletCredentialModel> revokeResult = await this.RevokeCredential(credential).ConfigureAwait(true);
+
+                    if (revokeResult.ResultStatus != ResultType.Success)
+                    {
+                        this.logger.LogDebug($"Error revoking credential. user {hdId}: {JsonSerializer.Serialize(revokeResult)}");
+                        return new RequestResult<WalletConnectionModel>()
+                        {
+                            ResultStatus = ResultType.Error,
+                            ResultError = new RequestResultError()
+                            {
+                                ResultMessage = "Error disconnecting with wallet issuer. Revoke credential failed",
+                                InnerError = revokeResult.ResultError,
+                            },
+                        };
+                    }
+                }
+            }
+
+            this.logger.LogDebug($"Disconnecting with wallet issuer. user {hdId}");
+            RequestResult<WalletConnection> walletIssuerConnectionResult =
+                await this.walletIssuerDelegate.DisconnectConnectionAsync(walletConnection).ConfigureAwait(true);
+            if (walletIssuerConnectionResult.ResultStatus != ResultType.Success)
+            {
+                this.logger.LogDebug($"Error disconnecting with wallet issuer. user {hdId}: {JsonSerializer.Serialize(walletIssuerConnectionResult)}");
+                return new RequestResult<WalletConnectionModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error disconnecting with wallet issuer",
+                        InnerError = walletIssuerConnectionResult.ResultError,
+                    },
+                };
+            }
+
+            this.logger.LogDebug($"Finished disconnecting with wallet issuer. user {hdId}: {JsonSerializer.Serialize(walletIssuerConnectionResult)}");
+            this.logger.LogDebug($"Updating wallet connection to database. user {hdId}");
+            walletConnection.Status = WalletConnectionStatus.Disconnected;
+            dbResult = this.walletDelegate.UpdateConnection(walletConnection);
+            if (dbResult.Status != DBStatusCode.Updated)
+            {
+                this.logger.LogDebug($"Error updating wallet connection to database. user {hdId}: {JsonSerializer.Serialize(dbResult)}");
+                return new RequestResult<WalletConnectionModel>()
+                {
+                    ResultStatus = ResultType.Error,
+                    ResultError = new RequestResultError()
+                    {
+                        ResultMessage = "Error updating wallet connection to database",
+                    },
+                };
+            }
+
+            this.logger.LogDebug($"Finished updating wallet connection to database. user {hdId}: {JsonSerializer.Serialize(dbResult)}");
+            return new RequestResult<WalletConnectionModel>()
+            {
+                ResourcePayload = WalletConnectionModel.CreateFromDbModel(dbResult.Payload),
+                ResultStatus = ResultType.Success,
+            };
         }
 
         /// <inheritdoc/>

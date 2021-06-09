@@ -95,9 +95,13 @@ namespace HealthGateway.WebClient.Controllers
         [HttpDelete]
         [Route("{hdid}/Connection/{connectionId}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public ActionResult DisconnectConnection(string hdId, Guid connectionId)
+        public async Task<ActionResult> DisconnectConnection(string hdId, Guid connectionId)
         {
-            throw new NotSupportedException();
+            this.logger.LogDebug($"Disconnecting wallet connection for user {hdId}");
+            RequestResult<WalletConnectionModel> result = await this.walletService.DisconnectConnectionAsync(connectionId, hdId).ConfigureAwait(true);
+
+            this.logger.LogDebug($"Finished disconnecting wallet connection for user {hdId}: {JsonSerializer.Serialize(result)}");
+            return new JsonResult(result);
         }
 
         /// <summary>
