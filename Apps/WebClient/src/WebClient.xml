@@ -432,21 +432,21 @@
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Controllers.WalletController"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
-            <param name="verifiableCredentialService">The injected verifiable credential service.</param>
+            <param name="walletService">The injected wallet service.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.CreateConnection(System.String)">
             <summary>
-            Creates a verifiable credential connection.
+            Creates a wallet connection.
             </summary>
             <param name="hdId">The user hdid.</param>
-            <returns>The created verifiable credential connection model.</returns>
+            <returns>The created wallet credential connection model.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.GetConnection(System.String)">
             <summary>
-            Gets a verifiable credential connection.
+            Gets a wallet connection.
             </summary>
             <param name="hdId">The user hdid.</param>
-            <returns>The verifiable credential connection model.</returns>
+            <returns>The wallet connection model.</returns>
         </member>
         <member name="M:HealthGateway.WebClient.Controllers.WalletController.DisconnectConnection(System.String,System.Guid)">
             <summary>

@@ -37,50 +37,50 @@ namespace HealthGateway.WebClient.Controllers
     public class WalletController
     {
         private readonly ILogger logger;
-        private readonly IWalletService verifiableCredentialService;
+        private readonly IWalletService walletService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WalletController"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="verifiableCredentialService">The injected verifiable credential service.</param>
+        /// <param name="walletService">The injected wallet service.</param>
         public WalletController(
             ILogger<WalletController> logger,
-            IWalletService verifiableCredentialService)
+            IWalletService walletService)
         {
             this.logger = logger;
-            this.verifiableCredentialService = verifiableCredentialService;
+            this.walletService = walletService;
         }
 
         /// <summary>
-        /// Creates a verifiable credential connection.
+        /// Creates a wallet connection.
         /// </summary>
         /// <param name="hdId">The user hdid.</param>
-        /// <returns>The created verifiable credential connection model.</returns>
+        /// <returns>The created wallet credential connection model.</returns>
         [HttpPost]
         [Route("{hdid}/Connection")]
         [Authorize(Policy = UserProfilePolicy.Write)]
         public async Task<JsonResult> CreateConnection(string hdId)
         {
             this.logger.LogDebug($"Creating wallet connection for user {hdId}");
-            RequestResult<WalletConnectionModel> result = await this.verifiableCredentialService.CreateConnectionAsync(hdId).ConfigureAwait(true);
+            RequestResult<WalletConnectionModel> result = await this.walletService.CreateConnectionAsync(hdId).ConfigureAwait(true);
 
             this.logger.LogDebug($"Finished creating wallet connection for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
         }
 
         /// <summary>
-        /// Gets a verifiable credential connection.
+        /// Gets a wallet connection.
         /// </summary>
         /// <param name="hdId">The user hdid.</param>
-        /// <returns>The verifiable credential connection model.</returns>
+        /// <returns>The wallet connection model.</returns>
         [HttpGet]
         [Route("{hdid}/Connection")]
         [Authorize(Policy = UserProfilePolicy.Read)]
         public ActionResult GetConnection(string hdId)
         {
             this.logger.LogDebug($"Getting current wallet connection for user {hdId}");
-            RequestResult<WalletConnectionModel> result = this.verifiableCredentialService.GetConnection(hdId);
+            RequestResult<WalletConnectionModel> result = this.walletService.GetConnection(hdId);
 
             this.logger.LogDebug($"Finished getting current wallet connection for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
@@ -109,10 +109,10 @@ namespace HealthGateway.WebClient.Controllers
         [HttpPost]
         [Route("{hdid}/Credentials")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult> CreateCredentials(string hdId, [FromBody] IEnumerable<string> targetIds)
+        public async Task<JsonResult> CreateCredentials(string hdId, [FromBody] IEnumerable<string> targetIds)
         {
             this.logger.LogDebug($"Creating credential for user {hdId}");
-            RequestResult<IEnumerable<WalletCredentialModel>> result = await this.verifiableCredentialService.CreateCredentialsAsync(hdId, targetIds).ConfigureAwait(true);
+            RequestResult<IEnumerable<WalletCredentialModel>> result = await this.walletService.CreateCredentialsAsync(hdId, targetIds).ConfigureAwait(true);
             this.logger.LogDebug($"Finished creating credential for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
         }
@@ -126,10 +126,10 @@ namespace HealthGateway.WebClient.Controllers
         [HttpDelete]
         [Route("{hdid}/Credential/{credentialId}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult> RevokeCredential(string hdId, Guid credentialId)
+        public async Task<JsonResult> RevokeCredential(string hdId, Guid credentialId)
         {
             this.logger.LogDebug($"Revoking credential for user {hdId}");
-            RequestResult<WalletCredentialModel> result = await this.verifiableCredentialService.RevokeCredential(credentialId, hdId).ConfigureAwait(true);
+            RequestResult<WalletCredentialModel> result = await this.walletService.RevokeCredential(credentialId, hdId).ConfigureAwait(true);
             this.logger.LogDebug($"Finished revoking credential for user {hdId}: {JsonSerializer.Serialize(result)}");
             return new JsonResult(result);
         }
