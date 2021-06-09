@@ -90,6 +90,8 @@ namespace HealthGateway.WebClient
             services.AddTransient<INotificationSettingsService, NotificationSettingsService>();
             services.AddTransient<IDependentService, DependentService>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
+            services.AddTransient<IWalletService, WalletService>();
+            services.AddTransient<IWalletStatusService, WalletStatusService>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DBProfileDelegate>();
@@ -106,6 +108,9 @@ namespace HealthGateway.WebClient
             services.AddTransient<INotificationSettingsDelegate, RestNotificationSettingsDelegate>();
             services.AddTransient<IUserPreferenceDelegate, DBUserPreferenceDelegate>();
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
+            services.AddTransient<IWalletIssuerDelegate, RestWalletIssuerDelegate>();
+            services.AddTransient<IWalletDelegate, DBWalletDelegate>();
+            services.AddTransient<IImmunizationDelegate, RestImmunizationDelegate>();
 
             // Add Background Services
             services.AddHostedService<BannerListener>();

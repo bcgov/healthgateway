@@ -4,6 +4,7 @@ import { ActionContext } from "vuex";
 import { auth } from "./modules/auth/auth";
 import { comment } from "./modules/comment/comment";
 import { config } from "./modules/config/config";
+import { credential } from "./modules/credential/credential";
 import { encounter } from "./modules/encounter/encounter";
 import { errorBanner } from "./modules/error/errorBanner";
 import { idle } from "./modules/idle/idle";
@@ -54,5 +55,6 @@ export class StoreOptions implements GatewayStoreOptions {
         idle,
         errorBanner,
         timeline,
+        credential,
     };
 }

@@ -19,6 +19,7 @@ namespace HealthGateway.Common.Swagger
     using System;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
@@ -65,6 +66,15 @@ namespace HealthGateway.Common.Swagger
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
                 Scheme = "bearer",
+            });
+
+            options.AddSecurityDefinition("apikey", new OpenApiSecurityScheme
+            {
+                Name = ApiKeyRequirement.ApiKeyHeaderNameDefault,
+                Description = $"Authorization using the {ApiKeyRequirement.ApiKeyHeaderNameDefault} header. Example: \"{ApiKeyRequirement.ApiKeyHeaderNameDefault} {{apiKey}}\"",
+                Type = SecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header,
+                Scheme = "apikey",
             });
 
             // Add auth header filter

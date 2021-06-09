@@ -253,6 +253,40 @@
             ValidateSms - Sms not found error.
             </summary>
         </member>
+        <member name="T:HealthGateway.WebClient.Test.Controllers.WalletControllerTests">
+            <summary>
+            VerifiableCredentialController's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldCreateConnection">
+            <summary>
+            Successfully Create Connection - Happy Path scenario.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldCreateCredential">
+            <summary>
+            Successfully Create Credential - Happy Path scenario.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldGetConnection">
+            <summary>
+            Successfully Get Connection - Happy path scenario.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldDisconnectConnection">
+            <summary>
+            Successfully Disconnect Connection - Happy path scenario.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Controllers.WalletControllerTests.ShouldRevokeCredential">
+            <summary>
+            Successfully Revoke Credential - Happy path scenario.
+            </summary>
+            <returns>>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
         <member name="T:HealthGateway.WebClient.Test.Services.CommentServiceTests">
             <summary>
             CommentService's Unit Tests.
@@ -616,6 +650,39 @@
             <summary>
             ValidateSMS - Happy path scenario.
             </summary>
+        </member>
+        <member name="T:HealthGateway.WebClient.Test.Services.WalletServiceTests">
+            <summary>
+            CommentService's Unit Tests.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.ShouldCreateConnection">
+            <summary>
+            CreateConnection - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.GetConnection">
+            <summary>
+            GetConnection - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.GetCredentialByExchangeId">
+            <summary>
+            GetCredentialByExchangeId - Happy Path.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.RevokeCredential">
+            <summary>
+            RevokeCredential - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
+        </member>
+        <member name="M:HealthGateway.WebClient.Test.Services.WalletServiceTests.DisconnectConnection">
+            <summary>
+            Disconnect Connection - Happy Path.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous unit test.</returns>
         </member>
     </members>
 </doc>

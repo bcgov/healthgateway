@@ -50,6 +50,22 @@ Create the common config
 oc process -f ./commonSecrets.yaml -p CR_CERT_PASSWORD=[THE PASSWORD] | oc apply -f -
 ```
 
+### Salesforce secrets
+
+Needs to be updated - review salesforceSecrets.yaml
+
+### Aca-Py secrets
+
+```console
+  oc process -f ./acaPySecrets.yaml --parameters
+```
+
+Create the common config
+
+```console
+oc process -f ./acaPySecrets.yaml -p AGENT_URL=[AGENT URL] -p AGENT_KEY=[AGENT KEY] -p WEBHOOK_KEY=[Webhook Key] | oc apply -f -
+```
+
 ### Certificates
 
 The Client Registry backing service requires a certificate for system to system authentication

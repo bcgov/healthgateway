@@ -51,7 +51,7 @@ export class RestImmunizationService implements IImmunizationService {
 
             return this.http
                 .getWithCors<RequestResult<ImmunizationResult>>(
-                    `${this.baseUri}${this.IMMS_BASE_URI}/${hdid}`
+                    `${this.baseUri}${this.IMMS_BASE_URI}?hdid=${hdid}`
                 )
                 .then((requestResult) => {
                     resolve(requestResult);
