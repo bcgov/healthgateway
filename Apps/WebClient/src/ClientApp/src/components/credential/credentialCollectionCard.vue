@@ -1,10 +1,15 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import QRCode from "qrcode";
 import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
+import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
+import LoadingComponent from "@/components/loading.vue";
+import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
+import BannerError from "@/models/bannerError";
 import User from "@/models/user";
 import {
     ConnectionStatus,
@@ -15,10 +20,15 @@ import {
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.container";
 import { ILogger } from "@/services/interfaces";
+import ErrorTranslator from "@/utility/errorTranslator";
+
+library.add(faEllipsisV);
 
 @Component({
     components: {
+        LoadingComponent,
         "message-modal": MessageModalComponent,
+        DeleteModalComponent,
     },
 })
 export default class CredentialCollectionCard extends Vue {
@@ -37,16 +47,37 @@ export default class CredentialCollectionCard extends Vue {
     @Action("retrieveConnection", { namespace: "credential" })
     retrieveConnection!: (params: { hdid: string }) => Promise<boolean>;
 
+    @Action("disconnectConnection", { namespace: "credential" })
+    disconnectConnection!: (params: {
+        hdid: string;
+        connectionId: string;
+    }) => Promise<boolean>;
+
+    @Action("addError", { namespace: "errorBanner" })
+    addError!: (error: BannerError) => void;
+
+    @Ref("disconnectModal")
+    readonly disconnectModal!: DeleteModalComponent;
+
+    private isLoading = false;
+
     @Watch("connection")
     private updateQrCode(): void {
         const data = this.connection?.invitationEndpoint || "";
         if (data.length === 0) {
             this.qrCodeDataUrl = null;
+            return;
         }
         QRCode.toDataURL(data, {}, (err: unknown, url: string) => {
             if (err) {
                 this.logger.error(`Error generating QR Code: ${err}`);
                 this.qrCodeDataUrl = null;
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Error generating QR Code",
+                        `${err}`
+                    )
+                );
             } else {
                 this.qrCodeDataUrl = url;
             }
@@ -119,26 +150,92 @@ export default class CredentialCollectionCard extends Vue {
     }
 
     private handleCreateConnection(): void {
+        this.isLoading = true;
         this.createConnection({
             hdid: this.user.hdid,
-        }).catch((err) => {
-            this.logger.error(`Error creating connection: ${err}`);
-        });
+        })
+            .catch((err) => {
+                this.logger.error(`Error creating connection: ${err}`);
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Error creating connection",
+                        err
+                    )
+                );
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 
     private refreshConnection(): void {
+        this.isLoading = true;
         this.retrieveConnection({
             hdid: this.user.hdid,
-        }).catch((err) => {
-            this.logger.error(`Error retrieving connection: ${err}`);
-        });
+        })
+            .catch((err) => {
+                this.logger.error(`Error retrieving connection: ${err}`);
+                this.addError(
+                    ErrorTranslator.toBannerError(
+                        "Error retrieving connection",
+                        err
+                    )
+                );
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    private showDisconnectConfirmationModal(): void {
+        this.disconnectModal.showModal();
+    }
+
+    private handleDisconnect(): void {
+        this.isLoading = true;
+        this.disconnectConnection({
+            hdid: this.user.hdid,
+            connectionId: this.connection?.walletConnectionId ?? "",
+        })
+            .catch((err) => {
+                this.logger.error(`Error disconnecting: ${err}`);
+                this.addError(
+                    ErrorTranslator.toBannerError("Error disconnecting", err)
+                );
+            })
+            .finally(() => {
+                this.refreshConnection();
+                this.isLoading = false;
+            });
     }
 }
 </script>
 
 <template>
     <div>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-card>
+            <div v-if="isConnectionConnected" class="text-center float-right">
+                <b-nav>
+                    <b-nav-item-dropdown right text="" :no-caret="true">
+                        <!-- Using 'button-content' slot -->
+                        <template slot="button-content">
+                            <hg-icon
+                                icon="ellipsis-v"
+                                size="small"
+                                data-testid="connectionMenuBtn"
+                                class="connectionMenu"
+                            />
+                        </template>
+                        <b-dropdown-item
+                            data-testid="disconnectMenuBtn"
+                            @click.stop="showDisconnectConfirmationModal()"
+                        >
+                            Disconnect
+                        </b-dropdown-item>
+                    </b-nav-item-dropdown>
+                </b-nav>
+            </div>
             <b-card-title>Wallet Connection</b-card-title>
             <b-card-text>
                 <status-label
@@ -209,9 +306,18 @@ export default class CredentialCollectionCard extends Vue {
                 </div>
             </template>
         </b-card>
+        <delete-modal-component
+            ref="disconnectModal"
+            title="Disconnect"
+            message="Are you sure you want to disconnect?"
+            @submit="handleDisconnect()"
+        ></delete-modal-component>
     </div>
 </template>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/_variables.scss";
+.connectionMenu {
+    color: $soft_text;
+}
 </style>

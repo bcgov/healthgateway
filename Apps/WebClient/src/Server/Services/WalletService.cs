@@ -94,6 +94,9 @@ namespace HealthGateway.WebClient.Services
                 await this.walletIssuerDelegate.CreateConnectionAsync(walletConnection.Id).ConfigureAwait(true);
             if (walletIssuerConnectionResult.ResultStatus != ResultType.Success)
             {
+                // Logically delete the created connection in the database
+                walletConnection.Status = WalletConnectionStatus.Disconnected;
+                this.walletDelegate.UpdateConnection(walletConnection);
                 this.logger.LogDebug($"Error creating connection with wallet issuer. user {hdId}: {JsonSerializer.Serialize(walletIssuerConnectionResult)}");
                 return new RequestResult<WalletConnectionModel>()
                 {
@@ -314,24 +317,27 @@ namespace HealthGateway.WebClient.Services
             WalletConnection walletConnection = dbResult.Payload;
 
             this.logger.LogDebug($"Revoking all connection credentials. user: {hdId}. {JsonSerializer.Serialize(walletConnection)}");
-            foreach (var credential in walletConnection.Credentials)
+            if (walletConnection.Credentials != null)
             {
-                if (credential.Status != WalletCredentialStatus.Revoked)
+                foreach (var credential in walletConnection.Credentials)
                 {
-                    RequestResult<WalletCredentialModel> revokeResult = await this.RevokeCredential(credential).ConfigureAwait(true);
-
-                    if (revokeResult.ResultStatus != ResultType.Success)
+                    if (credential.Status != WalletCredentialStatus.Revoked)
                     {
-                        this.logger.LogDebug($"Error revoking credential. user {hdId}: {JsonSerializer.Serialize(revokeResult)}");
-                        return new RequestResult<WalletConnectionModel>()
+                        RequestResult<WalletCredentialModel> revokeResult = await this.RevokeCredential(credential).ConfigureAwait(true);
+
+                        if (revokeResult.ResultStatus != ResultType.Success)
                         {
-                            ResultStatus = ResultType.Error,
-                            ResultError = new RequestResultError()
+                            this.logger.LogDebug($"Error revoking credential. user {hdId}: {JsonSerializer.Serialize(revokeResult)}");
+                            return new RequestResult<WalletConnectionModel>()
                             {
-                                ResultMessage = "Error disconnecting with wallet issuer. Revoke credential failed",
-                                InnerError = revokeResult.ResultError,
-                            },
-                        };
+                                ResultStatus = ResultType.Error,
+                                ResultError = new RequestResultError()
+                                {
+                                    ResultMessage = "Error disconnecting with wallet issuer. Revoke credential failed",
+                                    InnerError = revokeResult.ResultError,
+                                },
+                            };
+                        }
                     }
                 }
             }

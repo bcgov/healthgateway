@@ -94,6 +94,40 @@ export class RestCredentialService implements ICredentialService {
         });
     }
 
+    public disconnectConnection(
+        hdid: string,
+        connectionId: string
+    ): Promise<WalletConnection> {
+        return new Promise((resolve, reject) => {
+            if (!this.isEnabled) {
+                reject();
+                return;
+            }
+
+            this.http
+                .delete<RequestResult<WalletConnection>>(
+                    `${this.CREDENTIAL_BASE_URI}/${hdid}/Connection/${connectionId}`
+                )
+                .then((requestResult) => {
+                    this.logger.debug(`disconnectConnection ${requestResult}`);
+                    RequestResultUtil.handleResult(
+                        requestResult,
+                        resolve,
+                        reject
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(`disconnectConnection error: ${err}`);
+                    return reject(
+                        ErrorTranslator.internalNetworkError(
+                            err,
+                            ServiceName.HealthGatewayUser
+                        )
+                    );
+                });
+        });
+    }
+
     public createCredentials(
         hdid: string,
         targetIds: string[]

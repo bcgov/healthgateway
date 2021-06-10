@@ -17,15 +17,24 @@ export default class ErrorTranslator {
 
     public static toBannerError(
         title: string,
-        error?: ResultError
+        error?: ResultError | string
     ): BannerError {
-        if (error) {
+        const resultError = error as ResultError;
+        if (resultError?.errorCode) {
             return {
                 title,
-                description: this.getDisplayMessage(error.errorCode),
-                detail: error.resultMessage,
-                errorCode: error.errorCode,
-                traceId: error.traceId,
+                description: this.getDisplayMessage(resultError.errorCode),
+                detail: resultError.resultMessage,
+                errorCode: resultError.errorCode,
+                traceId: resultError.traceId,
+            };
+        } else if (typeof error == "string") {
+            return {
+                title,
+                description: error as string,
+                detail: "",
+                errorCode: "",
+                traceId: "",
             };
         } else {
             return {
