@@ -44,6 +44,28 @@ export const actions: CredentialActions = {
                 });
         });
     },
+    disconnectConnection(
+        context,
+        params: { hdid: string; connectionId: string }
+    ): Promise<boolean> {
+        const credentialService: ICredentialService =
+            container.get<ICredentialService>(
+                SERVICE_IDENTIFIER.CredentialService
+            );
+        return new Promise((resolve, reject) => {
+            context.commit("setRequested");
+            credentialService
+                .disconnectConnection(params.hdid, params.connectionId)
+                .then((result) => {
+                    context.commit("removeCredential", result);
+                    resolve(true);
+                })
+                .catch((error) => {
+                    context.dispatch("handleError", error);
+                    reject(error);
+                });
+        });
+    },
     createCredential(
         context,
         params: { hdid: string; targetId: string }
