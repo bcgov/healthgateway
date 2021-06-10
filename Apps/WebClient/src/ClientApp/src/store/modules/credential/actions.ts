@@ -57,7 +57,7 @@ export const actions: CredentialActions = {
             credentialService
                 .disconnectConnection(params.hdid, params.connectionId)
                 .then((result) => {
-                    context.commit("removeCredential", result);
+                    context.commit("setConnection", result);
                     resolve(true);
                 })
                 .catch((error) => {
