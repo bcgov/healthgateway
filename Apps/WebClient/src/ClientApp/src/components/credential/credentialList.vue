@@ -159,6 +159,7 @@ export default class CredentialList extends Vue {
             v-for="entry in entries"
             :key="entry.id"
             class="cardWrapper mb-1"
+            data-testid="credentialCard"
         >
             <b-col class="ml-0 ml-md-2">
                 <b-row class="entryHeading p-3 align-items-center">
@@ -231,9 +232,8 @@ export default class CredentialList extends Vue {
                             v-else
                             data-testid="credentialStatus"
                             :class="statusClasses(entry.credential.status)"
+                            >{{ statusLabel(entry.credential.status) }}</strong
                         >
-                            {{ statusLabel(entry.credential.status) }}
-                        </strong>
                     </b-col>
                     <b-col cols="auto" class="pl-3">
                         <b-navbar-nav v-if="entry.credential !== undefined">
@@ -242,13 +242,13 @@ export default class CredentialList extends Vue {
                                 text=""
                                 :no-caret="true"
                                 :disabled="isMenuDisabled(entry.credential)"
+                                data-testid="credentialMenuBtn"
                             >
                                 <!-- Using 'button-content' slot -->
                                 <template slot="button-content">
                                     <hg-icon
                                         icon="ellipsis-v"
                                         size="small"
-                                        data-testid="credentialMenuBtn"
                                         class="credentialMenu"
                                     />
                                 </template>
