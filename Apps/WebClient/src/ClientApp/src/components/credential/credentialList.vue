@@ -130,6 +130,26 @@ export default class CredentialList extends Vue {
             this.logger.error(`Error revoking credential: ${err}`);
         });
     }
+
+    private handleReissueCredential(credential: WalletCredential): void {
+        this.revokeCredential({
+            hdid: this.user.hdid,
+            credentialId: credential.credentialId,
+        })
+            .then((result) => {
+                if (result === true) {
+                    return this.createCredential({
+                        hdid: this.user.hdid,
+                        targetId: credential.sourceId,
+                    }).catch((err) => {
+                        this.logger.error(`Error creating credential: ${err}`);
+                    });
+                }
+            })
+            .catch((err) => {
+                this.logger.error(`Error revoking credential: ${err}`);
+            });
+    }
 }
 </script>
 
@@ -242,6 +262,17 @@ export default class CredentialList extends Vue {
                                     "
                                 >
                                     Revoke
+                                </b-dropdown-item>
+                                <b-dropdown-item
+                                    data-testid="reissueCredentialMenuBtn"
+                                    class="menuItem"
+                                    @click.stop="
+                                        handleReissueCredential(
+                                            entry.credential
+                                        )
+                                    "
+                                >
+                                    Reissue
                                 </b-dropdown-item>
                             </b-nav-item-dropdown>
                         </b-navbar-nav>
