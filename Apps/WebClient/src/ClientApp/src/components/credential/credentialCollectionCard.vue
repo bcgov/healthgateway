@@ -178,16 +178,12 @@ export default class CredentialCollectionCard extends Vue {
         this.disconnectConnection({
             hdid: this.user.hdid,
             connectionId: this.connection?.walletConnectionId ?? "",
-        })
-            .catch((err) => {
-                this.logger.error(`Error disconnecting: ${err}`);
-                this.addError(
-                    ErrorTranslator.toBannerError("Error disconnecting", err)
-                );
-            })
-            .finally(() => {
-                this.refreshConnection();
-            });
+        }).catch((err) => {
+            this.logger.error(`Error disconnecting: ${err}`);
+            this.addError(
+                ErrorTranslator.toBannerError("Error disconnecting", err)
+            );
+        });
     }
 }
 </script>
