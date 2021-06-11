@@ -197,13 +197,17 @@ export default class CredentialCollectionCard extends Vue {
         <b-card>
             <div v-if="isConnectionConnected" class="text-center float-right">
                 <b-nav>
-                    <b-nav-item-dropdown right text="" :no-caret="true">
+                    <b-nav-item-dropdown
+                        right
+                        text=""
+                        :no-caret="true"
+                        data-testid="connectionMenuBtn"
+                    >
                         <!-- Using 'button-content' slot -->
                         <template slot="button-content">
                             <hg-icon
                                 icon="ellipsis-v"
                                 size="small"
-                                data-testid="connectionMenuBtn"
                                 class="connectionMenu"
                             />
                         </template>
@@ -222,14 +226,17 @@ export default class CredentialCollectionCard extends Vue {
                     heading="Connection Status"
                     :variant="connectionStatusVariant"
                     :status="connectionStatusLabel"
-                    data-testid="connectionStatusLabel"
                 />
                 <div v-if="isConnectionConnected" class="mt-2 text-muted">
-                    Credentials in Wallet: {{ addedCredentials.length }}
+                    <span>Credentials in Wallet: </span>
+                    <span data-testid="credentialsInWallet">{{
+                        addedCredentials.length
+                    }}</span>
                 </div>
                 <div
                     v-else-if="isConnectionPending"
                     class="mx-auto mt-3 text-center"
+                    data-testid="connectionPendingDetails"
                 >
                     <div class="mb-3">
                         <div class="mb-3">
