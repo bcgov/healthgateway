@@ -6,7 +6,6 @@ import Vue from "vue";
 import { Component, Ref, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import LoadingComponent from "@/components/loading.vue";
 import DeleteModalComponent from "@/components/modal/deleteConfirmation.vue";
 import MessageModalComponent from "@/components/modal/genericMessage.vue";
 import BannerError from "@/models/bannerError";
@@ -26,7 +25,6 @@ library.add(faEllipsisV);
 
 @Component({
     components: {
-        LoadingComponent,
         "message-modal": MessageModalComponent,
         DeleteModalComponent,
     },
@@ -58,8 +56,6 @@ export default class CredentialCollectionCard extends Vue {
 
     @Ref("disconnectModal")
     readonly disconnectModal!: DeleteModalComponent;
-
-    private isLoading = false;
 
     @Watch("connection")
     private updateQrCode(): void {
@@ -150,41 +146,28 @@ export default class CredentialCollectionCard extends Vue {
     }
 
     private handleCreateConnection(): void {
-        this.isLoading = true;
         this.createConnection({
             hdid: this.user.hdid,
-        })
-            .catch((err) => {
-                this.logger.error(`Error creating connection: ${err}`);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Error creating connection",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+        }).catch((err) => {
+            this.logger.error(`Error creating connection: ${err}`);
+            this.addError(
+                ErrorTranslator.toBannerError("Error creating connection", err)
+            );
+        });
     }
 
     private refreshConnection(): void {
-        this.isLoading = true;
         this.retrieveConnection({
             hdid: this.user.hdid,
-        })
-            .catch((err) => {
-                this.logger.error(`Error retrieving connection: ${err}`);
-                this.addError(
-                    ErrorTranslator.toBannerError(
-                        "Error retrieving connection",
-                        err
-                    )
-                );
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+        }).catch((err) => {
+            this.logger.error(`Error retrieving connection: ${err}`);
+            this.addError(
+                ErrorTranslator.toBannerError(
+                    "Error retrieving connection",
+                    err
+                )
+            );
+        });
     }
 
     private showDisconnectConfirmationModal(): void {
@@ -192,7 +175,6 @@ export default class CredentialCollectionCard extends Vue {
     }
 
     private handleDisconnect(): void {
-        this.isLoading = true;
         this.disconnectConnection({
             hdid: this.user.hdid,
             connectionId: this.connection?.walletConnectionId ?? "",
@@ -205,7 +187,6 @@ export default class CredentialCollectionCard extends Vue {
             })
             .finally(() => {
                 this.refreshConnection();
-                this.isLoading = false;
             });
     }
 }
@@ -213,7 +194,6 @@ export default class CredentialCollectionCard extends Vue {
 
 <template>
     <div>
-        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <b-card>
             <div v-if="isConnectionConnected" class="text-center float-right">
                 <b-nav>
