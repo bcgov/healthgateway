@@ -64,6 +64,9 @@ namespace HealthGateway.Database.Delegates
                 connection = this.dbContext.WalletConnection
                                            .Where(p => p.Id == id &&
                                                        p.UserProfileId == userProfileId)
+                                           .Include(c => c.Credentials
+                                                  .Where(q => q.Status != WalletCredentialStatus.Revoked)
+                                                  .OrderByDescending(q => q.CreatedDateTime))
                                            .FirstOrDefault();
             }
             else
