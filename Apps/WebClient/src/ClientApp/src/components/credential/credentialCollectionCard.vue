@@ -204,7 +204,6 @@ export default class CredentialCollectionCard extends Vue {
                 );
             })
             .finally(() => {
-                this.refreshConnection();
                 this.isLoading = false;
             });
     }
