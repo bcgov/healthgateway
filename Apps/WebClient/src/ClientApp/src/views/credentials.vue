@@ -92,9 +92,13 @@ export default class CredentialsView extends Vue {
                     v-if="!hasCredentialConnection && !acknowledgedInstructions"
                     :has-covid-immunizations="hasCovidImmunizations"
                     :is-loading="isLoading"
+                    data-testid="credentialInstructions"
                     @started="acknowledgeInstructions"
                 />
-                <credential-management v-else />
+                <credential-management
+                    v-else
+                    data-testid="credentialManagement"
+                />
             </b-col>
         </b-row>
         <resource-centre />

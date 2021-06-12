@@ -3,14 +3,20 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Getter } from "vuex-class";
 
+import LoadingComponent from "@/components/loading.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import { ConnectionStatus, WalletConnection } from "@/models/wallet";
+import {
+    ConnectionStatus,
+    CredentialStatus,
+    WalletConnection,
+} from "@/models/wallet";
 
 import CredentialCollectionCard from "./credentialCollectionCard.vue";
 import CredentialList from "./credentialList.vue";
 
 @Component({
     components: {
+        LoadingComponent,
         "credential-collection-card": CredentialCollectionCard,
         "credential-list": CredentialList,
     },
@@ -22,6 +28,9 @@ export default class CredentialManagementView extends Vue {
     @Getter("webClient", { namespace: "config" })
     config!: WebClientConfiguration;
 
+    @Getter("isLoading", { namespace: "credential" })
+    isLoading!: boolean;
+
     private get isConnectionConnected(): boolean {
         return this.connection?.status === ConnectionStatus.Connected;
     }
@@ -29,15 +38,21 @@ export default class CredentialManagementView extends Vue {
     private get verifierUrl(): string {
         return this.config.externalURLs["CredentialVerification"];
     }
+
+    private get hasAddedCredential(): boolean {
+        const credentials = this.connection?.credentials ?? [];
+        return credentials.some((c) => c.status === CredentialStatus.Added);
+    }
 }
 </script>
 
 <template>
     <div>
+        <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <page-title title="Credentials" />
         <credential-collection-card />
         <credential-list v-if="isConnectionConnected" class="mt-3" />
-        <b-row v-if="isConnectionConnected" class="mt-3"
+        <b-row v-if="isConnectionConnected && hasAddedCredential" class="mt-3"
             ><b-col class="text-center">
                 <div class="my-3">
                     Test your credentials to see how verification would work
