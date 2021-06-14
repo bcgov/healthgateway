@@ -47,6 +47,14 @@ export default class CredentialsView extends Vue {
     @Action("retrieveConnection", { namespace: "credential" })
     retrieveConnection!: (params: { hdid: string }) => Promise<boolean>;
 
+    private timeoutHandle = 0;
+
+    private readonly pollingSeconds = 15;
+
+    private logger!: ILogger;
+
+    private acknowledgedInstructions = false;
+
     private get hasCredentialConnection(): boolean {
         return this.connection !== undefined && this.connection !== null;
     }
@@ -58,10 +66,6 @@ export default class CredentialsView extends Vue {
     private get isLoading(): boolean {
         return this.isPatientLoading || this.isImmunizationLoading;
     }
-
-    private logger!: ILogger;
-
-    private acknowledgedInstructions = false;
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -76,6 +80,16 @@ export default class CredentialsView extends Vue {
         ]).catch((err) => {
             this.logger.error(`Error loading credential data: ${err}`);
         });
+    }
+
+    private mounted() {
+        this.timeoutHandle = window.setInterval(() => {
+            this.retrieveConnection({ hdid: this.user.hdid });
+        }, 1000 * this.pollingSeconds);
+    }
+
+    private destroyed() {
+        clearInterval(this.timeoutHandle);
     }
 
     private acknowledgeInstructions() {
