@@ -36,6 +36,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis" Version="3.9.0" />
+    <PackageReference Update="Microsoft.CodeAnalysis" Version="3.10.0" />
   </ItemGroup>
 </Project>
