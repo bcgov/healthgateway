@@ -30,22 +30,21 @@ The B.C. Government colour palette ensures all public facing government services
 #### Brand Colours
 
 <p float="left">
-    <img src="images/primary.png" alt="Primary Color" width="100" />
-    <img src="images/secondary.png" alt="Secondary Color" width="100" />
-    <img src="images/heading-text.png" alt="Heading Color" width="100" />
-    <img src="images/input-text.png" alt="Input Text Color" width="100" />
-    <img src="images/accent.png" alt="Accent Color" width="100" />
+    <img src="images/colours/primary.png" alt="Primary Color" width="100" />
+    <img src="images/colours/heading-text.png" alt="Heading Color" width="100" />
+    <img src="images/colours/input-text.png" alt="Input Text Color" width="100" />
+    <img src="images/colours/accent.png" alt="Accent Color" width="100" />
 </p>
 
 #### State Colours
 
 <p float="left">
-    <img src="images/success.png" alt="Success Color" width="100" />
-    <img src="images/error.png" alt="Error Color" width="100" />
-    <img src="images/links.png" alt="Link Color" width="100" />
-    <img src="images/background.png" alt="Background Color" width="100" />
-    <img src="images/navigation-bar.png" alt="Navigation bar Color" width="100" />
-    <img src="images/comment-icons.png" alt="Comment icons Color" width="100" />
+    <img src="images/colours/success.png" alt="Success Color" width="100" />
+    <img src="images/colours/error.png" alt="Error Color" width="100" />
+    <img src="images/colours/links.png" alt="Link Color" width="100" />
+    <img src="images/colours/background.png" alt="Background Color" width="100" />
+    <img src="images/colours/navigation-bar.png" alt="Navigation bar Color" width="100" />
+    <img src="images/colours/comment-icons.png" alt="Comment icons Color" width="100" />
 
 </p>
 
@@ -60,7 +59,7 @@ Accent #FCBA19
 Links #1A5A96
 Navigation Bar #38598A
 Secondary Text #606060
-Background #F2F2F2
+Background #F7F7F7
 ```
 
 Or color live examples
