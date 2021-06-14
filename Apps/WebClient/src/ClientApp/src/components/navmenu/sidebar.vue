@@ -1,5 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
+import { faIdCard as farIdCard } from "@fortawesome/free-regular-svg-icons";
 import {
     faAngleDoubleLeft,
     faChartLine,
@@ -28,7 +29,8 @@ library.add(
     faClipboardList,
     faEdit,
     faStream,
-    faUserFriends
+    faUserFriends,
+    farIdCard
 );
 
 const auth = "auth";
@@ -220,6 +222,14 @@ export default class SidebarComponent extends Vue {
         return this.$route.path == "/timeline";
     }
 
+    private get isCredentialsEnabled(): boolean {
+        return this.config.modules["Credential"];
+    }
+
+    private get isCredentials(): boolean {
+        return this.$route.path == "/credentials";
+    }
+
     private get isTermsOfService(): boolean {
         return this.$route.path == "/profile/termsOfService";
     }
@@ -356,6 +366,35 @@ export default class SidebarComponent extends Vue {
                             </div>
                         </b-popover>
                     </div>
+                    <!-- Credentials button -->
+                    <hg-button
+                        v-show="isCredentialsEnabled && isActiveProfile"
+                        id="menuBtnCredentials"
+                        data-testid="menuBtnCredentialsLink"
+                        to="/credentials"
+                        variant="nav"
+                        class="my-3"
+                        :class="{ selected: isCredentials }"
+                    >
+                        <b-row class="align-items-center">
+                            <b-col
+                                title="Credentials"
+                                :class="{ 'col-3': isOpen }"
+                            >
+                                <hg-icon
+                                    :icon="['far', 'id-card']"
+                                    size="large"
+                                />
+                            </b-col>
+                            <b-col
+                                v-show="isOpen"
+                                data-testid="credentialsLabel"
+                                class="button-text"
+                            >
+                                <span>Credentials</span>
+                            </b-col>
+                        </b-row>
+                    </hg-button>
                     <hg-button
                         v-show="isDependentEnabled && isActiveProfile"
                         id="menuBtnDependents"

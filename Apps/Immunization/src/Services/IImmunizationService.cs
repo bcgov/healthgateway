@@ -15,9 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Services
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Immunization;
     using HealthGateway.Immunization.Models;
 
     /// <summary>
@@ -26,11 +26,17 @@ namespace HealthGateway.Immunization.Services
     public interface IImmunizationService
     {
         /// <summary>
+        /// Gets the ImmunizationEvent for the given id.
+        /// </summary>
+        /// <param name="immunizationId">The security token representing the authenticated user.</param>
+        /// <returns>Returns a list of immunizations.</returns>
+        Task<RequestResult<ImmunizationEvent>> GetImmunization(string immunizationId);
+
+        /// <summary>
         /// Gets the ImmunizationResult inluding load state and a list of immunization records.
         /// </summary>
-        /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="pageIndex">The page index to return.</param>
         /// <returns>Returns a list of immunizations.</returns>
-        Task<RequestResult<ImmunizationResult>> GetImmunizations(string bearerToken, int pageIndex = 0);
+        Task<RequestResult<ImmunizationResult>> GetImmunizations(int pageIndex = 0);
     }
 }

@@ -13,38 +13,37 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.Models
+namespace HealthGateway.Common.Models.Immunization
 {
-    using System.Collections.Generic;
-    using HealthGateway.Immunization.Models.PHSA.Recommendation;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Defines an Immunization definition.
+    /// The Immunization Agents model.
     /// </summary>
-    public class ImmunizationDefinition
+    public class ImmunizationAgent
     {
         /// <summary>
-        /// Gets or sets the Immunization name.
+        /// Gets or sets the Immunization id.
         /// </summary>
+        [JsonPropertyName("code")]
+        public string Code { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Immunization Name.
+        /// </summary>
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Immunization Agents.
+        /// Gets or sets the Immunization Lot Number.
         /// </summary>
-        public IEnumerable<ImmunizationAgent> ImmunizationAgents { get; set; } = new List<ImmunizationAgent>();
+        [JsonPropertyName("lotNumber")]
+        public string LotNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Creates an ImmunizationDefinition object from a PHSA model.
+        /// Gets or sets the Immunization Product Name.
         /// </summary>
-        /// <param name="model">The vaccine code object to convert.</param>
-        /// <returns>The newly created ImmunizationDefinition object.</returns>
-        public static ImmunizationDefinition FromPHSAModel(VaccineCode model)
-        {
-            return new ImmunizationDefinition()
-            {
-                Name = model.VaccineCodeText,
-                ImmunizationAgents = ImmunizationAgent.FromPHSACodesModel(model.VaccineCodes),
-            };
-        }
+        [JsonPropertyName("productName")]
+        public string ProductName { get; set; } = string.Empty;
     }
 }

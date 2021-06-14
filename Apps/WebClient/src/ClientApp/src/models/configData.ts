@@ -56,7 +56,7 @@ export interface WebClientConfiguration {
     // Gets or sets the Webclient timeout values.
     registrationStatus: RegistrationStatus;
     // Gets or sets the ExternalURLs used by the Webclient.
-    externalURLs?: Dictionary<string>;
+    externalURLs: Dictionary<string>;
     // Gets or sets the Module state.
     modules: Dictionary<boolean>;
     // Gets or sets the hours for deletion.

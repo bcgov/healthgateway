@@ -13,7 +13,8 @@
     "devDependencies": {
         "@types/chart.js": "^2.9.32",
         "@types/jest": "^26.0.23",
-        "@types/luxon": "^1.26.5",
+        "@types/luxon": "^1.27.0",
+        "@types/qrcode": "^1.4.0",
         "@types/vuelidate": "^0.7.14",
         "@types/webpack-env": "^1.16.0",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
@@ -83,6 +84,7 @@
         "inversify": "^5.1.1",
         "luxon": "^1.27.0",
         "oidc-client": "^1.11.5",
+        "qrcode": "^1.4.4",
         "reflect-metadata": "^0.1.13",
         "vue": "^2.6.12",
         "vue-chartjs": "^3.5.1",

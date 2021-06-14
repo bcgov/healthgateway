@@ -27,6 +27,15 @@ namespace HealthGateway.Immunization.Models.PHSA
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationResponse"/> class.
         /// </summary>
+        public ImmunizationResponse()
+        {
+            this.ImmunizationViews = new List<ImmunizationViewResponse>();
+            this.Recommendations = new List<ImmunizationRecommendationResponse>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImmunizationResponse"/> class.
+        /// </summary>
         /// <param name="immunizationViews">The list of immunization view response.</param>
         /// <param name="recommendations">The list of immunization recommendation response.</param>
         [JsonConstructor]

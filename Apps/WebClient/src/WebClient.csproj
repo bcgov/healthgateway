@@ -13,12 +13,13 @@
     <Content Remove="Listeners\**" />
     <EmbeddedResource Remove="Listeners\**" />
     <None Remove="Listeners\**" />
+    <None Remove="Server\Models\AcaPy\" />
   </ItemGroup>  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.7" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="VueCliMiddleware" Version="5.0.0" />
   </ItemGroup>
@@ -45,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\DumpHeaders\" />
+    <Folder Include="Server\Models\AcaPy\" />
   </ItemGroup>
   <Target Name="CleanDistFolder" AfterTargets="CoreClean">
     <RemoveDir Directories="wwwroot\dist" />
