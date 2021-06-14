@@ -81,8 +81,11 @@ Primary
 
 ### Icons
 
-Describe the icons
+Sizing of icons
 
-<img src="images/icons/icon-typeface.png" alt="Icon and Typeface" width="100%" />
+<img src="images/icons/icons.png" alt="Icon and Typeface" width="100%" />
 
-## Other examples
+## Typography
+
+typeface and sizing
+<img src="images/typography/typography.png" alt="Icon and Typeface"  />
