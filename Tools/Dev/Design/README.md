@@ -62,20 +62,18 @@ Secondary Text #606060
 Background #F7F7F7
 ```
 
-Or color live examples
-
 ### Buttons
 
-Buttons are categorized in used as follow:
+Buttons are categorized and used as follow:
 Primary
 
 <img src="images/buttons/primary.png" alt="Primary Button" />
-<img src="images/buttons/secondary.png" alt="Secondary Button" />
-<img src="images/buttons/highlighted.png" alt="Highlighted Button" />
+<img src="images/buttons/secondary.png" alt="Secondary Button"  />
+<img src="images/buttons/highlighted.png" alt="Highlighted Button"  />
 <img src="images/buttons/navigation.png" alt="Navigation Button" />
-<img src="images/buttons/current nav.png" alt="Current Nav Button" />
+<img src="images/buttons/current nav.png" alt="Current Nav Button"/>
 <img src="images/buttons/link.png" alt="Secondary Button" />
-<img src="images/buttons/error link.png" alt="Primary Button" />
+<img src="images/buttons/error link.png" alt="Primary Button"/>
 <img src="images/buttons/icon light.png" alt="Secondary Button" />
 <img src="images/buttons/icon dark.png" alt="Secondary Button" />
 <img src="images/buttons/submenu with icon.png" alt="Secondary Button" />
@@ -85,6 +83,6 @@ Primary
 
 Describe the icons
 
-<img src="images/icon-typeface.png" alt="Icon and Typeface" width="100%" />
+<img src="images/icons/icon-typeface.png" alt="Icon and Typeface" width="100%" />
 
 ## Other examples
