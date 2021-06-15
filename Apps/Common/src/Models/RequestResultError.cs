@@ -60,12 +60,6 @@ namespace HealthGateway.Common.Models
         public ActionType? ActionCode { get; set; }
 
         /// <summary>
-        /// Gets or sets the inner request error object.
-        /// </summary>
-        [JsonPropertyName("innerError")]
-        public RequestResultError? InnerError { get; set; }
-
-        /// <summary>
         /// Gets action code.
         /// Will always be set when ResultType is ActionRequired.
         /// </summary>
