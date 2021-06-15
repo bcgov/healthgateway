@@ -67,17 +67,17 @@ Background #F7F7F7
 Buttons are categorized and used as follow:
 Primary
 
-<img src="images/buttons/primary.png" alt="Primary Button" />
-<img src="images/buttons/secondary.png" alt="Secondary Button"  />
-<img src="images/buttons/highlighted.png" alt="Highlighted Button"  />
-<img src="images/buttons/navigation.png" alt="Navigation Button" />
-<img src="images/buttons/current nav.png" alt="Current Nav Button"/>
-<img src="images/buttons/link.png" alt="Secondary Button" />
-<img src="images/buttons/error link.png" alt="Primary Button"/>
-<img src="images/buttons/icon light.png" alt="Secondary Button" />
-<img src="images/buttons/icon dark.png" alt="Secondary Button" />
-<img src="images/buttons/submenu with icon.png" alt="Secondary Button" />
-<img src="images/buttons/submenu.png" alt="Submenu Button" />
+<img src="images/buttons/primary.png" alt="Primary Button" width="250"/>
+<img src="images/buttons/secondary.png" alt="Secondary Button" width="250" />
+<img src="images/buttons/highlighted.png" alt="Highlighted Button" width="250"/>
+<img src="images/buttons/navigation.png" alt="Navigation Button" width="250"/>
+<img src="images/buttons/current nav.png" alt="Current Nav Button"width="250"/>
+<img src="images/buttons/link.png" alt="Secondary Button"width="250" />
+<img src="images/buttons/error link.png" alt="Primary Button"width="250"/>
+<img src="images/buttons/icon light.png" alt="Secondary Button"width="250" />
+<img src="images/buttons/icon dark.png" alt="Secondary Button"width="250" />
+<img src="images/buttons/submenu with icon.png" alt="Secondary Button" width="250"/>
+<img src="images/buttons/submenu.png" alt="Submenu Button" width="250"/>
 
 ### Icons
 
