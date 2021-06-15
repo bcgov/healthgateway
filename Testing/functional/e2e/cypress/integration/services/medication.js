@@ -238,12 +238,12 @@ describe("Medication Service", () => {
                         accept: "application/json",
                     },
                 }).should((response) => {
+                    cy.log(`response.body: ${response.body}`);
                     expect(response.status).to.eq(200);
                     expect(response.body).to.not.be.null;
-                    cy.log(`response.body: ${response.body}`);
                     expect(
                         response.body.resourcePayload.length
-                    ).to.be.greaterThan(1);
+                    ).to.be.greaterThan(0);
                     expect(response.body.resourcePayload[0].referenceNumber).to
                         .not.be.empty;
                 });
