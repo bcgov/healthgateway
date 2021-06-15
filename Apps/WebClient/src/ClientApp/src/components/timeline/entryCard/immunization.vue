@@ -126,7 +126,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                                 second dose will be sent out following a schedule 
                                 similar to first doses. Please do not be concerned if your 
                                 Dose 2 forecast date has already passed. You will receive an 
-                                invitiation as soon as it is your turn. For more information
+                                invitation as soon as it is your turn. For more information
                                 go to
                                 <a
                                     href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/dose-2"
