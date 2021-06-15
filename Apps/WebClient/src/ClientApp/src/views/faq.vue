@@ -240,50 +240,12 @@
                     block
                     variant="info"
                     class="text-left"
-                    >Do I use the Health Gateway for COVID-19 immunization
-                    registration and booking?</b-button
-                >
-            </b-card-header>
-            <b-collapse id="accordion-faqAnswer5" role="tabpanel">
-                <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
-                            <p>
-                                No. Visit the
-                                <a
-                                    href="https://www2.gov.bc.ca/gov/content/safety/emergency-preparedness-response-recovery/covid-19-provincial-support/vaccines"
-                                    target="blank_"
-                                    >COVID-19 Immunization Plan</a
-                                >
-                                page for more information on the COVID-19
-                                immunization registration and booking process.
-                                The Health Gateway provides a digital record of
-                                your COVID-19 immunization once you have
-                                received it.
-                            </p>
-                        </div></b-card-text
-                    >
-                </b-card-body>
-            </b-collapse>
-        </b-card>
-        <b-card no-body class="mb-1 border-0">
-            <b-card-header
-                header-tag="header"
-                class="p-1 faq-header"
-                role="tab"
-            >
-                <b-button
-                    v-b-toggle.accordion-faqAnswer6
-                    data-testid="questionBtn"
-                    block
-                    variant="info"
-                    class="text-left"
                     >I see immunizations that I received in the pharmacy, like
                     flu shots, but I don’t see immunizations from my family
                     doctor or travel clinic. Why is that?
                 </b-button>
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer6" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer5" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -312,7 +274,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer7
+                    v-b-toggle.accordion-faqAnswer6
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -321,7 +283,7 @@
                     portals, such as My Health?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer7" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer6" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -350,7 +312,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer8
+                    v-b-toggle.accordion-faqAnswer7
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -359,7 +321,7 @@
                     their information through the Health Gateway?
                 </b-button>
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer8" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer7" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -381,7 +343,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer9
+                    v-b-toggle.accordion-faqAnswer8
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -390,7 +352,7 @@
                     Health Gateway?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer9" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer8" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -416,7 +378,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer10
+                    v-b-toggle.accordion-faqAnswer9
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -424,7 +386,7 @@
                     >How frequently do you add new features?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer10" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer9" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
