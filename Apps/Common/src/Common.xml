@@ -2869,11 +2869,6 @@
             Will always be set when ResultType is ActionRequired.
             </summary>
         </member>
-        <member name="P:HealthGateway.Common.Models.RequestResultError.InnerError">
-            <summary>
-            Gets or sets the inner request error object.
-            </summary>
-        </member>
         <member name="P:HealthGateway.Common.Models.RequestResultError.ActionCodeValue">
             <summary>
             Gets action code.

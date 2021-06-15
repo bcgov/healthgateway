@@ -101,11 +101,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<WalletConnectionModel>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error creating wallet connection with wallet issuer",
-                        InnerError = walletIssuerConnectionResult.ResultError,
-                    },
+                    ResultError = walletIssuerConnectionResult.ResultError,
                 };
             }
 
@@ -186,11 +182,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<IEnumerable<WalletCredentialModel>>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error getting patient info when creating wallet credential",
-                        InnerError = patientRequestResult.ResultError,
-                    },
+                    ResultError = patientRequestResult.ResultError,
                 };
             }
 
@@ -206,11 +198,7 @@ namespace HealthGateway.WebClient.Services
                     return new RequestResult<IEnumerable<WalletCredentialModel>>()
                     {
                         ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError()
-                        {
-                            ResultMessage = "Error getting immunization info when creating wallet credential",
-                            InnerError = patientRequestResult.ResultError,
-                        },
+                        ResultError = patientRequestResult.ResultError,
                     };
                 }
 
@@ -238,11 +226,7 @@ namespace HealthGateway.WebClient.Services
                     return new RequestResult<IEnumerable<WalletCredentialModel>>()
                     {
                         ResultStatus = ResultType.Error,
-                        ResultError = new RequestResultError()
-                        {
-                            ResultMessage = "Error creating wallet credential with wallet issuer",
-                            InnerError = walletIssuerCredentialResult.ResultError,
-                        },
+                        ResultError = walletIssuerCredentialResult.ResultError,
                     };
                 }
 
@@ -331,11 +315,7 @@ namespace HealthGateway.WebClient.Services
                             return new RequestResult<WalletConnectionModel>()
                             {
                                 ResultStatus = ResultType.Error,
-                                ResultError = new RequestResultError()
-                                {
-                                    ResultMessage = "Error disconnecting with wallet issuer. Revoke credential failed",
-                                    InnerError = revokeResult.ResultError,
-                                },
+                                ResultError = revokeResult.ResultError,
                             };
                         }
                     }
@@ -351,11 +331,7 @@ namespace HealthGateway.WebClient.Services
                 return new RequestResult<WalletConnectionModel>()
                 {
                     ResultStatus = ResultType.Error,
-                    ResultError = new RequestResultError()
-                    {
-                        ResultMessage = "Error disconnecting with wallet issuer",
-                        InnerError = walletIssuerConnectionResult.ResultError,
-                    },
+                    ResultError = walletIssuerConnectionResult.ResultError,
                 };
             }
 
