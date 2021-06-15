@@ -3,7 +3,7 @@ describe("Immunization", () => {
     before(() => {
         let isLoading = false;
         cy.enableModules("Immunization");
-        cy.intercept("GET", "**/v1/api/Immunization/*", (req) => {
+        cy.intercept("GET", "/v1/api/Immunization", (req) => {
             req.reply((res) => {
                 if (!isLoading) {
                     res.send({
@@ -84,16 +84,10 @@ describe("Immunization", () => {
         );
         cy.get("[data-testid=doseDate]")
             .first()
-            .should(
-                "be.visible",
-                "not.be.empty"
-            );
+            .should("be.visible", "not.be.empty");
         cy.get("[data-testid=doseDate]")
             .last()
-            .should(
-                "be.visible",
-                "not.be.empty"
-            );
+            .should("be.visible", "not.be.empty");
 
         cy.get("[data-testid=exportCardBtn]")
             .should("be.enabled", "be.visible")
@@ -107,7 +101,7 @@ describe("Immunization", () => {
 
     it("Validate Empty Title", () => {
         cy.enableModules("Immunization");
-        cy.intercept("GET", "**/v1/api/Immunization/*", {
+        cy.intercept("GET", "/v1/api/Immunization", {
             fixture: "ImmunizationService/immunizationEmptyName.json",
         });
         cy.login(

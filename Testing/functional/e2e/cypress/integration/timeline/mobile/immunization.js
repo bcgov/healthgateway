@@ -3,7 +3,7 @@ describe("Immunization Async", () => {
     beforeEach(() => {
         let isLoading = false;
         cy.enableModules("Immunization");
-        cy.intercept("GET", "**/v1/api/Immunization/*", (req) => {
+        cy.intercept("GET", "/v1/api/Immunization", (req) => {
             if (!isLoading) {
                 req.reply({
                     fixture: "ImmunizationService/immunizationrefresh.json",
@@ -23,12 +23,9 @@ describe("Immunization Async", () => {
     });
 
     it("Validate Immunization Loading", () => {
-        cy.get("[data-testid=immunizationLoading]")
-            .should("be.visible")
-        cy.get("[data-testid=immunizationLoading]")
-            .should("not.exist");
-        cy.get("[data-testid=immunizationReady]")
-            .should("be.visible");
+        cy.get("[data-testid=immunizationLoading]").should("be.visible");
+        cy.get("[data-testid=immunizationLoading]").should("not.exist");
+        cy.get("[data-testid=immunizationReady]").should("be.visible");
     });
 });
 
@@ -36,7 +33,7 @@ describe("Immunization Async No Records", () => {
     beforeEach(() => {
         let isLoading = false;
         cy.enableModules("Immunization");
-        cy.intercept("GET", "**/v1/api/Immunization/*", (req) => {
+        cy.intercept("GET", "/v1/api/Immunization", (req) => {
             if (!isLoading) {
                 req.reply({
                     fixture: "ImmunizationService/immunizationrefresh.json",
@@ -58,20 +55,16 @@ describe("Immunization Async No Records", () => {
     });
 
     it("Validate Immunization Loading", () => {
-        cy.get("[data-testid=immunizationLoading]")
-            .should("be.visible")
-        cy.get("[data-testid=immunizationLoading]")
-            .should("not.exist");
-        cy.get("[data-testid=immunizationEmpty]")
-            .should("be.visible");
-
+        cy.get("[data-testid=immunizationLoading]").should("be.visible");
+        cy.get("[data-testid=immunizationLoading]").should("not.exist");
+        cy.get("[data-testid=immunizationEmpty]").should("be.visible");
     });
 });
 
 describe("Immunization", () => {
     beforeEach(() => {
         cy.enableModules("Immunization");
-        cy.intercept("GET", "**/v1/api/Immunization/*", {
+        cy.intercept("GET", "/v1/api/Immunization", {
             fixture: "ImmunizationService/immunization.json",
         });
         cy.viewport("iphone-6");
