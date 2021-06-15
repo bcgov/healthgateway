@@ -9,7 +9,7 @@
             </b-col>
         </b-row>
         <b-row class="m-1 fluid text-right">
-            <b-col> Last updated: <strong>2021-May-05</strong> </b-col>
+            <b-col> Last updated: <strong>2021-June-16</strong> </b-col>
         </b-row>
         <b-card no-body class="mb-1 border-0">
             <b-card-header
@@ -119,12 +119,106 @@
                     block
                     variant="info"
                     class="text-left"
+                    >I received one or both doses of the COVID-19 vaccine
+                    outside of BC. How do I get my out-of-province dose(s) to
+                    appear in Health Gateway?</b-button
+                >
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer2" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
+                                Health Gateway shows your vaccinations as
+                                recorded in the Provincial Immunization
+                                Registry. To get your out-of-province vaccines
+                                added to the Registry, complete the online form
+                                at
+                                <a
+                                    href="www.gov.bc.ca/vaccinerecord"
+                                    target="blank_"
+                                    >www.gov.bc.ca/vaccinerecord</a
+                                >. You will need to upload proof of your
+                                vaccination. Once your information has been
+                                submitted, it may take about 3 business days for
+                                it to appear in Health Gateway.
+                            </p>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse> </b-card
+        ><b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer3
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
+                    >I received my COVID-19 vaccine in BC, but it’s not showing
+                    in Health Gateway. What should I do?
+                </b-button>
+            </b-card-header>
+            <b-collapse id="accordion-faqAnswer3" role="tabpanel">
+                <b-card-body>
+                    <b-card-text
+                        ><div data-testid="answerTxt">
+                            <p>
+                                Your vaccine will usually appear in Health
+                                Gateway within 48 hours, but with the thousands
+                                of vaccinations happening each day, sometimes
+                                records can take a bit of time to be added.
+                                Please check back again. Once it has been 8
+                                weeks since your first dose, you can call the
+                                Get Vaccinated line at 1-833-838-2323 to book
+                                your second dose appointment. If your first dose
+                                still isn’t showing, let the call centre agent
+                                know. You will be asked to bring proof of your
+                                first dose with you to your second dose
+                                appointment. If you will not be booking another
+                                COVID-19 vaccine appointment and your vaccine
+                                record(s) are not showing in Health Gateway,
+                                please complete the online form at
+                                <a
+                                    href="www.gov.bc.ca/vaccinerecord"
+                                    target="blank_"
+                                    >www.gov.bc.ca/vaccinerecord</a
+                                >. You will need to upload proof of your
+                                vaccine(s). Once your information has been
+                                submitted, it may take about 3 business days for
+                                it to appear in Health Gateway. (Note: The
+                                easiest way is to bring your first dose record
+                                with you to your second dose appointment. Only
+                                use the online form if you are not going to
+                                another appointment.)
+                            </p>
+                        </div></b-card-text
+                    >
+                </b-card-body>
+            </b-collapse>
+        </b-card>
+        <b-card no-body class="mb-1 border-0">
+            <b-card-header
+                header-tag="header"
+                class="p-1 faq-header"
+                role="tab"
+            >
+                <b-button
+                    v-b-toggle.accordion-faqAnswer4
+                    data-testid="questionBtn"
+                    block
+                    variant="info"
+                    class="text-left"
                     >Why does my health visit record show a different
                     practitioner or clinic address than the one I went
                     to?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer2" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer4" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -148,45 +242,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer3
-                    data-testid="questionBtn"
-                    block
-                    variant="info"
-                    class="text-left"
-                    >Do I use the Health Gateway for COVID-19 immunization
-                    registration and booking?</b-button
-                >
-            </b-card-header>
-            <b-collapse id="accordion-faqAnswer3" role="tabpanel">
-                <b-card-body>
-                    <b-card-text
-                        ><div data-testid="answerTxt">
-                            <p>
-                                No. Visit the
-                                <a
-                                    href="https://www2.gov.bc.ca/gov/content/safety/emergency-preparedness-response-recovery/covid-19-provincial-support/vaccines"
-                                    target="blank_"
-                                    >COVID-19 Immunization Plan</a
-                                >
-                                page for more information on the COVID-19
-                                immunization registration and booking process.
-                                The Health Gateway provides a digital record of
-                                your COVID-19 immunization once you have
-                                received it.
-                            </p>
-                        </div></b-card-text
-                    >
-                </b-card-body>
-            </b-collapse>
-        </b-card>
-        <b-card no-body class="mb-1 border-0">
-            <b-card-header
-                header-tag="header"
-                class="p-1 faq-header"
-                role="tab"
-            >
-                <b-button
-                    v-b-toggle.accordion-faqAnswer4
+                    v-b-toggle.accordion-faqAnswer5
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -196,7 +252,7 @@
                     doctor or travel clinic. Why is that?
                 </b-button>
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer4" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer5" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -225,7 +281,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer5
+                    v-b-toggle.accordion-faqAnswer6
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -234,7 +290,7 @@
                     portals, such as My Health?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer5" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer6" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -263,7 +319,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer6
+                    v-b-toggle.accordion-faqAnswer7
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -272,7 +328,7 @@
                     their information through the Health Gateway?
                 </b-button>
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer6" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer7" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -294,7 +350,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer7
+                    v-b-toggle.accordion-faqAnswer8
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -303,7 +359,7 @@
                     Health Gateway?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer7" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer8" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
@@ -329,7 +385,7 @@
                 role="tab"
             >
                 <b-button
-                    v-b-toggle.accordion-faqAnswer8
+                    v-b-toggle.accordion-faqAnswer9
                     data-testid="questionBtn"
                     block
                     variant="info"
@@ -337,7 +393,7 @@
                     >How frequently do you add new features?</b-button
                 >
             </b-card-header>
-            <b-collapse id="accordion-faqAnswer8" role="tabpanel">
+            <b-collapse id="accordion-faqAnswer9" role="tabpanel">
                 <b-card-body>
                     <b-card-text
                         ><div data-testid="answerTxt">
