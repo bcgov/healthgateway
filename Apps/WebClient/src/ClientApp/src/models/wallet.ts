@@ -21,7 +21,7 @@ export enum ConnectionStatus {
 export interface WalletCredential {
     credentialId: string;
     walletConnectionId: string;
-    issuerCredentialId: string;
+    issuerConnectionId: string;
     sourceType: string;
     sourceId: string;
     addedDate: StringISODateTime;
