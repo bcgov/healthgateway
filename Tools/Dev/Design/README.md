@@ -30,42 +30,29 @@ The B.C. Government colour palette ensures all public facing government services
 #### Brand Colours
 
 <p float="left">
-    <img src="images/colours/primary.png" alt="Primary Color" width="100" />
-    <img src="images/colours/heading-text.png" alt="Heading Color" width="100" />
-    <img src="images/colours/input-text.png" alt="Input Text Color" width="100" />
-    <img src="images/colours/accent.png" alt="Accent Color" width="100" />
-</p>
-
-#### State Colours
-
-<p float="left">
-    <img src="images/colours/success.png" alt="Success Color" width="100" />
-    <img src="images/colours/error.png" alt="Error Color" width="100" />
-    <img src="images/colours/links.png" alt="Link Color" width="100" />
-    <img src="images/colours/background.png" alt="Background Color" width="100" />
-    <img src="images/colours/navigation-bar.png" alt="Navigation bar Color" width="100" />
-    <img src="images/colours/comment-icons.png" alt="Comment icons Color" width="100" />
-
-</p>
+    <img src="images/colours/colours.png" alt="Primary Color"  />
+     <img src="images/colours/disabled-colour-state.png" alt="Heading Color" />
 
 ```
 Primary #003366
-Secondary #0092F1
+Highlighted #0092F1
 Success #2E8540
 Error #D72E3D
+Accent #FCBA19
 Heading Text #313132
 Input Text #606060
-Accent #FCBA19
+Disbaled #E9ECEF
 Links #1A5A96
 Navigation Bar #38598A
 Secondary Text #606060
 Background #F7F7F7
+Date Icons #6D757D
+
 ```
 
 ### Buttons
 
 Buttons are categorized and used as follow:
-Primary
 
 <img src="images/buttons/primary.png" alt="Primary Button" width="250"/>
 <img src="images/buttons/secondary.png" alt="Secondary Button" width="250" />
