@@ -135,10 +135,13 @@
                                 added to the Registry, complete the online form
                                 at
                                 <a
-                                    href="www.gov.bc.ca/vaccinerecord"
+                                    href="https://www.gov.bc.ca/vaccinerecord"
                                     target="blank_"
-                                    >www.gov.bc.ca/vaccinerecord</a
-                                >. You will need to upload proof of your
+                                    >gov.bc.ca/vaccinerecord</a
+                                >.
+                            </p>
+                            <p>
+                                You will need to upload proof of your
                                 vaccination. Once your information has been
                                 submitted, it may take about 3 business days for
                                 it to appear in Health Gateway.
@@ -172,21 +175,26 @@
                                 Gateway within 48 hours, but with the thousands
                                 of vaccinations happening each day, sometimes
                                 records can take a bit of time to be added.
-                                Please check back again. Once it has been 8
-                                weeks since your first dose, you can call the
-                                Get Vaccinated line at 1-833-838-2323 to book
-                                your second dose appointment. If your first dose
-                                still isn’t showing, let the call centre agent
-                                know. You will be asked to bring proof of your
-                                first dose with you to your second dose
-                                appointment. If you will not be booking another
-                                COVID-19 vaccine appointment and your vaccine
-                                record(s) are not showing in Health Gateway,
-                                please complete the online form at
+                                Please check back again.
+                            </p>
+                            <p>
+                                Once it has been 8 weeks since your first dose,
+                                you can call the Get Vaccinated line at
+                                1-833-838-2323 to book your second dose
+                                appointment. If your first dose still isn’t
+                                showing, let the call centre agent know. You
+                                will be asked to bring proof of your first dose
+                                with you to your second dose appointment.
+                            </p>
+                            <p>
+                                If you will not be booking another COVID-19
+                                vaccine appointment and your vaccine record(s)
+                                are not showing in Health Gateway, please
+                                complete the online form at
                                 <a
-                                    href="www.gov.bc.ca/vaccinerecord"
+                                    href="https://www.gov.bc.ca/vaccinerecord"
                                     target="blank_"
-                                    >www.gov.bc.ca/vaccinerecord</a
+                                    >gov.bc.ca/vaccinerecord</a
                                 >. You will need to upload proof of your
                                 vaccine(s). Once your information has been
                                 submitted, it may take about 3 business days for
