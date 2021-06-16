@@ -34,6 +34,7 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
         state: UserState
     ) => (preferenceName: string) => UserPreference | undefined;
     patientData(state: UserState): PatientData;
+    isLoading(state: UserState): boolean;
 }
 
 type UserContext = ActionContext<UserState, RootState>;
