@@ -50,9 +50,16 @@ export default class CredentialManagementView extends Vue {
     <div>
         <LoadingComponent :is-loading="isLoading"></LoadingComponent>
         <page-title title="Credentials" />
-        <credential-collection-card />
-        <credential-list v-if="isConnectionConnected" class="mt-3" />
-        <b-row v-if="isConnectionConnected && hasAddedCredential" class="mt-3"
+        <credential-collection-card data-testid="credentialCollectionCard" />
+        <credential-list
+            v-if="isConnectionConnected"
+            class="mt-3"
+            data-testid="credentialList"
+        />
+        <b-row
+            v-if="isConnectionConnected && hasAddedCredential"
+            class="mt-3"
+            data-testid="credentialVerification"
             ><b-col class="text-center">
                 <div class="my-3">
                     Test your credentials to see how verification would work
