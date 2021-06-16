@@ -61,13 +61,13 @@ export default class CredentialCollectionCard extends Vue {
     private updateQrCode(): void {
         const data = this.connection?.invitationEndpoint || "";
         if (data.length === 0) {
-            this.qrCodeDataUrl = null;
+            this.qrCodeDataUrl = undefined;
             return;
         }
         QRCode.toDataURL(data, {}, (err: unknown, url: string) => {
             if (err) {
                 this.logger.error(`Error generating QR Code: ${err}`);
-                this.qrCodeDataUrl = null;
+                this.qrCodeDataUrl = undefined;
                 this.addError(
                     ErrorTranslator.toBannerError(
                         "Error generating QR Code",
@@ -138,7 +138,7 @@ export default class CredentialCollectionCard extends Vue {
 
     private logger!: ILogger;
 
-    private qrCodeDataUrl: string | null = null;
+    private qrCodeDataUrl: string | undefined = undefined;
 
     private created() {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -255,7 +255,7 @@ export default class CredentialCollectionCard extends Vue {
                             and scan this QR code:
                         </div>
                         <img
-                            v-if="qrCodeDataUrl !== null"
+                            v-if="qrCodeDataUrl !== undefined"
                             :src="qrCodeDataUrl"
                             data-testid="qrCodeImage"
                             class="mb-3"
