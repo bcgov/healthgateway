@@ -21,7 +21,6 @@ namespace HealthGateway.Common.AspNetConfiguration
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Net.Http;
     using System.Reflection;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
@@ -150,6 +149,7 @@ namespace HealthGateway.Common.AspNetConfiguration
 
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, FhirResourceAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, ApiKeyAuthorizationHandler>();
 
             services.AddAuthorization(options =>
             {
@@ -206,7 +206,11 @@ namespace HealthGateway.Common.AspNetConfiguration
                 {
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
-                    policy.Requirements.Add(new FhirRequirement(FhirResource.Immunization, FhirAccessType.Read));
+                    policy.Requirements.Add(new FhirRequirement(
+                        FhirResource.Immunization,
+                        FhirAccessType.Read,
+                        FhirResourceLookup.Parameter,
+                        supportsUserDelegation: false));
                 });
                 options.AddPolicy(ImmunizationPolicy.Write, policy =>
                 {
@@ -273,6 +277,12 @@ namespace HealthGateway.Common.AspNetConfiguration
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
                     policy.Requirements.Add(new FhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
+                });
+
+                // API Key Policy
+                options.AddPolicy(ApiKeyPolicy.Write, policy =>
+                {
+                    policy.Requirements.Add(new ApiKeyRequirement(this.configuration));
                 });
             });
         }

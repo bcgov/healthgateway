@@ -17,6 +17,9 @@ namespace HealthGateway.Common.Swagger
 {
     using System.Collections.Generic;
     using System.Linq;
+    using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.AccessManagement.Authorization.Requirements;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.OpenApi.Models;
@@ -48,10 +51,30 @@ namespace HealthGateway.Common.Swagger
 
                 if ((controllerAuth && !methodAnonymous) || (!controllerAuth && methodAuth))
                 {
-                    var scheme = new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearer" } };
+                    bool controllerApiAuth = cad.ControllerTypeInfo.GetCustomAttributes(true).Any(t => t is AuthorizeAttribute attribute && attribute.Policy == ApiKeyPolicy.Write);
+                    bool methodApiAuth = cad.MethodInfo.GetCustomAttributes(true).Any(t => t is AuthorizeAttribute attribute && attribute.Policy == ApiKeyPolicy.Write);
+                    OpenApiSecurityScheme securityScheme;
+                    if (controllerApiAuth || methodApiAuth)
+                    {
+                        securityScheme = new ()
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "apikey" },
+                        };
+                    }
+                    else
+                    {
+                        securityScheme = new ()
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "bearer" },
+                        };
+                    }
+
                     operation.Security.Add(new OpenApiSecurityRequirement
                     {
-                        [scheme] = new List<string>(),
+                        {
+                            securityScheme,
+                            System.Array.Empty<string>()
+                        },
                     });
                 }
             }

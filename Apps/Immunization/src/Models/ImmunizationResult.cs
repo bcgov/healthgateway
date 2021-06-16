@@ -17,6 +17,7 @@ namespace HealthGateway.Immunization.Models
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Models.Immunization;
 
     /// <summary>
     /// Represents Immunization Result.

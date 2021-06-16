@@ -28,6 +28,7 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
         /// </summary>
         public VaccineCode()
         {
+            this.VaccineCodes = new List<SystemCode>();
         }
 
         /// <summary>
@@ -50,6 +51,6 @@ namespace HealthGateway.Immunization.Models.PHSA.Recommendation
         /// Gets the Vaccine codes.
         /// </summary>
         [JsonPropertyName("vaccineCodes")]
-        public IList<SystemCode> VaccineCodes { get; } = new List<SystemCode>();
+        public IList<SystemCode> VaccineCodes { get; }
     }
 }

@@ -401,6 +401,24 @@
             Gets or sets the list of attachments.
             </summary>
         </member>
+        <member name="T:Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema">
+            <summary>
+            Queries the Health Gateway DB for all current users with emails.
+            Queues NotificationSettings job for each.
+            </summary>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema.#ctor(Microsoft.Extensions.Logging.ILogger{Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema},HealthGateway.Common.Delegates.IWalletIssuerDelegate)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema"/> class.
+            </summary>
+            <param name="logger">The logger to use.</param>
+            <param name="walletIssuerDelegate">The injected wallet issuer service.</param>
+        </member>
+        <member name="M:Healthgateway.JobScheduler.Tasks.CreateImmunizationSchema.Run">
+            <summary>
+            Runs the task that needs to be done for the IOneTimeTask.
+            </summary>
+        </member>
         <member name="T:Healthgateway.JobScheduler.Tasks.IOneTimeTask">
             <summary>
             A task that should be invoked only once from the OneTimeJob.

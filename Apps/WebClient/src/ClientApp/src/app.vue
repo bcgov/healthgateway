@@ -243,4 +243,8 @@ h4.hg-h4 {
     font-size: 1.2rem;
     font-weight: 400;
 }
+
+small {
+    font-size: 0.875rem;
+}
 </style>

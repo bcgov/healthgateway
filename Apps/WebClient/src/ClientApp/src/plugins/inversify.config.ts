@@ -12,6 +12,7 @@ import {
     IAuthenticationService,
     ICommunicationService,
     IConfigService,
+    ICredentialService,
     IDependentService,
     IEncounterService,
     IHttpDelegate,
@@ -41,6 +42,7 @@ import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserRatingService } from "@/services/restUserRatingService";
+import { RestCredentialService } from "@/services/restCredentialService";
 import { WinstonLogger } from "@/services/winstonLogger";
 import StoreProvider from "@/store/provider";
 import container from "./inversify.container";
@@ -106,6 +108,10 @@ container
 container
     .bind<IUserRatingService>(SERVICE_IDENTIFIER.UserRatingService)
     .to(RestUserRatingService)
+    .inSingletonScope();
+container
+    .bind<ICredentialService>(SERVICE_IDENTIFIER.CredentialService)
+    .to(RestCredentialService)
     .inSingletonScope();
 container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)

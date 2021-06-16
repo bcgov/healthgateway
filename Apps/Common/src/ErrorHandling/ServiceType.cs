@@ -97,6 +97,14 @@ namespace HealthGateway.Common.ErrorHandling
             get { return new ServiceType("SF"); }
         }
 
+         /// <summary>
+        /// Gets the Salesforce service code.
+        /// </summary>
+        public static ServiceType WalletIssuer
+        {
+            get { return new ServiceType("WAL"); }
+        }
+
         /// <summary>
         /// Gets or sets the Value that holds the internal representation of the ServiceType.
         /// </summary>

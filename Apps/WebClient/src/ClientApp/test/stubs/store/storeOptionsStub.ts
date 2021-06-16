@@ -6,6 +6,7 @@ import { GatewayStoreOptions } from "@/store/types";
 import authStub from "./authStub";
 import commentStub from "./commentStub";
 import configStub from "./configStub";
+import credentialStub from "./credentialStub";
 import encounterStub from "./encounterStub";
 import errorBannerStub from "./errorBannerStub";
 import idleStub from "./idleStub";
@@ -42,5 +43,6 @@ export default class StoreOptionsStub implements GatewayStoreOptions {
         idle: idleStub,
         errorBanner: errorBannerStub,
         timeline: timelineStub,
+        credential: credentialStub,
     };
 }
