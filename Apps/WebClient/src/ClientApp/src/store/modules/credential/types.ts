@@ -22,6 +22,7 @@ export interface CredentialGetters
     extends GetterTree<CredentialState, RootState> {
     connection(state: CredentialState): WalletConnection | undefined;
     credentials(state: CredentialState): WalletCredential[] | null;
+    isLoading(state: CredentialState): boolean;
 }
 
 type CredentialContext = ActionContext<CredentialState, RootState>;
