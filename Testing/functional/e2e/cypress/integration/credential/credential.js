@@ -28,14 +28,14 @@ describe("Credentials (No Connection Established)", () => {
             "GET",
             "/v1/api/Wallet/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/Connection",
             {
-                fixture: "WebClientService/Wallet/connectionUndefined.json",
+                fixture: "WebClientService/wallet/connectionUndefined.json",
             }
         );
         cy.intercept(
             "POST",
             "/v1/api/Wallet/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/Connection",
             {
-                fixture: "WebClientService/Wallet/connectionPending.json",
+                fixture: "WebClientService/wallet/connectionPending.json",
             }
         );
         cy.login(
@@ -87,21 +87,21 @@ describe("Credentials (Connection Established)", () => {
             "GET",
             "/v1/api/Wallet/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/Connection",
             {
-                fixture: "WebClientService/Wallet/connectionNoCredentials.json",
+                fixture: "WebClientService/wallet/connectionNoCredentials.json",
             }
         );
         cy.intercept(
             "POST",
             "/v1/api/Wallet/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/Credentials",
             {
-                fixture: "WebClientService/Wallet/credentialCreated.json",
+                fixture: "WebClientService/wallet/credentialCreated.json",
             }
         );
         cy.intercept(
             "DELETE",
             "/v1/api/Wallet/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/Connection",
             {
-                fixture: "WebClientService/Wallet/connectionDisconnected.json",
+                fixture: "WebClientService/wallet/connectionDisconnected.json",
             }
         );
         cy.login(
@@ -169,21 +169,21 @@ describe("Credentials (Connection Established)", () => {
 //             "GET",
 //             "/v1/api/Wallet/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/Connection",
 //             {
-//                 fixture: "WebClientService/Wallet/connectionOneCredential.json",
+//                 fixture: "WebClientService/wallet/connectionOneCredential.json",
 //             }
 //         );
 //         cy.intercept(
 //             "POST",
 //             "/v1/api/Wallet/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/Credentials",
 //             {
-//                 fixture: "WebClientService/Wallet/credentialCreated.json",
+//                 fixture: "WebClientService/wallet/credentialCreated.json",
 //             }
 //         );
 //         cy.intercept(
 //             "DELETE",
 //             "/v1/api/Wallet/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/Credential",
 //             {
-//                 fixture: "WebClientService/Wallet/credentialRevoked.json",
+//                 fixture: "WebClientService/wallet/credentialRevoked.json",
 //             }
 //         );
 //         cy.login(
