@@ -33,23 +33,6 @@ The B.C. Government colour palette ensures all public facing government services
     <img src="images/colours/colours.png" alt="Primary Color"  />
      <img src="images/colours/disabled-colour-state.png" alt="Heading Color" />
 
-```
-Primary #003366
-Highlighted #0092F1
-Success #2E8540
-Error #D72E3D
-Accent #FCBA19
-Heading Text #313132
-Input Text #606060
-Disbaled #E9ECEF
-Links #1A5A96
-Navigation Bar #38598A
-Secondary Text #606060
-Background #F7F7F7
-Date Icons #6D757D
-
-```
-
 ### Buttons
 
 Buttons are categorized and used as follow:
