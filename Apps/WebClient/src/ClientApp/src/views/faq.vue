@@ -143,7 +143,7 @@
                             <p>
                                 You will need to upload proof of your
                                 vaccination. Once your information has been
-                                submitted, it may take about 3 business days for
+                                submitted, it may take about 7 business days for
                                 it to appear in Health Gateway.
                             </p>
                         </div></b-card-text
@@ -197,7 +197,7 @@
                                     >gov.bc.ca/vaccinerecord</a
                                 >. You will need to upload proof of your
                                 vaccine(s). Once your information has been
-                                submitted, it may take about 3 business days for
+                                submitted, it may take about 7 business days for
                                 it to appear in Health Gateway. (Note: The
                                 easiest way is to bring your first dose record
                                 with you to your second dose appointment. Only
