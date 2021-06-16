@@ -52,6 +52,9 @@ const userGetters: UserGetters = {
     patientData(): PatientData {
         return new PatientData();
     },
+    isLoading(): boolean {
+        return false;
+    },
 };
 
 const userMutations: UserMutation = {
