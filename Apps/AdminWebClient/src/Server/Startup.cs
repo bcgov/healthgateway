@@ -43,6 +43,7 @@ namespace HealthGateway.AdminWebClient
     public class Startup
     {
         private readonly StartupConfiguration startupConfig;
+        private readonly IWebHostEnvironment environment;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
 
@@ -55,6 +56,7 @@ namespace HealthGateway.AdminWebClient
         {
             this.startupConfig = new StartupConfiguration(configuration, env);
             this.logger = this.startupConfig.Logger;
+            this.environment = env;
             this.configuration = configuration;
         }
 
@@ -170,6 +172,7 @@ namespace HealthGateway.AdminWebClient
         private void ConfigureAuthenticationService(IServiceCollection services)
         {
             string basePath = this.GetBasePath();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -184,6 +187,14 @@ namespace HealthGateway.AdminWebClient
             })
             .AddOpenIdConnect(options =>
             {
+                // Allows http://localhost to work on Chromium and Edge.
+                if (this.environment.IsDevelopment())
+                {
+                    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+                    options.NonceCookie.SameSite = SameSiteMode.Unspecified;
+                }
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
