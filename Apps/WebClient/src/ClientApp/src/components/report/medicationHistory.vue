@@ -53,7 +53,7 @@ export default class MedicationHistoryReportComponent extends Vue {
 
     private logger!: ILogger;
     private notFoundText = "Not Found";
-    private fileMaxRecords = 1000;
+    private fileMaxRecords = 500;
     private fileIndex = 0;
     private totalFiles = 1;
     private isPreview = true;
