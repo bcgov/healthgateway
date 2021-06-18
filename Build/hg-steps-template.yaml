@@ -11,6 +11,12 @@ parameters:
     default: true
 
 steps:
+  - task: DotNetCoreCLI@2
+    displayName: "Compiling code for $(App.Name)"
+    inputs:
+      projects: "$(App.Home)/src"
+      arguments: "/warnaserror"
+
   - task: Npm@1
     displayName: "Installing NPM Packages"
     condition: and(succeeded(), eq(variables['NPMInstall'], true))
@@ -25,12 +31,6 @@ steps:
       command: "custom"
       customCommand: "test"
       workingDir: "$(App.Home)/src/ClientApp"
-
-  - task: DotNetCoreCLI@2
-    displayName: "Compiling code for $(App.Name)"
-    inputs:
-      projects: "$(App.Home)/src"
-      arguments: "/warnaserror"
 
   - task: DotNetCoreCLI@2
     displayName: "Runing Unit Tests for $(App.Name)"
