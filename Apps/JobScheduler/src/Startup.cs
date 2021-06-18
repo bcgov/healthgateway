@@ -116,6 +116,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IResourceDelegateDelegate, DBResourceDelegateDelegate>();
             services.AddTransient<IEventLogDelegate, DBEventLogDelegate>();
             services.AddTransient<IWalletIssuerDelegate, RestWalletIssuerDelegate>();
+            services.AddTransient<IFeedbackDelegate, DBFeedbackDelegate>();
 
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
@@ -127,6 +128,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<ICommunicationJob, CommunicationJob>();
             services.AddTransient<IEmailJob, EmailJob>();
             services.AddTransient<INotificationSettingsJob, NotificationSettingsJob>();
+            services.AddTransient<IAdminFeedbackJob, AdminFeedbackJob>();
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));

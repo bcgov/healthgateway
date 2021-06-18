@@ -4,7 +4,6 @@
         <Nullable>enable</Nullable>
         <LangVersion>9.0</LangVersion>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
-    	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
      	<WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
