@@ -17,6 +17,7 @@ namespace HealthGateway.WebClient.Test.Services
 {
     using System;
     using DeepEqual.Syntax;
+    using Hangfire;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -53,10 +54,15 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IRatingDelegate> ratingDelegateMock = new Mock<IRatingDelegate>();
             ratingDelegateMock.Setup(s => s.InsertRating(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip))).Returns(insertResult);
 
+            Mock<IBackgroundJobClient> mockJobclient = new ();
+            Mock<IUserProfileDelegate> mockProfileDelegate = new ();
+
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
                 new Mock<IFeedbackDelegate>().Object,
-                ratingDelegateMock.Object);
+                ratingDelegateMock.Object,
+                mockProfileDelegate.Object,
+                mockJobclient.Object);
 
             RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
 
@@ -85,10 +91,15 @@ namespace HealthGateway.WebClient.Test.Services
             Mock<IRatingDelegate> ratingDelegateMock = new Mock<IRatingDelegate>();
             ratingDelegateMock.Setup(s => s.InsertRating(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip))).Returns(insertResult);
 
+            Mock<IBackgroundJobClient> mockJobclient = new ();
+            Mock<IUserProfileDelegate> mockProfileDelegate = new ();
+
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
                 new Mock<IFeedbackDelegate>().Object,
-                ratingDelegateMock.Object);
+                ratingDelegateMock.Object,
+                mockProfileDelegate.Object,
+                mockJobclient.Object);
 
             RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
 
@@ -116,13 +127,30 @@ namespace HealthGateway.WebClient.Test.Services
                 Status = DBStatusCode.Created,
             };
 
+            UserProfile profile = new ()
+            {
+                Email = "mock@email.com",
+            };
+
+            DBResult<UserProfile> profileResult = new ()
+            {
+                Payload = profile,
+                Status = DBStatusCode.Read,
+            };
+
             Mock<IFeedbackDelegate> userFeedbackDelegateMock = new Mock<IFeedbackDelegate>();
             userFeedbackDelegateMock.Setup(s => s.InsertUserFeedback(It.Is<UserFeedback>(r => r.Comment == expectedUserFeedback.Comment && r.Id == expectedUserFeedback.Id && r.UserProfileId == expectedUserFeedback.UserProfileId && r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed))).Returns(insertResult);
+
+            Mock<IBackgroundJobClient> mockJobclient = new ();
+            Mock<IUserProfileDelegate> mockProfileDelegate = new ();
+            mockProfileDelegate.Setup(s => s.GetUserProfile(It.Is<string>(hdid => hdid == expectedUserFeedback.UserProfileId))).Returns(profileResult);
 
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,
                 userFeedbackDelegateMock.Object,
-                new Mock<IRatingDelegate>().Object);
+                new Mock<IRatingDelegate>().Object,
+                mockProfileDelegate.Object,
+                mockJobclient.Object);
 
             DBResult<UserFeedback> actualResult = service.CreateUserFeedback(expectedUserFeedback);
 
