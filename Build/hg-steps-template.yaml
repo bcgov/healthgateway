@@ -27,6 +27,12 @@ steps:
       workingDir: "$(App.Home)/src/ClientApp"
 
   - task: DotNetCoreCLI@2
+    displayName: "Compiling code for $(App.Name)"
+    inputs:
+      projects: "$(App.Home)/src"
+      arguments: "/warnaserror"
+
+  - task: DotNetCoreCLI@2
     displayName: "Runing Unit Tests for $(App.Name)"
     condition: and(succeeded(), eq(variables['UnitTests'], true))
     inputs:
@@ -51,7 +57,7 @@ steps:
       reportDirectory: "$(App.Home)/CodeCoverage"
 
   - task: DotNetCoreCLI@2
-    displayName: "Compiling and Publishing code for $(App.Name)"
+    displayName: "Publishing code for $(App.Name)"
     inputs:
       modifyOutputPath: false
       command: "publish"
