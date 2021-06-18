@@ -28,7 +28,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "EmailTemplate",
                 columns: new[] { "EmailTemplateId", "Body", "CreatedBy", "CreatedDateTime", "EffectiveDate", "ExpiryDate", "FormatCode", "From", "Name", "Priority", "Subject", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { new Guid("75c79b3e-1a61-403b-82ee-fddcda7144af"), "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Health Gateway Feedback</title>\n    </head>\n    <body style=\"margin: 0\">\n        <strong>Hi Admin,</strong>\n        <p>\n            User: ${hdid} sent the following feedback:\n        </p>\n        <p>${feedback}</p>\n    </body>\n</html>\n", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "HTML", "HG_Donotreply@gov.bc.ca", "AdminFeedback", 1, "Health Gateway Feedback Received", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { new Guid("75c79b3e-1a61-403b-82ee-fddcda7144af"), "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Health Gateway Feedback</title>\n    </head>\n    <body style=\"margin: 0\">\n        <strong>Hi Admin,</strong>\n        <p>${feedback}</p>\n    </body>\n</html>\n", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "HTML", "HG_Donotreply@gov.bc.ca", "AdminFeedback", 1, "Health Gateway Feedback Received", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -27,7 +27,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20210618022825_AdminFeedbackEmail")]
+    [Migration("20210618155609_AdminFeedbackEmail")]
     partial class AdminFeedbackEmail
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1405,7 +1405,7 @@ namespace HealthGateway.Database.Migrations
                         new
                         {
                             Id = new Guid("75c79b3e-1a61-403b-82ee-fddcda7144af"),
-                            Body = "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Health Gateway Feedback</title>\n    </head>\n    <body style=\"margin: 0\">\n        <strong>Hi Admin,</strong>\n        <p>\n            User: ${hdid} sent the following feedback:\n        </p>\n        <p>${feedback}</p>\n    </body>\n</html>\n",
+                            Body = "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Health Gateway Feedback</title>\n    </head>\n    <body style=\"margin: 0\">\n        <strong>Hi Admin,</strong>\n        <p>${feedback}</p>\n    </body>\n</html>\n",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
