@@ -835,6 +835,15 @@ namespace HealthGateway.Database.Context
                     CreatedDateTime = this.DefaultSeedDate,
                     UpdatedBy = UserId.DefaultUser,
                     UpdatedDateTime = this.DefaultSeedDate,
+                },
+                new CommunicationTypeCode
+                {
+                    StatusCode = CommunicationType.InApp,
+                    Description = "In-App communication type",
+                    CreatedBy = UserId.DefaultUser,
+                    CreatedDateTime = this.DefaultSeedDate,
+                    UpdatedBy = UserId.DefaultUser,
+                    UpdatedDateTime = this.DefaultSeedDate,
                 });
 
             modelBuilder.Entity<CommunicationStatusCode>().HasData(
