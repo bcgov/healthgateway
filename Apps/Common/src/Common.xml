@@ -1843,6 +1843,17 @@
             Ignores auditing on the specified controller.
             </summary>
         </member>
+        <member name="T:HealthGateway.Common.Jobs.IAdminFeedbackJob">
+            <summary>
+            A Job to send/retry sending an email to the administrator.
+            </summary>
+        </member>
+        <member name="M:HealthGateway.Common.Jobs.IAdminFeedbackJob.SendEmail(HealthGateway.Common.Models.ClientFeedback)">
+            <summary>
+            Sends an email to the Health Gateway Admin with the feedback included.
+            </summary>
+            <param name="clientFeedback">The client feedback to email to the admin.</param>
+        </member>
         <member name="T:HealthGateway.Common.Jobs.ICommunicationJob">
             <summary>
             A Job to send/retry sending (email) communications.
@@ -2238,6 +2249,21 @@
         <member name="P:HealthGateway.Common.Models.AESCryptoDelegateConfig.IV">
             <summary>
             Gets or sets the Initialization Vector.
+            </summary>
+        </member>
+        <member name="T:HealthGateway.Common.Models.ClientFeedback">
+            <summary>
+            Represents a user email and the associated feedback.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.ClientFeedback.UserFeedbackId">
+            <summary>
+            Gets or sets the ID of the feedback to send to Admin.
+            </summary>
+        </member>
+        <member name="P:HealthGateway.Common.Models.ClientFeedback.Email">
+            <summary>
+            Gets or sets the client email that created the associated feedback.
             </summary>
         </member>
         <member name="T:HealthGateway.Common.Models.HMACHashDelegateConfig">
