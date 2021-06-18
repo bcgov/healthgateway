@@ -15,7 +15,7 @@ steps:
     displayName: "Compiling code for $(App.Name)"
     inputs:
       projects: "$(App.Home)/src"
-      arguments: "/warnaserror"
+      arguments: "--no-incremental /warnaserror"
 
   - task: Npm@1
     displayName: "Installing NPM Packages"
