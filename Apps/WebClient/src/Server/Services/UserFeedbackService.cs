@@ -43,7 +43,7 @@ namespace HealthGateway.WebClient.Services
         /// <param name="feedbackDelegate">The feedback delegate to perform the work.</param>
         /// <param name="ratingDelegate">The rating delegate to perform the work.</param>
         /// <param name="profileDelegate">The user profile delegate to use.</param>
-        /// <param name="jobClient">The JobScheduler queue client</param>
+        /// <param name="jobClient">The JobScheduler queue client.</param>
         public UserFeedbackService(ILogger<UserFeedbackService> logger, IFeedbackDelegate feedbackDelegate, IRatingDelegate ratingDelegate, IUserProfileDelegate profileDelegate, IBackgroundJobClient jobClient)
         {
             this.logger = logger;
