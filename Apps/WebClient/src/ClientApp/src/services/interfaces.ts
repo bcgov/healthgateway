@@ -7,7 +7,7 @@ import { Store } from "vuex";
 
 import AddDependentRequest from "@/models/addDependentRequest";
 import { Dictionary } from "@/models/baseTypes";
-import Communication from "@/models/communication";
+import Communication, { CommunicationType } from "@/models/communication";
 import {
     ExternalConfiguration,
     OpenIdConnectConfiguration,
@@ -152,7 +152,7 @@ export interface IUserCommentService {
 
 export interface ICommunicationService {
     initialize(http: IHttpDelegate): void;
-    getActive(): Promise<RequestResult<Communication>>;
+    getActive(type: CommunicationType): Promise<RequestResult<Communication>>;
 }
 
 export interface IDependentService {

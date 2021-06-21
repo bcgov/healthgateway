@@ -599,7 +599,7 @@
             <param name="logger">Injected Logger Provider.</param>
             <param name="dbContext">The context to be used when accessing the database.</param>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.DBCommunicationDelegate.GetActiveBanner">
+        <member name="M:HealthGateway.Database.Delegates.DBCommunicationDelegate.GetActiveBanner(HealthGateway.Database.Constants.CommunicationType)">
             <inheritdoc />
         </member>
         <member name="M:HealthGateway.Database.Delegates.DBCommunicationDelegate.Add(HealthGateway.Database.Models.Communication,System.Boolean)">
@@ -1137,10 +1137,11 @@
             Operations to be performed for Communications.
             </summary>
         </member>
-        <member name="M:HealthGateway.Database.Delegates.ICommunicationDelegate.GetActiveBanner">
+        <member name="M:HealthGateway.Database.Delegates.ICommunicationDelegate.GetActiveBanner(HealthGateway.Database.Constants.CommunicationType)">
             <summary>
-            Gets the active communication banner from the DB.
+            Gets the active communication banner from the DB by type.
             </summary>
+            <param name="communicationType">The active communiction type to retrieve.</param>
             <returns>The Communication wrapped in a DBResult.</returns>
         </member>
         <member name="M:HealthGateway.Database.Delegates.ICommunicationDelegate.Add(HealthGateway.Database.Models.Communication,System.Boolean)">
@@ -2195,7 +2196,7 @@
         </member>
         <member name="P:HealthGateway.Database.Models.Communication.CommunicationTypeCode">
             <summary>
-            Gets or sets the type of the Communication (Banner vs Email).
+            Gets or sets the type of the Communication (Banner, Email or In-App).
             </summary>
         </member>
         <member name="P:HealthGateway.Database.Models.Communication.CommunicationStatusCode">

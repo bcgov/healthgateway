@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 
-import Communication from "@/models/communication";
+import Communication, { CommunicationType } from "@/models/communication";
 import { ServiceName } from "@/models/errorInterfaces";
 import RequestResult from "@/models/requestResult";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -22,10 +22,14 @@ export class RestCommunicationService implements ICommunicationService {
         this.http = http;
     }
 
-    public getActive(): Promise<RequestResult<Communication>> {
+    public getActive(
+        type: CommunicationType
+    ): Promise<RequestResult<Communication>> {
         return new Promise((resolve, reject) => {
             this.http
-                .getWithCors<RequestResult<Communication>>(`${this.BASE_URI}/`)
+                .getWithCors<RequestResult<Communication>>(
+                    `${this.BASE_URI}/${type}`
+                )
                 .then((communication) => {
                     return resolve(communication);
                 })

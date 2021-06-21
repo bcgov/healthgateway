@@ -95,10 +95,11 @@
             </summary>
             <param name="communicationService">The injected communication service.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Controllers.CommunicationController.Get">
+        <member name="M:HealthGateway.WebClient.Controllers.CommunicationController.Get(HealthGateway.Database.Constants.CommunicationType)">
             <summary>
             Gets the latest active communication.
             </summary>
+            <param name="bannerType">The banner type to retrieve.</param>
             <returns>The active communication or null if not found.</returns>
             <response code="200">Returns the communication json.</response>
         </member>
@@ -496,6 +497,7 @@
         <member name="T:HealthGateway.WebClient.Listeners.BannerListener">
             <summary>
             Implements the abstract DB Listener and listens on the BannerChange channel.
+            Actions that may come are DELETE, UPDATE, and INSERT.
             </summary>
         </member>
         <member name="M:HealthGateway.WebClient.Listeners.BannerListener.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Listeners.BannerListener},System.IServiceProvider)">
@@ -1536,10 +1538,16 @@
             <param name="communicationDelegate">Injected Note delegate.</param>
             <param name="memoryCache">The cache to use to reduce lookups.</param>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.CommunicationService.GetActiveBanner">
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.GetActiveBanner(HealthGateway.Database.Constants.CommunicationType)">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.CommunicationService.SetActiveBannerCache(HealthGateway.Common.Models.RequestResult{HealthGateway.Database.Models.Communication})">
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.RemoveBannerCache(HealthGateway.Database.Constants.CommunicationType)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.GetBannerCache(HealthGateway.Database.Constants.CommunicationType)">
+            <inheritdoc />
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.CommunicationService.AddBannerCache(HealthGateway.Common.Models.RequestResult{HealthGateway.Database.Models.Communication},HealthGateway.Database.Constants.CommunicationType)">
             <inheritdoc />
         </member>
         <member name="T:HealthGateway.WebClient.Services.ConfigurationService">
@@ -1630,17 +1638,33 @@
             Service to interact with the Communication Delegate.
             </summary>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.GetActiveBanner">
+        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.GetActiveBanner(HealthGateway.Database.Constants.CommunicationType)">
             <summary>
-            Gets the active communication banner from the backend.
+            Gets the active communication banner based on type from the backend.
+            Only Banner and In-App values are supported.
             </summary>
+            <param name="communicationType">The type of communication banner to retrieve.</param>
             <returns>The active communication wrapped in a RequestResult.</returns>
         </member>
-        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.SetActiveBannerCache(HealthGateway.Common.Models.RequestResult{HealthGateway.Database.Models.Communication})">
+        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.AddBannerCache(HealthGateway.Common.Models.RequestResult{HealthGateway.Database.Models.Communication},HealthGateway.Database.Constants.CommunicationType)">
             <summary>
-            Sets the Active Banner in the internal cache.
+            Adds the associated banner to the local cache.
             </summary>
-            <param name="cacheEntry">The Communication wrapped in a RequestResult.</param>
+            <param name="cacheEntry">The communication to be cached..</param>
+            <param name="cacheType">The communication type to be removed.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.RemoveBannerCache(HealthGateway.Database.Constants.CommunicationType)">
+            <summary>
+            Removes the associated banner from the local cache.
+            </summary>
+            <param name="cacheType">The communication type to be removed.</param>
+        </member>
+        <member name="M:HealthGateway.WebClient.Services.ICommunicationService.GetBannerCache(HealthGateway.Database.Constants.CommunicationType)">
+            <summary>
+            Gets the associated banner from the local cache.
+            </summary>
+            <param name="cacheType">The communication type to be removed.</param>
+            <returns>The cached object.</returns>
         </member>
         <member name="T:HealthGateway.WebClient.Services.IConfigurationService">
             <summary>
@@ -2001,13 +2025,15 @@
         <member name="T:HealthGateway.WebClient.Services.UserFeedbackService">
             <inheritdoc />
         </member>
-        <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserFeedbackService},HealthGateway.Database.Delegates.IFeedbackDelegate,HealthGateway.Database.Delegates.IRatingDelegate)">
+        <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.#ctor(Microsoft.Extensions.Logging.ILogger{HealthGateway.WebClient.Services.UserFeedbackService},HealthGateway.Database.Delegates.IFeedbackDelegate,HealthGateway.Database.Delegates.IRatingDelegate,HealthGateway.Database.Delegates.IUserProfileDelegate,Hangfire.IBackgroundJobClient)">
             <summary>
             Initializes a new instance of the <see cref="T:HealthGateway.WebClient.Services.UserFeedbackService"/> class.
             </summary>
             <param name="logger">Injected Logger Provider.</param>
             <param name="feedbackDelegate">The feedback delegate to perform the work.</param>
             <param name="ratingDelegate">The rating delegate to perform the work.</param>
+            <param name="profileDelegate">The user profile delegate to use.</param>
+            <param name="jobClient">The JobScheduler queue client.</param>
         </member>
         <member name="M:HealthGateway.WebClient.Services.UserFeedbackService.CreateUserFeedback(HealthGateway.Database.Models.UserFeedback)">
             <inheritdoc />
