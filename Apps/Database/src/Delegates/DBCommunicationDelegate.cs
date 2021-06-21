@@ -48,7 +48,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc />
-        public DBResult<Communication> GetActiveBanner()
+        public DBResult<Communication> GetActiveBanner(CommunicationType communicationType)
         {
             this.logger.LogTrace($"Getting active Communication from DB...");
             DBResult<Communication> result = new DBResult<Communication>()
@@ -57,7 +57,7 @@ namespace HealthGateway.Database.Delegates
             };
             Communication? communication = this.dbContext.Communication
                 .OrderByDescending(c => c.CreatedDateTime)
-                .Where(c => c.CommunicationTypeCode == CommunicationType.Banner)
+                .Where(c => c.CommunicationTypeCode == communicationType)
                 .Where(c => c.CommunicationStatusCode == CommunicationStatus.New)
                 .Where(c => DateTime.UtcNow >= c.EffectiveDateTime && DateTime.UtcNow <= c.ExpiryDateTime)
                 .FirstOrDefault();

@@ -1,6 +1,7 @@
 export const enum CommunicationType {
     Email = "Email",
     Banner = "Banner",
+    InApp = "InApp",
 }
 
 export const enum CommunicationStatus {
@@ -36,7 +37,7 @@ export default interface Communication {
     priority: number;
 
     // Gets or sets the communication type: email or banner
-    communicationTypeCode: string;
+    communicationTypeCode: CommunicationType;
 
     // Gets or sets the communication status code: new or processed
     communicationStatusCode: string;

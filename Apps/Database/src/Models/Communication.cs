@@ -65,7 +65,7 @@ namespace HealthGateway.Database.Models
         public DateTime? ScheduledDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of the Communication (Banner vs Email).
+        /// Gets or sets the type of the Communication (Banner, Email or In-App).
         /// </summary>
         [MaxLength(10)]
         public CommunicationType CommunicationTypeCode { get; set; } = CommunicationType.Banner;

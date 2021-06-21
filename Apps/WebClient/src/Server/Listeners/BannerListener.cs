@@ -21,14 +21,12 @@ namespace HealthGateway.WebClient.Listeners
     using System.Text.Json.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
@@ -36,12 +34,10 @@ namespace HealthGateway.WebClient.Listeners
 
     /// <summary>
     /// Implements the abstract DB Listener and listens on the BannerChange channel.
+    /// Actions that may come are DELETE, UPDATE, and INSERT.
     /// </summary>
     public class BannerListener : BackgroundService
     {
-        private const string DeleteAction = "DELETE";
-        private const string UpdateAction = "UPDATE";
-        private const string InsertAction = "INSERT";
         private const string Channel = "BannerChange";
         private const int SleepDuration = 10000;
 
@@ -127,30 +123,20 @@ namespace HealthGateway.WebClient.Listeners
             BannerChangeEvent? changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, options);
             if (this.CommunicationService != null && changeEvent != null && changeEvent.Data != null)
             {
+                Communication comm = changeEvent.Data;
                 DateTime utcnow = DateTime.UtcNow;
-                RequestResult<Communication> cacheEntry = new RequestResult<Communication>();
-                if (changeEvent.Action == InsertAction ||
-                    changeEvent.Action == UpdateAction)
+                if (utcnow >= comm.EffectiveDateTime && utcnow <= comm.ExpiryDateTime)
                 {
-                    Communication comm = changeEvent.Data;
-                    if (utcnow >= comm.EffectiveDateTime && utcnow <= comm.ExpiryDateTime)
-                    {
-                        cacheEntry.ResultStatus = Common.Constants.ResultType.Success;
-                        cacheEntry.ResourcePayload = comm;
-                        this.logger.LogInformation("Active Banner inserted or updated in DB");
-                        this.CommunicationService.SetActiveBannerCache(cacheEntry);
-                    }
+                    // shortcut - Active comm, remove from cache
+                    this.CommunicationService.RemoveBannerCache(comm.CommunicationTypeCode);
                 }
-                else if (changeEvent.Action == DeleteAction)
+                else
                 {
-                    RequestResult<Communication> currentBanner = this.CommunicationService.GetActiveBanner();
-                    if (currentBanner.ResourcePayload != null &&
-                        currentBanner.ResourcePayload.Id == changeEvent.Data.Id)
+                    // Change to the current comm, remove from cache
+                    RequestResult<Communication>? cacheComm = this.CommunicationService.GetBannerCache(comm.CommunicationTypeCode);
+                    if (cacheComm != null && cacheComm.ResourcePayload != null && cacheComm.ResourcePayload.Id == comm.Id)
                     {
-                        cacheEntry.ResultStatus = Common.Constants.ResultType.Error;
-                        cacheEntry.ResultError = new RequestResultError() { ResultMessage = "Active Banner deleted from DB", ErrorCode = ErrorTranslator.InternalError(ErrorType.InvalidState) };
-                        this.logger.LogInformation("Active Banner deleted from DB");
-                        this.CommunicationService.SetActiveBannerCache(cacheEntry);
+                        this.CommunicationService.RemoveBannerCache(comm.CommunicationTypeCode);
                     }
                 }
             }

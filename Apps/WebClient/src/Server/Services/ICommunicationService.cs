@@ -15,8 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Services
 {
-    using System.Collections.Generic;
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -25,15 +25,31 @@ namespace HealthGateway.WebClient.Services
     public interface ICommunicationService
     {
         /// <summary>
-        /// Gets the active communication banner from the backend.
+        /// Gets the active communication banner based on type from the backend.
+        /// Only Banner and In-App values are supported.
         /// </summary>
+        /// <param name="communicationType">The type of communication banner to retrieve.</param>
         /// <returns>The active communication wrapped in a RequestResult.</returns>
-        public RequestResult<Communication> GetActiveBanner();
+        RequestResult<Communication> GetActiveBanner(CommunicationType communicationType);
 
         /// <summary>
-        /// Sets the Active Banner in the internal cache.
+        /// Adds the associated banner to the local cache.
         /// </summary>
-        /// <param name="cacheEntry">The Communication wrapped in a RequestResult.</param>
-        public void SetActiveBannerCache(RequestResult<Communication> cacheEntry);
+        /// <param name="cacheEntry">The communication to be cached..</param>
+        /// <param name="cacheType">The communication type to be removed.</param>
+        public void AddBannerCache(RequestResult<Communication> cacheEntry, CommunicationType cacheType);
+
+        /// <summary>
+        /// Removes the associated banner from the local cache.
+        /// </summary>
+        /// <param name="cacheType">The communication type to be removed.</param>
+        void RemoveBannerCache(CommunicationType cacheType);
+
+        /// <summary>
+        /// Gets the associated banner from the local cache.
+        /// </summary>
+        /// <param name="cacheType">The communication type to be removed.</param>
+        /// <returns>The cached object.</returns>
+        RequestResult<Communication>? GetBannerCache(CommunicationType cacheType);
     }
 }
