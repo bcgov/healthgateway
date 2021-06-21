@@ -46,7 +46,7 @@ namespace HealthGateway.WebClient.Test.Controllers
             };
 
             Mock<ICommunicationService> communicationServiceMock = new Mock<ICommunicationService>();
-            communicationServiceMock.Setup(s => s.GetActiveBanner()).Returns(expectedResult);
+            communicationServiceMock.Setup(s => s.GetActiveBanner(Database.Constants.CommunicationType.Banner)).Returns(expectedResult);
 
             CommunicationController controller = new CommunicationController(communicationServiceMock.Object);
             var actualResult = controller.Get();

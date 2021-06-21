@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -25,10 +26,11 @@ namespace HealthGateway.Database.Delegates
     public interface ICommunicationDelegate
     {
         /// <summary>
-        /// Gets the active communication banner from the DB.
+        /// Gets the active communication banner from the DB by type.
         /// </summary>
+        /// <param name="communicationType">The active communiction type to retrieve.</param>
         /// <returns>The Communication wrapped in a DBResult.</returns>
-        DBResult<Communication> GetActiveBanner();
+        DBResult<Communication> GetActiveBanner(CommunicationType communicationType);
 
         /// <summary>
         /// Add the given communication.
