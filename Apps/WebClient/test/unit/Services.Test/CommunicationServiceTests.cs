@@ -83,13 +83,13 @@ namespace HealthGateway.WebClient.Test.Services
             IMemoryCache? memoryCache = serviceProvider.GetService<IMemoryCache>();
 
             Mock<ICommunicationDelegate> communicationDelegateMock = new Mock<ICommunicationDelegate>();
-            communicationDelegateMock.Setup(s => s.GetActiveBanner()).Returns(dbResult);
+            communicationDelegateMock.Setup(s => s.GetActiveBanner(Database.Constants.CommunicationType.Banner)).Returns(dbResult);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
                 memoryCache);
-            RequestResult<Communication> actualResult = service.GetActiveBanner();
+            RequestResult<Communication> actualResult = service.GetActiveBanner(Database.Constants.CommunicationType.Banner);
 
             return new Tuple<RequestResult<Communication>, Communication>(actualResult, communication);
         }

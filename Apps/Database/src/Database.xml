@@ -159,6 +159,11 @@
             The Email communication.
             </summary>
         </member>
+        <member name="F:HealthGateway.Database.Constants.CommunicationType.InApp">
+            <summary>
+            Communication inside the app.
+            </summary>
+        </member>
         <member name="T:HealthGateway.Database.Constants.DBStatusCode">
             <summary>
             The set of programs.

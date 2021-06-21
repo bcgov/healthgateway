@@ -29,5 +29,10 @@ namespace HealthGateway.Database.Constants
         /// The Email communication.
         /// </summary>
         Email,
+
+        /// <summary>
+        /// Communication inside the app.
+        /// </summary>
+        InApp,
     }
 }

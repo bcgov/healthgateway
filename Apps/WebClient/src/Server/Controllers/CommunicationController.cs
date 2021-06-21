@@ -16,6 +16,7 @@
 namespace HealthGateway.WebClient.Controllers
 {
     using HealthGateway.Common.Models;
+    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.WebClient.Services;
     using Microsoft.AspNetCore.Mvc;
@@ -43,12 +44,14 @@ namespace HealthGateway.WebClient.Controllers
         /// <summary>
         /// Gets the latest active communication.
         /// </summary>
+        /// <param name="bannerType">The banner type to retrieve.</param>
         /// <returns>The active communication or null if not found.</returns>
         /// <response code="200">Returns the communication json.</response>
         [HttpGet]
-        public IActionResult Get()
+        [Route("{bannerType}")]
+        public IActionResult Get(CommunicationType bannerType = CommunicationType.Banner)
         {
-            RequestResult<Communication> result = this.communicationService.GetActiveBanner();
+            RequestResult<Communication> result = this.communicationService.GetActiveBanner(bannerType);
             return new JsonResult(result);
         }
     }
