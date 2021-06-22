@@ -92,7 +92,11 @@ export default class CommunicationComponent extends Vue {
 <template>
     <b-row v-if="hasCommunication">
         <b-col class="p-0 m-0">
-            <div class="text-center communication p-2" v-html="text" />
+            <div
+                data-testid="communicationBanner"
+                class="text-center communication p-2"
+                v-html="text"
+            />
         </b-col>
     </b-row>
 </template>
