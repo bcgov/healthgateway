@@ -10,9 +10,7 @@ describe("Communication", () => {
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
             .contains("Test Banner");
-    });
 
-    it("InApp Banner Unauthenticated", () => {
         cy.visit("/faq");
         cy.get("[data-testid=communicationBanner]")
             .should("exist")
